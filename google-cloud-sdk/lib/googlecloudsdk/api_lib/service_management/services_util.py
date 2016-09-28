@@ -25,6 +25,7 @@ from dateutil import tz
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
@@ -39,6 +40,12 @@ FINGERPRINT_REGEX = re.compile(
 OP_BASE_CMD = 'gcloud beta service-management operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
+
+
+class OperationErrorException(core_exceptions.Error):
+
+  def __init__(self, message):
+    super(OperationErrorException, self).__init__(message)
 
 
 def GetMessagesModule():
@@ -410,7 +417,8 @@ def WaitForOperation(op_name, client):
     client: The client object that contains the GetOperation request object.
 
   Raises:
-    ToolException: if the operation fails or does not complete in time.
+    ToolException: if the operation does not complete in time.
+    OperationErrorException: if the operation fails.
 
   Returns:
     The Operation object, if successful. Raises an exception on failure.
@@ -450,7 +458,7 @@ def WaitForOperation(op_name, client):
 
   # Check to see if the operation resulted in an error
   if WaitForOperation.operation_response.error is not None:
-    raise exceptions.ToolException(
+    raise OperationErrorException(
         'The operation with ID {0} resulted in a failure.'.format(op_name))
 
   # If we've gotten this far, the operation completed successfully,

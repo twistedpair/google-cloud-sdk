@@ -31,8 +31,8 @@ def Create(model):
       projectsId=res.projectsId,
       googleCloudMlV1beta1Model=msgs.GoogleCloudMlV1beta1Model(
           name=res.Name()))
-  resp = client.projects_models.Create(req)
-  return resp
+  op = client.projects_models.Create(req)
+  return op
 
 
 def Delete(model):
@@ -45,8 +45,8 @@ def Delete(model):
   res = registry.Parse(model, collection='ml.projects.models')
   req = msgs.MlProjectsModelsDeleteRequest(
       projectsId=res.projectsId, modelsId=res.Name())
-  resp = client.projects_models.Delete(req)
-  return resp
+  op = client.projects_models.Delete(req)
+  return op
 
 
 def Get(model):

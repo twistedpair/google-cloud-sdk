@@ -23,7 +23,7 @@ class CollectionInfo(object):
       api_name: str, name of the api of resources parsed by this parser.
       api_version: str, version id for this api.
       path: str, Atomic URI template for this resource.
-      flat_path: list(str), Detailed URI templates for this resource.
+      flat_paths: {name->path}, Named detailed URI templates for this resource.
       params: list(str), description of parameters in the path.
       request_type: str, name of apitools generated type for Get request.
       name: str, collection name for this resource without leading api_name.

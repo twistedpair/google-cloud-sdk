@@ -15,6 +15,9 @@
 """Util for gcloud_shell operations."""
 
 from googlecloudsdk.command_lib.static_completion import lookup
+from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from prompt_toolkit import Application
 from prompt_toolkit import auto_suggest
 from prompt_toolkit import buffer as ptkbuffer
@@ -28,18 +31,45 @@ from pygments.lexers import shell
 from pygments.token import Token
 
 
+BLUE = '#00bbcc'
+GRAY = '#666666'
+DARK_GRAY = '#333333'
+BLACK = '#000000'
+
+
+def Color(foreground=None, background=None):
+  components = []
+  if foreground:
+    components.append(foreground)
+  if background:
+    components.append('bg:' + background)
+  return ' '.join(components)
+
+
 def GetDocumentStyle():
+  """Return the color styles for the layout."""
   prompt_styles = styles.default_style_extensions
   prompt_styles.update({
-      Token.Menu.Completions.Completion.Current: '#000000 bg:#00aaaa',
-      Token.Menu.Completions.Completion: '#000000 bg:#00ffff',
-      Token.Toolbar: '#00ffff bg:#000000'
+      Token.Menu.Completions.Completion.Current: Color(BLUE, GRAY),
+      Token.Menu.Completions.Completion: Color(BLUE, DARK_GRAY),
+      Token.Toolbar: Color(BLUE, DARK_GRAY),
+      Token.Toolbar.Account: Color(),
+      Token.Toolbar.Separator: Color(),
+      Token.Toolbar.Project: Color(),
+      Token.Prompt: Color()
   })
   return styles.PygmentsStyle.from_defaults(style_dict=prompt_styles)
 
 
 def GetBottomToolbarTokens(unused_cli):
-  return [(Token.Toolbar, ' Gcloud Interactive Shell')]
+  # Prevents caching of properties, so we will update the toolbar in response to
+  # changes in property status
+  named_configs.ActivePropertiesFile().Invalidate()
+  project = properties.VALUES.core.project.Get() or '<NO PROJECT SET>'
+  account = properties.VALUES.core.account.Get() or '<NO ACCOUNT SET>'
+  return [(Token.Toolbar.Account, account),
+          (Token.Toolbar.Separator, ' - '),
+          (Token.Toolbar.Project, project)]
 
 
 def _KeyBindings():
@@ -102,7 +132,7 @@ def CreateCli(gcloud_py_dir):
   layout = shortcuts.create_prompt_layout(
       lexer=shell.BashLexer,
       get_bottom_toolbar_tokens=GetBottomToolbarTokens,
-      message=u'$ ')
+      message=u'Cloud SDK {0}> '.format(config.CLOUD_SDK_VERSION))
 
   cli_buffer = ptkbuffer.Buffer(
       history=in_memory_history,

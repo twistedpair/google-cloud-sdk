@@ -537,12 +537,12 @@ class GoogleCloudMlV1beta1CancelJobRequest(_messages.Message):
 
 
 class GoogleCloudMlV1beta1GetConfigResponse(_messages.Message):
-  """Returns service configuration associated with a given project.
+  """Returns service account information associated with a project.
 
   Fields:
     serviceAccount: The service account Cloud ML uses to access resources in
       the project.
-    serviceAccountProject: Project number associated with 'service_account'.
+    serviceAccountProject: The project number for `service_account`.
   """
 
   serviceAccount = _messages.StringField(1)
@@ -666,9 +666,9 @@ class GoogleCloudMlV1beta1Job(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The job state is unspecified.
-      QUEUED: The job has been just created and is awaiting to be processed.
-      PREPARING: The job is being prepared to run.
-      RUNNING: Training or prediction is in progress.
+      QUEUED: The job has been just created and processing has not yet begun.
+      PREPARING: The service is preparing to run the job.
+      RUNNING: The job is in progress.
       SUCCEEDED: The job completed successfully.
       FAILED: The job failed. `error_message` should contain the details of
         the failure.
@@ -738,11 +738,19 @@ class GoogleCloudMlV1beta1ListVersionsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1beta1Model(_messages.Message):
-  """Represents a machine learning model resource that can be used to perform
-  prediction.
+  """Represents a trained machine learning model that can be used to handle
+  prediction requests. A model can have many versions, each of which is a
+  deployed, trained model ready to receive prediction requests. In that way, a
+  model resource is a container for one or more versions. However, each model
+  has a default version that will be used for prediction when a version isn't
+  specified.
 
   Fields:
-    defaultVersion: Output only. The default version of the model.
+    defaultVersion: Output only. The default version of the model. This
+      version will be used to handle prediction requests that do not specify a
+      version. You can change the default version by calling [projects.methods
+      .versions.setDefault](/ml/reference/rest/v1beta1/projects.models.version
+      s/setDefault).
     description: Optional. The description of the model.
     name: Required. The user-specified name of the model.
   """
@@ -753,19 +761,19 @@ class GoogleCloudMlV1beta1Model(_messages.Message):
 
 
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
-  """Represents the metadata of the longrunning.Operation.
+  """Represents the metadata of the long-running operation.
 
   Enums:
     OperationTypeValueValuesEnum: The operation type.
 
   Fields:
-    createTime: When the operation was submitted.
-    endTime: When the operation processing was completed.
-    isCancellationRequested: Whether the cancellation of this operation has
-      been requested.
+    createTime: The time the operation was submitted.
+    endTime: The time operation processing completed.
+    isCancellationRequested: Indicates whether a request to cancel this
+      operation has been made.
     modelName: Contains the name of the model associated with the operation.
     operationType: The operation type.
-    startTime: When the operation processing was started.
+    startTime: The time operation processing started.
     version: Contains the version associated with the operation.
   """
 
@@ -776,10 +784,12 @@ class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
       OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
       CREATE_VERSION: An operation to create a new version.
       DELETE_VERSION: An operation to delete an existing version.
+      DELETE_MODEL: An operation to delete an existing model.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE_VERSION = 1
     DELETE_VERSION = 2
+    DELETE_MODEL = 3
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
@@ -806,7 +816,7 @@ class GoogleCloudMlV1beta1ParameterSpec(_messages.Message):
     discreteValues: Required if type is `DISCRETE`. A list of feasible points.
       The list should be in strictly increasing order. For instance, this
       parameter might have possible settings of 1.5, 2.5, and 4.0. This list
-      shouldn't be too large - probably not more than 1,000 points.
+      should not contain more than 1,000 values.
     maxValue: Required if typeis `DOUBLE` or `INTEGER`. This field should be
       unset if type is `CATEGORICAL`. This value should be integers if type is
       `INTEGER`.
@@ -845,8 +855,8 @@ class GoogleCloudMlV1beta1ParameterSpec(_messages.Message):
     """Required. The type of the parameter.
 
     Values:
-      PARAMETER_TYPE_UNSPECIFIED: Parameter type must be specified.
-        Unspecified values will be treated as an error.
+      PARAMETER_TYPE_UNSPECIFIED: You must specify a valid type. Using this
+        unspecified type will result in an error.
       DOUBLE: Type for real-valued parameters.
       INTEGER: Type for integral parameters.
       CATEGORICAL: The parameter is categorical, with a value chosen from the
@@ -872,59 +882,50 @@ class GoogleCloudMlV1beta1ParameterSpec(_messages.Message):
 
 class GoogleCloudMlV1beta1PredictRequest(_messages.Message):
   """Request for predictions to be issued against a trained model.  The body
-  of the request consists of a single JSON object with a single top-level
-  field:   * `instances`: a list of JSON values representing the instances to
-  use for  prediction.  The structure of each element of the instances list is
-  the type of data your model expects to work on. There are two types of
-  instances: those that include named inputs and those that do not.  Most data
-  does not include named inputs. In this case, each instance will be a JSON
-  boolean, number, string, or (possibly deeply nested) list of any of the
-  above. For instance, if your model accepts rows of CSV data, then each
-  element is a string; if each data instance is a vector of ints or floats,
-  use a JSON list of numbers, etc. More examples are as follows:  <pre> # CSV
-  data  {"instances": ["1.0,true,\\"x\\"", "-2.0,false,\\"y\\""]}  # Text
-  {"instances": ["the quick brown fox", "la bruja le dio"]}  # Sentences, each
-  a list of words (vectors of strings).  {"instances":
-  [["the","quick","brown"], ["la","bruja","le"]]}  # Three instances, each a
-  floating point scalar, e.g., to compute f(x).  {"instances": [0.0, 1.1,
-  2.2]}  # 3 instances (integer scalars)  # Two instances, each a 3 element
-  vecor of ints.  {"instances": [[0,1,2], [3,4,5],...]}  # A single instance,
-  which is 2x3 matrix of ints.  {"instances": [[[0,1,2], [3,4,5]], ...]}  # A
-  single image represented as a 3-dimensional list with dimesions:  # height,
-  width, and channels (3).  {"instances": [[[[0,1,2], [3,4,5], \u2026]]]]} </pre>
-  Importantly, if your data is not UTF-8 (the only currently supported
-  character set), you will need to base64 encode the data and mark it as
-  binary. The latter is accomplished by using a JSON object of the form:
-  <pre>{"b": "..."} </pre> in place of any JSON string that is base64 encoded.
-  For example:  <pre> # Two Serialized tf.Examples (fake data, for
-  illustrative purposes only)  {"instances": [{"b": "X5ad6u"}, {"b":
-  "IA9j4nx"}]}  # Two JPEG image byte strings (fake data, for illustrative
-  purposes only)  {"instances": [{"b": "ASa8asdf"}, {"b": "JLK7ljk3"}]} </pre>
-  In the case that your data includes named references, you will send a JSON
-  object with the named references as the keys. For instance, if you used
-  Cloud ML's preprocessing library and used the JSON key-value pair data
-  format, you would send instances as follows:  <pre> # JSON input data to be
-  preprocessed.  {"instances": [{"a": 1.0,  "b": true,  "c": "x"},
-  {"a": -2.0, "b": false, "c": "y"}]} </pre>  Another use case is if your
-  underlying TensorFlow graph contains multiple input tensors, then the keys
-  would be the aliases to the input tensors, e.g.,  <pre> # Graph with input
-  tensor aliases "tag" (string) and "image" (base64  # encoded string).
-  {"instances": [{"tag": "beach", "image": {"b": "ASa8asdf"}},
-  {"tag": "car", "image": {"b": "JLK7ljk3"}}]}  # Graph with input tensor
-  aliases "tag" (string) and "image"  # (3-dimensional array of 8-bit ints).
-  {"instances": [{"tag": "beach", "image": [[[263,1,10], [262,2,11], ...]]},
-  {"tag": "car", "image": [[[10,11,24], [23,10,15], ...]]}]} </pre>  There is
-  a one-to-one correspondence between the predictions and the instances in the
-  request. Each individual prediction takes the same form as an instance in
-  the request, namely JSON strings, numbers, booleans, or lists thereof. If
-  your model has more than one output tensor, each prediction will be a JSON
-  object with the keys being the output aliases in the graph.  Examples:
-  <pre> # Predictions for three input instances, predictions are an integer
-  label,  # e.g., a digit in digit recognition  {"predictions": [5, 4, 3]}  #
-  Predictions for two input instances in a two-class classification  #
-  problem. The labels are strings and scores are the probability of "car"  #
-  and "beach".  {"predictions": [{"label": "beach", "scores": [0.1, 0.9]},
-  {"label": "car", "scores": [0.75, 0.25]}]} </pre>
+  of the request is a single JSON object with a single top-level field:  <dl>
+  <dt>instances</dt>   <dd>A JSON array containing values representing the
+  instances to use for       prediction.</dd> </dl>  The structure of each
+  element of the instances list is determined by your model's input
+  definition. Instances can include named inputs or can contain only unlabeled
+  values.  Most data does not include named inputs. Some instances will be
+  simple JSON values (boolean, number, or string). However, instances are
+  often lists of simple values, or complex nested lists. Here are some
+  examples of request bodies:  CSV data with each row encoded as a string
+  value: <pre> {"instances": ["1.0,true,\\"x\\"", "-2.0,false,\\"y\\""]}
+  </pre> Plain text: <pre> {"instances": ["the quick brown fox", "la bruja le
+  dio"]} </pre> Sentences encoded as lists of words (vectors of strings):
+  <pre> {"instances": [["the","quick","brown"], ["la","bruja","le"]]} </pre>
+  Floating point scalar values: <pre> {"instances": [0.0, 1.1, 2.2]} </pre>
+  Vectors of integers: <pre> {"instances": [[0, 1, 2], [3, 4, 5],...]} </pre>
+  Tensors (in this case, two-dimensional tensors): <pre> {"instances": [[[0,
+  1, 2], [3, 4, 5]], ...]} </pre> Images represented as a three-dimensional
+  list. In this encoding scheme the first two dimensions represent the rows
+  and columns of the image, and the third contains the R, G, and B values for
+  each pixel. <pre> {"instances": [[[[138, 30, 66], [130, 20, 56], ...]]]]}
+  </pre> Data must be encoded as UTF-8. If your data uses another character
+  encoding, you must base64 encode the data and mark it as binary. To mark a
+  JSON string as binary, replace it with an object with a single attribute
+  named `b`: <pre>{"b": "..."} </pre> For example:  Two Serialized tf.Examples
+  (fake data, for illustrative purposes only): <pre> {"instances": [{"b":
+  "X5ad6u"}, {"b": "IA9j4nx"}]} </pre> Two JPEG image byte strings (fake data,
+  for illustrative purposes only): <pre> {"instances": [{"b": "ASa8asdf"},
+  {"b": "JLK7ljk3"}]} </pre> If your data includes named references, format
+  each instance as a JSON object with the named references as the keys:  JSON
+  input data to be preprocessed: <pre> {"instances": [{"a": 1.0,  "b": true,
+  "c": "x"},                {"a": -2.0, "b": false, "c": "y"}]} </pre> Some
+  models have an underlying TensorFlow graph that accepts multiple input
+  tensors. In this case, you should use the names of JSON name/value pairs to
+  identify the input tensors, as shown in the following exmaples:  For a graph
+  with input tensor aliases "tag" (string) and "image" (base64-encoded
+  string): <pre> {"instances": [{"tag": "beach", "image": {"b": "ASa8asdf"}},
+  {"tag": "car", "image": {"b": "JLK7ljk3"}}]} </pre> For a graph with input
+  tensor aliases "tag" (string) and "image" (3-dimensional array of 8-bit
+  ints): <pre> {"instances": [{"tag": "beach", "image": [[[263, 1, 10], [262,
+  2, 11], ...]]},                {"tag": "car", "image": [[[10, 11, 24], [23,
+  10, 15], ...]]}]} </pre> If the call is successful, the response body will
+  contain one prediction entry per instance in the request body. If prediction
+  fails for any instance, the response body will contain no predictions and
+  will contian a single error entry instead.
 
   Fields:
     httpBody:  Required. The prediction request body.
@@ -962,10 +963,12 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
       TEXT: The source file is a text file with instances separated by the
         new-line character.
       TF_RECORD: The source file is a TFRecord file.
+      TF_RECORD_ZLIB: The source file is a TFRecord file compressed by zlib.
     """
     DATA_FORMAT_UNSPECIFIED = 0
     TEXT = 1
     TF_RECORD = 2
+    TF_RECORD_ZLIB = 3
 
   dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
   inputPaths = _messages.StringField(2, repeated=True)
@@ -1000,52 +1003,71 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
 
   Enums:
     ScaleTierValueValuesEnum: Required. Specifies the machine types, the
-      amounts of replicas for workers and parameter servers.
+      number of replicas for workers and parameter servers.
 
   Fields:
     args: Optional. Command line arguments to pass to the program.
     hyperparameters: Optional. The set of Hyperparameters to tune.
-    masterType: Optional. Specifies the master machine type. The following
-      types are supported:  - `standard` - `large_model` - `complex_model_s` -
-      `complex_model_m` - `complex_model_l`  Cannot be used in combination
-      with a standard scale tier.
+    masterType: Optional. Specifies the type of virtual machine to use for
+      your training job's master worker.  The following types are supported:
+      <dl>   <dt>standard</dt>   <dd>   A basic machine configuration suitable
+      for training simple models with   small to moderate datasets.   </dd>
+      <dt>large_model</dt>   <dd>   A machine with a lot of memory, specially
+      suited for parameter servers   when your model is large (having many
+      hidden layers or layers with very   large numbers of nodes).   </dd>
+      <dt>complex_model_s</dt>   <dd>   A machine suitable for the master and
+      workers of the cluster when your   model requires more computation than
+      the standard machine can handle   satisfactorily.   </dd>
+      <dt>complex_model_m</dt>   <dd>   A machine with roughly twice the
+      number of cores and roughly double the   memory of `complex_model_s`.
+      </dd>   <dt>complex_model_l</dt>   <dd>   A machine with roughly twice
+      the number of cores and roughly double the   memory of
+      `complex_model_m`.   </dd> </dl>  This value can only be used when
+      `ScaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies.
-    parameterServerCount: Optional. Specifies the required amount of parameter
-      server replicas. Cannot be used in combination with a standard scale
-      tier.
-    parameterServerType: Optional. Specifies the parameter server machine
-      type. The following types are supported:  - `standard` - `large_model` -
-      `complex_model_s` - `complex_model_m` - `complex_model_l`  Cannot be
-      used in combination with a standard scale tier.
+    parameterServerCount: Optional. The number of parameter server replicas to
+      use for the training job. Each replica in the cluster will be of the
+      type specified in `parameter_server_type`.
+    parameterServerType: Optional. Specifies the type of virtual machine to
+      use for your training job's parameter server.  The supported values are
+      the same as those described in the entry for `master_type`.  This value
+      can only be used when `ScaleTier` is set to `CUSTOM`.
     pythonModule: Required. The Python module name to run after installing the
       packages.
     region: Required. The Google Compute Engine region to run the training job
       in.
-    scaleTier: Required. Specifies the machine types, the amounts of replicas
+    scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
-    workerCount: Optional. Specifies the required amount of worker replicas.
-      Cannot be used in combination with a standard scale tier.
-    workerType: Optional. Specifies the worker machine type. The following
-      types are supported:  - `standard` - `large_model` - `complex_model_s` -
-      `complex_model_m` - `complex_model_l`  Cannot be used in combination
-      with a standard scale tier.
+    workerCount: Optional. The number of worker replicas to use for the
+      training job. Each replica in the cluster will be of the type specified
+      in `worker_type`. Cannot be used in combination with a standard scale
+      tier.
+    workerType: Optional. Specifies the type of virtual machine to use for
+      your training job's worker nodes.  The supported values are the same as
+      those described in the entry for `master_type`.  This value can only be
+      used when `ScaleTier` is set to `CUSTOM`.
   """
 
   class ScaleTierValueValuesEnum(_messages.Enum):
-    """Required. Specifies the machine types, the amounts of replicas for
+    """Required. Specifies the machine types, the number of replicas for
     workers and parameter servers.
 
     Values:
-      BASIC: A single worker instance and no parameter servers.
+      BASIC: A single worker instance. This tier is suitable for learning how
+        to use Cloud ML, and for experimenting with new models using small
+        datasets.
       STANDARD_1: A few workers and one parameter server.
       STANDARD_2: A medium amount of workers and a few parameter servers.
       PREMIUM_1: A large amount of worker with more parameter servers.
       PREMIUM_2: A very large amount of workers with even more parameter
         servers.
-      CUSTOM: Specify your own amounts of replicas in the `worker_count` and
-        `parameter_server_count` fields, as well as machine types for the
-        master, the workers and the parameter servers.
+      CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
+        your own cluster specification. When you use this tier, you must also
+        set valid values for `worker_count` and `parameter_server_count`, and
+        you can specify the type of virtual machines to use for the different
+        types of workers by setting `master_type`, `worker_type`, and
+        `parameter_server_type`.
     """
     BASIC = 0
     STANDARD_1 = 1
@@ -1080,17 +1102,24 @@ class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):
-  """Represents a version of the model.
+  """Represents a version of the model. Each version is a trained model
+  deployed in the cloud, ready to handle prediction requests.
 
   Fields:
     createTime: Output only. The creation time of the version.
-    deploymentUri: Required. Google Cloud Storage object containing the model
-      graph, weights and additional metadata at the moment when the version is
-      created.
-    description: Optional. The description of the model version.
-    isDefault: Output only. Whether the version is default within the model.
-    lastUseTime: Output only. The last usage time of the version.
-    name: Required.The user-specified name of the model version.
+    deploymentUri: Required. Google Cloud Storage object containing the
+      TensorFlow graph, weights, and additional metadata that constitute a
+      trained model. This model information is captured from the Cloud Storage
+      location when the version is created, and all relevant model information
+      is stored by the Cloud ML prediction service.
+    description: Optional. The description of the model version. This value is
+      specified when the version is created.
+    isDefault: Output only. If true, indicates that this version is the
+      default for the model.
+    lastUseTime: Output only. The time when the version was last used for
+      prediction.
+    name: Required.The name of the model version. This value is specified when
+      the version is created.
   """
 
   createTime = _messages.StringField(1)
@@ -1312,7 +1341,7 @@ class MlProjectsGetConfigRequest(_messages.Message):
   """A MlProjectsGetConfigRequest object.
 
   Fields:
-    projectsId: Part of `name`. Required. The project name. Authorization:
+    projectsId: Part of `name`. Required. The project name.  Authorization:
       requires `Viewer` role on the specified project.
   """
 
@@ -1327,8 +1356,8 @@ class MlProjectsJobsCancelRequest(_messages.Message):
       GoogleCloudMlV1beta1CancelJobRequest resource to be passed as the
       request body.
     jobsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the job. Authorization:
-      requires `Editor` role on the parent project.
+    projectsId: Part of `name`. Required. The name of the job to cancel.
+      Authorization: requires `Editor` role on the parent project.
   """
 
   googleCloudMlV1beta1CancelJobRequest = _messages.MessageField('GoogleCloudMlV1beta1CancelJobRequest', 1)
@@ -1342,7 +1371,7 @@ class MlProjectsJobsCreateRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1Job: A GoogleCloudMlV1beta1Job resource to be passed
       as the request body.
-    projectsId: Part of `parent`. Required. The project name. Authorization:
+    projectsId: Part of `parent`. Required. The project name.  Authorization:
       requires `Editor` role on the specified project.
   """
 
@@ -1355,8 +1384,9 @@ class MlProjectsJobsGetRequest(_messages.Message):
 
   Fields:
     jobsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the job. Authorization:
-      requires `Viewer` role on the parent project.
+    projectsId: Part of `name`. Required. The name of the job to get the
+      description of.  Authorization: requires `Viewer` role on the parent
+      project.
   """
 
   jobsId = _messages.StringField(1, required=True)
@@ -1369,10 +1399,17 @@ class MlProjectsJobsListRequest(_messages.Message):
   Fields:
     filter: Optional. Specifies the subset of jobs to retrieve.
     orderBy: Optional. Specifies the ordering of the jobs.
-    pageSize: Optional. The page size.
-    pageToken: Optional. A token for continuing the enumeration.
-    projectsId: Part of `parent`. Required. The name of the project whose jobs
-      are to be listed. Authorization: requires `Viewer` role on the specified
+    pageSize: Optional. The number of jobs to retrieve per "page" of results.
+      If you specify a page size, and the size you provide is less than the
+      total number of jobs, the response will include a list of that many jobs
+      and a `next_page_token`, that you can use on a subsequent call as
+      `page_toiken` to get the next group of jobs.
+    pageToken: Optional. A token for continuing the enumeration. When you
+      request a list of jobs and specify a `page_size` that is less than the
+      total number of jobs, you'll get a `next_page_token` in your response.
+      Use that value here to get the next page of results.
+    projectsId: Part of `parent`. Required. The name of the project for which
+      to list jobs.  Authorization: requires `Viewer` role on the specified
       project.
   """
 
@@ -1389,7 +1426,7 @@ class MlProjectsModelsCreateRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1Model: A GoogleCloudMlV1beta1Model resource to be
       passed as the request body.
-    projectsId: Part of `parent`. Required. The project name. Authorization:
+    projectsId: Part of `parent`. Required. The project name.  Authorization:
       requires `Editor` role on the specified project.
   """
 
@@ -1432,7 +1469,7 @@ class MlProjectsModelsListRequest(_messages.Message):
     pageSize: Optional. The page size.
     pageToken: Optional. A token for for continuing the enumeration.
     projectsId: Part of `parent`. Required. The name of the project whose
-      models are to be listed. Authorization: requires `Viewer` role on the
+      models are to be listed.  Authorization: requires `Viewer` role on the
       specified project.
   """
 
@@ -1464,7 +1501,9 @@ class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
 
   Fields:
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the version.
+    projectsId: Part of `name`. Required. The name of the version. You can get
+      the names of all the versions of a model by calling [projects.models.ver
+      sions.list](/ml/reference/rest/v1beta1/projects.models.versions/list).
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1497,9 +1536,9 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
     orderBy: Optional. Specifies the ordering of the versions.
     pageSize: Optional. The page size.
     pageToken: Optional. A token for continuing the enumeration.
-    projectsId: Part of `parent`. Required. The name of the model whose
-      versions are to be listed. Authorization: requires `Viewer` role on the
-      parent project.
+    projectsId: Part of `parent`. Required. The name of the model for which to
+      list the version.  Authorization: requires `Viewer` role on the parent
+      project.
   """
 
   filter = _messages.StringField(1)
@@ -1518,9 +1557,11 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
       GoogleCloudMlV1beta1SetDefaultVersionRequest resource to be passed as
       the request body.
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The version name which is being made
-      default within the model. Authorization: requires `Editor` role on the
-      parent project.
+    projectsId: Part of `name`. Required. The name of the version to make the
+      default for the model. You can get the names of all the versions of a
+      model by calling [projects.models.versions.list](/ml/reference/rest/v1be
+      ta1/projects.models.versions/list).  Authorization: requires `Editor`
+      role on the parent project.
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1591,7 +1632,7 @@ class MlProjectsPredictRequest(_messages.Message):
     googleCloudMlV1beta1PredictRequest: A GoogleCloudMlV1beta1PredictRequest
       resource to be passed as the request body.
     projectsId: Part of `name`. Required. The resource name of a model or a
-      version. Authorization: requires `Viewer` role on the parent project.
+      version.  Authorization: requires `Viewer` role on the parent project.
   """
 
   googleCloudMlV1beta1PredictRequest = _messages.MessageField('GoogleCloudMlV1beta1PredictRequest', 1)

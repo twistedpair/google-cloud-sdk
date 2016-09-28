@@ -261,7 +261,7 @@
           "type": "string"
         },
         "httpRequest": {
-          "description": "Optional. Information about the HTTP request associated with this log entry,\nif applicable.",
+          "description": "Optional. Information about the HTTP request associated with this\nlog entry, if applicable.",
           "$ref": "HttpRequest"
         },
         "labels": {
@@ -276,11 +276,11 @@
           "$ref": "LogEntryOperation"
         },
         "internalId": {
-          "description": "Internal ID of the owner of this log entry.",
+          "description": "Optional. Internal ID of the owner of this log entry.",
           "$ref": "InternalEntityId"
         },
         "writerEmailAddress": {
-          "description": "The email address of the role that wrote the entry on behalf of a\nuser. Not populated for entries written by a user.",
+          "description": "Optional. The email address of the role that wrote the entry on behalf of a\nuser. Not populated for entries written by a user.",
           "type": "string"
         }
       }
@@ -329,6 +329,11 @@
           "description": "The referer URL of the request, as defined in\n[HTTP\/1.1 Header Field Definitions](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
           "type": "string"
         },
+        "latency": {
+          "description": "The request processing latency on the server, from the time the request was\nreceived until the response was sent.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "cacheLookup": {
           "description": "Whether or not a cache lookup was attempted.",
           "type": "boolean"
@@ -354,11 +359,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. An arbitrary operation identifier. Log entries with the\nsame identifier are assumed to be part of the same operation.",
+          "description": "Optional. An arbitrary operation identifier. Log entries with the\nsame identifier are assumed to be part of the same operation.",
           "type": "string"
         },
         "producer": {
-          "description": "Required. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, `\"github.com\/MyProject\/MyApplication\"`.",
+          "description": "Optional. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, `\"github.com\/MyProject\/MyApplication\"`.",
           "type": "string"
         },
         "first": {
@@ -782,7 +787,7 @@
           ]
         },
         "formatChange": {
-          "description": "When the format was changed.",
+          "description": "Optional. Timestamp when the format was changed.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -798,16 +803,16 @@
           "type": "string"
         },
         "includeChildren": {
-          "description": "If true, then logs from children of this entity will also be sent to this\nsink. e.g. If this sink is associated with an organization, then logs from\nall projects in the organization as well as the organization itself will be\nsent to this sink. This only applies to sinks in organizations and folders.\nThis field is ignored for sinks in projects and billing_accounts.",
+          "description": "Optional. If true, then logs from children of this entity will also be\nsent to this sink. e.g. If this sink is associated with an organization,\nthen logs from all projects in the organization as well as the\norganization itself will be sent to this sink. This only applies to\nsinks in organizations and folders. This field is ignored for sinks in\nprojects and billing_accounts.",
           "type": "boolean"
         },
         "startTime": {
-          "description": "Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
+          "description": "Optional. Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Time at which this sink expires",
+          "description": "Optional. Time at which this sink expires.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -914,15 +919,15 @@
           "type": "string"
         },
         "description": {
-          "description": "A description of this metric, which is used in documentation.",
+          "description": "Optional. A description of this metric, which is used in documentation.",
           "type": "string"
         },
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"logName:syslog AND severity>=ERROR\"`.",
+          "description": "Required. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"resource.type=gae_app AND severity>=ERROR\"`.",
           "type": "string"
         },
         "version": {
-          "description": "The API version that created or updated this metric.",
+          "description": "Optional. The API version that created or updated this metric.",
           "enumDescriptions": [
             "Stackdriver Logging API v2.",
             "Stackdriver Logging API v1."

@@ -58,7 +58,9 @@ def AddAutoscalerArgs(parser,
       help='Managed instance group which autoscaling parameters will be set.')
   parser.add_argument('--cool-down-period', type=arg_parsers.Duration(),
                       help='Number of seconds Autoscaler will wait between '
-                      'resizing collection.')
+                      'resizing collection. Note: The Autoscaler waits '
+                      '10 minutes before scaling down, the value entered here '
+                      'is in addition to the initial 10 minute period.')
   parser.add_argument('--description', help='Notes about Autoscaler.')
   parser.add_argument('--min-num-replicas',
                       type=arg_parsers.BoundedInt(0, sys.maxint),
@@ -68,19 +70,19 @@ def AddAutoscalerArgs(parser,
                       help='Maximum number of replicas Autoscaler will set.')
   parser.add_argument('--scale-based-on-cpu',
                       action='store_true',
-                      help='Use autoscaling based on cpu utilization.')
+                      help='Autoscaler will be based on CPU utilization.')
   parser.add_argument('--scale-based-on-load-balancing',
                       action='store_true',
                       help=('Use autoscaling based on load balancing '
                             'utilization.'))
   parser.add_argument('--target-cpu-utilization',
                       type=arg_parsers.BoundedFloat(0.0, 1.0),
-                      help='CPU utilization level Autoscaler will aim to '
-                      'maintain (0.0 to 1.0).')
+                      help='Autoscaler will aim to maintain CPU utilization at '
+                      'target level (0.0 to 1.0).')
   parser.add_argument('--target-load-balancing-utilization',
                       type=arg_parsers.BoundedFloat(0.0, None),
-                      help='Load balancing utilization level Autoscaler will '
-                      'aim to maintain (greater than 0.0).')
+                      help='Autoscaler will aim to maintain the load balancing '
+                      'utilization level (greater than 0.0).')
   custom_metric_utilization = parser.add_argument(
       '--custom-metric-utilization',
       type=arg_parsers.ArgDict(
@@ -91,8 +93,8 @@ def AddAutoscalerArgs(parser,
           },
       ),
       action='append',
-      help=('Adds target value of a Google Cloud Monitoring metric Autoscaler '
-            'will aim to maintain.'),
+      help=('Autoscaler will maintain the target value of a Google Cloud '
+            'Monitoring metric.'),
       metavar='PROPERTY=VALUE',
   )
   custom_metric_utilization.detailed_help = """

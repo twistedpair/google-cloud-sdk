@@ -90,6 +90,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     self._is_group = isinstance(self._calliope_command, CommandGroup)
     self._error_to_report = None
+    self._remainder_action = None
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   # Assume we will never have a flag called ----calliope-internal...
@@ -98,47 +99,98 @@ class ArgumentParser(argparse.ArgumentParser):
   def GetFlagCollection(self):
     return self._flag_collection
 
+  def AddRemainderArgument(self, *args, **kwargs):
+    """Add an argument representing '--' followed by anything.
+
+    This argument is bound to the parser, so the parser can use it's helper
+    methods to parse.
+
+    GA track methods are made non-strict for backwards compatibility. If a BETA
+    track alternate exists, it is used as the suggested strict alternate. See
+    arg_parsers.RemainderAction for more information.
+
+    Args:
+      *args: The arguments for the action.
+      **kwargs: They keyword arguments for the action.
+
+    Raises:
+      ArgumentException: If there already is a Remainder Action bound to this
+      parser.
+
+    Returns:
+      The created action.
+    """
+    if self._remainder_action:
+      raise ArgumentException('There can only be one pass through argument.')
+    kwargs['action'] = arg_parsers.RemainderAction
+    track = self._calliope_command.ReleaseTrack()
+    # pylint:disable=protected-access
+    cli_generator = self._calliope_command._cli_generator
+    alternates = cli_generator.ReplicateCommandPathForAllOtherTracks(
+        self._calliope_command.GetPath())
+    # Assume GA has backwards compatability otherwise assume strict.
+    is_strict = track is not base.ReleaseTrack.GA
+    strict_alternate = None
+    if not is_strict and base.ReleaseTrack.BETA in alternates:
+      strict_alternate = ' '.join(alternates[base.ReleaseTrack.BETA])
+    self._remainder_action = self.add_argument(
+        is_strict=is_strict, strict_alternate=strict_alternate, *args, **kwargs)
+    return self._remainder_action
+
   def parse_known_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_known_args method."""
-    args, argv = super(ArgumentParser, self).parse_known_args(args, namespace)
+    if args is None:
+      args = sys.argv[1:]
+    if namespace is None:
+      namespace = argparse.Namespace()
+    try:
+      if self._remainder_action:
+        # Remove remainder_action so it is not parsed regularly.
+        self._actions.remove(self._remainder_action)
+        # Split on first -- if it exists
+        namespace, args = self._remainder_action.ParseKnownArgs(
+            args, namespace)
+      namespace, unknown_args = super(
+          ArgumentParser, self).parse_known_args(args, namespace)
+    finally:
+      # Replace action for help message and ArgumentErrors.
+      if self._remainder_action:
+        self._actions.append(self._remainder_action)
+
     # Pass back a reference to the deepest parser used in the parse
     # as part of the returned args.
-    if not hasattr(args, self.CIDP):
-      setattr(args, self.CIDP, self)
-    return (args, argv)
+    if not hasattr(namespace, self.CIDP):
+      setattr(namespace, self.CIDP, self)
+    return (namespace, unknown_args)
 
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
     self._abbreviated_flags.clear()
-    args, argv = self.parse_known_args(args, namespace)
+    namespace, unknown_args = self.parse_known_args(args, namespace)
+
     for flag, matched_flag in sorted(self._abbreviated_flags.iteritems()):
       dest = flag[2:].replace('-', '_')
       if not hasattr(args, dest):
         log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
                  'use the full name [%s].', flag, matched_flag)
-    if not argv:
-      return args
-    if hasattr(args, 'implementation_args'):
-      # Workaround for argparse total botch of posix '--'.  An
-      # 'implementation_args' positional signals that the current command
-      # expects 0 or more positionals which may be separated from the explicit
-      # flags and positionals by '--'. The first '--' is consumed here. The
-      # extra positionals, if any, are stuffed in args.implementation_args.
-      # This is still not 100% correct. Incredibly, argparse recognizes the
-      # leftmost '--' and does not consume it, and in addition recognizes and
-      # consumes all subsequent '--' args. This is exactly opposite of the
-      # POSIX spec. We would have to intercept more argparse innards here to get
-      # that right, and then take about 100 showers afterwards. It wouldn't be
-      # worth doing that unless someone files a bug. One scenario where it
-      # might pop up is using ssh to run a command that also needs '--' to work:
-      #   gcloud compute ssh my-instance -- some-ssh-like-command -- args
-      # Currently the second '--' will not be seen by some-ssh-like-command.
-      start = 1 if argv[0] == '--' else 0
-      args.implementation_args = argv[start:]
-      return args
 
     # Content of these lines differs from argparser's parse_args().
-    deepest_parser = getattr(args, self.CIDP, self)
+    deepest_parser = getattr(namespace, self.CIDP, self)
+
+    if not unknown_args:
+      return namespace
+    # pylint:disable=protected-access
+    if deepest_parser._remainder_action:
+      # Assume the user wanted to pass all arguments after last recognized
+      # arguments into _remainder_action. Either do this with a warning or
+      # fail depending on strictness.
+      # pylint:disable=protected-access
+      namespace, unknown_args = (
+          deepest_parser._remainder_action.ParseRemainingArgs(
+              unknown_args, namespace, args))
+      # There still may be unknown_args that came before the last known arg.
+      if not unknown_args:
+        return namespace
 
     # Add a message for each unknown argument.  For each, try to come up with
     # a suggestion based on text distance.  If one is close enough, print a
@@ -157,21 +209,25 @@ class ArgumentParser(argparse.ArgumentParser):
           suggester.AddAliases(aliases, options[0])
 
     suggestions = {}
-    for arg in argv:
+    for arg in unknown_args:
       # Only do this for flag names.
       suggestion = suggester.GetSuggestion(arg) if arg.startswith('-') else None
-      suggestions[arg] = suggestion
+      if suggestion is not None:
+        suggestions[arg] = suggestion
       if suggestion:
         messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
       else:
         messages.append(arg)
 
-    # pylint:disable=g-import-not-at-top, Only import if we have a parse error.
-    import json
+    error_extra_info = {
+        'total_unrecognized': len(unknown_args),
+        'total_suggestions': len(suggestions),
+        'suggestions': suggestions,
+    }
     deepest_parser._error_to_report = ArgumentParserError(
-        '.'.join(self._calliope_command.GetPath()),
+        '.'.join(deepest_parser._calliope_command.GetPath()),
         parse_errors.UnrecognizedArguments,
-        json.dumps(suggestions))
+        error_extra_info)
 
     # If there is a single arg, put it on the same line.  If there are multiple
     # add each on it's own line for better clarity.
@@ -249,7 +305,7 @@ class ArgumentParser(argparse.ArgumentParser):
       self._error_to_report = ArgumentParserError(
           '.'.join(self._calliope_command.GetPath() + [value]),
           parse_errors.WrongTrackException,
-          ','.join(existing_alternatives))
+          {'suggestions': existing_alternatives})
 
     # See if the spelling was close to something else that exists here.
     else:
@@ -266,10 +322,16 @@ class ArgumentParser(argparse.ArgumentParser):
       # We don't know if the user entered 'value' is a mistyped command or
       # some resource name that the user entered and we incorrectly thought it's
       # a command. We can't include it since it might be PII.
+
+      error_extra_info = {
+          'total_unrecognized': 1,
+          'total_suggestions': 1 if suggestion else 0,
+          'suggestions': [suggestion] if suggestion else choices,
+      }
       self._error_to_report = ArgumentParserError(
           '.'.join(self._calliope_command.GetPath()),
           parse_errors.ParsingCommandException,
-          (suggestion if suggestion else ','.join(choices)))
+          error_extra_info)
 
     raise argparse.ArgumentError(action, message)
 
@@ -300,6 +362,18 @@ class ArgumentParser(argparse.ArgumentParser):
 
   def _ReportErrorMetricsHelper(self, dotted_command_path, error,
                                 error_extra_info=None):
+    """Log `Commands` and `Error` Google Analytics events for an error.
+
+    Args:
+      dotted_command_path: str, The dotted path to as much of the command as we
+          can identify before an error. Example: gcloud.projects
+      error: class, The class (not the instance) of the Exception for an error.
+      error_extra_info: str, Extra info that that we want to log with the error.
+          This can be the error message or suggestion for parse error, etc.
+          While this can be any string, it is recommended this is in the form of
+          a JSON encoded dictionary. This enables us to write queries that can
+          understand the keys and values in this dict.
+    """
     metrics.Commands(
         dotted_command_path,
         config.CLOUD_SDK_VERSION,
@@ -314,11 +388,14 @@ class ArgumentParser(argparse.ArgumentParser):
   def ReportErrorMetrics(self, message):
     """Report Command and Error metrics in case of argparse errors."""
 
+    # pylint:disable=g-import-not-at-top, Only import if we have an error.
+    import json
+
     if self._error_to_report:
       self._ReportErrorMetricsHelper(
           self._error_to_report.dotted_command_path,
           self._error_to_report.error,
-          self._error_to_report.error_extra_info)
+          json.dumps(self._error_to_report.error_extra_info, sort_keys=True))
       return
 
     # No recorded error from upstream, try to detect error from message.
@@ -337,7 +414,7 @@ class ArgumentParser(argparse.ArgumentParser):
       self._ReportErrorMetricsHelper(
           dotted_command_path,
           parse_errors.RequiredArgumentException,
-          req_argument)
+          json.dumps({'required': req_argument}))
       return
 
     re_result = re.search('one of the arguments (.+?) is required', message)
@@ -346,7 +423,7 @@ class ArgumentParser(argparse.ArgumentParser):
       self._ReportErrorMetricsHelper(
           dotted_command_path,
           parse_errors.RequiredArgumentGroupException,
-          req_argument)
+          json.dumps({'required': req_argument}))
       return
 
     # Catch all for any error we didn't explicitly detect
@@ -562,6 +639,7 @@ class ArgumentInterceptor(object):
       self.required = []
       self.dests = []
       self.mutex_groups = {}
+      self.required_mutex_groups = set()
       self.positional_args = []
       self.flag_args = []
       self.ancestor_flag_args = []
@@ -586,6 +664,10 @@ class ArgumentInterceptor(object):
   def defaults(self):
     return self.data.defaults
 
+  # pylint: disable=g-bad-name
+  def is_mutex_group_required(self, group_id):
+    return group_id in self.required_mutex_groups
+
   @property
   def required(self):
     return self.data.required
@@ -597,6 +679,10 @@ class ArgumentInterceptor(object):
   @property
   def mutex_groups(self):
     return self.data.mutex_groups
+
+  @property
+  def required_mutex_groups(self):
+    return self.data.required_mutex_groups
 
   @property
   def positional_args(self):
@@ -677,16 +763,20 @@ class ArgumentInterceptor(object):
             'command [{1}]'.format(name, self.data.command_name))
 
     self.defaults[dest] = default
+    if self.mutex_group_id:
+      self.mutex_groups[dest] = self.mutex_group_id
+      if self.parser.required:
+        self.required_mutex_groups.add(self.mutex_group_id)
     if required:
       self.required.append(dest)
     self.dests.append(dest)
-    if self.mutex_group_id:
-      self.mutex_groups[dest] = self.mutex_group_id
 
-    if positional and 'metavar' not in kwargs:
-      kwargs['metavar'] = name.upper()
-
-    added_argument = self.parser.add_argument(*args, **kwargs)
+    if kwargs.get('nargs') is argparse.REMAINDER:
+      added_argument = self.parser.AddRemainderArgument(*args, **kwargs)
+    else:
+      if positional and 'metavar' not in kwargs:
+        kwargs['metavar'] = name.upper()
+      added_argument = self.parser.add_argument(*args, **kwargs)
     self._AddRemoteCompleter(added_argument, completion_resource,
                              list_command_path, list_command_callback_fn)
 
@@ -709,6 +799,7 @@ class ArgumentInterceptor(object):
       added_argument.do_not_propagate = do_not_propagate
       added_argument.is_replicated = is_replicated
       added_argument.is_global = is_global
+      added_argument.required = required
       added_argument.suggestion_aliases = suggestion_aliases
       if isinstance(added_argument.choices, dict):
         # choices is a name: description dict. Set the choices attribute to the
@@ -832,7 +923,8 @@ class ArgumentInterceptor(object):
 
     inverted_argument = self.parser.add_argument(inverted_name, **kwargs)
     if show_inverted:
-      setattr(inverted_argument, 'show_inverted', show_inverted)
+      # flag.show_inverted means display inverted_argument in the SYNOPSIS.
+      setattr(added_argument, 'show_inverted', inverted_argument)
     return inverted_argument
 
   def _ShouldInvertBooleanFlag(self, name, action):

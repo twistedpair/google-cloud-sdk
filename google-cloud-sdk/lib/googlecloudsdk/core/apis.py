@@ -14,6 +14,7 @@
 
 """Library for obtaining API clients and messages."""
 
+from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis import apis_map
@@ -304,3 +305,23 @@ def GetResourceModule(api_name, api_version):
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
   return __import__(api_def.class_path + '.' + 'resources',
                     fromlist=['something'])
+
+
+def GetApiCollections(api_name, api_version):
+  """Yields all collections for for given api."""
+
+  try:
+    resources_module = GetResourceModule(api_name, api_version)
+  except ImportError:
+    pass
+  else:
+    for collection in resources_module.Collections:
+      yield resource_util.CollectionInfo(
+          api_name,
+          api_version,
+          resources_module.BASE_URL,
+          collection.collection_name,
+          collection.request_type,
+          collection.path,
+          collection.flat_paths,
+          collection.params)

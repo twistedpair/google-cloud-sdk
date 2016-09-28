@@ -310,7 +310,7 @@
           "type": "string"
         },
         "cmd": {
-          "description": "Required. The command string to run. Parameters that do not have\n`localCopy` specified should be used as environment variables, while\nthose that do can be accessed at the defined paths.",
+          "description": "Required. The command or newline delimited script to run. The command\nstring will be executed within a bash shell.\n\nIf the command exits with a non-zero exit code, output parameter\nde-localization will be skipped and the pipeline operation's\n`error` field will be populated.\n\nMaximum command string length is 16384.",
           "type": "string"
         }
       }
@@ -482,7 +482,7 @@
           "type": "string"
         },
         "scopes": {
-          "description": "List of scopes to be enabled for this service account on the\npipeline virtual machine.\nThe following scopes are automatically included:\n* https:\/\/www.googleapis.com\/auth\/genomics\n* https:\/\/www.googleapis.com\/auth\/compute\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "List of scopes to be enabled for this service account on the\npipeline virtual machine.\nThe following scopes are automatically included:\n\n  * https:\/\/www.googleapis.com\/auth\/genomics\n  * https:\/\/www.googleapis.com\/auth\/compute\n  * https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"

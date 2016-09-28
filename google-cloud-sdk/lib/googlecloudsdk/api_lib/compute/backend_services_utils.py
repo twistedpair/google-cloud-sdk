@@ -40,7 +40,9 @@ def GetDefaultScope(action, args):
   """Gets the default compute flags scope enum value."""
   if IsRegionDefaultModeWarnOtherwise(
       print_warning=(
-          action.ReleaseTrack() == base.ReleaseTrack.ALPHA and
+          (action.ReleaseTrack() in [
+              base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA
+          ]) and
           getattr(args, 'global', None) is None and
           getattr(args, 'region', None) is None)):
     return compute_flags.ScopeEnum.REGION
@@ -52,7 +54,9 @@ def IsRegionalRequest(action, args):
   """Determines whether the args specify a regional or global request."""
   if IsRegionDefaultModeWarnOtherwise(
       print_warning=(
-          action.ReleaseTrack() == base.ReleaseTrack.ALPHA and
+          (action.ReleaseTrack() in [
+              base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA
+          ]) and
           getattr(args, 'global', None) is None and
           getattr(args, 'region', None) is None)):
     # Return True (regional request) unless --global was specified.

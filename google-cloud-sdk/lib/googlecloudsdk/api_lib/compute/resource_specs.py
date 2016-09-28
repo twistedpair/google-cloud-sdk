@@ -884,6 +884,26 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
+_SPECS_BETA['regionBackendServices'] = _InternalSpec(
+    message_class_name='BackendService',
+    table_cols=[
+        ('NAME', 'name'),
+        ('BACKENDS', _BackendsToCell),
+        ('PROTOCOL', 'protocol'),
+    ],
+    transformations=[
+        ('backends[].group', path_simplifier.ScopedSuffix),
+    ],
+    editables=[
+        'backends',
+        'description',
+        'enableCDN',
+        'healthChecks',
+        'port',
+        'portName',
+        'protocol',
+        'timeoutSec',
+    ],)
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
@@ -951,26 +971,6 @@ _SPECS_ALPHA['backendServices'] = _InternalSpec(
         'enableCDN',
         'sessionAffinity',
         'affinityCookieTTL',
-        'healthChecks',
-        'port',
-        'portName',
-        'protocol',
-        'timeoutSec',
-    ],)
-_SPECS_ALPHA['regionBackendServices'] = _InternalSpec(
-    message_class_name='BackendService',
-    table_cols=[
-        ('NAME', 'name'),
-        ('BACKENDS', _BackendsToCell),
-        ('PROTOCOL', 'protocol'),
-    ],
-    transformations=[
-        ('backends[].group', path_simplifier.ScopedSuffix),
-    ],
-    editables=[
-        'backends',
-        'description',
-        'enableCDN',
         'healthChecks',
         'port',
         'portName',

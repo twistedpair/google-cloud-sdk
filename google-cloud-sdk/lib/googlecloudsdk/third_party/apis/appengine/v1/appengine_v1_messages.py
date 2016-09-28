@@ -400,6 +400,32 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class AppengineExperimentalAppsOperationsGetRequest(_messages.Message):
+  """A AppengineExperimentalAppsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineExperimentalAppsOperationsListRequest(_messages.Message):
+  """A AppengineExperimentalAppsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation collection.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
   Engine application.

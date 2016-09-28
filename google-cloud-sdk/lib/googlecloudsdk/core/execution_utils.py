@@ -224,7 +224,12 @@ def _ReplaceSignal(signo, handler):
     signal.signal(signo, old_handler)
 
 
-def Exec(args, env=None, no_exit=False, out_func=None, err_func=None):
+def Exec(args,
+         env=None,
+         no_exit=False,
+         out_func=None,
+         err_func=None,
+         **extra_popen_kwargs):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
   This executes the given command, waits for it to finish, and then exits this
@@ -239,6 +244,8 @@ def Exec(args, env=None, no_exit=False, out_func=None, err_func=None):
       process. This can be e.g. log.file_only_logger.debug or log.out.write.
     err_func: str->None, a function to call with the stderr of the executed
       process. This can be e.g. log.file_only_logger.debug or log.err.write.
+    **extra_popen_kwargs: Any additional kwargs will be passed through directly
+      to subprocess.Popen
 
   Returns:
     int, The exit code of the child if no_exit is True, else this method does
@@ -259,7 +266,6 @@ def Exec(args, env=None, no_exit=False, out_func=None, err_func=None):
 
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
-    extra_popen_kwargs = {}
     if out_func:
       extra_popen_kwargs['stdout'] = subprocess.PIPE
     if err_func:

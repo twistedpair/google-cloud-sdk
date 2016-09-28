@@ -21,7 +21,6 @@ import textwrap
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 class Error(Exception):
@@ -32,6 +31,8 @@ _SPLIT = 78  # Split lines longer than this.
 _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
+
+_REQUIRED_FLAGS_HEADING = 'REQUIRED FLAGS'
 
 
 class ExampleCommandLineSplitter(object):
@@ -235,7 +236,7 @@ class MarkdownGenerator(object):
     if sep:
       self._out('\n')
 
-  def _PrintSynopsisSection(self):
+  def _PrintSynopsisSection(self, sections, has_global_flags):
     """Prints the command line synopsis section."""
     # MARKDOWN_CODE is the default SYNOPSIS font style.
     code = base.MARKDOWN_CODE
@@ -264,91 +265,33 @@ class MarkdownGenerator(object):
     elif self._subgroups:
       self._out(' ' + em + 'GROUP' + em)
 
-    # Place all flags into a dict. Flags that are in a mutually
-    # exclusive group are mapped group_id -> [flags]. All other flags
-    # are mapped dest -> [flag].
-    global_flags = False
-    groups = collections.defaultdict(list)
-    for flag in (self._command.ai.flag_args +
-                 self._command.ai.ancestor_flag_args):
-      if flag.is_global and not self._is_top_element:
-        global_flags = True
-      else:
-        group_id = self._command.ai.mutex_groups.get(flag.dest, flag.dest)
-        groups[group_id].append(flag)
-
-    # Partition the non-GLOBAL flag groups dict into categorized sections. A
-    # group is REQUIRED if any flag in it is required, categorized if any flag
-    # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
-    # over categorized.
-    categorized_groups = {}
-    for group_id, flags in groups.iteritems():
-      for f in flags:
-        if f.required:
-          category = 'REQUIRED'
-        elif f.category:
-          category = f.category
-        else:
-          continue
-        if category not in categorized_groups:
-          categorized_groups[category] = {}
-        categorized_groups[category][group_id] = flags
-        break
-    # Delete the categorized groups to get OTHER.
-    for v in categorized_groups.values():
-      for g in v:
-        del groups[g]
-    category = 'OTHER'
-    if category not in categorized_groups:
-      categorized_groups[category] = {}
-    for group_id, flags in groups.iteritems():
-      categorized_groups[category][group_id] = flags
-
-    # Collect the sections in order: REQUIRED, COMMON, OTHER, and categorized.
-    sections = []
-    for category in ('REQUIRED', base.COMMONLY_USED_FLAGS, 'OTHER'):
-      if category in categorized_groups:
-        sections.append(categorized_groups[category])
-        del categorized_groups[category]
-    for _, v in sorted(categorized_groups.iteritems()):
-      sections.append(v)
-
     # Generate the flag usage string with flags in section order.
-    for section in sections:
-      for group in sorted(section.values(), key=lambda g: g[0].option_strings):
+    for heading, _, groups in sections:
+      for group in sorted(groups.values(), key=usage_text.FlagGroupSortKey):
+        flag = group[0]
         if len(group) == 1:
-          arg = group[0]
-          if usage_text.IsSuppressed(arg):
-            continue
-          msg = usage_text.FlagDisplayString(arg, markdown=True)
+          show_inverted = getattr(flag, 'show_inverted', None)
+          if show_inverted:
+            flag = show_inverted
+          msg = usage_text.FlagDisplayString(flag, markdown=True)
           if not msg:
             continue
-          if arg.required:
+          if flag.required:
             self._out(' {msg}'.format(msg=msg))
           else:
             self._out(' [{msg}]'.format(msg=msg))
         else:
-          # Check if the inverted boolean name should be displayed.
-          inverted = None
-          if len(group) == 2:
-            for arg in group:
-              if getattr(arg, 'show_inverted', False):
-                inverted = arg
-                break
-          if inverted:
-            # The inverted arg replaces the boolean group which only contains
-            # the arg and inverted arg.
-            msg = usage_text.FlagDisplayString(inverted, markdown=True)
-          else:
-            group = usage_text.FilterOutSuppressed(group)
-            group.sort(key=lambda f: f.option_strings)
-            msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
-                             for arg in group)
+          group.sort(key=lambda f: f.option_strings)
+          msg = ' | '.join(usage_text.FlagDisplayString(flag, markdown=True)
+                           for flag in group)
           if not msg:
             continue
-          self._out(' [{msg}]'.format(msg=msg))
+          if heading == _REQUIRED_FLAGS_HEADING:
+            self._out(' ({msg})'.format(msg=msg))
+          else:
+            self._out(' [{msg}]'.format(msg=msg))
 
-    if global_flags:
+    if has_global_flags:
       self._out(' [' + em + 'GLOBAL-FLAG ...' + em + ']')
 
     # positional_args will only be non-empty if we had -- ... or REMAINDER left.
@@ -357,14 +300,31 @@ class MarkdownGenerator(object):
 
     self._out('\n')
 
-  def _PrintFlagSection(self, section, flags):
-    self._Section(section, sep=False)
-    for flag in sorted(flags, key=lambda f: f.option_strings):
-      self._out('\n{0}::\n'.format(
-          usage_text.FlagDisplayString(flag, markdown=True)))
-      self._out('\n{arghelp}\n'.format(arghelp=self._Details(flag)))
+  def _PrintFlagDefinition(self, flag):
+    """Prints a flags definition list item."""
+    self._out('\n{0}::\n'.format(
+        usage_text.FlagDisplayString(flag, markdown=True)))
+    self._out('\n{arghelp}\n'.format(arghelp=self._Details(flag)))
 
-  def _PrintPositionalsAndFlagsSections(self):
+  def _PrintFlagSection(self, heading, groups):
+    """Prints a flag section."""
+    self._Section(heading, sep=False)
+    for group in sorted(groups.values(), key=usage_text.FlagGroupSortKey):
+      if len(group) == 1 or any([getattr(f, 'show_inverted', None)
+                                 for f in group]):
+        self._PrintFlagDefinition(group[0])
+      else:
+        if len(group) > 1:
+          # Introduce the group with a line that differentialtes required vs
+          # optional.
+          if heading == _REQUIRED_FLAGS_HEADING:
+            self._out('\nExactly one of these must be specified:\n')
+          else:
+            self._out('\nAt most one of these may be specified:\n')
+        for flag in sorted(group, key=lambda f: f.option_strings):
+          self._PrintFlagDefinition(flag)
+
+  def _PrintPositionalsAndFlagsSections(self, sections, has_global_flags):
     """Prints the positionals and flags sections."""
     visible_positionals = usage_text.FilterOutSuppressed(
         self._command.ai.positional_args)
@@ -375,12 +335,9 @@ class MarkdownGenerator(object):
             usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
         self._out('\n{arghelp}\n'.format(arghelp=self._Details(arg)))
 
-    sections, has_global_flags = usage_text.GetFlagSections(
-        self._command, self._command.ai)
-
     # List the sections in order.
-    for section, _, flags in sections:
-      self._PrintFlagSection(section, flags)
+    for heading, _, groups in sections:
+      self._PrintFlagSection(heading, groups)
 
     if has_global_flags:
       self._Section('GLOBAL FLAGS', sep=False)
@@ -692,13 +649,15 @@ class MarkdownGenerator(object):
     self._Section('NAME')
     self._out('{{command}} - {index}\n'.format(index=self._command.index_help))
     if not self._is_topic:
-      self._PrintSynopsisSection()
+      sections, has_global_flags = usage_text.GetFlagSections(
+          self._command, self._command.ai)
+      self._PrintSynopsisSection(sections, has_global_flags)
     self._ExtractDetailedHelp()
     self._PrintSectionIfExists(
         'DESCRIPTION',
         default=usage_text.ExpandHelpText(self._command, self._description))
     if not self._is_topic:
-      self._PrintPositionalsAndFlagsSections()
+      self._PrintPositionalsAndFlagsSections(sections, has_global_flags)
     if self._subgroups:
       self._PrintCommandSection('GROUP', self._subgroups)
     if self._subcommands:

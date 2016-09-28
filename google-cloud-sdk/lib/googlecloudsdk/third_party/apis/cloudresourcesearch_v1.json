@@ -1,0 +1,369 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "cloudresourcesearch:v1",
+  "name": "cloudresourcesearch",
+  "canonicalName": "Cloud Resource Search",
+  "version": "v1",
+  "revision": "0",
+  "title": "Google Cloud Resource Search",
+  "description": "An API for searching over Google Cloud Platform Resources.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://groups.google.com/forum/#!forum/resource-search-api-alpha",
+  "protocol": "rest",
+  "rootUrl": "https://cloudresourcesearch.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://cloudresourcesearch.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": "True",
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "bearer_token": {
+      "type": "string",
+      "description": "OAuth bearer token.",
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "pp": {
+      "type": "boolean",
+      "description": "Pretty-print response.",
+      "default": "true",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "SearchResponse": {
+      "id": "SearchResponse",
+      "description": "Response message for Search().",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "The list of resources that match the search query.",
+          "type": "array",
+          "items": {
+            "$ref": "SearchResult"
+          }
+        },
+        "matchedCount": {
+          "description": "The approximate number of documents that match the query. It is greater\nthan or equal to the number of documents actually returned.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nextPageToken": {
+          "description": "If there are more results, retrieve them by invoking search call with the\nsame arguments and this `nextPageToken`. If there are no more results, this\nfield is not set.",
+          "type": "string"
+        }
+      }
+    },
+    "SearchResult": {
+      "id": "SearchResult",
+      "description": "A single Google Cloud Platform resource returned in SearchResourcesResponse.",
+      "type": "object",
+      "properties": {
+        "discoveryUrl": {
+          "description": "The URL of the discovery document containing the resource's JSON schema.\nExample: https:\/\/cloudresourcemanager.googleapis.com\/$discovery\/rest",
+          "type": "string"
+        },
+        "discoveryType": {
+          "description": "The JSON schema name listed in the discovery document.\nExample: Project",
+          "type": "string"
+        },
+        "resourceUrl": {
+          "description": "The REST URL for accessing the resource. HTTP GET on the `resource_url`\nwould return a JSON object equivalent to the `resource` below.\nExample: https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123",
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "The RPC resource name. It is a scheme-less URI that includes the DNS-\ncompatible API service name. It does not include API version, or support\n%-encoding.\nExample: \/\/cloudresourcemanager.googleapis.com\/projects\/my-project-123",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "A domain-scoped name that describes the protocol buffer message type.\nExample: type.googleapis.com\/google.cloud.resourcemanager.v1.Project",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The matched resource, expressed as a JSON object.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "BillingAccount": {
+      "id": "BillingAccount",
+      "description": "A billing account in [Google Cloud\nConsole](https:\/\/console.cloud.google.com\/). You can assign a billing account\nto one or more projects.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the billing account. The resource name has the form\n`billingAccounts\/{billing_account_id}`. For example,\n`billingAccounts\/012345-567890-ABCDEF` would be the resource name for\nbilling account `012345-567890-ABCDEF`.",
+          "type": "string"
+        },
+        "open": {
+          "description": "True if the billing account is open, and will therefore be charged for any\nusage on associated projects. False if the billing account is closed, and\ntherefore projects associated with it will be unable to use paid services.",
+          "type": "boolean"
+        },
+        "displayName": {
+          "description": "The display name given to the billing account, such as `My Billing\nAccount`. This name is displayed in the Google Cloud Console.",
+          "type": "string"
+        }
+      }
+    },
+    "Organization": {
+      "id": "Organization",
+      "description": "The root node in the resource hierarchy to which a particular entity's\n(e.g., company) resources belong.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output Only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
+          "type": "string"
+        },
+        "organizationId": {
+          "description": "An immutable id for the Organization that is assigned on creation. This\nshould be omitted when creating a new Organization.\nThis field is read-only.\nThis field is deprecated and will be removed in v1. Use name instead.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "A friendly string to be used to refer to the Organization in the UI.\nAssigned by the server, set to the firm name of the Google For Work\ncustomer that owns this organization.\n@OutputOnly",
+          "type": "string"
+        },
+        "owner": {
+          "description": "The owner of this Organization. The owner should be specified on\ncreation. Once set, it cannot be changed.\nThis field is required.",
+          "$ref": "OrganizationOwner"
+        },
+        "creationTime": {
+          "description": "Timestamp when the Organization was created. Assigned by the server.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lifecycleState": {
+          "description": "The organization's current lifecycle state. Assigned by the server.\n@OutputOnly",
+          "enumDescriptions": [
+            "Unspecified state.  This is only useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The organization has been marked for deletion by the user."
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ]
+        }
+      }
+    },
+    "OrganizationOwner": {
+      "id": "OrganizationOwner",
+      "description": "The entity that owns an Organization. The lifetime of the Organization and\nall of its descendants are bound to the `OrganizationOwner`. If the\n`OrganizationOwner` is deleted, the Organization and all its descendants will\nbe deleted.",
+      "type": "object",
+      "properties": {
+        "directoryCustomerId": {
+          "description": "The Google for Work customer id used in the Directory API.",
+          "type": "string"
+        }
+      }
+    },
+    "Project": {
+      "id": "Project",
+      "description": "A Project is a high-level Google Cloud Platform entity.  It is a\ncontainer for ACLs, APIs, AppEngine Apps, VMs, and other\nGoogle Cloud Platform resources.",
+      "type": "object",
+      "properties": {
+        "projectNumber": {
+          "description": "The number uniquely identifying the project.\n\nExample: <code>415104041262<\/code>\n\nRead-only.",
+          "type": "string",
+          "format": "int64"
+        },
+        "projectId": {
+          "description": "The unique, user-assigned ID of the Project.\nIt must be 6 to 30 lowercase letters, digits, or hyphens.\nIt must start with a letter.\nTrailing hyphens are prohibited.\n\nExample: <code>tokyo-rain-123<\/code>\n\nRead-only after creation.",
+          "type": "string"
+        },
+        "lifecycleState": {
+          "description": "The Project lifecycle state.\n\nRead-only.",
+          "enumDescriptions": [
+            "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
+            "The normal and active state.",
+            "The project has been marked for deletion by the user\n(by invoking DeleteProject)\nor by the system (Google Cloud Platform).\nThis can generally be reversed by invoking UndeleteProject.",
+            "This lifecycle state is no longer used and is not returned by the API."
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED",
+            "DELETE_IN_PROGRESS"
+          ]
+        },
+        "name": {
+          "description": "The user-assigned display name of the Project.\nIt must be 4 to 30 characters.\nAllowed characters are: lowercase and uppercase letters, numbers,\nhyphen, single-quote, double-quote, space, and exclamation point.\n\nExample: <code>My Project<\/code>\n\nRead-write.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Creation time.\n\nRead-only.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels associated with this Project.\n\nLabel keys must be between 1 and 63 characters long and must conform\nto the following regular expression: \\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?.\n\nLabel values must be between 0 and 63 characters long and must conform\nto the regular expression (\\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?)?.\n\nNo more than 256 labels can be associated with a given resource.\n\nClients should store labels in a representation such as JSON that does not\ndepend on specific characters being disallowed.\n\nExample: <code>\"environment\" : \"dev\"<\/code>\n\nRead-write.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "parent": {
+          "description": "An optional reference to a parent Resource.\n\nThe only supported parent type is \"organization\". Once set, the parent\ncannot be modified.\n\nRead-write.",
+          "$ref": "ResourceId"
+        }
+      }
+    },
+    "ResourceId": {
+      "id": "ResourceId",
+      "description": "A container to reference an id for any resource type. A `resource` in Google\nCloud Platform is a generic term for something you (a developer) may want to\ninteract with through one of our API's. Some examples are an AppEngine app,\na Compute Engine instance, a Cloud SQL database, and so on.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required field representing the resource type this id is for.\nAt present, the valid types are \"project\" and \"organization\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "Required field for the type-specific id. This should correspond to the id\nused in the type-specific API's.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "resources": {
+      "methods": {
+        "search": {
+          "id": "cloudresourcesearch.resources.search",
+          "path": "v1/resources:search",
+          "flatPath": "v1/resources:search",
+          "httpMethod": "GET",
+          "description": "Lists accessible Google Cloud Platform resources that match the query. A\nresource is accessible to the caller if they have the IAM .get permission\nfor it.",
+          "parameters": {
+            "query": {
+              "description": "The query string in search query syntax. If the query is missing or empty,\nall resources are returned.\n\nAny field in a supported resource type's JSON schema may be specified in\nthe query. Additionally, every resource has a `@type` field whose value is\nthe resource's type URL. See `SearchResult.resource_type` for more\ninformation.\n\nExample: The following query searches for all Google Compute Engine VM\ninstances accessible to the caller. The query is further restricted on the\n`labels` and `machineType` fields of the resource. Only VM instances with\nthe label `env` set to \"prod\" and `machineType` including a token phrase\nwith the prefix \"n1-stand\" are matched.\n  @type:Instance labels.env:prod machineType:n1-stand*",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of search results to return per page. Searches perform\nbest when the `pageSize` is kept as small as possible. If not specified, 20\nresults are returned per page. At most 1000 results are returned per page.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "A `nextPageToken` returned from previous SearchResources call as the\nstarting point for this call.",
+              "location": "query",
+              "type": "string"
+            },
+            "orderBy": {
+              "description": "Comma-separated list of string fields for sorting on the search result,\nincluding fields from the resources and the built-in fields (`resourceName`\nand `resourceType`). Strings are sorted as binary strings based on their\nUTF-8 encoding.\n\nThe default sorting order is ascending. To specify descending order for a\nfield, a suffix `\" desc\"` should be appended to the field name. For\nexample: `orderBy=\"foo desc,bar\"`.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "SearchResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

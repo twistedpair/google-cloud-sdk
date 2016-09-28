@@ -203,8 +203,8 @@ class TextRenderer(renderer.Renderer):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
 
     Collapses adjacent spaces to one space, deletes trailing space, and doesn't
-    split top-level nested [...] groups. Also detects and does not count
-    terminal control sequences.
+    split top-level nested [...] or (...) groups. Also detects and does not
+    count terminal control sequences.
 
     Args:
       line: The NAME or SYNOPSIS text.
@@ -242,14 +242,14 @@ class TextRenderer(renderer.Renderer):
         n = 1
       return index + n
 
-    def SkipNest(line, index, open_char='[', close_char=']'):
+    def SkipNest(line, index, open_chars='[(', close_chars=')]'):
       """Skip a [...] nested bracket group starting at line[index].
 
       Args:
         line: The string.
         index: The starting index in string.
-        open_char: The open nesting character.
-        close_char: The close nesting character.
+        open_chars: The open nesting characters.
+        close_chars: The close nesting characters.
 
       Returns:
         The index in line after the nesting group or len(line) at end of string.
@@ -258,9 +258,9 @@ class TextRenderer(renderer.Renderer):
       while index < len(line):
         c = line[index]
         index += 1
-        if c == open_char:
+        if c in open_chars:
           nest += 1
-        elif c == close_char:
+        elif c in close_chars:
           nest -= 1
           if nest <= 0:
             break
@@ -282,7 +282,7 @@ class TextRenderer(renderer.Renderer):
         else:
           groups.append(line[beg:end])
           beg = i
-      elif c == '[':
+      elif c in '[(':
         i = SkipNest(line, i)
       elif c == self._csi_char:
         i = SkipControlSequence(line, i)
@@ -329,7 +329,7 @@ class TextRenderer(renderer.Renderer):
       line: A CSV table data line.
     """
     if line is None:
-      # TODO(user): Use resource_printer.TablePrinter() when it lands.
+      # TODO(b/31628974): Use resource_printer.TablePrinter().
       if self._rows:
         cols = len(self._rows[0])
         width = [0 for _ in range(cols)]

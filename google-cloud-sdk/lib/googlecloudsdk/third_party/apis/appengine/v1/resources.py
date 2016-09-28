@@ -25,49 +25,71 @@ class Collections(enum.Enum):
   APPS = (
       'apps',
       '{+name}',
-      [
-          'apps/{appsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}',
+      },
+      [u'name'],
+      'AppengineAppsGetRequest',)
   APPS_LOCATIONS = (
       'apps.locations',
       '{+name}',
-      [
-          'apps/{appsId}/locations/{locationsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}/locations/{locationsId}',
+      },
+      [u'name'],
+      'AppengineAppsLocationsGetRequest',)
   APPS_OPERATIONS = (
       'apps.operations',
       '{+name}',
-      [
-          'apps/{appsId}/operations/{operationsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}/operations/{operationsId}',
+      },
+      [u'name'],
+      'AppengineAppsOperationsGetRequest',)
   APPS_SERVICES = (
       'apps.services',
       '{+name}',
-      [
-          'apps/{appsId}/services/{servicesId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}/services/{servicesId}',
+      },
+      [u'name'],
+      'AppengineAppsServicesGetRequest',)
   APPS_SERVICES_VERSIONS = (
       'apps.services.versions',
       '{+name}',
-      [
-          'apps/{appsId}/services/{servicesId}/versions/{versionsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+      },
+      [u'name'],
+      'AppengineAppsServicesVersionsGetRequest',)
   APPS_SERVICES_VERSIONS_INSTANCES = (
       'apps.services.versions.instances',
       '{+name}',
-      [
-          'apps/{appsId}/services/{servicesId}/versions/{versionsId}/'
-          'instances/{instancesId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'apps/{appsId}/services/{servicesId}/versions/{versionsId}/'
+              'instances/{instancesId}',
+      },
+      [u'name'],
+      'AppengineAppsServicesVersionsInstancesGetRequest',)
+  EXPERIMENTAL_APPS_OPERATIONS = (
+      'experimental.apps.operations',
+      '{+name}',
+      {
+          '':
+              'apps/{appsId}/operations/{operationsId}',
+      },
+      [u'name'],
+      'AppengineExperimentalAppsOperationsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

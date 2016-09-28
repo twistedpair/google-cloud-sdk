@@ -145,6 +145,26 @@ def _CredentialHelperConfigured():
     return False
 
 
+def _GCRCredHelperConfigured():
+  """Returns True if docker-credential-gcr is the docker credential store.
+
+  Returns:
+    True if docker-credential-gcr is specified in the docker config.
+    False if the config file does not exist, does not contain a
+    'credsStore' key, or if the credstore is not docker-credential-gcr.
+  """
+  try:
+    new_config_1_7_0_plus, new_format = _ReadFullDockerConfiguration()
+    if new_format and _CREDENTIAL_STORE_KEY in new_config_1_7_0_plus:
+      return new_config_1_7_0_plus[_CREDENTIAL_STORE_KEY] == 'gcr'
+    else:
+      # Docker <1.7.0 (no credential store support) or credsStore == null
+      return False
+  except IOError:
+    # Config file doesn't exist or can't be parsed.
+    return False
+
+
 def ReadDockerConfig():
   """Retrieve the contents of the Docker authorization entry.
 
@@ -221,8 +241,12 @@ def UpdateDockerCredentials(server):
   # Strip the port, if it exists. It's OK to butcher IPv6, this is only an
   # optimization for hostnames in constants.ALL_SUPPORTED_REGISTRIES.
   hostname = url.hostname.split(':')[0]
-  if (_CredentialHelperConfigured() or
+
+  third_party_cred_helper = (_CredentialHelperConfigured() and
+                             not _GCRCredHelperConfigured())
+  if (third_party_cred_helper or
       hostname not in constants.ALL_SUPPORTED_REGISTRIES):
+    # If this is a custom host or if there's a third-party credential helper...
     try:
       # Update the credentials stored by docker, passing the access token
       # as a password, and benign values as the email and username.
@@ -237,14 +261,14 @@ def UpdateDockerCredentials(server):
       # TODO(user) when app deploy is using Argo to take over builds,
       # remove this.
       _UpdateDockerConfig(server, _USERNAME, cred.access_token)
-      log.warn(
-          "'docker' was not discovered on the path. Credentials have been "
-          'stored, but are not guaranteed to work with the 1.11 Docker client '
-          ' if an external credential store is configured.')
-  else:
-    # The happy case! No credential helpers have been configured so we can
-    # inject our credentials directly.
+      log.warn("'docker' was not discovered on the path. Credentials have been "
+               'stored, but are not guaranteed to work with the Docker client '
+               ' if an external credential store is configured.')
+  elif not _GCRCredHelperConfigured():
+    # If this is not a custom host and no third-party cred helper...
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+
+  # If this is a default registry and docker-credential-gcr is configured, no-op
 
 
 def _DockerLogin(server, email, username, access_token):

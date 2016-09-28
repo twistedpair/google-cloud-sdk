@@ -26,6 +26,11 @@ class InvalidInstancesFileError(core_exceptions.Error):
   pass
 
 
+class HttpRequestFailError(core_exceptions.Error):
+  """Indicates that the http request fails in some way."""
+  pass
+
+
 def Predict(model_name=None, version_name=None, input_file=None):
   """Perform online prediction on the input data file.
 
@@ -38,6 +43,8 @@ def Predict(model_name=None, version_name=None, input_file=None):
   Raises:
       InvalidInstancesFileError: if the input_file is empty, ill-formatted,
           or contains more than 100 instances.
+      HttpRequestFailError: if error happens with http request, or parsing
+          the http response.
   """
 
   # Get the url for the predict request.
@@ -73,9 +80,13 @@ def Predict(model_name=None, version_name=None, input_file=None):
   # Workaround since current gcloud sdk cannot handle the httpbody properly.
   # TODO(b/31403673): use M1V1beta1.ProjectsService.Predict once b/31403673
   # is fixed.
-  _, response_body = http.Http().request(
+  response, response_body = http.Http().request(
       uri=url, method='POST', body=json.dumps(body), headers=headers)
+  if response.get('status') != '200':
+    raise HttpRequestFailError('HTTP request failed. Response: ' +
+                               response_body)
   try:
     return json.loads(response_body)
-  except ValueError as e:
-    raise core_exceptions.Error(e)
+  except ValueError:
+    raise HttpRequestFailError('No JSON object could be decoded from the '
+                               'HTTP response body: ' + response_body)

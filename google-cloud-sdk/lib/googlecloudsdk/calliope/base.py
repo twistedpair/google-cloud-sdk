@@ -209,20 +209,6 @@ FILTER_FLAG = Argument(
     details run $ gcloud topic filters. If *--limit* is also specified
     then it is applied after *--filter*.""")
 
-FLATTEN_FLAG = Argument(
-    '--flatten',
-    metavar='KEY',
-    type=arg_parsers.ArgList(),
-    category=LIST_COMMAND_FLAGS,
-    help=('Flatten _name_[] resource slices in _KEY_ to separate records '
-          'for each item in each slice.'),
-    detailed_help="""\
-    Flatten _name_[] resource slices in _KEY_ to separate records for each
-    item in each slice. Multiple keys and slices may be specified. This also
-    flattens keys for *--format* and *--filter*. For example,
-    *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
-    *abc.def.ghi*.""")
-
 LIMIT_FLAG = Argument(
     '--limit',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
@@ -248,7 +234,8 @@ PAGE_SIZE_FLAG = Argument(
 
 SORT_BY_FLAG = Argument(
     '--sort-by',
-    metavar='FIELDS',
+    metavar='FIELD',
+    type=arg_parsers.ArgList(),
     category=LIST_COMMAND_FLAGS,
     help='A comma-separated list of field key names to sort by.',
     detailed_help="""\
@@ -654,7 +641,6 @@ class ListCommand(CacheCommand):
     """
 
     FILTER_FLAG.AddToParser(parser)
-    FLATTEN_FLAG.AddToParser(parser)
     LIMIT_FLAG.AddToParser(parser)
     PAGE_SIZE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)

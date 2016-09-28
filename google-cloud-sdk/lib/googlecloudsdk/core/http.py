@@ -93,7 +93,7 @@ def MakeUserAgentString(cmd_path=None):
           ' interactive/{5}'
           ' python/{6}'
           ' {7}').format(
-              config.CLOUD_SDK_VERSION,
+              config.CLOUD_SDK_VERSION.replace(' ', '_'),
               cmd_path or properties.VALUES.metrics.command_name.Get(),
               uuid.uuid4().hex,
               properties.GetMetricsEnvironment(),

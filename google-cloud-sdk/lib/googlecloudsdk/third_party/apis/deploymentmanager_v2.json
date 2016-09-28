@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20160914",
+ "revision": "20160919",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -630,6 +630,10 @@
    "type": "object",
    "description": "",
    "properties": {
+    "accessControl": {
+     "$ref": "ResourceAccessControl",
+     "description": "The Access Control Policy set on this resource."
+    },
     "finalProperties": {
      "type": "string",
      "description": "[Output Only] The evaluated properties of the resource with references expanded. Returned as serialized YAML."
@@ -707,11 +711,26 @@
     }
    }
   },
+  "ResourceAccessControl": {
+   "id": "ResourceAccessControl",
+   "type": "object",
+   "description": "The access controls set on the resource.",
+   "properties": {
+    "gcpIamPolicy": {
+     "type": "string",
+     "description": "The GCP IAM Policy to set on the resource."
+    }
+   }
+  },
   "ResourceUpdate": {
    "id": "ResourceUpdate",
    "type": "object",
    "description": "",
    "properties": {
+    "accessControl": {
+     "$ref": "ResourceAccessControl",
+     "description": "The Access Control Policy to set on this resource after updating the resource itself."
+    },
     "error": {
      "type": "object",
      "description": "[Output Only] If errors are generated during update of the resource, this field will be populated.",
@@ -1147,6 +1166,11 @@
        "maximum": "500",
        "location": "query"
       },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
       "pageToken": {
        "type": "string",
        "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
@@ -1495,6 +1519,11 @@
        "maximum": "500",
        "location": "query"
       },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
       "pageToken": {
        "type": "string",
        "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
@@ -1578,6 +1607,11 @@
        "format": "uint32",
        "minimum": "0",
        "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
       },
       "pageToken": {
@@ -1679,6 +1713,11 @@
        "maximum": "500",
        "location": "query"
       },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
       "pageToken": {
        "type": "string",
        "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
@@ -1728,6 +1767,11 @@
        "format": "uint32",
        "minimum": "0",
        "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
       },
       "pageToken": {

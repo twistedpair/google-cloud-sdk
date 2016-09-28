@@ -2,6 +2,67 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 128.0.0 (2016/09/28)
+
+### Breaking Changes
+
+* The `gcloud auth application-default` commands are now in GA.
+  `gcloud auth login` no longer writes Application Default Credentials, use
+  `gcloud auth application-default login` instead.
+
+### Google AppEngine
+
+* Java apps that have no app.yaml file are now auto-detected based on a
+  WEB-INF/appengine-web.xml file when launching the dev_appserver.
+
+* Fixed timestamp processing issue
+  (https://code.google.com/p/google-cloud-sdk/issues/detail?id=1121) in
+  `gcloud app logs read`.
+
+### Google Cloud Functions
+
+* Added the `--memory` flag to `gcloud alpha functions deploy` to allow
+  configuration of amount of memory available during function execution.
+
+### Google Cloud ML
+
+* Added `gcloud beta ml local train` command which runs user code locally and
+  injects the environment variables necessary for running distributed TensorFlow
+  jobs in subprocesses.
+
+* `gcloud beta ml jobs submit training` now takes a path to a python package,
+  and either (1) builds from the setup.py file at the package root, or (2)
+  generates a setup.py file and builds the package. It then uploads the
+  generated tar.gz archives to Google Cloud Storage.
+
+### Google Compute Engine
+
+* Internal load balancing is now in beta.
+
+* Cloud Source Repositories control scope is now included in the list of default
+  scopes granted to newly created instances and instance templates.
+
+* Added multi-nic support to `gcloud alpha compute instances create` and
+  `gcloud alpha compute instance-templates create`.
+
+### Google Container Engine
+
+* Can now create temporary clusters with all kubernetes alpha features enabled
+  using `gcloud alpha container clusters create --enable-kubernetes-alpha`.
+
+* Added support for kubernetes labels on new clusters and nodepools by passing
+  `--node-labels=label1=value1,label2=value2...`. See
+  `gcloud alpha container clusters create --help` and
+  `gcloud alpha container nodepools create --help` for more details and
+  examples.
+
+### Google Container Repository
+
+* Added the ability to configure where (and in which order)
+  docker-credential-gcr searches for Google Container Registry credentials. Run
+  `docker-credential-gcr config --help` for more details.
+
+
 ## 127.0.0 (2016/09/21)
 
 ### Google BigQuery

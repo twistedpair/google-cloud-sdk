@@ -25,48 +25,43 @@ class Collections(enum.Enum):
   OPERATIONS = (
       'operations',
       'operations/{operationsId}',
-      [
-          'operations/{operationsId}',
-      ],
-      [u'operationsId'])
+      {},
+      [u'operationsId'],
+      'ServicemanagementOperationsGetRequest',)
   SERVICES = (
       'services',
       'services/{serviceName}',
-      [
-          'services/{serviceName}',
-      ],
-      [u'serviceName'])
+      {},
+      [u'serviceName'],
+      'ServicemanagementServicesGetRequest',)
   SERVICES_CONFIGS = (
       'services.configs',
       'services/{serviceName}/configs/{configId}',
-      [
-          'services/{serviceName}/configs/{configId}',
-      ],
-      [u'serviceName', u'configId'])
+      {},
+      [u'serviceName', u'configId'],
+      'ServicemanagementServicesConfigsGetRequest',)
   SERVICES_CUSTOMERSETTINGS = (
       'services.customerSettings',
       'services/{serviceName}/customerSettings/{customerId}',
-      [
-          'services/{serviceName}/customerSettings/{customerId}',
-      ],
-      [u'serviceName', u'customerId'])
+      {},
+      [u'serviceName', u'customerId'],
+      'ServicemanagementServicesCustomerSettingsGetRequest',)
   SERVICES_PROJECTSETTINGS = (
       'services.projectSettings',
       'services/{serviceName}/projectSettings/{consumerProjectId}',
-      [
-          'services/{serviceName}/projectSettings/{consumerProjectId}',
-      ],
-      [u'serviceName', u'consumerProjectId'])
+      {},
+      [u'serviceName', u'consumerProjectId'],
+      'ServicemanagementServicesProjectSettingsGetRequest',)
   SERVICES_ROLLOUTS = (
       'services.rollouts',
       'services/{serviceName}/rollouts/{rolloutId}',
-      [
-          'services/{serviceName}/rollouts/{rolloutId}',
-      ],
-      [u'serviceName', u'rolloutId'])
+      {},
+      [u'serviceName', u'rolloutId'],
+      'ServicemanagementServicesRolloutsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

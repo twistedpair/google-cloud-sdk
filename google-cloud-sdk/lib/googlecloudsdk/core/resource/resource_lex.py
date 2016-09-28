@@ -89,13 +89,14 @@ class _TransformCall(object):
     func: The transform function.
     active: The parent projection active level. A transform is active if
       transform.active is None or equal to the caller active level.
-    map_transform: If r is a list then apply the transform to each list item.
+    map_transform: If r is a list then apply the transform to each list item
+      up to map_transform times. map_transform>1 handles nested lists.
     args: List of function call actual arg strings.
     kwargs: List of function call actual keyword arg strings.
     restriction: Call is a global restriction that does not have an obj arg.
   """
 
-  def __init__(self, name, func, active=0, map_transform=None, args=None,
+  def __init__(self, name, func, active=0, map_transform=0, args=None,
                kwargs=None, restriction=False):
     self.name = name
     self.func = func
@@ -109,8 +110,13 @@ class _TransformCall(object):
     args = ['<projecton>' if isinstance(
         arg, resource_projection_spec.ProjectionSpec) else arg
             for arg in self.args]
-    return '{0}{1}({2})'.format('map().' if self.map_transform else '',
-                                self.name, ','.join(args))
+    if self.map_transform > 1:
+      prefix = 'map({0}).'.format(self.map_transform)
+    elif self.map_transform == 1:
+      prefix = 'map().'
+    else:
+      prefix = ''
+    return '{0}{1}({2})'.format(prefix, self.name, ','.join(args))
 
   def __deepcopy__(self, memo):
     # This avoids recursive ProjectionSpec transforms that deepcopy chokes on.
@@ -135,7 +141,7 @@ class _Transform(object):
   @property
   def active(self):
     """The transform active level or None if always active."""
-    return self._transforms[0].active
+    return self._transforms[0].active if self._transforms else None
 
   @property
   def conditional(self):
@@ -167,7 +173,19 @@ class _Transform(object):
     for transform in self._transforms:
       if transform.map_transform and resource_property.IsListLike(obj):
         # A transform mapped on a list - transform each list item.
+        # map_transform > 1 for nested lists. For example:
+        #   abc[].def[].ghi[].map(3)
+        # iterates over the items in ghi[] for all abc[] and def[].
         items = obj
+        for _ in range(transform.map_transform - 1):
+          nested = []
+          try:
+            # Stop if items is not a list.
+            for item in items:
+              nested.extend(item)
+          except TypeError:
+            break
+          items = nested
         obj = []
         for item in items:
           obj.append(transform.func(item, *transform.args, **transform.kwargs))
@@ -568,7 +586,8 @@ class Lexer(object):
     Args:
       func_name: The transform function name.
       active: The transform active level or None if always active.
-      map_transform: Apply the transform to each resource list item.
+      map_transform: Apply the transform to each resource list item this many
+        times.
       restriction: Transform is a global restriction that does not have an obj
         arg.
 
@@ -622,7 +641,7 @@ class Lexer(object):
     """
     here = self.GetPosition()
     calls = _Transform()
-    map_transform = False
+    map_transform = 0
     while True:
       transform = self._ParseTransform(func_name, active=active,
                                        map_transform=map_transform,
@@ -632,7 +651,7 @@ class Lexer(object):
         active = None  # Always active.
         func_name = None
       elif transform.func == resource_transform.TransformMap:
-        map_transform = True
+        map_transform = int(transform.args[0]) if transform.args else 1
         func_name = None
       elif transform.func == resource_transform.TransformIf:
         if len(transform.args) != 1:
@@ -643,7 +662,7 @@ class Lexer(object):
       else:
         # always() applies to all transforms for key.
         # map() applies to the next transform.
-        map_transform = False
+        map_transform = 0
         calls.Add(transform)
       if not self.IsCharacter('.', eoi_ok=True):
         break

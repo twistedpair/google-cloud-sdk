@@ -5,7 +5,7 @@
  "name": "serviceregistry",
  "canonicalName": "Service Registry",
  "version": "v1alpha",
- "revision": "20160914",
+ "revision": "20160919",
  "title": "Google Cloud Service Registry API",
  "description": "Manages service endpoints in Service Registry and provides integration with DNS for service discovery and name resolution.",
  "ownerDomain": "google.com",
@@ -509,6 +509,11 @@
        "maximum": "500",
        "location": "query"
       },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
       "pageToken": {
        "type": "string",
        "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
@@ -660,6 +665,11 @@
        "format": "uint32",
        "minimum": "0",
        "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
       },
       "pageToken": {

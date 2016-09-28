@@ -695,6 +695,16 @@ class CreateTokenRequest(_messages.Message):
   projectNumber = _messages.IntegerField(2)
 
 
+class ExtraValue(_messages.Message):
+  """ExtraValue allows the extra field to be a mapstringstring
+
+  Fields:
+    items: items, if empty, will result in an empty slice
+  """
+
+  items = _messages.StringField(1, repeated=True)
+
+
 class HorizontalPodAutoscaling(_messages.Message):
   """Configuration options for the horizontal pod autoscaling feature, which
   increases or decreases the number of replica pods a replication controller
@@ -1365,9 +1375,18 @@ class SubjectAccessReviewSpec(_messages.Message):
   """The description of the request for authorization. This should match the
   SubjectAccessReviewSpec struct in pkg/apis/authorization/v1beta1/types.go
 
+  Messages:
+    ExtraValue: Any "extra" data from the user being authorized. Note:
+      normally this field would be called "extras", but we have to match the
+      struct in Kubernetes.
+
   Fields:
-    groups: Any groups this user may be a part of (this is not used for GKE
-      IAM).
+    extra: Any "extra" data from the user being authorized. Note: normally
+      this field would be called "extras", but we have to match the struct in
+      Kubernetes.
+    group: Any groups this user may be a part of (this is not used for GKE
+      IAM). Note: normally this field would be called "groups", but we have to
+      match the struct in Kubernetes.
     nonResourceAttributes: The attributes of the request for a non-resource
       request. If this field is set, ResourceAttributes should not be set (and
       will be ignored).
@@ -1377,10 +1396,37 @@ class SubjectAccessReviewSpec(_messages.Message):
     user: The user making the request.
   """
 
-  groups = _messages.StringField(1, repeated=True)
-  nonResourceAttributes = _messages.MessageField('NonResourceAttributes', 2)
-  resourceAttributes = _messages.MessageField('ResourceAttributes', 3)
-  user = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraValue(_messages.Message):
+    """Any "extra" data from the user being authorized. Note: normally this
+    field would be called "extras", but we have to match the struct in
+    Kubernetes.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtraValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ExtraValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtraValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtraValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extra = _messages.MessageField('ExtraValue', 1)
+  group = _messages.StringField(2, repeated=True)
+  nonResourceAttributes = _messages.MessageField('NonResourceAttributes', 3)
+  resourceAttributes = _messages.MessageField('ResourceAttributes', 4)
+  user = _messages.StringField(5)
 
 
 class SubjectAccessReviewStatus(_messages.Message):

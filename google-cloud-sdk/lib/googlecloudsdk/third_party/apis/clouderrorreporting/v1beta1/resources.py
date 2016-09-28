@@ -25,13 +25,16 @@ class Collections(enum.Enum):
   PROJECTS_GROUPS = (
       'projects.groups',
       '{+groupName}',
-      [
-          'projects/{projectsId}/groups/{groupsId}',
-      ],
-      [u'groupName'])
+      {
+          '':
+              'projects/{projectsId}/groups/{groupsId}',
+      },
+      [u'groupName'],
+      'ClouderrorreportingProjectsGroupsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

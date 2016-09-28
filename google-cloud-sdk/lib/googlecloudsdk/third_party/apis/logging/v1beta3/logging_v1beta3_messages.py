@@ -36,6 +36,8 @@ class HttpRequest(_messages.Message):
     cacheValidatedWithOriginServer: Whether or not the response was validated
       with the origin server before being served from cache. This field is
       only meaningful if `cache_hit` is True.
+    latency: The request processing latency on the server, from the time the
+      request was received until the response was sent.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -62,15 +64,16 @@ class HttpRequest(_messages.Message):
   cacheHit = _messages.BooleanField(2)
   cacheLookup = _messages.BooleanField(3)
   cacheValidatedWithOriginServer = _messages.BooleanField(4)
-  referer = _messages.StringField(5)
-  remoteIp = _messages.StringField(6)
-  requestMethod = _messages.StringField(7)
-  requestSize = _messages.IntegerField(8)
-  requestUrl = _messages.StringField(9)
-  responseSize = _messages.IntegerField(10)
-  serverIp = _messages.StringField(11)
-  status = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(13)
+  latency = _messages.StringField(5)
+  referer = _messages.StringField(6)
+  remoteIp = _messages.StringField(7)
+  requestMethod = _messages.StringField(8)
+  requestSize = _messages.IntegerField(9)
+  requestUrl = _messages.StringField(10)
+  responseSize = _messages.IntegerField(11)
+  serverIp = _messages.StringField(12)
+  status = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(14)
 
 
 class ListLogEntriesRequest(_messages.Message):
@@ -260,14 +263,15 @@ class LogEntry(_messages.Message):
       is expressed as a JSON object.
 
   Fields:
-    httpRequest: Information about the HTTP request associated with this log
-      entry, if applicable.
-    insertId: A unique ID for the log entry. If you provide this field, the
-      logging service considers other log entries in the same project with the
-      same ID as duplicates which can be removed.  If omitted, Stackdriver
-      Logging will generate a unique ID for this log entry.
-    log: The log to which this entry belongs. When a log entry is written, the
-      value of this field is set by the logging system.
+    httpRequest: Optional. Information about the HTTP request associated with
+      this log entry, if applicable.
+    insertId: Optional. A unique ID for the log entry. If you provide this
+      field, the logging service considers other log entries in the same
+      project with the same ID as duplicates which can be removed.  If
+      omitted, Stackdriver Logging will generate a unique ID for this log
+      entry.
+    log: Optional. The log to which this entry belongs. When a log entry is
+      written, the value of this field is set by the logging system.
     metadata: Required. Information about the log entry.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
@@ -278,7 +282,8 @@ class LogEntry(_messages.Message):
       expressed as a JSON object.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
-    writerEmailAddress: A string attribute.
+    writerEmailAddress: Optional. The email address of the role that wrote the
+      entry on behalf of a user. Not populated for entries written by a user.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -351,11 +356,11 @@ class LogEntryMetadata(_messages.Message):
   creating the log entry.
 
   Enums:
-    SeverityValueValuesEnum: The severity of the log entry. If omitted,
-      `LogSeverity.DEFAULT` is used.
+    SeverityValueValuesEnum: Optional. The severity of the log entry. If
+      omitted, `LogSeverity.DEFAULT` is used.
 
   Messages:
-    LabelsValue: A set of (key, value) data that provides additional
+    LabelsValue: Optional. A set of (key, value) data that provides additional
       information about the log entry. If the log entry is from one of the
       Google Cloud Platform sources listed below, the indicated (key, value)
       information must be provided:  Google App Engine, service_name
@@ -369,10 +374,10 @@ class LogEntryMetadata(_messages.Message):
       "compute.googleapis.com/resource_id", <instance ID>
 
   Fields:
-    labels: A set of (key, value) data that provides additional information
-      about the log entry. If the log entry is from one of the Google Cloud
-      Platform sources listed below, the indicated (key, value) information
-      must be provided:  Google App Engine, service_name
+    labels: Optional. A set of (key, value) data that provides additional
+      information about the log entry. If the log entry is from one of the
+      Google Cloud Platform sources listed below, the indicated (key, value)
+      information must be provided:  Google App Engine, service_name
       `appengine.googleapis.com`:        "appengine.googleapis.com/module_id",
       <module ID>       "appengine.googleapis.com/version_id", <version ID>
       and one of:       "appengine.googleapis.com/replica_index", <instance
@@ -381,27 +386,27 @@ class LogEntryMetadata(_messages.Message):
       Engine, service_name `compute.googleapis.com`:
       "compute.googleapis.com/resource_type", "instance"
       "compute.googleapis.com/resource_id", <instance ID>
-    projectId: The project ID of the Google Cloud Platform service that
-      created the log entry.
-    projectNumber: This field is supplied by the API at when the entry is
-      written.
-    region: The region name of the Google Cloud Platform service that created
-      the log entry.  For example, `"us-central1"`.
+    projectId: Optional. The project ID of the Google Cloud Platform service
+      that created the log entry.
+    projectNumber: Optional. This field is supplied by the API at when the
+      entry is written.
+    region: Optional. The region name of the Google Cloud Platform service
+      that created the log entry.  For example, `"us-central1"`.
     serviceName: Required. The API name of the Google Cloud Platform service
       that created the log entry.  For example, `"compute.googleapis.com"`.
-    severity: The severity of the log entry. If omitted, `LogSeverity.DEFAULT`
-      is used.
-    timestamp: The time the event described by the log entry occurred.
-      Timestamps must be later than January 1, 1970.  If omitted, Stackdriver
-      Logging will use the time the log entry is received.
-    userId: This field is not used and its value is discarded.
-    zone: The zone of the Google Cloud Platform service that created the log
-      entry. For example, `"us-central1-a"`.
+    severity: Optional. The severity of the log entry. If omitted,
+      `LogSeverity.DEFAULT` is used.
+    timestamp: Optional. The time the event described by the log entry
+      occurred. Timestamps must be later than January 1, 1970.  If omitted,
+      Stackdriver Logging will use the time the log entry is received.
+    userId: Optional. This field is not used and its value is discarded.
+    zone: Optional. The zone of the Google Cloud Platform service that created
+      the log entry.  For example, `"us-central1-a"`.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """The severity of the log entry. If omitted, `LogSeverity.DEFAULT` is
-    used.
+    """Optional. The severity of the log entry. If omitted,
+    `LogSeverity.DEFAULT` is used.
 
     Values:
       DEFAULT: (0) The log entry has no assigned severity level.
@@ -427,17 +432,18 @@ class LogEntryMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """A set of (key, value) data that provides additional information about
-    the log entry. If the log entry is from one of the Google Cloud Platform
-    sources listed below, the indicated (key, value) information must be
-    provided:  Google App Engine, service_name `appengine.googleapis.com`:
-    "appengine.googleapis.com/module_id", <module ID>
-    "appengine.googleapis.com/version_id", <version ID>           and one of:
-    "appengine.googleapis.com/replica_index", <instance index>
-    "appengine.googleapis.com/clone_id", <instance ID>      or else provide
-    the following Compute Engine labels:  Google Compute Engine, service_name
-    `compute.googleapis.com`:         "compute.googleapis.com/resource_type",
-    "instance"        "compute.googleapis.com/resource_id", <instance ID>
+    """Optional. A set of (key, value) data that provides additional
+    information about the log entry. If the log entry is from one of the
+    Google Cloud Platform sources listed below, the indicated (key, value)
+    information must be provided:  Google App Engine, service_name
+    `appengine.googleapis.com`:        "appengine.googleapis.com/module_id",
+    <module ID>       "appengine.googleapis.com/version_id", <version ID>
+    and one of:       "appengine.googleapis.com/replica_index", <instance
+    index>       "appengine.googleapis.com/clone_id", <instance ID>      or
+    else provide the following Compute Engine labels:  Google Compute Engine,
+    service_name `compute.googleapis.com`:
+    "compute.googleapis.com/resource_type", "instance"
+    "compute.googleapis.com/resource_id", <instance ID>
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -475,11 +481,11 @@ class LogEntryOperation(_messages.Message):
   which a log entry is associated.
 
   Fields:
-    first: True for the first entry associated with `id`.
-    id: An opaque identifier. A producer of log entries should ensure that
-      `id` is only reused for entries related to one operation.
-    last: True for the last entry associated with `id`.
-    producer: Ensures the operation can be uniquely identified. The
+    first: Optional. True for the first entry associated with `id`.
+    id: Optional. An opaque identifier. A producer of log entries should
+      ensure that `id` is only reused for entries related to one operation.
+    last: Optional. True for the last entry associated with `id`.
+    producer: Optional. Ensures the operation can be uniquely identified. The
       combination of `id` and `producer` should be made globally unique by
       filling `producer` with a value that disambiguates the service that
       created `id`.
@@ -558,14 +564,16 @@ class LogMetric(_messages.Message):
   log entries in your project that match a logs filter.
 
   Fields:
-    description: A description of this metric.
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
-      Example: `"log:syslog AND metadata.severity>=ERROR"`.
-    name: The client-assigned name for this metric, such as `"severe_errors"`.
-      Metric names are limited to 1000 characters and can include only the
-      following characters: `A-Z`, `a-z`, `0-9`, and the special characters
-      `_-.,+!*',()%/\`.  The slash character (`/`) denotes a hierarchy of name
-      pieces, and it cannot be the first character of the name.
+    description: Optional. A description of this metric.
+    filter: Required. An [advanced logs
+      filter](/logging/docs/view/advanced_filters). Example: `"log=syslog AND
+      metadata.severity>=ERROR"`.
+    name: Required. The client-assigned name for this metric, such as
+      `"severe_errors"`.  Metric names are limited to 1000 characters and can
+      include only the following characters: `A-Z`, `a-z`, `0-9`, and the
+      special characters `_-.,+!*',()%/\`.  The slash character (`/`) denotes
+      a hierarchy of name pieces, and it cannot be the first character of the
+      name.
   """
 
   description = _messages.StringField(1)
@@ -598,21 +606,22 @@ class LogSink(_messages.Message):
   """Describes where log entries are written outside of Stackdriver Logging.
 
   Fields:
-    destination: The resource name of the destination. Stackdriver Logging
-      writes designated log entries to this destination. For example,
+    destination: Required. The resource name of the destination. Stackdriver
+      Logging writes designated log entries to this destination. For example,
       `"storage.googleapis.com/my-output-bucket"`.
-    endTime: Time at which this sink expires
+    endTime: Optional. Time at which this sink expires
     errors: _Output only._ If any errors occur when invoking a sink method,
       then this field contains descriptions of the errors.
-    filter: An advanced logs filter. If present, only log entries matching the
-      filter are written.  Only project sinks use this field; log sinks and
-      log service sinks must not include a filter.
-    name: The client-assigned name of this sink. For example, `"my-syslog-
-      sink"`.  The name must be unique among the sinks of a similar kind in
-      the project.
-    startTime: Time range for which this sink is active. Logs are exported
-      only if start_time <= entry.timestamp < end_time Both start_time and
-      end_time may be omitted to specify (half) infinite ranges.
+    filter: Optional. An advanced logs filter. If present, only log entries
+      matching the filter are written.  Only project sinks use this field; log
+      sinks and log service sinks must not include a filter.
+    name: Required. The client-assigned name of this sink. For example, `"my-
+      syslog-sink"`.  The name must be unique among the sinks of a similar
+      kind in the project.
+    startTime: Optional. Time range for which this sink is active. Logs are
+      exported only if start_time <= entry.timestamp < end_time Both
+      start_time and end_time may be omitted to specify (half) infinite
+      ranges.
   """
 
   destination = _messages.StringField(1)
@@ -741,8 +750,8 @@ class LoggingProjectsLogServicesSinksCreateRequest(_messages.Message):
   Fields:
     logServicesId: Part of `serviceName`. See documentation of `projectsId`.
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `serviceName`. The resource name of the log service to
-      which the sink is bound.
+    projectsId: Part of `serviceName`. Required. The resource name of the log
+      service to which the sink is bound.
   """
 
   logServicesId = _messages.StringField(1, required=True)
@@ -755,8 +764,8 @@ class LoggingProjectsLogServicesSinksDeleteRequest(_messages.Message):
 
   Fields:
     logServicesId: Part of `sinkName`. See documentation of `projectsId`.
-    projectsId: Part of `sinkName`. The resource name of the log service sink
-      to delete.
+    projectsId: Part of `sinkName`. Required. The resource name of the log
+      service sink to delete.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -770,8 +779,8 @@ class LoggingProjectsLogServicesSinksGetRequest(_messages.Message):
 
   Fields:
     logServicesId: Part of `sinkName`. See documentation of `projectsId`.
-    projectsId: Part of `sinkName`. The resource name of the log service sink
-      to return.
+    projectsId: Part of `sinkName`. Required. The resource name of the log
+      service sink to return.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -785,7 +794,8 @@ class LoggingProjectsLogServicesSinksListRequest(_messages.Message):
 
   Fields:
     logServicesId: Part of `serviceName`. See documentation of `projectsId`.
-    projectsId: Part of `serviceName`. The log service whose sinks are wanted.
+    projectsId: Part of `serviceName`. Required. The log service whose sinks
+      are wanted.
   """
 
   logServicesId = _messages.StringField(1, required=True)
@@ -798,8 +808,8 @@ class LoggingProjectsLogServicesSinksUpdateRequest(_messages.Message):
   Fields:
     logServicesId: Part of `sinkName`. See documentation of `projectsId`.
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `sinkName`. The resource name of the log service sink
-      to update.
+    projectsId: Part of `sinkName`. Required. The resource name of the log
+      service sink to update.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -875,8 +885,8 @@ class LoggingProjectsLogsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     logsId: Part of `logName`. See documentation of `projectsId`.
-    projectsId: Part of `logName`. The resource name of the log to which to
-      the sink is bound.
+    projectsId: Part of `logName`. Required. The resource name of the log to
+      which to the sink is bound.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -889,8 +899,8 @@ class LoggingProjectsLogsSinksDeleteRequest(_messages.Message):
 
   Fields:
     logsId: Part of `sinkName`. See documentation of `projectsId`.
-    projectsId: Part of `sinkName`. The resource name of the log sink to
-      delete.
+    projectsId: Part of `sinkName`. Required. The resource name of the log
+      sink to delete.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -904,8 +914,8 @@ class LoggingProjectsLogsSinksGetRequest(_messages.Message):
 
   Fields:
     logsId: Part of `sinkName`. See documentation of `projectsId`.
-    projectsId: Part of `sinkName`. The resource name of the log sink to
-      return.
+    projectsId: Part of `sinkName`. Required. The resource name of the log
+      sink to return.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -919,8 +929,8 @@ class LoggingProjectsLogsSinksListRequest(_messages.Message):
 
   Fields:
     logsId: Part of `logName`. See documentation of `projectsId`.
-    projectsId: Part of `logName`. The log whose sinks are wanted. For
-      example, `"compute.google.com/syslog"`.
+    projectsId: Part of `logName`. Required. The log whose sinks are
+      requested. For example, `"compute.google.com/syslog"`.
   """
 
   logsId = _messages.StringField(1, required=True)
@@ -933,7 +943,8 @@ class LoggingProjectsLogsSinksUpdateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     logsId: Part of `sinkName`. See documentation of `projectsId`.
-    projectsId: Part of `sinkName`. The resource name of the sink to update.
+    projectsId: Part of `sinkName`. Required. The resource name of the sink to
+      update.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -985,14 +996,16 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
   """A LoggingProjectsMetricsListRequest object.
 
   Fields:
-    pageSize: The maximum number of `LogMetric` objects to return in one
-      operation.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogMetrics` operation.  If `pageToken` is supplied, then the other
-      fields of this request are ignored, and instead the previous
-      `ListLogMetrics` operation is continued.
-    projectsId: Part of `projectName`. The resource name for the project whose
-      metrics are wanted.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    projectsId: Part of `projectName`. Required. The resource name for the
+      project whose metrics are wanted.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1020,8 +1033,8 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `projectName`. The resource name of the project to
-      which the sink is bound.
+    projectsId: Part of `projectName`. Required. The resource name of the
+      project to which the sink is bound.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1032,8 +1045,8 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
   """A LoggingProjectsSinksDeleteRequest object.
 
   Fields:
-    projectsId: Part of `sinkName`. The resource name of the project sink to
-      delete.
+    projectsId: Part of `sinkName`. Required. The resource name of the project
+      sink to delete.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -1045,8 +1058,8 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   """A LoggingProjectsSinksGetRequest object.
 
   Fields:
-    projectsId: Part of `sinkName`. The resource name of the project sink to
-      return.
+    projectsId: Part of `sinkName`. Required. The resource name of the project
+      sink to return.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -1058,7 +1071,8 @@ class LoggingProjectsSinksListRequest(_messages.Message):
   """A LoggingProjectsSinksListRequest object.
 
   Fields:
-    projectsId: Part of `projectName`. The project whose sinks are wanted.
+    projectsId: Part of `projectName`. Required. The project whose sinks are
+      wanted.
   """
 
   projectsId = _messages.StringField(1, required=True)
@@ -1069,8 +1083,8 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `sinkName`. The resource name of the project sink to
-      update.
+    projectsId: Part of `sinkName`. Required. The resource name of the project
+      sink to update.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 

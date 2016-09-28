@@ -25,14 +25,20 @@ class _BaseInstances(object):
   @classmethod
   def _SetBackupConfiguration(cls, sql_messages, settings, args, original):
     """Sets the backup configuration for the instance."""
-    # these args are only present for the patch command
-    no_backup = not getattr(args, 'backup', True)
+    # create defines '--backup' while patch defines '--no-backup'
+    no_backup = getattr(args, 'no_backup', False) or (
+        not getattr(args, 'backup', True))
 
     if original and (
         any([args.backup_start_time, args.enable_bin_log is not None,
              no_backup])):
       if original.settings.backupConfiguration:
-        backup_config = original.settings.backupConfiguration[0]
+        if isinstance(original.settings.backupConfiguration, list):
+          # Only one backup configuration was ever allowed.
+          # Field switched from list to single object in v1beta4.
+          backup_config = original.settings.backupConfiguration[0]
+        else:
+          backup_config = original.settings.backupConfiguration
       else:
         backup_config = sql_messages.BackupConfiguration(
             startTime='00:00',

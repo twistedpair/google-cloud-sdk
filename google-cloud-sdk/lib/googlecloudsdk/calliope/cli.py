@@ -23,6 +23,7 @@ import uuid
 
 import argcomplete
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
@@ -468,6 +469,23 @@ class CLILoader(object):
         action=actions.StoreBooleanProperty(
             properties.VALUES.core.user_output_enabled),
         help='Print user intended output to the console.')
+
+    flatten_flag = top_element.ai.add_argument(
+        '--flatten',
+        metavar='KEY',
+        default=None,
+        type=arg_parsers.ArgList(),
+        category=calliope_base.COMMONLY_USED_FLAGS,
+        help=('Flatten _name_[] output resource slices in _KEY_ into separate '
+              'records for each item in each slice.'),
+    )
+    flatten_flag.detailed_help = """\
+        Flatten _name_[] output resource slices in _KEY_ into separate records
+        for each item in each slice. Multiple keys and slices may be specified.
+        This also flattens keys for *--format* and *--filter*. For example,
+        *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
+        *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
+        will expand to N records in the flattened output."""
 
     format_flag = top_element.ai.add_argument(
         '--format',

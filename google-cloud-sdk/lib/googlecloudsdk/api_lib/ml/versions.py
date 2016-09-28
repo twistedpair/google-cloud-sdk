@@ -15,11 +15,19 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+
+
+class InvalidArgumentError(core_exceptions.Error):
+  """Indicates that the input argument was invalid in some way."""
+  pass
 
 
 def Create(model, version, origin):
   """Create a new version in an existing model."""
+  if '/' in version:
+    raise InvalidArgumentError('Version name should not contain "/"')
   # TODO(b/31062835): remove CloneAndSwitchAPI here and below
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
@@ -40,6 +48,8 @@ def Create(model, version, origin):
 
 def Delete(model, version):
   """Delete a version from a model."""
+  if '/' in version:
+    raise InvalidArgumentError('Version name should not contain "/"')
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
   registry = resources.REGISTRY.Clone()
@@ -50,12 +60,14 @@ def Delete(model, version):
       collection='ml.projects.models.versions')
   req = msgs.MlProjectsModelsVersionsDeleteRequest(
       projectsId=res.projectsId, modelsId=res.modelsId, versionsId=res.Name())
-  resp = client.projects_models_versions.Delete(req)
-  return resp
+  op = client.projects_models_versions.Delete(req)
+  return op
 
 
 def Get(model, version):
   """Get details about an existing model version."""
+  if '/' in version:
+    raise InvalidArgumentError('Version name should not contain "/"')
   client = apis.GetClientInstance('ml', 'v1beta1')
   registry = resources.REGISTRY.Clone()
   registry.RegisterApiByName('ml', 'v1beta1')
@@ -86,6 +98,8 @@ def List(model):
 
 def SetDefault(model, version):
   """Set a model's default version."""
+  if '/' in version:
+    raise InvalidArgumentError('Version name should not contain "/"')
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
   registry = resources.REGISTRY.Clone()

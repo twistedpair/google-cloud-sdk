@@ -938,11 +938,18 @@
           "description": "The user making the request.",
           "type": "string"
         },
-        "groups": {
-          "description": "Any groups this user may be a part of (this is not used for GKE IAM).",
+        "group": {
+          "description": "Any groups this user may be a part of (this is not used for GKE IAM). Note:\nnormally this field would be called \"groups\", but we have to match the\nstruct in Kubernetes.",
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "extra": {
+          "description": "Any \"extra\" data from the user being authorized. Note: normally this field\nwould be called \"extras\", but we have to match the struct in Kubernetes.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ExtraValue"
           }
         }
       }
@@ -994,6 +1001,20 @@
         "verb": {
           "description": "The verb of the request",
           "type": "string"
+        }
+      }
+    },
+    "ExtraValue": {
+      "id": "ExtraValue",
+      "description": "ExtraValue allows the extra field to be a mapstringstring",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "items, if empty, will result in an empty slice",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

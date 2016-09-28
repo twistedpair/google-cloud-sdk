@@ -168,6 +168,19 @@ def BytesToGb(size):
   return size / constants.BYTES_IN_ONE_GB
 
 
+def BytesToMb(size):
+  """Converts a disk size in bytes to MB."""
+  if not size:
+    return None
+
+  if size % constants.BYTES_IN_ONE_MB != 0:
+    raise calliope_exceptions.ToolException(
+        'Disk size must be a multiple of 1 MB. Did you mean [{0}MB]?'
+        .format(size / constants.BYTES_IN_ONE_MB + 1))
+
+  return size / constants.BYTES_IN_ONE_MB
+
+
 def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
   """Writes a warning message if the given disk size is too small."""
   if not size_gb:

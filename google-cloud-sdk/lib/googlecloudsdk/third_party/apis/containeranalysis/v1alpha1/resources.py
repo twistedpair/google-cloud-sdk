@@ -25,20 +25,19 @@ class Collections(enum.Enum):
   PROJECTS_OCCURRENCES = (
       'projects.occurrences',
       'projects/{projectsId}/occurrences/{occurrencesId}',
-      [
-          'projects/{projectsId}/occurrences/{occurrencesId}',
-      ],
-      [u'projectsId', u'occurrencesId'])
+      {},
+      [u'projectsId', u'occurrencesId'],
+      'ContaineranalysisProjectsOccurrencesGetRequest',)
   PROVIDERS_NOTES = (
       'providers.notes',
       'providers/{providersId}/notes/{notesId}',
-      [
-          'providers/{providersId}/notes/{notesId}',
-      ],
-      [u'providersId', u'notesId'])
+      {},
+      [u'providersId', u'notesId'],
+      'ContaineranalysisProvidersNotesGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

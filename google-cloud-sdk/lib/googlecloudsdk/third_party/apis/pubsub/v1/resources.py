@@ -25,20 +25,25 @@ class Collections(enum.Enum):
   PROJECTS_SUBSCRIPTIONS = (
       'projects.subscriptions',
       '{+subscription}',
-      [
-          'projects/{projectsId}/subscriptions/{subscriptionsId}',
-      ],
-      [u'subscription'])
+      {
+          '':
+              'projects/{projectsId}/subscriptions/{subscriptionsId}',
+      },
+      [u'subscription'],
+      'PubsubProjectsSubscriptionsGetRequest',)
   PROJECTS_TOPICS = (
       'projects.topics',
       '{+topic}',
-      [
-          'projects/{projectsId}/topics/{topicsId}',
-      ],
-      [u'topic'])
+      {
+          '':
+              'projects/{projectsId}/topics/{topicsId}',
+      },
+      [u'topic'],
+      'PubsubProjectsTopicsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

@@ -26,26 +26,31 @@ class Collections(enum.Enum):
       'backupRuns',
       'projects/{project}/instances/{instance}/backupRuns/'
       '{backupConfiguration}',
-      [],
-      [u'project', u'instance', u'backupConfiguration'])
+      {},
+      [u'project', u'instance', u'backupConfiguration'],
+      'SqlBackupRunsGetRequest',)
   INSTANCES = (
       'instances',
       'projects/{project}/instances/{instance}',
-      [],
-      [u'project', u'instance'])
+      {},
+      [u'project', u'instance'],
+      'SqlInstancesGetRequest',)
   OPERATIONS = (
       'operations',
       'projects/{project}/instances/{instance}/operations/{operation}',
-      [],
-      [u'project', u'instance', u'operation'])
+      {},
+      [u'project', u'instance', u'operation'],
+      'SqlOperationsGetRequest',)
   SSLCERTS = (
       'sslCerts',
       'projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
-      [],
-      [u'project', u'instance', u'sha1Fingerprint'])
+      {},
+      [u'project', u'instance', u'sha1Fingerprint'],
+      'SqlSslCertsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

@@ -183,7 +183,8 @@ If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
 If the name is not provided in the request, the server will assign a random
-name for this subscription on the same project as the topic.
+name for this subscription on the same project as the topic. Note that
+for REST API requests, you must specify a name.
 
       Args:
         request: (Subscription) input message
@@ -327,7 +328,8 @@ set.
       """Modifies the ack deadline for a specific message. This method is useful.
 to indicate that more time is needed to process a message by the
 subscriber, or to make the message available for redelivery if the
-processing was interrupted.
+processing was interrupted. Note that this does not modify the
+subscription-level `ackDeadlineSeconds` used for subsequent messages.
 
       Args:
         request: (PubsubProjectsSubscriptionsModifyAckDeadlineRequest) input message

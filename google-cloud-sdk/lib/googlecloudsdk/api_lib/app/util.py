@@ -282,6 +282,10 @@ def IsFlex(env):
   return env in ['2', 'flex', 'flexible']
 
 
+def IsStandard(env):
+  return env in ['1', 'standard']
+
+
 class ClientDeployLoggingContext(object):
   """Context for sending and recording server rpc requests.
 

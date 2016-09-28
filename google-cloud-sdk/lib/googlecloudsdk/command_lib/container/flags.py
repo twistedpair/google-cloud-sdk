@@ -15,7 +15,9 @@
 """Flags and helpers for the container related commands."""
 
 import argparse
+
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -163,7 +165,7 @@ def AddClustersWaitAndAsyncFlags(parser):
       help='Don\'t wait for the operation to complete.')
 
 
-def AddEnableKubernetesAlphaFlag(parser, suppressed=True):
+def AddEnableKubernetesAlphaFlag(parser, suppressed=False):
   """Adds a --enable-kubernetes-alpha flag to parser."""
   help_text = argparse.SUPPRESS if suppressed else """\
 Enable Kubernetes alpha features on this cluster. Selecting this
@@ -179,6 +181,29 @@ used for production workloads."""
       help=help_text)
 
 
+def AddNodeLabelsFlag(parser, suppressed=True, for_node_pool=False):
+  """Adds a --node-labels flag to the given parser."""
+  if suppressed:
+    help_text = argparse.SUPPRESS
+  else:
+    if for_node_pool:
+      help_text = """\
+Applies the given kubernetes labels on all nodes in the new node-pool. Example:
 
+  $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
+"""
+    else:
+      help_text = """\
+Applies the given kubernetes labels on all nodes in the new node-pool. Example:
 
+  $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
+"""
+    help_text += """
+New nodes, including ones created by resize or recreate, will have these labels
+on the kubernetes API node object and can be used in nodeSelectors.
+See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
 
+  parser.add_argument(
+      '--node-labels',
+      type=arg_parsers.ArgDict(),
+      help=help_text)

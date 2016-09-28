@@ -25,203 +25,243 @@ class Collections(enum.Enum):
   ADDRESSES = (
       'addresses',
       'projects/{project}/regions/{region}/addresses/{address}',
-      [],
-      [u'project', u'region', u'address'])
+      {},
+      [u'project', u'region', u'address'],
+      'ComputeAddressesGetRequest',)
   AUTOSCALERS = (
       'autoscalers',
       'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
-      [],
-      [u'project', u'zone', u'autoscaler'])
+      {},
+      [u'project', u'zone', u'autoscaler'],
+      'ComputeAutoscalersGetRequest',)
   BACKENDSERVICES = (
       'backendServices',
       'projects/{project}/global/backendServices/{backendService}',
-      [],
-      [u'project', u'backendService'])
+      {},
+      [u'project', u'backendService'],
+      'ComputeBackendServicesGetRequest',)
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
-      [],
-      [u'project', u'zone', u'diskType'])
+      {},
+      [u'project', u'zone', u'diskType'],
+      'ComputeDiskTypesGetRequest',)
   DISKS = (
       'disks',
       'projects/{project}/zones/{zone}/disks/{disk}',
-      [],
-      [u'project', u'zone', u'disk'])
+      {},
+      [u'project', u'zone', u'disk'],
+      'ComputeDisksGetRequest',)
   FIREWALLS = (
       'firewalls',
       'projects/{project}/global/firewalls/{firewall}',
-      [],
-      [u'project', u'firewall'])
+      {},
+      [u'project', u'firewall'],
+      'ComputeFirewallsGetRequest',)
   FORWARDINGRULES = (
       'forwardingRules',
       'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
-      [],
-      [u'project', u'region', u'forwardingRule'])
+      {},
+      [u'project', u'region', u'forwardingRule'],
+      'ComputeForwardingRulesGetRequest',)
   GLOBALADDRESSES = (
       'globalAddresses',
       'projects/{project}/global/addresses/{address}',
-      [],
-      [u'project', u'address'])
+      {},
+      [u'project', u'address'],
+      'ComputeGlobalAddressesGetRequest',)
   GLOBALFORWARDINGRULES = (
       'globalForwardingRules',
       'projects/{project}/global/forwardingRules/{forwardingRule}',
-      [],
-      [u'project', u'forwardingRule'])
+      {},
+      [u'project', u'forwardingRule'],
+      'ComputeGlobalForwardingRulesGetRequest',)
   GLOBALOPERATIONS = (
       'globalOperations',
       'projects/{project}/global/operations/{operation}',
-      [],
-      [u'project', u'operation'])
+      {},
+      [u'project', u'operation'],
+      'ComputeGlobalOperationsGetRequest',)
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
-      [],
-      [u'project', u'healthCheck'])
+      {},
+      [u'project', u'healthCheck'],
+      'ComputeHealthChecksGetRequest',)
   HTTPHEALTHCHECKS = (
       'httpHealthChecks',
       'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
-      [],
-      [u'project', u'httpHealthCheck'])
+      {},
+      [u'project', u'httpHealthCheck'],
+      'ComputeHttpHealthChecksGetRequest',)
   HTTPSHEALTHCHECKS = (
       'httpsHealthChecks',
       'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
-      [],
-      [u'project', u'httpsHealthCheck'])
+      {},
+      [u'project', u'httpsHealthCheck'],
+      'ComputeHttpsHealthChecksGetRequest',)
   IMAGES = (
       'images',
       'projects/{project}/global/images/{image}',
-      [],
-      [u'project', u'image'])
+      {},
+      [u'project', u'image'],
+      'ComputeImagesGetRequest',)
   INSTANCEGROUPMANAGERS = (
       'instanceGroupManagers',
       'projects/{project}/zones/{zone}/instanceGroupManagers/'
       '{instanceGroupManager}',
-      [],
-      [u'project', u'zone', u'instanceGroupManager'])
+      {},
+      [u'project', u'zone', u'instanceGroupManager'],
+      'ComputeInstanceGroupManagersGetRequest',)
   INSTANCEGROUPS = (
       'instanceGroups',
       'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
-      [],
-      [u'project', u'zone', u'instanceGroup'])
+      {},
+      [u'project', u'zone', u'instanceGroup'],
+      'ComputeInstanceGroupsGetRequest',)
   INSTANCETEMPLATES = (
       'instanceTemplates',
       'projects/{project}/global/instanceTemplates/{instanceTemplate}',
-      [],
-      [u'project', u'instanceTemplate'])
+      {},
+      [u'project', u'instanceTemplate'],
+      'ComputeInstanceTemplatesGetRequest',)
   INSTANCES = (
       'instances',
       'projects/{project}/zones/{zone}/instances/{instance}',
-      [],
-      [u'project', u'zone', u'instance'])
+      {},
+      [u'project', u'zone', u'instance'],
+      'ComputeInstancesGetRequest',)
   LICENSES = (
       'licenses',
       'projects/{project}/global/licenses/{license}',
-      [],
-      [u'project', u'license'])
+      {},
+      [u'project', u'license'],
+      'ComputeLicensesGetRequest',)
   MACHINETYPES = (
       'machineTypes',
       'projects/{project}/zones/{zone}/machineTypes/{machineType}',
-      [],
-      [u'project', u'zone', u'machineType'])
+      {},
+      [u'project', u'zone', u'machineType'],
+      'ComputeMachineTypesGetRequest',)
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',
-      [],
-      [u'project', u'network'])
+      {},
+      [u'project', u'network'],
+      'ComputeNetworksGetRequest',)
   PROJECTS = (
       'projects',
       'projects/{project}',
-      [],
-      [u'project'])
+      {},
+      [u'project'],
+      'ComputeProjectsGetRequest',)
   REGIONOPERATIONS = (
       'regionOperations',
       'projects/{project}/regions/{region}/operations/{operation}',
-      [],
-      [u'project', u'region', u'operation'])
+      {},
+      [u'project', u'region', u'operation'],
+      'ComputeRegionOperationsGetRequest',)
   REGIONS = (
       'regions',
       'projects/{project}/regions/{region}',
-      [],
-      [u'project', u'region'])
+      {},
+      [u'project', u'region'],
+      'ComputeRegionsGetRequest',)
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',
-      [],
-      [u'project', u'region', u'router'])
+      {},
+      [u'project', u'region', u'router'],
+      'ComputeRoutersGetRequest',)
   ROUTES = (
       'routes',
       'projects/{project}/global/routes/{route}',
-      [],
-      [u'project', u'route'])
+      {},
+      [u'project', u'route'],
+      'ComputeRoutesGetRequest',)
   SNAPSHOTS = (
       'snapshots',
       'projects/{project}/global/snapshots/{snapshot}',
-      [],
-      [u'project', u'snapshot'])
+      {},
+      [u'project', u'snapshot'],
+      'ComputeSnapshotsGetRequest',)
   SSLCERTIFICATES = (
       'sslCertificates',
       'projects/{project}/global/sslCertificates/{sslCertificate}',
-      [],
-      [u'project', u'sslCertificate'])
+      {},
+      [u'project', u'sslCertificate'],
+      'ComputeSslCertificatesGetRequest',)
   SUBNETWORKS = (
       'subnetworks',
       'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
-      [],
-      [u'project', u'region', u'subnetwork'])
+      {},
+      [u'project', u'region', u'subnetwork'],
+      'ComputeSubnetworksGetRequest',)
   TARGETHTTPPROXIES = (
       'targetHttpProxies',
       'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
-      [],
-      [u'project', u'targetHttpProxy'])
+      {},
+      [u'project', u'targetHttpProxy'],
+      'ComputeTargetHttpProxiesGetRequest',)
   TARGETHTTPSPROXIES = (
       'targetHttpsProxies',
       'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
-      [],
-      [u'project', u'targetHttpsProxy'])
+      {},
+      [u'project', u'targetHttpsProxy'],
+      'ComputeTargetHttpsProxiesGetRequest',)
   TARGETINSTANCES = (
       'targetInstances',
       'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
-      [],
-      [u'project', u'zone', u'targetInstance'])
+      {},
+      [u'project', u'zone', u'targetInstance'],
+      'ComputeTargetInstancesGetRequest',)
   TARGETPOOLS = (
       'targetPools',
       'projects/{project}/regions/{region}/targetPools/{targetPool}',
-      [],
-      [u'project', u'region', u'targetPool'])
+      {},
+      [u'project', u'region', u'targetPool'],
+      'ComputeTargetPoolsGetRequest',)
   TARGETSSLPROXIES = (
       'targetSslProxies',
       'projects/{project}/global/targetSslProxies/{targetSslProxy}',
-      [],
-      [u'project', u'targetSslProxy'])
+      {},
+      [u'project', u'targetSslProxy'],
+      'ComputeTargetSslProxiesGetRequest',)
   TARGETVPNGATEWAYS = (
       'targetVpnGateways',
       'projects/{project}/regions/{region}/targetVpnGateways/'
       '{targetVpnGateway}',
-      [],
-      [u'project', u'region', u'targetVpnGateway'])
+      {},
+      [u'project', u'region', u'targetVpnGateway'],
+      'ComputeTargetVpnGatewaysGetRequest',)
   URLMAPS = (
       'urlMaps',
       'projects/{project}/global/urlMaps/{urlMap}',
-      [],
-      [u'project', u'urlMap'])
+      {},
+      [u'project', u'urlMap'],
+      'ComputeUrlMapsGetRequest',)
   VPNTUNNELS = (
       'vpnTunnels',
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
-      [],
-      [u'project', u'region', u'vpnTunnel'])
+      {},
+      [u'project', u'region', u'vpnTunnel'],
+      'ComputeVpnTunnelsGetRequest',)
   ZONEOPERATIONS = (
       'zoneOperations',
       'projects/{project}/zones/{zone}/operations/{operation}',
-      [],
-      [u'project', u'zone', u'operation'])
+      {},
+      [u'project', u'zone', u'operation'],
+      'ComputeZoneOperationsGetRequest',)
   ZONES = (
       'zones',
       'projects/{project}/zones/{zone}',
-      [],
-      [u'project', u'zone'])
+      {},
+      [u'project', u'zone'],
+      'ComputeZonesGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

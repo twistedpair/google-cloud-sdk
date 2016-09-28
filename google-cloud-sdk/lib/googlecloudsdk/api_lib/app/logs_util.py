@@ -13,11 +13,9 @@
 # limitations under the License.
 """General formatting utils, App Engine specific formatters."""
 
-import datetime
-import re
-
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import times
 
 
 def FormatAppEntry(entry):
@@ -113,7 +111,7 @@ class LogPrinter(object):
   See https://cloud.google.com/logging/docs/api/introduction_v2
 
   Attributes:
-    api_time_format: See datetime.strftime()
+    api_time_format: str, the output format to print. See datetime.strftime()
     max_length: The maximum length of a formatted log entry after truncation.
   """
 
@@ -134,16 +132,11 @@ class LogPrinter(object):
     text = self._LogEntryToText(entry)
     text = text.strip().replace('\n', '  ')
 
-    # Timestamp format from the Logging API (RFC 3339)
-    # Strip fractions of a second, if present.
-    timestamp = re.sub(r'\.\d*Z$', r'Z', entry.timestamp)
-    output_time_format = '%Y-%m-%dT%H:%M:%SZ'
     try:
-      time = datetime.datetime.strptime(
-          timestamp, output_time_format).strftime(self.api_time_format)
+      time = times.ParseDateTime(entry.timestamp).strftime(self.api_time_format)
     except ValueError:
       log.warn('Received timestamp [{0}] does not match expected'
-               ' format [{1}]'.format(timestamp, output_time_format))
+               ' format.'.format(entry.timestamp))
       time = '????-??-?? ??:??:??'
 
     out = u'{timestamp} {log_text}'.format(

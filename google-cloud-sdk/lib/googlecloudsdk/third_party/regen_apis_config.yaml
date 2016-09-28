@@ -61,10 +61,9 @@ apis:
     v1:
       discovery_doc: bigtableclusteradmin_v1.json
       resources:
-         operations:
-             - "operations/{+operationId}"
+         operations: "operations/{+operationId}"
          projects.zones.clusters:
-             - "projects/{projectId}/zones/{zoneId}/clusters/{clusterId}"
+           "projects/{projectId}/zones/{zoneId}/clusters/{clusterId}"
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -89,6 +88,9 @@ apis:
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
+  cloudresourcesearch:
+    v1:
+      discovery_doc: cloudresourcesearch_v1.json
   clouduseraccounts:
     alpha:
       discovery_doc: clouduseraccounts_alpha.json
@@ -150,9 +152,6 @@ apis:
     v1beta2:
       discovery_doc: manager_v1beta2.json
   ml:
-    v1alpha3:
-      discovery_doc: ml_v1alpha3.json
-      default: true
     v1beta1:
       discovery_doc: ml_v1beta1.json
   pubsub:

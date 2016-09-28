@@ -15,6 +15,7 @@
 
 import abc
 import os
+import shutil
 import StringIO
 import tempfile
 import threading
@@ -409,11 +410,9 @@ class RemoteCompletion(object):
       try:
         if not os.path.isdir(dirname):
           files.MakeDir(dirname)
-        tempname = tempfile.NamedTemporaryFile(dir=dirname).name
-        with open(tempname, 'w') as f:
+        with tempfile.NamedTemporaryFile(dir=dirname, delete=False) as f:
           f.write('\n'.join(paths[path]))
-        # note that atomic rename does't work on windows
-        os.rename(tempname, abs_path)
+        shutil.move(f.name, abs_path)
         now = time.time()
         timeout = RemoteCompletion._TIMEOUTS.get(collection, 300)
         os.utime(abs_path, (now, now+timeout))

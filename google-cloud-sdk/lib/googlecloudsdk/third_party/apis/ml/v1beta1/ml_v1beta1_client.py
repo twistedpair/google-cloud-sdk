@@ -77,7 +77,7 @@ class MlV1beta1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      """Create a training or a prediction job.
+      """Create a training or a batch prediction job.
 
       Args:
         request: (MlProjectsJobsCreateRequest) input message
@@ -192,7 +192,8 @@ is a Version.
     )
 
     def Delete(self, request, global_params=None):
-      """Delete a version.
+      """Deletes a model version. Each model can have multiple versions deployed and.
+in use at any given time. Use this method to remove a single version.
 
       Args:
         request: (MlProjectsModelsVersionsDeleteRequest) input message
@@ -338,7 +339,7 @@ is a Version.
         request: (MlProjectsModelsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleProtobufEmpty) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -353,7 +354,7 @@ is a Version.
         relative_path=u'v1beta1/projects/{projectsId}/models/{modelsId}',
         request_field='',
         request_type_name=u'MlProjectsModelsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        response_type_name=u'GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -549,7 +550,10 @@ to use different resource name schemes, such as `users/*/operations`.
           }
 
     def GetConfig(self, request, global_params=None):
-      """Get the service config associated with a given project.
+      """Get the service account information associated with your project. You need.
+this information in order to grant the service account persmissions for
+the Google Cloud Storage location where you put your model training code
+for training the model with Google Cloud Machine Learning.
 
       Args:
         request: (MlProjectsGetConfigRequest) input message
@@ -580,41 +584,47 @@ to use different resource name schemes, such as `users/*/operations`.
 Responses are very similar to requests. There are two top-level fields,
 each of which are JSON lists:
 
- * `predictions`: The list of predictions for each of the inputs
-in the request.
- * `error`: An error message if any instance produced an error.
+<dl>
+  <dt>predictions</dt>
+  <dd>The list of predictions, one per instance in the request.</dd>
+  <dt>error</dt>
+  <dd>An error message returned instead of a prediction list if any
+      instance produced an error.</dd>
+</dl>
 
-There is a one-to-one correspondence between the predictions and the
-instances in the request. Each individual prediction takes the same form
-as an instance in the request, namely JSON strings, numbers, booleans,
-or lists thereof. If your model has more than one output tensor, each
-prediction will be a JSON object with the keys being the output aliases
-in the graph.
+If the call is successful, the response body will contain one prediction
+entry per instance in the request body. If prediction fails for any
+instance, the response body will contain no predictions and will contian
+a single error entry instead.
 
-If there is an error processing any single instance, no predictions
-are returned and the `error` field is populated with the error message.
+Even though there is one prediction per instance, the format of a
+prediction is not directly related to the format of an instance.
+Predictions take whatever format is specified in the outputs collection
+defined in the model. The collection of predictions is returned in a JSON
+list. Each member of the list can be a simple value, a list, or a JSON
+object of any complexity. If your model has more than one output tensor,
+each prediction will be a JSON object containing a name/value pair for each
+output. The names identify the output aliases in the graph.
 
-Examples:
+The following examples show some possible responses:
 
+A simple set of predictions for three input instances, where each
+prediction is an integer value:
 <pre>
-# Predictions for three input instances, predictions are an integer label,
-
-# e.g., a digit in digit recognition
-
 {"predictions": [5, 4, 3]}
-
-# Predictions for two input instances in a two-class classification
-
-# problem. The labels are strings and scores are the probability of
-
-# "car" and "beach".
-
+</pre>
+A more complex set of predictions, each containing two named values that
+correspond to output tensors, named **label** and **scores** respectively.
+The value of **label** is the predicted category ("car" or "beach") and
+**scores** contains a list of probabilities for that instance across the
+possible categories.
+<pre>
 {"predictions": [{"label": "beach", "scores": [0.1, 0.9]},
                  {"label": "car", "scores": [0.75, 0.25]}]}
-
-# An error:
-
- {"error": "Divide by zero"}
+</pre>
+A response when there is an error processing an input instance:
+<pre>
+{"error": "Divide by zero"}
 </pre>
 
       Args:

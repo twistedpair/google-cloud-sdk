@@ -25,76 +25,70 @@ class Collections(enum.Enum):
   ANNOTATIONS = (
       'annotations',
       'annotations/{annotationId}',
-      [
-          'annotations/{annotationId}',
-      ],
-      [u'annotationId'])
+      {},
+      [u'annotationId'],
+      'GenomicsAnnotationsGetRequest',)
   ANNOTATIONSETS = (
       'annotationsets',
       'annotationsets/{annotationSetId}',
-      [
-          'annotationsets/{annotationSetId}',
-      ],
-      [u'annotationSetId'])
+      {},
+      [u'annotationSetId'],
+      'GenomicsAnnotationsetsGetRequest',)
   CALLSETS = (
       'callsets',
       'callsets/{callSetId}',
-      [
-          'callsets/{callSetId}',
-      ],
-      [u'callSetId'])
+      {},
+      [u'callSetId'],
+      'GenomicsCallsetsGetRequest',)
   DATASETS = (
       'datasets',
       'datasets/{datasetId}',
-      [
-          'datasets/{datasetId}',
-      ],
-      [u'datasetId'])
+      {},
+      [u'datasetId'],
+      'GenomicsDatasetsGetRequest',)
   OPERATIONS = (
       'operations',
       '{+name}',
-      [
-          'operations/{operationsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name'],
+      'GenomicsOperationsGetRequest',)
   READGROUPSETS = (
       'readgroupsets',
       'readgroupsets/{readGroupSetId}',
-      [
-          'readgroupsets/{readGroupSetId}',
-      ],
-      [u'readGroupSetId'])
+      {},
+      [u'readGroupSetId'],
+      'GenomicsReadgroupsetsGetRequest',)
   REFERENCES = (
       'references',
       'references/{referenceId}',
-      [
-          'references/{referenceId}',
-      ],
-      [u'referenceId'])
+      {},
+      [u'referenceId'],
+      'GenomicsReferencesGetRequest',)
   REFERENCESETS = (
       'referencesets',
       'referencesets/{referenceSetId}',
-      [
-          'referencesets/{referenceSetId}',
-      ],
-      [u'referenceSetId'])
+      {},
+      [u'referenceSetId'],
+      'GenomicsReferencesetsGetRequest',)
   VARIANTS = (
       'variants',
       'variants/{variantId}',
-      [
-          'variants/{variantId}',
-      ],
-      [u'variantId'])
+      {},
+      [u'variantId'],
+      'GenomicsVariantsGetRequest',)
   VARIANTSETS = (
       'variantsets',
       'variantsets/{variantSetId}',
-      [
-          'variantsets/{variantSetId}',
-      ],
-      [u'variantSetId'])
+      {},
+      [u'variantSetId'],
+      'GenomicsVariantsetsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

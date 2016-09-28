@@ -369,7 +369,7 @@ class HTMLRenderer(renderer.Renderer):
   def Synopsis(self, line):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
 
-    Does not split top-level [...] groups.
+    Does not split top-level [...] or (...) groups.
 
     Args:
       line: The NAME or SYNOPSIS section text.
@@ -378,14 +378,14 @@ class HTMLRenderer(renderer.Renderer):
                     '<span class="normalfont">\n')
     nest = 0
     for c in line:
-      if c == '[':
+      if c in '[(':
         nest += 1
         if nest == 1:
-          c = '<nobr>['
-      elif c == ']':
+          c = '<nobr>' + c
+      elif c in ')]':
         nest -= 1
         if not nest:
-          c = ']</nobr>'
+          c += '</nobr>'
       self._out.write(c)
     self._out.write('\n</span></dt></dl>\n')
 

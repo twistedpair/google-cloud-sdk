@@ -25,29 +25,26 @@ class Collections(enum.Enum):
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',
       'projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-      [
-          'projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-      ],
-      [u'projectId', u'zone', u'clusterId'])
+      {},
+      [u'projectId', u'zone', u'clusterId'],
+      'ContainerProjectsZonesClustersGetRequest',)
   PROJECTS_ZONES_CLUSTERS_NODEPOOLS = (
       'projects.zones.clusters.nodePools',
       'projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/'
       '{nodePoolId}',
-      [
-          'projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/'
-          '{nodePoolId}',
-      ],
-      [u'projectId', u'zone', u'clusterId', u'nodePoolId'])
+      {},
+      [u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+      'ContainerProjectsZonesClustersNodePoolsGetRequest',)
   PROJECTS_ZONES_OPERATIONS = (
       'projects.zones.operations',
       'projects/{projectId}/zones/{zone}/operations/{operationId}',
-      [
-          'projects/{projectId}/zones/{zone}/operations/{operationId}',
-      ],
-      [u'projectId', u'zone', u'operationId'])
+      {},
+      [u'projectId', u'zone', u'operationId'],
+      'ContainerProjectsZonesOperationsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

@@ -414,6 +414,7 @@ class CreateClusterOptions(object):
                disable_addons=None,
                local_ssd_count=None,
                tags=None,
+               node_labels=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -438,6 +439,7 @@ class CreateClusterOptions(object):
     self.disable_addons = disable_addons
     self.local_ssd_count = local_ssd_count
     self.tags = tags
+    self.node_labels = node_labels
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -487,6 +489,7 @@ class CreateNodePoolOptions(object):
                num_nodes=None,
                local_ssd_count=None,
                tags=None,
+               node_labels=None,
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
@@ -498,6 +501,7 @@ class CreateNodePoolOptions(object):
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.tags = tags
+    self.node_labels = node_labels
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
@@ -536,6 +540,8 @@ class V1Adapter(APIAdapter):
 
     if options.image_type:
       node_config.imageType = options.image_type
+
+    _AddNodeLabelsToNodeConfig(node_config, options)
 
     max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
     pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
@@ -683,6 +689,8 @@ class V1Adapter(APIAdapter):
     else:
       node_config.tags = []
 
+    _AddNodeLabelsToNodeConfig(node_config, options)
+
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
         initialNodeCount=options.num_nodes,
@@ -755,3 +763,14 @@ class V1Adapter(APIAdapter):
         size=size,
         zone=zone)
     return self.compute_client.instanceGroupManagers.Resize(req)
+
+
+def _AddNodeLabelsToNodeConfig(node_config, options):
+  if options.node_labels is None:
+    return
+  labels = node_config.LabelsValue()
+  props = []
+  for key, value in options.node_labels.iteritems():
+    props.append(labels.AdditionalProperty(key=key, value=value))
+  labels.additionalProperties = props
+  node_config.labels = labels

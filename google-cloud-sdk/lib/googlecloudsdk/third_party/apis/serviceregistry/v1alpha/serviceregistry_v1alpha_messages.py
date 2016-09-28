@@ -348,6 +348,14 @@ class ServiceregistryEndpointsListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -356,8 +364,9 @@ class ServiceregistryEndpointsListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ServiceregistryEndpointsPatchRequest(_messages.Message):
@@ -428,6 +437,14 @@ class ServiceregistryOperationsListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -436,8 +453,9 @@ class ServiceregistryOperationsListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

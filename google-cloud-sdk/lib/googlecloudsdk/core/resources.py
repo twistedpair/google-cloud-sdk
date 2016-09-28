@@ -25,8 +25,6 @@ import re
 import types
 import urllib
 
-from apitools.base.py import base_api
-
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
@@ -204,7 +202,7 @@ class _ResourceParser(object):
                    collection_path, base_url, self.params_defaults_func)
 
     if resolve:
-      ref.Resolve()
+      ref.Resolve(suppress_param_default_err=True)
 
     return ref
 
@@ -328,6 +326,9 @@ class Resource(object):
   def Collection(self):
     return self._collection_info.full_name
 
+  def GetCollectionInfo(self):
+    return self._collection_info
+
   def Name(self):
     self.Resolve()
     return self.__name
@@ -352,22 +353,33 @@ class Resource(object):
       setattr(request, param_name, getattr(self, param_name))
     return request
 
-  def Resolve(self):
+  def Resolve(self, suppress_param_default_err=False):
     """Resolve unknown parameters for this resource.
+
+    Args:
+      suppress_param_default_err: bool, False by default, True if
+      RequiredPropertyError should be suppressed.
 
     Raises:
       UnknownFieldException: If, after resolving, one of the fields is still
           unknown.
     """
-    self.WeakResolve()
+    self.WeakResolve(suppress_param_default_err=suppress_param_default_err)
     for param in self._collection_info.params:
       if not getattr(self, param, None):
         raise UnknownFieldException(self.__collection_path, param)
 
-  def WeakResolve(self):
+  def WeakResolve(self, suppress_param_default_err=True):
     """Attempts to resolve unknown parameters for this resource.
 
        Unknown parameters are left as None.
+
+    Args:
+      suppress_param_default_err: bool, True by default, False if
+      errors should not be suppressed
+
+    Raises:
+      properties.RequiredPropertyError, if a required field is not known.
     """
     for param in self._collection_info.params:
       if getattr(self, param, None):
@@ -381,13 +393,12 @@ class Resource(object):
         else:
           setattr(self, param, resolver)
         continue
-
       # Then try the registered defaults.
       try:
         setattr(self, param, self._param_defaults(param))
       except properties.RequiredPropertyError:
-        # If property lookup fails, that's ok.  Just don't resolve anything.
-        pass
+        if not suppress_param_default_err:
+          raise
 
     effective_params = dict(
         [(k, getattr(self, k) or '*') for k in self._collection_info.params])
@@ -533,7 +544,7 @@ class Registry(object):
         return registered_versions[-1]
       api_version = core_apis.GetDefaultVersion(api_name)
 
-    for collection in _GetApiCollections(api_name, api_version):
+    for collection in core_apis.GetApiCollections(api_name, api_version):
       self._RegisterCollection(collection)
 
     self.registered_apis[api_name].append(api_version)
@@ -682,6 +693,15 @@ class Registry(object):
     base_url = None
     if endpoint_override_property is not None:
       base_url = endpoint_override_property.Get()
+      if base_url is not None:
+        # Check base url style. If it includes api version then override
+        # also replaces the version, otherwise it only overrides the domain.
+        client_class = core_apis.GetClientClass(api_name, api_version)
+        _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
+            client_class.BASE_URL)
+        if url_version is None:
+          base_url += api_version + u'/'
+
     return parser.ParseCollectionPath(
         collection_path, kwargs, resolve, base_url)
 
@@ -916,64 +936,3 @@ class Registry(object):
 
 # TODO(user): Deglobalize this object, force gcloud to manage it on its own.
 REGISTRY = Registry()
-
-
-def _GetApiCollections(api_name, api_version):
-  """Returns all collections for given api.
-
-  Args:
-    api_name: str, The API name for which to fetch collections.
-    api_version: str, Use this api version for which to fetch collections.
-  Yields:
-    CollectionInfo for each detected collection.
-  """
-  client_class = core_apis.GetClientClass(api_name, api_version)
-  for service_class in client_class.__dict__.itervalues():
-    try:
-      collection = _GetServiceCollection(
-          api_name, api_version, client_class, service_class)
-    except _ResourceWithoutGetException:
-      pass
-    else:
-      yield collection
-
-
-def _GetServiceCollection(api_name, api_version, client_class, service_class):
-  """Extract collection info from given service for an API.
-
-  Args:
-    api_name: str, name of api to register under.
-    api_version: str, Use this api version to registerr resources.
-    client_class: base_api.BaseApiClient, The client class for a
-        Google Cloud API.
-    service_class: base_api.BaseApiService, the service class with collection.
-
-  Returns:
-    CollectionInfo for this service.
-  Raises:
-    _ResourceWithoutGetException: If given service does not have Get method.
-  """
-  if (not isinstance(service_class, type) or
-      not issubclass(service_class, base_api.BaseApiService)):
-    raise _ResourceWithoutGetException()
-  try:
-    method_config = getattr(service_class, 'Get').method_config()
-  except (AttributeError, KeyError):
-    raise _ResourceWithoutGetException()
-  match = _METHOD_ID_RE.match(method_config.method_id)
-  if not match:
-    raise _ResourceWithoutGetException()
-
-  collection = match.group('collection')
-  collection = collection.split('.', 1)[1]  # drop api name
-
-  url = client_class.BASE_URL + method_config.relative_path
-  _, _, path = _APINameAndVersionFromURL(url)
-  base_url = url[:-len(path)]
-
-  return resource_util.CollectionInfo(
-      api_name, api_version,
-      base_url, collection, method_config.request_type_name,
-      path,
-      [method_config.flat_path] if method_config.flat_path else [],
-      method_config.ordered_params)

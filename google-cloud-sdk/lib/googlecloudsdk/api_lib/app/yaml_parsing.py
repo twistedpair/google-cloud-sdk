@@ -182,10 +182,13 @@ class ServiceYamlInfo(_YamlInfo):
     super(ServiceYamlInfo, self).__init__(file_path, parsed)
     self.module = parsed.module
 
-    # All env: 2 apps are hermetic. All vm: false apps are not hermetic.
-    # vm: true apps are hermetic IFF they don't use static files.
+    # All env: 2 apps are hermetic. All vm: false apps are not hermetic except
+    # for those with (explicit) env: 1 and runtime: custom. vm: true apps are
+    # hermetic IFF they don't use static files.
     if util.IsFlex(parsed.env):
       self.is_hermetic = True
+    elif util.IsStandard(parsed.env):
+      self.is_hermetic = parsed.runtime == 'custom'
     elif parsed.vm:
       for urlmap in parsed.handlers:
         if urlmap.static_dir or urlmap.static_files:
@@ -196,7 +199,10 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.is_hermetic = False
 
-    if parsed.runtime == 'vm' or self.is_hermetic:
+    if util.IsStandard(parsed.env) and self.is_hermetic:
+      self.env = util.Environment.STANDARD
+      self.runtime = parsed.runtime
+    elif parsed.runtime == 'vm' or self.is_hermetic:
       self.env = util.Environment.FLEXIBLE
       self.runtime = parsed.GetEffectiveRuntime()
       self._UpdateManagedVMConfig()
@@ -235,6 +241,9 @@ class ServiceYamlInfo(_YamlInfo):
       elif parsed.runtime == 'python-compat':
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
+      elif parsed.runtime == 'custom' and not parsed.env:
+        raise YamlValidationError(
+            'runtime "custom" requires that env be explicitly specified.')
 
     if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(
@@ -265,7 +274,7 @@ class ServiceYamlInfo(_YamlInfo):
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""
-    return self.env is util.Environment.FLEXIBLE
+    return self.env is util.Environment.FLEXIBLE or self.is_hermetic
 
   def _UpdateManagedVMConfig(self):
     """Overwrites vm_settings for App Engine Flexible services.

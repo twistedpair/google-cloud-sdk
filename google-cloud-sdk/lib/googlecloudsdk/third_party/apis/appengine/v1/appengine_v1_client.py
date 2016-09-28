@@ -40,6 +40,9 @@ class AppengineV1(base_api.BaseApiClient):
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
+    self.experimental_apps_operations = self.ExperimentalAppsOperationsService(self)
+    self.experimental_apps = self.ExperimentalAppsService(self)
+    self.experimental = self.ExperimentalService(self)
 
   class AppsLocationsService(base_api.BaseApiService):
     """Service class for the apps_locations resource."""
@@ -645,3 +648,93 @@ for example "*Error retrieving the App Engine service account*".
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+  class ExperimentalAppsOperationsService(base_api.BaseApiService):
+    """Service class for the experimental_apps_operations resource."""
+
+    _NAME = u'experimental_apps_operations'
+
+    def __init__(self, client):
+      super(AppengineV1.ExperimentalAppsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (AppengineExperimentalAppsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'experimental/apps/{appsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'appengine.experimental.apps.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'experimental/{+name}',
+        request_field='',
+        request_type_name=u'AppengineExperimentalAppsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding below allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`.
+
+      Args:
+        request: (AppengineExperimentalAppsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'experimental/apps/{appsId}/operations',
+        http_method=u'GET',
+        method_id=u'appengine.experimental.apps.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'experimental/{+name}/operations',
+        request_field='',
+        request_type_name=u'AppengineExperimentalAppsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ExperimentalAppsService(base_api.BaseApiService):
+    """Service class for the experimental_apps resource."""
+
+    _NAME = u'experimental_apps'
+
+    def __init__(self, client):
+      super(AppengineV1.ExperimentalAppsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ExperimentalService(base_api.BaseApiService):
+    """Service class for the experimental resource."""
+
+    _NAME = u'experimental'
+
+    def __init__(self, client):
+      super(AppengineV1.ExperimentalService, self).__init__(client)
+      self._upload_configs = {
+          }

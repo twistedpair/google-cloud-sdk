@@ -229,15 +229,15 @@
           }
         },
         "insertId": {
-          "description": "A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same project with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
+          "description": "Optional. A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same project with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
           "type": "string"
         },
         "log": {
-          "description": "The log to which this entry belongs. When a log entry is written,\nthe value of this field is set by the logging system.",
+          "description": "Optional. The log to which this entry belongs. When a log entry is written,\nthe value of this field is set by the logging system.",
           "type": "string"
         },
         "httpRequest": {
-          "description": "Information about the HTTP request associated with this log entry,\nif applicable.",
+          "description": "Optional. Information about the HTTP request associated with this\nlog entry, if applicable.",
           "$ref": "HttpRequest"
         },
         "operation": {
@@ -245,7 +245,7 @@
           "$ref": "LogEntryOperation"
         },
         "writerEmailAddress": {
-
+          "description": "Optional. The email address of the role that wrote the entry on behalf of a\nuser. Not populated for entries written by a user.",
           "type": "string"
         }
       }
@@ -256,12 +256,12 @@
       "type": "object",
       "properties": {
         "timestamp": {
-          "description": "The time the event described by the log entry occurred.\nTimestamps must be later than January 1, 1970.  If omitted,\nStackdriver Logging will use the time the log entry is received.",
+          "description": "Optional. The time the event described by the log entry occurred.\nTimestamps must be later than January 1, 1970.  If omitted,\nStackdriver Logging will use the time the log entry is received.",
           "type": "string",
           "format": "google-datetime"
         },
         "severity": {
-          "description": "The severity of the log entry. If omitted, `LogSeverity.DEFAULT`\nis used.",
+          "description": "Optional. The severity of the log entry. If omitted, `LogSeverity.DEFAULT`\nis used.",
           "enumDescriptions": [
             "(0) The log entry has no assigned severity level.",
             "(100) Debug or trace information.",
@@ -287,11 +287,11 @@
           ]
         },
         "projectId": {
-          "description": "The project ID of the Google Cloud Platform service that created the log\nentry.",
+          "description": "Optional. The project ID of the Google Cloud Platform service that\ncreated the log entry.",
           "type": "string"
         },
         "projectNumber": {
-          "description": "This field is supplied by the API at when the entry is written.",
+          "description": "Optional. This field is supplied by the API at when the entry is written.",
           "type": "string",
           "format": "int64"
         },
@@ -300,19 +300,19 @@
           "type": "string"
         },
         "region": {
-          "description": "The region name of the Google Cloud Platform service that created the log\nentry.  For example, `\"us-central1\"`.",
+          "description": "Optional. The region name of the Google Cloud Platform service that\ncreated the log entry.  For example, `\"us-central1\"`.",
           "type": "string"
         },
         "zone": {
-          "description": "The zone of the Google Cloud Platform service that created the log entry.\nFor example, `\"us-central1-a\"`.",
+          "description": "Optional. The zone of the Google Cloud Platform service that created\nthe log entry.  For example, `\"us-central1-a\"`.",
           "type": "string"
         },
         "userId": {
-          "description": "This field is not used and its value is discarded.",
+          "description": "Optional. This field is not used and its value is discarded.",
           "type": "string"
         },
         "labels": {
-          "description": "A set of (key, value) data that provides additional information about\nthe log entry.\nIf the log entry is from one of the Google Cloud Platform sources listed\nbelow, the indicated (key, value) information must be provided:\n\nGoogle App Engine, service_name `appengine.googleapis.com`:\n\n      \"appengine.googleapis.com\/module_id\", <module ID>\n      \"appengine.googleapis.com\/version_id\", <version ID>\n          and one of:\n      \"appengine.googleapis.com\/replica_index\", <instance index>\n      \"appengine.googleapis.com\/clone_id\", <instance ID>\n\n    or else provide the following Compute Engine labels:\n\nGoogle Compute Engine, service_name `compute.googleapis.com`:\n\n       \"compute.googleapis.com\/resource_type\", \"instance\"\n       \"compute.googleapis.com\/resource_id\", <instance ID>",
+          "description": "Optional. A set of (key, value) data that provides additional information\nabout the log entry.\nIf the log entry is from one of the Google Cloud Platform sources listed\nbelow, the indicated (key, value) information must be provided:\n\nGoogle App Engine, service_name `appengine.googleapis.com`:\n\n      \"appengine.googleapis.com\/module_id\", <module ID>\n      \"appengine.googleapis.com\/version_id\", <version ID>\n          and one of:\n      \"appengine.googleapis.com\/replica_index\", <instance index>\n      \"appengine.googleapis.com\/clone_id\", <instance ID>\n\n    or else provide the following Compute Engine labels:\n\nGoogle Compute Engine, service_name `compute.googleapis.com`:\n\n       \"compute.googleapis.com\/resource_type\", \"instance\"\n       \"compute.googleapis.com\/resource_id\", <instance ID>",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -364,6 +364,11 @@
           "description": "The referer URL of the request, as defined in\n[HTTP\/1.1 Header Field Definitions](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
           "type": "string"
         },
+        "latency": {
+          "description": "The request processing latency on the server, from the time the request was\nreceived until the response was sent.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "cacheLookup": {
           "description": "Whether or not a cache lookup was attempted.",
           "type": "boolean"
@@ -389,19 +394,19 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "An opaque identifier. A producer of log entries should ensure that `id` is\nonly reused for entries related to one operation.",
+          "description": "Optional. An opaque identifier. A producer of log entries should ensure\nthat `id` is only reused for entries related to one operation.",
           "type": "string"
         },
         "producer": {
-          "description": "Ensures the operation can be uniquely identified. The combination of `id`\nand `producer` should be made globally unique by filling `producer` with a\nvalue that disambiguates the service that created `id`.",
+          "description": "Optional. Ensures the operation can be uniquely identified. The\ncombination of `id` and `producer` should be made globally unique by\nfilling `producer` with a value that disambiguates the service that\ncreated `id`.",
           "type": "string"
         },
         "first": {
-          "description": "True for the first entry associated with `id`.",
+          "description": "Optional. True for the first entry associated with `id`.",
           "type": "boolean"
         },
         "last": {
-          "description": "True for the last entry associated with `id`.",
+          "description": "Optional. True for the last entry associated with `id`.",
           "type": "boolean"
         }
       }
@@ -541,15 +546,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The client-assigned name of this sink. For example,\n`\"my-syslog-sink\"`.  The name must be unique among the sinks of a\nsimilar kind in the project.",
+          "description": "Required. The client-assigned name of this sink. For example,\n`\"my-syslog-sink\"`.  The name must be unique among the sinks of a\nsimilar kind in the project.",
           "type": "string"
         },
         "destination": {
-          "description": "The resource name of the destination.\nStackdriver Logging writes designated log entries to this destination.\nFor example, `\"storage.googleapis.com\/my-output-bucket\"`.",
+          "description": "Required. The resource name of the destination.\nStackdriver Logging writes designated log entries to this destination.\nFor example, `\"storage.googleapis.com\/my-output-bucket\"`.",
           "type": "string"
         },
         "filter": {
-          "description": "An advanced logs filter. If present, only log entries matching the filter\nare written.  Only project sinks use this field; log sinks and log service\nsinks must not include a filter.",
+          "description": "Optional. An advanced logs filter. If present, only log entries matching\nthe filter are written.  Only project sinks use this field; log sinks and\nlog service sinks must not include a filter.",
           "type": "string"
         },
         "errors": {
@@ -560,12 +565,12 @@
           }
         },
         "startTime": {
-          "description": "Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
+          "description": "Optional. Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Time at which this sink expires",
+          "description": "Optional. Time at which this sink expires",
           "type": "string",
           "format": "google-datetime"
         }
@@ -670,15 +675,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The client-assigned name for this metric, such as\n`\"severe_errors\"`.  Metric names are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.,+!*',()%\/\\`.  The slash\ncharacter (`\/`) denotes a hierarchy of name pieces, and it cannot\nbe the first character of the name.",
+          "description": "Required. The client-assigned name for this metric, such as\n`\"severe_errors\"`.  Metric names are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.,+!*',()%\/\\`.  The slash\ncharacter (`\/`) denotes a hierarchy of name pieces, and it cannot\nbe the first character of the name.",
           "type": "string"
         },
         "description": {
-          "description": "A description of this metric.",
+          "description": "Optional. A description of this metric.",
           "type": "string"
         },
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"log:syslog AND metadata.severity>=ERROR\"`.",
+          "description": "Required. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"log=syslog AND metadata.severity>=ERROR\"`.",
           "type": "string"
         }
       }
@@ -1053,7 +1058,7 @@
                   "description": "Lists log sinks associated with a log.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `logName`. The log whose sinks are wanted.\nFor example, `\"compute.google.com\/syslog\"`.",
+                      "description": "Part of `logName`. Required. The log whose sinks are requested.\nFor example, `\"compute.google.com\/syslog\"`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1087,7 +1092,7 @@
                   "description": "Gets a log sink.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the log sink to return.",
+                      "description": "Part of `sinkName`. Required. The resource name of the log sink to return.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1128,7 +1133,7 @@
                   "description": "Creates a log sink.\nAll log entries for a specified log are written to the destination.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `logName`. The resource name of the log to which to the sink is bound.",
+                      "description": "Part of `logName`. Required. The resource name of the log to which to the sink is bound.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1163,7 +1168,7 @@
                   "description": "Updates a log sink.\nIf the sink does not exist, it is created.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the sink to update.",
+                      "description": "Part of `sinkName`. Required. The resource name of the sink to update.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1205,7 +1210,7 @@
                   "description": "Deletes a log sink.\nAfter deletion, no new log entries are written to the destination.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the log sink to delete.",
+                      "description": "Part of `sinkName`. Required. The resource name of the log sink to delete.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1440,7 +1445,7 @@
                   "description": "Lists log service sinks associated with a log service.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `serviceName`. The log service whose sinks are wanted.",
+                      "description": "Part of `serviceName`. Required. The log service whose sinks are wanted.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1474,7 +1479,7 @@
                   "description": "Gets a log service sink.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the log service sink to return.",
+                      "description": "Part of `sinkName`. Required. The resource name of the log service sink to return.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1515,7 +1520,7 @@
                   "description": "Creates a log service sink.\nAll log entries from a specified log service are written to the\ndestination.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `serviceName`. The resource name of the log service to which the sink is bound.",
+                      "description": "Part of `serviceName`. Required. The resource name of the log service to which the sink is bound.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1550,7 +1555,7 @@
                   "description": "Updates a log service sink.\nIf the sink does not exist, it is created.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the log service sink to update.",
+                      "description": "Part of `sinkName`. Required. The resource name of the log service sink to update.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1592,7 +1597,7 @@
                   "description": "Deletes a log service sink.\nAfter deletion, no new log entries are written to the destination.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `sinkName`. The resource name of the log service sink to delete.",
+                      "description": "Part of `sinkName`. Required. The resource name of the log service sink to delete.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1637,7 +1642,7 @@
               "description": "Lists project sinks associated with a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The project whose sinks are wanted.",
+                  "description": "Part of `projectName`. Required. The project whose sinks are wanted.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1664,7 +1669,7 @@
               "description": "Gets a project sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the project sink to return.",
+                  "description": "Part of `sinkName`. Required. The resource name of the project sink to return.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1698,7 +1703,7 @@
               "description": "Creates a project sink.\nA logs filter determines which log entries are written to the destination.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project to which the sink is bound.",
+                  "description": "Part of `projectName`. Required. The resource name of the project to which the sink is bound.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1726,7 +1731,7 @@
               "description": "Updates a project sink.\nIf the sink does not exist, it is created.\nThe destination, filter, or both may be updated.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the project sink to update.",
+                  "description": "Part of `sinkName`. Required. The resource name of the project sink to update.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1761,7 +1766,7 @@
               "description": "Deletes a project sink.\nAfter deletion, no new log entries are written to the destination.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the project sink to delete.",
+                  "description": "Part of `sinkName`. Required. The resource name of the project sink to delete.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1797,18 +1802,18 @@
               "description": "Lists the logs-based metrics associated with a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name for the project whose metrics are wanted.",
+                  "description": "Part of `projectName`. Required. The resource name for the project whose metrics are wanted.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogMetrics`\noperation.  If `pageToken` is supplied, then the other fields of this\nrequest are ignored, and instead the previous `ListLogMetrics` operation is\ncontinued.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of `LogMetric` objects to return in one operation.",
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

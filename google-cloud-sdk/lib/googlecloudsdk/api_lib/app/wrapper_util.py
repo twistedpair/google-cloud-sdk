@@ -65,6 +65,9 @@ def GetRuntimes(args):
                 log.warn(_WARNING_RUNTIMES[runtime])
         except yaml.YAMLError:
           continue
+    elif os.path.isfile(os.path.join(arg, 'WEB-INF', 'appengine-web.xml')):
+      # For unstanged Java App Engine apps, which may not have any yaml files.
+      runtimes.add('java')
   return runtimes
 
 

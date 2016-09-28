@@ -150,6 +150,14 @@ MAP = {
             default_version=True
         ),
     },
+    'cloudresourcesearch': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudresourcesearch.v1',
+            client_classpath='cloudresourcesearch_v1_client.CloudresourcesearchV1',
+            messages_modulepath='cloudresourcesearch_v1_messages',
+            default_version=True
+        ),
+    },
     'clouduseraccounts': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.clouduseraccounts.alpha',
@@ -295,17 +303,11 @@ MAP = {
         ),
     },
     'ml': {
-        'v1alpha3': APIDef(
-            class_path='googlecloudsdk.third_party.apis.ml.v1alpha3',
-            client_classpath='ml_v1alpha3_client.MlV1alpha3',
-            messages_modulepath='ml_v1alpha3_messages',
-            default_version=True
-        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.ml.v1beta1',
             client_classpath='ml_v1beta1_client.MlV1beta1',
             messages_modulepath='ml_v1beta1_messages',
-            default_version=False
+            default_version=True
         ),
     },
     'pubsub': {

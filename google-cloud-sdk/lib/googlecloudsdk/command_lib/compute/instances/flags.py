@@ -51,6 +51,16 @@ INSTANCES_ARG = compute_flags.ResourceArgument(
     plural=True)
 
 
+def InstanceArgumentForRoute(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='instance',
+      name='--next-hop-instance',
+      completion_resource_id='compute.instances',
+      required=required,
+      zonal_collection='compute.instances',
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
 def AddImageArgs(parser):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -60,12 +70,12 @@ def AddImageArgs(parser):
           Specifies the boot image for the instances. For each
           instance, a new boot disk will be created from the given
           image. Each boot disk will have the same name as the
-          instance.
+          instance. To view a list of public images and projects, run
+          `$ gcloud compute images list`.
 
           When using this option, ``--boot-disk-device-name'' and
           ``--boot-disk-size'' can be used to override the boot disk's
           device name and size, respectively.
-
           """
 
   image_group = parser.add_mutually_exclusive_group()
@@ -406,16 +416,18 @@ def AddAddressArgs(parser, instances=True,
         Assigns the given external IP address to the instance that is created.
         This option can only be used when creating a single instance.
         """
+  multiple_network_interface_cards_spec = {
+      'network': str,
+      'subnet': str,
+      'address': str,
+  }
+  if instances:
+    multiple_network_interface_cards_spec['private-network-ip'] = str
   if multiple_network_interface_cards:
     parser.add_argument(
         '--network-interface',
         type=arg_parsers.ArgDict(
-            spec={
-                'network': str,
-                'subnet': str,
-                'private-network-ip': str,
-                'address': str,
-            },
+            spec=multiple_network_interface_cards_spec,
         ),
         action='append',  # pylint:disable=protected-access
         help=argparse.SUPPRESS,
@@ -783,8 +795,8 @@ def ValidateAddressFlags(args):
   conflicting_args = [
       'address', 'network', 'private_network_ip', 'subnet']
   conflicting_args_present = [
-      arg for arg in conflicting_args if getattr(args, arg)]
-  if (hasattr(args, 'network_interface') and args.network_interface is not None
+      arg for arg in conflicting_args if getattr(args, arg, None)]
+  if (getattr(args, 'network_interface', None) is not None
       and conflicting_args_present):
     conflicting_args = ['--{0}'.format(arg.replace('_', '-'))
                         for arg in conflicting_args_present]

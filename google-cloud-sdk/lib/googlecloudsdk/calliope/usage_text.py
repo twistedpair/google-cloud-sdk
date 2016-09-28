@@ -150,15 +150,30 @@ def WrapMessageInNargs(msg, nargs):
     return msg
 
 
-def GetFlagMetavar(metavar, flag):
+def FlagGroupSortKey(flags):
+  """Returns a flag group sort key for sorted().
+
+  This orders individual flags before mutually exclusive groups.
+
+  Args:
+    flags: A list of flags in the group.
+
+  Returns:
+    A sort key for the sorted() builtin where singletons sort before groups.
+  """
+  return [len(flags) > 1] + sorted([flag.option_strings for flag in flags])
+
+
+def GetFlagMetavar(name, metavar, flag):
+  separator = '=' if name.startswith('--') else ' '
   if isinstance(flag.type, arg_parsers.ArgList):
     msg = '[{metavar},...]'.format(metavar=metavar)
     if flag.type.min_length:
       msg = ','.join([metavar]*flag.type.min_length+[msg])
-    return ' ' + msg
+    return separator + msg
   if metavar == ' ':
     return ''
-  return ' ' + metavar
+  return separator + metavar
 
 
 def PositionalDisplayString(arg, markdown=False):
@@ -197,7 +212,7 @@ def FlagDisplayString(arg, brief=False, markdown=False):
       return long_string
     return '{flag}{metavar}'.format(
         flag=long_string,
-        metavar=GetFlagMetavar(metavar, arg))
+        metavar=GetFlagMetavar(long_string, metavar, arg))
   if arg.nargs == 0:
     if markdown:
       display_string = ', '.join([base.MARKDOWN_BOLD + x + base.MARKDOWN_BOLD
@@ -214,7 +229,7 @@ def FlagDisplayString(arg, brief=False, markdown=False):
             bb=base.MARKDOWN_BOLD if markdown else '',
             flag=option_string,
             be=base.MARKDOWN_BOLD if markdown else '',
-            metavar=GetFlagMetavar(metavar, arg))
+            metavar=GetFlagMetavar(option_string, metavar, arg))
          for option_string in arg.option_strings])
     if not arg.required and arg.default:
       if isinstance(arg.default, list):
@@ -423,52 +438,75 @@ def GetFlagSections(command, argument_interceptor):
       has_global_flags - True if command has global flags not included in the
         section list.
   """
+  # Place all flag groups into a dict. Flags that are in a mutually
+  # exclusive group are mapped group_id -> [flags]. All other flags
+  # are mapped dest -> [flag].
+  is_top_element = command.IsRoot()
+  has_global_flags = False
+  groups = {}
+  for flag in (argument_interceptor.flag_args +
+               argument_interceptor.ancestor_flag_args):
+    if flag.is_global and not is_top_element:
+      has_global_flags = True
+    else:
+      group_id = argument_interceptor.mutex_groups.get(flag.dest, flag.dest)
+      if group_id not in groups:
+        groups[group_id] = []
+      groups[group_id].append(flag)
+
   # Partition the non-GLOBAL flag groups dict into categorized sections. A
   # group is REQUIRED if any flag in it is required, categorized if any flag
   # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
   # over categorized.
-  categories = {}
-  has_global_flags = False
-  is_top_element = command.IsRoot()
-  for arg in (argument_interceptor.flag_args +
-              argument_interceptor.ancestor_flag_args):
-    if not IsSuppressed(arg):
-      if arg.is_global and not is_top_element:
-        has_global_flags = True
-      else:
-        if arg.required:
-          category = 'REQUIRED'
-        elif arg.category:
-          category = arg.category
-        else:
-          category = 'OTHER'
-        if category not in categories:
-          categories[category] = []
-        categories[category].append(arg)
+  categorized_groups = {}
+  for group_id, group in groups.iteritems():
+    flags = FilterOutSuppressed(group)
+    if not flags:
+      continue
 
+    if argument_interceptor.is_mutex_group_required(group_id):
+      category = 'REQUIRED'
+    else:
+      category = 'OTHER'
+      for f in flags:
+        if f.required:
+          category = 'REQUIRED'
+          break
+        elif f.category:
+          category = f.category
+          break
+
+    if category not in categorized_groups:
+      categorized_groups[category] = {}
+    categorized_groups[category][group_id] = flags
+
+  # Collect the priority sections first in order:
+  #   REQUIRED, COMMON, OTHER, and categorized.
   sections = []
   other_flags_heading = 'FLAGS'
-
-  # Collect the priority sections first.
   for category, other in (('REQUIRED', 'OPTIONAL'),
                           (base.COMMONLY_USED_FLAGS, 'OTHER'),
                           ('OTHER', None)):
-    if category in categories:
+    if category in categorized_groups:
       if other:
         other_flags_heading = other
         heading = category
-      elif len(categories) > 1:
+      elif len(categorized_groups) > 1:
         heading = 'FLAGS'
       else:
         heading = other_flags_heading
-      sections.append(
-          (GetFlagHeading(heading), other is not None, categories[category]))
+      if heading == base.COMMONLY_USED_FLAGS and is_top_element:
+        # The root command COMMON flags are "GLOBAL".
+        heading = 'GLOBAL'
+      sections.append((GetFlagHeading(heading),
+                       other is not None,
+                       categorized_groups[category]))
       # This prevents the category from being re-added in the loop below.
-      del categories[category]
+      del categorized_groups[category]
 
   # Add the remaining categories in sorted order.
-  for category, flags in sorted(categories.iteritems()):
-    sections.append((GetFlagHeading(category), False, flags))
+  for category, groups in sorted(categorized_groups.iteritems()):
+    sections.append((GetFlagHeading(category), False, groups))
 
   return sections, has_global_flags
 
@@ -563,7 +601,7 @@ def ShortHelpText(command, argument_interceptor):
     sections, has_global_flags = GetFlagSections(command, argument_interceptor)
 
     # Add the top 2 is_priority sections.
-    for index, (heading, is_priority, flags) in enumerate(sections):
+    for index, (heading, is_priority, groups) in enumerate(sections):
       if not is_priority or index >= 2:
         # More sections remain. Long help will list those.
         all_messages.append(TextIfExists(
@@ -572,8 +610,9 @@ def ShortHelpText(command, argument_interceptor):
             'this command.'.format(command_path)))
         break
       messages = []
-      for flag in flags:
-        messages.append((FlagDisplayString(flag), flag.help or ''))
+      for group in sorted(groups.values(), key=FlagGroupSortKey):
+        for flag in group:
+          messages.append((FlagDisplayString(flag), flag.help or ''))
       all_messages.append(TextIfExists(heading.lower() + ':', sorted(messages)))
 
     if has_global_flags:

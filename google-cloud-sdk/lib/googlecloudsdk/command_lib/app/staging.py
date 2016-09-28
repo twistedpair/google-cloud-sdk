@@ -22,10 +22,11 @@ commands.
 The interface is defined as follows:
 
 - A staging command is an executable (binary or script) that takes two
-  positional parameters: the path of the directory containing the unstaged
-  application code, and the path of an empty directory in which to stage the
-  application code. On success, the sole output of the staging command is the
-  path to the `app.yaml` file of the staged service.
+  positional parameters: the path of the `<service>.yaml` in the directory
+  containing the unstaged application code, and the path of an empty directory
+  in which to stage the application code. On success, the sole output of the
+  staging command is the path to the `<service>.yaml` file of the staged
+  service.
 - On success, the STDOUT and STDERR of the staging command are logged at the
   INFO level. On failure, a StagingCommandFailedError is raised containing the
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
@@ -131,10 +132,9 @@ _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
 """
 
 
-def _StageUsingGivenCommand(command_path):
-  app_directory = os.getcwd()
+def _StageUsingGivenCommand(command_path, service_yaml):
   with files.TemporaryDirectory() as temp_directory:
-    args = [command_path, app_directory, temp_directory]
+    args = [command_path, service_yaml, temp_directory]
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
     out = cStringIO.StringIO()
     err = cStringIO.StringIO()
@@ -154,7 +154,7 @@ class Stager(object):
     self.registry = registry
 
   @contextlib.contextmanager
-  def Stage(self, runtime, environment):
+  def Stage(self, service_yaml, runtime, environment):
     """Stage the given command.
 
     This method is a context manager that
@@ -163,6 +163,7 @@ class Stager(object):
     ...   pass  # perform deployment steps
 
     Args:
+      service_yaml: str, path to the unstaged <service>.yaml
       runtime: str, the name of the runtime for the application to stage
       environment: api_lib.app.util.Environment, the environment for the
           application to stage
@@ -189,7 +190,7 @@ class Stager(object):
     command.EnsureInstalled()
 
     command_path = command.GetPath()
-    for app_yaml in _StageUsingGivenCommand(command_path):
+    for app_yaml in _StageUsingGivenCommand(command_path, service_yaml):
       yield app_yaml
 
 

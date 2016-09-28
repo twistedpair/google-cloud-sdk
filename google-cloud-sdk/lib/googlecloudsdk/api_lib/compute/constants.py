@@ -16,6 +16,7 @@ import os
 
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 
+BYTES_IN_ONE_MB = 2 ** 20
 BYTES_IN_ONE_GB = 2 ** 30
 
 DEFAULT_STANDARD_DISK_SIZE_GB = 500
@@ -144,15 +145,17 @@ _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
 _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
 _SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
 _SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management.readonly'
+_SOURCE_REPOS = 'https://www.googleapis.com/auth/source.full_control'
 
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
-    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE,
+    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _SOURCE_REPOS,
 ])
 
 SCOPES = {
     'bigquery': 'https://www.googleapis.com/auth/bigquery',
     'cloud-platform': 'https://www.googleapis.com/auth/cloud-platform',
+    'cloud-source-repos': _SOURCE_REPOS,
     'compute-ro': 'https://www.googleapis.com/auth/compute.readonly',
     'compute-rw': 'https://www.googleapis.com/auth/compute',
     'useraccounts-ro': _USERACCOUNTS_RO,

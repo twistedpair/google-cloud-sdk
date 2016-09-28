@@ -281,6 +281,14 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -289,8 +297,9 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
@@ -492,6 +501,14 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -501,8 +518,9 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
   deployment = _messages.StringField(1, required=True)
   filter = _messages.StringField(2)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class DeploymentmanagerOperationsGetRequest(_messages.Message):
@@ -545,6 +563,14 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -553,8 +579,9 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class DeploymentmanagerResourcesGetRequest(_messages.Message):
@@ -600,6 +627,14 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -609,8 +644,9 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
   deployment = _messages.StringField(1, required=True)
   filter = _messages.StringField(2)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class DeploymentmanagerTypesListRequest(_messages.Message):
@@ -641,6 +677,14 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -649,8 +693,9 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class DeploymentsCancelPreviewRequest(_messages.Message):
@@ -997,6 +1042,7 @@ class Resource(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    accessControl: The Access Control Policy set on this resource.
     finalProperties: [Output Only] The evaluated properties of the resource
       with references expanded. Returned as serialized YAML.
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1058,17 +1104,28 @@ class Resource(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  finalProperties = _messages.StringField(1)
-  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(3)
-  manifest = _messages.StringField(4)
-  name = _messages.StringField(5)
-  properties = _messages.StringField(6)
-  type = _messages.StringField(7)
-  update = _messages.MessageField('ResourceUpdate', 8)
-  updateTime = _messages.StringField(9)
-  url = _messages.StringField(10)
-  warnings = _messages.MessageField('WarningsValueListEntry', 11, repeated=True)
+  accessControl = _messages.MessageField('ResourceAccessControl', 1)
+  finalProperties = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(4)
+  manifest = _messages.StringField(5)
+  name = _messages.StringField(6)
+  properties = _messages.StringField(7)
+  type = _messages.StringField(8)
+  update = _messages.MessageField('ResourceUpdate', 9)
+  updateTime = _messages.StringField(10)
+  url = _messages.StringField(11)
+  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+
+
+class ResourceAccessControl(_messages.Message):
+  """The access controls set on the resource.
+
+  Fields:
+    gcpIamPolicy: The GCP IAM Policy to set on the resource.
+  """
+
+  gcpIamPolicy = _messages.StringField(1)
 
 
 class ResourceUpdate(_messages.Message):
@@ -1080,6 +1137,8 @@ class ResourceUpdate(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    accessControl: The Access Control Policy to set on this resource after
+      updating the resource itself.
     error: [Output Only] If errors are generated during update of the
       resource, this field will be populated.
     finalProperties: [Output Only] The expanded properties of the resource
@@ -1160,13 +1219,14 @@ class ResourceUpdate(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  error = _messages.MessageField('ErrorValue', 1)
-  finalProperties = _messages.StringField(2)
-  intent = _messages.StringField(3)
-  manifest = _messages.StringField(4)
-  properties = _messages.StringField(5)
-  state = _messages.StringField(6)
-  warnings = _messages.MessageField('WarningsValueListEntry', 7, repeated=True)
+  accessControl = _messages.MessageField('ResourceAccessControl', 1)
+  error = _messages.MessageField('ErrorValue', 2)
+  finalProperties = _messages.StringField(3)
+  intent = _messages.StringField(4)
+  manifest = _messages.StringField(5)
+  properties = _messages.StringField(6)
+  state = _messages.StringField(7)
+  warnings = _messages.MessageField('WarningsValueListEntry', 8, repeated=True)
 
 
 class ResourcesListResponse(_messages.Message):

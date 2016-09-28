@@ -132,12 +132,14 @@ class ProjectionSpec(object):
   def _Print(self, projection, out, level):
     """Print() helper -- prints projection node p and its children.
 
+    Sorted by projection tree level for diff stability.
+
     Args:
       projection: A _Tree node in the original projection.
       out: The output stream.
       level: The nesting level counting from 1 at the root.
     """
-    for key in projection.tree:
+    for key in sorted(projection.tree):
       out.write('{indent} {key} : {attribute}\n'.format(
           indent='  ' * level,
           key=key,

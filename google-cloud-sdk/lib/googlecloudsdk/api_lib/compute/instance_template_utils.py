@@ -62,6 +62,33 @@ def CreateNetworkInterfaceMessage(
   return network_interface
 
 
+def CreateNetworkInterfaceMessages(
+    scope_prompter, messages, network_interface_arg, region):
+  """Create network interface messages.
+
+  Args:
+    scope_prompter: generates resource references.
+    messages: creates resources.
+    network_interface_arg: CLI argument specyfying network interfaces.
+    region: region of the subnetwork.
+  Returns:
+    list, items are NetworkInterfaceMessages.
+  """
+  result = []
+  if network_interface_arg:
+    for interface in network_interface_arg:
+      address = interface.get('address', None)
+      # pylint: disable=g-explicit-bool-comparison
+      if address == '':
+        address = EPHEMERAL_ADDRESS
+      result.append(CreateNetworkInterfaceMessage(
+          scope_prompter, messages, interface.get('network', None),
+          region,
+          interface.get('subnet', None),
+          address))
+  return result
+
+
 def CreatePersistentAttachedDiskMessages(messages, disks):
   """Returns a list of AttachedDisk messages and the boot disk's reference.
 
@@ -122,4 +149,3 @@ def CreateDefaultBootAttachedDiskMessage(
           diskType=disk_type),
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
-

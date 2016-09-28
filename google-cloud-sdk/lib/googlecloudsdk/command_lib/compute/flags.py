@@ -605,8 +605,9 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
       choice_mapping.append((scope, choice_resource.name))
       choice_names.append(choice_name)
 
-  title = ('For the following {0}:\n {1}\n'
+  title = ('For the following {0}{1}:\n {2}\n'
            .format(resource_name,
+                   '(s)' if len(underspecified_names) > 1 else '',
                    '\n '.join('- [{0}]'.format(n)
                               for n in sorted(underspecified_names))))
   flags = ' or '.join(sorted([s.flag_name for s in scope_value_choices.keys()]))

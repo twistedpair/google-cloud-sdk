@@ -94,6 +94,7 @@ class Parser(object):
       order: The column sort order, None if not ordered. Lower values have
         higher sort precedence.
       reverse: Reverse column sort if True.
+      skip_reorder: Don't reorder this attribute in the next _Reorder().
       subformat: Sub-format string.
       transform: obj = func(obj,...) function applied during projection.
     """
@@ -106,6 +107,7 @@ class Parser(object):
       self.optional = None
       self.order = None
       self.reverse = None
+      self.skip_reorder = False
       self.subformat = None
       self.transform = None
 
@@ -198,7 +200,9 @@ class Parser(object):
         attribute = copy.copy(tree[name].attribute)
       else:
         attribute = tree[name].attribute
-      attribute.hidden = False
+      if not self.__key_attributes_only or not attribute.order:
+        # Only an attributes_only attribute with explicit :sort=N can be hidden.
+        attribute.hidden = False
     elif isinstance(name, (int, long)) and None in tree:
       # New projection for explicit name using slice defaults.
       tree[name] = copy.deepcopy(tree[None])
@@ -214,6 +218,9 @@ class Parser(object):
     # Propagate non-default values from attribute_add to attribute.
     if attribute_add.order is not None:
       attribute.order = attribute_add.order
+      if self.__key_attributes_only:
+        self.__key_order_offset += 1
+        attribute.skip_reorder = True
     if attribute_add.label is not None:
       attribute.label = attribute_add.label
     elif attribute.label is None:
@@ -241,6 +248,35 @@ class Parser(object):
     elif not name_in_tree:
       # This is a new attributes only key.
       attribute.flag = self._projection.DEFAULT
+
+  def _Reorder(self):
+    """Recursively adds self.__key_order_offset to non-zero attribute order.
+
+    This slides established attribute.order out of the way so new
+    attribute.order in projection composition take precedence.
+    """
+
+    def _AddOffsetToOrder(tree):
+      """Adds self.__key_order_offset to unmarked attribute.order.
+
+      A DFS search that visits each attribute once. The search clears
+      skip_reorder attributes marked skip_reorder, otherwise it adds
+      self.__key_order_offset to attribute.order.
+
+      Args:
+        tree: The attribute subtree to reorder.
+      """
+      for node in tree.values():
+        if node.attribute.order:
+          if node.attribute.skip_reorder:
+            node.attribute.skip_reorder = False
+          else:
+            node.attribute.order += self.__key_order_offset
+        _AddOffsetToOrder(node.tree)
+
+    if self.__key_order_offset:
+      _AddOffsetToOrder(self._root.tree)
+      self.__key_order_offset = 0
 
   def _ParseKeyAttributes(self, key, attribute):
     """Parses one or more key attributes and adds them to attribute.
@@ -419,12 +455,15 @@ class Parser(object):
             defaults = False
             self._projection.Defaults()
           self._ParseKeys()
+          if self.__key_attributes_only:
+            self.__key_attributes_only = False
+            self._Reorder()
         elif self._lex.IsCharacter('['):
           self._ParseAttributes()
         elif self._lex.IsCharacter(':'):
           self.__key_attributes_only = True
+          self.__key_order_offset = 0
         else:
-          self.__key_attributes_only = False
           here = self._lex.GetPosition()
           name = self._lex.Token(':([')
           if not name.isalpha():

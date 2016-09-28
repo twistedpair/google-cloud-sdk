@@ -25,38 +25,45 @@ class Collections(enum.Enum):
   DEPLOYMENTS = (
       'deployments',
       'projects/{project}/global/deployments/{deployment}',
-      [],
-      [u'project', u'deployment'])
+      {},
+      [u'project', u'deployment'],
+      'DeploymentmanagerDeploymentsGetRequest',)
   MANIFESTS = (
       'manifests',
       'projects/{project}/global/deployments/{deployment}/manifests/'
       '{manifest}',
-      [],
-      [u'project', u'deployment', u'manifest'])
+      {},
+      [u'project', u'deployment', u'manifest'],
+      'DeploymentmanagerManifestsGetRequest',)
   OPERATIONS = (
       'operations',
       'projects/{project}/global/operations/{operation}',
-      [],
-      [u'project', u'operation'])
+      {},
+      [u'project', u'operation'],
+      'DeploymentmanagerOperationsGetRequest',)
   RESOURCES = (
       'resources',
       'projects/{project}/global/deployments/{deployment}/resources/'
       '{resource}',
-      [],
-      [u'project', u'deployment', u'resource'])
+      {},
+      [u'project', u'deployment', u'resource'],
+      'DeploymentmanagerResourcesGetRequest',)
   TYPEPROVIDERS = (
       'typeProviders',
       'projects/{project}/global/typeProviders/{typeProvider}',
-      [],
-      [u'project', u'typeProvider'])
+      {},
+      [u'project', u'typeProvider'],
+      'DeploymentmanagerTypeProvidersGetRequest',)
   TYPES = (
       'types',
       'projects/{project}/global/types/{type}',
-      [],
-      [u'project', u'type'])
+      {},
+      [u'project', u'type'],
+      'DeploymentmanagerTypesGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

@@ -25,22 +25,26 @@ class Collections(enum.Enum):
   PROJECTS_HISTORIES = (
       'projects.histories',
       'projects/{projectId}/histories/{historyId}',
-      [],
-      [u'projectId', u'historyId'])
+      {},
+      [u'projectId', u'historyId'],
+      'ToolresultsProjectsHistoriesGetRequest',)
   PROJECTS_HISTORIES_EXECUTIONS = (
       'projects.histories.executions',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}',
-      [],
-      [u'projectId', u'historyId', u'executionId'])
+      {},
+      [u'projectId', u'historyId', u'executionId'],
+      'ToolresultsProjectsHistoriesExecutionsGetRequest',)
   PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
       'projects.histories.executions.steps',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}',
-      [],
-      [u'projectId', u'historyId', u'executionId', u'stepId'])
+      {},
+      [u'projectId', u'historyId', u'executionId', u'stepId'],
+      'ToolresultsProjectsHistoriesExecutionsStepsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

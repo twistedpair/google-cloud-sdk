@@ -298,7 +298,7 @@ def CreateNetworkInterfaceMessages(
       result.append(CreateNetworkInterfaceMessage(
           scope_prompter, compute_client, interface.get('network', None),
           interface.get('subnet', None),
-          interface.get('private_network_ip', None), no_address,
+          interface.get('private-network-ip', None), no_address,
           address, instance_refs))
   return result
 

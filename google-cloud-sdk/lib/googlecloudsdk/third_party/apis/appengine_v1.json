@@ -1384,6 +1384,84 @@
     }
   },
   "resources": {
+    "experimental": {
+      "resources": {
+        "apps": {
+          "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "appengine.experimental.apps.operations.get",
+                  "path": "experimental/{+name}",
+                  "flatPath": "experimental/apps/{appsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]*\/operations\/[^\/]*$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "list": {
+                  "id": "appengine.experimental.apps.operations.list",
+                  "path": "experimental/{+name}/operations",
+                  "flatPath": "experimental/apps/{appsId}/operations",
+                  "httpMethod": "GET",
+                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation collection.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]*$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "apps": {
       "methods": {
         "get": {

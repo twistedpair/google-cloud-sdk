@@ -48,6 +48,8 @@ class HttpRequest(_messages.Message):
     cacheValidatedWithOriginServer: Whether or not the response was validated
       with the origin server before being served from cache. This field is
       only meaningful if `cache_hit` is True.
+    latency: The request processing latency on the server, from the time the
+      request was received until the response was sent.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -74,15 +76,16 @@ class HttpRequest(_messages.Message):
   cacheHit = _messages.BooleanField(2)
   cacheLookup = _messages.BooleanField(3)
   cacheValidatedWithOriginServer = _messages.BooleanField(4)
-  referer = _messages.StringField(5)
-  remoteIp = _messages.StringField(6)
-  requestMethod = _messages.StringField(7)
-  requestSize = _messages.IntegerField(8)
-  requestUrl = _messages.StringField(9)
-  responseSize = _messages.IntegerField(10)
-  serverIp = _messages.StringField(11)
-  status = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(13)
+  latency = _messages.StringField(5)
+  referer = _messages.StringField(6)
+  remoteIp = _messages.StringField(7)
+  requestMethod = _messages.StringField(8)
+  requestSize = _messages.IntegerField(9)
+  requestUrl = _messages.StringField(10)
+  responseSize = _messages.IntegerField(11)
+  serverIp = _messages.StringField(12)
+  status = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(14)
 
 
 class InternalEntityId(_messages.Message):
@@ -319,7 +322,7 @@ class LogEntry(_messages.Message):
       project with the same ID as duplicates which can be removed.  If
       omitted, Stackdriver Logging will generate a unique ID for this log
       entry.
-    internalId: Internal ID of the owner of this log entry.
+    internalId: Optional. Internal ID of the owner of this log entry.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -349,8 +352,8 @@ class LogEntry(_messages.Message):
     timestamp: Optional. The time the event described by the log entry
       occurred.  If omitted, Stackdriver Logging will use the time the log
       entry is received.
-    writerEmailAddress: The email address of the role that wrote the entry on
-      behalf of a user. Not populated for entries written by a user.
+    writerEmailAddress: Optional. The email address of the role that wrote the
+      entry on behalf of a user. Not populated for entries written by a user.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -479,11 +482,11 @@ class LogEntryOperation(_messages.Message):
   Fields:
     first: Optional. Set this to True if this is the first log entry in the
       operation.
-    id: Required. An arbitrary operation identifier. Log entries with the same
+    id: Optional. An arbitrary operation identifier. Log entries with the same
       identifier are assumed to be part of the same operation.
     last: Optional. Set this to True if this is the last log entry in the
       operation.
-    producer: Required. An arbitrary producer identifier. The combination of
+    producer: Optional. An arbitrary producer identifier. The combination of
       `id` and `producer` must be globally unique.  Examples for `producer`:
       `"MyDivision.MyBigCompany.com"`, `"github.com/MyProject/MyApplication"`.
   """
@@ -561,13 +564,15 @@ class LogMetric(_messages.Message):
   log entries that match a logs filter.
 
   Enums:
-    VersionValueValuesEnum: The API version that created or updated this
-      metric.
+    VersionValueValuesEnum: Optional. The API version that created or updated
+      this metric.
 
   Fields:
-    description: A description of this metric, which is used in documentation.
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
-      Example: `"logName:syslog AND severity>=ERROR"`.
+    description: Optional. A description of this metric, which is used in
+      documentation.
+    filter: Required. An [advanced logs
+      filter](/logging/docs/view/advanced_filters). Example:
+      `"resource.type=gae_app AND severity>=ERROR"`.
     name: Required. The client-assigned metric identifier. Example:
       `"severe_errors"`.  Metric identifiers are limited to 100 characters and
       can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
@@ -576,11 +581,11 @@ class LogMetric(_messages.Message):
       of the name.  The '%' character is used to URL encode unsafe and
       reserved characters and must be followed by two hexadecimal digits
       according to RFC 1738.
-    version: The API version that created or updated this metric.
+    version: Optional. The API version that created or updated this metric.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    """The API version that created or updated this metric.
+    """Optional. The API version that created or updated this metric.
 
     Values:
       V2: Stackdriver Logging API v2.
@@ -610,7 +615,7 @@ class LogSink(_messages.Message):
       "storage.googleapis.com/my-gcs-bucket"
       "bigquery.googleapis.com/projects/my-project-id/datasets/my-dataset"
       "pubsub.googleapis.com/projects/my-project/topics/my-topic"
-    endTime: Time at which this sink expires
+    endTime: Optional. Time at which this sink expires.
     errors: Output only. All active errors found for this sink.
     filter: Optional. An [advanced logs
       filter](/logging/docs/view/advanced_filters). Only log entries matching
@@ -619,9 +624,9 @@ class LogSink(_messages.Message):
       regardless of the format of the log entry that was originally written to
       Stackdriver Logging. Example filter (V2 format):      logName=projects
       /my-projectid/logs/syslog AND severity>=ERROR
-    formatChange: When the format was changed.
-    includeChildren: If true, then logs from children of this entity will also
-      be sent to this sink. e.g. If this sink is associated with an
+    formatChange: Optional. Timestamp when the format was changed.
+    includeChildren: Optional. If true, then logs from children of this entity
+      will also be sent to this sink. e.g. If this sink is associated with an
       organization, then logs from all projects in the organization as well as
       the organization itself will be sent to this sink. This only applies to
       sinks in organizations and folders. This field is ignored for sinks in
@@ -635,9 +640,10 @@ class LogSink(_messages.Message):
       sink's exported log entries.  This version does not have to correspond
       to the version of the log entry that was written to Stackdriver Logging.
       If omitted, the v2 format is used.
-    startTime: Time range for which this sink is active. Logs are exported
-      only if start_time <= entry.timestamp < end_time Both start_time and
-      end_time may be omitted to specify (half) infinite ranges.
+    startTime: Optional. Time range for which this sink is active. Logs are
+      exported only if start_time <= entry.timestamp < end_time Both
+      start_time and end_time may be omitted to specify (half) infinite
+      ranges.
     writerIdentity: Output only. The iam identity to which the destination
       needs to grant write access.  This may be a service account or a group.
       Examples (Do not assume these specific values):    "serviceAccount

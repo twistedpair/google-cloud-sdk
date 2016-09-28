@@ -52,6 +52,8 @@ import datetime
 import re
 import sys
 
+from googlecloudsdk.core import log
+
 
 __all__ = ['Duration', 'BinarySize']
 
@@ -151,7 +153,7 @@ def GetMultiCompleter(individual_completer):
       start = lst[0] + ','
       prefix = lst[1]
     matches = individual_completer(prefix, parsed_args, **kwargs)
-    return [start+match for match in matches]
+    return [start + match for match in matches]
   return MultiCompleter
 
 
@@ -738,7 +740,7 @@ class ArgDict(ArgList):
              'flag values.').format(repr(arg)))
       key, value = split_arg
       if not key:
-        raise ArgumentTypeError('bad key for dict arg: '+repr(arg))
+        raise ArgumentTypeError('bad key for dict arg: ' + repr(arg))
       if self.value_type:
         value = self.value_type(value)
       if self.spec:
@@ -976,3 +978,137 @@ class BufferedFileInput(object):
     except (IOError, OSError) as e:
       raise ArgumentTypeError(
           "Can't open '{0}': {1}".format(name, e))
+
+
+STRICT_ARGS_DEPRECATION_DATE = 'March 2017'
+
+
+class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-access
+  """An action with a couple of helpers to better handle --.
+
+  argparse on its own does not properly handle -- implementation args.
+  argparse.REMAINDER greedily steals valid flags before a --, and nargs='*' will
+  bind to [] and not  parse args after --. This Action represents arguments to
+  be passed through to a subcommand after --.
+
+  Primarily, this Action provides two utility parsers to help a modified
+  ArgumentParser parse -- properly.
+
+  There are three additional properties:
+    is_strict: Whether the parser errors out or warns if the -- is not present
+        before the implementation args. Previously, the -- was not required:
+        anything after the last valid token (and in some cases, before!) would
+        be used. This will be deprecated {deprecation_date} and strict will be
+        the only option.
+    strict_alternate: Another command with the strict behavior that the warning
+        can suggest to the user. Will be removed when strictness becomes the
+        only option.
+    example: A usage statement used to construct nice additional help.
+  """.format(deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
+
+  def __init__(
+      self, is_strict=True, strict_alternate=None, example=None, *args,
+      **kwargs):
+    if kwargs['nargs'] is not argparse.REMAINDER:
+      raise ValueError(
+          'The RemainderAction should only be used when '
+          'nargs=argparse.REMAINDER.')
+    if is_strict and strict_alternate:
+      raise ValueError(
+          'strict_alternate only makes sense if this command is not strict.')
+    self.strict_alternate = strict_alternate
+    self.is_strict = is_strict
+
+    if 'metavar' in kwargs:
+      raise ValueError(('metavar was [{metavar}], with implementation args '
+                        'cannot be set, will automatically be '
+                        '-- IMPLEMENTATION-ARGS')
+                       .format(metavar=kwargs['metavar']))
+    self.base_metavar = 'IMPLEMENTATION-ARGS'
+    kwargs['metavar'] = '-- ' + self.base_metavar
+
+    # TODO(b/31400045)
+    # In 6 months we will remove the ability to use implementation args without
+    # a preceding --.
+    # Create detailed help.
+    self.explanation = (
+        "The '--' argument must be specified between gcloud specific args on "
+        'the left and {metavar} on the right. IMPORTANT: previously, commands '
+        'allowed the omission of the --, and unparsed arguments were treated '
+        'as implementation args. This usage is being deprecated and will be '
+        'removed in {deprecation_date}.'
+    ).format(metavar=self.base_metavar,
+             deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
+    if 'help' in kwargs:
+      self.detailed_help = kwargs['help'] + '\n\n' + self.explanation
+      if example:
+        self.detailed_help += ' Example:\n\n' + example
+    super(RemainderAction, self).__init__(*args, **kwargs)
+
+  def _SplitOnDash(self, args):
+    split_index = args.index('--')
+    # Remove -- before passing through
+    return args[:split_index], args[split_index + 1:]
+
+  def ParseKnownArgs(self, args, namespace):
+    """Binds all args after -- to the namespace."""
+    remainder_args = []
+    if '--' in args:
+      args, remainder_args = self._SplitOnDash(args)
+    self(None, namespace, remainder_args)
+    return namespace, args
+
+  def ParseRemainingArgs(self, remaining_args, namespace, original_args):
+    """Parses the unrecognized args from the end of the remaining_args.
+
+    This method identifies all unrecognized arguments after the last argument
+    recognized by a parser (but before --). It then either logs a warning and
+    binds them to the namespace or raises an error, depending on strictness.
+
+    Args:
+      remaining_args: A list of arguments that the parsers did not recognize.
+      namespace: The Namespace to bind to.
+      original_args: The full list of arguments given to the top parser,
+
+    Raises:
+      ArgumentError: If there were remaining arguments after the last recognized
+      argument and this action is strict.
+
+    Returns:
+      A tuple of the updated namespace and unrecognized arguments (before the
+      last recognized argument).
+    """
+    # Only parse consecutive unknown args from the end of the original args.
+    # Strip out everything after '--'
+    remainder_args = []
+    if '--' in original_args:
+      original_args, remainder_args = self._SplitOnDash(original_args)
+    # Find common suffix between remaining_args and orginal_args
+    split_index = 0
+    for i, (arg1, arg2) in enumerate(
+        zip(reversed(remaining_args), reversed(original_args))):
+      if arg1 != arg2:
+        split_index = len(remaining_args) - i
+        break
+    pass_through_args = remaining_args[split_index:]
+    remaining_args = remaining_args[:split_index]
+
+    if pass_through_args:
+      if self.is_strict:
+        msg = ('unrecognized args: {args}\n' + self.explanation).format(
+            args=' '.join(pass_through_args))
+        # strip '-- ' off metavar for nicer error.
+        self.metavar = self.base_metavar
+        raise argparse.ArgumentError(self, msg)
+      pass_through_args += remainder_args
+      msg = self.explanation + (
+          '\nThis will be strictly enforced in {deprecation_date}.'
+          ).format(deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
+      if self.strict_alternate:
+        msg += " Use '{alternate}' to see new behavior.".format(
+            alternate=self.strict_alternate)
+      msg += "\nUsing '{args}' for {metavar}.".format(
+          args=' '.join(pass_through_args), metavar=self.base_metavar)
+      log.warn(msg)
+    self(None, namespace, pass_through_args)
+    return namespace, remaining_args

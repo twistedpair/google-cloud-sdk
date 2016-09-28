@@ -12,20 +12,66 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Provides common arguments for the ML command surface."""
+import argparse
 
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
+
+
+class ArgumentError(exceptions.Error):
+  pass
+
+
+# Run flags
+DISTRIBUTED = base.Argument(
+    '--distributed',
+    action='store_true',
+    default=False,
+    help=('Runs the provided code in distributed mode by providing cluster '
+          'configurations as environment variables to subprocesses'))
+PARAM_SERVERS = base.Argument(
+    '--parameter-server-count',
+    type=int,
+    help=('Number of parameter servers with which to run. '
+          'Ignored if --distributed is not specified. Default: 2'))
+WORKERS = base.Argument(
+    '--worker-count',
+    type=int,
+    help=('Number of workers with which to run. '
+          'Ignored if --distributed is not specified. Default: 2'))
+START_PORT = base.Argument(
+    '--start-port',
+    type=int,
+    default=27182,
+    help=('Start of the range of ports reserved by the local cluster. '
+          'Ignored if --distributed is not specified'))
+
 
 # TODO(user): move these into a class
 CONFIG = base.Argument('--config', help='Path to yaml configuration file.')
 JOB_NAME = base.Argument('job', help='Name of the job.')
-MODULE_NAME = base.Argument('--module', help='Name of Python module to run.')
-REGION = base.Argument(
-    '--region',
-    help='The Google Compute Engine region to run the training job in.')
-TRAINER_URI = base.Argument(
-    '--trainer-uri',
-    help='Google Cloud Storage location of the training program.',
-    nargs='+')
+MODULE_NAME = base.Argument(
+    '--module-name',
+    required=True,
+    help='Name of the module to run')
+PACKAGE_PATH = base.Argument(
+    '--package-path',
+    help='Path to a Python package to build')
+PACKAGES = base.Argument(
+    '--packages',
+    nargs='+',
+    default=[],
+    help='Path to .tar.gz archives of Python code to be used for training')
+STAGING_BUCKET = base.Argument(
+    '--staging-bucket',
+    help='Bucket in which to stage training archives',
+    type=storage_util.BucketReference.Argument,
+    required=True)
+USER_ARGS = base.Argument(
+    'user_args',
+    nargs=argparse.REMAINDER,
+    help='Additional user arguments to be fowarded to user code')
 VERSION_NAME = base.Argument('version', help='Name of the model version.')
 VERSION_DATA = base.Argument(
     '--origin',

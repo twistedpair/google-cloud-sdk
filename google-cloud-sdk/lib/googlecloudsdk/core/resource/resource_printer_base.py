@@ -140,6 +140,9 @@ class ResourcePrinter(object):
     if projection:
       self.attributes = projection.Attributes() or {}
       self.column_attributes = projection
+      if 'debug' in self.attributes:
+        log.status.Print('{0} format projection:'.format(projection.Name()))
+        projection.Print(log.status)
     else:
       self.attributes = {}
       self.column_attributes = None

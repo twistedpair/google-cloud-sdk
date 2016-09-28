@@ -174,8 +174,9 @@ class ServiceDeployer(object):
         service does not require an image.
     """
     if service.RequiresImage():
-      log.warning('Deployment of App Engine Flexible Environment apps is '
-                  'currently in Beta')
+      if service.env == util.Environment.FLEXIBLE:
+        log.warning('Deployment of App Engine Flexible Environment apps is '
+                    'currently in Beta')
       if not image:
         image = deploy_command_util.BuildAndPushDockerImage(
             new_version.project, service, new_version.id, code_bucket_ref)
@@ -233,7 +234,8 @@ class ServiceDeployer(object):
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
 
-    with self.stager.Stage(service.runtime, service.env) as app_yaml:
+    with self.stager.Stage(service.file, service.runtime,
+                           service.env) as app_yaml:
       if app_yaml:
         app_dir = os.path.dirname(app_yaml)
       else:
@@ -309,6 +311,12 @@ def ArgsDeploy(parser):
       action='store_true',
       default=False,
       help=argparse.SUPPRESS)
+  # For internal use only
+  parser.add_argument(
+      '--skip-image-url-validation',
+      action='store_true',
+      default=False,
+      help=argparse.SUPPRESS)
 
 
 def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
@@ -331,7 +339,8 @@ def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
 
   services = app_config.Services()
 
-  flags.ValidateImageUrl(args.image_url, services)
+  if not args.skip_image_url_validation:
+    flags.ValidateImageUrl(args.image_url, services)
 
   # The new API client.
   api_client = appengine_api_client.GetApiClient()

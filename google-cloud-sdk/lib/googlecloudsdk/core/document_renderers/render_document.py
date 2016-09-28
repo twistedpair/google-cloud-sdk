@@ -101,7 +101,7 @@ class _MarkdownConverter(object):
   Attributes:
     _EMPHASIS: The font emphasis attribute dict indexed by markdown character.
     _buf: The current output line.
-    _code_block: Currently in a ```...``` code block.
+    _code_block_indent: ```...``` code block indent if >= 0.
     _depth: List nesting depth counting from 0.
     _edit: True if NOTES edits are required.
     _example: The current example indentation space count.
@@ -130,7 +130,7 @@ class _MarkdownConverter(object):
     self._notes = notes
     self._edit = self._notes
     self._lists = [_ListElementState()]
-    self._code_block = False
+    self._code_block_indent = -1
     self._depth = 0
     self._example = 0
     self._next_example = 0
@@ -239,7 +239,7 @@ class _MarkdownConverter(object):
       A string with markdown attributes converted to render properly.
     """
     # String append used on ret below because of anchor text look behind.
-    emphasis = '' if self._code_block or self._example else '*_`'
+    emphasis = '' if self._code_block_indent >= 0 or self._example else '*_`'
     ret = ''
     if self._buf:
       buf = self._renderer.Escape(self._buf)
@@ -362,7 +362,10 @@ class _MarkdownConverter(object):
     self._Fill()
     if self._lists[self._depth].bullet:
       self._renderer.List(0)
-      self._depth -= 1
+      if self._depth:
+        self._depth -= 1
+      else:
+        self._lists[self._depth].bullet = False
     if self._lists[self._depth].ignore_line:
       self._lists[self._depth].ignore_line -= 1
     if not self._depth or not self._lists[self._depth].ignore_line:
@@ -495,21 +498,22 @@ class _MarkdownConverter(object):
     Returns:
       -1 if the input line is part of a code block markdown, i otherwise.
     """
-    if not i:
-      return i
     if self._line[i:].startswith('```'):
       lang = self._line[i+3:]
       if not lang:
-        self._code_block = not self._code_block
-        self._renderer.SetLang('' if self._code_block else None)
+        if self._code_block_indent >= 0:
+          self._code_block_indent = -1
+        else:
+          self._code_block_indent = i
+        self._renderer.SetLang('' if self._code_block_indent >= 0 else None)
         return -1
-      if not self._code_block and lang.isalnum():
+      if self._code_block_indent < 0 and lang.isalnum():
         self._renderer.SetLang(lang)
-        self._code_block = True
+        self._code_block_indent = i
         return -1
-    if not self._code_block:
+    if self._code_block_indent < 0:
       return i
-    self._Example(i)
+    self._Example(self._code_block_indent)
     return -1
 
   def _ConvertDefinitionList(self, i):
@@ -565,9 +569,9 @@ class _MarkdownConverter(object):
 
     or nesting by indicator indentation:
 
-        - level-1
-         - level-2
-        - level-1
+        * level-1
+          * level-2
+        * level-1
 
     Args:
       i: The current character index in self._line.

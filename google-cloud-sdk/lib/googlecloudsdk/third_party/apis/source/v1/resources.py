@@ -25,78 +25,81 @@ class Collections(enum.Enum):
   PROJECTS_REPOS = (
       'projects.repos',
       'projects/{projectId}/repos/{repoName}',
-      [
-          'projects/{projectId}/repos/{repoName}',
-      ],
-      [u'projectId', u'repoName'])
+      {},
+      [u'projectId', u'repoName'],
+      'SourceProjectsReposGetRequest',)
   PROJECTS_REPOS_ALIASES = (
       'projects.repos.aliases',
       'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
-      [
-          'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
-      ],
-      [u'projectId', u'repoName', u'kind', u'name'])
+      {},
+      [u'projectId', u'repoName', u'kind', u'name'],
+      'SourceProjectsReposAliasesGetRequest',)
   PROJECTS_REPOS_ALIASES_FILES = (
       'projects.repos.aliases.files',
       'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/'
       '{+path}',
-      [
-          'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/'
-          '{filesId}',
-      ],
-      [u'projectId', u'repoName', u'kind', u'name', u'path'])
+      {
+          '':
+              'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/'
+              'files/{filesId}',
+      },
+      [u'projectId', u'repoName', u'kind', u'name', u'path'],
+      'SourceProjectsReposAliasesFilesGetRequest',)
   PROJECTS_REPOS_REVISIONS = (
       'projects.repos.revisions',
       'projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
-      [
-          'projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
-      ],
-      [u'projectId', u'repoName', u'revisionId'])
+      {},
+      [u'projectId', u'repoName', u'revisionId'],
+      'SourceProjectsReposRevisionsGetRequest',)
   PROJECTS_REPOS_REVISIONS_FILES = (
       'projects.repos.revisions.files',
       'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/'
       '{+path}',
-      [
-          'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/'
-          'files/{filesId}',
-      ],
-      [u'projectId', u'repoName', u'revisionId', u'path'])
+      {
+          '':
+              'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/'
+              'files/{filesId}',
+      },
+      [u'projectId', u'repoName', u'revisionId', u'path'],
+      'SourceProjectsReposRevisionsFilesGetRequest',)
   PROJECTS_REPOS_WORKSPACES = (
       'projects.repos.workspaces',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}',
-      [
-          'projects/{projectId}/repos/{repoName}/workspaces/{name}',
-      ],
-      [u'projectId', u'repoName', u'name'])
+      {},
+      [u'projectId', u'repoName', u'name'],
+      'SourceProjectsReposWorkspacesGetRequest',)
   PROJECTS_REPOS_WORKSPACES_FILES = (
       'projects.repos.workspaces.files',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
-      [
-          'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
-          '{filesId}',
-      ],
-      [u'projectId', u'repoName', u'name', u'path'])
+      {
+          '':
+              'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
+              '{filesId}',
+      },
+      [u'projectId', u'repoName', u'name', u'path'],
+      'SourceProjectsReposWorkspacesFilesGetRequest',)
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS = (
       'projects.repos.workspaces.snapshots',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}',
-      [
-          'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
-          '{snapshotId}',
-      ],
-      [u'projectId', u'repoName', u'name', u'snapshotId'])
+      {},
+      [u'projectId', u'repoName', u'name', u'snapshotId'],
+      'SourceProjectsReposWorkspacesSnapshotsGetRequest',)
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS_FILES = (
       'projects.repos.workspaces.snapshots.files',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}/files/{+path}',
-      [
-          'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
-          '{snapshotId}/files/{filesId}',
-      ],
-      [u'projectId', u'repoName', u'name', u'snapshotId', u'path'])
+      {
+          '':
+              'projects/{projectId}/repos/{repoName}/workspaces/{name}/'
+              'snapshots/{snapshotId}/files/{filesId}',
+      },
+      [u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
+      'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

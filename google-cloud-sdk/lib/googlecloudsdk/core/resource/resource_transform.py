@@ -144,20 +144,26 @@ def TransformCollection(r, undefined=''):  # pylint: disable=unused-argument
 def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
   """Colorizes the resource string value.
 
-  The resource string is searched for an RE pattern match in Roy.G.Biv order.
-  The first pattern that matches colorizes the resource string with that color.
+  The *red*, *yellow*, *green* and *blue* args are RE patterns, matched against
+  the resource in order. The first pattern that matches colorizes the matched
+  substring with that color, and the other patterns are skipped.
 
   Args:
     r: A JSON-serializable object.
-    red: Color red resource value pattern.
-    yellow: Color yellow resource value pattern.
-    green: Color green resource value pattern.
-    blue: Color blue resource value pattern.
+    red: The substring pattern for the color red.
+    yellow: The substring pattern for the color yellow.
+    green: The substring pattern for the color green.
+    blue: The substring pattern for the color blue.
     **kwargs: console_attr.Colorizer() kwargs.
 
   Returns:
     A console_attr.Colorizer() object if any color substring matches, r
     otherwise.
+
+  Example:
+    For the resource string "CAUTION means GO FASTER", the
+    *color(red=STOP,yellow=CAUTION,green=GO)* transform will display the
+    substring "CAUTION" in yellow.
   """
   string = unicode(r)
   for color, pattern in (('red', red), ('yellow', yellow), ('green', green),
@@ -318,6 +324,11 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
 
   Returns:
     The ISO 8601 duration string for r or undefined if r is not a duration.
+
+  Example:
+    *duration(start=createTime,end=updateTime)* is the duration from resource
+    creation to the most recent update. *updateTime.duration()* is the duration
+    since the most recent resource update.
   """
   try:
     parts = int(parts)
@@ -714,23 +725,26 @@ def TransformList(r, show='', undefined='', separator=','):
   return r or undefined
 
 
-def TransformMap(r):
+def TransformMap(r, depth=1):
   """Applies the next transform in the sequence to each resource list item.
 
   Example:
-    list_field.map().foo().bar() applies foo() to each item in list_field and
-    then bar() to the resulting value. list_field.map().foo().map().bar()
-    applies foo() to each item in list_field and then bar() to each item in the
-    resulting list.
+    list_field.map().foo().list() applies foo() to each item in list_field and
+    then list() to the resulting value to return a compact comma-separated list.
+    list_field.map().foo().map().bar() applies foo() to each item in list_field
+    and then bar() to each item in the resulting list. abc[].xyz[].map(2).foo()
+    applies foo() to each item in xyz[] for all items in abc[].
 
   Args:
     r: A resource.
+    depth: The list nesting depth.
 
   Returns:
     r.
   """
   # This method is used as a decorator in transform expressions. It is
   # recognized at parse time and discarded.
+  _ = depth
   return r
 
 

@@ -25,28 +25,29 @@ class Collections(enum.Enum):
   PROJECTS_REGIONS_CLUSTERS = (
       'projects.regions.clusters',
       'projects/{projectId}/regions/{region}/clusters/{clusterName}',
-      [
-          'projects/{projectId}/regions/{region}/clusters/{clusterName}',
-      ],
-      [u'projectId', u'region', u'clusterName'])
+      {},
+      [u'projectId', u'region', u'clusterName'],
+      'DataprocProjectsRegionsClustersGetRequest',)
   PROJECTS_REGIONS_JOBS = (
       'projects.regions.jobs',
       'projects/{projectId}/regions/{region}/jobs/{jobId}',
-      [
-          'projects/{projectId}/regions/{region}/jobs/{jobId}',
-      ],
-      [u'projectId', u'region', u'jobId'])
+      {},
+      [u'projectId', u'region', u'jobId'],
+      'DataprocProjectsRegionsJobsGetRequest',)
   PROJECTS_REGIONS_OPERATIONS = (
       'projects.regions.operations',
       '{+name}',
-      [
-          'projects/{projectsId}/regions/{regionsId}/operations/'
-          '{operationsId}',
-      ],
-      [u'name'])
+      {
+          '':
+              'projects/{projectsId}/regions/{regionsId}/operations/'
+              '{operationsId}',
+      },
+      [u'name'],
+      'DataprocProjectsRegionsOperationsGetRequest',)
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params, request_type):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.request_type = request_type

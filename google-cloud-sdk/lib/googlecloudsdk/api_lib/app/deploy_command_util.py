@@ -32,6 +32,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
 
@@ -42,6 +43,32 @@ MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
 
 # Wait this long before displaying an additional message
 _PREPARE_VM_MESSAGE_DELAY = 15
+
+# https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
+# Technically, this should be 260 because of the drive, ':\', and a null
+# terminator, but any time we're getting close we're in dangerous territory.
+_WINDOWS_MAX_PATH = 256
+
+
+class WindowMaxPathError(exceptions.Error):
+  """Raised if a file cannot be read because of the MAX_PATH limitation."""
+
+  _WINDOWS_MAX_PATH_ERROR_TEMPLATE = """\
+The following file couldn't be read because its path is too long:
+
+  [{0}]
+
+For more information on this issue and possible workarounds, please read the
+following (links are specific to Node.js, but the information is generally
+applicable):
+
+* https://github.com/Microsoft/nodejstools/issues/69
+* https://github.com/Microsoft/nodejs-guidelines/blob/master/windows-environment.md#max_path-explanation-and-workarounds\
+"""
+
+  def __init__(self, filename):
+    super(WindowMaxPathError, self).__init__(
+        self._WINDOWS_MAX_PATH_ERROR_TEMPLATE.format(filename))
 
 
 class DockerfileError(exceptions.Error):
@@ -162,8 +189,14 @@ def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
         repo=_GetImageName(project, service.module, version_id),
         nocache=False,
         tag=config.DOCKER_IMAGE_TAG)
-    cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                             image.tagged_repo)
+    try:
+      cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
+                               image.tagged_repo)
+    except (OSError, IOError) as err:
+      if platforms.OperatingSystem.IsWindows():
+        if len(err.filename) > _WINDOWS_MAX_PATH:
+          raise WindowMaxPathError(err.filename)
+      raise
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
     cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
                                   image.tagged_repo)

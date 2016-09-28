@@ -225,9 +225,11 @@ class DockerExecutor(_messages.Message):
   """The Docker execuctor specification.
 
   Fields:
-    cmd: Required. The command string to run. Parameters that do not have
-      `localCopy` specified should be used as environment variables, while
-      those that do can be accessed at the defined paths.
+    cmd: Required. The command or newline delimited script to run. The command
+      string will be executed within a bash shell.  If the command exits with
+      a non-zero exit code, output parameter de-localization will be skipped
+      and the pipeline operation's `error` field will be populated.  Maximum
+      command string length is 16384.
     imageName: Required. Image name from either Docker Hub or Google Container
       Registry. Users that run pipelines must have READ access to the image.
   """
@@ -903,8 +905,8 @@ class ServiceAccount(_messages.Message):
       uses the compute service account associated with the project.
     scopes: List of scopes to be enabled for this service account on the
       pipeline virtual machine. The following scopes are automatically
-      included: * https://www.googleapis.com/auth/genomics *
-      https://www.googleapis.com/auth/compute *
+      included:    * https://www.googleapis.com/auth/genomics   *
+      https://www.googleapis.com/auth/compute   *
       https://www.googleapis.com/auth/devstorage.full_control
   """
 

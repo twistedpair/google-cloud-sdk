@@ -237,19 +237,18 @@ class Displayer(object):
 
     if fmt and self._GetFlag('sort_by'):
       # :(...) adds key only attributes that don't affect the projection.
-      names = (self._args.sort_by if isinstance(self._args.sort_by, list)
-               else [self._args.sort_by])
-      reverse = False
       orders = []
-      for order, name in enumerate(names):
+      for order, name in enumerate(self._args.sort_by):
+        # ~name reverses the sort for name.
         if name.startswith('~'):
           name = name.lstrip('~')
-          if not order:
-            reverse = True
+          reverse = ':reverse'
+        else:
+          reverse = ''
         # Slices default to the first list element for consistency.
         name = name.replace('[]', '[0]')
         orders.append('{name}:sort={order}{reverse}'.format(
-            name=name, order=order + 1, reverse=':reverse' if reverse else ''))
+            name=name, order=order + 1, reverse=reverse))
       fmt += ':({orders})'.format(orders=','.join(orders))
 
     return fmt

@@ -213,7 +213,7 @@ RESOURCE_REGISTRY = {
         cache_command='projects list',
         list_format="""
           table(
-            projectId:sort=101,
+            projectId:sort=1,
             name,
             projectNumber
           )
@@ -225,7 +225,7 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             displayName,
-            organizationId:sort=101,
+            organizationId:sort=1,
             owner.directoryCustomerId
           )
         """,
@@ -883,7 +883,7 @@ RESOURCE_REGISTRY = {
             logLevel,
             logMessageFormat,
             id)
-            :(isFinalState:sort=101, createTime:sort=102)
+            :(isFinalState:sort=1, createTime:sort=2)
         """,
     ),
 
@@ -1211,6 +1211,14 @@ RESOURCE_REGISTRY = {
 
     # ml
 
+    'ml.operations': ResourceInfo(
+        list_format="""
+          table(
+            name
+          )
+        """,
+    ),
+
     'ml.beta.jobs': ResourceInfo(
         list_format="""
           table(
@@ -1221,22 +1229,12 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'ml.beta.models.versions': ResourceInfo(
+    'ml.models.versions': ResourceInfo(
+        async_collection='ml.operations',
         list_format="""
           table(
             name.basename(),
             deploymentUri
-          )
-        """,
-    ),
-
-    # TODO(b/31062835): remove any resources no longer used
-    'ml.jobs': ResourceInfo(
-        list_format="""
-          table(
-            name.basename(),
-            metadata.jobState:label=STATUS,
-            metadata.createTime.date():label=CREATED
           )
         """,
     ),
@@ -1246,15 +1244,6 @@ RESOURCE_REGISTRY = {
           table(
             name.basename(),
             defaultVersion.name.basename()
-          )
-        """,
-    ),
-
-    'ml.models.versions': ResourceInfo(
-        list_format="""
-          table(
-            name.basename(),
-            originUri
           )
         """,
     ),
@@ -1689,7 +1678,7 @@ RESOURCE_REGISTRY = {
     'uri': ResourceInfo(
         list_format="""
           table(
-            uri():sort=101:label=""
+            uri():sort=1:label=""
           )
         """,
     ),

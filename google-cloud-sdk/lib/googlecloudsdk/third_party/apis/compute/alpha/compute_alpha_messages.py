@@ -3405,6 +3405,53 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class ComputeHostsGetIamPolicyRequest(_messages.Message):
+  """A ComputeHostsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeHostsSetIamPolicyRequest(_messages.Message):
+  """A ComputeHostsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeHostsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeHostsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
   """A ComputeHttpHealthChecksDeleteRequest object.
 
@@ -10909,6 +10956,12 @@ class Instance(_messages.Message):
       property when you create the resource.
     disks: Array of disks associated with this instance. Persistent disks must
       be created before you can assign them.
+    host: Full or partial URL of the host resource that the instance should be
+      placed on, in the format: zones/zone/host/host.  Optional, Private Host
+      (physical machine) that the instance will be placed on when it's
+      created. The instance is guaranteed to be placed on the same machine as
+      other instances with the same private host.  The request will be
+      rejected if the private host has run out of resources.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instanceEncryptionKey: Encrypts or decrypts data for an instance with a
@@ -11033,22 +11086,23 @@ class Instance(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
-  kind = _messages.StringField(8, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  machineType = _messages.StringField(11)
-  metadata = _messages.MessageField('Metadata', 12)
-  name = _messages.StringField(13)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 14, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 15)
-  selfLink = _messages.StringField(16)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  tags = _messages.MessageField('Tags', 20)
-  zone = _messages.StringField(21)
+  host = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
+  kind = _messages.StringField(9, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  machineType = _messages.StringField(12)
+  metadata = _messages.MessageField('Metadata', 13)
+  name = _messages.StringField(14)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 15, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 16)
+  selfLink = _messages.StringField(17)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  tags = _messages.MessageField('Tags', 21)
+  zone = _messages.StringField(22)
 
 
 class InstanceAggregatedList(_messages.Message):

@@ -511,13 +511,15 @@ class _SectionCompute(_Section):
         'zone',
         help_text='The default zone to use when working with zonal Compute '
         'Engine resources. When a `--zone` flag is required but not provided, '
-        'the command will fall back to this value, if set.',
+        'the command will fall back to this value, if set. To see valid '
+        'choices, run `gcloud compute zones list`.',
         resource='compute.zones')
     self.region = self._Add(
         'region',
         help_text='The default region to use when working with regional Compute'
         ' Engine resources. When a `--region` flag is required but not '
-        'provided, the command will fall back to this value, if set.',
+        'provided, the command will fall back to this value, if set. To see '
+        'valid choices, run `gcloud compute regions list`.',
         resource='compute.regions')
     self.gce_metadata_read_timeout_sec = self._Add(
         'gce_metadata_read_timeout_sec',
