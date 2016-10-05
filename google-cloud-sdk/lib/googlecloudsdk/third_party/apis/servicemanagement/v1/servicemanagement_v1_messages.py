@@ -712,17 +712,15 @@ class CustomHttpPattern(_messages.Message):
 
 
 class CustomerSettings(_messages.Message):
-  """Settings that control how a customer (identified by a billing account)
-  uses a service
+  """Settings that control how a customer (organization or folder) uses a
+  service.
 
   Fields:
-    customerId: ID for the customer that consumes the service (see above). The
-      supported types of customers are:  1. domain:{domain} A Google Apps
-      domain name. For example, google.com.  2.
-      billingAccount:{billing_account_id} A Google Cloud Plafrom billing
-      account. For Example, 123456-7890ab-cdef12.
+    customerId: ID for the customer that consumes the service (see above).
+      Customer id is always in the format of a Gaia id.
     quotaSettings: Settings that control how much or how fast the service can
-      be used by the consumer projects owned by the customer collectively.
+      be used by the consumer projects under the organization or folder
+      collectively.
     serviceName: The name of the service.  See the `ServiceManager` overview
       for naming requirements.
   """
@@ -1496,6 +1494,21 @@ class ListServiceConfigsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serviceConfigs = _messages.MessageField('Service', 2, repeated=True)
+
+
+class ListServiceConsumersResponse(_messages.Message):
+  """Response message for `ListServiceConsumers` method.
+
+  Fields:
+    customerSettings: The organization/folder-level results of the query.
+    nextPageToken: Token that can be passed to `ListServiceConsumers` to
+      resume a paginated query.
+    projectSettings: The project-level results of the query.
+  """
+
+  customerSettings = _messages.MessageField('CustomerSettings', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  projectSettings = _messages.MessageField('ProjectSettings', 3, repeated=True)
 
 
 class ListServiceRolloutsResponse(_messages.Message):
@@ -3099,6 +3112,33 @@ class ServicemanagementServicesConfigsSubmitRequest(_messages.Message):
   submitConfigSourceRequest = _messages.MessageField('SubmitConfigSourceRequest', 2)
 
 
+class ServicemanagementServicesConsumersListRequest(_messages.Message):
+  """A ServicemanagementServicesConsumersListRequest object.
+
+  Fields:
+    consumerId: Include services consumed by the specified consumer.  The
+      Google Service Management implementation accepts the following forms: -
+      project:<project_id> - project_number:<project_number> -
+      organization:<organization number> - folder:<folder number>  In this
+      version of the API, the only supported consumer type is "organization".
+    pageSize: Requested size of the next page of data.
+    pageToken: Token identifying which result to start with; returned by a
+      previous list call.
+    serviceName: If service_name is specified, return only consumer settings
+      for the specified service.  If not specified, for organizations or
+      folders this will return consumer settings for all services that have
+      defined org-level quotas in the service configuration. For projects,
+      this will return consumer project settings for all services activated by
+      the consumer project.  In this version of the API, the only supported
+      consumer type is "organization".
+  """
+
+  consumerId = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  serviceName = _messages.StringField(4, required=True)
+
+
 class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):
   """A ServicemanagementServicesCustomerSettingsGetRequest object.
 
@@ -3282,6 +3322,15 @@ class ServicemanagementServicesListRequest(_messages.Message):
     category: Include services only in the specified category. Supported
       categories are servicemanagement.googleapis.com/categories/google-
       services or servicemanagement.googleapis.com/categories/play-games.
+    consumerId: Include services consumed by the specified consumer.  The
+      Google Service Management implementation accepts the following forms: -
+      project:<project_id> - project_number:<project_number> -
+      organization:<organization number> - folder:<folder number>  Note: If
+      consumer_id specifies a folder or an organization, then the expand
+      option is ignored. To retrieve consumer settings at folder or
+      organization level, "ListServiceConsumers" should be used.  If
+      consumer_id specifies a project, then the semantics of the API are
+      identical to specifying consumer_project_id.
     consumerProjectId: Include services consumed by the specified project.  If
       project_settings is expanded, then this field controls which project
       project_settings is populated for.
@@ -3296,11 +3345,12 @@ class ServicemanagementServicesListRequest(_messages.Message):
   """
 
   category = _messages.StringField(1)
-  consumerProjectId = _messages.StringField(2)
-  expand = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  producerProjectId = _messages.StringField(6)
+  consumerId = _messages.StringField(2)
+  consumerProjectId = _messages.StringField(3)
+  expand = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  producerProjectId = _messages.StringField(7)
 
 
 class ServicemanagementServicesPatchConfigRequest(_messages.Message):

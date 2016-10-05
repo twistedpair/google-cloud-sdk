@@ -101,19 +101,24 @@ def RecoverProjectId(repository):
     raise ValueError('Domain-scoped app missing project name: %s', parts[0])
 
 
+def _UnqualifiedResourceUrl(repo):
+  return 'https://{repo}@'.format(repo=str(repo))
+
+
 def _ResourceUrl(repo, digest):
   return 'https://{repo}@{digest}'.format(repo=str(repo), digest=digest)
 
 
-def FetchOccurrences(manifests, repository):
-  """Fetches the occurrences attaches to the list of manifests."""
+def FetchOccurrences(repository):
+  """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
 
   # Construct a filter of all of the resource urls we are displaying
   filters = []
-  for k in sorted(manifests.keys()):
-    filters.append('resourceUrl = "{resource}"'.format(
-        resource=_ResourceUrl(repository, k)))
+
+  # Retrieve all resource urls prefixed with the image path
+  filters.append('has_prefix(resource_url, "{repo}"'.format(
+      repo=_UnqualifiedResourceUrl(repository)))
 
   client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
   messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
@@ -137,8 +142,7 @@ def TransformManifests(manifests, repository, show_occurrences=True):
     return []
 
   # Map from resource url to the occurrence.
-  occurrences = FetchOccurrences(
-      manifests, repository) if show_occurrences else {}
+  occurrences = FetchOccurrences(repository) if show_occurrences else {}
 
   # Attach each occurrence to the resource to which it applies.
   results = []

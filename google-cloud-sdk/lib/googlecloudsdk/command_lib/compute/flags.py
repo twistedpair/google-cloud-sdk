@@ -363,7 +363,7 @@ class ResourceArgument(object):
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
 
-  def AddArgument(self, parser):
+  def AddArgument(self, parser, operation_type='operate on'):
     """Add this set of arguments to argparse parser."""
 
     params = dict(
@@ -403,7 +403,7 @@ class ResourceArgument(object):
           scope,
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
-          operation_type='operate on',
+          operation_type=operation_type,
           explanation=self._zone_explanation)
 
     if ScopeEnum.REGION in self.scopes:
@@ -411,7 +411,7 @@ class ResourceArgument(object):
           scope,
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
-          operation_type='operate on',
+          operation_type=operation_type,
           explanation=self._region_explanation)
 
     if ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:

@@ -14,9 +14,6 @@
 
 """Common utilities for the gcloud dataproc tool."""
 
-import functools
-import json
-import sys
 import time
 import uuid
 
@@ -28,24 +25,6 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-
-
-def FormatHttpError(error):
-  """Returns a ready-to-print string representation of an apitools HttpError.
-
-  Args:
-    error: An apitools exceptions.HttpError
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  log.debug('Error:\n' + error.content)
-  try:
-    content = json.loads(error.content)
-  except ValueError:
-    # The error isn't valid JSON. Simply return it.
-    return str(error)
-  return str(content['error']['message'])
 
 
 def FormatRpcError(error):
@@ -64,21 +43,6 @@ def FormatRpcError(error):
     formatted_error += (
         '\nDetails:\n' + encoding.MessageToJson(error.details))
   return formatted_error
-
-
-def HandleHttpError(func):
-  """Decorator that catches HttpError and raises corresponding HttpException."""
-
-  @functools.wraps(func)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
-    try:
-      return func(*args, **kwargs)
-    except apitools_exceptions.HttpError as error:
-      msg = FormatHttpError(error)
-      _, _, traceback = sys.exc_info()
-      raise exceptions.HttpException, msg, traceback
-
-  return CatchHTTPErrorRaiseHTTPException
 
 
 # TODO(user): Create a common wait_utils class to reuse common code.
@@ -114,7 +78,8 @@ def WaitForOperation(
         if operation.done:
           break
       except apitools_exceptions.HttpError as error:
-        log.debug('GetOperation failed:\n' + FormatHttpError(error))
+        exc = exceptions.HttpException(error)
+        log.debug('GetOperation failed:\n' + exc.payload.status_message)
         # Keep trying until we timeout in case error is transient.
       time.sleep(poll_period_s)
   # TODO(user): Parse operation metadata.

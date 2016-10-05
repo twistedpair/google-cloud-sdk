@@ -2,6 +2,47 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 129.0.0 (2016/10/05)
+
+### Google Cloud Bigtable
+
+* `gcloud alpha bigtable` commands are deprecated and will be removed in
+  release 134.0.0. All users should migrate to `gcloud beta bigtable` commands.
+
+### Google Cloud ML
+
+* Add `gcloud beta ml jobs stream-logs` JOB [--allow-multiline-logs]
+  [--polling-interval=POLLING_INTERVAL; default="60"] [GLOBAL-FLAG ...]
+  to show logs from a running Cloud ML job.
+
+### Google Compute Engine
+
+* The --replacement flag is no longer required in the
+  `gcloud compute images deprecate` command.
+
+* Add --create-disk flag to `gcloud alpha compute instances create`.
+
+* Add --create-disk flag to `gcloud alpha compute instance-templates create`.
+
+### Google Container Engine
+
+* Can now specify the cluster-version when creating Google Container Engine
+  clusters.
+
+* Update kubectl to version 1.4.0.
+
+### Google Container Registry
+
+* `docker-credential-gcr` bug fixed.
+
+### Go SDK
+
+* Update Go SDK component to use 20160927 release, based on Go 1.6.3.
+
+### Stackdriver Logging
+
+* Added commands to manage logs-based metrics in Stackdriver Logging.
+
 ## 128.0.0 (2016/09/28)
 
 ### Breaking Changes

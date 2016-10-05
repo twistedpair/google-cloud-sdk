@@ -126,7 +126,8 @@ def AddMetadataArgs(parser, required=False):
       default={},
       help=('Metadata to be made available to the guest operating system '
             'running on the instances'),
-      metavar='KEY=VALUE')
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction)
   metadata.detailed_help = """\
       Metadata to be made available to the guest operating system
       running on the instances. Each metadata entry is a key/value

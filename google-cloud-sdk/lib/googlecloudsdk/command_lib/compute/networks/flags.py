@@ -27,7 +27,9 @@ def NetworkArgument(required=True):
       short_help='The name of the network.')
 
 
-def NetworkArgumentForSubnetwork(required=True):
+def NetworkArgumentForOtherResource(short_help,
+                                    required=True,
+                                    detailed_help=None):
   return compute_flags.ResourceArgument(
       name='--network',
       resource_name='network',
@@ -35,15 +37,5 @@ def NetworkArgumentForSubnetwork(required=True):
       plural=False,
       required=required,
       global_collection='compute.networks',
-      short_help='The network to which the subnetwork belongs.')
-
-
-def NetworkArgumentForRoute(required=True):
-  return compute_flags.ResourceArgument(
-      name='--network',
-      resource_name='network',
-      completion_resource_id='compute.networks',
-      plural=False,
-      required=required,
-      global_collection='compute.networks',
-      short_help='Specifies the network to which the route will be applied.')
+      short_help=short_help,
+      detailed_help=detailed_help)

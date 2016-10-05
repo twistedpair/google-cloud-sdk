@@ -172,7 +172,6 @@ class BuildSignature(_messages.Message):
       the provenance bytes from BuildDetails are base64-decoded into a binary
       representation in signed.bin. Openssl can then verify the signature:
       'openssl sha256 -verify public.pem -signature signature.bin signed.bin'
-      This field can be used as a filter in list requests.
     signature: Signature of the related BuildProvenance, encoded in a base64
       string.
   """
@@ -186,8 +185,7 @@ class BuildType(_messages.Message):
   the provenance message in linked BuildDetails.
 
   Fields:
-    builderVersion: Version of the builder which produced this Note. This
-      field can be used as a filter in list requests.
+    builderVersion: Version of the builder which produced this Note.
     signature: Signature of the build in Occurrences pointing to the Note
       containing this BuilderDetails.
   """
@@ -611,12 +609,11 @@ class Detail(_messages.Message):
       vulnerability exists. This field can be used as a filter in list
       requests.
     minAffectedVersion: The min version of the package in which the
-      vulnerability exists. This field can be used as a filter in list
-      requests.
+      vulnerability exists.
     package: The name of the package where the vulnerability was found. This
       field can be used as a filter in list requests.
     severity: The severity (eg: distro assigned severity) for this
-      vulnerability. This field can be used as a filter in list requests.
+      vulnerability.
   """
 
   cpeUri = _messages.StringField(1)
@@ -752,8 +749,7 @@ class Note(_messages.Message):
 
   Enums:
     KindValueValuesEnum: This explicitly denotes which kind of note is
-      specified. This field can be used as a filter in list requests.
-      @OutputOnly
+      specified. @OutputOnly
 
   Fields:
     buildType: Build provenance type for a verifiable build.
@@ -761,8 +757,7 @@ class Note(_messages.Message):
       filter in list requests. @OutputOnly
     expirationTime: Time of expiration for this Note, null if Note currently
       does not expire.
-    kind: This explicitly denotes which kind of note is specified. This field
-      can be used as a filter in list requests. @OutputOnly
+    kind: This explicitly denotes which kind of note is specified. @OutputOnly
     longDescription: A detailed description of this note
     name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
@@ -774,8 +769,7 @@ class Note(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """This explicitly denotes which kind of note is specified. This field can
-    be used as a filter in list requests. @OutputOnly
+    """This explicitly denotes which kind of note is specified. @OutputOnly
 
     Values:
       UNKNOWN: Unknown
@@ -805,16 +799,13 @@ class Occurrence(_messages.Message):
 
   Enums:
     KindValueValuesEnum: This explicitly denotes which of the occurrence
-      details is specified. This field can be used as a filter in list
-      requests. @OutputOnly
+      details is specified. @OutputOnly
 
   Fields:
     buildDetails: Build details for a verifiable build.
-    createTime: The time this occurrence was created. This field can be used
-      as a filter in list requests. @OutputOnly
+    createTime: The time this occurrence was created. @OutputOnly
     kind: This explicitly denotes which of the occurrence details is
-      specified. This field can be used as a filter in list requests.
-      @OutputOnly
+      specified. @OutputOnly
     name: The name of the occurrence in the form
       "projects/{project_id}/occurrences/{occurrence_id}" @OutputOnly
     noteName: An analysis note associated with this image, in the form
@@ -824,14 +815,13 @@ class Occurrence(_messages.Message):
     resourceUrl: The unique url of the image or container for which the
       occurrence applies. Example: https://gcr.io/project/image@sha256:foo
       This field can be used as a filter in list requests.
-    updateTime: The time this occurrence was last updated. This field can be
-      used as a filter in list requests. @OutputOnly
+    updateTime: The time this occurrence was last updated. @OutputOnly
     vulnerabilityDetails: Details of a security vulnerability note.
   """
 
   class KindValueValuesEnum(_messages.Enum):
     """This explicitly denotes which of the occurrence details is specified.
-    This field can be used as a filter in list requests. @OutputOnly
+    @OutputOnly
 
     Values:
       UNKNOWN: Unknown
@@ -852,6 +842,19 @@ class Occurrence(_messages.Message):
   resourceUrl = _messages.StringField(7)
   updateTime = _messages.StringField(8)
   vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 9)
+
+
+class PackageIssue(_messages.Message):
+  """This message wraps a location affected by a vulnerability and its
+  associated fix (if one is available).
+
+  Fields:
+    affectedLocation: The location of the vulnerability.
+    fixedLocation: The location of the available fix for vulnerability.
+  """
+
+  affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
+  fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
 
 
 class Policy(_messages.Message):
@@ -1191,23 +1194,21 @@ class VulnerabilityDetails(_messages.Message):
 
   Enums:
     SeverityValueValuesEnum: The provider assigned Severity of the
-      vulnerability. This field can be used as a filter in list requests.
-      @OutputOnly
+      vulnerability. @OutputOnly
 
   Fields:
     affectedLocation: The location of the vulnerability.
-    cvssScore: The CVSS score of this vulnerability. This field can be used as
-      a filter in list requests. @OutputOnly
+    cvssScore: The CVSS score of this vulnerability. @OutputOnly
     fixedLocation: The location of the available fix for vulnerability.
-    severity: The provider assigned Severity of the vulnerability. This field
-      can be used as a filter in list requests. @OutputOnly
+    packageIssue: The set of affected locations and their fixes (if available)
+      within the associated resource.
+    severity: The provider assigned Severity of the vulnerability. @OutputOnly
     type: The type of package; whether native or non native(ruby gems, node.js
-      packages etc) This field can be used as a filter in list requests.
+      packages etc)
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """The provider assigned Severity of the vulnerability. This field can be
-    used as a filter in list requests. @OutputOnly
+    """The provider assigned Severity of the vulnerability. @OutputOnly
 
     Values:
       UNKNOWN: Unknown Impact
@@ -1227,8 +1228,9 @@ class VulnerabilityDetails(_messages.Message):
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
   cvssScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
-  type = _messages.StringField(5)
+  packageIssue = _messages.MessageField('PackageIssue', 4, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
+  type = _messages.StringField(6)
 
 
 class VulnerabilityLocation(_messages.Message):
@@ -1238,8 +1240,7 @@ class VulnerabilityLocation(_messages.Message):
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       format. Examples include distro or storage location for vulnerable jar.
       This field can be used as a filter in list requests.
-    package: The package being described. This field can be used as a filter
-      in list requests.
+    package: The package being described.
     version: The version of the package being described. This field can be
       used as a filter in list requests.
   """
@@ -1254,21 +1255,17 @@ class VulnerabilityType(_messages.Message):
 
   Enums:
     SeverityValueValuesEnum: Provider assigned impact of the vulnerability
-      This field can be used as a filter in list requests.
 
   Fields:
-    cvssScore: The CVSS score for this Vulnerability. This field can be used
-      as a filter in list requests.
+    cvssScore: The CVSS score for this Vulnerability.
     details: All information about the package to specifically identify this
       vulnerability. One entry per (version range and cpe_uri) the package
       vulnerability has manifested in.
-    severity: Provider assigned impact of the vulnerability This field can be
-      used as a filter in list requests.
+    severity: Provider assigned impact of the vulnerability
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Provider assigned impact of the vulnerability This field can be used as
-    a filter in list requests.
+    """Provider assigned impact of the vulnerability
 
     Values:
       UNKNOWN: Unknown Impact

@@ -31,15 +31,33 @@ MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     region_explanation=flags.REGION_PROPERTY_EXPLANATION)
 
 ZONAL_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
-    resource_name='instance group manager',
+    resource_name='managed instance group',
     completion_resource_id='compute.instanceGroupManagers',
-    zonal_collection='compute.instanceGroups',
+    zonal_collection='compute.instanceGroupManagers',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
+
+ZONAL_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
+    resource_name='managed instance group',
+    plural=True,
+    name='names',
+    completion_resource_id='compute.instanceGroupManagers',
+    zonal_collection='compute.instanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
 MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
-    resource_name='instance group manager',
+    resource_name='managed instance group',
     completion_resource_id='compute.regionInstanceGroupManagers',
-    zonal_collection='compute.instanceGroups',
+    zonal_collection='compute.instanceGroupManagers',
+    regional_collection='compute.regionInstanceGroupManagers',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
+
+MULTISCOPE_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
+    resource_name='managed instance group',
+    plural=True,
+    name='names',
+    completion_resource_id='compute.regionInstanceGroupManagers',
+    zonal_collection='compute.instanceGroupManagers',
     regional_collection='compute.regionInstanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
     region_explanation=flags.REGION_PROPERTY_EXPLANATION)

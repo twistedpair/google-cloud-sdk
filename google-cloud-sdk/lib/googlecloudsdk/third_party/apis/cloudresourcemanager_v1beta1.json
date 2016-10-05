@@ -453,6 +453,14 @@
             "CREATE",
             "MOVE"
           ]
+        },
+        "sourceParent": {
+          "description": "The resource name of the folder's parent.\nOnly applicable when the operation_type is MOVE.",
+          "type": "string"
+        },
+        "destinationParent": {
+          "description": "The resource name of the folder or organization we are either creating\nthe folder under or moving the folder to.",
+          "type": "string"
         }
       }
     },
@@ -461,8 +469,8 @@
       "description": "Information about a failed folder operation.\nIf a long running folder operations fails, then we will return\nthis message in the Operation.error.details field.",
       "type": "object",
       "properties": {
-        "errorType": {
-          "description": "The type of operation error experienced.",
+        "errorMessageId": {
+          "description": "The message id for the operation error that was experienced.",
           "enumDescriptions": [
             "An undefined error type.",
             "The attempted action would violate the max folder depth constraint.",

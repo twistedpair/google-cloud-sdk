@@ -84,18 +84,24 @@ class ImageExpander(object):
           error_message='Could not fetch image resource:')
     return res[0]
 
-  def ExpandImageFlag(self, args, return_image_resource=False):
-    """Resolves the --image or --image-family flag value.
+  def ExpandImageFlag(self,
+                      image=None,
+                      image_family=None,
+                      image_project=None,
+                      return_image_resource=False):
+    """Resolves the image or image-family value.
 
-    If the value of --image is one of the aliases defined in the
+    If the value of image is one of the aliases defined in the
     constants module, both the user's project and the public image
     project for the alias are queried. Otherwise, only the user's
-    project is queried. If --image is an alias and --image-project is
+    project is queried. If image is an alias and image-project is
     provided, only the given project is queried.
 
     Args:
-      args: The command-line flags. The flags accessed are --image,
-        --image-family and --image-project.
+      image: The name of the image.
+      image_family: The family of the image. Is ignored if image name is
+        specified.
+      image_project: The project of the image.
       return_image_resource: If True, always makes an API call to also
         fetch the image resource.
 
@@ -106,18 +112,13 @@ class ImageExpander(object):
     """
 
     image_ref = None
-    warn_alias = True
 
-    if args.image:
+    if image:
       image_ref = self.resources.Parse(
-          args.image,
-          collection='compute.images',
-          resolve=False)
-    elif args.image_family is not None:
+          image, collection='compute.images', resolve=False)
+    elif image_family is not None:
       image_ref = self.resources.Parse(
-          args.image_family,
-          collection='compute.images',
-          resolve=False)
+          image_family, collection='compute.images', resolve=False)
       if not image_ref.image.startswith(FAMILY_PREFIX):
         image_ref.image = FAMILY_PREFIX + image_ref.image
     else:
@@ -131,10 +132,9 @@ class ImageExpander(object):
 
     # If an image project was specified, then assume that image refers
     # to an image in that project.
-    if args.image_project:
+    if image_project:
       image_project_ref = self.resources.Parse(
-          args.image_project,
-          collection='compute.projects')
+          image_project, collection='compute.projects')
       image_ref.project = image_project_ref.Name()
       image_ref.Resolve()
       return (image_ref.SelfLink(),
@@ -158,8 +158,7 @@ class ImageExpander(object):
     # latest one among the public image project and the user's
     # project.
 
-    if warn_alias:
-      WarnAlias(alias)
+    WarnAlias(alias)
 
     errors = []
     images = self.GetMatchingImages(image_ref.Name(), alias, errors)

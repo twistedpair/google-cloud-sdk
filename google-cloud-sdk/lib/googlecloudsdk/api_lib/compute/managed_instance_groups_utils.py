@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.compute import flags
 
 
 _ALLOWED_UTILIZATION_TARGET_TYPES = [
@@ -48,14 +47,8 @@ def ArgsSupportQueueScaling(args):
   return 'queue_scaling_acceptable_backlog_per_instance' in args
 
 
-def AddAutoscalerArgs(parser,
-                      multizonal_enabled=False, queue_scaling_enabled=False):
+def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
   """Adds commandline arguments to parser."""
-  parser.add_argument(
-      'name',
-      metavar='NAME',
-      completion_resource='compute.instanceGroupManagers',
-      help='Managed instance group which autoscaling parameters will be set.')
   parser.add_argument('--cool-down-period', type=arg_parsers.Duration(),
                       help='Number of seconds Autoscaler will wait between '
                       'resizing collection. Note: The Autoscaler waits '
@@ -142,23 +135,6 @@ def AddAutoscalerArgs(parser,
                         help='Hint the autoscaler for queue-based scaling on '
                         'how much throughput a single worker instance is able '
                         'to consume.')
-  if multizonal_enabled:
-    scope_parser = parser.add_mutually_exclusive_group()
-    flags.AddRegionFlag(
-        scope_parser,
-        resource_type='resources',
-        operation_type='update',
-        explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-    flags.AddZoneFlag(
-        scope_parser,
-        resource_type='resources',
-        operation_type='update',
-        explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
-  else:
-    flags.AddZoneFlag(
-        parser,
-        resource_type='resources',
-        operation_type='update')
 
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
@@ -357,7 +333,7 @@ def AutoscalersForMigs(migs, autoscalers, project):
   for (name, scope_type, scope_name) in migs:
     igm_url_regexes.append(
         '/projects/{project}/{scopeType}/{scopeName}/'
-        'instanceGroupManagers/{name}'
+        'instanceGroupManagers/{name}$'
         .format(project=project,
                 scopeType=(scope_type + 's'),
                 scopeName=scope_name,

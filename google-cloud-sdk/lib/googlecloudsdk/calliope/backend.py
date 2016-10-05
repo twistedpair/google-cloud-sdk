@@ -170,7 +170,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
     for flag, matched_flag in sorted(self._abbreviated_flags.iteritems()):
       dest = flag[2:].replace('-', '_')
-      if not hasattr(args, dest):
+      if not hasattr(namespace, dest):
         log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
                  'use the full name [%s].', flag, matched_flag)
 
@@ -771,11 +771,11 @@ class ArgumentInterceptor(object):
       self.required.append(dest)
     self.dests.append(dest)
 
+    if positional and 'metavar' not in kwargs:
+      kwargs['metavar'] = name.upper()
     if kwargs.get('nargs') is argparse.REMAINDER:
       added_argument = self.parser.AddRemainderArgument(*args, **kwargs)
     else:
-      if positional and 'metavar' not in kwargs:
-        kwargs['metavar'] = name.upper()
       added_argument = self.parser.add_argument(*args, **kwargs)
     self._AddRemoteCompleter(added_argument, completion_resource,
                              list_command_path, list_command_callback_fn)

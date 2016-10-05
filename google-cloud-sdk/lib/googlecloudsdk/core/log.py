@@ -125,7 +125,7 @@ class _ConsoleWriter(object):
   def Print(self, *msg):
     """Writes the given message to the output stream, and adds a newline.
 
-    This method has the same output behavior as the build in print method but
+    This method has the same output behavior as the builtin print method but
     respects the configured verbosity.
 
     Args:
@@ -133,8 +133,7 @@ class _ConsoleWriter(object):
     """
 
     from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
-    msg = (x if isinstance(x, unicode) else console_attr.DecodeFromInput(x)
-           for x in msg)
+    msg = (console_attr.EncodeForOutput(x, escape=False) for x in msg)
     message = u' '.join(msg)
     self.write(message + u'\n')
 
@@ -375,7 +374,7 @@ class _LogManager(object):
       log_file = self._SetupLogsDir(logs_dir)
       file_handler = logging.FileHandler(log_file)
     except (OSError, IOError, files.Error) as exp:
-      warn('Could not setup log file in {0}, ({1}: {2})'
+      warn(u'Could not setup log file in {0}, ({1}: {2})'
            .format(logs_dir, type(exp).__name__, exp))
       return
 
@@ -405,7 +404,7 @@ class _LogManager(object):
 
     try:
       dirnames = os.listdir(logs_dir)
-    except OSError:
+    except (OSError, UnicodeError):
       # In event of a non-existing or non-readable directory, we don't want to
       # cause an error
       return
@@ -525,7 +524,7 @@ file_only_logger = _log_manager.file_only_logger
 def Print(*msg):
   """Writes the given message to the output stream, and adds a newline.
 
-  This method has the same output behavior as the build in print method but
+  This method has the same output behavior as the builtin print method but
   respects the configured user output setting.
 
   Args:
@@ -751,11 +750,11 @@ def _PrintResourceChange(operation, resource, kind, async, details, failed):
   if details:
     msg.append(details)
   if failed:
-    msg[-1] = '{0}:'.format(msg[-1])
+    msg[-1] = u'{0}:'.format(msg[-1])
     msg.append(failed)
   period = '' if msg[-1].endswith('.') else '.'
   writer = error if failed else status.Print
-  writer('{0}{1}'.format(' '.join(msg), period))
+  writer(u'{0}{1}'.format(' '.join(msg), period))
 
 
 def CreatedResource(resource, kind=None, async=False, details=None,

@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160919",
+ "revision": "20160923",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3355,7 +3355,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] The URL for this resource type. The server generates this URL."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },
@@ -4596,7 +4596,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for this resource ."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },
@@ -5903,7 +5903,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },
@@ -6177,7 +6177,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
+     "description": "[Output Only] Server-defined URL for this resource."
     },
     "start": {
      "type": "string",
@@ -7562,7 +7562,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },
@@ -7593,7 +7593,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },
@@ -8089,7 +8089,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
+     "description": "[Output Only] Server-defined URL for this resource."
     }
    }
   },

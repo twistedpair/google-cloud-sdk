@@ -927,7 +927,7 @@
           "type": "string"
         },
         "version": {
-          "description": "Optional. The API version that created or updated this metric.",
+          "description": "Output only. The API version that created or updated this metric.\nThe version also dictates the syntax of the filter expression. When a value\nfor this field is missing, the default value of V2 should be assumed.",
           "enumDescriptions": [
             "Stackdriver Logging API v2.",
             "Stackdriver Logging API v1."

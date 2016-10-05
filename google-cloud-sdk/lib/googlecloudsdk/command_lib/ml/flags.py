@@ -13,8 +13,10 @@
 # limitations under the License.
 """Provides common arguments for the ML command surface."""
 import argparse
+import sys
 
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 
@@ -77,6 +79,17 @@ VERSION_DATA = base.Argument(
     '--origin',
     required=True,
     help='Google Cloud Storage location containing the model graph.')
+POLLING_INTERVAL = base.Argument(
+    '--polling-interval',
+    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    required=False,
+    default=60,
+    help='Number of seconds to wait between efforts to fetch the latest '
+    'log messages.')
+ALLOW_MULTILINE_LOGS = base.Argument(
+    '--allow-multiline-logs',
+    action='store_true',
+    help='Output multiline log messages as single records.')
 
 
 def GetModelName(positional=True, required=False):

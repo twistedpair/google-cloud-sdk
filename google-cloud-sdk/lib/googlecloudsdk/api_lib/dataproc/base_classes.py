@@ -64,7 +64,7 @@ class JobSubmitter(base.Command):
     try:
       cluster = client.projects_regions_clusters.Get(request)
     except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(util.FormatHttpError(error))
+      raise exceptions.HttpException(error)
 
     self._staging_dir = self.GetStagingDir(cluster)
     self.ValidateAndStageFiles()
@@ -87,7 +87,7 @@ class JobSubmitter(base.Command):
     try:
       job = client.projects_regions_jobs.Submit(request)
     except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(util.FormatHttpError(error))
+      raise exceptions.HttpException(error)
 
     log.status.Print('Job [{0}] submitted.'.format(job_id))
 

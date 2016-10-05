@@ -20,9 +20,6 @@ import re
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
-from dateutil import parser
-from dateutil import tz
-
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -30,6 +27,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
+from googlecloudsdk.core.util import times
 
 import yaml
 
@@ -280,18 +278,16 @@ def ConvertUTCDateTimeStringToLocalTimeString(utc_string):
     A string representing the input time in local time. The format will follow
     '%Y-%m-%d %H:%M:%S %Z'.
   """
-  dt_parser = parser.parser()
   try:
-    utc_dt = dt_parser.parse(utc_string)
+    utc_dt = times.ParseDateTime(utc_string)
   except ValueError:
     log.warn('Failed to parse UTC string %s', utc_string)
     return utc_string
   except OverflowError:
     log.warn('Parsed UTC date exceeds largest valid C integer on this system')
     return utc_string
-  loc_dt = utc_dt.astimezone(tz.tzlocal())
-  fmt = '%Y-%m-%d %H:%M:%S %Z'
-  return loc_dt.strftime(fmt)
+  return times.FormatDateTime(
+      utc_dt, '%Y-%m-%d %H:%M:%S %Z', tzinfo=times.LOCAL)
 
 
 def GetByteStringFromFingerprint(fingerprint):

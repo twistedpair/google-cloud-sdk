@@ -478,13 +478,6 @@
           "items": {
             "$ref": "BindingDelta"
           }
-        },
-        "auditConfigDeltas": {
-          "description": "The delta for AuditConfigs between two policies.",
-          "type": "array",
-          "items": {
-            "$ref": "AuditConfigDelta"
-          }
         }
       }
     },
@@ -513,35 +506,6 @@
         },
         "member": {
           "description": "A single identity requesting access for a Cloud Platform resource.\nFollows the same format of Binding.members.\nRequired",
-          "type": "string"
-        }
-      }
-    },
-    "AuditConfigDelta": {
-      "id": "AuditConfigDelta",
-      "description": "One delta entry for AuditConfig. Each individual change (only one\nexempted_member in each entry) to a AuditConfig will be a separate entry.",
-      "type": "object",
-      "properties": {
-        "action": {
-          "description": "The action that was performed on an audit configuration in a policy.\nRequired",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Addition of an audit configuration.",
-            "Removal of an audit configuration."
-          ],
-          "type": "string",
-          "enum": [
-            "ACTION_UNSPECIFIED",
-            "ADD",
-            "REMOVE"
-          ]
-        },
-        "service": {
-          "description": "Specifies a service that will be enabled for \"data access\" audit\nlogging.\nFor example, `resourcemanager`, `storage`, `compute`.\n`allServices` is a special value that covers all services.\nRequired",
-          "type": "string"
-        },
-        "exemptedMember": {
-          "description": "A single identity that is exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.\nRequired",
           "type": "string"
         }
       }

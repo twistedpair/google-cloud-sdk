@@ -90,6 +90,36 @@ def GetHealthChecks(args, resource_parser):
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 
 
+def GetIAP(args, messages, existing_iap_settings=None):
+  """Returns IAP settings from arguments."""
+
+  if 'enabled' in args.iap and 'disabled' in args.iap:
+    raise exceptions.InvalidArgumentException(
+        '--iap', 'Must specify only one of [enabled] or [disabled]')
+
+  iap_settings = messages.BackendServiceIAAP()
+  if 'enabled' in args.iap:
+    iap_settings.enabled = True
+  elif 'disabled' in args.iap:
+    iap_settings.enabled = False
+  elif existing_iap_settings is not None:
+    iap_settings.enabled = existing_iap_settings.enabled
+
+  if iap_settings.enabled:
+    # If either oauth2-client-id or oauth2-client-secret is specified,
+    # then the other should also be specified.
+    if 'oauth2-client-id' in args.iap or 'oauth2-client-secret' in args.iap:
+      iap_settings.oauth2ClientId = args.iap.get('oauth2-client-id')
+      iap_settings.oauth2ClientSecret = args.iap.get('oauth2-client-secret')
+      if not iap_settings.oauth2ClientId or not iap_settings.oauth2ClientSecret:
+        raise exceptions.InvalidArgumentException(
+            '--iap',
+            'Both [oauth2-client-id] and [oauth2-client-secret] must be '
+            'specified together')
+
+  return iap_settings
+
+
 class BackendServiceMutator(base_classes.BaseAsyncMutator):
   """Makes mutator respect Regional/Global resources."""
 

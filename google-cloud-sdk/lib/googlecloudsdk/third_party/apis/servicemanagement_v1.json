@@ -1956,6 +1956,50 @@
         }
       }
     },
+    "ListServiceConsumersResponse": {
+      "id": "ListServiceConsumersResponse",
+      "description": "Response message for `ListServiceConsumers` method.",
+      "type": "object",
+      "properties": {
+        "projectSettings": {
+          "description": "The project-level results of the query.",
+          "type": "array",
+          "items": {
+            "$ref": "ProjectSettings"
+          }
+        },
+        "customerSettings": {
+          "description": "The organization\/folder-level results of the query.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomerSettings"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token that can be passed to `ListServiceConsumers` to resume a paginated\nquery.",
+          "type": "string"
+        }
+      }
+    },
+    "CustomerSettings": {
+      "id": "CustomerSettings",
+      "description": "Settings that control how a customer (organization or folder) uses\na service.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
+          "type": "string"
+        },
+        "customerId": {
+          "description": "ID for the customer that consumes the service (see above).\nCustomer id is always in the format of a Gaia id.",
+          "type": "string"
+        },
+        "quotaSettings": {
+          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects under the organization or folder collectively.",
+          "$ref": "QuotaSettings"
+        }
+      }
+    },
     "ListServiceConfigsResponse": {
       "id": "ListServiceConfigsResponse",
       "description": "Response message for ListServiceConfigs method.",
@@ -2447,25 +2491,6 @@
         }
       }
     },
-    "CustomerSettings": {
-      "id": "CustomerSettings",
-      "description": "Settings that control how a customer (identified by a billing account) uses\na service",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
-          "type": "string"
-        },
-        "customerId": {
-          "description": "ID for the customer that consumes the service (see above).\nThe supported types of customers are:\n\n1. domain:{domain}\nA Google Apps domain name. For example, google.com.\n\n2. billingAccount:{billing_account_id}\nA Google Cloud Plafrom billing account. For Example, 123456-7890ab-cdef12.",
-          "type": "string"
-        },
-        "quotaSettings": {
-          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects owned by the customer collectively.",
-          "$ref": "QuotaSettings"
-        }
-      }
-    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -2954,6 +2979,11 @@
             },
             "pageToken": {
               "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+              "location": "query",
+              "type": "string"
+            },
+            "consumerId": {
+              "description": "Include services consumed by the specified consumer.\n\nThe Google Service Management implementation accepts the following\nforms:\n- project:<project_id>\n- project_number:<project_number>\n- organization:<organization number>\n- folder:<folder number>\n\nNote: If consumer_id specifies a folder or an organization, then the\nexpand option is ignored. To retrieve consumer settings at folder or\norganization level, \"ListServiceConsumers\" should be used.\n\nIf consumer_id specifies a project, then the semantics of the API are\nidentical to specifying consumer_project_id.",
               "location": "query",
               "type": "string"
             }
@@ -3496,6 +3526,51 @@
       }
       ,
       "resources": {
+        "consumers": {
+          "methods": {
+            "list": {
+              "id": "servicemanagement.services.consumers.list",
+              "path": "v1/services/{serviceName}/consumers",
+              "flatPath": "v1/services/{serviceName}/consumers",
+              "httpMethod": "GET",
+              "description": "Lists consumer settings for managed services.\nTo search across all services, specify {service_name} as '-'.",
+              "parameters": {
+                "serviceName": {
+                  "description": "If service_name is specified, return only consumer settings for the\nspecified service.\n\nIf not specified, for organizations or folders this will return consumer\nsettings for all services that have defined org-level quotas in the service\nconfiguration. For projects, this will return consumer project settings\nfor all services activated by the consumer project.\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumerId": {
+                  "description": "Include services consumed by the specified consumer.\n\nThe Google Service Management implementation accepts the following\nforms:\n- project:<project_id>\n- project_number:<project_number>\n- organization:<organization number>\n- folder:<folder number>\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Requested size of the next page of data.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Token identifying which result to start with; returned by a previous list\ncall.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "serviceName"
+              ],
+              "response": {
+                "$ref": "ListServiceConsumersResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            }
+          }
+        },
         "configs": {
           "methods": {
             "list": {

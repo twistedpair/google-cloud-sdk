@@ -193,10 +193,21 @@ class _ResourceParser(object):
       UnknownFieldException: If the collection-path's path did not provide
           enough fields.
     """
+    params = self.collection_info.params
     if collection_path is not None:
-      fields = self._GetFieldsForKnownCollection(collection_path)
+      match = _COLLECTIONPATH_RE.match(collection_path)
+      if not match:
+        raise InvalidResourceException(collection_path)
+      collection, path = match.groups()
+
+      if collection and collection != self.collection_info.full_name:
+        raise WrongResourceCollectionException(
+            expected=self.collection_info.full_name,
+            got=collection, path=collection_path)
+
+      fields = _GetParamValuesFromPath(params, path)
     else:
-      fields = [None] * len(self.collection_info.params)
+      fields = [None] * len(params)
 
     ref = Resource(self.collection_info, fields, kwargs,
                    collection_path, base_url, self.params_defaults_func)
@@ -205,80 +216,6 @@ class _ResourceParser(object):
       ref.Resolve(suppress_param_default_err=True)
 
     return ref
-
-  def _GetFieldsForKnownCollection(self, collection_path):
-    """Get the ordered fields for the provided collection-path.
-
-    Args:
-      collection_path: str, The not-None string provided on the command line.
-
-    Returns:
-      [str], The ordered list of URL params corresponding to this parser's
-      resource type.
-
-    Raises:
-      InvalidResourceException: If the provided collection-path is malformed.
-      WrongResourceCollectionException: If the collection-path specified the
-          wrong collection.
-      WrongFieldNumberException: If the collection-path's path provided too many
-          fields.
-      UnknownFieldException: If the collection-path's path did not provide
-          enough fields.
-    """
-
-    match = _COLLECTIONPATH_RE.match(collection_path)
-    if not match:
-      # Right now it is impossible for this exception to be raised: the
-      # regular expression matches all strings. But we will leave it in
-      # in case that ever changes.
-      raise InvalidResourceException(collection_path)
-    collection, path = match.groups()
-
-    if collection and collection != self.collection_info.full_name:
-      raise WrongResourceCollectionException(
-          expected=self.collection_info.full_name,
-          got=collection, path=collection_path)
-
-    # collection-paths that begin with a slash must have an entry for all
-    # ordered params, especially including the project.
-    has_project = path.startswith('/')
-
-    # Pending b/17727265, path might contain multiple items after being split
-    # on a '/'.
-    fields = path.split('/')
-
-    if has_project:
-      # first token must be empty, but we already recorded the fact that the
-      # next token must be the project
-      fields = fields[1:]
-
-    total_param_count = len(self.collection_info.params)
-
-    if has_project and total_param_count != len(fields):
-      raise WrongFieldNumberException(
-          path=path, ordered_params=self.collection_info.params)
-
-    # Check if there were too many fields provided.
-    if len(fields) > total_param_count:
-      raise WrongFieldNumberException(
-          path=path, ordered_params=self.collection_info.params)
-
-    # If the project is not included, we can either have only one or all-but-one
-    # token. So, just simple names or everything that isn't the project.
-    if not has_project and len(fields) not in [1, total_param_count - 1]:
-      raise WrongFieldNumberException(
-          path=path, ordered_params=self.collection_info.params)
-
-    num_missing = total_param_count - len(fields)
-    # pad the beginning with Nones so we don't have to count backwards.
-    fields = [None] * num_missing + fields
-
-    # Did the user enter a literal empty argument at any stage?
-    if '' in fields:
-      raise WrongFieldNumberException(
-          path=path, ordered_params=self.collection_info.params)
-
-    return fields
 
   def __str__(self):
     path_str = ''
@@ -333,13 +270,20 @@ class Resource(object):
     self.Resolve()
     return self.__name
 
+  def FullName(self):
+    """Full resource name without leading /.
+
+    Returns:
+       Unescaped part of SelfLink which is essentially base_url + full_name.
+    """
+    self.Resolve()
+    effective_params = dict(
+        [(k, getattr(self, k) or '*') for k in self._collection_info.params])
+    return urllib.unquote(
+        uritemplate.expand(self._collection_info.path, effective_params))
+
   def SelfLink(self):
     self.Resolve()
-    return self.__self_link
-
-  def WeakSelfLink(self):
-    """Returns a self link containing '*'s for unset parameters."""
-    self.WeakResolve()
     return self.__self_link
 
   def Request(self):
@@ -363,22 +307,6 @@ class Resource(object):
     Raises:
       UnknownFieldException: If, after resolving, one of the fields is still
           unknown.
-    """
-    self.WeakResolve(suppress_param_default_err=suppress_param_default_err)
-    for param in self._collection_info.params:
-      if not getattr(self, param, None):
-        raise UnknownFieldException(self.__collection_path, param)
-
-  def WeakResolve(self, suppress_param_default_err=True):
-    """Attempts to resolve unknown parameters for this resource.
-
-       Unknown parameters are left as None.
-
-    Args:
-      suppress_param_default_err: bool, True by default, False if
-      errors should not be suppressed
-
-    Raises:
       properties.RequiredPropertyError, if a required field is not known.
     """
     for param in self._collection_info.params:
@@ -419,6 +347,10 @@ class Resource(object):
       # part of the resource that cannot be inferred by a resolver or other
       # context, and MUST be provided in the argument.
       self.__name = getattr(self, self._collection_info.params[-1])
+
+    for param in self._collection_info.params:
+      if not getattr(self, param, None):
+        raise UnknownFieldException(self.__collection_path, param)
 
   def __str__(self):
     return self.SelfLink()
@@ -586,6 +518,8 @@ class Registry(object):
     cur_level = self.parsers_by_url
     while tokens:
       token = tokens.pop(0)
+      if token[0] == '{' and token[-1] == '}':
+        token = '{}'
       if token not in cur_level:
         cur_level[token] = {}
       cur_level = cur_level[token]
@@ -705,6 +639,14 @@ class Registry(object):
     return parser.ParseCollectionPath(
         collection_path, kwargs, resolve, base_url)
 
+  def GetCollectionInfo(self, collection_name):
+    api_name = _APINameFromCollection(collection_name)
+    api_version = self.RegisterApiByName(api_name)
+    parser = (self.parsers_by_collection
+              .get(api_name, {}).get(api_version, {})
+              .get(collection_name, None))
+    return parser.collection_info
+
   def ParseURL(self, url):
     """Parse a URL into a Resource.
 
@@ -755,7 +697,6 @@ class Registry(object):
 
     tokens = [api_name, api_version] + resource_path.split('/')
     endpoint = url[:-len(resource_path)]
-    params = {}
 
     # Register relevant API if necessary and possible
     try:
@@ -764,6 +705,7 @@ class Registry(object):
       # The caught InvalidResourceException has a less detailed message.
       raise InvalidResourceException(url)
 
+    params = []
     cur_level = self.parsers_by_url
     for i, token in enumerate(tokens):
       if token in cur_level:
@@ -772,20 +714,19 @@ class Registry(object):
       elif len(cur_level) == 1:
         # If the literal token is not here, and there is only one key, it must
         # be a parameter that will be added to the params dict.
-        param = cur_level.keys()[0]
-        if not param.startswith('{') or not param.endswith('}'):
+        param, next_level = next(cur_level.iteritems())
+        if param != '{}':
           raise InvalidResourceException(url)
 
-        next_level = cur_level[param]
         if len(next_level) == 1 and None in next_level:
           # This is the last parameter so we can combine the remaining tokens.
           token = '/'.join(tokens[i:])
-          params[param[1:-1]] = urllib.unquote(token)
+          params.append(urllib.unquote(token))
           cur_level = next_level
           break
 
         # Clean up the provided value
-        params[param[1:-1]] = urllib.unquote(token)
+        params.append(urllib.unquote(token))
 
         # Keep digging down.
         cur_level = next_level
@@ -802,6 +743,7 @@ class Registry(object):
     if None not in cur_level:
       raise InvalidResourceException(url)
     parser = cur_level[None]
+    params = dict(zip(parser.collection_info.params, params))
     return parser.ParseCollectionPath(
         None, params, resolve=True, base_url=endpoint)
 
@@ -936,3 +878,66 @@ class Registry(object):
 
 # TODO(user): Deglobalize this object, force gcloud to manage it on its own.
 REGISTRY = Registry()
+
+
+def _GetParamValuesFromPath(params, path):
+  """Get the ordered fields for the provided collection-path.
+
+  Args:
+    params: list(str), which might be represented in the path.
+    path: str, The not-None string provided on the command line.
+
+  Returns:
+    [str], The ordered list of URL params corresponding to this parser's
+    resource type.
+
+  Raises:
+    InvalidResourceException: If the provided collection-path is malformed.
+    WrongResourceCollectionException: If the collection-path specified the
+        wrong collection.
+    WrongFieldNumberException: If the collection-path's path provided too many
+        fields.
+    UnknownFieldException: If the collection-path's path did not provide
+        enough fields.
+  """
+
+  # collection-paths that begin with a slash must have an entry for all
+  # ordered params, especially including the project.
+  has_project = path.startswith('/')
+
+  # Pending b/17727265, path might contain multiple items after being split
+  # on a '/'.
+  fields = path.split('/')
+
+  if has_project:
+    # first token must be empty, but we already recorded the fact that the
+    # next token must be the project
+    fields = fields[1:]
+
+  total_param_count = len(params)
+
+  if has_project and total_param_count != len(fields):
+    raise WrongFieldNumberException(
+        path=path, ordered_params=params)
+
+  # Check if there were too many fields provided.
+  if len(fields) > total_param_count:
+    raise WrongFieldNumberException(
+        path=path, ordered_params=params)
+
+  # If the project is not included, we can either have only one or all-but-one
+  # token. So, just simple names or everything that isn't the project.
+  if not has_project and len(fields) not in [1, total_param_count - 1]:
+    raise WrongFieldNumberException(
+        path=path, ordered_params=params)
+
+  num_missing = total_param_count - len(fields)
+  # pad the beginning with Nones so we don't have to count backwards.
+  fields = [None] * num_missing + fields
+
+  # Did the user enter a literal empty argument at any stage?
+  if '' in fields:
+    raise WrongFieldNumberException(
+        path=path, ordered_params=params)
+
+  return fields

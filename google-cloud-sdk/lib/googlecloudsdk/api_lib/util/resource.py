@@ -24,6 +24,11 @@ class CollectionInfo(object):
       api_version: str, version id for this api.
       path: str, Atomic URI template for this resource.
       flat_paths: {name->path}, Named detailed URI templates for this resource.
+          If there is an entry ''->path it replaces path and corresponding param
+          attributes for resources parsing. path and param are still used when
+          generating requests, see request_type attribute.
+          Also note that key in this dictionary is referred as subcollection,
+          as it extends 'name' attribute.
       params: list(str), description of parameters in the path.
       request_type: str, name of apitools generated type for Get request.
       name: str, collection name for this resource without leading api_name.
@@ -44,6 +49,30 @@ class CollectionInfo(object):
   @property
   def full_name(self):
     return self.api_name + '.'  + self.name
+
+  def GetParams(self, subcollection):
+    """Returns ordered list of parameters for given subcollection.
+
+    Args:
+      subcollection: str, key name for flat_paths. If self.flat_paths is empty
+          use '' (or any other falsy value) for subcollection to get default
+          path parameters.
+    Returns:
+      Paramaters present in specified subcollection path.
+    Raises:
+      KeyError if given subcollection does not exists.
+    """
+    # If default collection requested and we are not using custom paths.
+    if not subcollection and not self.flat_paths:
+      return self.params
+    return GetParamsFromPath(self.flat_paths[subcollection])
+
+  def GetPath(self, subcollection):
+    """Returns uri template path for given subcollection."""
+    # If default collection requested and we are not using custom paths.
+    if not subcollection and not self.flat_paths:
+      return self.path
+    return self.flat_paths[subcollection]
 
   def __cmp__(self, other):
     return cmp((self.api_name, self.api_version, self.name),
@@ -101,6 +130,29 @@ def SplitDefaultEndpointUrl(url):
     else:
       version = None
   return api_name, version, resource_path
+
+
+def GetParamsFromPath(path):
+  """Extract parameters from uri template path.
+
+    See https://tools.ietf.org/html/rfc6570. This function makes simplifying
+    assumption that all parameter names are surrounded by /{ and }/.
+
+  Args:
+    path: str, uri template path.
+  Returns:
+    list(str), list of parameters in the template path.
+  """
+  parts = path.split('/')
+  params = []
+  for part in parts:
+    if part.startswith('{') and part.endswith('}'):
+      part = part[1:-1]
+      if part.startswith('+'):
+        params.append(part[1:])
+      else:
+        params.append(part)
+  return params
 
 
 def _StripUrl(url):

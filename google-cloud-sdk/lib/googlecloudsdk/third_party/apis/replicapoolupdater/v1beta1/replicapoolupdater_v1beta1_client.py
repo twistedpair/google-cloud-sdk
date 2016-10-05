@@ -318,6 +318,32 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      """Get the details of a rollout.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'replicapoolupdater.rollout.get',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutGetRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Inserts and starts a new rollout.
 
@@ -341,6 +367,32 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
         request_field=u'rollout',
         request_type_name=u'ReplicapoolupdaterRolloutInsertRequest',
         response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Resume a rollout. This lets the rollout continue updating instances after a pause.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolloutResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'replicapoolupdater.rollout.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutListRequest',
+        response_type_name=u'ListRolloutResponse',
         supports_download=False,
     )
 

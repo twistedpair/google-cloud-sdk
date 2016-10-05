@@ -28,6 +28,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'rollingUpdate'],
       'ReplicapoolupdaterRollingUpdatesGetRequest',)
+  ROLLOUT = (
+      'rollout',
+      'projects/{project}/zones/{zone}/rollouts/{rollout}',
+      {},
+      [u'project', u'zone', u'rollout'],
+      'ReplicapoolupdaterRolloutGetRequest',)
   ZONEOPERATIONS = (
       'zoneOperations',
       'projects/{project}/zones/{zone}/operations/{operation}',

@@ -142,8 +142,10 @@ def WrapMessageInNargs(msg, nargs):
   """
   if nargs == '+':
     return '{msg} [{msg} ...]'.format(msg=msg)
-  elif nargs == '*' or nargs == argparse.REMAINDER:
+  elif nargs == '*':
     return '[{msg} ...]'.format(msg=msg)
+  elif nargs == argparse.REMAINDER:
+    return '[-- {msg} ...]'.format(msg=msg)
   elif nargs == '?':
     return '[{msg}]'.format(msg=msg)
   else:
@@ -167,13 +169,16 @@ def FlagGroupSortKey(flags):
 def GetFlagMetavar(name, metavar, flag):
   separator = '=' if name.startswith('--') else ' '
   if isinstance(flag.type, arg_parsers.ArgList):
-    msg = '[{metavar},...]'.format(metavar=metavar)
-    if flag.type.min_length:
-      msg = ','.join([metavar]*flag.type.min_length+[msg])
+    msg = flag.type.GetUsageMsg(bool(flag.metavar), metavar)
     return separator + msg
   if metavar == ' ':
     return ''
   return separator + metavar
+
+
+def _ApplyMarkdownItalic(msg):
+  return re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
+                base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
 
 
 def PositionalDisplayString(arg, markdown=False):
@@ -188,8 +193,7 @@ def PositionalDisplayString(arg, markdown=False):
   """
   msg = arg.metavar or arg.dest.upper()
   if markdown:
-    msg = re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
-                 base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
+    msg = _ApplyMarkdownItalic(msg)
   return ' ' + WrapMessageInNargs(msg, arg.nargs)
 
 
@@ -220,17 +224,18 @@ def FlagDisplayString(arg, brief=False, markdown=False):
     else:
       display_string = ', '.join(arg.option_strings)
   else:
-    if markdown:
-      metavar = re.sub('(\\b[a-zA-Z][-a-zA-Z_0-9]*)',
-                       base.MARKDOWN_ITALIC + '\\1' + base.MARKDOWN_ITALIC,
-                       metavar)
-    display_string = ', '.join(
-        ['{bb}{flag}{be}{metavar}'.format(
-            bb=base.MARKDOWN_BOLD if markdown else '',
-            flag=option_string,
-            be=base.MARKDOWN_BOLD if markdown else '',
-            metavar=GetFlagMetavar(option_string, metavar, arg))
-         for option_string in arg.option_strings])
+    display_list = []
+    for option_string in arg.option_strings:
+      flag_metavar = GetFlagMetavar(option_string, metavar, arg)
+      if markdown:
+        flag_metavar = _ApplyMarkdownItalic(flag_metavar)
+      display_list.append(
+          '{bb}{flag}{be}{flag_metavar}'.format(
+              bb=base.MARKDOWN_BOLD if markdown else '',
+              flag=option_string,
+              be=base.MARKDOWN_BOLD if markdown else '',
+              flag_metavar=flag_metavar))
+    display_string = ', '.join(display_list)
     if not arg.required and arg.default:
       if isinstance(arg.default, list):
         default = ','.join(arg.default)

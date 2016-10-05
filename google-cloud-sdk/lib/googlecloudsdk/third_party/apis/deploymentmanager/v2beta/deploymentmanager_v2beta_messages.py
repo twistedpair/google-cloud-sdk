@@ -1074,7 +1074,8 @@ class ManifestsListResponse(_messages.Message):
 
 
 class OldCompositeType(_messages.Message):
-  """Contents of a composite type.
+  """This proto was from the alpha, and is now DEPRECATED. Contents of a
+  composite type.
 
   Fields:
     files: Files for the template type.

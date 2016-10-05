@@ -61,6 +61,32 @@ def InstanceArgumentForRoute(required=True):
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
+def InstanceArgumentForTargetInstance(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='instance',
+      name='--instance',
+      completion_resource_id='compute.instances',
+      required=required,
+      zonal_collection='compute.instances',
+      short_help=('The name of the virtual machine instance that will handle '
+                  'the traffic.'),
+      zone_explanation=(
+          'If not specified, it will be set to the same as zone.'))
+
+
+def InstanceArgumentForTargetPool(action, required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='instance',
+      name='--instances',
+      completion_resource_id='compute.instances',
+      required=required,
+      zonal_collection='compute.instances',
+      short_help=(
+          'Specifies a list of instances to {0} the target pool.'.format(action)
+      ),
+      plural=True)
+
+
 def AddImageArgs(parser):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -216,6 +242,72 @@ def AddDiskArgs(parser):
       """
 
 
+def AddCreateDiskArgs(parser):
+  """Adds create-disk argument for instances and instance-templates."""
+
+  create_disk = parser.add_argument(
+      '--create-disk',
+      type=arg_parsers.ArgDict(spec={
+          'name': str,
+          'mode': str,
+          'image': str,
+          'image-family': str,
+          'image-project': str,
+          'size': arg_parsers.BinarySize(lower_bound='10GB'),
+          'type': str,
+          'device-name': str,
+          'auto-delete': str,
+      }),
+      action='append',
+      help='Creates and attaches persistent disks to the instances.',
+      metavar='PROPERTY=VALUE')
+  create_disk.detailed_help = """
+      Creates and attaches persistent disks to the instances.
+
+      *name*::: Specifies the name of the disk. This option cannot be
+      specified if more than one instance is being created.
+
+      *mode*::: Specifies the mode of the disk. Supported options
+      are ``ro'' for read-only and ``rw'' for read-write. If
+      omitted, ``rw'' is used as a default.
+
+      *image*::: Specifies the name of the image that the disk will be
+      initialized with. A new disk will be created based on the given
+      image. To view a list of public images and projects, run
+      `$ gcloud compute images list`. If omitted image-family must be
+      specified to identify the image.
+
+      *image-family*::: The family of the image that the disk will be
+      initialized with. When a family is specified instead of an image,
+      the latest non-deprecated image associated with that family is
+      used.
+
+      *image-project*::: The project that the image or image family
+      belongs to. If not specified and either an image or image family
+      is provided, the project of the instance is assumed.
+
+      *size*::: The size of the disk. The value must be a whole number
+      followed by a size unit of ``KB'' for kilobyte, ``MB'' for
+      megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For
+      example, ``10GB'' will produce a 10 gigabyte disk. Disk size must
+      be a multiple of 1 GB. If not specified, the default image size
+      will be used for the new disk.
+
+      *type*::: The type of the disk. To get a list of available disk
+      types, run $ gcloud compute disk-types list. The default disk type
+      is ``pd-standard''.
+
+      *device-name*::: An optional name that indicates the disk name
+      the guest operating system will see. If omitted, a device name
+      of the form ``persistent-disk-N'' will be used.
+
+      *auto-delete*::: If ``yes'',  this persistent disk will be
+      automatically deleted when the instance is deleted. However,
+      if the disk is later detached from the instance, this option
+      won't apply. The default value for this is ``no''.
+      """
+
+
 def AddCustomMachineTypeArgs(parser):
   """Adds arguments related to custom machine types for instances."""
   custom_cpu = parser.add_argument(
@@ -307,6 +399,7 @@ def ValidateDiskFlags(args):
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
   ValidateDiskBootFlags(args)
+  ValidateCreateDiskFlags(args)
 
 
 def ValidateDiskCommonFlags(args):
@@ -390,6 +483,37 @@ def ValidateDiskBootFlags(args):
       raise exceptions.ToolException(
           '[--no-boot-disk-auto-delete] can only be used when creating a '
           'new boot disk.')
+
+
+def ValidateCreateDiskFlags(args):
+  """Validates the values of create-disk related flags."""
+  for disk in getattr(args, 'create_disk', []) or []:
+    disk_name = disk.get('name')
+    if len(args.names) > 1 and disk_name:
+      raise exceptions.ToolException(
+          'Cannot create a disk with [name]={} for more than one instance.'
+          .format(disk_name))
+    if not disk_name and args.require_csek_key_create and args.csek_key_file:
+      raise exceptions.ToolException(
+          'Cannot create a disk with customer supplied key when disk name '
+          'is not specified.')
+
+    mode_value = disk.get('mode')
+    if mode_value and mode_value not in ('rw', 'ro'):
+      raise exceptions.ToolException(
+          'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
+          .format(mode_value))
+
+    image_value = disk.get('image')
+    image_family_value = disk.get('image-family')
+    if image_value and image_family_value:
+      raise exceptions.ToolException(
+          'Cannot specify [image] and [image-family] for a [--create-disk].'
+          'The fields are mutually excusive.')
+    if not image_value and not image_family_value:
+      raise exceptions.ToolException(
+          'Either [image] or [image-family] must be specified for '
+          '[--create-disk].')
 
 
 def AddAddressArgs(parser, instances=True,
@@ -528,7 +652,9 @@ def AddServiceAccountAndScopeArgs(parser):
       '--no-scopes', action='store_true',
       help='Remove all scopes from the instance')
   scopes = scopes_group.add_argument(
-      '--scopes', nargs='*', help='Scopes for the instance')
+      '--scopes',
+      type=arg_parsers.ArgList(),
+      help='Comma separated list of scopes for the instance')
   scopes.detailed_help = """\
   If not provided instance will keep the scopes it currently has.
 

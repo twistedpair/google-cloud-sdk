@@ -92,6 +92,16 @@ class InstanceUpdateList(_messages.Message):
   selfLink = _messages.StringField(4)
 
 
+class ListRolloutResponse(_messages.Message):
+  """A ListRolloutResponse object.
+
+  Fields:
+    resources: A Rollout attribute.
+  """
+
+  resources = _messages.MessageField('Rollout', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   """An operation resource, used to manage asynchronous API requests.
 
@@ -397,6 +407,20 @@ class ReplicapoolupdaterRolloutCommitRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ReplicapoolupdaterRolloutGetRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutGetRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
   """A ReplicapoolupdaterRolloutInsertRequest object.
 
@@ -426,6 +450,26 @@ class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
   rollout = _messages.MessageField('Rollout', 2)
   updatePolicyInitialisationMethod = _messages.EnumField('UpdatePolicyInitialisationMethodValueValuesEnum', 3)
   zone = _messages.StringField(4, required=True)
+
+
+class ReplicapoolupdaterRolloutListRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression for filtering listed resources.
+    maxResults: Optional. Maximum count of results to be returned. Maximum
+      value is 500 and default value is 500.
+    pageToken: Optional. Tag returned by a previous list request truncated by
+      maxResults. Used to continue a previous list request.
+    project: The Google Developers Console project name.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ReplicapoolupdaterRolloutPauseRequest(_messages.Message):

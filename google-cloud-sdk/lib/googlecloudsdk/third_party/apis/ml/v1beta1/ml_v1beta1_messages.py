@@ -42,496 +42,6 @@ class GoogleApiHttpBody(_messages.Message):
   data = _messages.BytesField(2)
 
 
-class GoogleCloudMlV1alpha3CreateVersionRequest(_messages.Message):
-  """Uploads the provided trained model version to Cloud Machine Learning.
-
-  Fields:
-    parent: The name of the model.
-    version: The version details.
-  """
-
-  parent = _messages.StringField(1)
-  version = _messages.MessageField('GoogleCloudMlV1alpha3Version', 2)
-
-
-class GoogleCloudMlV1alpha3HyperparameterJobResult(_messages.Message):
-  """Represents the result of a hyperparameter tuning run from a training job.
-
-  Messages:
-    HyperparametersValue: The hyperparameters given to this run.
-
-  Fields:
-    bestObjectiveValue: The best objective value seen for this run.
-    bestTrainingStep: The training step associated with the best objective
-      value.
-    hyperparameters: The hyperparameters given to this run.
-    runId: The run id for these results.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class HyperparametersValue(_messages.Message):
-    """The hyperparameters given to this run.
-
-    Messages:
-      AdditionalProperty: An additional property for a HyperparametersValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type HyperparametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a HyperparametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  bestObjectiveValue = _messages.FloatField(1)
-  bestTrainingStep = _messages.IntegerField(2)
-  hyperparameters = _messages.MessageField('HyperparametersValue', 3)
-  runId = _messages.StringField(4)
-
-
-class GoogleCloudMlV1alpha3HyperparameterSpec(_messages.Message):
-  """Represents a set of hyperparameters to optimize.
-
-  Enums:
-    GoalValueValuesEnum: Should the evaluation metric be maximized or
-      minimized?
-
-  Fields:
-    goal: Should the evaluation metric be maximized or minimized?
-    maxParallelRuns: How many training runs should be run in parallel. More
-      parallelization will be faster, but parallel runs only benefit from the
-      information gained by previous runs. Each run will use the number of
-      workers specified by the worker, parameter server, and evaluator specs.
-      Defaults to one.
-    maxRuns: How many training runs should be attempted to optimize. Defaults
-      to one.
-    params: The set of parameters to tune.
-  """
-
-  class GoalValueValuesEnum(_messages.Enum):
-    """Should the evaluation metric be maximized or minimized?
-
-    Values:
-      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
-      MAXIMIZE: Maximize the goal metric.
-      MINIMIZE: Minimize the goal metric.
-    """
-    GOAL_TYPE_UNSPECIFIED = 0
-    MAXIMIZE = 1
-    MINIMIZE = 2
-
-  goal = _messages.EnumField('GoalValueValuesEnum', 1)
-  maxParallelRuns = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxRuns = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  params = _messages.MessageField('GoogleCloudMlV1alpha3ParameterConfig', 4, repeated=True)
-
-
-class GoogleCloudMlV1alpha3JobMetadata(_messages.Message):
-  """Represents the metadata of the longrunning.Operation created by the
-  SubmitTrainingJob or SubmitPredictionJob method.
-
-  Enums:
-    JobStateValueValuesEnum: The detailed state of a job.
-
-  Messages:
-    StatusMetricsSnapshotValue: Progress report. A set of key-value pairs that
-      convey the current state of the job.
-
-  Fields:
-    createTime: When the job was submitted.
-    createVersionRequest: The create version job request recorded. The create
-      version job request recorded.
-    endTime: When the job processing was completed.
-    isCancellationRequested: Whether the cancellation of this job has been
-      requested.
-    jobState: The detailed state of a job.
-    predictionRequest: The prediction job request recorded.
-    predictionResult: The current prediction job result.
-    startTime: When the job processing was started.
-    statusMetricsSnapshot: Progress report. A set of key-value pairs that
-      convey the current state of the job.
-    statusMetricsSnapshotTime: The time at which the 'status' field was
-      populated.
-    trainingRequest: The training job request recorded.
-    trainingResult: The current training job result.
-  """
-
-  class JobStateValueValuesEnum(_messages.Enum):
-    """The detailed state of a job.
-
-    Values:
-      UNKNOWN_JOB_STATE: <no description>
-      QUEUED: <no description>
-      PREPARING: <no description>
-      RUNNING: <no description>
-      SUCCEEDED: <no description>
-      FAILED: <no description>
-      CANCELLED: <no description>
-    """
-    UNKNOWN_JOB_STATE = 0
-    QUEUED = 1
-    PREPARING = 2
-    RUNNING = 3
-    SUCCEEDED = 4
-    FAILED = 5
-    CANCELLED = 6
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatusMetricsSnapshotValue(_messages.Message):
-    """Progress report. A set of key-value pairs that convey the current state
-    of the job.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        StatusMetricsSnapshotValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        StatusMetricsSnapshotValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a StatusMetricsSnapshotValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  createVersionRequest = _messages.MessageField('GoogleCloudMlV1alpha3CreateVersionRequest', 2)
-  endTime = _messages.StringField(3)
-  isCancellationRequested = _messages.BooleanField(4)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 5)
-  predictionRequest = _messages.MessageField('GoogleCloudMlV1alpha3SubmitPredictionJobRequest', 6)
-  predictionResult = _messages.MessageField('GoogleCloudMlV1alpha3PredictionJobResult', 7)
-  startTime = _messages.StringField(8)
-  statusMetricsSnapshot = _messages.MessageField('StatusMetricsSnapshotValue', 9)
-  statusMetricsSnapshotTime = _messages.StringField(10)
-  trainingRequest = _messages.MessageField('GoogleCloudMlV1alpha3SubmitTrainingJobRequest', 11)
-  trainingResult = _messages.MessageField('GoogleCloudMlV1alpha3TrainingJobResult', 12)
-
-
-class GoogleCloudMlV1alpha3MasterSpec(_messages.Message):
-  """Represents a specification of master worker.
-
-  Fields:
-    replicaCount: The required number of master worker servers. Defaults to 1.
-      If the number of replicas is greater than 1, the first master worker
-      will be the one monitored for success/failure.
-    resources: Resource requirements for a master. If not specified, default
-      master configuration will be used.
-  """
-
-  replicaCount = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
-
-
-class GoogleCloudMlV1alpha3ParameterConfig(_messages.Message):
-  """Represents a single hyperparameter to optimize.
-
-  Enums:
-    ScaleTypeValueValuesEnum: How the parameter should be scaled to the
-      hypercube. Leave unset for categorical Parameters. We strongly suggest
-      using some kind of scaling for real or integral parameters (e.g.,
-      UNIT_LINEAR_SCALE).
-    TypeValueValuesEnum: The type of the parameter.
-
-  Fields:
-    categories: The list of possible categories. REQUIRED if
-      type==CATEGORICAL.
-    feasiblePoints: A list of feasible points, to be provided if and only if
-      type==DISCRETE. The list should be in strictly increasing order. For
-      instance, this Parameter might have possible settings of 1.5, 2.5, and
-      4.0. This list shouldn't be too large - probably not more than 1,000
-      points.
-    maxValue: max_value is REQUIRED if type==DOUBLE or type==INTEGER. This
-      field should be unset if type==CATEGORICAL. This value should be
-      integers if type==INTEGER.
-    minValue: min_value is REQUIRED if type==DOUBLE or type==INTEGER. This
-      field should be unset if type==CATEGORICAL. This value should be
-      integers if type==INTEGER.
-    name: The parameter name must be unique amongst all ParameterConfigs in a
-      HyperparameterConfig. E.g., "learning_rate".
-    scaleType: How the parameter should be scaled to the hypercube. Leave
-      unset for categorical Parameters. We strongly suggest using some kind of
-      scaling for real or integral parameters (e.g., UNIT_LINEAR_SCALE).
-    type: The type of the parameter.
-  """
-
-  class ScaleTypeValueValuesEnum(_messages.Enum):
-    """How the parameter should be scaled to the hypercube. Leave unset for
-    categorical Parameters. We strongly suggest using some kind of scaling for
-    real or integral parameters (e.g., UNIT_LINEAR_SCALE).
-
-    Values:
-      NONE: By default, no scaling is applied.
-      UNIT_LINEAR_SCALE: Scales the feasible space to (0, 1) linearly.
-      UNIT_LOG_SCALE: Scales the feasible space logarithmically to (0, 1). The
-        entire feasible space must be strictly positive.
-      UNIT_REVERSE_LOG_SCALE: Scales the feasible space "reverse"
-        logarithmically to (0, 1). The result is that values close to the top
-        of the feasible space are spread out more than points near the bottom.
-        The entire feasible space must be strictly positive.
-    """
-    NONE = 0
-    UNIT_LINEAR_SCALE = 1
-    UNIT_LOG_SCALE = 2
-    UNIT_REVERSE_LOG_SCALE = 3
-
-  class TypeValueValuesEnum(_messages.Enum):
-    """The type of the parameter.
-
-    Values:
-      PARAMETER_TYPE_UNSPECIFIED: Parameter type must be specified.
-        Unspecified values will be treated as an error.
-      DOUBLE: Type for real-valued parameters.
-      INTEGER: Type for integral parameters.
-      CATEGORICAL: The parameter is categorical, with a value chosen from the
-        categories field.
-      DISCRETE: The parameter is real valued, with a fixed set of feasible
-        points. If type==DISCRETE, feasible_points must be provided, and
-        {min_value, max_value} will be ignored.
-    """
-    PARAMETER_TYPE_UNSPECIFIED = 0
-    DOUBLE = 1
-    INTEGER = 2
-    CATEGORICAL = 3
-    DISCRETE = 4
-
-  categories = _messages.StringField(1, repeated=True)
-  feasiblePoints = _messages.FloatField(2, repeated=True)
-  maxValue = _messages.FloatField(3)
-  minValue = _messages.FloatField(4)
-  name = _messages.StringField(5)
-  scaleType = _messages.EnumField('ScaleTypeValueValuesEnum', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-
-
-class GoogleCloudMlV1alpha3ParameterServerSpec(_messages.Message):
-  """Represents a specification of parameter servers.
-
-  Fields:
-    replicaCount: The required number of parameter servers. Defaults to 1.
-    resources: Resource requirements for a single parameter server. If not
-      specified, default parameter server configuration will be used.
-  """
-
-  replicaCount = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
-
-
-class GoogleCloudMlV1alpha3PredictionJobResult(_messages.Message):
-  """Represents the result of the longrunning.Operation created by the
-  SubmitPredictionJob method.
-
-  Fields:
-    instancesProcessed: The number of data instances processed
-    outputUri: The URI of the output dir provided at job creation time.
-  """
-
-  instancesProcessed = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  outputUri = _messages.StringField(2)
-
-
-class GoogleCloudMlV1alpha3ResourceSpec(_messages.Message):
-  """Resource specification for a program running inside a VM.
-
-  Fields:
-    cpus: The number of CPUs.
-    disk: The required disk size (in bytes).
-    gpus: The number of GPUs. Only allowed to be set within WorkerSpec.
-    ram: The required RAM size (in bytes).
-  """
-
-  cpus = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  disk = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  gpus = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  ram = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-
-
-class GoogleCloudMlV1alpha3SubmitPredictionJobRequest(_messages.Message):
-  """Request to submit a batch prediction job against a trained model.
-
-  Fields:
-    inputUris: URIs of the TFRecord input data files. May contain file-system
-      appropriate wildcards (Google Cloud Storage prefixes, for example.).
-    jobName: The job name. Must be unique within the project.
-    outputUri: The uri to which output is written, a Google Cloud Storage
-      prefix for example.
-    parent: The name of the model against which prediction should be
-      performed. It is of the form:
-      /projects/project_id/models/model_name/versions/version_id. The version
-      information may be omitted, in which case prediction is performed
-      against the default version.
-    zone: Optional. The Google Compute Engine zone to run the training job in.
-      If not specified, the system will pick a zone based on the job
-      requirements. It is the user's responsibility to procure quota in this
-      zone.
-  """
-
-  inputUris = _messages.StringField(1, repeated=True)
-  jobName = _messages.StringField(2)
-  outputUri = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  zone = _messages.StringField(5)
-
-
-class GoogleCloudMlV1alpha3SubmitTrainingJobRequest(_messages.Message):
-  """Request message for the SubmitTrainingJob method.
-
-  Enums:
-    LogLevelValueValuesEnum: Specify minimun log levels.
-    TensorflowVersionValueValuesEnum: The version of TensorFlow to use. If
-      unset, defaults to LATEST.
-
-  Fields:
-    evalDataPaths: The URIs of the data used for evaluation.
-    hyperparameters: Optional set of Hyperparameters to tune.
-    jobArgs: Additional command line arguments to pass to the program.
-    jobName: The job name. Must be unique within the project.
-    logLevel: Specify minimun log levels.
-    masterSpec: Specification of master workers. The first master worker will
-      be the task monitored for job success/failure.
-    metadataPath: Optional. The URI of the file containing metadata.
-    moduleName: The python module name to run after installing the trainer_uri
-      packages. The worker will be given a flag telling the type of the
-      process: worker, parameter server or evaluator. Required if docker_image
-      is not set.
-    outputPath: The URI of the Google Cloud Storage location to which output
-      should be written. This URI may have additional subdirectories appended
-      to it, e.g., during hyperparameter tuning, and the possibly modified URI
-      is passed to the binary as the --output_path flag. Training binaries
-      should generally respect this parameter for their output and are
-      required to do so when launching from Google Cloud Dataflow or when
-      using hyperparameter tuning.
-    parent: The project name.
-    psSpec: Specification of parameter servers.
-    tensorflowVersion: The version of TensorFlow to use. If unset, defaults to
-      LATEST.
-    trainDataPaths: The URIs of the training data.
-    trainerUri: Tarball Python Packages from Google Cloud Storage with the
-      training program and any additional dependencies. At least one is
-      required if docker_image is not set.
-    workerSpec: Specification of workers.
-    zone: Optional. The Google Compute Engine zone to run the training job in.
-      If not specified, the system will pick a zone based on the job
-      requirements. It is the user's responsibility to procure quota in this
-      zone.
-  """
-
-  class LogLevelValueValuesEnum(_messages.Enum):
-    """Specify minimun log levels.
-
-    Values:
-      UNKNOWN: No log level specified.
-      DEBUG: Debug logs and above will be saved.
-      INFO: Info logs and above will be saved.
-      WARNING: Warning logs and above will be saved.
-      ERROR: Error logs and above will be saved.
-      CRITICAL: Only critical logs will be saved.
-    """
-    UNKNOWN = 0
-    DEBUG = 1
-    INFO = 2
-    WARNING = 3
-    ERROR = 4
-    CRITICAL = 5
-
-  class TensorflowVersionValueValuesEnum(_messages.Enum):
-    """The version of TensorFlow to use. If unset, defaults to LATEST.
-
-    Values:
-      LATEST: Equivalent to the latest supported version, i.e., the last
-        version in this list of enums.
-      V_0_9_1: Tensorflow version 0.9.1
-    """
-    LATEST = 0
-    V_0_9_1 = 1
-
-  evalDataPaths = _messages.StringField(1, repeated=True)
-  hyperparameters = _messages.MessageField('GoogleCloudMlV1alpha3HyperparameterSpec', 2)
-  jobArgs = _messages.StringField(3, repeated=True)
-  jobName = _messages.StringField(4)
-  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 5)
-  masterSpec = _messages.MessageField('GoogleCloudMlV1alpha3MasterSpec', 6)
-  metadataPath = _messages.StringField(7)
-  moduleName = _messages.StringField(8)
-  outputPath = _messages.StringField(9)
-  parent = _messages.StringField(10)
-  psSpec = _messages.MessageField('GoogleCloudMlV1alpha3ParameterServerSpec', 11)
-  tensorflowVersion = _messages.EnumField('TensorflowVersionValueValuesEnum', 12)
-  trainDataPaths = _messages.StringField(13, repeated=True)
-  trainerUri = _messages.StringField(14, repeated=True)
-  workerSpec = _messages.MessageField('GoogleCloudMlV1alpha3WorkerSpec', 15)
-  zone = _messages.StringField(16)
-
-
-class GoogleCloudMlV1alpha3TrainingJobResult(_messages.Message):
-  """Represents the result of the longrunning.Operation created by the
-  SubmitTrainingJob method.
-
-  Fields:
-    outputPath: The URI of the output location provided at job creation time.
-    runs: Results for individual Hyperparameter runs.
-    runsCompleted: The number of tuning runs completed successfully.
-    stepsCompleted: The accomplished number of steps.
-  """
-
-  outputPath = _messages.StringField(1)
-  runs = _messages.MessageField('GoogleCloudMlV1alpha3HyperparameterJobResult', 2, repeated=True)
-  runsCompleted = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  stepsCompleted = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-
-
-class GoogleCloudMlV1alpha3Version(_messages.Message):
-  """Represents a version of the model.
-
-  Fields:
-    createTime: The creation time of the version.
-    isDefault: Whether the version is default within the model.
-    lastUseTime: The last usage time of the version.
-    name: The user-specified name of the model version.
-    originUri: Google Cloud Storage location containing the model graph,
-      weights and additional metadata at the moment when the version is
-      created.
-  """
-
-  createTime = _messages.StringField(1)
-  isDefault = _messages.BooleanField(2)
-  lastUseTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  originUri = _messages.StringField(5)
-
-
-class GoogleCloudMlV1alpha3WorkerSpec(_messages.Message):
-  """Represents a specification of training workers.
-
-  Fields:
-    replicaCount: The required number of workers. Defaults to 1.
-    resources: Resource requirements for a single worker. Optional. If not
-      specified, default worker configuration will be used.
-  """
-
-  replicaCount = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
-
-
 class GoogleCloudMlV1beta1CancelJobRequest(_messages.Message):
   """Request message for the CancelJob method."""
 
@@ -1398,7 +908,6 @@ class MlProjectsJobsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Specifies the subset of jobs to retrieve.
-    orderBy: Optional. Specifies the ordering of the jobs.
     pageSize: Optional. The number of jobs to retrieve per "page" of results.
       If you specify a page size, and the size you provide is less than the
       total number of jobs, the response will include a list of that many jobs
@@ -1414,10 +923,9 @@ class MlProjectsJobsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectsId = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectsId = _messages.StringField(4, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):
@@ -1464,8 +972,6 @@ class MlProjectsModelsListRequest(_messages.Message):
   """A MlProjectsModelsListRequest object.
 
   Fields:
-    filter: Optional. Specifies the subset of models to retrieve.
-    orderBy: Optional. Specifies the ordering of the models.
     pageSize: Optional. The page size.
     pageToken: Optional. A token for for continuing the enumeration.
     projectsId: Part of `parent`. Required. The name of the project whose
@@ -1473,11 +979,9 @@ class MlProjectsModelsListRequest(_messages.Message):
       specified project.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectsId = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  projectsId = _messages.StringField(3, required=True)
 
 
 class MlProjectsModelsVersionsCreateRequest(_messages.Message):
@@ -1531,9 +1035,7 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
   """A MlProjectsModelsVersionsListRequest object.
 
   Fields:
-    filter: Optional. Specifies the subset of versions to retrieve.
     modelsId: Part of `parent`. See documentation of `projectsId`.
-    orderBy: Optional. Specifies the ordering of the versions.
     pageSize: Optional. The page size.
     pageToken: Optional. A token for continuing the enumeration.
     projectsId: Part of `parent`. Required. The name of the model for which to
@@ -1541,12 +1043,10 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
       project.
   """
 
-  filter = _messages.StringField(1)
-  modelsId = _messages.StringField(2, required=True)
-  orderBy = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  projectsId = _messages.StringField(6, required=True)
+  modelsId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectsId = _messages.StringField(4, required=True)
 
 
 class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):

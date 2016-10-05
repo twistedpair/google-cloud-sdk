@@ -439,19 +439,21 @@ SET_NAMED_PORTS_HELP = {
 
 
 def CreateInstanceReferences(
-    scope_prompter, compute_client, group_ref, instance_names):
+    resources, compute_client, igm_ref, instance_names):
   """Creates reference to instances in instance group (zonal or regional)."""
-  compute = compute_client.apitools_client
-  if group_ref.Collection() == 'compute.instanceGroupManagers':
-    instances_refs = scope_prompter.CreateZonalReferences(
-        instance_names, group_ref.zone, resource_type='instances')
-    return [instance_ref.SelfLink() for instance_ref in instances_refs]
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    instance_refs = []
+    for instance in instance_names:
+      instance_refs.append(resources.Parse(
+          instance, collection='compute.instances',
+          params={'zone': igm_ref.zone}))
+    return [instance_ref.SelfLink() for instance_ref in instance_refs]
   else:
-    service = compute.regionInstanceGroupManagers
+    service = compute_client.apitools_client.regionInstanceGroupManagers
     request = service.GetRequestType('ListManagedInstances')(
-        instanceGroupManager=group_ref.Name(),
-        region=group_ref.region,
-        project=group_ref.project)
+        instanceGroupManager=igm_ref.Name(),
+        region=igm_ref.region,
+        project=igm_ref.project)
     results = compute_client.MakeRequests(requests=[
         (service, 'ListManagedInstances', request)])[0].managedInstances
     # here we assume that instances are uniquely named within RMIG

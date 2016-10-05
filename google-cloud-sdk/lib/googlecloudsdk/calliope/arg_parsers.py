@@ -682,6 +682,13 @@ class ArgList(ArgType):
 
     return arg_list
 
+  def GetUsageMsg(self, is_custom_metavar, metavar):
+    is_custom_metavar = is_custom_metavar
+    msg = '[{metavar},...]'.format(metavar=metavar)
+    if self.min_length:
+      msg = ','.join([metavar]*self.min_length+[msg])
+    return msg
+
 
 class ArgDict(ArgList):
   """Interpret an argument value as a dict.
@@ -691,7 +698,8 @@ class ArgDict(ArgList):
   key-value pairs to get a dict.
   """
 
-  def __init__(self, value_type=None, spec=None, min_length=0, max_length=None):
+  def __init__(self, value_type=None, spec=None, min_length=0, max_length=None,
+               allow_key_only=False):
     """Initialize an ArgDict.
 
     Args:
@@ -699,9 +707,11 @@ class ArgDict(ArgList):
       spec: {str: (str)->str}, A mapping of expected keys to functions.
         The functions are applied to the values. If None, an arbitrary
         set of keys will be accepted. If not None, it is an error for the
-        user to supply a key that is not in the spec.
+        user to supply a key that is not in the spec. If the function specified
+        is None, then accept a key only without '=value'.
       min_length: int, The minimum number of keys in the dict.
       max_length: int, The maximum number of keys in the dict.
+      allow_key_only: bool, Allow empty values.
 
     Returns:
       (str)->{str:str}, A function to parse the dict in the argument.
@@ -715,14 +725,19 @@ class ArgDict(ArgList):
       raise ValueError('cannot have both spec and sub_type')
     self.value_type = value_type
     self.spec = spec
+    self.allow_key_only = allow_key_only
 
   def _ApplySpec(self, key, value):
     if key in self.spec:
+      if self.spec[key] is None:
+        if value:
+          raise ArgumentTypeError('Key [{0}] does not take a value'.format(key))
+        return None
       return self.spec[key](value)
     else:
       raise ArgumentTypeError(
           _GenerateErrorMessage(
-              'valid keys are {0}'.format(
+              'valid keys are [{0}]'.format(
                   ', '.join(sorted(self.spec.keys()))),
               user_input=key))
 
@@ -731,16 +746,15 @@ class ArgDict(ArgList):
 
     arg_dict = {}
     for arg in arg_list:
-      split_arg = arg.split('=', 1)  # only use the first =
+      key, sep, value = arg.partition('=')
       # TODO(user): These exceptions won't present well to the user.
-      if len(split_arg) != 2:
-        raise ArgumentTypeError(
-            ('Bad syntax for dict arg: {0}. Please see `gcloud topic escaping` '
-             'if you would like information on escaping list or dictionary '
-             'flag values.').format(repr(arg)))
-      key, value = split_arg
       if not key:
-        raise ArgumentTypeError('bad key for dict arg: ' + repr(arg))
+        raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
+      if not sep and not self.allow_key_only:
+        raise ArgumentTypeError(
+            ('Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
+             'escaping` if you would like information on escaping list or '
+             'dictionary flag values.').format(arg))
       if self.value_type:
         value = self.value_type(value)
       if self.spec:
@@ -748,6 +762,32 @@ class ArgDict(ArgList):
       arg_dict[key] = value
 
     return arg_dict
+
+  def GetUsageMsg(self, is_custom_metavar, metavar):
+    # If we're not using a spec to limit the key values or if metavar
+    # has been overridden, then use the normal ArgList formatting
+    if not self.spec or is_custom_metavar:
+      return super(ArgDict, self).GetUsageMsg(is_custom_metavar, metavar)
+
+    msg_list = []
+    spec_list = sorted(self.spec.iteritems())
+
+    # First put the spec keys with no value followed by those that expect a
+    # value
+    for spec_key, spec_function in spec_list:
+      if spec_function is None:
+        if not self.allow_key_only:
+          raise ArgumentTypeError(
+              'Key [{0}] specified in spec without a function but '
+              'allow_key_only is set to False'.format(spec_key))
+        msg_list.append(spec_key)
+
+    for spec_key, spec_function in spec_list:
+      if spec_function is not None:
+        msg_list.append('{0}={1}'.format(spec_key, spec_key.upper()))
+
+    msg = '[' + '],['.join(msg_list) + ']'
+    return msg
 
 
 class UpdateAction(argparse.Action):
@@ -1019,14 +1059,6 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     self.strict_alternate = strict_alternate
     self.is_strict = is_strict
 
-    if 'metavar' in kwargs:
-      raise ValueError(('metavar was [{metavar}], with implementation args '
-                        'cannot be set, will automatically be '
-                        '-- IMPLEMENTATION-ARGS')
-                       .format(metavar=kwargs['metavar']))
-    self.base_metavar = 'IMPLEMENTATION-ARGS'
-    kwargs['metavar'] = '-- ' + self.base_metavar
-
     # TODO(b/31400045)
     # In 6 months we will remove the ability to use implementation args without
     # a preceding --.
@@ -1037,7 +1069,7 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
         'allowed the omission of the --, and unparsed arguments were treated '
         'as implementation args. This usage is being deprecated and will be '
         'removed in {deprecation_date}.'
-    ).format(metavar=self.base_metavar,
+    ).format(metavar=kwargs['metavar'],
              deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
     if 'help' in kwargs:
       self.detailed_help = kwargs['help'] + '\n\n' + self.explanation
@@ -1097,8 +1129,6 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
       if self.is_strict:
         msg = ('unrecognized args: {args}\n' + self.explanation).format(
             args=' '.join(pass_through_args))
-        # strip '-- ' off metavar for nicer error.
-        self.metavar = self.base_metavar
         raise argparse.ArgumentError(self, msg)
       pass_through_args += remainder_args
       msg = self.explanation + (
@@ -1108,7 +1138,54 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
         msg += " Use '{alternate}' to see new behavior.".format(
             alternate=self.strict_alternate)
       msg += "\nUsing '{args}' for {metavar}.".format(
-          args=' '.join(pass_through_args), metavar=self.base_metavar)
+          args=' '.join(pass_through_args), metavar=self.metavar)
       log.warn(msg)
     self(None, namespace, pass_through_args)
     return namespace, remaining_args
+
+
+class StoreOnceAction(argparse.Action):
+  r"""Create a single dict value from delimited flags.
+
+  For example, with the following flag definition:
+
+      parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgDict(),
+        action=StoreOnceAction)
+
+  a caller can specify on the command line flags such as:
+
+    --inputs k1=v1,k2=v2
+
+  and the result will be a list of one dict:
+
+    [{ 'k1': 'v1', 'k2': 'v2' }]
+
+  Specifying two separate command line flags such as:
+
+    --inputs k1=v1 \
+    --inputs k2=v2
+
+  will raise an exception.
+
+  Note that this class will raise an exception if a key value is specified
+  more than once. To allow for a key value to be specified multiple times,
+  use UpdateActionWithAppend.
+  """
+
+  def OnSecondArgumentRaiseError(self):
+    raise argparse.ArgumentError(self, _GenerateErrorMessage(
+        '"{0}" argument cannot be specified multiple times'.format(self.dest)))
+
+  def __init__(self, *args, **kwargs):
+    self.dest_is_populated = False
+    super(StoreOnceAction, self).__init__(*args, **kwargs)
+
+  # pylint: disable=protected-access
+  def __call__(self, parser, namespace, values, option_string=None):
+    # Make sure no existing arg value exist
+    if self.dest_is_populated:
+      self.OnSecondArgumentRaiseError()
+    self.dest_is_populated = True
+    setattr(namespace, self.dest, values)

@@ -18,6 +18,7 @@
 import json
 import multiprocessing
 import os
+import platform
 import shutil
 
 from googlecloudsdk.api_lib.app import util
@@ -28,6 +29,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
 
@@ -190,11 +192,28 @@ def _UploadFile(file_upload_task):
 
 
 def _UploadFiles(files_to_upload, bucket_ref):
+  """Upload files to App Engine Cloud Storeage bucket.
+
+  Uses the appropriate parallelism (multi-process, or no parallelism).
+
+  Args:
+    files_to_upload: list of FileUploadTask
+    bucket_ref: The reference to the bucket files will be placed in.
+
+  Raises:
+    MultiError: if one or more errors occurred during file upload.
+  """
   tasks = []
   for sha1_hash, path in sorted(files_to_upload.iteritems()):
     tasks.append(FileUploadTask(sha1_hash, path, bucket_ref.ToBucketUrl()))
 
-  num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
+  if (platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
+      and platform.mac_ver()[0].startswith('10.12')):  # Sierra is version 10.12
+    # TODO(b/31578136): Use multiple threads here for better performance
+    # OS X Sierra has issues with spawning processes in this manner
+    num_procs = 1
+  else:
+    num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
   if num_procs > 1:
     pool = multiprocessing.Pool(num_procs)
     results = pool.map(_UploadFile, tasks)

@@ -119,93 +119,6 @@
     }
   },
   "schemas": {
-    "GoogleLongrunning__Operation": {
-      "id": "GoogleLongrunning__Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure.",
-          "$ref": "GoogleRpc__Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "GoogleRpc__Status": {
-      "id": "GoogleRpc__Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "GoogleLongrunning__ListOperationsResponse": {
-      "id": "GoogleLongrunning__ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleLongrunning__Operation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleProtobuf__Empty": {
-      "id": "GoogleProtobuf__Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudMlV1beta1__Job": {
       "id": "GoogleCloudMlV1beta1__Job",
       "description": "Represents a training or prediction job.",
@@ -621,6 +534,13 @@
       "properties": {
       }
     },
+    "GoogleProtobuf__Empty": {
+      "id": "GoogleProtobuf__Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudMlV1beta1__Model": {
       "id": "GoogleCloudMlV1beta1__Model",
       "description": "Represents a trained machine learning model that can be used to handle\nprediction requests. A model can have many versions, each of which is a\ndeployed, trained model ready to receive prediction requests. In that way, a\nmodel resource is a container for one or more versions. However, each model\nhas a default version that will be used for prediction when a version isn't\nspecified.",
@@ -688,6 +608,68 @@
         "nextPageToken": {
           "description": "Optional pagination token to use for retrieving the next page of results.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunning__Operation": {
+      "id": "GoogleLongrunning__Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure.",
+          "$ref": "GoogleRpc__Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpc__Status": {
+      "id": "GoogleRpc__Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
         }
       }
     },
@@ -759,519 +741,21 @@
         }
       }
     },
-    "GoogleCloudMlV1alpha3__JobMetadata": {
-      "id": "GoogleCloudMlV1alpha3__JobMetadata",
-      "description": "Represents the metadata of the longrunning.Operation created by\nthe SubmitTrainingJob or SubmitPredictionJob method.",
+    "GoogleLongrunning__ListOperationsResponse": {
+      "id": "GoogleLongrunning__ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
       "type": "object",
       "properties": {
-        "createTime": {
-          "description": "When the job was submitted.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "startTime": {
-          "description": "When the job processing was started.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "When the job processing was completed.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "statusMetricsSnapshot": {
-          "description": "Progress report. A set of key-value pairs that convey the current\nstate of the job.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "statusMetricsSnapshotTime": {
-          "description": "The time at which the 'status' field was populated.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "isCancellationRequested": {
-          "description": "Whether the cancellation of this job has been requested.",
-          "type": "boolean"
-        },
-        "jobState": {
-          "description": "The detailed state of a job.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
-          "type": "string",
-          "enum": [
-            "UNKNOWN_JOB_STATE",
-            "QUEUED",
-            "PREPARING",
-            "RUNNING",
-            "SUCCEEDED",
-            "FAILED",
-            "CANCELLED"
-          ]
-        },
-        "trainingRequest": {
-          "description": "The training job request recorded.",
-          "$ref": "GoogleCloudMlV1alpha3__SubmitTrainingJobRequest"
-        },
-        "predictionRequest": {
-          "description": "The prediction job request recorded.",
-          "$ref": "GoogleCloudMlV1alpha3__SubmitPredictionJobRequest"
-        },
-        "createVersionRequest": {
-          "description": "The create version job request recorded.\nThe create version job request recorded.",
-          "$ref": "GoogleCloudMlV1alpha3__CreateVersionRequest"
-        },
-        "trainingResult": {
-          "description": "The current training job result.",
-          "$ref": "GoogleCloudMlV1alpha3__TrainingJobResult"
-        },
-        "predictionResult": {
-          "description": "The current prediction job result.",
-          "$ref": "GoogleCloudMlV1alpha3__PredictionJobResult"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__SubmitTrainingJobRequest": {
-      "id": "GoogleCloudMlV1alpha3__SubmitTrainingJobRequest",
-      "description": "Request message for the SubmitTrainingJob method.",
-      "type": "object",
-      "properties": {
-        "parent": {
-          "description": "The project name.",
-          "type": "string"
-        },
-        "jobName": {
-          "description": "The job name. Must be unique within the project.",
-          "type": "string"
-        },
-        "workerSpec": {
-          "description": "Specification of workers.",
-          "$ref": "GoogleCloudMlV1alpha3__WorkerSpec"
-        },
-        "psSpec": {
-          "description": "Specification of parameter servers.",
-          "$ref": "GoogleCloudMlV1alpha3__ParameterServerSpec"
-        },
-        "masterSpec": {
-          "description": "Specification of master workers. The first master worker\nwill be the task monitored for job success\/failure.",
-          "$ref": "GoogleCloudMlV1alpha3__MasterSpec"
-        },
-        "trainerUri": {
-          "description": "Tarball Python Packages from Google Cloud Storage with the training program\nand any additional dependencies. At least one is required if docker_image\nis not set.",
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "GoogleLongrunning__Operation"
           }
         },
-        "moduleName": {
-          "description": "The python module name to run after installing the trainer_uri packages.\nThe worker will be given a flag telling the type of the process:\nworker, parameter server or evaluator. Required if docker_image is not set.",
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
           "type": "string"
-        },
-        "tensorflowVersion": {
-          "description": "The version of TensorFlow to use. If unset, defaults to LATEST.",
-          "enumDescriptions": [
-            "Equivalent to the latest supported version, i.e., the last version\nin this list of enums.",
-            "Tensorflow version 0.9.1"
-          ],
-          "type": "string",
-          "enum": [
-            "LATEST",
-            "V_0_9_1"
-          ]
-        },
-        "trainDataPaths": {
-          "description": "The URIs of the training data.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "evalDataPaths": {
-          "description": "The URIs of the data used for evaluation.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "metadataPath": {
-          "description": "Optional. The URI of the file containing metadata.",
-          "type": "string"
-        },
-        "outputPath": {
-          "description": "The URI of the Google Cloud Storage location to which output should be\nwritten. This URI may have additional subdirectories appended to it, e.g.,\nduring hyperparameter tuning, and the possibly modified URI is passed to\nthe binary as the --output_path flag. Training binaries should generally\nrespect this parameter for their output and are required to do so when\nlaunching from Google Cloud Dataflow or when using hyperparameter tuning.",
-          "type": "string"
-        },
-        "jobArgs": {
-          "description": "Additional command line arguments to pass to the program.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "hyperparameters": {
-          "description": "Optional set of Hyperparameters to tune.",
-          "$ref": "GoogleCloudMlV1alpha3__HyperparameterSpec"
-        },
-        "logLevel": {
-          "description": "Specify minimun log levels.",
-          "enumDescriptions": [
-            "No log level specified.",
-            "Debug logs and above will be saved.",
-            "Info logs and above will be saved.",
-            "Warning logs and above will be saved.",
-            "Error logs and above will be saved.",
-            "Only critical logs will be saved."
-          ],
-          "type": "string",
-          "enum": [
-            "UNKNOWN",
-            "DEBUG",
-            "INFO",
-            "WARNING",
-            "ERROR",
-            "CRITICAL"
-          ]
-        },
-        "zone": {
-          "description": "Optional. The Google Compute Engine zone to run the training job in.\nIf not specified, the system will pick a zone based on the job\nrequirements. It is the user's responsibility to procure quota\nin this zone.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__WorkerSpec": {
-      "id": "GoogleCloudMlV1alpha3__WorkerSpec",
-      "description": "Represents a specification of training workers.",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "description": "Resource requirements for a single worker. Optional.\nIf not specified, default worker configuration will be used.",
-          "$ref": "GoogleCloudMlV1alpha3__ResourceSpec"
-        },
-        "replicaCount": {
-          "description": "The required number of workers. Defaults to 1.",
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__ResourceSpec": {
-      "id": "GoogleCloudMlV1alpha3__ResourceSpec",
-      "description": "Resource specification for a program running inside a VM.",
-      "type": "object",
-      "properties": {
-        "cpus": {
-          "description": "The number of CPUs.",
-          "type": "string",
-          "format": "uint64"
-        },
-        "gpus": {
-          "description": "The number of GPUs. Only allowed to be set within WorkerSpec.",
-          "type": "string",
-          "format": "uint64"
-        },
-        "ram": {
-          "description": "The required RAM size (in bytes).",
-          "type": "string",
-          "format": "uint64"
-        },
-        "disk": {
-          "description": "The required disk size (in bytes).",
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__ParameterServerSpec": {
-      "id": "GoogleCloudMlV1alpha3__ParameterServerSpec",
-      "description": "Represents a specification of parameter servers.",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "description": "Resource requirements for a single parameter server.\nIf not specified, default parameter server configuration will be used.",
-          "$ref": "GoogleCloudMlV1alpha3__ResourceSpec"
-        },
-        "replicaCount": {
-          "description": "The required number of parameter servers. Defaults to 1.",
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__MasterSpec": {
-      "id": "GoogleCloudMlV1alpha3__MasterSpec",
-      "description": "Represents a specification of master worker.",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "description": "Resource requirements for a master.\nIf not specified, default master configuration will be used.",
-          "$ref": "GoogleCloudMlV1alpha3__ResourceSpec"
-        },
-        "replicaCount": {
-          "description": "The required number of master worker servers. Defaults to 1.\nIf the number of replicas is greater than 1, the first master worker\nwill be the one monitored for success\/failure.",
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__HyperparameterSpec": {
-      "id": "GoogleCloudMlV1alpha3__HyperparameterSpec",
-      "description": "Represents a set of hyperparameters to optimize.",
-      "type": "object",
-      "properties": {
-        "goal": {
-          "description": "Should the evaluation metric be maximized or minimized?",
-          "enumDescriptions": [
-            "Goal Type will default to maximize.",
-            "Maximize the goal metric.",
-            "Minimize the goal metric."
-          ],
-          "type": "string",
-          "enum": [
-            "GOAL_TYPE_UNSPECIFIED",
-            "MAXIMIZE",
-            "MINIMIZE"
-          ]
-        },
-        "params": {
-          "description": "The set of parameters to tune.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudMlV1alpha3__ParameterConfig"
-          }
-        },
-        "maxRuns": {
-          "description": "How many training runs should be attempted to optimize. Defaults to one.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxParallelRuns": {
-          "description": "How many training runs should be run in parallel. More parallelization\nwill be faster, but parallel runs only benefit from the information gained\nby previous runs. Each run will use the number of workers specified by\nthe worker, parameter server, and evaluator specs. Defaults to one.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__ParameterConfig": {
-      "id": "GoogleCloudMlV1alpha3__ParameterConfig",
-      "description": "Represents a single hyperparameter to optimize.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The parameter name must be unique amongst all ParameterConfigs in a\nHyperparameterConfig. E.g., \"learning_rate\".",
-          "type": "string"
-        },
-        "type": {
-          "description": "The type of the parameter.",
-          "enumDescriptions": [
-            "Parameter type must be specified.  Unspecified values will be treated\nas an error.",
-            "Type for real-valued parameters.",
-            "Type for integral parameters.",
-            "The parameter is categorical, with a value chosen from the categories\nfield.",
-            "The parameter is real valued, with a fixed set of feasible points. If\ntype==DISCRETE, feasible_points must be provided, and\n{min_value, max_value} will be ignored."
-          ],
-          "type": "string",
-          "enum": [
-            "PARAMETER_TYPE_UNSPECIFIED",
-            "DOUBLE",
-            "INTEGER",
-            "CATEGORICAL",
-            "DISCRETE"
-          ]
-        },
-        "minValue": {
-          "description": "min_value is REQUIRED if type==DOUBLE or type==INTEGER. This field\nshould be unset if type==CATEGORICAL. This value should be integers if\ntype==INTEGER.",
-          "type": "number",
-          "format": "double"
-        },
-        "maxValue": {
-          "description": "max_value is REQUIRED if type==DOUBLE or type==INTEGER. This field\nshould be unset if type==CATEGORICAL. This value should be integers if\ntype==INTEGER.",
-          "type": "number",
-          "format": "double"
-        },
-        "categories": {
-          "description": "The list of possible categories. REQUIRED if type==CATEGORICAL.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "feasiblePoints": {
-          "description": "A list of feasible points, to be provided if and only if type==DISCRETE.\nThe list should be in strictly increasing order. For instance, this\nParameter might have possible settings of 1.5, 2.5, and 4.0. This list\nshouldn't be too large - probably not more than 1,000 points.",
-          "type": "array",
-          "items": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "scaleType": {
-          "description": "How the parameter should be scaled to the hypercube. Leave unset for\ncategorical Parameters. We strongly suggest using some kind of scaling for\nreal or integral parameters (e.g., UNIT_LINEAR_SCALE).",
-          "enumDescriptions": [
-            "By default, no scaling is applied.",
-            "Scales the feasible space to (0, 1) linearly.",
-            "Scales the feasible space logarithmically to (0, 1). The entire feasible\nspace must be strictly positive.",
-            "Scales the feasible space \"reverse\" logarithmically to (0, 1). The result\nis that values close to the top of the feasible space are spread out more\nthan points near the bottom. The entire feasible space must be strictly\npositive."
-          ],
-          "type": "string",
-          "enum": [
-            "NONE",
-            "UNIT_LINEAR_SCALE",
-            "UNIT_LOG_SCALE",
-            "UNIT_REVERSE_LOG_SCALE"
-          ]
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__SubmitPredictionJobRequest": {
-      "id": "GoogleCloudMlV1alpha3__SubmitPredictionJobRequest",
-      "description": "Request to submit a batch prediction job against a trained model.",
-      "type": "object",
-      "properties": {
-        "parent": {
-          "description": "The name of the model against which prediction should be performed. It is\nof the form: \/projects\/project_id\/models\/model_name\/versions\/version_id.\nThe version information may be omitted, in which case prediction is\nperformed against the default version.",
-          "type": "string"
-        },
-        "jobName": {
-          "description": "The job name. Must be unique within the project.",
-          "type": "string"
-        },
-        "inputUris": {
-          "description": "URIs of the TFRecord input data files. May contain file-system appropriate\nwildcards (Google Cloud Storage prefixes, for example.).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "outputUri": {
-          "description": "The uri to which output is written, a Google Cloud Storage prefix\nfor example.",
-          "type": "string"
-        },
-        "zone": {
-          "description": "Optional. The Google Compute Engine zone to run the training job in.\nIf not specified, the system will pick a zone based on the job\nrequirements. It is the user's responsibility to procure quota\nin this zone.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__CreateVersionRequest": {
-      "id": "GoogleCloudMlV1alpha3__CreateVersionRequest",
-      "description": "Uploads the provided trained model version to Cloud Machine Learning.",
-      "type": "object",
-      "properties": {
-        "parent": {
-          "description": "The name of the model.",
-          "type": "string"
-        },
-        "version": {
-          "description": "The version details.",
-          "$ref": "GoogleCloudMlV1alpha3__Version"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__Version": {
-      "id": "GoogleCloudMlV1alpha3__Version",
-      "description": "Represents a version of the model.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The user-specified name of the model version.",
-          "type": "string"
-        },
-        "isDefault": {
-          "description": "Whether the version is default within the model.",
-          "type": "boolean"
-        },
-        "originUri": {
-          "description": "Google Cloud Storage location containing the model graph, weights and\nadditional metadata at the moment when the version is created.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "The creation time of the version.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastUseTime": {
-          "description": "The last usage time of the version.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__TrainingJobResult": {
-      "id": "GoogleCloudMlV1alpha3__TrainingJobResult",
-      "description": "Represents the result of the longrunning.Operation created by the\nSubmitTrainingJob method.",
-      "type": "object",
-      "properties": {
-        "outputPath": {
-          "description": "The URI of the output location provided at job creation time.",
-          "type": "string"
-        },
-        "stepsCompleted": {
-          "description": "The accomplished number of steps.",
-          "type": "string",
-          "format": "uint64"
-        },
-        "runsCompleted": {
-          "description": "The number of tuning runs completed successfully.",
-          "type": "string",
-          "format": "uint64"
-        },
-        "runs": {
-          "description": "Results for individual Hyperparameter runs.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudMlV1alpha3__HyperparameterJobResult"
-          }
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__HyperparameterJobResult": {
-      "id": "GoogleCloudMlV1alpha3__HyperparameterJobResult",
-      "description": "Represents the result of a hyperparameter tuning run from a training job.",
-      "type": "object",
-      "properties": {
-        "runId": {
-          "description": "The run id for these results.",
-          "type": "string"
-        },
-        "hyperparameters": {
-          "description": "The hyperparameters given to this run.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "bestObjectiveValue": {
-          "description": "The best objective value seen for this run.",
-          "type": "number",
-          "format": "double"
-        },
-        "bestTrainingStep": {
-          "description": "The training step associated with the best objective value.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudMlV1alpha3__PredictionJobResult": {
-      "id": "GoogleCloudMlV1alpha3__PredictionJobResult",
-      "description": "Represents the result of the longrunning.Operation created by the\nSubmitPredictionJob method.",
-      "type": "object",
-      "properties": {
-        "outputUri": {
-          "description": "The URI of the output dir provided at job creation time.",
-          "type": "string"
-        },
-        "instancesProcessed": {
-          "description": "The number of data instances processed",
-          "type": "string",
-          "format": "uint64"
         }
       }
     },
@@ -1383,143 +867,6 @@
       }
       ,
       "resources": {
-        "operations": {
-          "methods": {
-            "get": {
-              "id": "ml.projects.operations.get",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "httpMethod": "GET",
-              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "operationsId"
-              ],
-              "response": {
-                "$ref": "GoogleLongrunning__Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "list": {
-              "id": "ml.projects.operations.list",
-              "path": "v1beta1/projects/{projectsId}/operations",
-              "flatPath": "v1beta1/projects/{projectsId}/operations",
-              "httpMethod": "GET",
-              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation collection.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "The standard list filter.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The standard list page size.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "The standard list page token.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId"
-              ],
-              "response": {
-                "$ref": "GoogleLongrunning__ListOperationsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "cancel": {
-              "id": "ml.projects.operations.cancel",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
-              "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be cancelled.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "operationsId"
-              ],
-              "response": {
-                "$ref": "GoogleProtobuf__Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "delete": {
-              "id": "ml.projects.operations.delete",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "httpMethod": "DELETE",
-              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be deleted.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "operationsId"
-              ],
-              "response": {
-                "$ref": "GoogleProtobuf__Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            }
-          }
-        },
         "jobs": {
           "methods": {
             "create": {
@@ -1564,11 +911,6 @@
                 },
                 "filter": {
                   "description": "Optional. Specifies the subset of jobs to retrieve.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "orderBy": {
-                  "description": "Optional. Specifies the ordering of the jobs.",
                   "location": "query",
                   "type": "string"
                 },
@@ -1701,16 +1043,6 @@
                   "description": "Part of `parent`. Required. The name of the project whose models are to be listed.\n\nAuthorization: requires `Viewer` role on the specified project.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "Optional. Specifies the subset of models to retrieve.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "orderBy": {
-                  "description": "Optional. Specifies the ordering of the models.",
-                  "location": "query",
                   "type": "string"
                 },
                 "pageToken": {
@@ -1855,16 +1187,6 @@
                       "required": true,
                       "type": "string"
                     },
-                    "filter": {
-                      "description": "Optional. Specifies the subset of versions to retrieve.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Optional. Specifies the ordering of the versions.",
-                      "location": "query",
-                      "type": "string"
-                    },
                     "pageToken": {
                       "description": "Optional. A token for continuing the enumeration.",
                       "location": "query",
@@ -2006,6 +1328,143 @@
                   ]
                 }
               }
+            }
+          }
+        },
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "ml.projects.operations.get",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `name`. The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "operationsId": {
+                  "description": "Part of `name`. See documentation of `projectsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId",
+                "operationsId"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunning__Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "list": {
+              "id": "ml.projects.operations.list",
+              "path": "v1beta1/projects/{projectsId}/operations",
+              "flatPath": "v1beta1/projects/{projectsId}/operations",
+              "httpMethod": "GET",
+              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `name`. The name of the operation collection.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunning__ListOperationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "cancel": {
+              "id": "ml.projects.operations.cancel",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation.",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `name`. The name of the operation resource to be cancelled.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "operationsId": {
+                  "description": "Part of `name`. See documentation of `projectsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId",
+                "operationsId"
+              ],
+              "response": {
+                "$ref": "GoogleProtobuf__Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "ml.projects.operations.delete",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `name`. The name of the operation resource to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "operationsId": {
+                  "description": "Part of `name`. See documentation of `projectsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId",
+                "operationsId"
+              ],
+              "response": {
+                "$ref": "GoogleProtobuf__Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
         }

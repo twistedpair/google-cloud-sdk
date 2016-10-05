@@ -356,6 +356,95 @@ def CreatePersistentAttachedDiskMessages(
   return disks_messages, boot_disk_ref
 
 
+def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
+                                       resources, csek_keys, create_disks,
+                                       instance_ref):
+  """Returns a list of AttachedDisk messages for newly creating disks.
+
+  Args:
+    scope_prompter: Scope prompter object,
+    compute_client: creates resources,
+    resources: parser of resources,
+    csek_keys: customer suplied encryption keys,
+    create_disks: disk objects - contains following properties
+             * name - the name of disk,
+             * mode - 'rw' (R/W), 'ro' (R/O) access mode,
+             * disk-size - the size of the disk,
+             * disk-type - the type of the disk (HDD or SSD),
+             * image - the name of the image to initialize from,
+             * image-family - the image family name,
+             * image-project - the project name that has the image,
+             * auto-delete - whether disks is deleted when VM is deleted,
+             * device-name - device name on VM.
+    instance_ref: reference to the instance that will own the new disks.
+  Returns:
+    list of API messages for attached disks
+  """
+  disks_messages = []
+
+  messages = compute_client.messages
+  compute = compute_client.apitools_client
+  for disk in create_disks or []:
+    name = disk.get('name')
+
+    # Resolves the mode.
+    mode_value = disk.get('mode', 'rw')
+    if mode_value == 'rw':
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+    else:
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
+
+    auto_delete_value = disk.get('auto-delete', 'yes')
+    auto_delete = auto_delete_value == 'yes'
+
+    disk_size_gb = utils.BytesToGb(disk.get('size'))
+    disk_type = disk.get('type')
+    if disk_type:
+      disk_type_ref = scope_prompter.CreateZonalReference(
+          disk_type, instance_ref.zone, resource_type='diskTypes')
+      disk_type_uri = disk_type_ref.SelfLink()
+    else:
+      disk_type_ref = None
+      disk_type_uri = None
+
+    image_uri, _ = scope_prompter.ExpandImageFlag(
+        image=disk.get('image'),
+        image_family=disk.get('image-family'),
+        image_project=disk.get('image-project'),
+        return_image_resource=False)
+
+    image_key = None
+    disk_key = None
+    if csek_keys:
+      image_key = csek_utils.MaybeLookupKeyMessagesByUri(csek_keys,
+                                                         resources,
+                                                         [image_uri],
+                                                         compute)
+      if name:
+        disk_ref = scope_prompter.CreateZonalReference(
+            name, instance_ref.zone, resource_type='disks')
+        disk_key = csek_utils.MaybeLookupKeyMessage(csek_keys, disk_ref,
+                                                    compute)
+
+    create_disk = messages.AttachedDisk(
+        autoDelete=auto_delete,
+        boot=False,
+        deviceName=disk.get('device-name'),
+        initializeParams=messages.AttachedDiskInitializeParams(
+            diskName=name,
+            sourceImage=image_uri,
+            diskSizeGb=disk_size_gb,
+            diskType=disk_type_uri,
+            sourceImageEncryptionKey=image_key),
+        mode=mode,
+        type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+        diskEncryptionKey=disk_key)
+
+    disks_messages.append(create_disk)
+
+  return disks_messages
+
+
 def CreateDefaultBootAttachedDiskMessage(
     scope_prompter, compute_client, resources,
     disk_type, disk_device_name, disk_auto_delete, disk_size_gb,

@@ -564,8 +564,10 @@ class LogMetric(_messages.Message):
   log entries that match a logs filter.
 
   Enums:
-    VersionValueValuesEnum: Optional. The API version that created or updated
-      this metric.
+    VersionValueValuesEnum: Output only. The API version that created or
+      updated this metric. The version also dictates the syntax of the filter
+      expression. When a value for this field is missing, the default value of
+      V2 should be assumed.
 
   Fields:
     description: Optional. A description of this metric, which is used in
@@ -581,11 +583,16 @@ class LogMetric(_messages.Message):
       of the name.  The '%' character is used to URL encode unsafe and
       reserved characters and must be followed by two hexadecimal digits
       according to RFC 1738.
-    version: Optional. The API version that created or updated this metric.
+    version: Output only. The API version that created or updated this metric.
+      The version also dictates the syntax of the filter expression. When a
+      value for this field is missing, the default value of V2 should be
+      assumed.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    """Optional. The API version that created or updated this metric.
+    """Output only. The API version that created or updated this metric. The
+    version also dictates the syntax of the filter expression. When a value
+    for this field is missing, the default value of V2 should be assumed.
 
     Values:
       V2: Stackdriver Logging API v2.

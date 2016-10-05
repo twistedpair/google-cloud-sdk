@@ -20,7 +20,6 @@ import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
 from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import exceptions
 
@@ -480,7 +479,7 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
     config_file = manifest.config
     imports = manifest.imports
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(dm_v2_util.GetError(error))
+    raise exceptions.HttpException(error)
 
   # If properties were specified, then we need to ensure that the
   # configuration in the manifest retrieved has only a single resource.

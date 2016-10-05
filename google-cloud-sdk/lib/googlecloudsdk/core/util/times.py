@@ -102,6 +102,8 @@ def ParseDuration(string, calendar=False):
 
   Raises:
     ValueError: Invalid duration syntax.
+    OverflowError: A Duration numeric constant exceeded the largest system
+      dependent integer value.
 
   Returns:
     An iso_duration.Duration object for the given ISO 8601 duration/period
@@ -290,6 +292,8 @@ def ParseDateTime(string, tzinfo=None):
 
   Raises:
     ValueError: Invalid date/time/duration syntax.
+    OverflowError: A date/time numeric constant exceeded the largest system
+      dependent integer value.
 
   Returns:
     A datetime.datetime object for the given date/time string.
@@ -304,11 +308,11 @@ def ParseDateTime(string, tzinfo=None):
       # The string had no timezone name or offset => localize dt to tzinfo.
       dt = parser.parse(string, tzinfos=None)
       dt = dt.replace(tzinfo=tzinfo)
-  except ValueError as e:
+  except (OverflowError, ValueError) as e:
     try:
       # Check if its an iso_duration string.
       dt = ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
-    except ValueError:
+    except (OverflowError, ValueError):
       # Raise the datetime parse error.
       raise e
   return dt

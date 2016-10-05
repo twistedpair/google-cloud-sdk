@@ -482,6 +482,8 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    region: [Output Only] URL of the region where the instance group resides
+      (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
     target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides (for
@@ -494,9 +496,10 @@ class Autoscaler(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#autoscaler')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  target = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  target = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -7941,6 +7944,8 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
+    region: The URL of the region where the instance group is located (for
+      regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
@@ -7958,10 +7963,11 @@ class InstanceGroup(_messages.Message):
   name = _messages.StringField(6)
   namedPorts = _messages.MessageField('NamedPort', 7, repeated=True)
   network = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class InstanceGroupAggregatedList(_messages.Message):
@@ -8073,6 +8079,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
+    region: [Output Only] The URL of the region where the managed instance
+      group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -8096,10 +8104,11 @@ class InstanceGroupManager(_messages.Message):
   kind = _messages.StringField(9, default=u'compute#instanceGroupManager')
   name = _messages.StringField(10)
   namedPorts = _messages.MessageField('NamedPort', 11, repeated=True)
-  selfLink = _messages.StringField(12)
-  targetPools = _messages.StringField(13, repeated=True)
-  targetSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(15)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  targetPools = _messages.StringField(14, repeated=True)
+  targetSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(16)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -8215,8 +8224,7 @@ class InstanceGroupManagerList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -9501,7 +9509,7 @@ class NetworkList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource .
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -10498,7 +10506,7 @@ class RouterList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -10777,7 +10785,7 @@ class SerialPortOutput(_messages.Message):
     contents: [Output Only] The contents of the console output.
     kind: [Output Only] Type of the resource. Always compute#serialPortOutput
       for serial port output.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   contents = _messages.StringField(1)
@@ -12236,7 +12244,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -12285,7 +12293,7 @@ class TargetVpnGatewayList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -12729,7 +12737,7 @@ class VpnTunnelList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)

@@ -67,8 +67,9 @@ def Predict(model_name=None, version_name=None, input_file=None):
           'instances per file. Please use batch prediction instead.')
     try:
       instances.append(json.loads(line.rstrip('\n')))
-    except ValueError as e:
-      raise InvalidInstancesFileError(e.msgs)
+    except ValueError:
+      raise InvalidInstancesFileError('Input instances must be in JSON format.'
+                                      ' See "gcloud beta ml predict --help".')
 
   if not instances:
     raise InvalidInstancesFileError('Input file is empty.')

@@ -591,11 +591,7 @@ class RemoteCompletion(object):
                   parms[attrib] = value
                   command.append('--' + attrib)
                   command.append(value)
-        parms['project'] = properties.VALUES.core.project.Get(required=True)
-        resource_ref = resources.REGISTRY.Parse(
-            '+', parms, resource, resolve=False)
-        # TODO(b/30309781): remove resource weak resolve usage.
-        resource_link = resource_ref.WeakSelfLink()
+        resource_link = _GetResourceLink(parms, resource)
         ccache = RemoteCompletion()
         options = ccache.GetFromCache(resource_link, prefix)
         if options is not None:
@@ -639,3 +635,19 @@ class RemoteCompletion(object):
       return options
 
     return RemoteCompleter
+
+
+def _GetResourceLink(parms, collection_name):
+  """Resolves specified resource and returns its self link."""
+  parms['project'] = properties.VALUES.core.project.Get(required=True)
+
+  collection_info = resources.REGISTRY.GetCollectionInfo(collection_name)
+  for param in collection_info.params:
+    if param not in parms:
+      param_default = resources.REGISTRY.GetParamDefault(
+          collection_info.api_name, collection_info.name, param)
+      if param_default is None:
+        parms[param] = u'*'
+  return resources.REGISTRY.Parse(
+      '+', parms, collection_name, resolve=True).SelfLink()
+

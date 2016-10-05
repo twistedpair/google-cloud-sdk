@@ -296,8 +296,12 @@ class FolderOperation(_messages.Message):
     OperationTypeValueValuesEnum: The type of folder operation.
 
   Fields:
+    destinationParent: The resource name of the folder or organization we are
+      either creating the folder under or moving the folder to.
     displayName: The display name of the folder.
     operationType: The type of folder operation.
+    sourceParent: The resource name of the folder's parent. Only applicable
+      when the operation_type is MOVE.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
@@ -312,8 +316,10 @@ class FolderOperation(_messages.Message):
     CREATE = 1
     MOVE = 2
 
-  displayName = _messages.StringField(1)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 2)
+  destinationParent = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
+  sourceParent = _messages.StringField(4)
 
 
 class FolderOperationError(_messages.Message):
@@ -322,14 +328,16 @@ class FolderOperationError(_messages.Message):
   Operation.error.details field.
 
   Enums:
-    ErrorTypeValueValuesEnum: The type of operation error experienced.
+    ErrorMessageIdValueValuesEnum: The message id for the operation error that
+      was experienced.
 
   Fields:
-    errorType: The type of operation error experienced.
+    errorMessageId: The message id for the operation error that was
+      experienced.
   """
 
-  class ErrorTypeValueValuesEnum(_messages.Enum):
-    """The type of operation error experienced.
+  class ErrorMessageIdValueValuesEnum(_messages.Enum):
+    """The message id for the operation error that was experienced.
 
     Values:
       UNDEFINED_ERROR: An undefined error type.
@@ -359,7 +367,7 @@ class FolderOperationError(_messages.Message):
     FOLDER_ALREADY_BEING_MOVED = 7
     FOLDER_TO_DELETE_NON_EMPTY = 8
 
-  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 1)
+  errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
 
 
 class GetAncestryRequest(_messages.Message):

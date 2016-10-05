@@ -13,43 +13,6 @@ from apitools.base.py import encoding
 package = 'iam'
 
 
-class AuditConfigDelta(_messages.Message):
-  """One delta entry for AuditConfig. Each individual change (only one
-  exempted_member in each entry) to a AuditConfig will be a separate entry.
-
-  Enums:
-    ActionValueValuesEnum: The action that was performed on an audit
-      configuration in a policy. Required
-
-  Fields:
-    action: The action that was performed on an audit configuration in a
-      policy. Required
-    exemptedMember: A single identity that is exempted from "data access"
-      audit logging for the `service` specified above. Follows the same format
-      of Binding.members. Required
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services. Required
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """The action that was performed on an audit configuration in a policy.
-    Required
-
-    Values:
-      ACTION_UNSPECIFIED: Unspecified.
-      ADD: Addition of an audit configuration.
-      REMOVE: Removal of an audit configuration.
-    """
-    ACTION_UNSPECIFIED = 0
-    ADD = 1
-    REMOVE = 2
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  exemptedMember = _messages.StringField(2)
-  service = _messages.StringField(3)
-
-
 class AuditData(_messages.Message):
   """Audit log information specific to Cloud IAM. This message is serialized
   as an `Any` type in the `ServiceData` message of an `AuditLog` message.
@@ -481,12 +444,10 @@ class PolicyDelta(_messages.Message):
   """The difference delta between two policies.
 
   Fields:
-    auditConfigDeltas: The delta for AuditConfigs between two policies.
     bindingDeltas: The delta for Bindings between two policies.
   """
 
-  auditConfigDeltas = _messages.MessageField('AuditConfigDelta', 1, repeated=True)
-  bindingDeltas = _messages.MessageField('BindingDelta', 2, repeated=True)
+  bindingDeltas = _messages.MessageField('BindingDelta', 1, repeated=True)
 
 
 class QueryGrantableRolesRequest(_messages.Message):

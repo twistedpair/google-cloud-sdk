@@ -88,6 +88,9 @@ apis:
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
+      default: true
+    v1:
+      discovery_doc: cloudresourcemanager_v1.json
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json

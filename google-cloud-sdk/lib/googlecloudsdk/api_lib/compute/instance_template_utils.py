@@ -13,6 +13,7 @@
 # limitations under the License.
 """Convenience functions for dealing with instance templates."""
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import utils
 
 EPHEMERAL_ADDRESS = object()
 
@@ -131,6 +132,62 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
       disks_messages = [attached_disk] + disks_messages
     else:
       disks_messages.append(attached_disk)
+
+  return disks_messages
+
+
+def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
+  """Returns a list of AttachedDisk messages.
+
+  Args:
+    scope_prompter: Scope prompter object,
+    messages: GCE API messages,
+    create_disks: disk objects - contains following properties
+             * name - the name of disk,
+             * mode - 'rw' (R/W), 'ro' (R/O) access mode,
+             * disk-size - the size of the disk,
+             * disk-type - the type of the disk (HDD or SSD),
+             * image - the name of the image to initialize from,
+             * image-family - the image family name,
+             * image-project - the project name that has the image,
+             * auto-delete - whether disks is deleted when VM is deleted,
+             * device-name - device name on VM.
+
+  Returns:
+    list of API messages for attached disks
+  """
+
+  disks_messages = []
+  for disk in create_disks or []:
+    name = disk['name']
+    # Resolves the mode.
+    mode_value = disk.get('mode', 'rw')
+    if mode_value == 'rw':
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+    else:
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
+
+    auto_delete = disk.get('auto-delete') == 'yes'
+    disk_size_gb = utils.BytesToGb(disk.get('size'))
+    image_uri, _ = scope_prompter.ExpandImageFlag(
+        image=disk.get('image'),
+        image_family=disk.get('image-family'),
+        image_project=disk.get('image-project'),
+        return_image_resource=False)
+
+    create_disk = messages.AttachedDisk(
+        autoDelete=auto_delete,
+        boot=False,
+        deviceName=disk.get('device-name'),
+        initializeParams=messages.AttachedDiskInitializeParams(
+            diskName=name,
+            sourceImage=image_uri,
+            diskSizeGb=disk_size_gb,
+            diskType=disk.get('type')),
+        mode=mode,
+        type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+
+    disks_messages.append(create_disk)
 
   return disks_messages
 

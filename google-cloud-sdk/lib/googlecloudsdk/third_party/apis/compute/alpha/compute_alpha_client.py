@@ -3956,7 +3956,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.instances.attachDisk',
         ordered_params=[u'project', u'zone', u'instance'],
         path_params=[u'instance', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'forceAttach'],
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/attachDisk',
         request_field=u'attachedDisk',
         request_type_name=u'ComputeInstancesAttachDiskRequest',

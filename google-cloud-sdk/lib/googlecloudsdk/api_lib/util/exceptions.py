@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -147,9 +148,11 @@ class HttpErrorPayload(string.Formatter):
     response = getattr(http_error, 'response', None)
     if response:
       self.status_code = int(response.get('status', 0))
-      self.status_description = response.get('reason', '')
+      self.status_description = console_attr.DecodeFromInput(
+          response.get('reason', ''))
+    content = console_attr.DecodeFromInput(http_error.content)
     try:
-      self.content = _JsonSortedDict(json.loads(http_error.content))
+      self.content = _JsonSortedDict(json.loads(content))
       self.error_info = _JsonSortedDict(self.content['error'])
       if not self.status_code:  # Could have been set above.
         self.status_code = int(self.error_info.get('code', 0))
@@ -157,7 +160,7 @@ class HttpErrorPayload(string.Formatter):
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
     except (KeyError, TypeError, ValueError):
-      self.status_message = http_error.content
+      self.status_message = content
 
     except AttributeError:
       pass

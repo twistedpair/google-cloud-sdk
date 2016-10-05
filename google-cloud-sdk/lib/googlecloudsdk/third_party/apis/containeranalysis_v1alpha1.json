@@ -137,7 +137,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which of the occurrence details is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "This explicitly denotes which of the occurrence details is specified.\n@OutputOnly",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -163,12 +163,12 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The time this occurrence was created.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "The time this occurrence was created.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time this occurrence was last updated.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "The time this occurrence was last updated.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         }
@@ -188,11 +188,11 @@
           "$ref": "VulnerabilityLocation"
         },
         "type": {
-          "description": "The type of package; whether native or non native(ruby gems,\nnode.js packages etc)\nThis field can be used as a filter in list requests.",
+          "description": "The type of package; whether native or non native(ruby gems,\nnode.js packages etc)",
           "type": "string"
         },
         "severity": {
-          "description": "The provider assigned Severity of the vulnerability.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "The provider assigned Severity of the vulnerability.\n@OutputOnly",
           "enumDescriptions": [
             "Unknown Impact",
             "Minimal Impact",
@@ -212,9 +212,16 @@
           ]
         },
         "cvssScore": {
-          "description": "The CVSS score of this vulnerability.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "The CVSS score of this vulnerability.\n@OutputOnly",
           "type": "number",
           "format": "float"
+        },
+        "packageIssue": {
+          "description": "The set of affected locations and their fixes (if available) within\nthe associated resource.",
+          "type": "array",
+          "items": {
+            "$ref": "PackageIssue"
+          }
         }
       }
     },
@@ -228,7 +235,7 @@
           "type": "string"
         },
         "package": {
-          "description": "The package being described.\nThis field can be used as a filter in list requests.",
+          "description": "The package being described.",
           "type": "string"
         },
         "version": {
@@ -254,6 +261,21 @@
         "revision": {
           "description": "The iteration of the package build from the above version.",
           "type": "string"
+        }
+      }
+    },
+    "PackageIssue": {
+      "id": "PackageIssue",
+      "description": "This message wraps a location affected by a vulnerability and its\nassociated fix (if one is available).",
+      "type": "object",
+      "properties": {
+        "affectedLocation": {
+          "description": "The location of the vulnerability.",
+          "$ref": "VulnerabilityLocation"
+        },
+        "fixedLocation": {
+          "description": "The location of the available fix for vulnerability.",
+          "$ref": "VulnerabilityLocation"
         }
       }
     },
@@ -552,7 +574,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which kind of note is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "This explicitly denotes which kind of note is specified.\n@OutputOnly",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -603,12 +625,12 @@
       "type": "object",
       "properties": {
         "cvssScore": {
-          "description": "The CVSS score for this Vulnerability.\nThis field can be used as a filter in list requests.",
+          "description": "The CVSS score for this Vulnerability.",
           "type": "number",
           "format": "float"
         },
         "severity": {
-          "description": "Provider assigned impact of the vulnerability\nThis field can be used as a filter in list requests.",
+          "description": "Provider assigned impact of the vulnerability",
           "enumDescriptions": [
             "Unknown Impact",
             "Minimal Impact",
@@ -650,7 +672,7 @@
           "type": "string"
         },
         "minAffectedVersion": {
-          "description": "The min version of the package in which the vulnerability exists.\nThis field can be used as a filter in list requests.",
+          "description": "The min version of the package in which the vulnerability exists.",
           "$ref": "Version"
         },
         "maxAffectedVersion": {
@@ -658,7 +680,7 @@
           "$ref": "Version"
         },
         "severity": {
-          "description": "The severity (eg: distro assigned severity) for this vulnerability.\nThis field can be used as a filter in list requests.",
+          "description": "The severity (eg: distro assigned severity) for this vulnerability.",
           "type": "string"
         },
         "description": {
@@ -677,7 +699,7 @@
       "type": "object",
       "properties": {
         "builderVersion": {
-          "description": "Version of the builder which produced this Note.\nThis field can be used as a filter in list requests.",
+          "description": "Version of the builder which produced this Note.",
           "type": "string"
         },
         "signature": {
@@ -692,7 +714,7 @@
       "type": "object",
       "properties": {
         "publicKey": {
-          "description": "Public key of the builder which can be used to verify that related\nFindings are valid and unchanged. To verify the signature, place the\ncontents of this field into a file (public.pem). The signature field is\nbase64-decoded into its binary representation in signature.bin, and the\nprovenance bytes from BuildDetails are base64-decoded into a binary\nrepresentation in signed.bin. Openssl can then verify the signature:\n'openssl sha256 -verify public.pem -signature signature.bin signed.bin'\n\nThis field can be used as a filter in list requests.",
+          "description": "Public key of the builder which can be used to verify that related\nFindings are valid and unchanged. To verify the signature, place the\ncontents of this field into a file (public.pem). The signature field is\nbase64-decoded into its binary representation in signature.bin, and the\nprovenance bytes from BuildDetails are base64-decoded into a binary\nrepresentation in signed.bin. Openssl can then verify the signature:\n'openssl sha256 -verify public.pem -signature signature.bin signed.bin'",
           "type": "string"
         },
         "signature": {

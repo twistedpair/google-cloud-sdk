@@ -27,10 +27,7 @@ _REPLACEMENT_DISK_DETAILED_HELP = """\
        Specifies a Compute Engine image as a replacement for the image
        being phased out. Users of the deprecated image will be advised to switch
        to this replacement. For example, *--replacement example-image* or
-       *--replacement projects/google/global/images/example-image*. This
-       flag is required when setting the image state to anything other than
-       ``ACTIVE'' or when *--delete-in*, *--delete-on*, *--obsolete-in*, or
-       *--obsolete-on* is provided.
+       *--replacement projects/google/global/images/example-image*.
        """
 
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION

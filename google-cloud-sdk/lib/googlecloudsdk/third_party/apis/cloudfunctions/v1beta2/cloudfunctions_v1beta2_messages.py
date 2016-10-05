@@ -50,6 +50,8 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 128MB.
+    conditionTrigger: A source that fires events in response to a condition in
+      another service.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -92,16 +94,17 @@ class CloudFunction(_messages.Message):
     DELETING = 4
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  entryPoint = _messages.StringField(2)
-  gcsTrigger = _messages.StringField(3)
-  gcsUrl = _messages.StringField(4)
-  httpsTrigger = _messages.MessageField('HTTPSTrigger', 5)
-  latestOperation = _messages.StringField(6)
-  name = _messages.StringField(7)
-  pubsubTrigger = _messages.StringField(8)
-  sourceRepository = _messages.MessageField('SourceRepository', 9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  timeout = _messages.StringField(11)
+  conditionTrigger = _messages.MessageField('ConditionTrigger', 2)
+  entryPoint = _messages.StringField(3)
+  gcsTrigger = _messages.StringField(4)
+  gcsUrl = _messages.StringField(5)
+  httpsTrigger = _messages.MessageField('HTTPSTrigger', 6)
+  latestOperation = _messages.StringField(7)
+  name = _messages.StringField(8)
+  pubsubTrigger = _messages.StringField(9)
+  sourceRepository = _messages.MessageField('SourceRepository', 10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  timeout = _messages.StringField(12)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -202,6 +205,35 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ConditionTrigger(_messages.Message):
+  """Describes ConditionTrigger, used to request events be sent from another
+  service.
+
+  Fields:
+    action: Action names contain the service that is sending an event and the
+      kind of action that fired the event. Must be of the form
+      sources/*/actions/* e.g. Directly handle a Message published to Google
+      Cloud PubSub      sources/cloud.pubsub/actions/publish       Handle an
+      object changing in Google Cloud Storage
+      sources/cloud.storage/actions/change       Handle a write to the
+      Firebase Realtime Database      sources/firebase.database/actions/write
+    path: Optional path within the resource that should be used to filter
+      events. Named wildcards may be written in curly brackets (e.g.
+      {variable}). The value that matched this parameter will be included  in
+      the event parameters. e.g. users/{userId}/profilePic Path is not
+      supported for all actions.
+    resource: Which instance of the source's service should send events. E.g.
+      for PubSub this would be a PubSub topic at projects/*/topics/*. For
+      Google Cloud Storage this would be a bucket at projects/*/buckets/*. For
+      any source that only supports one instance per-project, this should be
+      the name of the project (projects/*)
+  """
+
+  action = _messages.StringField(1)
+  path = _messages.StringField(2)
+  resource = _messages.StringField(3)
 
 
 class HTTPSTrigger(_messages.Message):

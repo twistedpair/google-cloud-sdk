@@ -873,7 +873,7 @@ class _SectionExperimental(_Section):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
     self.fast_component_update = self._AddBool(
         'fast_component_update',
-        callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel])
+        default=False)
 
 
 class _SectionTest(_Section):

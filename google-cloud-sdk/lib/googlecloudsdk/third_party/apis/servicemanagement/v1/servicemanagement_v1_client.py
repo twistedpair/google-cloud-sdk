@@ -37,6 +37,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
     self.operations = self.OperationsService(self)
     self.services_accessPolicy = self.ServicesAccessPolicyService(self)
     self.services_configs = self.ServicesConfigsService(self)
+    self.services_consumers = self.ServicesConsumersService(self)
     self.services_customerSettings = self.ServicesCustomerSettingsService(self)
     self.services_projectSettings = self.ServicesProjectSettingsService(self)
     self.services_rollouts = self.ServicesRolloutsService(self)
@@ -247,6 +248,43 @@ Operation<response: SubmitConfigSourceResponse>
         request_field=u'submitConfigSourceRequest',
         request_type_name=u'ServicemanagementServicesConfigsSubmitRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ServicesConsumersService(base_api.BaseApiService):
+    """Service class for the services_consumers resource."""
+
+    _NAME = u'services_consumers'
+
+    def __init__(self, client):
+      super(ServicemanagementV1.ServicesConsumersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists consumer settings for managed services.
+To search across all services, specify {service_name} as '-'.
+
+      Args:
+        request: (ServicemanagementServicesConsumersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceConsumersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'servicemanagement.services.consumers.list',
+        ordered_params=[u'serviceName'],
+        path_params=[u'serviceName'],
+        query_params=[u'consumerId', u'pageSize', u'pageToken'],
+        relative_path=u'v1/services/{serviceName}/consumers',
+        request_field='',
+        request_type_name=u'ServicemanagementServicesConsumersListRequest',
+        response_type_name=u'ListServiceConsumersResponse',
         supports_download=False,
     )
 
@@ -833,7 +871,7 @@ set.
         method_id=u'servicemanagement.services.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'category', u'consumerProjectId', u'expand', u'pageSize', u'pageToken', u'producerProjectId'],
+        query_params=[u'category', u'consumerId', u'consumerProjectId', u'expand', u'pageSize', u'pageToken', u'producerProjectId'],
         relative_path=u'v1/services',
         request_field='',
         request_type_name=u'ServicemanagementServicesListRequest',

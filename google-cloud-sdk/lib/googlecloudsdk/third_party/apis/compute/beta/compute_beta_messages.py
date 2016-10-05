@@ -10224,8 +10224,7 @@ class InstanceGroupManagerList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -11628,7 +11627,7 @@ class NetworkList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource .
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -12860,7 +12859,7 @@ class RouterList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -13142,7 +13141,7 @@ class SerialPortOutput(_messages.Message):
     next: [Output Only] The position of the next byte of content from the
       serial console output. Use this value in the next request as the start
       parameter.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
     start: [Output Only] The starting byte position of the output that was
       returned. This should match the start parameter sent with the request.
       If the serial console output exceeds the size of the buffer, older
@@ -14666,7 +14665,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -14715,7 +14714,7 @@ class TargetVpnGatewayList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -15181,7 +15180,7 @@ class VpnTunnelList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
