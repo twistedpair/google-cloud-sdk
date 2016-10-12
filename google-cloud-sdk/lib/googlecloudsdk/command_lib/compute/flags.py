@@ -363,11 +363,13 @@ class ResourceArgument(object):
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
 
-  def AddArgument(self, parser, operation_type='operate on'):
+  # TODO(b/31933786) remove cust_metavar once surface supports metavars for
+  # plural flags.
+  def AddArgument(self, parser, operation_type='operate on', cust_metavar=None):
     """Add this set of arguments to argparse parser."""
 
     params = dict(
-        metavar=self.name.upper(),
+        metavar=cust_metavar if cust_metavar else self.name.upper(),
         completion_resource=self.completion_resource_id,
     )
 

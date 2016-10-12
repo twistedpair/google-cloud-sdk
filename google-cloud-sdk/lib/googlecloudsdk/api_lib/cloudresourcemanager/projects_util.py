@@ -29,7 +29,7 @@ class DeletedResource(object):
 
 def GetMessages():
   """Import and return the appropriate projects messages module."""
-  return apis.GetMessagesModule('cloudresourcemanager', 'v1beta1')
+  return apis.GetMessagesModule('cloudresourcemanager', 'v1')
 
 
 def GetClient():
@@ -38,7 +38,7 @@ def GetClient():
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  return apis.GetClientInstance('cloudresourcemanager', 'v1beta1')
+  return apis.GetClientInstance('cloudresourcemanager', 'v1')
 
 
 def IsActive(project):
@@ -64,7 +64,7 @@ def ConvertHttpError(error):
 
   First line will parse project ID out of error url.
   Example:
-   URL = .../v1beta1/projects/BAD_ID:method?prettyPrint=True&alt=json
+   URL = .../v1/projects/BAD_ID:method?prettyPrint=True&alt=json
    project_id = 'BAD_ID'
   """
   log.debug('HttpError in projects API call.', exc_info=True)

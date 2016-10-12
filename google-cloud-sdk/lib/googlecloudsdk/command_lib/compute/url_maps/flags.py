@@ -16,6 +16,16 @@
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+def UrlMapArgument(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='url map',
+      completion_resource_id='compute.urlMaps',
+      plural=False,
+      required=required,
+      global_collection='compute.urlMaps',
+      short_help='The name of the URL map.')
+
+
 def UrlMapArgumentForTargetHttpsProxy(required=True):
   return compute_flags.ResourceArgument(
       name='--url-map',

@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
-import argparse
-
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
@@ -76,7 +74,7 @@ def InstanceArgumentForTargetInstance(required=True):
 
 def InstanceArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
-      resource_name='instance',
+      resource_name='instances',
       name='--instances',
       completion_resource_id='compute.instances',
       required=required,
@@ -84,7 +82,8 @@ def InstanceArgumentForTargetPool(action, required=True):
       short_help=(
           'Specifies a list of instances to {0} the target pool.'.format(action)
       ),
-      plural=True)
+      plural=True,
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
 def AddImageArgs(parser):
@@ -142,8 +141,7 @@ def AddLocalSsdArgs(parser):
           'interface': (lambda x: x.upper()),
       }),
       action='append',
-      help='(BETA) Specifies instances with attached local SSDs.',
-      metavar='PROPERTY=VALUE')
+      help='(BETA) Specifies instances with attached local SSDs.')
   local_ssd.detailed_help = """
       Attaches a local SSD to the instances.
 
@@ -211,8 +209,7 @@ def AddDiskArgs(parser):
           'auto-delete': str,
       }),
       action='append',
-      help='Attaches persistent disks to the instances.',
-      metavar='PROPERTY=VALUE')
+      help='Attaches persistent disks to the instances.')
   disk.detailed_help = """
       Attaches persistent disks to the instances. The disks
       specified must already exist.
@@ -362,13 +359,13 @@ def _GetAddress(compute_client, address_ref):
   return res[0]
 
 
-def ExpandAddressFlag(scope_prompter, compute_client, address, region):
+def ExpandAddressFlag(resources, compute_client, address, region):
   """Resolves the --address flag value.
 
   If the value of --address is a name, the regional address is queried.
 
   Args:
-    scope_prompter: Scope prompter object,
+    resources: resources object,
     compute_client: GCE API client,
     address: The command-line flags. The flag accessed is --address,
     region: The region.
@@ -388,8 +385,10 @@ def ExpandAddressFlag(scope_prompter, compute_client, address, region):
     pass
 
   # Lookup the address.
-  address_ref = scope_prompter.CreateRegionalReference(
-      address, region, resource_type='addresses')
+  address_ref = resources.Parse(
+      address,
+      collection='compute.addresses',
+      params={'region': region})
   res = _GetAddress(compute_client, address_ref)
   return res.address
 
@@ -541,22 +540,48 @@ def AddAddressArgs(parser, instances=True,
         This option can only be used when creating a single instance.
         """
   multiple_network_interface_cards_spec = {
-      'network': str,
-      'subnet': str,
       'address': str,
+      'network': str,
+      'no-address': None,
+      'subnet': str,
   }
   if instances:
     multiple_network_interface_cards_spec['private-network-ip'] = str
   if multiple_network_interface_cards:
-    parser.add_argument(
+    network_interface = parser.add_argument(
         '--network-interface',
         type=arg_parsers.ArgDict(
             spec=multiple_network_interface_cards_spec,
+            allow_key_only=True,
         ),
         action='append',  # pylint:disable=protected-access
-        help=argparse.SUPPRESS,
-        metavar='PROPERTY=VALUE',
+        help='Adds a network interface to the instance.',
     )
+
+    network_interface_detailed_help = """\
+        Adds a network interface to the instance. Mutually exclusive with
+        --address, --network, --subnet, and --private-network-ip flags.
+
+        The following keys are allowed:
+        *address*::: Assigns the given external address to the instance that is
+        created. Specyfying an empty string will assign an ephemeral IP.
+        Mutually exclusive with no-address. If neither key is present the
+        instance will get an ephemeral IP.
+
+        *network*::: Specifies the network that the interface will be part of.
+        This is mutually exclusive with subnet key. If neither is specified,
+        this defaults to the "default" network.
+
+        *no-address*::: If specified the interface will have no external IP.
+        """
+    if instances:
+      network_interface_detailed_help += """
+        *private-network-ip*::: Assigns the given RFC1918 IP address to the
+        interface. """
+    network_interface_detailed_help += """
+        *subnet*::: Specifies the subnet that the interface will be part of.
+        This is mutally exclusive with network key."""
+    network_interface.detailed_help = network_interface_detailed_help
 
 
 def AddMachineTypeArgs(parser, required=False):
@@ -917,15 +942,41 @@ def ValidateLocalSsdFlags(args):
                   ok=', '.join(LOCAL_SSD_INTERFACES)))
 
 
-def ValidateAddressFlags(args):
+def ValidateNicFlags(args):
+  """Valiadates flags specyfying network interface cards.
+
+  Args:
+    args: parsed comandline arguments.
+  Raises:
+    InvalidArgumentException: when it finds --network-interface that has both
+                              network, and subnet or address, and no-address
+                              keys.
+    ConflictingArgumentsException: when it finds --network-interface and at
+                                   least one of --address, --network,
+                                   --private_network_ip, or --subnet.
+  """
+  network_interface = getattr(args, 'network_interface', None)
+  if network_interface is None:
+    return
+  for ni in network_interface:
+    if 'network' in ni and 'subnet' in ni:
+      raise exceptions.InvalidArgumentException(
+          '--network-interface',
+          'specifies both network and subnet for one interface')
+
+    if 'address' in ni and 'no-address' in ni:
+      raise exceptions.InvalidArgumentException(
+          '--network-interface',
+          'specifies both address and no-address for one interface')
+
   conflicting_args = [
       'address', 'network', 'private_network_ip', 'subnet']
   conflicting_args_present = [
       arg for arg in conflicting_args if getattr(args, arg, None)]
-  if (getattr(args, 'network_interface', None) is not None
-      and conflicting_args_present):
-    conflicting_args = ['--{0}'.format(arg.replace('_', '-'))
-                        for arg in conflicting_args_present]
-    raise exceptions.ConflictingArgumentsException(
-        '--network-interface',
-        'all of the following: ' + ', '.join(conflicting_args))
+  if not conflicting_args_present:
+    return
+  conflicting_args = ['--{0}'.format(arg.replace('_', '-'))
+                      for arg in conflicting_args_present]
+  raise exceptions.ConflictingArgumentsException(
+      '--network-interface',
+      'all of the following: ' + ', '.join(conflicting_args))

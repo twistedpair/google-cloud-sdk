@@ -127,7 +127,7 @@ def GetEnabledListRequest(project_id):
 
 def GetAvailableListRequest(project_id):
   # The constant strings here are special settings that will make Inception
-  # return all service-management available to a project.
+  # return all services available to a project.
   return GetMessagesModule().ServicemanagementServicesListRequest(
       consumerProjectId=project_id,
       category=('servicemanagement.googleapis.com/'
@@ -226,20 +226,21 @@ def PushOpenApiServiceConfig(
           serviceName=service_name,
           submitConfigSourceRequest=config_source_request,
       ))
-  operation = client.services_configs.Submit(submit_request)
-  ProcessOperationResult(operation, async)
+  api_response = client.services_configs.Submit(submit_request)
+  operation = ProcessOperationResult(api_response, async)
 
-  # TODO(b/30276465): Get warnings/errors out of response when available.
+  diagnostics = svc_config = None
+  response = operation.get('response', {})
+  diagnostics = response.get('diagnostics', [])
+  svc_config = response.get('serviceConfig', {})
 
-  # Fish the serviceConfig.id fields from the proto Any that is returned
-  # in operation.response
-  for prop in operation.response.additionalProperties:
-    if prop.key == 'serviceConfig':
-      for item in prop.value.object_value.properties:
-        if item.key == 'id':
-          return item.value.string_value
+  for diagnostic in diagnostics:
+    kind = diagnostic.get('kind', '').upper()
+    logger = log.error if kind == 'ERROR' else log.warning
+    logger('{l}: {m}'.format(
+        l=diagnostic.get('location'), m=diagnostic.get('message')))
 
-  return None
+  return svc_config.get('id')
 
 
 def CreateServiceIfNew(service_name, project):
@@ -334,6 +335,9 @@ def ProcessOperationResult(result, async=False):
   Args:
     result: The message to process (expected to be of type Operation)'
     async: If False, the method will block until the operation completes.
+
+  Returns:
+    The processed Operation message in Python dict form
   """
   op = GetProcessedOperationResult(result, async)
   cmd = OP_DESCRIBE_CMD.format(op.get('name'))
@@ -347,6 +351,8 @@ def ProcessOperationResult(result, async=False):
     log.status.Print('Operation finished successfully. '
                      'The following command can describe '
                      'the Operation details:\n {0}'.format(cmd))
+
+  return op
 
 
 def GetProcessedOperationResult(result, async=False):

@@ -28,6 +28,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import local_state
@@ -1194,7 +1195,7 @@ prompt, or run:
     args = execution_utils.ArgsForPythonTool(gcloud_path, *command)
     self.__Write(log.status)
     try:
-      with console_io.ProgressTracker(
+      with progress_tracker.ProgressTracker(
           message='Performing post processing steps', tick_delay=.25):
         # Raise PostProcessingError for all failures so the progress tracker
         # will report the failure.

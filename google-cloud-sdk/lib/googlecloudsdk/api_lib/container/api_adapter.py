@@ -27,7 +27,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 
 WRONG_ZONE_ERROR_MSG = """\
 {error}
@@ -294,9 +294,9 @@ class APIAdapter(object):
       Error: if the operation times out or finishes with an error.
     """
     detail_message = None
-    with console_io.ProgressTracker(message, autotick=True,
-                                    detail_message_callback=
-                                    lambda: detail_message):
+    with progress_tracker.ProgressTracker(message, autotick=True,
+                                          detail_message_callback=
+                                          lambda: detail_message):
       start_time = time.clock()
       while timeout_s > (time.clock() - start_time):
         try:
@@ -353,7 +353,7 @@ class APIAdapter(object):
     operation_ids = deque(operation_ids)
     operations = {}
     errors = []
-    with console_io.ProgressTracker(message, autotick=True):
+    with progress_tracker.ProgressTracker(message, autotick=True):
       start_time = time.clock()
       ops_to_retry = []
       while timeout_s > (time.clock() - start_time) and operation_ids:

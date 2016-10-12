@@ -23,7 +23,7 @@ from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManag
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
 import yaml
@@ -92,7 +92,7 @@ def WaitForOperation(client, messages, operation_name, project,
              + ('{0} '.format(operation_description)
                 if operation_description else '')
              + operation_name)
-  with console_io.ProgressTracker(message, autotick=False) as ticker:
+  with progress_tracker.ProgressTracker(message, autotick=False) as ticker:
     while timeout is None or ticks < timeout:
       ticks += 1
 

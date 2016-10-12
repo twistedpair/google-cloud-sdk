@@ -17,7 +17,7 @@
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import text
 
 
@@ -167,7 +167,8 @@ def DeleteServices(api_client, services):
   errors = {}
   for service in services:
     try:
-      with console_io.ProgressTracker('Deleting [{0}]'.format(service.id)):
+      with progress_tracker.ProgressTracker(
+          'Deleting [{0}]'.format(service.id)):
         api_client.DeleteService(service.id)
     except (calliope_exceptions.HttpException, operations.OperationError,
             operations.OperationTimeoutError) as err:

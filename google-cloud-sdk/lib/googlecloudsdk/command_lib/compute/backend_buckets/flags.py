@@ -39,3 +39,12 @@ REQUIRED_GCS_BUCKET_ARG = compute_flags.ResourceArgument(
     plural=False,
     global_collection='compute.backendBuckets',
     detailed_help=_GCS_BUCKET_DETAILED_HELP)
+
+
+def BackendBucketArgumentForUrlMap(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='backend bucket',
+      name='--default-backend-bucket',
+      required=required,
+      completion_resource_id='compute.backendBuckets',
+      global_collection='compute.backendBuckets')

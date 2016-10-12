@@ -120,7 +120,11 @@ SCHEMA = s.Message(
     resources=s.Message(
         memory_gb=s.Value(),
         disk_size_gb=s.Value('disk_gb'),
-        cpu=s.Value()),
+        cpu=s.Value(),
+        volumes=s.RepeatedField(element=s.Message(
+            name=s.Value(converter=c.ToJsonString),
+            volume_type=s.Value(converter=c.ToJsonString),
+            size_gb=s.Value()))),
     runtime=s.Value(converter=c.ToJsonString),
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),

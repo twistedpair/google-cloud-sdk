@@ -32,6 +32,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
@@ -40,9 +41,6 @@ DEFAULT_DOMAIN = 'appspot.com'
 DEFAULT_SERVICE = 'default'
 ALT_SEPARATOR = '-dot-'
 MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
-
-# Wait this long before displaying an additional message
-_PREPARE_VM_MESSAGE_DELAY = 15
 
 # https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
 # Technically, this should be 260 because of the drive, ':\', and a null
@@ -211,8 +209,7 @@ def DoPrepareManagedVms(gae_client):
   """Call an API to prepare the for App Engine Flexible."""
   try:
     message = 'If this is your first deployment, this may take a while'
-    with console_io.DelayedProgressTracker(message,
-                                           _PREPARE_VM_MESSAGE_DELAY):
+    with progress_tracker.ProgressTracker(message):
       # Note: this doesn't actually boot the VM, it just prepares some stuff
       # for the project via an undocumented Admin API.
       gae_client.PrepareVmRuntime()

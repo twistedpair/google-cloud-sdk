@@ -15,7 +15,7 @@
 
 from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.core import apis as core_apis
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -44,7 +44,7 @@ def WaitForOperation(client, operation_ref, message):
   Returns:
     True iff the operation finishes with success
   """
-  with console_io.ProgressTracker(message, autotick=False) as pt:
+  with progress_tracker.ProgressTracker(message, autotick=False) as pt:
     while True:
       operation = client.zoneOperations.Get(operation_ref.Request())
       if operation.error:

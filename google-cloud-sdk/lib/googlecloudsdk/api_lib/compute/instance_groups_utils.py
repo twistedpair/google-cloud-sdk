@@ -205,8 +205,10 @@ class InstanceGroupListInstances(InstanceGroupListInstancesBase):
 
   def GetResources(self, args):
     """Retrieves response with instance in the instance group."""
-    group_ref = self.CreateZonalReference(args.name, args.zone)
-
+    group_ref = self.resources.Parse(
+        args.name,
+        collection='compute.' + self.resource_type,
+        params={'zone': args.zone})
     if args.regexp:
       filter_expr = 'instance eq {0}'.format(args.regexp)
     else:
@@ -263,11 +265,21 @@ def CreateInstanceGroupReferences(
 
   if unresolved_names:
     if region is not None:
-      refs = scope_prompter.CreateRegionalReferences(
-          unresolved_names, region, resource_type=regional_resource_type)
+      refs = []
+      for name in unresolved_names:
+        ref = resources.Parse(
+            name,
+            collection='compute.' + regional_resource_type,
+            params={'region': region})
+        refs.append(ref)
     elif zone is not None:
-      refs = scope_prompter.CreateZonalReferences(
-          unresolved_names, zone, resource_type=zonal_resource_type)
+      refs = []
+      for name in unresolved_names:
+        ref = resources.Parse(
+            name,
+            collection='compute.' + zonal_resource_type,
+            params={'zone': zone})
+        refs.append(ref)
     else:
       refs = scope_prompter.PromptForMultiScopedReferences(
           unresolved_names,

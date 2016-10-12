@@ -24,7 +24,7 @@ DEPLOY_MESSAGE_TEMPLATE = """\
 """
 
 DEPLOYED_URL_TEMPLATE = """\
-     Deployed URL: [{url}]
+     Deploying to URL: [{url}]
 """
 
 PROMOTE_MESSAGE_TEMPLATE = """\

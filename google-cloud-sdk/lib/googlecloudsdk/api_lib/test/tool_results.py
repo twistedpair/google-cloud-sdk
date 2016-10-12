@@ -20,7 +20,7 @@ import urlparse
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
@@ -86,7 +86,7 @@ def GetToolResultsIds(matrix, matrix_monitor,
   history_id = None
   execution_id = None
   msg = 'Creating individual test executions'
-  with console_io.ProgressTracker(msg, autotick=True):
+  with progress_tracker.ProgressTracker(msg, autotick=True):
     while True:
       if matrix.resultStorage.toolResultsExecution:
         history_id = matrix.resultStorage.toolResultsExecution.historyId

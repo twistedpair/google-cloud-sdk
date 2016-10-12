@@ -22,7 +22,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
@@ -196,7 +196,8 @@ def DeleteVersions(api_client, versions):
   for version in versions:
     version_path = '{0}/{1}'.format(version.service, version.id)
     try:
-      with console_io.ProgressTracker('Deleting [{0}]'.format(version_path)):
+      with progress_tracker.ProgressTracker(
+          'Deleting [{0}]'.format(version_path)):
         api_client.DeleteVersion(version.service, version.id)
     except (calliope_exceptions.HttpException, operations.OperationError,
             operations.OperationTimeoutError) as err:
@@ -275,7 +276,7 @@ def _SetDefaultVersion(new_version, api_client):
     new_version: Version, The version to promote.
     api_client: appengine_api_client.AppengineApiClient to use to make requests.
   """
-  # TODO(b/29116891): It sometimes takes a while for a new service to show up.
+  # TODO(b/31824825): It sometimes takes a while for a new service to show up.
   # Retry it if we get a service not found error.
   def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
     return exc_type == calliope_exceptions.HttpException
@@ -327,9 +328,16 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
             old_default_version))
     return
 
+  log.status.Print('Stopping version [{0}].')
   try:
-    api_client.StopVersion(service_name=old_default_version.service,
-                           version_id=old_default_version.id)
+    # We don't block here because stopping the previous version adds a long time
+    # (reports of 2.5 minutes) to deployment. The risk is that if we don't wait,
+    # the operation might fail and leave an old version running. But the time
+    # savings is substantial.
+    api_client.StopVersion(
+        service_name=old_default_version.service,
+        version_id=old_default_version.id,
+        block=False)
   except (calliope_exceptions.HttpException, operations.OperationError,
           operations.OperationTimeoutError) as err:
     log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
@@ -337,3 +345,12 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
     log.warn('Version [{0}] is still running and you must stop or delete it '
              'yourself in order to turn it off. (If you do not, you may be '
              'charged.)'.format(old_default_version))
+  else:
+    # TODO(b/318248525): Switch to refer to `gcloud app operations wait` when
+    # available
+    log.status.Print(
+        'Sent request to stop version [{0}]. This operation may take some time '
+        'to complete. If you would like to verify that it succeeded, run:\n'
+        '  $ gcloud app versions describe {0}\n'
+        'until it shows that the version has stopped.'.format(
+            old_default_version))

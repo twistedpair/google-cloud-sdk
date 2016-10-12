@@ -117,7 +117,7 @@ def FetchOccurrences(repository):
   filters = []
 
   # Retrieve all resource urls prefixed with the image path
-  filters.append('has_prefix(resource_url, "{repo}"'.format(
+  filters.append('has_prefix(resource_url, "{repo}")'.format(
       repo=_UnqualifiedResourceUrl(repository)))
 
   client = apis.GetClientInstance('containeranalysis', 'v1alpha1')

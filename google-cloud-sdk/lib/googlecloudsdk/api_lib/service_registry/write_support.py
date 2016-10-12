@@ -18,7 +18,7 @@ import time
 
 from googlecloudsdk.api_lib.service_registry import constants
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 
 
 class ServiceRegistryError(exceptions.ToolException):
@@ -88,7 +88,7 @@ class ServiceRegistryClient(object):
     message = ('Waiting for {0}[{1}]'.format(
         operation_description + ' ' if operation_description else '',
         operation_ref.Name()))
-    with console_io.ProgressTracker(message, autotick=False) as ticker:
+    with progress_tracker.ProgressTracker(message, autotick=False) as ticker:
       while ticks < self.OPERATION_TIMEOUT:
         operation = self.client.operations.Get(operation_ref.Request())
         # Operation status is one of PENDING, RUNNING, DONE

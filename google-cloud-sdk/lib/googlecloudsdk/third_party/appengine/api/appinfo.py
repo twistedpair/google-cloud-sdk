@@ -14,8 +14,8 @@
 
 """AppInfo tools.
 
-Library for working with AppInfo records in memory, store and load from
-configuration files.
+This library allows you to work with AppInfo records in memory, as well as store
+and load from configuration files.
 """
 
 
@@ -57,9 +57,11 @@ from googlecloudsdk.third_party.appengine.api import backendinfo
 
 # pylint: enable=g-import-not-at-top
 
-# Regular expression for matching url, file, url root regular expressions.
-# url_root is identical to url except it additionally imposes not ending with *.
-# TODO(user): url_root should generally allow a url but not a regex or glob.
+# Regular expression for matching URL, file, URL root regular expressions.
+# `url_root` is identical to url except it additionally imposes not ending with
+# *.
+# TODO(user): `url_root` should generally allow a URL but not a regex or
+# glob.
 _URL_REGEX = r'(?!\^)/.*|\..*|(\(.).*(?!\$).'
 _FILES_REGEX = r'.+'
 _URL_ROOT_REGEX = r'/.*'
@@ -88,13 +90,13 @@ _EXPIRATION_CONVERSIONS = {
     's': 1,
 }
 
-# Constant values from apphosting/base/constants.h
+# Constant values from `apphosting/base/constants.h`
 # TODO(user): Maybe a python constants file.
 APP_ID_MAX_LEN = 100
 MODULE_ID_MAX_LEN = 63
 # See b/5485871 for why this is 100 and not 63.
 # NOTE(user): See b/5485871 for why this is different from the
-# apphosting/base/constants.h value.
+# `apphosting/base/constants.h` value.
 MODULE_VERSION_ID_MAX_LEN = 63
 MAX_URL_MAPS = 100
 
@@ -131,8 +133,10 @@ APPLICATION_RE_STRING = (r'(?:%s)?(?:%s)?%s' %
 # NOTE(user,user): These regexes have been copied to multiple other
 # locations in google.apphosting so we don't have to pull this file into
 # python_lib for other modules to work in production.
-# Other known locations as of 2012-03-26:
+# Other known locations as of 2016-08-15:
 # - java/com/google/apphosting/admin/legacy/LegacyAppInfo.java
+# - apphosting/client/app_config_old.cc
+# - apphosting/api/app_config/app_config_server2.cc
 MODULE_ID_RE_STRING = r'^(?!-)[a-z\d\-]{0,%d}[a-z\d]$' % (MODULE_ID_MAX_LEN - 1)
 MODULE_VERSION_ID_RE_STRING = (r'^(?!-)[a-z\d\-]{0,%d}[a-z\d]$' %
                                (MODULE_VERSION_ID_MAX_LEN - 1))
@@ -200,7 +204,7 @@ SKIP_NO_FILES = r'(?!)'
 
 DEFAULT_NOBUILD_FILES = (r'^$')
 
-# Attributes for URLMap
+# Attributes for `URLMap`
 LOGIN = 'login'
 AUTH_FAIL_ACTION = 'auth_fail_action'
 SECURE = 'secure'
@@ -219,7 +223,7 @@ HTTP_HEADERS = 'http_headers'
 APPLICATION_READABLE = 'application_readable'
 REDIRECT_HTTP_RESPONSE_CODE = 'redirect_http_response_code'
 
-# Attributes for AppInfoExternal
+# Attributes for `AppInfoExternal`
 APPLICATION = 'application'
 PROJECT = 'project'  # An alias for 'application'
 MODULE = 'module'
@@ -326,8 +330,8 @@ ON_ALIASES = ['yes', 'y', 'True', 't', '1', 'true']
 OFF = 'off'
 OFF_ALIASES = ['no', 'n', 'False', 'f', '0', 'false']
 
-# Attributes for VmHealthCheck. Please refer to message VmHealthCheck in
-# request_path and port are not configurable yet.
+# Attributes for `VmHealthCheck`. Please refer to message `VmHealthCheck` in
+# `request_path` and `port` are not configurable yet.
 ENABLE_HEALTH_CHECK = 'enable_health_check'
 CHECK_INTERVAL_SEC = 'check_interval_sec'
 TIMEOUT_SEC = 'timeout_sec'
@@ -340,6 +344,12 @@ HOST = 'host'
 CPU = 'cpu'
 MEMORY_GB = 'memory_gb'
 DISK_SIZE_GB = 'disk_size_gb'
+
+# Attributes for Resources:Volumes.
+VOLUMES = 'volumes'
+VOLUME_NAME = 'name'
+VOLUME_TYPE = 'volume_type'
+SIZE_GB = 'size_gb'
 
 # Attributes for Network.
 FORWARDED_PORTS = 'forwarded_ports'
@@ -359,27 +369,28 @@ class _VersionedLibrary(object):
                default_version=None,
                deprecated_versions=None,
                experimental_versions=None):
-    """Initializer for _VersionedLibrary.
+    """Initializer for `_VersionedLibrary`.
 
     Args:
-      name: The name of the library e.g. "django".
-      url: The URL for the library's project page e.g.
-          "http://www.djangoproject.com/".
-      description: A short description of the library e.g. "A framework...".
-      supported_versions: A list of supported version names ordered by release
-          date e.g. ["v1", "v2", "v3"].
-      latest_version: The version of the library that will be used when
-          customers specify "latest." The rule of thumb is that this should
-          be the newest version that is neither deprecated nor experimental
-          (although may be experimental if all supported versions are either
-          deprecated or experimental).
+      name: The name of the library; for example, `django`.
+      url: The URL for the library's project page; for example,
+          `http://www.djangoproject.com/`.
+      description: A short description of the library; for example,
+          `A framework...`.
+      supported_versions: A list of supported version names, ordered by release
+          date; for example, `["v1", "v2", "v3"]`.
+      latest_version: The version of the library that will be used when you
+          specify `latest.` The rule of thumb is that this value should be the
+          newest version that is neither deprecated nor experimental; however
+          this value might be an experimental version if all of the supported
+          versions are either deprecated or experimental.
       default_version: The version of the library that is enabled by default
-          in the Python 2.7 runtime or None if the library is not available by
-          default e.g. "v1".
+          in the Python 2.7 runtime, or `None` if the library is not available
+          by default; for example, `v1`.
       deprecated_versions: A list of the versions of the library that have been
-          deprecated e.g. ["v1", "v2"].
+          deprecated; for example, `["v1", "v2"]`.
       experimental_versions: A list of the versions of the library that are
-          current experimental e.g. ["v1"].
+          currently experimental; for example, `["v1"]`.
     """
     self.name = name
     self.url = url
@@ -392,17 +403,36 @@ class _VersionedLibrary(object):
 
   @property
   def non_deprecated_versions(self):
+    """Retrieves the versions of the library that are not deprecated.
+
+    Returns:
+      A list of the versions of the library that are not deprecated.
+    """
     return [version for version in self.supported_versions
             if version not in self.deprecated_versions]
 
 
 _SUPPORTED_LIBRARIES = [
     _VersionedLibrary(
+        'clearsilver',
+        'http://www.clearsilver.net/',
+        'A fast, powerful, and language-neutral HTML template system.',
+        ['0.10.5'],
+        latest_version='0.10.5',
+        ),
+    _VersionedLibrary(
         'django',
         'http://www.djangoproject.com/',
         'A full-featured web application framework for Python.',
         ['1.2', '1.3', '1.4', '1.5', '1.9'],
         latest_version='1.4',
+        ),
+    _VersionedLibrary(
+        'enum',
+        'https://pypi.python.org/pypi/enum34',
+        'A backport of the enum module introduced in python 3.4',
+        ['0.9.23'],
+        latest_version='0.9.23',
         ),
     _VersionedLibrary(
         'endpoints',
@@ -510,6 +540,13 @@ _SUPPORTED_LIBRARIES = [
         latest_version='0.6c11',
         ),
     _VersionedLibrary(
+        'six',
+        'https://pypi.python.org/pypi/six',
+        'Abstract differences between py2.x and py3',
+        ['1.9.0'],
+        latest_version='1.9.0',
+        ),
+    _VersionedLibrary(
         'ssl',
         'http://docs.python.org/dev/library/ssl.html',
         'The SSL socket wrapper built-in module.',
@@ -532,6 +569,14 @@ _SUPPORTED_LIBRARIES = [
         ['1.1.1', '1.2.3'],
         latest_version='1.2.3',
         default_version='1.1.1',
+        ),
+    _VersionedLibrary(
+        'werkzeug',
+        'http://www.werkzeug.pocoo.org/',
+        'A WSGI utility library.',
+        ['0.11.10'],
+        latest_version='0.11.10',
+        default_version='0.11.10',
         ),
     _VersionedLibrary(
         'yaml',
@@ -605,7 +650,7 @@ _all_runtimes = _CANNED_RUNTIMES
 def GetAllRuntimes():
   """Returns the list of all valid runtimes.
 
-  This can include third-party runtimes as well as canned runtimes.
+  This list can include third-party runtimes as well as canned runtimes.
 
   Returns:
     Tuple of strings.
@@ -639,17 +684,19 @@ class HandlerBase(validation.Validated):
 
 
 class HttpHeadersDict(validation.ValidatedDict):
-  """A dict that limits keys and values what http_headers allows.
+  """A dict that limits keys and values to what `http_headers` allows.
 
-  http_headers is an static handler key i.e. it applies to handlers with
-  static_dir or static_files keys. An example of how http_headers is used is
+  `http_headers` is an static handler key; it applies to handlers with
+  `static_dir` or `static_files` keys. The following code is an example of how
+  `http_headers` is used::
 
-  handlers:
-  - url: /static
-    static_dir: static
-    http_headers:
-      X-Foo-Header: foo value
-      X-Bar-Header: bar value
+      handlers:
+      - url: /static
+        static_dir: static
+        http_headers:
+          X-Foo-Header: foo value
+          X-Bar-Header: bar value
+
   """
 
   DISALLOWED_HEADERS = frozenset([
@@ -675,15 +722,16 @@ class HttpHeadersDict(validation.ValidatedDict):
   MAX_LEN = 500
 
   class KeyValidator(validation.Validator):
-    """Ensures that keys in HttpHeadersDict i.e. header names are valid.
+    """Ensures that keys in `HttpHeadersDict` are valid.
 
-    An instance is used as HttpHeadersDict's KEY_VALIDATOR.
+    `HttpHeadersDict` contains a list of headers. An instance is used as
+    `HttpHeadersDict`'s `KEY_VALIDATOR`.
     """
 
     def Validate(self, name, unused_key=None):
-      """Returns argument, or raises an exception if it is invalid.
+      """Returns an argument, or raises an exception if the argument is invalid.
 
-      HTTP header names are defined by RFC 2616 section 4.2.
+      HTTP header names are defined by `RFC 2616, section 4.2`_.
 
       Args:
         name: HTTP header field value.
@@ -693,8 +741,11 @@ class HttpHeadersDict(validation.ValidatedDict):
         name argument, unchanged.
 
       Raises:
-        appinfo_errors.InvalidHttpHeaderName: argument cannot be used as an HTTP
-          header name.
+        appinfo_errors.InvalidHttpHeaderName: An argument cannot be used as an
+            HTTP header name.
+
+      .. _RFC 2616, section 4.2:
+         https://www.ietf.org/rfc/rfc2616.txt
       """
       original_name = name
 
@@ -736,29 +787,32 @@ class HttpHeadersDict(validation.ValidatedDict):
       return original_name
 
   class ValueValidator(validation.Validator):
-    """Ensures that values in HttpHeadersDict i.e. header values are valid.
+    """Ensures that values in `HttpHeadersDict` are valid.
 
-    An instance is used as HttpHeadersDict's VALUE_VALIDATOR.
+    An instance is used as `HttpHeadersDict`'s `VALUE_VALIDATOR`.
     """
 
     def Validate(self, value, key=None):
-      """Returns value, or raises an exception if it is invalid.
+      """Returns a value, or raises an exception if the value is invalid.
 
-      According to RFC 2616 section 4.2, header field values must consist "of
-      either *TEXT or combinations of token, separators, and quoted-string".
+      According to `RFC 2616 section 4.2`_ header field values must consist "of
+      either *TEXT or combinations of token, separators, and quoted-string"::
 
-      TEXT = <any OCTET except CTLs, but including LWS>
+          TEXT = <any OCTET except CTLs, but including LWS>
 
       Args:
         value: HTTP header field value.
         key: HTTP header field name.
 
       Returns:
-        value argument.
+        A value argument.
 
       Raises:
-        appinfo_errors.InvalidHttpHeaderValue: argument cannot be used as an
-          HTTP header value.
+        appinfo_errors.InvalidHttpHeaderValue: An argument cannot be used as an
+            HTTP header value.
+
+      .. _RFC 2616, section 4.2:
+         https://www.ietf.org/rfc/rfc2616.txt
       """
       # Make sure only ASCII data is used.
       if isinstance(value, unicode):
@@ -772,7 +826,7 @@ class HttpHeadersDict(validation.ValidatedDict):
       key = key.lower()
 
       # TODO(user): This is the same check that appserver performs, but it
-      # could be stronger. e.g. '"foo' should not be considered valid, because
+      # could be stronger. e.g. `"foo` should not be considered valid, because
       # HTTP does not allow unclosed double quote marks in header values, per
       # RFC 2616 section 4.2.
       printable = set(string.printable[:-5])
@@ -788,8 +842,9 @@ class HttpHeadersDict(validation.ValidatedDict):
     def AssertHeaderNotTooLong(name, value):
       header_length = len('%s: %s\r\n' % (name, value))
 
-      # The >= operator here is a little counter-intuitive. The reason for it is
-      # that I'm trying to follow the HTTPProto::IsValidHeader implementation.
+      # The `>=` operator here is a little counter-intuitive. The reason for it
+      # is that I'm trying to follow the
+      # `HTTPProto::IsValidHeader` implementation.
       if header_length >= HttpHeadersDict.MAX_HEADER_LENGTH:
         # If execution reaches this point, it generally means the header is too
         # long, but there are a few exceptions, which are listed in the next
@@ -818,8 +873,8 @@ class HttpHeadersDict(validation.ValidatedDict):
       header_name: HTTP header name to look for.
 
     Returns:
-      A header value that corresponds to header_name. If more than one such
-      value is in self, one of the values is selected arbitrarily, and
+      A header value that corresponds to `header_name`. If more than one such
+      value is in `self`, one of the values is selected arbitrarily and
       returned. The selection is not deterministic.
     """
     for name in self:
@@ -827,7 +882,7 @@ class HttpHeadersDict(validation.ValidatedDict):
         return self[name]
 
   # TODO(user): Perhaps, this functionality should be part of
-  # validation.ValidatedDict .
+  # `validation.ValidatedDict`.
   def __setitem__(self, key, value):
     is_addition = self.Get(key) is None
     if is_addition and len(self) >= self.MAX_LEN:
@@ -839,81 +894,87 @@ class HttpHeadersDict(validation.ValidatedDict):
 
 
 class URLMap(HandlerBase):
-  """Mapping from URLs to handlers.
+  """Maps from URLs to handlers.
 
-  This class acts like something of a union type.  Its purpose is to
-  describe a mapping between a set of URLs and their handlers.  What
-  handler type a given instance has is determined by which handler-id
-  attribute is used.
+  This class acts similar to a union type. Its purpose is to describe a mapping
+  between a set of URLs and their handlers. The handler type of a given instance
+  is determined by which `handler-id` attribute is used.
 
-  Each mapping can have one and only one handler type.  Attempting to
-  use more than one handler-id attribute will cause an UnknownHandlerType
-  to be raised during validation.  Failure to provide any handler-id
-  attributes will cause MissingHandlerType to be raised during validation.
+  Every mapping can have one and only one handler type. Attempting to use more
+  than one `handler-id` attribute will cause an `UnknownHandlerType` to be
+  raised during validation. Failure to provide any `handler-id` attributes will
+  cause `MissingHandlerType` to be raised during validation.
 
-  The regular expression used by the url field will be used to match against
-  the entire URL path and query string of the request.  This means that
-  partial maps will not be matched.  Specifying a url, say /admin, is the
-  same as matching against the regular expression '^/admin$'.  Don't begin
-  your matching url with ^ or end them with $.  These regular expressions
-  won't be accepted and will raise ValueError.
+  The regular expression used by the `url` field will be used to match against
+  the entire URL path and query string of the request; therefore, partial maps
+  will not be matched. Specifying a `url`, such as `/admin`, is the same as
+  matching against the regular expression `^/admin$`. Don't start your matching
+  `url` with `^` or end them with `$`. These regular expressions won't be
+  accepted and will raise `ValueError`.
 
   Attributes:
-    login: Whether or not login is required to access URL.  Defaults to
-      'optional'.
-    secure: Restriction on the protocol which can be used to serve
-            this URL/handler (HTTP, HTTPS or either).
-    url: Regular expression used to fully match against the request URLs path.
-      See Special Cases for using static_dir.
-    static_files: Handler id attribute that maps URL to the appropriate
-      file.  Can use back regex references to the string matched to url.
-    upload: Regular expression used by the application configuration
-      program to know which files are uploaded as blobs.  It's very
-      difficult to determine this using just the url and static_files
-      so this attribute must be included.  Required when defining a
-      static_files mapping.
-      A matching file name must fully match against the upload regex, similar
-      to how url is matched against the request path.  Do not begin upload
-      with ^ or end it with $.
-    static_dir: Handler id that maps the provided url to a sub-directory
-      within the application directory.  See Special Cases.
-    mime_type: When used with static_files and static_dir the mime-type
-      of files served from those directories are overridden with this
-      value.
-    script: Handler id that maps URLs to scipt handler within the application
-      directory that will run using CGI.
-    position: Used in AppInclude objects to specify whether a handler
-      should be inserted at the beginning of the primary handler list or at the
-      end.  If 'tail' is specified, the handler is inserted at the end,
-      otherwise, the handler is inserted at the beginning.  This means that
-      'head' is the effective default.
-    expiration: When used with static files and directories, the time delta to
-      use for cache expiration. Has the form '4d 5h 30m 15s', where each letter
-      signifies days, hours, minutes, and seconds, respectively. The 's' for
-      seconds may be omitted. Only one amount must be specified, combining
-      multiple amounts is optional. Example good values: '10', '1d 6h',
-      '1h 30m', '7d 7d 7d', '5m 30'.
-    api_endpoint: Handler id that identifies endpoint as an API endpoint,
-      calls that terminate here will be handled by the api serving framework.
+    login: Specifies whether a user should be logged in to access a URL.
+        The default value of this argument is `optional`.
+    secure: Sets the restriction on the protocol that can be used to serve this
+        URL or handler. This value can be set to `HTTP`, `HTTPS` or `either`.
+    url: Specifies a regular expression that is used to fully match against the
+        request URLs path. See the "Special cases" section of this document to
+        learn more.
+    static_files: Specifies the handler ID attribute that maps `url` to the
+        appropriate file. You can specify regular expression backreferences to
+        the string matched to `url`.
+    upload: Specifies the regular expression that is used by the application
+        configuration program to determine which files are uploaded as blobs.
+        Because it is difficult to determine this information using just the
+        `url` and `static_files` arguments, this attribute must be included.
+        This attribute is required when you define a `static_files` mapping. A
+        matching file name must fully match against the `upload` regular
+        expression, similar to how `url` is matched against the request path. Do
+        not begin the `upload` argument with the `^` character or end it with
+        the `$` character.
+    static_dir: Specifies the handler ID that maps the provided `url` to a
+        sub-directory within the application directory. See "Special cases."
+    mime_type: When used with `static_files` and `static_dir`, this argument
+        specifies that the MIME type of the files that are served from those
+        directories must be overridden with this value.
+    script: Specifies the handler ID that maps URLs to a script handler within
+        the application directory that will run using CGI.
+    position: Used in `AppInclude` objects to specify whether a handler should
+        be inserted at the beginning of the primary handler list or at the end.
+        If `tail` is specified, the handler is inserted at the end; otherwise,
+        the handler is inserted at the beginning. This behavior implies that
+        `head` is the effective default.
+    expiration: When used with static files and directories, this argument
+        specifies the time delta to use for cache expiration. This argument
+        should use the following format: `4d 5h 30m 15s`, where each letter
+        signifies days, hours, minutes, and seconds, respectively. The `s` for
+        "seconds" can be omitted. Only one amount must be specified, though
+        combining multiple amounts is optional. The following list contains
+        examples of values that are acceptable: `10`, `1d 6h`, `1h 30m`,
+        `7d 7d 7d`, `5m 30`.
+    api_endpoint: Specifies the handler ID that identifies an endpoint as an API
+        endpoint. Calls that terminate here will be handled by the API serving
+        framework.
 
   Special cases:
-    When defining a static_dir handler, do not use a regular expression
-    in the url attribute.  Both the url and static_dir attributes are
-    automatically mapped to these equivalents:
+    When defining a `static_dir` handler, do not use a regular expression in the
+    `url` attribute. Both the `url` and `static_dir` attributes are
+    automatically mapped to these equivalents::
 
-      <url>/(.*)
-      <static_dir>/\1
+        <url>/(.*)
+        <static_dir>/\1
 
-    For example:
+    For example, this declaration...::
 
-      url: /images
-      static_dir: images_folder
+        url: /images
+        static_dir: images_folder
 
-    Is the same as this static_files declaration:
+    ...is equivalent to this `static_files` declaration::
 
-      url: /images/(.*)
-      static_files: images_folder/\1
-      upload: images_folder/(.*)
+        url: /images/(.*)
+        static_files: images_folder/\1
+        upload: images_folder/(.*)
+
   """
   ATTRIBUTES = {
       # Static file fields.
@@ -960,31 +1021,28 @@ class URLMap(HandlerBase):
   }
 
   def GetHandler(self):
-    """Get handler for mapping.
+    """Gets the handler for a mapping.
 
     Returns:
-      Value of the handler (determined by handler id attribute).
+      The value of the handler, as determined by the handler ID attribute.
     """
     return getattr(self, self.GetHandlerType())
 
   def GetHandlerType(self):
-    """Get handler type of mapping.
+    """Gets the handler type of a mapping.
 
     Returns:
-      Handler type determined by which handler id attribute is set.
+      The handler type as determined by which handler ID attribute is set.
 
     Raises:
-      UnknownHandlerType: when none of the no handler id attributes are set.
-
-      UnexpectedHandlerAttribute: when an unexpected attribute is set for the
-        discovered handler type.
-
-      HandlerTypeMissingAttribute: when the handler is missing a
-        required attribute for its handler type.
-
-      MissingHandlerAttribute: when a URL handler is missing an attribute
+      UnknownHandlerType: If none of the handler ID attributes are set.
+      UnexpectedHandlerAttribute: If an unexpected attribute is set for the
+          discovered handler type.
+      HandlerTypeMissingAttribute: If the handler is missing a required
+          attribute for its handler type.
+      MissingHandlerAttribute: If a URL handler is missing an attribute.
     """
-    # Special case for the api_endpoint handler as it may have a 'script'
+    # Special case for the `api_endpoint` handler as it may have a `script`
     # attribute as well.
     if getattr(self, HANDLER_API_ENDPOINT) is not None:
       # Matched id attribute, break out of loop.
@@ -1024,20 +1082,19 @@ class URLMap(HandlerBase):
     return mapping_type
 
   def CheckInitialized(self):
-    """Adds additional checking to make sure handler has correct fields.
+    """Adds additional checking to make sure a handler has correct fields.
 
-    In addition to normal ValidatedCheck calls GetHandlerType
-    which validates all the handler fields are configured
-    properly.
+    In addition to normal `ValidatedCheck`, this method calls `GetHandlerType`,
+    which validates whether all of the handler fields are configured properly.
 
     Raises:
-      UnknownHandlerType: when none of the no handler id attributes are set.
-      UnexpectedHandlerAttribute: when an unexpected attribute is set for the
-        discovered handler type.
-      HandlerTypeMissingAttribute: when the handler is missing a required
-        attribute for its handler type.
-      ContentTypeSpecifiedMultipleTimes: when mime_type is inconsistent with
-        http_headers.
+      UnknownHandlerType: If none of the handler ID attributes are set.
+      UnexpectedHandlerAttribute: If an unexpected attribute is set for the
+          discovered handler type.
+      HandlerTypeMissingAttribute: If the handler is missing a required
+          attribute for its handler type.
+      ContentTypeSpecifiedMultipleTimes: If `mime_type` is inconsistent with
+          `http_headers`.
     """
     super(URLMap, self).CheckInitialized()
     if self.GetHandlerType() in (STATIC_DIR, STATIC_FILES):
@@ -1055,25 +1112,26 @@ class URLMap(HandlerBase):
       self.AssertUniqueContentType()
 
   def AssertUniqueContentType(self):
-    """Makes sure that self.http_headers is consistent with self.mime_type.
+    """Makes sure that `self.http_headers` is consistent with `self.mime_type`.
 
-    Assumes self is a static handler i.e. either self.static_dir or
-    self.static_files is set (to not None).
+    This method assumes that `self` is a static handler, either
+    `self.static_dir` or `self.static_files`. You cannot specify `None`.
 
     Raises:
-      appinfo_errors.ContentTypeSpecifiedMultipleTimes: Raised when
-        self.http_headers contains a Content-Type header, and self.mime_type is
-        set. For example, the following configuration would be rejected:
+      appinfo_errors.ContentTypeSpecifiedMultipleTimes: If `self.http_headers`
+          contains a `Content-Type` header, and `self.mime_type` is set. For
+          example, the following configuration would be rejected::
 
-          handlers:
-          - url: /static
-            static_dir: static
-            mime_type: text/html
-            http_headers:
-              content-type: text/html
+              handlers:
+              - url: /static
+                static_dir: static
+                mime_type: text/html
+                http_headers:
+                  content-type: text/html
+
 
         As this example shows, a configuration will be rejected when
-        http_headers and mime_type specify a content type, even when they
+        `http_headers` and `mime_type` specify a content type, even when they
         specify the same content type.
     """
     used_both_fields = self.mime_type and self.http_headers
@@ -1087,21 +1145,21 @@ class URLMap(HandlerBase):
           ' also specified a mime_type of %r.' % (content_type, self.mime_type))
 
   def FixSecureDefaults(self):
-    """Force omitted 'secure: ...' handler fields to 'secure: optional'.
+    """Forces omitted `secure` handler fields to be set to 'secure: optional'.
 
-    The effect is that handler.secure is never equal to the (nominal)
-    default.
-
-    See http://b/issue?id=2073962.
+    The effect is that `handler.secure` is never equal to the nominal default.
     """
+    # See http://b/issue?id=2073962.
     if self.secure == SECURE_DEFAULT:
       self.secure = SECURE_HTTP_OR_HTTPS
 
   def WarnReservedURLs(self):
     """Generates a warning for reserved URLs.
 
-    See:
-    https://developers.google.com/appengine/docs/python/config/appconfig#Reserved_URLs
+    See the `version element documentation`_ to learn which URLs are reserved.
+
+    .. _`version element documentation`:
+       https://cloud.google.com/appengine/docs/python/config/appref#syntax
     """
     if self.url == '/form':
       logging.warning(
@@ -1111,8 +1169,8 @@ class URLMap(HandlerBase):
     """Raises an error if position is specified outside of AppInclude objects.
 
     Raises:
-      PositionUsedInAppYamlHandler: when position attribute is specified for an
-      app.yaml file instead of an include.yaml file.
+      PositionUsedInAppYamlHandler: If the `position` attribute is specified for
+          an `app.yaml` file instead of an `include.yaml` file.
     """
     if self.position:
       raise appinfo_errors.PositionUsedInAppYamlHandler(
@@ -1122,8 +1180,7 @@ class URLMap(HandlerBase):
 
 
 class AdminConsolePage(validation.Validated):
-  """Class representing admin console page in AdminConsole object.
-  """
+  """Class representing the admin console page in an `AdminConsole` object."""
   ATTRIBUTES = {
       URL: _URL_REGEX,
       NAME: _PAGE_NAME_REGEX,
@@ -1131,21 +1188,20 @@ class AdminConsolePage(validation.Validated):
 
 
 class AdminConsole(validation.Validated):
-  """Class representing admin console directives in application info.
-  """
+  """Class representing an admin console directives in application info."""
   ATTRIBUTES = {
       PAGES: validation.Optional(validation.Repeated(AdminConsolePage)),
   }
 
   @classmethod
   def Merge(cls, adminconsole_one, adminconsole_two):
-    """Return the result of merging two AdminConsole objects."""
+    """Returns the result of merging two `AdminConsole` objects."""
     # Right now this method only needs to worry about the pages attribute of
-    # AdminConsole.  However, since this object is valid as part of an
-    # AppInclude object, any objects added to AdminConsole in the future must
-    # also be merged.  Rather than burying the merge logic in the process of
-    # merging two AppInclude objects, it is centralized here.  If you modify
-    # the AdminConsole object to support other objects, you must also modify
+    # `AdminConsole`. However, since this object is valid as part of an
+    # `AppInclude` object, any objects added to `AdminConsole` in the future
+    # must also be merged.  Rather than burying the merge logic in the process
+    # of merging two `AppInclude` objects, it is centralized here. If you modify
+    # the `AdminConsole` object to support other objects, you must also modify
     # this method to support merging those additional objects.
 
     if not adminconsole_one or not adminconsole_two:
@@ -1161,8 +1217,7 @@ class AdminConsole(validation.Validated):
 
 
 class ErrorHandlers(validation.Validated):
-  """Class representing error handler directives in application info.
-  """
+  """Class representing error handler directives in application info."""
   ATTRIBUTES = {
       ERROR_CODE: validation.Optional(_ERROR_CODE_REGEX),
       FILE: _FILES_REGEX,
@@ -1171,45 +1226,46 @@ class ErrorHandlers(validation.Validated):
 
 
 class BuiltinHandler(validation.Validated):
-  """Class representing builtin handler directives in application info.
+  """Class representing built-in handler directives in application info.
 
-  Permits arbitrary keys but their values must be described by the
-  validation.Options object returned by ATTRIBUTES.
+  This class permits arbitrary keys, but their values must be described by the
+  `validation.Options` object that is returned by `ATTRIBUTES`.
   """
 
-  # Validated is a somewhat complicated class.  It actually maintains two
-  # dictionaries: the ATTRIBUTES dictionary and an internal __dict__ object
-  # which maintains key value pairs.
+  # `Validated` is a somewhat complicated class. It actually maintains two
+  # dictionaries: the `ATTRIBUTES` dictionary and an internal `__dict__` object
+  # that maintains key value pairs.
   #
-  # The normal flow is that a key must exist in ATTRIBUTES in order to be able
-  # to be inserted into __dict__.  So that's why we force the
-  # ATTRIBUTES.__contains__ method to always return true; we want to accept any
-  # attribute.  Once the method returns true, then its value will be fetched,
-  # which returns ATTRIBUTES[key]; that's why we override ATTRIBUTES.__getitem__
-  # to return the validator for a BuiltinHandler object.
+  # The normal flow is that a key must exist in `ATTRIBUTES` in order to be able
+  # to be inserted into `__dict__`. So that's why we force the
+  # `ATTRIBUTES.__contains__` method to always return `True`; we want to accept
+  # any attribute. Once the method returns `True`, then its value will be
+  # fetched, which returns `ATTRIBUTES[key]`; that's why we override
+  # `ATTRIBUTES.__getitem__` to return the validator for a `BuiltinHandler`
+  # object.
   #
   # This is where it gets tricky. Once the validator object is returned, then
-  # __dict__[key] is set to the validated object for that key.  However, when
-  # CheckInitialized() is called, it uses iteritems from ATTRIBUTES in order to
-  # generate a list of keys to validate. This expects the BuiltinHandler
-  # instance to contain every item in ATTRIBUTES, which contains every builtin
-  # name see so far by any BuiltinHandler. To work around this, __getattr__
-  # always returns None for public attribute names. Note that __getattr__ is
-  # only called if __dict__ does not contain the key. Thus, the single builtin
-  # value set is validated.
+  # `__dict__[key]` is set to the validated object for that key. However, when
+  # `CheckInitialized()` is called, it uses iteritems from `ATTRIBUTES` in order
+  # to generate a list of keys to validate. This expects the `BuiltinHandler`
+  # instance to contain every item in `ATTRIBUTES`, which contains every
+  # built-in name seen so far by any `BuiltinHandler`. To work around this,
+  # `__getattr__` always returns `None` for public attribute names. Note that
+  # `__getattr__` is only called if `__dict__` does not contain the key. Thus,
+  # the single built-in value set is validated.
   #
   # What's important to know is that in this implementation, only the keys in
-  # ATTRIBUTES matter, and only the values in __dict__ matter.  The values in
-  # ATTRIBUTES and the keys in __dict__ are both ignored.  The key in __dict__
-  # is only used for the __getattr__ function, but to find out what keys are
-  # available, only ATTRIBUTES is ever read.
+  # `ATTRIBUTES` matter, and only the values in `__dict__` matter. The values in
+  # `ATTRIBUTES` and the keys in `__dict__` are both ignored. The key in
+  # `__dict__` is only used for the `__getattr__` function, but to find out what
+  # keys are available, only `ATTRIBUTES` is ever read.
 
   class DynamicAttributes(dict):
-    """Provide a dictionary object that will always claim to have a key.
+    """Provides a dictionary object that will always claim to have a key.
 
-    This dictionary returns a fixed value for any get operation.  The fixed
-    value passed in as a constructor parameter should be a
-    validation.Validated object.
+    This dictionary returns a fixed value for any `get` operation. The fixed
+    value that you pass in as a constructor parameter should be a
+    `validation.Validated` object.
     """
 
     def __init__(self, return_value, **parameters):
@@ -1227,21 +1283,28 @@ class BuiltinHandler(validation.Validated):
                                              (OFF, OFF_ALIASES))))
 
   def __init__(self, **attributes):
-    """Ensure that all BuiltinHandler objects at least have attribute 'default'.
+    """Ensures all BuiltinHandler objects at least use the `default` attribute.
+
+    Args:
+      **attributes: The attributes that you want to use.
     """
     self.builtin_name = ''
     super(BuiltinHandler, self).__init__(**attributes)
 
   def __setattr__(self, key, value):
-    """Permit ATTRIBUTES.iteritems() to return set of items that have values.
+    """Allows `ATTRIBUTES.iteritems()` to return set of items that have values.
 
-    Whenever validate calls iteritems(), it is always called on ATTRIBUTES,
-    not on __dict__, so this override is important to ensure that functions
-    such as ToYAML() return the correct set of keys.
+    Whenever `validate` calls `iteritems()`, it is always called on
+    `ATTRIBUTES`, not on `__dict__`, so this override is important to ensure
+    that functions such as `ToYAML()` return the correct set of keys.
+
+    Args:
+      key: The key for the `iteritem` that you want to set.
+      value: The value for the `iteritem` that you want to set.
 
     Raises:
-      MultipleBuiltinsSpecified: when more than one builtin is defined in a list
-      element.
+      MultipleBuiltinsSpecified: If more than one built-in is defined in a list
+          element.
     """
     if key == 'builtin_name':
       object.__setattr__(self, key, value)
@@ -1250,7 +1313,8 @@ class BuiltinHandler(validation.Validated):
       self.builtin_name = key
       super(BuiltinHandler, self).__setattr__(key, value)
     else:
-      # so the object can only be set once.  If later attributes are desired of
+      # Only the name of a built-in handler is currently allowed as an attribute
+      # so the object can only be set once. If later attributes are desired of
       # a different form, this clause should be used to catch whenever more than
       # one object does not match a predefined attribute name.
       raise appinfo_errors.MultipleBuiltinsSpecified(
@@ -1259,30 +1323,32 @@ class BuiltinHandler(validation.Validated):
 
   def __getattr__(self, key):
     if key.startswith('_'):
-      # __getattr__ is only called for attributes that don't exist in the
-      # instance dict.
+      # `__getattr__` is only called for attributes that don't exist in the
+      # instance dictionary.
       raise AttributeError
     return None
 
   def ToDict(self):
-    """Convert BuiltinHander object to a dictionary.
+    """Converts a `BuiltinHander` object to a dictionary.
 
     Returns:
-      dictionary of the form: {builtin_handler_name: on/off}
+      A dictionary in `{builtin_handler_name: on/off}` form
     """
     return {self.builtin_name: getattr(self, self.builtin_name)}
 
   @classmethod
   def IsDefined(cls, builtins_list, builtin_name):
-    """Find if a builtin is defined in a given list of builtin handler objects.
+    """Finds if a builtin is defined in a given list of builtin handler objects.
 
     Args:
-      builtins_list: list of BuiltinHandler objects (typically yaml.builtins)
-      builtin_name: name of builtin to find whether or not it is defined
+      builtins_list: A list of `BuiltinHandler` objects, typically
+          `yaml.builtins`.
+      builtin_name: The name of the built-in that you want to determine whether
+          it is defined.
 
     Returns:
-      true if builtin_name is defined by a member of builtins_list,
-      false otherwise
+      `True` if `builtin_name` is defined by a member of `builtins_list`; all
+      other results return `False`.
     """
     for b in builtins_list:
       if b.builtin_name == builtin_name:
@@ -1291,23 +1357,31 @@ class BuiltinHandler(validation.Validated):
 
   @classmethod
   def ListToTuples(cls, builtins_list):
-    """Converts a list of BuiltinHandler objects to a list of (name, status)."""
+    """Converts a list of `BuiltinHandler` objects.
+
+    Args:
+      builtins_list: A list of `BuildinHandler` objects to convert to tuples.
+
+    Returns:
+      A list of `(name, status)` that is derived from the `BuiltinHandler`
+      objects.
+    """
     return [(b.builtin_name, getattr(b, b.builtin_name)) for b in builtins_list]
 
   @classmethod
   def Validate(cls, builtins_list, runtime=None):
-    """Verify that all BuiltinHandler objects are valid and not repeated.
+    """Verifies that all `BuiltinHandler` objects are valid and not repeated.
 
     Args:
-      builtins_list: list of BuiltinHandler objects to validate.
-      runtime: if set then warnings are generated for builtins that have been
-          deprecated in the given runtime.
+      builtins_list: A list of `BuiltinHandler` objects to validate.
+      runtime: If you specify this argument, warnings are generated for
+          built-ins that have been deprecated in the given runtime.
 
     Raises:
-      InvalidBuiltinFormat: if the name of a Builtinhandler object
-          cannot be determined.
-      DuplicateBuiltinsSpecified: if a builtin handler name is used
-          more than once in the list.
+      InvalidBuiltinFormat: If the name of a `BuiltinHandler` object cannot be
+          determined.
+      DuplicateBuiltinsSpecified: If a `BuiltinHandler` name is used more than
+          once in the list.
     """
     seen = set()
     for b in builtins_list:
@@ -1320,11 +1394,11 @@ class BuiltinHandler(validation.Validated):
             'Builtin %s was specified more than once in one yaml file.'
             % b.builtin_name)
 
-      # This checking must be done here rather than in apphosting/ext/builtins
-      # because apphosting/ext/builtins cannot differentiate between between
-      # builtins specified in app.yaml versus ones added in a builtin include.
-      # There is a hole here where warnings are not generated for
-      # deprecated builtins that appear in user-created include files.
+      # This checking must be done here rather than in `apphosting/ext/builtins`
+      # because `apphosting/ext/builtins` cannot differentiate between between
+      # built-ins specified in `app.yaml` versus ones added in a built-in
+      # include. There is a hole here where warnings are not generated for
+      # deprecated built-ins that appear in user-created include files.
       if b.builtin_name == 'datastore_admin' and runtime == 'python':
         logging.warning(
             'The datastore_admin builtin is deprecated. You can find '
@@ -1343,10 +1417,10 @@ class BuiltinHandler(validation.Validated):
 
 
 class ApiConfigHandler(HandlerBase):
-  """Class representing api_config handler directives in application info."""
+  """Class representing `api_config` handler directives in application info."""
   ATTRIBUTES = HandlerBase.ATTRIBUTES
   ATTRIBUTES.update({
-      # Make URL and SCRIPT required for api_config stanza
+      # Make `URL` and `SCRIPT` required for `api_config` stanza
       URL: validation.Regex(_URL_REGEX),
       HANDLER_SCRIPT: validation.Regex(_FILES_REGEX)
   })
@@ -1359,7 +1433,14 @@ class Library(validation.Validated):
                 'version': validation.Type(str)}
 
   def CheckInitialized(self):
-    """Raises if the library configuration is not valid."""
+    """Determines if the library configuration is not valid.
+
+    Raises:
+      appinfo_errors.InvalidLibraryName: If the specified library is not
+          supported.
+      appinfo_errors.InvalidLibraryVersion: If the specified library version is
+          not supported.
+    """
     super(Library, self).CheckInitialized()
     if self.name not in _NAME_TO_SUPPORTED_LIBRARY:
       raise appinfo_errors.InvalidLibraryName(
@@ -1394,7 +1475,7 @@ class CpuUtilization(validation.Validated):
 
 
 class AutomaticScaling(validation.Validated):
-  """Class representing automatic scaling settings in the AppInfoExternal."""
+  """Class representing automatic scaling settings in AppInfoExternal."""
   ATTRIBUTES = {
       MINIMUM_IDLE_INSTANCES: validation.Optional(_IDLE_INSTANCES_REGEX),
       MAXIMUM_IDLE_INSTANCES: validation.Optional(_IDLE_INSTANCES_REGEX),
@@ -1432,14 +1513,14 @@ class AutomaticScaling(validation.Validated):
 
 
 class ManualScaling(validation.Validated):
-  """Class representing manual scaling settings in the AppInfoExternal."""
+  """Class representing manual scaling settings in AppInfoExternal."""
   ATTRIBUTES = {
       INSTANCES: validation.Regex(_INSTANCES_REGEX),
   }
 
 
 class BasicScaling(validation.Validated):
-  """Class representing basic scaling settings in the AppInfoExternal."""
+  """Class representing basic scaling settings in AppInfoExternal."""
   ATTRIBUTES = {
       MAX_INSTANCES: validation.Regex(_INSTANCES_REGEX),
       IDLE_TIMEOUT: validation.Optional(_IDLE_TIMEOUT_REGEX),
@@ -1449,7 +1530,7 @@ class BasicScaling(validation.Validated):
 class RuntimeConfig(validation.ValidatedDict):
   """Class for "vanilla" runtime configuration.
 
-  Fields used vary by runtime, so we delegate validation to the per-runtime
+  Fields used vary by runtime, so validation is delegated to the per-runtime
   build processes.
 
   These are intended to be used during Dockerfile generation, not after VM boot.
@@ -1462,7 +1543,8 @@ class RuntimeConfig(validation.ValidatedDict):
 class VmSettings(validation.ValidatedDict):
   """Class for VM settings.
 
-  We don't validate these further here.  They're validated server side.
+  The settings are not further validated here. The settings are validated on
+  the server side.
   """
 
   KEY_VALIDATOR = validation.Regex('[a-zA-Z_][a-zA-Z0-9_]*')
@@ -1470,10 +1552,23 @@ class VmSettings(validation.ValidatedDict):
 
   @classmethod
   def Merge(cls, vm_settings_one, vm_settings_two):
-    # Note that VmSettings.copy() results in a dict.
+    """Merges two `VmSettings` instances.
+
+    If a variable is specified by both instances, the value from
+    `vm_settings_one` is used.
+
+    Args:
+      vm_settings_one: The first `VmSettings` instance, or `None`.
+      vm_settings_two: The second `VmSettings` instance, or `None`.
+
+    Returns:
+      The merged `VmSettings` instance, or `None` if both input instances are
+      `None` or empty.
+    """
+    # Note that `VmSettings.copy()` results in a dict.
     result_vm_settings = (vm_settings_two or {}).copy()
     # TODO(user): Apply merge logic when feature is fully defined.
-    # For now, we will merge the two dict and vm_setting_one will win
+    # For now, we will merge the two dict and `vm_settings_one` will win
     # if key collides.
     result_vm_settings.update(vm_settings_one or {})
     return VmSettings(**result_vm_settings) if result_vm_settings else None
@@ -1482,40 +1577,53 @@ class VmSettings(validation.ValidatedDict):
 class BetaSettings(VmSettings):
   """Class for Beta (internal or unreleased) settings.
 
-  This class is meant to replace VmSettings eventually.
-  All new beta settings must be registered in shared_constants.py.
+  This class is meant to replace `VmSettings` eventually.
 
-  We don't validate these further here.  They're validated server side.
+  Note:
+      All new beta settings must be registered in `shared_constants.py`.
+
+  These settings are not validated further here. The settings are validated on
+  the server side.
   """
 
   @classmethod
   def Merge(cls, beta_settings_one, beta_settings_two):
+    """Merges two `BetaSettings` instances.
+
+    Args:
+      beta_settings_one: The first `BetaSettings` instance, or `None`.
+      beta_settings_two: The second `BetaSettings` instance, or `None`.
+
+    Returns:
+      The merged `BetaSettings` instance, or `None` if both input instances are
+      `None` or empty.
+    """
     merged = VmSettings.Merge(beta_settings_one, beta_settings_two)
     return BetaSettings(**merged.ToDict()) if merged else None
 
 
 class EnvironmentVariables(validation.ValidatedDict):
-  """Class representing a mapping of environment variable key value pairs."""
+  """Class representing a mapping of environment variable key/value pairs."""
 
   KEY_VALIDATOR = validation.Regex('[a-zA-Z_][a-zA-Z0-9_]*')
   VALUE_VALIDATOR = str
 
   @classmethod
   def Merge(cls, env_variables_one, env_variables_two):
-    """Merges to EnvironmentVariables instances.
-
-    Args:
-      env_variables_one: The first EnvironmentVariables instance or None.
-      env_variables_two: The second EnvironmentVariables instance or None.
-
-    Returns:
-      The merged EnvironmentVariables instance, or None if both input instances
-      are None or empty.
+    """Merges two `EnvironmentVariables` instances.
 
     If a variable is specified by both instances, the value from
-    env_variables_two is used.
+    `env_variables_two` is used.
+
+    Args:
+      env_variables_one: The first `EnvironmentVariables` instance or `None`.
+      env_variables_two: The second `EnvironmentVariables` instance or `None`.
+
+    Returns:
+      The merged `EnvironmentVariables` instance, or `None` if both input
+      instances are `None` or empty.
     """
-    # Note that EnvironmentVariables.copy() results in a dict.
+    # Note that `EnvironmentVariables.copy()` results in a dict.
     result_env_variables = (env_variables_one or {}).copy()
     result_env_variables.update(env_variables_two or {})
     return (EnvironmentVariables(**result_env_variables)
@@ -1526,10 +1634,11 @@ def ValidateSourceReference(ref):
   """Determines if a source reference is valid.
 
   Args:
-    ref: A source reference in a [repository_uri#]revision form.
+    ref: A source reference in the following format:
+        `[repository_uri#]revision`.
 
   Raises:
-    ValidationError: when the reference is malformed.
+    ValidationError: If the reference is malformed.
   """
   repo_revision = ref.split('#', 1)
   revision_id = repo_revision[-1]
@@ -1544,13 +1653,13 @@ def ValidateSourceReference(ref):
 
 
 def ValidateCombinedSourceReferencesString(source_refs):
-  """Determines if source_refs contains a valid list of source references.
+  """Determines if `source_refs` contains a valid list of source references.
 
   Args:
     source_refs: A multi-line string containing one source reference per line.
 
   Raises:
-    ValidationError: when the reference is malformed.
+    ValidationError: If the reference is malformed.
   """
   if len(source_refs) > SOURCE_REFERENCES_MAX_SIZE:
     raise validation.ValidationError(
@@ -1562,9 +1671,7 @@ def ValidateCombinedSourceReferencesString(source_refs):
 
 
 class HealthCheck(validation.Validated):
-  """Class representing the health check configuration.
-
-  """
+  """Class representing the health check configuration."""
   ATTRIBUTES = {
       ENABLE_HEALTH_CHECK: validation.Optional(validation.TYPE_BOOL),
       CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
@@ -1576,11 +1683,23 @@ class HealthCheck(validation.Validated):
 
 
 class VmHealthCheck(HealthCheck):
-  """Class representing the configuration of VM health check.
+  """Class representing the configuration of the VM health check.
 
-     This class is deprecated and will be removed (use HealthCheck).
+  Note:
+      This class is deprecated and will be removed in a future release. Use
+      `HealthCheck` instead.
   """
   pass
+
+
+class Volume(validation.Validated):
+  """Class representing the configuration of a volume."""
+
+  ATTRIBUTES = {
+      VOLUME_NAME: validation.TYPE_STR,
+      SIZE_GB: validation.TYPE_FLOAT,
+      VOLUME_TYPE: validation.TYPE_STR,
+  }
 
 
 class Resources(validation.Validated):
@@ -1589,7 +1708,8 @@ class Resources(validation.Validated):
   ATTRIBUTES = {
       CPU: validation.Optional(validation.TYPE_FLOAT),
       MEMORY_GB: validation.Optional(validation.TYPE_FLOAT),
-      DISK_SIZE_GB: validation.Optional(validation.TYPE_INT)
+      DISK_SIZE_GB: validation.Optional(validation.TYPE_INT),
+      VOLUMES: validation.Optional(validation.Repeated(Volume))
   }
 
 
@@ -1610,14 +1730,14 @@ class Network(validation.Validated):
 
 
 class AppInclude(validation.Validated):
-  """Class representing the contents of an included app.yaml file.
+  """Class representing the contents of an included `app.yaml` file.
 
-  Used for both builtins and includes directives.
+  This class is used for both `builtins` and `includes` directives.
   """
 
   # TODO(user): It probably makes sense to have a scheme where we do a
-  # deep-copy of fields from AppInfoExternal when setting the ATTRIBUTES here.
-  # Right now it's just copypasta.
+  # deep-copy of fields from `AppInfoExternal` when setting the `ATTRIBUTES`
+  # here. Right now it's just copypasta.
   ATTRIBUTES = {
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),
@@ -1629,33 +1749,41 @@ class AppInclude(validation.Validated):
       BETA_SETTINGS: validation.Optional(BetaSettings),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
       SKIP_FILES: validation.RegexStr(default=SKIP_NO_FILES),
-      # TODO(user): add LIBRARIES here when we have a good story for
+      # TODO(user): add `LIBRARIES` here when we have a good story for
       # handling contradictory library requests.
   }
 
   @classmethod
   def MergeManualScaling(cls, appinclude_one, appinclude_two):
-    """Takes the greater of <manual_scaling.instances> from the args.
+    """Takes the greater of `<manual_scaling.instances>` from the arguments.
 
-    Note that appinclude_one is mutated to be the merged result in this process.
+    `appinclude_one` is mutated to be the merged result in this process.
 
-    Also, this function needs to be updated if ManualScaling gets additional
+    Also, this function must be updated if `ManualScaling` gets additional
     fields.
 
     Args:
-      appinclude_one: object one to merge. Must have a "manual_scaling" field
-        which contains a ManualScaling().
-      appinclude_two: object two to merge. Must have a "manual_scaling" field
-        which contains a ManualScaling().
-
+      appinclude_one: The first object to merge. The object must have a
+          `manual_scaling` field that contains a `ManualScaling()`.
+      appinclude_two: The second object to merge. The object must have a
+          `manual_scaling` field that contains a `ManualScaling()`.
     Returns:
-      Object that is the result of merging
-      appinclude_one.manual_scaling.instances and
-      appinclude_two.manual_scaling.instances. I.e., <appinclude_one>
-      after the mutations are complete.
+      An object that is the result of merging
+      `appinclude_one.manual_scaling.instances` and
+      `appinclude_two.manual_scaling.instances`; this is returned as a revised
+      `appinclude_one` object after the mutations are complete.
     """
 
     def _Instances(appinclude):
+      """Determines the number of `manual_scaling.instances` sets.
+
+      Args:
+        appinclude: The include for which you want to determine the number of
+            `manual_scaling.instances` sets.
+
+      Returns:
+        The number of instances as an integer, or `None`.
+      """
       if appinclude.manual_scaling:
         if appinclude.manual_scaling.instances:
           return int(appinclude.manual_scaling.instances)
@@ -1670,29 +1798,37 @@ class AppInclude(validation.Validated):
 
   @classmethod
   def _CommonMergeOps(cls, one, two):
-    """This function performs common merge operations."""
-    # Merge ManualScaling.
+    """This function performs common merge operations.
+
+    Args:
+      one: The first object that you want to merge.
+      two: The second object that you want to merge.
+
+    Returns:
+      An updated `one` object containing all merged data.
+    """
+    # Merge `ManualScaling`.
     AppInclude.MergeManualScaling(one, two)
 
-    # Merge AdminConsole objects.
+    # Merge `AdminConsole` objects.
     one.admin_console = AdminConsole.Merge(one.admin_console,
                                            two.admin_console)
 
-    # Preserve the specific value of one.vm (None or False) when neither
-    # are True.
+    # Preserve the specific value of `one.vm` (`None` or `False`) when neither
+    # are `True`.
     one.vm = two.vm or one.vm
 
-    # Merge VmSettings objects.
+    # Merge `VmSettings` objects.
     one.vm_settings = VmSettings.Merge(one.vm_settings,
                                        two.vm_settings)
 
-    # Merge BetaSettings objects.
+    # Merge `BetaSettings` objects.
     if hasattr(one, 'beta_settings'):
       one.beta_settings = BetaSettings.Merge(one.beta_settings,
                                              two.beta_settings)
 
-    # Merge EnvironmentVariables objects. The values in two.env_variables
-    # override the ones in one.env_variables in case of conflict.
+    # Merge `EnvironmentVariables` objects. The values in `two.env_variables`
+    # override the ones in `one.env_variables` in case of conflict.
     one.env_variables = EnvironmentVariables.Merge(one.env_variables,
                                                    two.env_variables)
 
@@ -1702,7 +1838,15 @@ class AppInclude(validation.Validated):
 
   @classmethod
   def MergeAppYamlAppInclude(cls, appyaml, appinclude):
-    """This function merges an app.yaml file with referenced builtins/includes.
+    """Merges an `app.yaml` file with referenced builtins/includes.
+
+    Args:
+      appyaml: The `app.yaml` file that you want to update with `appinclude`.
+      appinclude: The includes that you want to merge into `appyaml`.
+
+    Returns:
+      An updated `app.yaml` file that includes the directives you specified in
+      `appinclude`.
     """
     # All merge operations should occur in this function or in functions
     # referenced from this one.  That makes it much easier to understand what
@@ -1711,7 +1855,7 @@ class AppInclude(validation.Validated):
     if not appinclude:
       return appyaml
 
-    # Merge handlers while paying attention to position attribute.
+    # Merge handlers while paying attention to `position` attribute.
     if appinclude.handlers:
       tail = appyaml.handlers or []
       appyaml.handlers = []
@@ -1721,8 +1865,8 @@ class AppInclude(validation.Validated):
           appyaml.handlers.append(h)
         else:
           tail.append(h)
-        # Get rid of the position attribute since we no longer need it, and is
-        # technically invalid to include in the resulting merged app.yaml file
+        # Get rid of the `position` attribute since we no longer need it, and is
+        # technically invalid to include in the resulting merged `app.yaml` file
         # that will be sent when deploying the application.
         h.position = None
 
@@ -1734,29 +1878,29 @@ class AppInclude(validation.Validated):
 
   @classmethod
   def MergeAppIncludes(cls, appinclude_one, appinclude_two):
-    """Merges the non-referential state of the provided AppInclude.
+    """Merges the non-referential state of the provided `AppInclude`.
 
-    That is, builtins and includes directives are not preserved, but
-    any static objects are copied into an aggregate AppInclude object that
-    preserves the directives of both provided AppInclude objects.
+    That is, `builtins` and `includes` directives are not preserved, but any
+    static objects are copied into an aggregate `AppInclude` object that
+    preserves the directives of both provided `AppInclude` objects.
 
-    Note that appinclude_one is mutated to be the merged result in this process.
+    `appinclude_one` is updated to be the merged result in this process.
 
     Args:
-      appinclude_one: object one to merge
-      appinclude_two: object two to merge
+      appinclude_one: First `AppInclude` to merge.
+      appinclude_two: Second `AppInclude` to merge.
 
     Returns:
-      AppInclude object that is the result of merging the static directives of
-      appinclude_one and appinclude_two. I.e., <appinclude_one> after the
-      mutations are complete.
+      `AppInclude` object that is the result of merging the static directives of
+      `appinclude_one` and `appinclude_two`. An updated version of
+      `appinclude_one` is returned.
     """
 
-    # If one or both appinclude objects were None, return the object which was
-    # not None or return None.
+    # If one or both `appinclude` objects were `None`, return the object that
+    # was not `None` or return `None`.
     if not appinclude_one or not appinclude_two:
       return appinclude_one or appinclude_two
-    # Now, both appincludes are non-None.
+    # Now, both `appincludes` are non-`None`.
 
     # Merge handlers.
     if appinclude_one.handlers:
@@ -1769,6 +1913,15 @@ class AppInclude(validation.Validated):
 
   @staticmethod
   def MergeSkipFiles(skip_files_one, skip_files_two):
+    """Merges two `skip_files` directives.
+
+    Args:
+      skip_files_one: The first `skip_files` element that you want to merge.
+      skip_files_two: The second `skip_files` element that you want to merge.
+
+    Returns:
+      A list of regular expressions that are merged.
+    """
     if skip_files_one == SKIP_NO_FILES:
       return skip_files_two
     if skip_files_two == SKIP_NO_FILES:
@@ -1782,7 +1935,7 @@ class AppInclude(validation.Validated):
 class AppInfoExternal(validation.Validated):
   """Class representing users application info.
 
-  This class is passed to a yaml_object builder to provide the validation
+  This class is passed to a `yaml_object` builder to provide the validation
   for the application information file format parser.
 
   Attributes:
@@ -1790,35 +1943,37 @@ class AppInfoExternal(validation.Validated):
     version: Application's major version.
     runtime: Runtime used by application.
     api_version: Which version of APIs to use.
-    source_language: Optional specification of the source language.
-      For example we specify "php-quercus" if this is a Java app
-      that was generated from PHP source using Quercus
+    source_language: Optional specification of the source language. For example,
+        you could specify `php-quercus` if this is a Java app that was generated
+        from PHP source using Quercus.
     handlers: List of URL handlers.
     default_expiration: Default time delta to use for cache expiration for
-      all static files, unless they have their own specific 'expiration' set.
-      See the URLMap.expiration field's documentation for more information.
-    skip_files: An re object.  Files that match this regular expression will
-      not be uploaded by appcfg.py.  For example:
-        skip_files: |
-          .svn.*|
-          #.*#
-    nobuild_files: An re object.  Files that match this regular expression will
-      not be built into the app.  Go only.
-    api_config: URL root and script/servlet path for enhanced api serving
+        all static files, unless they have their own specific `expiration` set.
+        See the documentation for the `URLMap.expiration` field for more
+        information.
+    skip_files: A regular expression object. Files that match this regular
+        expression will not be uploaded by `appcfg.py`. For example::
+            skip_files: |
+              .svn.*|
+              #.*#
+    nobuild_files: A regular expression object. Files that match this regular
+        expression will not be built into the app. This directive is valid for
+        Go only.
+    api_config: URL root and script or servlet path for enhanced API serving.
   """
 
   ATTRIBUTES = {
       # Regular expressions for these attributes are defined in
       # //apphosting/base/id_util.cc.
       APPLICATION: validation.Optional(APPLICATION_RE_STRING),
-      # An alias for APPLICATION.
+      # An alias for `APPLICATION`.
       PROJECT: validation.Optional(APPLICATION_RE_STRING),
       MODULE: validation.Optional(MODULE_ID_RE_STRING),
-      # 'service' will replace 'module' soon
+      # `service` will replace `module` soon
       SERVICE: validation.Optional(MODULE_ID_RE_STRING),
       VERSION: validation.Optional(MODULE_VERSION_ID_RE_STRING),
       RUNTIME: validation.Optional(RUNTIME_RE_STRING),
-      # A new api_version requires a release of the dev_appserver, so it
+      # A new `api_version` requires a release of the `dev_appserver`, so it
       # is ok to hardcode the version names here.
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
       # The App Engine environment to run this version in. (VM vs. non-VM, etc.)
@@ -1843,7 +1998,7 @@ class AppInfoExternal(validation.Validated):
       INCLUDES: validation.Optional(validation.Type(list)),
       HANDLERS: validation.Optional(validation.Repeated(URLMap), default=[]),
       LIBRARIES: validation.Optional(validation.Repeated(Library)),
-      # TODO(arb): change to a regex when validation.Repeated supports it
+      # TODO(arb): change to a regex when `validation.Repeated` supports it
       SERVICES: validation.Optional(validation.Repeated(
           validation.Regex(_SERVICE_RE_STRING))),
       DEFAULT_EXPIRATION: validation.Optional(_EXPIRATION_REGEX),
@@ -1865,32 +2020,36 @@ class AppInfoExternal(validation.Validated):
   }
 
   def CheckInitialized(self):
-    """Performs non-regex-based validation.
+    """Performs non-regular expression-based validation.
 
     The following are verified:
-      - At least one url mapping is provided in the URL mappers.
-      - Number of url mappers doesn't exceed MAX_URL_MAPS.
-      - Major version does not contain the string -dot-.
-      - If api_endpoints are defined, an api_config stanza must be defined.
-      - If the runtime is python27 and threadsafe is set, then no CGI handlers
-        can be used.
-      - That the version name doesn't start with BUILTIN_NAME_PREFIX
-      - If redirect_http_response_code exists, it is in the list of valid 300s.
-      - That module and service aren't both set
+        - At least one URL mapping is provided in the URL mappers.
+        - The number of URL mappers doesn't exceed `MAX_URL_MAPS`.
+        - The major version does not contain the string `-dot-`.
+        - If `api_endpoints` are defined, an `api_config` stanza must be
+          defined.
+        - If the `runtime` is `python27` and `threadsafe` is set, then no CGI
+          handlers can be used.
+        - The version name doesn't start with `BUILTIN_NAME_PREFIX`.
+        - If `redirect_http_response_code` exists, it is in the list of valid
+          300s.
+        - Module and service aren't both set. Services were formerly known as
+          modules.
 
     Raises:
-      DuplicateLibrary: if the name library name is specified more than once.
-      MissingURLMapping: if no URLMap object is present in the object.
-      TooManyURLMappings: if there are too many URLMap entries.
-      MissingApiConfig: if api_endpoints exist without an api_config.
-      MissingThreadsafe: if threadsafe is not set but the runtime requires it.
-      ThreadsafeWithCgiHandler: if the runtime is python27, threadsafe is set
-          and CGI handlers are specified.
-      TooManyScalingSettingsError: if more than one scaling settings block is
+      DuplicateLibrary: If `library_name` is specified more than once.
+      MissingURLMapping: If no `URLMap` object is present in the object.
+      TooManyURLMappings: If there are too many `URLMap` entries.
+      MissingApiConfig: If `api_endpoints` exists without an `api_config`.
+      MissingThreadsafe: If `threadsafe` is not set but the runtime requires it.
+      ThreadsafeWithCgiHandler: If the `runtime` is `python27`, `threadsafe` is
+          set and CGI handlers are specified.
+      TooManyScalingSettingsError: If more than one scaling settings block is
           present.
-      RuntimeDoesNotSupportLibraries: if libraries clause is used for a runtime
-          that does not support it (e.g. python25).
-      ModuleAndServiceDefined: if both 'module' and 'service' keywords are used.
+      RuntimeDoesNotSupportLibraries: If the libraries clause is used for a
+          runtime that does not support it, such as `python25`.
+      ModuleAndServiceDefined: If both `module` and `service` keywords are used.
+          Services were formerly known as modules.
     """
     super(AppInfoExternal, self).CheckInitialized()
     if self.runtime is None and not self.IsVm():
@@ -1989,11 +2148,12 @@ class AppInfoExternal(validation.Validated):
           "or 'basic_scaling'.")
 
   def GetAllLibraries(self):
-    """Returns a list of all Library instances active for this configuration.
+    """Returns a list of all `Library` instances active for this configuration.
 
     Returns:
-      The list of active Library instances for this configuration. This includes
-      directly-specified libraries as well as any required dependencies.
+      The list of active `Library` instances for this configuration. This
+      includes directly-specified libraries as well as any required
+      dependencies.
     """
     if not self.libraries:
       return []
@@ -2012,13 +2172,13 @@ class AppInfoExternal(validation.Validated):
             for library in self.libraries + required_libraries]
 
   def GetNormalizedLibraries(self):
-    """Returns a list of normalized Library instances for this configuration.
+    """Returns a list of normalized `Library` instances for this configuration.
 
     Returns:
-      The list of active Library instances for this configuration. This includes
-      directly-specified libraries, their required dependencies as well as any
-      libraries enabled by default. Any libraries with "latest" as their version
-      will be replaced with the latest available version.
+      The list of active `Library` instances for this configuration. This
+      includes directly-specified libraries, their required dependencies, and
+      any libraries enabled by default. Any libraries with `latest` as their
+      version will be replaced with the latest available version.
     """
     libraries = self.GetAllLibraries()
     enabled_libraries = set(library.name for library in libraries)
@@ -2029,18 +2189,21 @@ class AppInfoExternal(validation.Validated):
     return libraries
 
   def ApplyBackendSettings(self, backend_name):
-    """Applies settings from the indicated backend to the AppInfoExternal.
+    """Applies settings from the indicated backend to the `AppInfoExternal`.
 
-    Backend entries may contain directives that modify other parts of the
-    app.yaml, such as the 'start' directive, which adds a handler for the start
-    request.  This method performs those modifications.
+    Backend entries can contain directives that modify other parts of the
+    `app.yaml` file, such as the `start` directive, which adds a handler for the
+    start request. This method performs those modifications.
 
     Args:
-      backend_name: The name of a backend defined in 'backends'.
+      backend_name: The name of a backend that is defined in the `backends`
+          directive.
 
     Raises:
-      BackendNotFound: if the indicated backend was not listed in 'backends'.
-      DuplicateBackend: if backend is found more than once in 'backends'.
+      BackendNotFound: If the indicated backend was not listed in the
+          `backends` directive.
+      DuplicateBackend: If the backend is found more than once in the `backends`
+          directive.
     """
     if backend_name is None:
       return
@@ -2069,11 +2232,11 @@ class AppInfoExternal(validation.Validated):
     self.handlers.insert(0, start_handler)
 
   def GetEffectiveRuntime(self):
-    """Returns the app's runtime, resolving VMs to the underlying vm_runtime.
+    """Returns the app's runtime, resolving VMs to the underlying `vm_runtime`.
 
     Returns:
-      The effective runtime: the value of beta/vm_settings.vm_runtime if
-      runtime is "vm", or runtime otherwise.
+      The effective runtime: The value of `beta/vm_settings.vm_runtime` if
+      `runtime` is `vm`, or `runtime` otherwise.
     """
     if (self.runtime == 'vm' and hasattr(self, 'vm_settings')
         and self.vm_settings is not None):
@@ -2093,22 +2256,21 @@ class AppInfoExternal(validation.Validated):
       if not self.vm_settings:
         self.vm_settings = VmSettings()
 
-      # Patch up vm runtime setting. Copy 'runtime' to 'vm_runtime' and
-      # set runtime to the string 'vm'.
+      # Patch up vm runtime setting. Copy `runtime` to `vm_runtime` and set
+      # runtime to the string `vm`.
       self.vm_settings['vm_runtime'] = runtime
       self.runtime = 'vm'
     else:
       self.runtime = runtime
 
   def NormalizeVmSettings(self):
-    """Normalize Vm settings.
-    """
-    # NOTE(user): In the input files, 'vm' is not a type of runtime, but
-    # rather is specified as "vm: true|false". In the code, 'vm'
-    # is represented as a value of AppInfoExternal.runtime.
+    """Normalizes VM settings."""
+    # NOTE(user): In the input files, `vm` is not a type of runtime, but
+    # rather is specified as `vm: true|false`. In the code, `vm` is represented
+    # as a value of `AppInfoExternal.runtime`.
     # NOTE(user): This hack is only being applied after the parsing of
-    # AppInfoExternal. If the 'vm' attribute can ever be specified in the
-    # AppInclude, then this processing will need to be done there too.
+    # `AppInfoExternal`. If the `vm` attribute can ever be specified in the
+    # `AppInclude`, then this processing will need to be done there too.
     if self.IsVm():
       if not self.vm_settings:
         self.vm_settings = VmSettings()
@@ -2117,11 +2279,11 @@ class AppInfoExternal(validation.Validated):
         self.SetEffectiveRuntime(self.runtime)
 
       # Copy fields that are automatically added by the SDK or this class
-      # to beta_settings.
+      # to `beta_settings`.
       if hasattr(self, 'beta_settings') and self.beta_settings:
-        # Only copy if beta_settings already exists, because we have logic in
-        # appversion.py to discard all of vm_settings if anything is in
-        # beta_settings.  So we won't create an empty one just to add these
+        # Only copy if `beta_settings` already exists, because we have logic in
+        # `appversion.py` to discard all of `vm_settings` if anything is in
+        # `beta_settings`. So we won't create an empty one just to add these
         # fields.
         for field in ['vm_runtime',
                       'has_docker_image',
@@ -2130,18 +2292,18 @@ class AppInfoExternal(validation.Validated):
           if field not in self.beta_settings and field in self.vm_settings:
             self.beta_settings[field] = self.vm_settings[field]
 
-  # TODO(user): env replaces vm. Remove vm when field is removed.
+  # TODO(user): `env` replaces `vm`. Remove `vm` when field is removed.
   def IsVm(self):
     return (self.vm or
             self.env in ['2', 'flex', 'flexible'])
 
 def ValidateHandlers(handlers, is_include_file=False):
-  """Validates a list of handler (URLMap) objects.
+  """Validates a list of handler (`URLMap`) objects.
 
   Args:
-    handlers: A list of a handler (URLMap) objects.
-    is_include_file: If true, indicates the we are performing validation
-      for handlers in an AppInclude file, which may contain special directives.
+    handlers: A list of a handler (`URLMap`) objects.
+    is_include_file: If this argument is set to `True`, the handlers that are
+        added as part of the `includes` directive are validated.
   """
   if not handlers:
     return
@@ -2154,28 +2316,30 @@ def ValidateHandlers(handlers, is_include_file=False):
 
 
 def LoadSingleAppInfo(app_info):
-  """Load a single AppInfo object where one and only one is expected.
+  """Loads a single `AppInfo` object where one and only one is expected.
 
-  Validates that the the values in the AppInfo match the validators defined
-  in this file. (in particular, in AppInfoExternal.ATTRIBUTES)
+  This method validates that the the values in the `AppInfo` match the
+  validators that are defined in this file, in particular,
+  `AppInfoExternal.ATTRIBUTES`.
 
   Args:
-    app_info: A file-like object or string.  If it is a string, parse it as
-    a configuration file.  If it is a file-like object, read in data and
-    parse.
+    app_info: A file-like object or string. If the argument is a string, the
+        argument is parsed as a configuration file. If the argument is a
+        file-like object, the data is read, then parsed.
 
   Returns:
-    An instance of AppInfoExternal as loaded from a YAML file.
+    An instance of `AppInfoExternal` as loaded from a YAML file.
 
   Raises:
-    ValueError: if a specified service is not valid.
-    EmptyConfigurationFile: when there are no documents in YAML file.
-    MultipleConfigurationFile: when there is more than one document in YAML
-      file.
-    DuplicateBackend: if backend is found more than once in 'backends'.
-    yaml_errors.EventError: if the app.yaml fails validation.
-    appinfo_errors.MultipleProjectNames: if the app.yaml has both 'application'
-      and 'project'.
+    ValueError: If a specified service is not valid.
+    EmptyConfigurationFile: If there are no documents in YAML file.
+    MultipleConfigurationFile: If more than one document exists in the YAML
+        file.
+    DuplicateBackend: If a backend is found more than once in the `backends`
+        directive.
+    yaml_errors.EventError: If the `app.yaml` file fails validation.
+    appinfo_errors.MultipleProjectNames: If the `app.yaml` file has both an
+        `application` directive and a `project` directive.
   """
   builder = yaml_object.ObjectBuilder(AppInfoExternal)
   handler = yaml_builder.BuilderHandler(builder)
@@ -2193,9 +2357,9 @@ def LoadSingleAppInfo(app_info):
   if appyaml.builtins:
     BuiltinHandler.Validate(appyaml.builtins, appyaml.runtime)
 
-  # Allow "project: name" as an alias for "application: name". If found, we
-  # change the project field to None. (Deleting it would make a distinction
-  # between loaded and constructed AppInfoExternal objects, since the latter
+  # Allow `project: name` as an alias for `application: name`. If found, we
+  # change the `project` field to `None`. (Deleting it would make a distinction
+  # between loaded and constructed `AppInfoExternal` objects, since the latter
   # would still have the project field.)
   if appyaml.application and appyaml.project:
     raise appinfo_errors.MultipleProjectNames(
@@ -2211,8 +2375,8 @@ def LoadSingleAppInfo(app_info):
 class AppInfoSummary(validation.Validated):
   """This class contains only basic summary information about an app.
 
-  It is used to pass back information about the newly created app to users
-  after a new version has been created.
+  This class is used to pass back information about the newly created app to
+  users after a new version has been created.
   """
   # NOTE(user): Before you consider adding anything to this YAML definition,
   # you must solve the issue that old SDK versions will try to parse this new
@@ -2226,20 +2390,20 @@ class AppInfoSummary(validation.Validated):
 
 
 def LoadAppInclude(app_include):
-  """Load a single AppInclude object where one and only one is expected.
+  """Loads a single `AppInclude` object where one and only one is expected.
 
   Args:
-    app_include: A file-like object or string.  If it is a string, parse it as
-    a configuration file.  If it is a file-like object, read in data and
-    parse.
+    app_include: A file-like object or string. The argument is set to a string,
+        the argument is parsed as a configuration file. If the argument is set
+        to a file-like object, the data is read and parsed.
 
   Returns:
-    An instance of AppInclude as loaded from a YAML file.
+    An instance of `AppInclude` as loaded from a YAML file.
 
   Raises:
-    EmptyConfigurationFile: when there are no documents in YAML file.
-    MultipleConfigurationFile: when there is more than one document in YAML
-    file.
+    EmptyConfigurationFile: If there are no documents in the YAML file.
+    MultipleConfigurationFile: If there is more than one document in the YAML
+        file.
   """
   builder = yaml_object.ObjectBuilder(AppInclude)
   handler = yaml_builder.BuilderHandler(builder)
@@ -2267,7 +2431,7 @@ def ParseExpiration(expiration):
   """Parses an expiration delta string.
 
   Args:
-    expiration: String that matches _DELTA_REGEX.
+    expiration: String that matches `_DELTA_REGEX`.
 
   Returns:
     Time delta in seconds.
@@ -2283,14 +2447,17 @@ def ParseExpiration(expiration):
 #####################################################################
 # These regexps must be the same as those in apphosting/client/app_config.cc
 # and java/com/google/appengine/tools/admin/AppVersionUpload.java
+# java/com/google/apphosting/admin/legacy/LegacyAppInfo.java,
+# apphosting/client/app_config_old.cc,
+# apphosting/api/app_config/app_config_server2.cc
 
-# Valid characters for a filename.
-_file_path_positive_re = re.compile(r'^[ 0-9a-zA-Z\._\+/@\$-]{1,256}$')
+# Valid characters for a file name.
+_file_path_positive_re = re.compile(r'^.{1,256}$')
 
-# Forbid ., .., and leading -, _ah/ or /
+# Forbid `.`, `..`, and leading `-`, `_ah/` or `/`
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 
-# Forbid // and trailing /
+# Forbid `//` and trailing `/`
 _file_path_negative_2_re = re.compile(r'//|/$')
 
 # Forbid any use of space other than in the middle of a directory or file
@@ -2298,22 +2465,26 @@ _file_path_negative_2_re = re.compile(r'//|/$')
 _file_path_negative_3_re = re.compile(r'^ | $|/ | /')
 
 
+# (erinjerison) Lint seems to think I'm specifying the word "character" as an
+# argument. This isn't the case; it's part of a list to enable the list to
+# build properly. Disabling it for now.
+# pylint: disable=g-doc-args
 def ValidFilename(filename):
-  """Determines if filename is valid.
-
-  filename must be a valid pathname.
-  - It must contain only letters, numbers, @, _, +, /, $, ., and -.
-  - It must be less than 256 chars.
-  - It must not contain "/./", "/../", or "//".
-  - It must not end in "/".
-  - All spaces must be in the middle of a directory or file name.
+  """Determines if a file name is valid.
 
   Args:
-    filename: The filename to validate.
+    filename: The file name to validate. The file name must be a valid file
+        name:
+            - It must only contain letters, numbers, and the following special
+              characters:  `@`, `_`, `+`, `/` `$`, `.`, `-`, or '~'.
+            - It must be less than 256 characters.
+            - It must not contain `/./`, `/../`, or `//`.
+            - It must not end in `/`.
+            - All spaces must be in the middle of a directory or file name.
 
   Returns:
-    An error string if the filename is invalid.  Returns '' if the filename
-    is valid.
+    An error string if the file name is invalid. `''` is returned if the file
+    name is valid.
   """
   if _file_path_positive_re.match(filename) is None:
     return 'Invalid character in filename: %s' % filename

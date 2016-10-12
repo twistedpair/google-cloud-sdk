@@ -24,7 +24,7 @@ from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 
 
 def FormatRpcError(error):
@@ -71,7 +71,7 @@ def WaitForOperation(
       name=operation.name)
   log.status.Print('Waiting on operation [{0}].'.format(operation.name))
   start_time = time.time()
-  with console_io.ProgressTracker(message, autotick=True):
+  with progress_tracker.ProgressTracker(message, autotick=True):
     while timeout_s > (time.time() - start_time):
       try:
         operation = client.projects_regions_operations.Get(request)
@@ -105,7 +105,7 @@ def WaitForResourceDeletion(
     poll_period_s=5):
   """Poll Dataproc resource until it no longer exists."""
   request = resource_ref.Request()
-  with console_io.ProgressTracker(message, autotick=True):
+  with progress_tracker.ProgressTracker(message, autotick=True):
     start_time = time.time()
     while timeout_s > (time.time() - start_time):
       try:
@@ -122,7 +122,7 @@ def WaitForResourceDeletion(
 
 
 class NoOpProgressDisplay(object):
-  """For use in place of a console_io.ProgressTracker in a 'with' block."""
+  """For use in place of a ProgressTracker in a 'with' block."""
 
   def __enter__(self):
     pass
@@ -177,7 +177,7 @@ def WaitForJobTermination(
     log.status.Print('Waiting for job output...')
     wait_display = NoOpProgressDisplay()
   else:
-    wait_display = console_io.ProgressTracker(message, autotick=True)
+    wait_display = progress_tracker.ProgressTracker(message, autotick=True)
   start_time = now = time.time()
   with wait_display:
     while not timeout_s or timeout_s > (now - start_time):

@@ -176,6 +176,8 @@ class LogFetcher(object):
         A dictionary containing the fields of the log message.
     """
 
+    periods_without_progress = 0
+    last_progress_time = datetime.datetime.utcnow()
     while True:
       log_retriever = self.api_accessor.GetLogs(self.log_position)
       made_progress = False
@@ -188,6 +190,7 @@ class LogFetcher(object):
                                         log_entry.insertId):
           continue
         made_progress = True
+        last_progress_time = datetime.datetime.utcnow()
         multiline_log_dict = self.EntryToDict(log_entry)
         if self.allow_multiline_logs:
           yield multiline_log_dict
@@ -197,9 +200,19 @@ class LogFetcher(object):
             single_line_dict = copy.deepcopy(multiline_log_dict)
             single_line_dict['message'] = message_line
             yield single_line_dict
-      if not made_progress:
-        if self.api_accessor.CheckJobFinished():
-          raise StopIteration
+      if made_progress:
+        periods_without_progress = 0
+      else:
+        # If our last log query was the second in a row to make no progress,
+        # and the last progress was more than 5 seconds ago, check the job
+        # status to make sure that it's still running.
+        # If it is not, terminate the stream-logs command.
+        periods_without_progress += 1
+        if periods_without_progress > 1:
+          if last_progress_time + datetime.timedelta(
+              seconds=5) <= datetime.datetime.utcnow():
+            if self.api_accessor.CheckJobFinished():
+              raise StopIteration
         time.sleep(self.polling_interval)
 
   def EntryToDict(self, log_entry):

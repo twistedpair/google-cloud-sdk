@@ -47,6 +47,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
   RESOURCE_EXHAUSTED =   12 
   NOT_FOUND    =   13 
   ALREADY_EXISTS =   14 
+  FAILED_PRECONDITION =   15 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -63,6 +64,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
     12: "RESOURCE_EXHAUSTED",
     13: "NOT_FOUND",
     14: "ALREADY_EXISTS",
+    15: "FAILED_PRECONDITION",
   }
 
   def ErrorCode_Name(cls, x): return cls._ErrorCode_NAMES.get(x, "")

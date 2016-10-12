@@ -25,3 +25,36 @@ def HttpHealthCheckArgument(required=True):
       required=required,
       global_collection='compute.httpHealthChecks',
       short_help='The name of the HTTP health check.')
+
+
+def HttpHealthCheckArgumentForTargetPool(action, required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='http health check',
+      name='--http-health-check',
+      completion_resource_id='compute.httpHealthChecks',
+      plural=False,
+      required=required,
+      global_collection='compute.httpHealthChecks',
+      short_help=('Specifies an HTTP health check object to {0} the '
+                  'target pool.'.format(action)))
+
+
+def HttpHealthCheckArgumentForTargetPoolCreate(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='http health check',
+      name='--http-health-check',
+      completion_resource_id='compute.httpHealthChecks',
+      plural=False,
+      required=required,
+      global_collection='compute.httpHealthChecks',
+      short_help=(
+          'Specifies HttpHealthCheck to determine the health of instances '
+          'in the pool.'),
+      detailed_help="""\
+        Specifies an HTTP health check resource to use to determine the health
+        of instances in this pool. If no health check is specified, traffic will
+        be sent to all instances in this target pool as if the instances
+        were healthy, but the health status of this pool will appear as
+        unhealthy as a warning that this target pool does not have a health
+        check.
+        """)

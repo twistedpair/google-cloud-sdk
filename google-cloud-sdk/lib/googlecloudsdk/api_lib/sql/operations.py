@@ -19,7 +19,7 @@ import time
 from apitools.base.py import exceptions
 
 from googlecloudsdk.api_lib.sql import errors
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import retry
 
 
@@ -67,7 +67,8 @@ class _BaseOperations(object):
       # Otherwise let the retryer do it's job until the Operation is done.
       return not result
 
-    with console_io.ProgressTracker(message, autotick=False) as pt:
+    with console_progress_tracker.ProgressTracker(
+        message, autotick=False) as pt:
       time.sleep(_BaseOperations._PRE_START_SLEEP_SEC)
       retryer = retry.Retryer(exponential_sleep_multiplier=2,
                               max_wait_ms=_BaseOperations._MAX_WAIT_MS,
@@ -96,8 +97,8 @@ class OperationsV1Beta3(_BaseOperations):
     Args:
       sql_client: apitools.BaseApiClient, The client used to make requests.
       operation_ref: resources.Resource, A reference for the operation to poll.
-      progress_tracker: console_io.ProgressTracker, A reference for the progress
-          tracker to tick, in case this function is used in a Retryer.
+      progress_tracker: progress_tracker.ProgressTracker, A reference for the
+          progress tracker to tick, in case this function is used in a Retryer.
 
     Returns:
       True: if the operation succeeded without error.
@@ -139,8 +140,8 @@ class OperationsV1Beta4(_BaseOperations):
     Args:
       sql_client: apitools.BaseApiClient, The client used to make requests.
       operation_ref: resources.Resource, A reference for the operation to poll.
-      progress_tracker: console_io.ProgressTracker, A reference for the progress
-          tracker to tick, in case this function is used in a Retryer.
+      progress_tracker: progress_tracker.ProgressTracker, A reference for the
+          progress tracker to tick, in case this function is used in a Retryer.
 
     Returns:
       True: if the operation succeeded without error.

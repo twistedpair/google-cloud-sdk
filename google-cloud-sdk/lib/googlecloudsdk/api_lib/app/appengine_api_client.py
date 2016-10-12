@@ -179,16 +179,19 @@ class AppengineApiClient(object):
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def SetServingStatus(self, service_name, version_id, serving_status):
+  def SetServingStatus(self, service_name, version_id, serving_status,
+                       block=True):
     """Sets the serving status of the specified version.
 
     Args:
       service_name: str, The service name
       version_id: str, The version to delete.
       serving_status: The serving status to set.
+      block: bool, whether to block on the completion of the operation
 
     Returns:
-      The completed Operation.
+      The completed Operation if block is True, or the Operation to wait on
+      otherwise.
     """
     patch_request = self.messages.AppengineAppsServicesVersionsPatchRequest(
         name=self._FormatVersion(app_id=self.project,
@@ -199,7 +202,10 @@ class AppengineApiClient(object):
     operation = requests.MakeRequest(
         self.client.apps_services_versions.Patch,
         patch_request)
-    return operations.WaitForOperation(self.client.apps_operations, operation)
+    if block:
+      return operations.WaitForOperation(self.client.apps_operations, operation)
+    else:
+      return operation
 
   def ListInstances(self, versions):
     """Lists all instances for the given versions.
@@ -300,35 +306,42 @@ class AppengineApiClient(object):
     return requests.MakeRequest(
         self.client.apps_services_versions_instances.Get, request)
 
-  def StopVersion(self, service_name, version_id):
+  def StopVersion(self, service_name, version_id, block=True):
     """Stops the specified version.
 
     Args:
       service_name: str, The service name
       version_id: str, The version to stop.
+      block: bool, whether to block on the completion of the operation
+
 
     Returns:
-      The completed Operation.
+      The completed Operation if block is True, or the Operation to wait on
+      otherwise.
     """
     return self.SetServingStatus(
         service_name,
         version_id,
-        self.messages.Version.ServingStatusValueValuesEnum.STOPPED)
+        self.messages.Version.ServingStatusValueValuesEnum.STOPPED,
+        block)
 
-  def StartVersion(self, service_name, version_id):
+  def StartVersion(self, service_name, version_id, block=True):
     """Starts the specified version.
 
     Args:
       service_name: str, The service name
       version_id: str, The version to start.
+      block: bool, whether to block on the completion of the operation
 
     Returns:
-      The completed Operation.
+      The completed Operation if block is True, or the Operation to wait on
+      otherwise.
     """
     return self.SetServingStatus(
         service_name,
         version_id,
-        self.messages.Version.ServingStatusValueValuesEnum.SERVING)
+        self.messages.Version.ServingStatusValueValuesEnum.SERVING,
+        block)
 
   def ListServices(self):
     """Lists all services for the given application.

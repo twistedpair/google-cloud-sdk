@@ -97,7 +97,7 @@ def GetIAP(args, messages, existing_iap_settings=None):
     raise exceptions.InvalidArgumentException(
         '--iap', 'Must specify only one of [enabled] or [disabled]')
 
-  iap_settings = messages.BackendServiceIAAP()
+  iap_settings = messages.BackendServiceIAP()
   if 'enabled' in args.iap:
     iap_settings.enabled = True
   elif 'disabled' in args.iap:

@@ -17,8 +17,6 @@
 import json
 import os.path
 
-from apitools.base import py as apitools_base
-
 from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.core import apis
@@ -90,33 +88,6 @@ def ProcessEndpointsService(service, project, client=None, messages=None):
   return None
 
 
-def WriteServiceConfigToFile(file_path, contents):
-  """Writes Service Config contents to a file on disk.
-
-  Args:
-    file_path: path to the file that is to be written to.
-    contents: the contents to write to the file.
-
-  Raises:
-    SwaggerUploadException: if errors occur in creating the destination
-        directory or writing to the file.
-  """
-  dir_path = os.path.dirname(file_path)
-  if not os.path.isdir(dir_path):
-    try:
-      os.makedirs(dir_path)
-    except (IOError, OSError) as e:
-      raise SwaggerUploadException(
-          'Failed to create directory {0} {1}'.format(dir_path, str(e)))
-  try:
-    with open(file_path, 'w') as out:
-      out.write(contents)
-  except (IOError, OSError) as e:
-    raise SwaggerUploadException(
-        'Failed to write Google Service Configuration '
-        'file {0} to disk {1}'.format(file_path, str(e)))
-
-
 def PushServiceConfig(swagger_file, project, client, messages):
   """Pushes Service Configuration to Google Service Management.
 
@@ -164,41 +135,6 @@ def PushServiceConfig(swagger_file, project, client, messages):
   # Check to see if the Endpoints meta service needs to be enabled.
   enable_api.EnableServiceIfDisabled(
       project, services_util.GetEndpointsServiceName(), async=False)
-
-  # First, get the Open API specification contents, and convert it to
-  # Google Service Config. This is only needed at the moment for the
-  # Diagnostics information the ConvertConfig generates.
-  # TODO(b/30276465): When the Diagnostics information is available via the
-  # SubmitSourceConfig API, remove the usage of ConvertConfig API.
-  swagger_file_obj = messages.File(
-      contents=swagger_file_contents, path=swagger_file)
-  swagger_spec = messages.SwaggerSpec(swaggerFiles=[swagger_file_obj])
-  request = messages.ConvertConfigRequest(swaggerSpec=swagger_spec)
-  try:
-    response = client.v1.ConvertConfig(request)
-  except apitools_base.exceptions.HttpError as error:
-    raise SwaggerUploadException(_GetErrorMessage(error))
-
-  if response.diagnostics:
-    kind = messages.Diagnostic.KindValueValuesEnum
-    for diagnostic in response.diagnostics:
-      logger = log.error if diagnostic.kind == kind.ERROR else log.warning
-      logger('{l}: {m}'.format(l=diagnostic.location, m=diagnostic.message))
-
-  if not response.serviceConfig:
-    raise SwaggerUploadException('Failed to upload service configuration.')
-
-  # Create an endpoints directory under the location of the swagger config
-  # which will contain the service.json file needed by ESP.
-  # This file+directory will be carried to the App Engine Flexible VM via the
-  # app container.
-  # TODO(b/28090287): Remove this when ESP is able to pull this configuration
-  # directly from Service Management API.
-  swagger_path = os.path.dirname(swagger_file)
-  service_json_file = os.path.join(swagger_path, 'endpoints', 'service.json')
-  WriteServiceConfigToFile(
-      service_json_file,
-      apitools_base.encoding.MessageToJson(response.serviceConfig))
 
   service_name = service_config_dict.get('host', None)
   # Create the Service resource if it does not already exist.

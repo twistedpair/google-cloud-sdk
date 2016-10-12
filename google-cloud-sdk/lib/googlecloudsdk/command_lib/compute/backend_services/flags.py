@@ -47,6 +47,30 @@ GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
+def BackendServiceArgumentForUrlMap(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='backend service',
+      name='--default-service',
+      required=required,
+      completion_resource_id='compute.backendServices',
+      global_collection='compute.backendServices',
+      short_help=(
+          'A backend service that will be used for requests for which this '
+          'URL map has no mappings.'))
+
+
+def BackendServiceArgumentForUrlMapPathMatcher(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='backend service',
+      name='--default-service',
+      required=required,
+      completion_resource_id='compute.backendServices',
+      global_collection='compute.backendServices',
+      short_help=(
+          'A backend service that will be used for requests that the path '
+          'matcher cannot match.'))
+
+
 def AddLoadBalancingScheme(parser):
   parser.add_argument(
       '--load-balancing-scheme',

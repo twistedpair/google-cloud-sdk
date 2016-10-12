@@ -21,28 +21,24 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
 
-class InvalidInstancesFileError(core_exceptions.Error):
-  """Indicates that the input file was invalid in some way."""
-  pass
-
-
 class HttpRequestFailError(core_exceptions.Error):
   """Indicates that the http request fails in some way."""
   pass
 
 
-def Predict(model_name=None, version_name=None, input_file=None):
+def Predict(model_name=None, version_name=None, instances=None):
   """Perform online prediction on the input data file.
 
   Args:
       model_name: name of the model.
       version_name: name of the version.
-      input_file: An open file object for the input file.
+      instances: a list of JSON or UTF-8 encoded instances to perform
+          prediction on.
+
   Returns:
       A json object that contains predictions.
+
   Raises:
-      InvalidInstancesFileError: if the input_file is empty, ill-formatted,
-          or contains more than 100 instances.
       HttpRequestFailError: if error happens with http request, or parsing
           the http response.
   """
@@ -57,23 +53,6 @@ def Predict(model_name=None, version_name=None, input_file=None):
   url = (apis.GetEffectiveApiEndpoint('ml', 'v1beta1') + 'v1beta1/projects/' +
          model_version + ':predict')
 
-  # Read the instances from input file
-  instances = []
-  cnt = 0
-  for cnt, line in enumerate(input_file):
-    if cnt > 100:
-      raise InvalidInstancesFileError(
-          'Online prediction can process no more than 100 '
-          'instances per file. Please use batch prediction instead.')
-    try:
-      instances.append(json.loads(line.rstrip('\n')))
-    except ValueError:
-      raise InvalidInstancesFileError('Input instances must be in JSON format.'
-                                      ' See "gcloud beta ml predict --help".')
-
-  if not instances:
-    raise InvalidInstancesFileError('Input file is empty.')
-
   # Construct the body for the predict request.
   body = {'instances': instances}
 
@@ -82,7 +61,8 @@ def Predict(model_name=None, version_name=None, input_file=None):
   # TODO(b/31403673): use M1V1beta1.ProjectsService.Predict once b/31403673
   # is fixed.
   response, response_body = http.Http().request(
-      uri=url, method='POST', body=json.dumps(body), headers=headers)
+      uri=url, method='POST', body=json.dumps(body, sort_keys=True),
+      headers=headers)
   if response.get('status') != '200':
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)

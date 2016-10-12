@@ -31,6 +31,13 @@ _CLOUD_REPO_PATTERN = (
     '(/r/(?P<repo_name>[^/?#]+))?'
     '([/#?].*)?')
 
+_GIT_PENDING_CHANGE_PATTERN = (
+    '^# *('
+    'Untracked files|'
+    'Changes to be committed|'
+    'Changes not staged for commit'
+    '):')
+
 CAPTURE_CATEGORY = 'capture'
 REMOTE_REPO_CATEGORY = 'remote_repo'
 CONTEXT_FILENAME = 'source-context.json'
@@ -57,6 +64,20 @@ def ExtendContextDict(context, category=REMOTE_REPO_CATEGORY):
     An ExtendedSourceContext-compatible dict.
   """
   return {'context': context, 'labels': {'category': category}}
+
+
+def HasPendingChanges(source_directory):
+  """Checks if the git repo in a directory has any pending changes.
+
+  Args:
+    source_directory: The path to directory containing the source code.
+  Returns:
+    True if there are any uncommitted or untracked changes in the local repo
+    for the given directory.
+  """
+  status = _CallGit(source_directory, 'status')
+  return re.search(_GIT_PENDING_CHANGE_PATTERN, status,
+                   flags=re.MULTILINE)
 
 
 def CalculateExtendedSourceContexts(source_directory):

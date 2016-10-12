@@ -1251,7 +1251,7 @@ class BlobKey(object):
     Args:
       blob_key:  Key name of BlobReference that this key belongs to.
     """
-    ValidateString(blob_key, 'blob-key')
+    ValidateString(blob_key, 'blob-key', empty_ok=True)
     self.__blob_key = blob_key
 
   def __str__(self):

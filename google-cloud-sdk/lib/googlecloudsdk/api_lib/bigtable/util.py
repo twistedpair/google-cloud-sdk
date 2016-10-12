@@ -20,7 +20,7 @@ import time
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 
 
 def GetAdminClient():
@@ -100,7 +100,7 @@ def WaitForOp(context, op_id, text):
   cli = context['clusteradmin']
   msg = context['clusteradmin-msgs'].BigtableclusteradminOperationsGetRequest(
       name=op_id)
-  with console_io.ProgressTracker(text, autotick=False) as pt:
+  with progress_tracker.ProgressTracker(text, autotick=False) as pt:
     while True:
       # TODO(user): set reasonable timeout with input from API team
       resp = cli.operations.Get(msg)
@@ -129,7 +129,7 @@ def WaitForOpV2(operation, spinner_text):
   cli = GetAdminClient()
   msg = GetAdminMessages().BigtableadminOperationsGetRequest(
       operationsId=operation.name[11:])
-  with console_io.ProgressTracker(spinner_text, autotick=False) as pt:
+  with progress_tracker.ProgressTracker(spinner_text, autotick=False) as pt:
     while tick_limit > 0:
       resp = cli.operations.Get(msg)
       if resp.error:

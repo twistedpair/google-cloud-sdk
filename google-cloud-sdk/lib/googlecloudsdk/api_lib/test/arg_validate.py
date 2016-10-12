@@ -200,6 +200,7 @@ _FILE_ARG_VALIDATORS = {
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
     'obb_files': _ValidateObbFileList,
+    'test_targets': ValidateStringList,
     'event_count': _ValidatePositiveInteger,
     'event_delay': _ValidateNonNegativeInteger,
     'random_seed': _ValidateInteger,

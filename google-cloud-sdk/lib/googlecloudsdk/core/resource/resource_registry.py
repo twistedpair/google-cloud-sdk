@@ -1048,6 +1048,14 @@ RESOURCE_REGISTRY = {
 
     # functions
 
+    'functions.projects.locations': ResourceInfo(
+        list_format="""
+          table(
+            name
+          )
+        """,
+    ),
+
     'functions.projects.locations.functions': ResourceInfo(
         list_format="""
           table(

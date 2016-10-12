@@ -206,7 +206,7 @@ def CreateSchedulingMessage(
 
 
 def CreateMachineTypeUris(
-    scope_prompter, compute_client, project,
+    resources, compute_client, project,
     machine_type, custom_cpu, custom_memory, instance_refs):
   """Create machine type URIs for given args and instance references."""
   # The element at index i is the machine type URI for instance
@@ -227,15 +227,17 @@ def CreateMachineTypeUris(
                            project,
                            instance_ref.zone,
                            machine_type_name)
-    machine_type_uris.append(scope_prompter.CreateZonalReference(
-        machine_type_name, instance_ref.zone,
-        resource_type='machineTypes').SelfLink())
+    machine_type_uris.append(
+        resources.Parse(
+            machine_type_name,
+            collection='compute.machineTypes',
+            params={'zone': instance_ref.zone}).SelfLink())
 
   return machine_type_uris
 
 
 def CreateNetworkInterfaceMessage(
-    scope_prompter, compute_client,
+    resources, compute_client,
     network, subnet, private_network_ip, no_address, address,
     instance_refs):
   """Returns a new NetworkInterface message."""
@@ -244,13 +246,16 @@ def CreateNetworkInterfaceMessage(
   messages = compute_client.messages
   network_interface = None
   if subnet is not None:
-    subnet_ref = scope_prompter.CreateRegionalReference(
-        subnet, region, resource_type='subnetworks')
+    subnet_ref = resources.Parse(
+        subnet,
+        collection='compute.subnetworks',
+        params={'region': region})
     network_interface = messages.NetworkInterface(
         subnetwork=subnet_ref.SelfLink())
   else:
-    network_ref = scope_prompter.CreateGlobalReference(
-        network or constants.DEFAULT_NETWORK, resource_type='networks')
+    network_ref = resources.Parse(
+        network or constants.DEFAULT_NETWORK,
+        collection='compute.networks')
     network_interface = messages.NetworkInterface(
         network=network_ref.SelfLink())
 
@@ -267,7 +272,7 @@ def CreateNetworkInterfaceMessage(
     # TODO(b/25278937): plays poorly when creating multiple instances
     if len(instance_refs) == 1:
       address_resource = flags.ExpandAddressFlag(
-          scope_prompter, compute_client, address, region)
+          resources, compute_client, address, region)
       if address_resource:
         access_config.natIP = address_resource
 
@@ -277,11 +282,11 @@ def CreateNetworkInterfaceMessage(
 
 
 def CreateNetworkInterfaceMessages(
-    scope_prompter, compute_client, network_interface_arg, instance_refs):
+    resources, compute_client, network_interface_arg, instance_refs):
   """Create network interface messages.
 
   Args:
-    scope_prompter: generates resource references.
+    resources: generates resource references.
     compute_client: creates resources.
     network_interface_arg: CLI argument specyfying network interfaces.
     instance_refs: reference to instances that will own the generated
@@ -293,10 +298,10 @@ def CreateNetworkInterfaceMessages(
   if network_interface_arg:
     for interface in network_interface_arg:
       address = interface.get('address', None)
-      no_address = address is None
+      no_address = 'no-address' in interface
 
       result.append(CreateNetworkInterfaceMessage(
-          scope_prompter, compute_client, interface.get('network', None),
+          resources, compute_client, interface.get('network', None),
           interface.get('subnet', None),
           interface.get('private-network-ip', None), no_address,
           address, instance_refs))
@@ -304,7 +309,7 @@ def CreateNetworkInterfaceMessages(
 
 
 def CreatePersistentAttachedDiskMessages(
-    scope_prompter, compute_client, csek_keys, disks, instance_ref):
+    resources, compute_client, csek_keys, disks, instance_ref):
   """Returns a list of AttachedDisk messages and the boot disk's reference."""
   disks_messages = []
   boot_disk_ref = None
@@ -324,9 +329,11 @@ def CreatePersistentAttachedDiskMessages(
     boot = disk.get('boot') == 'yes'
     auto_delete = disk.get('auto-delete') == 'yes'
 
-    disk_ref = scope_prompter.CreateZonalReference(
-        name, instance_ref.zone,
-        resource_type='disks')
+    disk_ref = resources.Parse(
+        name,
+        collection='compute.disks',
+        params={'zone': instance_ref.zone})
+
     if boot:
       boot_disk_ref = disk_ref
 
@@ -400,8 +407,10 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     disk_type = disk.get('type')
     if disk_type:
-      disk_type_ref = scope_prompter.CreateZonalReference(
-          disk_type, instance_ref.zone, resource_type='diskTypes')
+      disk_type_ref = resources.Parse(disk_type,
+                                      collection='compute.diskTypes',
+                                      params={'zone': instance_ref.zone})
+
       disk_type_uri = disk_type_ref.SelfLink()
     else:
       disk_type_ref = None
@@ -421,8 +430,9 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
                                                          [image_uri],
                                                          compute)
       if name:
-        disk_ref = scope_prompter.CreateZonalReference(
-            name, instance_ref.zone, resource_type='disks')
+        disk_ref = resources.Parse(name,
+                                   collection='compute.disks',
+                                   params={'zone': instance_ref.zone})
         disk_key = csek_utils.MaybeLookupKeyMessage(csek_keys, disk_ref,
                                                     compute)
 
@@ -446,18 +456,17 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
 
 
 def CreateDefaultBootAttachedDiskMessage(
-    scope_prompter, compute_client, resources,
-    disk_type, disk_device_name, disk_auto_delete, disk_size_gb,
-    require_csek_key_create, image_uri, instance_ref,
+    compute_client, resources, disk_type, disk_device_name, disk_auto_delete,
+    disk_size_gb, require_csek_key_create, image_uri, instance_ref,
     csek_keys=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
 
   if disk_type:
-    disk_type_ref = scope_prompter.CreateZonalReference(
-        disk_type, instance_ref.zone,
-        resource_type='diskTypes')
+    disk_type_ref = resources.Parse(disk_type,
+                                    collection='compute.diskTypes',
+                                    params={'zone': instance_ref.zone})
     disk_type_uri = disk_type_ref.SelfLink()
   else:
     disk_type_ref = None
@@ -486,9 +495,9 @@ def CreateDefaultBootAttachedDiskMessage(
     effective_boot_disk_name = (
         disk_device_name or instance_ref.Name())
 
-    disk_ref = scope_prompter.CreateZonalReference(
-        effective_boot_disk_name, instance_ref.zone,
-        resource_type='disks')
+    disk_ref = resources.Parse(effective_boot_disk_name,
+                               collection='compute.disks',
+                               params={'zone': instance_ref.zone})
     disk_key_or_none = csek_utils.MaybeToMessage(
         csek_keys.LookupKey(disk_ref, require_csek_key_create),
         compute)
@@ -520,26 +529,28 @@ def UseExistingBootDisk(disks):
   return any(disk.get('boot') == 'yes' for disk in disks)
 
 
-def CreateLocalSsdMessage(command, device_name, interface, zone=None):
+def CreateLocalSsdMessage(resources, messages, device_name, interface,
+                          zone=None):
   """Create a message representing a local ssd."""
 
   if zone:
-    disk_type_ref = command.CreateZonalReference('local-ssd', zone,
-                                                 resource_type='diskTypes')
+    disk_type_ref = resources.Parse('local-ssd',
+                                    collection='compute.diskTypes',
+                                    params={'zone': zone})
     disk_type = disk_type_ref.SelfLink()
   else:
     disk_type = 'local-ssd'
 
   maybe_interface_enum = (
-      command.messages.AttachedDisk.InterfaceValueValuesEnum(interface)
+      messages.AttachedDisk.InterfaceValueValuesEnum(interface)
       if interface else None)
 
-  return command.messages.AttachedDisk(
-      type=command.messages.AttachedDisk.TypeValueValuesEnum.SCRATCH,
+  return messages.AttachedDisk(
+      type=messages.AttachedDisk.TypeValueValuesEnum.SCRATCH,
       autoDelete=True,
       deviceName=device_name,
       interface=maybe_interface_enum,
-      mode=command.messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
-      initializeParams=command.messages.AttachedDiskInitializeParams(
+      mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
+      initializeParams=messages.AttachedDiskInitializeParams(
           diskType=disk_type),
       )

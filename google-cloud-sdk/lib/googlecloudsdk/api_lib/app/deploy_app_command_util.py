@@ -29,6 +29,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
@@ -207,14 +208,24 @@ def _UploadFiles(files_to_upload, bucket_ref):
   for sha1_hash, path in sorted(files_to_upload.iteritems()):
     tasks.append(FileUploadTask(sha1_hash, path, bucket_ref.ToBucketUrl()))
 
+  num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
+  threads_per_proc = properties.VALUES.app.num_file_upload_threads.GetInt()
   if (platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
       and platform.mac_ver()[0].startswith('10.12')):  # Sierra is version 10.12
-    # TODO(b/31578136): Use multiple threads here for better performance
     # OS X Sierra has issues with spawning processes in this manner
-    num_procs = 1
-  else:
-    num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
-  if num_procs > 1:
+    if num_procs == 1:
+      # num_procs set explicitly to 1 indicates that a user tried to turn off
+      # parallelism, so we respect that.
+      threads_per_proc = 1
+    # Note: OS X (especially Sierra) has issues with multi-process file upload
+    # as we had it implemented, so we just *ignore* the number of processes
+    # requested and just use threads.
+    # This is slightly confusing, but when we resolve the TODO in the below
+    # branch of the if statement, this should get fixed.
+    with parallel.GetPool(1, threads_per_proc) as pool:
+      results = pool.Map(_UploadFile, tasks)
+  elif num_procs > 1:
+    # TODO(b/32001924) switch all parallelism to use core.util.parallel
     pool = multiprocessing.Pool(num_procs)
     results = pool.map(_UploadFile, tasks)
     errors = filter(bool, results)

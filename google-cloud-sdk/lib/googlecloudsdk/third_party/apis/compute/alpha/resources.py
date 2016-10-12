@@ -94,6 +94,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'healthCheck'],
       'ComputeHealthChecksGetRequest',)
+  HOSTS = (
+      'hosts',
+      'projects/{project}/zones/{zone}/hosts/{host}',
+      {},
+      [u'project', u'zone', u'host'],
+      'ComputeHostsGetRequest',)
   HTTPHEALTHCHECKS = (
       'httpHealthChecks',
       'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',

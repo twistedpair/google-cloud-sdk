@@ -17,6 +17,7 @@
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 
 
 class UnspecifiedRegionError(exceptions.Error):
@@ -42,7 +43,7 @@ def CreateApp(api_client, project, region):
   """
   message = ('Creating App Engine application in project [{project}] and '
              'region [{region}].'.format(project=project, region=region))
-  with console_io.ProgressTracker(message):
+  with progress_tracker.ProgressTracker(message):
     try:
       api_client.CreateApp(region)
     except api_lib_exceptions.ConflictError:

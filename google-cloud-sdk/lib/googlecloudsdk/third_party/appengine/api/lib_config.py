@@ -15,56 +15,51 @@
 
 """A mechanism for library configuration.
 
-Whenever App Engine library code has the need for a user-configurable
-value, it should use the following protocol:
+Whenever App Engine library code needs a user-configurable value, it should use
+the following protocol:
+    1. Pick a prefix unique to the library module, for example: `mylib`.
+    2. Call `lib_config.register(prefix, mapping)` with that prefix as the first
+       argument and a dict mapping suffixes to default functions as the second.
+    3. The `register()` function returns a configuration handle that is unique
+       to this prefix. The configuration handle object has attributes that
+       correspond to each of the suffixes given in the mapping. Call these
+       functions to access the user's configuration value.  If the user didn't
+       configure a function, the default function from the mapping is called
+       instead.
+    4. Document the function name and its signature and semantics.
 
-1. Pick a prefix unique to the library module, e.g. 'mylib'.
+Users that want to provide configuration values should create a module named
+`appengine_config.py` in the top-level directory of their application and define
+functions as documented by various App Engine library components in that module.
+To change the configuration, edit the file and re-deploy the application. When
+using the SDK, no redeployment is required; the development server will pick up
+the changes the next time it handles a request.
 
-2. Call lib_config.register(prefix, mapping) with that prefix as
-   the first argument and a dict mapping suffixes to default functions
-   as the second.
+Third party libraries can also use this mechanism. For casual use, calling the
+`register()` method with a unique prefix is acceptable. For more complex
+libraries, however, you should instantiate a new `LibConfigRegistry` instance
+that uses a different module name.
 
-3. The register() function returns a config handle unique to this
-   prefix.  The config handle object has attributes corresponding to
-   each of the suffixes given in the mapping.  Call these functions
-   (they're not really methods even though they look like methods) to
-   access the user's configuration value.  If the user didn't
-   configure a function, the default function from the mapping is
-   called instead.
 
-4. Document the function name and its signature and semantics.
+Example `appengine_config.py` file::
 
-Users wanting to provide configuration values should create a module
-named appengine_config.py in the top-level directory of their
-application, and define functions as documented by various App Engine
-library components in that module.  To change the configuration, edit
-the file and re-deploy the application.  (When using the SDK, no
-redeployment is required: the development server will pick up the
-changes the next time it handles a request.)
+    from somewhere import MyMiddleWareClass
 
-Third party libraries can also use this mechanism.  For casual use,
-just calling the register() method with a unique prefix is okay.  For
-carefull libraries, however, it is recommended to instantiate a new
-LibConfigRegistry instance using a different module name.
+    def mylib_add_middleware(app):
+      app = MyMiddleWareClass(app)
+      return app
 
-Example appengine_config.py file:
 
-  from somewhere import MyMiddleWareClass
+Example library use::
 
-  def mylib_add_middleware(app):
-    app = MyMiddleWareClass(app)
-    return app
+    from google.appengine.api import lib_config
 
-Example library use:
+    config_handle = lib_config.register(
+        'mylib',
+        {'add_middleware': lambda app: app})
 
-  from google.appengine.api import lib_config
-
-  config_handle = lib_config.register(
-      'mylib',
-      {'add_middleware': lambda app: app})
-
-  def add_middleware(app):
-    return config_handle.add_middleware(app)
+    def add_middleware(app):
+      return config_handle.add_middleware(app)
 """
 
 
@@ -90,7 +85,7 @@ DEFAULT_MODNAME = 'appengine_config'
 
 
 class LibConfigRegistry(object):
-  """A registry for library configuration values."""
+  """A registry containing library configuration values."""
 
   def __init__(self, modname):
     """Constructor.
@@ -108,18 +103,18 @@ class LibConfigRegistry(object):
     self._lock = threading.RLock()
 
   def register(self, prefix, mapping):
-    """Register a set of configuration names.
+    """Registers a set of configuration names.
 
     Args:
       prefix: A shared prefix for the configuration names being registered.
-          If the prefix doesn't end in '_', that character is appended.
-      mapping: A dict mapping suffix strings to default values.
+          If the prefix doesn't end in `_`, that character is appended.
+      mapping: A dict that maps suffix strings to default values.
 
     Returns:
-      A ConfigHandle instance.
+      A `ConfigHandle` instance.
 
-    It's okay to re-register the same prefix: the mappings are merged,
-    and for duplicate suffixes the most recent registration wins.
+    You can re-register the same prefix: the mappings are merged, and for
+    duplicate suffixes, the most recent registration is used.
     """
     if not prefix.endswith('_'):
       prefix += '_'
@@ -135,18 +130,18 @@ class LibConfigRegistry(object):
     return handle
 
   def initialize(self, import_func=__import__):
-    """Attempt to import the config module, if not already imported.
+    """Tries to import the configuration module if it is not already imported.
 
-    This function always sets self._module to a value unequal
-    to None: either the imported module (if imported successfully), or
-    a dummy object() instance (if an ImportError was raised).  Other
-    exceptions are *not* caught.
+    This function always sets `self._module` to a value that is not `None`;
+    either the imported module (if it was imported successfully) or a dummy
+    `object()` instance (if an `ImportError` was raised) is used. Other
+    exceptions are not caught.
 
-    When a dummy instance is used, it is also put in sys.modules.
-    This allows us to detect when sys.modules was changed (as
-    dev_appserver.py does when it notices source code changes) and
-    re-try the __import__ in that case, while skipping it (for speed)
-    if nothing has changed.
+    When a dummy instance is used, the instance is also put in `sys.modules`.
+    This usage allows us to detect when `sys.modules` was changed (as
+    `dev_appserver.py` does when it notices source code changes) and retries the
+    `__import__` in that case, while skipping it (for speed) if nothing has
+    changed.
 
     Args:
       import_func: Used for dependency injection.
@@ -170,9 +165,10 @@ class LibConfigRegistry(object):
       self._lock.release()
 
   def reset(self):
-    """Drops the imported config module.
+    """Drops the imported configuration module.
 
-    If the config module has not been imported then this is a no-op.
+    If the configuration module has not been imported, no operation occurs, and
+    the next operation takes place.
     """
     self._lock.acquire()
     try:
@@ -188,14 +184,14 @@ class LibConfigRegistry(object):
       handle._clear_cache()
 
   def _pairs(self, prefix):
-    """Generate (key, value) pairs from the config module matching prefix.
+    """Generates `(key, value)` pairs from the config module matching prefix.
 
     Args:
-      prefix: A prefix string ending in '_', e.g. 'mylib_'.
+      prefix: A prefix string ending in `_`, for example: `mylib_`.
 
     Yields:
-      (key, value) pairs where key is the configuration name with
-      prefix removed, and value is the corresponding value.
+      `(key, value)` pairs, where `key` is the configuration name with the
+      prefix removed, and `value` is the corresponding value.
     """
     self._lock.acquire()
     try:
@@ -211,7 +207,7 @@ class LibConfigRegistry(object):
         yield key[nskip:], value
 
   def _dump(self):
-    """Print info about all registrations to stdout."""
+    """Prints information about all registrations to stdout."""
     self.initialize()
     handles = []
     self._lock.acquire()
@@ -233,9 +229,9 @@ class LibConfigRegistry(object):
 class ConfigHandle(object):
   """A set of configuration for a single library module or package.
 
-  Public attributes of instances of this class are configuration
-  values.  Attributes are dynamically computed (in __getattr__()) and
-  cached as regular instance attributes.
+  Public attributes of instances of this class are configuration values.
+  Attributes are dynamically computed (in `__getattr__()`) and cached as regular
+  instance attributes.
   """
 
   _initialized = False  # Set to True by _update_configs()
@@ -244,9 +240,10 @@ class ConfigHandle(object):
     """Constructor.
 
     Args:
-      prefix: A shared prefix for the configuration names being registered.
-          It *must* end in '_'.  (This is enforced by LibConfigRegistry.)
-      registry: A LibConfigRegistry instance.
+      prefix: A shared prefix for the configuration names being registered. It
+          must end in `_`. This requirement is enforced by
+          `LibConfigRegistry`.
+      registry: A `LibConfigRegistry` instance.
     """
     assert prefix.endswith('_')
     self._prefix = prefix
@@ -256,7 +253,7 @@ class ConfigHandle(object):
     self._lock = threading.RLock()
 
   def _update_defaults(self, mapping):
-    """Update the default mappings.
+    """Updates the default mappings.
 
     Args:
       mapping: A dict mapping suffix strings to default values.
@@ -273,7 +270,7 @@ class ConfigHandle(object):
       self._lock.release()
 
   def _update_configs(self):
-    """Update the configuration values.
+    """Updates the configuration values.
 
     This clears the cached values, initializes the registry, and loads
     the configuration values from the config module.
@@ -293,7 +290,7 @@ class ConfigHandle(object):
       self._lock.release()
 
   def _clear_cache(self):
-    """Clear the cached values."""
+    """Clears the cached values."""
     self._lock.acquire()
     try:
       self._initialized = False
@@ -307,7 +304,7 @@ class ConfigHandle(object):
       self._lock.release()
 
   def _dump(self):
-    """Print info about this set of registrations to stdout."""
+    """Prints information about this set of registrations to stdout."""
     self._lock.acquire()
     try:
       print 'Prefix %s:' % self._prefix
@@ -337,11 +334,11 @@ class ConfigHandle(object):
       A configuration values.
 
     Raises:
-      AttributeError if the suffix is not a registered suffix.
+      AttributeError: If the suffix is not a registered suffix.
 
-    The first time an attribute is referenced, this method is invoked.
-    The value returned taken either from the config module or from the
-    registered default.
+    The first time an attribute is referenced, this method is invoked. The value
+    returned is taken either from the config module or from the registered
+    default.
     """
     self._lock.acquire()
     try:
@@ -369,24 +366,27 @@ def register(prefix, mapping):
 
   Args:
     prefix: A shared prefix for the configuration names being registered.
-        If the prefix doesn't end in '_', that character is appended.
+        If the prefix doesn't end in `_`, that character is appended.
     mapping: A dict mapping suffix strings to default values.
 
   Returns:
-    A ConfigHandle instance.
+    A `ConfigHandle` instance.
   """
   return _default_registry.register(prefix, mapping)
 
 
 def main():
-  """CGI-style request handler to dump the configuration.
+  """Dumps the configuration, using a CGI-style request handler.
 
-  Put this in your app.yaml to enable (you can pick any URL):
+  Put this in your `app.yaml` file to enable (you can pick any URL)::
 
-  - url: /lib_config
-    script: $PYTHON_LIB/google/appengine/api/lib_config.py
+      - url: /lib_config
+        script: $PYTHON_LIB/google/appengine/api/lib_config.py
 
-  Note: unless you are using the SDK, you must be admin.
+
+  Note:
+      Unless you are using the SDK, you must be an administrator to use this
+      function.
   """
   if not os.getenv('SERVER_SOFTWARE', '').startswith('Dev'):
     from googlecloudsdk.third_party.appengine.api import users

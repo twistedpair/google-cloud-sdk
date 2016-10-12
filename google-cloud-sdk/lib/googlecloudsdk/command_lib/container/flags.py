@@ -194,24 +194,21 @@ used for production workloads."""
       help=help_text)
 
 
-def AddNodeLabelsFlag(parser, suppressed=True, for_node_pool=False):
+def AddNodeLabelsFlag(parser, for_node_pool=False):
   """Adds a --node-labels flag to the given parser."""
-  if suppressed:
-    help_text = argparse.SUPPRESS
-  else:
-    if for_node_pool:
-      help_text = """\
+  if for_node_pool:
+    help_text = """\
 Applies the given kubernetes labels on all nodes in the new node-pool. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
-    else:
-      help_text = """\
+  else:
+    help_text = """\
 Applies the given kubernetes labels on all nodes in the new node-pool. Example:
 
   $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
 """
-    help_text += """
+  help_text += """
 New nodes, including ones created by resize or recreate, will have these labels
 on the kubernetes API node object and can be used in nodeSelectors.
 See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""

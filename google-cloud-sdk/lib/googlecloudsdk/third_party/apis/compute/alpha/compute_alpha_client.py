@@ -2330,6 +2330,84 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of hosts.
+
+      Args:
+        request: (ComputeHostsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hosts.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/hosts',
+        request_field='',
+        request_type_name=u'ComputeHostsAggregatedListRequest',
+        response_type_name=u'HostAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified Host resource.
+
+      Args:
+        request: (ComputeHostsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.hosts.delete',
+        ordered_params=[u'project', u'zone', u'host'],
+        path_params=[u'host', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/hosts/{host}',
+        request_field='',
+        request_type_name=u'ComputeHostsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified host. Get a list of available hosts by making a list() request.
+
+      Args:
+        request: (ComputeHostsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Host) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hosts.get',
+        ordered_params=[u'project', u'zone', u'host'],
+        path_params=[u'host', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/hosts/{host}',
+        request_field='',
+        request_type_name=u'ComputeHostsGetRequest',
+        response_type_name=u'Host',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -2353,6 +2431,58 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'ComputeHostsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a host resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeHostsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.hosts.insert',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/hosts',
+        request_field=u'host',
+        request_type_name=u'ComputeHostsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of hosts available to the specified project.
+
+      Args:
+        request: (ComputeHostsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hosts.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/hosts',
+        request_field='',
+        request_type_name=u'ComputeHostsListRequest',
+        response_type_name=u'HostList',
         supports_download=False,
     )
 
@@ -3222,7 +3352,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.instanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'zone', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -4536,6 +4666,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def UpdateAccessConfig(self, request, global_params=None):
+      """Updates the specified access config from an instance's network interface with the data included in the request.
+
+      Args:
+        request: (ComputeInstancesUpdateAccessConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAccessConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAccessConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.updateAccessConfig',
+        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'networkInterface'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateAccessConfig',
+        request_field=u'accessConfig',
+        request_type_name=u'ComputeInstancesUpdateAccessConfigRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class LicensesService(base_api.BaseApiService):
     """Service class for the licenses resource."""
 
@@ -5767,7 +5923,7 @@ If you increase the size of the instance group, the group creates new instances 
         request: (ComputeRegionDisksListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (RegionDiskList) The response message.
+        (DiskList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -5782,7 +5938,7 @@ If you increase the size of the instance group, the group creates new instances 
         relative_path=u'projects/{project}/regions/{region}/disks',
         request_field='',
         request_type_name=u'ComputeRegionDisksListRequest',
-        response_type_name=u'RegionDiskList',
+        response_type_name=u'DiskList',
         supports_download=False,
     )
 
@@ -6048,7 +6204,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'region', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',

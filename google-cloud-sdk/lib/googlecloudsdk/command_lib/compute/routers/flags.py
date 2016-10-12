@@ -16,6 +16,17 @@
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+def RouterArgument(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='router',
+      completion_resource_id='compute.routers',
+      plural=False,
+      required=required,
+      regional_collection='compute.routers',
+      short_help='The name of the router.',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
 def RouterArgumentForVpnTunnel(required=True):
   return compute_flags.ResourceArgument(
       resource_name='router',

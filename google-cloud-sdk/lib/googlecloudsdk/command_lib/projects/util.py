@@ -18,10 +18,15 @@ from googlecloudsdk.core import resources
 
 
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
+PROJECTS_API_VERSION = 'v1'
 
 
 def ParseProject(project_id):
-  return resources.REGISTRY.Parse(project_id, collection=PROJECTS_COLLECTION)
+  # Override the default API map version so we can increment API versions on a
+  # API interface basis.
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('cloudresourcemanager', PROJECTS_API_VERSION)
+  return registry.Parse(project_id, collection=PROJECTS_COLLECTION)
 
 
 def ProjectsUriFunc(resource):

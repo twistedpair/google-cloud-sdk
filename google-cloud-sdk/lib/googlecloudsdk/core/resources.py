@@ -104,6 +104,8 @@ class WrongResourceCollectionException(UserError):
         'wrong collection: expected [{expected}], got [{got}], for '
         'path [{path}]'.format(
             expected=expected, got=got, path=path))
+    self.got = got
+    self.path = path
 
 
 class WrongFieldNumberException(UserError):
@@ -164,7 +166,7 @@ class _ResourceParser(object):
     self.collection_info = collection_info
 
   def ParseCollectionPath(self, collection_path, kwargs, resolve,
-                          base_url=None):
+                          base_url=None, subcollection=''):
     """Given a command line and some keyword args, get the resource.
 
     Args:
@@ -180,6 +182,7 @@ class _ResourceParser(object):
           later.
       base_url: use this base url (endpoint) for the resource, if not provided
           default corresponding api version base url will be used.
+      subcollection: str, name of subcollection to use when parsing this path.
 
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
@@ -193,7 +196,7 @@ class _ResourceParser(object):
       UnknownFieldException: If the collection-path's path did not provide
           enough fields.
     """
-    params = self.collection_info.params
+    params = self.collection_info.GetParams(subcollection)
     if collection_path is not None:
       match = _COLLECTIONPATH_RE.match(collection_path)
       if not match:
@@ -209,7 +212,7 @@ class _ResourceParser(object):
     else:
       fields = [None] * len(params)
 
-    ref = Resource(self.collection_info, fields, kwargs,
+    ref = Resource(self.collection_info, subcollection, fields, kwargs,
                    collection_path, base_url, self.params_defaults_func)
 
     if resolve:
@@ -228,7 +231,7 @@ class _ResourceParser(object):
 class Resource(object):
   """Information about a Cloud resource."""
 
-  def __init__(self, collection_info, param_values,
+  def __init__(self, collection_info, subcollection, param_values,
                resolvers, collection_path, endpoint_url, param_defaults):
     """Create a Resource object that may be partially resolved.
 
@@ -239,6 +242,7 @@ class Resource(object):
     Args:
       collection_info: resource_util.CollectionInfo, The collection description
           for this resource.
+      subcollection: str, id for subcollection of this collection.
       param_values: list, A list of values for parameters, which can be None in
         which case resolvers and param_defaults will be used.
       resolvers: {str:(str or func()->str)}, The resolution functions that can
@@ -257,7 +261,9 @@ class Resource(object):
     self.__collection_path = collection_path
     self._endpoint_url = endpoint_url or collection_info.base_url
     self._param_defaults = param_defaults
-    for param, value in zip(collection_info.params, param_values):
+    self._path = collection_info.GetPath(subcollection)
+    self._params = collection_info.GetParams(subcollection)
+    for param, value in zip(self._params, param_values):
       setattr(self, param, value)
 
   def Collection(self):
@@ -278,9 +284,9 @@ class Resource(object):
     """
     self.Resolve()
     effective_params = dict(
-        [(k, getattr(self, k) or '*') for k in self._collection_info.params])
+        [(k, getattr(self, k) or '*') for k in self._params])
     return urllib.unquote(
-        uritemplate.expand(self._collection_info.path, effective_params))
+        uritemplate.expand(self._path, effective_params))
 
   def SelfLink(self):
     self.Resolve()
@@ -293,8 +299,16 @@ class Resource(object):
     request_type_cls = getattr(messages_module,
                                self._collection_info.request_type)
     request = request_type_cls()
-    for param_name in self._collection_info.params:
-      setattr(request, param_name, getattr(self, param_name))
+    if self._params != self._collection_info.params:
+      if len(self._collection_info.params) != 1:
+        raise InvalidCollectionException(self.collection_info.full_name)
+      full_name = self.FullName()
+      param_start = self._collection_info.path.index('{')
+      setattr(request, self._collection_info.params[0],
+              full_name[param_start:])
+    else:
+      for param_name in self._collection_info.params:
+        setattr(request, param_name, getattr(self, param_name))
     return request
 
   def Resolve(self, suppress_param_default_err=False):
@@ -309,7 +323,7 @@ class Resource(object):
           unknown.
       properties.RequiredPropertyError, if a required field is not known.
     """
-    for param in self._collection_info.params:
+    for param in self._params:
       if getattr(self, param, None):
         continue
 
@@ -329,11 +343,11 @@ class Resource(object):
           raise
 
     effective_params = dict(
-        [(k, getattr(self, k) or '*') for k in self._collection_info.params])
+        [(k, getattr(self, k) or '*') for k in self._params])
 
     self.__self_link = '%s%s' % (
         self._endpoint_url,
-        uritemplate.expand(self._collection_info.path, effective_params))
+        uritemplate.expand(self._path, effective_params))
 
     if (self.Collection().startswith('compute.') or
         self.Collection().startswith('clouduseraccounts.') or
@@ -342,13 +356,13 @@ class Resource(object):
       # storage pending b/15425944.
       self.__self_link = urllib.unquote(self.__self_link)
 
-    if self._collection_info.params:
+    if self._params:
       # The last param is defined to be the resource's "name", and is the only
       # part of the resource that cannot be inferred by a resolver or other
       # context, and MUST be provided in the argument.
-      self.__name = getattr(self, self._collection_info.params[-1])
+      self.__name = getattr(self, self._params[-1])
 
-    for param in self._collection_info.params:
+    for param in self._params:
       if not getattr(self, param, None):
         raise UnknownFieldException(self.__collection_path, param)
 
@@ -373,19 +387,6 @@ def _CopyNestedDictSpine(maybe_dictionary):
     return result
   else:
     return maybe_dictionary
-
-
-def _APINameAndVersionFromURL(url):
-  """Get the API name and version from a resource url.
-
-  Args:
-    url: str, The resource (possibly overriden) endpoint url.
-
-  Returns:
-    (str, str): The API name. and version
-  """
-  default_enpoint_url = core_apis.GetDefaultEndpointUrl(url)
-  return resource_util.SplitDefaultEndpointUrl(default_enpoint_url)
 
 
 def _APINameFromCollection(collection):
@@ -500,14 +501,25 @@ class Registry(object):
 
     collection_parsers = (self.parsers_by_collection.setdefault(api_name, {})
                           .setdefault(api_version, {}))
-    existing_parser = collection_parsers.get(collection_info.full_name)
-    if existing_parser is not None:
-      raise AmbiguousAPIException(collection_info.full_name,
-                                  [collection_info.base_url,
-                                   existing_parser.collection_info.base_url])
-    collection_parsers[collection_info.full_name] = parser
+    collection_subpaths = collection_info.flat_paths
+    if not collection_subpaths:
+      collection_subpaths = {'': collection_info.path}
 
-    tokens = [api_name, api_version] + collection_info.path.split('/')
+    for subname, path in collection_subpaths.iteritems():
+      collection_name = collection_info.full_name + (
+          '.' + subname if subname else '')
+      existing_parser = collection_parsers.get(collection_name)
+      if existing_parser is not None:
+        raise AmbiguousAPIException(collection_name,
+                                    [collection_info.base_url,
+                                     existing_parser.collection_info.base_url])
+      collection_parsers[collection_name] = parser
+
+      self._AddParserForUriPath(api_name, api_version, parser, path)
+
+  def _AddParserForUriPath(self, api_name, api_version, parser, path):
+    """Registers parser for given path."""
+    tokens = [api_name, api_version] + path.split('/')
 
     # Build up a search tree to match URLs against URL templates.
     # The tree will branch at each URL segment, where the first segment
@@ -636,8 +648,14 @@ class Registry(object):
         if url_version is None:
           base_url += api_version + u'/'
 
+    parser_collection = parser.collection_info.full_name
+    if  not parser_collection.startswith(collection):
+      raise InvalidCollectionException(parser_collection)
+    subcollection = ''
+    if len(parser_collection) != len(collection):
+      subcollection = parser_collection[len(collection)+1:]
     return parser.ParseCollectionPath(
-        collection_path, kwargs, resolve, base_url)
+        collection_path, kwargs, resolve, base_url, subcollection)
 
   def GetCollectionInfo(self, collection_name):
     api_name = _APINameFromCollection(collection_name)

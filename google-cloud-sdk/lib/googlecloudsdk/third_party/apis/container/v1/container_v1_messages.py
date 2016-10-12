@@ -986,6 +986,9 @@ class NodeConfig(_messages.Message):
       ](/container-registry/)).  If unspecified, no scopes are added, unless
       Cloud Logging or Cloud Monitoring are enabled, in which case their
       required scopes will be added.
+    preemptible: Whether the nodes are created as preemptible VM instances.
+      See: https://cloud.google.com/compute/docs/instances/preemptible for
+      more inforamtion about preemptible VM instances.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
@@ -1065,8 +1068,9 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(5)
   metadata = _messages.MessageField('MetadataValue', 6)
   oauthScopes = _messages.StringField(7, repeated=True)
-  serviceAccount = _messages.StringField(8)
-  tags = _messages.StringField(9, repeated=True)
+  preemptible = _messages.BooleanField(8)
+  serviceAccount = _messages.StringField(9)
+  tags = _messages.StringField(10, repeated=True)
 
 
 class NodePool(_messages.Message):
@@ -1282,6 +1286,7 @@ class ServerConfig(_messages.Message):
       default.
     defaultImageType: Default image type.
     validImageTypes: List of valid image types.
+    validMasterVersions: List of valid master versions.
     validNodeVersions: List of valid node upgrade target versions.
   """
 
@@ -1289,7 +1294,8 @@ class ServerConfig(_messages.Message):
   defaultClusterVersion = _messages.StringField(2)
   defaultImageType = _messages.StringField(3)
   validImageTypes = _messages.StringField(4, repeated=True)
-  validNodeVersions = _messages.StringField(5, repeated=True)
+  validMasterVersions = _messages.StringField(5, repeated=True)
+  validNodeVersions = _messages.StringField(6, repeated=True)
 
 
 class SignedUrls(_messages.Message):

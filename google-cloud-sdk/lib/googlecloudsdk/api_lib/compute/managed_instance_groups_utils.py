@@ -88,7 +88,6 @@ def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
       action='append',
       help=('Autoscaler will maintain the target value of a Google Cloud '
             'Monitoring metric.'),
-      metavar='PROPERTY=VALUE',
   )
   custom_metric_utilization.detailed_help = """
    Adds a target metric value for the to the Autoscaler.
@@ -111,7 +110,6 @@ def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
             },
         ),
         help='Scaling based on Cloud Pub/Sub queuing system.',
-        metavar='PROPERTY=VALUE',
     )
     cloud_pub_sub_spec.detailed_help = """
      Specifies queue-based scaling based on a Cloud Pub/Sub queuing system.
@@ -588,20 +586,20 @@ def AddAutohealingArgs(parser):
       """
 
 
-def CreateAutohealingPolicies(cmd, args):
+def CreateAutohealingPolicies(resources, messages, args):
   """Creates autohealing policy list from args."""
   if hasattr(args, 'http_health_check'):  # alpha or beta
     if args.http_health_check or args.https_health_check or args.initial_delay:
-      policy = cmd.messages.InstanceGroupManagerAutoHealingPolicy()
+      policy = messages.InstanceGroupManagerAutoHealingPolicy()
       if args.http_health_check:
-        health_check_ref = cmd.CreateGlobalReference(
+        health_check_ref = resources.Parse(
             args.http_health_check,
-            resource_type='httpHealthChecks')
+            collection='compute.httpHealthChecks')
         policy.healthCheck = health_check_ref.SelfLink()
       elif args.https_health_check:
-        health_check_ref = cmd.CreateGlobalReference(
+        health_check_ref = resources.Parse(
             args.https_health_check,
-            resource_type='httpsHealthChecks')
+            collection='compute.httpsHealthChecks')
         policy.healthCheck = health_check_ref.SelfLink()
       if args.initial_delay:
         policy.initialDelaySec = args.initial_delay

@@ -490,8 +490,8 @@ _SPECS_V1 = {
         editables=None,
     ),
 
-    'iaap': _InternalSpec(
-        message_class_name='BackendServiceIAAP',
+    'iap': _InternalSpec(
+        message_class_name='BackendServiceIAP',
         table_cols=[
             ('NAME', 'name'),
             ('ENABLED', 'enabled'),
@@ -985,9 +985,9 @@ _SPECS_ALPHA['backendServices'] = _InternalSpec(
         'sessionAffinity',
         'affinityCookieTTL',
         'healthChecks',
-        'iaap.enabled',
-        'iaap.oauth2ClientId',
-        'iaap.oauth2ClientSecret',
+        'iap.enabled',
+        'iap.oauth2ClientId',
+        'iap.oauth2ClientSecret',
         'port',
         'portName',
         'protocol',

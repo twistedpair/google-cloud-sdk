@@ -34,6 +34,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
@@ -544,7 +545,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
 
   def SetProjectMetadata(self, new_metadata):
     """Sets the project metadata to the new metadata with progress tracker."""
-    with console_io.ProgressTracker('Updating project ssh metadata'):
+    with progress_tracker.ProgressTracker('Updating project ssh metadata'):
       self._SetProjectMetadata(new_metadata)
 
   def _SetInstanceMetadata(self, instance, new_metadata):
@@ -576,7 +577,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
 
   def SetInstanceMetadata(self, instance, new_metadata):
     """Sets the instance metadata to the new metadata with progress tracker."""
-    with console_io.ProgressTracker('Updating instance ssh metadata'):
+    with progress_tracker.ProgressTracker('Updating instance ssh metadata'):
       self._SetInstanceMetadata(instance, new_metadata)
 
   def EnsureSSHKeyIsInInstance(self, user, instance, iam_keys=False):
@@ -835,57 +836,76 @@ class BaseSSHCLICommand(BaseSSHCommand):
             'ssh traffic.')
       time_utils.Sleep(5)
 
-  def LocalizeCommand(self, cmd_args):
-    """Modifies an ssh/scp command line to match the local implementation.
+  def _LocalizeWindowsCommand(self, cmd_args):
+    """Translate cmd_args[1:] from ssh form to plink/putty form.
+
+     The translations are:
+
+        ssh form                      plink/putty form
+        ========                      ================
+        -i PRIVATE_KEY_FILE           -i PRIVATE_KEY_FILE.ppk
+        -o ANYTHING                   <ignore>
+        -p PORT                       -P PORT
+        [USER]@HOST                   [USER]@HOST
+        -BOOLEAN_FLAG                 -BOOLEAN_FLAG
+        -FLAG WITH_VALUE              -FLAG WITH_VALUE
+        POSITIONAL                    POSITIONAL
 
     Args:
       cmd_args: [str], The command line that will be executed.
 
     Returns:
-      Returns new_cmd_args, the localized command line.
+      Returns translated_cmd_args, the localized command line.
     """
-    if not platforms.OperatingSystem.IsWindows():
-      return cmd_args
-    args = [cmd_args[0]]
-    i = 1
-    n = len(cmd_args)
     positionals = 0
-    while i < n:
-      arg = cmd_args[i]
-      i += 1
-      if arg == '-i' and i < n:
+    cmd_args = list(cmd_args)  # Get a mutable copy.
+    translated_args = [cmd_args.pop(0)]
+    while cmd_args:  # Each iteration processes 1 or 2 args.
+      arg = cmd_args.pop(0)
+      if arg == '-i' and cmd_args:
         # -i private_key_file -- use private_key_file.ppk -- if it doesn't exist
         # then winkeygen will be called to generate it before attempting to
         # connect.
-        args.append(arg)
-        arg = cmd_args[i]
-        i += 1
-        arg += '.ppk'
-      elif arg == '-o' and i < n:
-        arg = cmd_args[i]
-        i += 1
-        if arg.startswith('CheckHostIP'):
-          # Ignore -o CheckHostIP=yes/no.
-          continue
-        elif arg.startswith('IdentitiesOnly'):
-          # Ignore -o IdentitiesOnly=yes/no.
-          continue
-        elif arg.startswith('StrictHostKeyChecking'):
-          # Ignore -o StrictHostKeyChecking=yes/no.
-          continue
-        elif arg.startswith('UserKnownHostsFile'):
-          # Ignore UserKnownHostsFile=path.
-          continue
-      elif arg == '-p':
-        # -p port => -P port.
-        arg = '-P'
-      elif not arg.startswith('-'):
+        translated_args.append(arg)
+        translated_args.append(cmd_args.pop(0) + '.ppk')
+      elif arg == '-o' and cmd_args:
+        # Ignore `-o anything'.
+        cmd_args.pop(0)
+      elif arg == '-p' and cmd_args:
+        # -p PORT => -P PORT
+        translated_args.append('-P')
+        translated_args.append(cmd_args.pop(0))
+      elif arg in ['-2', '-a', '-C', '-l', '-load', '-m', '-pw', '-R', '-T',
+                   '-v', '-x'] and cmd_args:
+        # Pass through putty/plink flag with value.
+        translated_args.append(arg)
+        translated_args.append(cmd_args.pop(0))
+      elif arg.startswith('-'):
+        # Pass through putty/plink Boolean flags
+        translated_args.append(arg)
+      else:
         positionals += 1
-      args.append(arg)
-    # Check if a putty term should be opened here.
-    if positionals == 1 and cmd_args[0] == self.ssh_executable:
-      args[0] = self.ssh_term_executable
-    return args
+        translated_args.append(arg)
+
+    # If there is only 1 positional then it must be [USER@]HOST and we should
+    # use self.ssh_term_executable to open an xterm window.
+    if positionals == 1 and translated_args[0] == self.ssh_executable:
+      translated_args[0] = self.ssh_term_executable
+
+    return translated_args
+
+  def LocalizeCommand(self, cmd_args):
+    """Translates an ssh/scp command line to match the local implementation.
+
+    Args:
+      cmd_args: [str], The command line that will be executed.
+
+    Returns:
+      Returns translated_cmd_args, the localized command line.
+    """
+    if platforms.OperatingSystem.IsWindows():
+      return self._LocalizeWindowsCommand(cmd_args)
+    return cmd_args
 
   def IsHostKeyAliasInKnownHosts(self, host_key_alias):
     known_hosts = ReadFile(self.known_hosts_file)

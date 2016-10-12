@@ -152,7 +152,15 @@ class _BaseInstances(object):
         settings.ipConfiguration.enabled = args.assign_ip
 
       if args.authorized_networks:
-        settings.ipConfiguration.authorizedNetworks = args.authorized_networks
+        # AclEntry is only available in the v1beta4 version of the API. If it is
+        # present, the API expects an AclEntry for the authorizedNetworks list;
+        # otherwise, it expects a string.
+        if getattr(sql_messages, 'AclEntry', None) is not None:
+          authorized_networks = [sql_messages.AclEntry(value=n) for n in
+                                 args.authorized_networks]
+        else:
+          authorized_networks = args.authorized_networks
+        settings.ipConfiguration.authorizedNetworks = authorized_networks
       if clear_authorized_networks:
         # For patch requests, this field needs to be labeled explicitly cleared.
         settings.ipConfiguration.authorizedNetworks = []

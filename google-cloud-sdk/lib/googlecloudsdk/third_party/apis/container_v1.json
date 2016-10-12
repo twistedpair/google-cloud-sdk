@@ -342,6 +342,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "preemptible": {
+          "description": "Whether the nodes are created as preemptible VM instances. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible for more\ninforamtion about preemptible VM instances.",
+          "type": "boolean"
         }
       }
     },
@@ -683,6 +687,13 @@
         },
         "validImageTypes": {
           "description": "List of valid image types.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validMasterVersions": {
+          "description": "List of valid master versions.",
           "type": "array",
           "items": {
             "type": "string"

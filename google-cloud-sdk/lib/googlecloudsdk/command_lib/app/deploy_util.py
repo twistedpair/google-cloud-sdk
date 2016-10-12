@@ -42,6 +42,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 
 
@@ -249,7 +250,7 @@ class ServiceDeployer(object):
         # Actually create the new version of the service.
         message = 'Updating service [{service}]'.format(
             service=new_version.service)
-        with console_io.ProgressTracker(message):
+        with progress_tracker.ProgressTracker(message):
           self.api_client.DeployService(new_version.service, new_version.id,
                                         service, manifest, image,
                                         endpoints_info)
@@ -392,7 +393,7 @@ def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
   # Deploy config files.
   for (name, config) in app_config.Configs().iteritems():
     message = 'Updating config [{config}]'.format(config=name)
-    with console_io.ProgressTracker(message):
+    with progress_tracker.ProgressTracker(message):
       ac_client.UpdateConfig(name, config.parsed)
 
   updated_configs = app_config.Configs().keys()

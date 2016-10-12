@@ -52,11 +52,11 @@ class AccessConfig(_messages.Message):
     If this field is not specified, it is assumed to be PREMIUM.
 
     Values:
-      PREMIUM: <no description>
-      STANDARD: <no description>
+      CLOUD_NETWORK_PREMIUM: <no description>
+      CLOUD_NETWORK_STANDARD: <no description>
     """
-    PREMIUM = 0
-    STANDARD = 1
+    CLOUD_NETWORK_PREMIUM = 0
+    CLOUD_NETWORK_STANDARD = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -142,11 +142,11 @@ class Address(_messages.Message):
     is not specified, it is assumed to be PREMIUM.
 
     Values:
-      PREMIUM: <no description>
-      STANDARD: <no description>
+      CLOUD_NETWORK_PREMIUM: <no description>
+      CLOUD_NETWORK_STANDARD: <no description>
     """
-    PREMIUM = 0
-    STANDARD = 1
+    CLOUD_NETWORK_PREMIUM = 0
+    CLOUD_NETWORK_STANDARD = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
@@ -463,8 +463,11 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks. Note
-      that for InstanceTemplate, it is just disk name, not URL for the disk.
+      Disk resource. When creating a new instance, one of
+      initializeParams.sourceImage or disks.source is required.  If desired,
+      you can also attach existing non-root persistent disks using this
+      property. This field is only applicable for persistent disks.  Note that
+      for InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -544,18 +547,20 @@ class AttachedDiskInitializeParams(_messages.Message):
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
-    sourceImage: The source image used to create this disk. If the source
-      image is deleted, this field will not be set.  To create a disk with one
-      of the public operating system images, specify the image by its family
-      name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
-      Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
-      To create a disk with a private image that you created, specify the
-      image name in the following format:  global/images/my-private-image
-      You can also specify a private image by its image family, which returns
-      the latest version of the image in that family. Replace the image name
-      with family/family-name:  global/images/family/my-private-family
+    sourceImage: The source image to create this disk. When creating a new
+      instance, one of initializeParams.sourceImage or disks.source is
+      required.  To create a disk with one of the public operating system
+      images, specify the image by its family name. For example, specify
+      family/debian-8 to use the latest Debian 8 image:  projects/debian-
+      cloud/global/images/family/debian-8   Alternatively, use a specific
+      version of a public operating system image:  projects/debian-
+      cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
+      private image that you created, specify the image name in the following
+      format:  global/images/my-private-image   You can also specify a private
+      image by its image family, which returns the latest version of the image
+      in that family. Replace the image name with family/family-name:
+      global/images/family/my-private-family   If the source image is deleted
+      later, this field will not be set.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.  Instance templates do not store customer-
@@ -1236,7 +1241,7 @@ class BackendService(_messages.Message):
       health check can be specified, and a health check is required.  For
       internal load balancing, a URL to a HealthCheck resource must be
       specified instead.
-    iaap: A BackendServiceIAAP attribute.
+    iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -1333,7 +1338,7 @@ class BackendService(_messages.Message):
   enableCDN = _messages.BooleanField(8)
   fingerprint = _messages.BytesField(9)
   healthChecks = _messages.StringField(10, repeated=True)
-  iaap = _messages.MessageField('BackendServiceIAAP', 11)
+  iap = _messages.MessageField('BackendServiceIAP', 11)
   id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(13, default=u'compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
@@ -1418,8 +1423,8 @@ class BackendServiceGroupHealth(_messages.Message):
   kind = _messages.StringField(2, default=u'compute#backendServiceGroupHealth')
 
 
-class BackendServiceIAAP(_messages.Message):
-  """Identity Aware Application Proxy (Cloud Gatekeeper)
+class BackendServiceIAP(_messages.Message):
+  """Identity-Aware Proxy (Cloud Gatekeeper)
 
   Fields:
     enabled: A boolean attribute.
@@ -1566,8 +1571,8 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@gmail.com` or
-      `joe@example.com`.  * `serviceAccount:{emailid}`: An email address that
-      represents a service account. For example, `my-other-
+      `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
+      that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group. For example, `admins@example.com`.  *
       `domain:{domain}`: A Google Apps domain name that represents all the
@@ -1584,8 +1589,8 @@ class CacheInvalidationRule(_messages.Message):
   """A CacheInvalidationRule object.
 
   Fields:
-    host: If host is non-empty, this invalidation rule will only apply to
-      requests with a Host header matching host.
+    host: If set, this invalidation rule will only apply to requests with a
+      Host header matching host.
     path: A string attribute.
   """
 
@@ -3448,6 +3453,69 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class ComputeHostsAggregatedListRequest(_messages.Message):
+  """A ComputeHostsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeHostsDeleteRequest(_messages.Message):
+  """A ComputeHostsDeleteRequest object.
+
+  Fields:
+    host: Name of the Host resource to delete.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  host = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeHostsGetIamPolicyRequest(_messages.Message):
   """A ComputeHostsGetIamPolicyRequest object.
 
@@ -3460,6 +3528,85 @@ class ComputeHostsGetIamPolicyRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
+
+
+class ComputeHostsGetRequest(_messages.Message):
+  """A ComputeHostsGetRequest object.
+
+  Fields:
+    host: Name of the host to return.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  host = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeHostsInsertRequest(_messages.Message):
+  """A ComputeHostsInsertRequest object.
+
+  Fields:
+    host: A Host resource to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  host = _messages.MessageField('Host', 1)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeHostsListRequest(_messages.Message):
+  """A ComputeHostsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeHostsSetIamPolicyRequest(_messages.Message):
@@ -4032,14 +4179,22 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -5105,6 +5260,25 @@ class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
+  """A ComputeInstancesUpdateAccessConfigRequest object.
+
+  Fields:
+    accessConfig: A AccessConfig resource to be passed as the request body.
+    instance: The instance name for this request.
+    networkInterface: The name of the network interface where the access
+      config is attached.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  accessConfig = _messages.MessageField('AccessConfig', 1)
+  instance = _messages.StringField(2, required=True)
+  networkInterface = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   """A ComputeLicensesGetRequest object.
 
@@ -6116,14 +6290,22 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -8978,10 +9160,12 @@ class Condition(_messages.Message):
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       NO_ATTR: <no description>
+      SECURITY_REALM: <no description>
     """
     ATTRIBUTION = 0
     AUTHORITY = 1
     NO_ATTR = 2
+    SECURITY_REALM = 3
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -9086,12 +9270,17 @@ class DeprecationStatus(_messages.Message):
       result in an error.
 
   Fields:
-    deleted: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to DELETED.
-    deprecated: An optional RFC3339 timestamp on or after which the
-      deprecation state of this resource will be changed to DEPRECATED.
-    obsolete: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to OBSOLETE.
+    deleted: An optional RFC3339 timestamp on or after which the state of this
+      resource is intended to change to DELETED. This is only informational
+      and the status will not change unless the client explicitly changes it.
+    deprecated: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to DEPRECATED. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
+    obsolete: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to OBSOLETE. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
@@ -9132,7 +9321,6 @@ class Disk(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
-      Applicable statuses includes: CREATING, FAILED, READY, RESTORING.
     StorageTypeValueValuesEnum: [Deprecated] Storage type of the persistent
       disk.
 
@@ -9227,8 +9415,7 @@ class Disk(_messages.Message):
       persistent disk from a snapshot that was later deleted and recreated
       under the same name, the source snapshot ID would identify the exact
       version of the snapshot that was used.
-    status: [Output Only] The status of disk creation. Applicable statuses
-      includes: CREATING, FAILED, READY, RESTORING.
+    status: [Output Only] The status of disk creation.
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk.
@@ -9238,8 +9425,7 @@ class Disk(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The status of disk creation. Applicable statuses
-    includes: CREATING, FAILED, READY, RESTORING.
+    """[Output Only] The status of disk creation.
 
     Values:
       CREATING: <no description>
@@ -10020,11 +10206,11 @@ class ForwardingRule(_messages.Message):
     this field is not specified, it is assumed to be PREMIUM.
 
     Values:
-      PREMIUM: <no description>
-      STANDARD: <no description>
+      CLOUD_NETWORK_PREMIUM: <no description>
+      CLOUD_NETWORK_STANDARD: <no description>
     """
-    PREMIUM = 0
-    STANDARD = 1
+    CLOUD_NETWORK_PREMIUM = 0
+    CLOUD_NETWORK_STANDARD = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -10628,6 +10814,146 @@ class HealthStatus(_messages.Message):
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Host(_messages.Message):
+  """A Host object.
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the host. One of the
+      following values: CREATING, READY, REPAIR, and DELETING.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] An optional textual description of the
+      resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    instances: A list of resource URLs to the virtual machine instances in
+      this host. They must live in zones contained in the same region as this
+      host.
+    kind: [Output Only] The type of the resource. Always compute#host for
+      host.
+    name: The name of the resource, provided by the client when initially
+      creating the resource. The resource name must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the name must be 1-63 characters
+      long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    status: [Output Only] The status of the host. One of the following values:
+      CREATING, READY, REPAIR, and DELETING.
+    statusMessage: [Output Only] An optional, human-readable explanation of
+      the status.
+    zone: [Output Only] The name of the zone where the host resides, such as
+      us-central1-a.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The status of the host. One of the following values:
+    CREATING, READY, REPAIR, and DELETING.
+
+    Values:
+      CREATING: <no description>
+      DELETING: <no description>
+      INVALID: <no description>
+      READY: <no description>
+      REPAIR: <no description>
+    """
+    CREATING = 0
+    DELETING = 1
+    INVALID = 2
+    READY = 3
+    REPAIR = 4
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  instances = _messages.StringField(4, repeated=True)
+  kind = _messages.StringField(5, default=u'compute#host')
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  zone = _messages.StringField(10)
+
+
+class HostAggregatedList(_messages.Message):
+  """A HostAggregatedList object.
+
+  Messages:
+    ItemsValue: [Output Only] A map of scoped host lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A map of scoped host lists.
+    kind: [Output Only] Type of resource. Always compute#hostAggregatedList
+      for aggregated lists of hosts.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """[Output Only] A map of scoped host lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of hosts.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A HostsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('HostsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#hostAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class HostList(_messages.Message):
+  """Contains a list of hosts.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of Host resources.
+    kind: [Output Only] Type of resource. Always compute#hostList for lists of
+      hosts.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Host', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#hostList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class HostRule(_messages.Message):
   """UrlMaps A host-matching rule for a URL. If matched, will use the named
   PathMatcher to select the BackendService.
@@ -10646,6 +10972,106 @@ class HostRule(_messages.Message):
   description = _messages.StringField(1)
   hosts = _messages.StringField(2, repeated=True)
   pathMatcher = _messages.StringField(3)
+
+
+class HostsScopedList(_messages.Message):
+  """A HostsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] An informational warning that appears when the
+      host list is empty.
+
+  Fields:
+    hosts: [Output Only] List of hosts contained in this scope.
+    warning: [Output Only] An informational warning that appears when the host
+      list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] An informational warning that appears when the host list
+    is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  hosts = _messages.MessageField('Host', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class HttpHealthCheck(_messages.Message):
@@ -10873,8 +11299,8 @@ class Image(_messages.Message):
       be a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
       example, the following are valid values:   - https://www.googleapis.com/
-      compute/v1/projects/project/zones/zone/disk/disk  -
-      projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
+      compute/v1/projects/project/zones/zone/disks/disk  -
+      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
@@ -13082,6 +13508,12 @@ class Network(_messages.Message):
   """Represents a Network resource. Read Networks and Firewalls for more
   information.
 
+  Enums:
+    CrossVmEncryptionValueValuesEnum: [Output Only] Type of VM-to-VM traffic
+      encryption for this network.
+    LoadBalancerVmEncryptionValueValuesEnum: [Output Only] Type of LB-to-VM
+      traffic encryption for this network.
+
   Fields:
     IPv4Range: The range of internal addresses that are legal on this network.
       This range is a CIDR specification, for example: 192.168.0.0/16.
@@ -13093,6 +13525,8 @@ class Network(_messages.Message):
       region.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    crossVmEncryption: [Output Only] Type of VM-to-VM traffic encryption for
+      this network.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     gatewayIPv4: A gateway address for default routing to other networks. This
@@ -13102,6 +13536,8 @@ class Network(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
+    loadBalancerVmEncryption: [Output Only] Type of LB-to-VM traffic
+      encryption for this network.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -13114,16 +13550,38 @@ class Network(_messages.Message):
       subnetworks in this network.
   """
 
+  class CrossVmEncryptionValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of VM-to-VM traffic encryption for this network.
+
+    Values:
+      ENCRYPTED: <no description>
+      UNENCRYPTED: <no description>
+    """
+    ENCRYPTED = 0
+    UNENCRYPTED = 1
+
+  class LoadBalancerVmEncryptionValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of LB-to-VM traffic encryption for this network.
+
+    Values:
+      ENCRYPTED: <no description>
+      UNENCRYPTED: <no description>
+    """
+    ENCRYPTED = 0
+    UNENCRYPTED = 1
+
   IPv4Range = _messages.StringField(1)
   autoCreateSubnetworks = _messages.BooleanField(2)
   creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  gatewayIPv4 = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#network')
-  name = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  subnetworks = _messages.StringField(10, repeated=True)
+  crossVmEncryption = _messages.EnumField('CrossVmEncryptionValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  gatewayIPv4 = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#network')
+  loadBalancerVmEncryption = _messages.EnumField('LoadBalancerVmEncryptionValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  subnetworks = _messages.StringField(12, repeated=True)
 
 
 class NetworkInterface(_messages.Message):
@@ -13244,8 +13702,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies. If creating a persistent disk snapshot, this points to the
-      persistent disk that the snapshot was created from.
+      modifies. For operations related to creating a snapshot, this points to
+      the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during
@@ -13946,30 +14404,6 @@ class RegionAutoscalerList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
-class RegionDiskList(_messages.Message):
-  """A RegionDiskList object.
-
-  Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of persistent disks.
-    kind: [Output Only] Type of resource. Always compute#regionDiskList for
-      lists of region disks.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-  """
-
-  id = _messages.StringField(1)
-  items = _messages.MessageField('Disk', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#regionDiskList')
-  nextPageToken = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-
-
 class RegionDiskTypeList(_messages.Message):
   """A RegionDiskTypeList object.
 
@@ -14479,8 +14913,8 @@ class Router(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
-      resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g.
-      ipRange).
+      resource (e.g. linkedVpnTunnel), or IP address and IP address range
+      (e.g. ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.

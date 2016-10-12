@@ -18,11 +18,8 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
-from googlecloudsdk.api_lib.service_management import enable_api as services_enable_api
-from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import labels_util
-from googlecloudsdk.core import apis
 
 
 def List(limit=None):
@@ -56,31 +53,26 @@ def Get(project_ref):
     raise projects_util.ConvertHttpError(error)
 
 
-def Create(project_ref, project_name, enable_cloud_apis=True,
-           update_labels=None):
-  """Create a new project."""
+def Create(project_ref, display_name=None, update_labels=None):
+  """Create a new project.
+
+  Args:
+    project_ref: The identifier for the project
+    display_name: Optional display name for the project
+    update_labels: Optional labels to apply to the project
+
+  Returns:
+    An Operation object which can be used to check on the progress of the
+    project creation.
+  """
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
-
-  # Create project.
-  project_creation_result = client.projects.Create(
-      messages.CloudresourcemanagerProjectsCreateRequest(
-          project=messages.Project(
-              projectId=project_ref.Name(),
-              name=project_name if project_name else project_ref.Name(),
-              labels=labels_util.UpdateLabels(None,
-                                              messages.Project.LabelsValue,
-                                              update_labels=update_labels))))
-
-  if enable_cloud_apis:
-    # Enable cloudapis.googleapis.com
-    services_client = apis.GetClientInstance('servicemanagement', 'v1')
-    enable_operation = services_enable_api.EnableServiceApiCall(
-        project_ref.Name(), 'cloudapis.googleapis.com')
-    services_util.WaitForOperation(enable_operation.name, services_client)
-    # TODO(user): Retry in case it failed?
-
-  return project_creation_result
+  return client.projects.Create(
+      messages.Project(
+          projectId=project_ref.Name(),
+          name=display_name if display_name else project_ref.Name(),
+          labels=labels_util.UpdateLabels(
+              None, messages.Project.LabelsValue, update_labels=update_labels)))
 
 
 def Delete(project_ref):

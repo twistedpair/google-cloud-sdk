@@ -576,9 +576,21 @@ class _SectionApp(_Section):
     # machines tested (there's a benefit to exceeding the number of cores
     # available, since the task is bound by network/API latency among other
     # factors).
+    # This property is currently ignored on OS X Sierra (except if it's 1, in
+    # which case it makes the upload synchronous, since that's what that switch
+    # did historically).
     self.num_file_upload_processes = self._Add(
         'num_file_upload_processes',
         default='32',
+        hidden=True)
+    # This property is currently ignored except on OS X Sierra
+    # There's a theoretical benefit to exceeding the number of cores available,
+    # since the task is bound by network/API latency among other factors, and
+    # mini-benchmarks validated this (I got speedup from 4 threads to 8 on a
+    # 4-core machine).
+    self.num_file_upload_threads = self._Add(
+        'num_file_upload_threads',
+        default='8',
         hidden=True)
 
     def GetRuntimeRoot():
@@ -948,6 +960,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.compute = self._Add('compute')
+    self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')
     self.clouduseraccounts = self._Add('clouduseraccounts')
     self.container = self._Add('container')

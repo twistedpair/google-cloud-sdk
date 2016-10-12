@@ -25,7 +25,7 @@ from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 
 # The important substring from the error message "The read operation
@@ -233,7 +233,7 @@ def WaitForWaiter(waiter_resource, sleep=None, max_wait=None):
   waiter_client = WaiterClient()
   retryer = retry.Retryer(max_wait_ms=max_wait * 1000)
 
-  with console_io.ProgressTracker(
+  with progress_tracker.ProgressTracker(
       'Waiting for waiter [{0}] to finish'.format(waiter_resource.Name())):
     try:
       result = retryer.RetryOnResult(waiter_client.Get,

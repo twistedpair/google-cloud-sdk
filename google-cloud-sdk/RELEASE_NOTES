@@ -2,6 +2,55 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 130.0.0 (2016/10/12)
+
+### Breaking Changes
+
+* Breaking change to --network-interface in `alpha compute instances create`,
+  and `alpha compute instance-images create` commands. By default
+  interfaces will have ephemeral IP (was: no external ip).
+
+### Google AppEngine
+
+* App Engine: The `gcloud app deploy` command no longer blocks when stopping the
+  previous version; this should speed up deployment times. Instructions for
+  checking the status of the stop-version operation are included in the command
+  output.
+
+* Support ramdisk volumes in App Engine flexible environments Alpha.
+
+### Google Cloud Functions
+
+* Add `alpha functions regions list` command.
+
+### Google Cloud ML
+
+* Change '--instances=' to
+  '(--json-instances=, --instances= | --text-instances=)' to allow
+  `gcloud beta ml predict` to read files in UTF-8 encoded text format.
+
+### Google Cloud Platform Projects
+
+* Add the `gcloud alpha projects create` command.
+
+### Google Compute Engine
+
+* Add new key to --network-interface in `alpha compute instances create`,
+  and `alpha compute instance-images create` commands: no-address.
+
+* Make flag --network-interface visible in `alpha compute instances create`,
+  and `alpha compute instance-templates create` commands.
+
+### Google Container Engine
+
+* Fix a bug in `gcloud beta container images list-tags`.
+
+* Add support for kubernetes labels on new clusters and nodepools by passing
+  `--node-labels=label1=value1,label2=value2...`. See
+  `gcloud container clusters create --help` and
+  `gcloud container nodepools create --help` for more details and
+  examples.
+
 ## 129.0.0 (2016/10/05)
 
 ### Google Cloud Bigtable

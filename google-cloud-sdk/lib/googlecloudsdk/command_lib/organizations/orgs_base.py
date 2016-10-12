@@ -20,6 +20,7 @@ from googlecloudsdk.core import resources
 
 
 ORGS_COLLECTION = 'cloudresourcemanager.organizations'
+ORGS_API_VERSION = 'v1beta1'
 
 
 class OrganizationCommand(base.Command):
@@ -44,12 +45,15 @@ class OrganizationCommand(base.Command):
     # before we switched to the one platform "name" convention.
     # "organizationsId=123" gets turned into "name=organizations/123" under the
     # hood in the client. We don't pass organizationId because it's deprecated.
-    return resources.REGISTRY.Parse(None,
-                                    params={
-                                        'organizationsId': organization_id,
-                                        'organizationId': organization_id
-                                    },
-                                    collection=self.Collection())
+    registry = resources.REGISTRY.Clone()
+    registry.RegisterApiByName('cloudresourcemanager', ORGS_API_VERSION)
+    return registry.Parse(
+        None,
+        params={
+            'organizationsId': organization_id,
+            'organizationId': organization_id
+        },
+        collection=self.Collection())
 
   def GetUriFunc(self):
     def _GetUri(resource):

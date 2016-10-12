@@ -347,10 +347,6 @@ def RenderDocumentAction(command, default_style=None):
 
   class Action(argparse.Action):
 
-    # TODO(user): remove this.
-    # A signal to the lint checker to ignore nargs checks for this action.
-    _NOLINT = True
-
     def __init__(self, **kwargs):
       if default_style:
         kwargs['nargs'] = 0

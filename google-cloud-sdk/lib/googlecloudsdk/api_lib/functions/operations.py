@@ -16,7 +16,7 @@
 
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import retry
 
 MAX_WAIT_MS = 620000
@@ -30,8 +30,8 @@ def _GetOperationStatus(client, get_request, progress_tracker=None):
   Args:
     client: The client used to make requests.
     get_request: A GetOperationRequest message.
-    progress_tracker: console_io.ProgressTracker, A reference for the progress
-        tracker to tick, in case this function is used in a Retryer.
+    progress_tracker: progress_tracker.ProgressTracker, A reference for the
+        progress tracker to tick, in case this function is used in a Retryer.
 
   Returns:
     True if the operation succeeded without error.
@@ -70,7 +70,7 @@ def _WaitForOperation(client, get_request, message):
     FunctionsError: If the operation takes more than 620s.
   """
 
-  with console_io.ProgressTracker(message, autotick=False) as pt:
+  with console_progress_tracker.ProgressTracker(message, autotick=False) as pt:
     # This is actually linear retryer.
     retryer = retry.Retryer(exponential_sleep_multiplier=1,
                             max_wait_ms=MAX_WAIT_MS,
