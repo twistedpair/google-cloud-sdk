@@ -87,7 +87,6 @@ class ArgumentParser(argparse.ArgumentParser):
   def __init__(self, *args, **kwargs):
     self._calliope_command = kwargs.pop('calliope_command')
     self._flag_collection = kwargs.pop('flag_collection')
-    self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     self._is_group = isinstance(self._calliope_command, CommandGroup)
     self._error_to_report = None
     self._remainder_action = None
@@ -165,14 +164,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
-    self._abbreviated_flags.clear()
     namespace, unknown_args = self.parse_known_args(args, namespace)
-
-    for flag, matched_flag in sorted(self._abbreviated_flags.iteritems()):
-      dest = flag[2:].replace('-', '_')
-      if not hasattr(namespace, dest):
-        log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
-                 'use the full name [%s].', flag, matched_flag)
 
     # Content of these lines differs from argparser's parse_args().
     deepest_parser = getattr(namespace, self.CIDP, self)
@@ -368,11 +360,9 @@ class ArgumentParser(argparse.ArgumentParser):
       dotted_command_path: str, The dotted path to as much of the command as we
           can identify before an error. Example: gcloud.projects
       error: class, The class (not the instance) of the Exception for an error.
-      error_extra_info: str, Extra info that that we want to log with the error.
-          This can be the error message or suggestion for parse error, etc.
-          While this can be any string, it is recommended this is in the form of
-          a JSON encoded dictionary. This enables us to write queries that can
-          understand the keys and values in this dict.
+      error_extra_info: {str: json-serializable}, A json serializable dict of
+        extra info that we want to log with the error. This enables us to write
+        queries that can understand the keys and values in this dict.
     """
     metrics.Commands(
         dotted_command_path,
@@ -383,19 +373,17 @@ class ArgumentParser(argparse.ArgumentParser):
     metrics.Error(
         dotted_command_path,
         error,
-        self._flag_collection)
+        self._flag_collection,
+        error_extra_info=error_extra_info)
 
   def ReportErrorMetrics(self, message):
     """Report Command and Error metrics in case of argparse errors."""
-
-    # pylint:disable=g-import-not-at-top, Only import if we have an error.
-    import json
 
     if self._error_to_report:
       self._ReportErrorMetricsHelper(
           self._error_to_report.dotted_command_path,
           self._error_to_report.error,
-          json.dumps(self._error_to_report.error_extra_info, sort_keys=True))
+          self._error_to_report.error_extra_info)
       return
 
     # No recorded error from upstream, try to detect error from message.
@@ -414,7 +402,7 @@ class ArgumentParser(argparse.ArgumentParser):
       self._ReportErrorMetricsHelper(
           dotted_command_path,
           parse_errors.RequiredArgumentException,
-          json.dumps({'required': req_argument}))
+          {'required': req_argument})
       return
 
     re_result = re.search('one of the arguments (.+?) is required', message)
@@ -423,7 +411,7 @@ class ArgumentParser(argparse.ArgumentParser):
       self._ReportErrorMetricsHelper(
           dotted_command_path,
           parse_errors.RequiredArgumentGroupException,
-          json.dumps({'required': req_argument}))
+          {'required': req_argument})
       return
 
     # Catch all for any error we didn't explicitly detect
@@ -527,7 +515,8 @@ class ArgumentParser(argparse.ArgumentParser):
   def _get_option_tuples(self, option_string):
     """Overrides argparse.ArgumentParser's ._get_option_tuples method.
 
-    This warns about flag abbreviations unless its for arg completion.
+    Cloud SDK no longer supports flag abbreviations, so it always returns []
+    for the non-arg-completion case to indicate no abbreviated flag matches.
 
     Args:
       option_string: The option string to match.
@@ -535,22 +524,9 @@ class ArgumentParser(argparse.ArgumentParser):
     Returns:
       A list of matching flag tuples.
     """
-    matches = super(ArgumentParser, self)._get_option_tuples(option_string)
     if '_ARGCOMPLETE' in os.environ:
-      return matches
-    if matches and len(matches) == 1:
-      # Because of nested parsers the same abbreviated flag can get to this spot
-      # multiple times during a single parse_args() call.  Some of the prefix
-      # matches here may actually be exact matches for flags that will appear
-      # in subsequent nested parsers.  We add the abbreviated flags to a dict
-      # that will be checked later to emit one warning per distinct
-      # abbreviation.  argparse catches ambiguous flag matches elsewhere.
-      self._abbreviated_flags[option_string.split('=', 1)[0]] = matches[0][1]
-    return matches  # [] to disable abbreviations
-    # TODO(user): b/30268716 use this as the method body starting 132.0.0
-    # if '_ARGCOMPLETE' in os.environ:
-    #   return super(ArgumentParser, self)._get_option_tuples(option_string)
-    # return []
+      return super(ArgumentParser, self)._get_option_tuples(option_string)
+    return []
 
 
 # pylint:disable=protected-access
@@ -567,14 +543,12 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
   def __init__(self, *args, **kwargs):
     self._calliope_command = kwargs.pop('calliope_command')
     self._flag_collection = kwargs.pop('flag_collection')
-    self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     super(CloudSDKSubParsersAction, self).__init__(*args, **kwargs)
 
   def add_parser(self, name, **kwargs):
     # Pass the same flag collection down to any sub parsers that are created.
     kwargs['flag_collection'] = self._flag_collection
     # Pass the same abbreviated flags down to any sub parsers that are created.
-    kwargs['abbreviated_flags'] = self._abbreviated_flags
     return super(CloudSDKSubParsersAction, self).add_parser(name, **kwargs)
 
   def IsValidChoice(self, choice):
@@ -1134,8 +1108,7 @@ class CommandCommon(object):
           add_help=False,
           prog=self.dotted_name,
           calliope_command=self,
-          flag_collection=[],
-          abbreviated_flags={})
+          flag_collection=[])
     else:
       # This is a normal sub group, so just add a new subparser to the existing
       # one.
@@ -1458,8 +1431,7 @@ class CommandGroup(CommandCommon):
     if not self._sub_parser:
       self._sub_parser = self._parser.add_subparsers(
           action=CloudSDKSubParsersAction, calliope_command=self,
-          flag_collection=self._parser._flag_collection,
-          abbreviated_flags=self._parser._abbreviated_flags)
+          flag_collection=self._parser._flag_collection)
     return self._sub_parser
 
   def AllSubElements(self):

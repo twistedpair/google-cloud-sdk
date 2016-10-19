@@ -26,42 +26,41 @@ class Collections(enum.Enum):
       'bucketAccessControls',
       'b/{bucket}/acl/{entity}',
       {},
-      [u'bucket', u'entity'],
-      'StorageBucketAccessControlsGetRequest',)
+      [u'bucket', u'entity']
+  )
   BUCKETS = (
       'buckets',
       'b/{bucket}',
       {},
-      [u'bucket'],
-      'StorageBucketsGetRequest',)
+      [u'bucket']
+  )
   DEFAULTOBJECTACCESSCONTROLS = (
       'defaultObjectAccessControls',
       'b/{bucket}/defaultObjectAcl/{entity}',
       {},
-      [u'bucket', u'entity'],
-      'StorageDefaultObjectAccessControlsGetRequest',)
+      [u'bucket', u'entity']
+  )
   NOTIFICATIONS = (
       'notifications',
       'notifications/{notification}',
       {},
-      [u'notification'],
-      'StorageNotificationsGetRequest',)
+      [u'notification']
+  )
   OBJECTACCESSCONTROLS = (
       'objectAccessControls',
       'b/{bucket}/o/{object}/acl/{entity}',
       {},
-      [u'bucket', u'object', u'entity'],
-      'StorageObjectAccessControlsGetRequest',)
+      [u'bucket', u'object', u'entity']
+  )
   OBJECTS = (
       'objects',
       'b/{bucket}/o/{object}',
       {},
-      [u'bucket', u'object'],
-      'StorageObjectsGetRequest',)
+      [u'bucket', u'object']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

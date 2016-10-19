@@ -104,17 +104,16 @@ def WaitForResourceDeletion(
     timeout_s=60,
     poll_period_s=5):
   """Poll Dataproc resource until it no longer exists."""
-  request = resource_ref.Request()
   with progress_tracker.ProgressTracker(message, autotick=True):
     start_time = time.time()
     while timeout_s > (time.time() - start_time):
       try:
-        request_method(request)
+        request_method(resource_ref)
       except apitools_exceptions.HttpError as error:
         if error.status_code == 404:
           # Object deleted
           return
-        log.debug('Request [{0}] failed:\n{1}', request, error)
+        log.debug('Get request for [{0}] failed:\n{1}', resource_ref, error)
         # Keep trying until we timeout in case error is transient.
       time.sleep(poll_period_s)
   raise exceptions.ToolException(
@@ -162,7 +161,10 @@ def WaitForJobTermination(
   """
   client = context['dataproc_client']
   job_ref = ParseJob(job.reference.jobId, context)
-  request = job_ref.Request()
+  request = client.MESSAGES_MODULE.DataprocProjectsRegionsJobsGetRequest(
+      projectId=job_ref.projectId,
+      region=job_ref.region,
+      jobId=job_ref.jobId)
   driver_log_stream = None
   last_job_poll_time = 0
   job_complete = False

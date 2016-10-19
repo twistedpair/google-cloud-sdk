@@ -26,12 +26,11 @@ class Collections(enum.Enum):
       'debugger.debuggees.breakpoints',
       'debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
       {},
-      [u'debuggeeId', u'breakpointId'],
-      'ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest',)
+      [u'debuggeeId', u'breakpointId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

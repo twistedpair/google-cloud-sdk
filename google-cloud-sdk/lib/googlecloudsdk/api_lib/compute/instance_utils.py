@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instances and instance templates."""
+import collections
 import re
 
 from googlecloudsdk.api_lib.compute import constants
@@ -19,7 +20,6 @@ from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute.instances import flags
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 def GetCpuRamFromCustomName(name):
@@ -244,20 +244,22 @@ def CreateNetworkInterfaceMessage(
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   region = utils.ZoneNameToRegionName(instance_refs[0].zone.split('/')[-1])
   messages = compute_client.messages
-  network_interface = None
+  network_interface = messages.NetworkInterface()
+  # By default interface is attached to default network. If network or subnet
+  # are specified they're used instead.
   if subnet is not None:
     subnet_ref = resources.Parse(
         subnet,
         collection='compute.subnetworks',
         params={'region': region})
-    network_interface = messages.NetworkInterface(
-        subnetwork=subnet_ref.SelfLink())
-  else:
+    network_interface.subnetwork = subnet_ref.SelfLink()
+  if network is not None:
+    network_ref = resources.Parse(network, collection='compute.networks')
+    network_interface.network = network_ref.SelfLink()
+  elif subnet is None:
     network_ref = resources.Parse(
-        network or constants.DEFAULT_NETWORK,
-        collection='compute.networks')
-    network_interface = messages.NetworkInterface(
-        network=network_ref.SelfLink())
+        constants.DEFAULT_NETWORK, collection='compute.networks')
+    network_interface.network = network_ref.SelfLink()
 
   if private_network_ip is not None:
     network_interface.networkIP = private_network_ip

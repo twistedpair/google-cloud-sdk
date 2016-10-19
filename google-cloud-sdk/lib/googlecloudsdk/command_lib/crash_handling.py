@@ -14,16 +14,20 @@
 
 """Error Reporting Handler."""
 
-
 import sys
 import traceback
+import urllib
+import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.error_reporting import util
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.command_lib import error_reporting_util
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
+from googlecloudsdk.core import http
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 
@@ -72,22 +76,73 @@ def _PrintInstallationAction(err, err_string):
       ).format(err.command, err_string, sys.executable))
 
 
-def _ReportError(err):
-  """Get the command and stacktrace and sends Error to Error Reporting.
+CRASH_SERVICE = 'gcloud'
+CRASH_PROJECT = 'cloud-sdk-errors'
+CRASH_API_KEY = 'AIzaSyA45D7bA0Y1vyLmQ_Gl10G149M8jiwwK-s'
+
+
+def _GetReportingClient():
+  """Returns a client that uses an API key for Cloud SDK crash reports.
+
+  Returns:
+    An error reporting client that uses an API key for Cloud SDK crash reports.
+  """
+  http_client = http.Http()
+  orig_request = http_client.request
+
+  def RequestWithAPIKey(*args, **kwargs):
+    """Wrap request for request/response logging.
+
+    Args:
+      *args: Positional arguments.
+      **kwargs: Keyword arguments.
+
+    Returns:
+      Original returned response of this wrapped request.
+    """
+    # Modify request url to enable API key based authentication.
+    url_parts = urlparse.urlsplit(args[0])
+    query_params = urlparse.parse_qs(url_parts.query)
+    query_params['key'] = CRASH_API_KEY
+
+    modified_url_parts = list(url_parts)
+    modified_url_parts[3] = urllib.urlencode(query_params, doseq=True)
+    modified_args = list(args)
+    modified_args[0] = urlparse.urlunsplit(modified_url_parts)
+
+    return orig_request(*modified_args, **kwargs)
+
+  http_client.request = RequestWithAPIKey
+
+  client_class = core_apis.GetClientClass(util.API_NAME, util.API_VERSION)
+  return client_class(get_credentials=False, http=http_client)
+
+
+def _ReportCrash(err):
+  """Report the anonymous crash information to the Error Reporting service.
 
   Args:
-    err: Exception err.
+    err: Exception, the error that caused the crash.
   """
-  command = ' '.join(sys.argv[1:])
   stacktrace = traceback.format_exc(err)
   stacktrace = error_reporting_util.RemovePrivateInformationFromTraceback(
       stacktrace)
+  command = properties.VALUES.metrics.command_name.Get()
+  cid = metrics.GetCIDIfMetricsEnabled()
+
+  client = _GetReportingClient()
+  reporter = util.ErrorReporting(client)
   try:
-    util.ErrorReporting().ReportEvent(error_message=stacktrace,
-                                      service=command,
-                                      version=config.CLOUD_SDK_VERSION)
-  except apitools_exceptions.HttpError:
-    pass
+    reporter.ReportEvent(error_message=stacktrace,
+                         service=CRASH_SERVICE,
+                         version=config.CLOUD_SDK_VERSION,
+                         project=CRASH_PROJECT,
+                         request_url=command,
+                         user=cid)
+  except apitools_exceptions.HttpError as http_err:
+    log.file_only_logger.error(
+        'Unable to report crash stacktrace:\n{0}'.format(
+            console_attr.EncodeForOutput(http_err)))
 
 
 def HandleGcloudCrash(err):
@@ -104,7 +159,7 @@ def HandleGcloudCrash(err):
     log.error(u'gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
     if not properties.VALUES.core.disable_usage_reporting.GetBool():
-      _ReportError(err)
+      _ReportCrash(err)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')

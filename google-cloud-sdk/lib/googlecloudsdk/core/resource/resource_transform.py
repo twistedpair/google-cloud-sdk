@@ -217,7 +217,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
   tz_out = times.GetTimeZone(tz) if tz else None
   # Check if r is a date/time string.
   try:
-    dt = times.ParseDateTime(r, tz_in)
+    dt = times.ParseDateTime(r, tzinfo=tz_in)
     return times.FormatDateTime(dt, format, tz_out)
   except (AttributeError, ImportError, TypeError, ValueError):
     pass
@@ -748,6 +748,21 @@ def TransformMap(r, depth=1):
   return r
 
 
+def TransformNotNull(r):
+  """Remove null values from the resource list.
+
+  Args:
+    r: A resource list.
+
+  Returns:
+    The resource list with None values removed.
+  """
+  try:
+    return [x for x in r if x is not None]
+  except TypeError:
+    return []
+
+
 def TransformResolution(r, undefined='', transpose=False):
   """Formats a human readable XY resolution.
 
@@ -1095,6 +1110,7 @@ _BUILTIN_TRANSFORMS = {
     'len': TransformLen,
     'list': TransformList,
     'map': TransformMap,
+    'notnull': TransformNotNull,
     'resolution': TransformResolution,
     'scope': TransformScope,
     'segment': TransformSegment,

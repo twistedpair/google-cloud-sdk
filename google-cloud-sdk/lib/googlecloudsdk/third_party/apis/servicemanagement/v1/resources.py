@@ -26,42 +26,41 @@ class Collections(enum.Enum):
       'operations',
       'operations/{operationsId}',
       {},
-      [u'operationsId'],
-      'ServicemanagementOperationsGetRequest',)
+      [u'operationsId']
+  )
   SERVICES = (
       'services',
       'services/{serviceName}',
       {},
-      [u'serviceName'],
-      'ServicemanagementServicesGetRequest',)
+      [u'serviceName']
+  )
   SERVICES_CONFIGS = (
       'services.configs',
       'services/{serviceName}/configs/{configId}',
       {},
-      [u'serviceName', u'configId'],
-      'ServicemanagementServicesConfigsGetRequest',)
+      [u'serviceName', u'configId']
+  )
   SERVICES_CUSTOMERSETTINGS = (
       'services.customerSettings',
       'services/{serviceName}/customerSettings/{customerId}',
       {},
-      [u'serviceName', u'customerId'],
-      'ServicemanagementServicesCustomerSettingsGetRequest',)
+      [u'serviceName', u'customerId']
+  )
   SERVICES_PROJECTSETTINGS = (
       'services.projectSettings',
       'services/{serviceName}/projectSettings/{consumerProjectId}',
       {},
-      [u'serviceName', u'consumerProjectId'],
-      'ServicemanagementServicesProjectSettingsGetRequest',)
+      [u'serviceName', u'consumerProjectId']
+  )
   SERVICES_ROLLOUTS = (
       'services.rollouts',
       'services/{serviceName}/rollouts/{rolloutId}',
       {},
-      [u'serviceName', u'rolloutId'],
-      'ServicemanagementServicesRolloutsGetRequest',)
+      [u'serviceName', u'rolloutId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

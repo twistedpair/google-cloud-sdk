@@ -137,7 +137,10 @@ class CloudBuildClient(object):
     Returns:
       Build resource
     """
-    return self.client.projects_builds.Get(build_ref.Request())
+    return self.client.projects_builds.Get(
+        self.messages.CloudbuildProjectsBuildsGetRequest(
+            projectId=build_ref.projectId,
+            id=build_ref.id))
 
   def Stream(self, build_ref):
     """Stream the logs for a build.

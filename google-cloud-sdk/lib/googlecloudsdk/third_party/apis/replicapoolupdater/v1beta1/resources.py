@@ -26,24 +26,23 @@ class Collections(enum.Enum):
       'rollingUpdates',
       'projects/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}',
       {},
-      [u'project', u'zone', u'rollingUpdate'],
-      'ReplicapoolupdaterRollingUpdatesGetRequest',)
+      [u'project', u'zone', u'rollingUpdate']
+  )
   ROLLOUT = (
       'rollout',
       'projects/{project}/zones/{zone}/rollouts/{rollout}',
       {},
-      [u'project', u'zone', u'rollout'],
-      'ReplicapoolupdaterRolloutGetRequest',)
+      [u'project', u'zone', u'rollout']
+  )
   ZONEOPERATIONS = (
       'zoneOperations',
       'projects/{project}/zones/{zone}/operations/{operation}',
       {},
-      [u'project', u'zone', u'operation'],
-      'ReplicapoolupdaterZoneOperationsGetRequest',)
+      [u'project', u'zone', u'operation']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

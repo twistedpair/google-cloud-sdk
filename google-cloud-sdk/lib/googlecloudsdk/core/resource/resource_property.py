@@ -15,6 +15,11 @@
 """Resource property Get."""
 
 import json
+import re
+
+
+_SNAKE_RE = re.compile(
+    '((?<=[a-z0-9])[A-Z]+(?=[A-Z][a-z]|$)|(?!^)[A-Z](?=[a-z]))')
 
 
 def _GetMetaDict(items, key, value):
@@ -83,6 +88,49 @@ def _GetMetaDataValue(items, name, deserialize=False):
   return value
 
 
+def ConvertToCamelCase(name):
+  """Converts snake_case name to camelCase."""
+  part = name.split('_')
+  return part[0] + ''.join(x.title() for x in part[1:])
+
+
+def ConvertToSnakeCase(name):
+  """Converts camelCase name to snake_case."""
+  return _SNAKE_RE.sub(r'_\1', name).lower()
+
+
+def ConvertToAngrySnakeCase(name):
+  """Converts camelCase name to ANGRY_SNAKE_CASE."""
+  return _SNAKE_RE.sub(r'_\1', name).upper()
+
+
+def GetMatchingIndex(index, func):
+  """Returns index converted to a case that satisfies func."""
+  if func(index):
+    return index
+  if not isinstance(index, basestring):
+    return None
+  for convert in [ConvertToCamelCase, ConvertToSnakeCase]:
+    name = convert(index)
+    if func(name):
+      return name
+  return None
+
+
+def GetMatchingIndexValue(index, func):
+  """Returns the first non-None func value for case-converted index."""
+  value = func(index)
+  if value:
+    return value
+  if not isinstance(index, basestring):
+    return None
+  for convert in [ConvertToCamelCase, ConvertToSnakeCase]:
+    value = func(convert(index))
+    if value:
+      return value
+  return None
+
+
 def Get(resource, key, default=None):
   """Gets the value referenced by key in the object resource.
 
@@ -109,21 +157,25 @@ def Get(resource, key, default=None):
       intentionally not an error. In this context a value can be any data
       object: dict, list, tuple, class, str, int, float, ...
   """
-  if isinstance(resource, set):
-    resource = sorted(resource)
   meta = None
   for i, index in enumerate(key):
-    # This if-ladder ordering checks builtin object attributes last. For
+    if isinstance(resource, set):
+      resource = sorted(resource)
+
+    # This if ordering checks builtin object attributes last. For
     # example, with resource = {'items': ...}, Get() treats 'items' as a dict
     # key rather than the builtin 'items' attribute of resource.
 
     if resource is None:
       # None is different than an empty dict or list.
       return default
-    elif meta:
+
+    if meta:
       resource = _GetMetaDict(resource, meta, index)
       meta = None
-    elif hasattr(resource, 'iteritems'):
+      continue
+
+    if hasattr(resource, 'iteritems'):
       # dict-like
       if index is None:
         if i + 1 < len(key):
@@ -132,33 +184,46 @@ def Get(resource, key, default=None):
         else:
           # Trailing slice: *.[]
           return resource
-      elif index in resource:
-        resource = resource[index]
-      elif 'items' in resource:
+
+      name = GetMatchingIndex(index, lambda x: x in resource)
+      if name:
+        resource = resource[name]
+        continue
+
+      if 'items' in resource:
         # It would be nice if there were a better metadata indicator.
         # _GetMetaDataValue() returns None if resource['items'] isn't really
         # metadata, so there is a bit more verification than just 'items' in
         # resource.
-        resource = _GetMetaDataValue(
-            resource['items'], index, deserialize=i + 1 < len(key))
-      else:
-        return default
 
-    elif isinstance(index, basestring) and hasattr(resource, index):
-      # class-like
-      resource = getattr(resource, index, default)
+        def _GetValue(index):
+          # pylint: disable=cell-var-from-loop
+          return _GetMetaDataValue(
+              resource['items'], index, deserialize=i + 1 < len(key))
 
-    elif hasattr(resource, '__iter__') or isinstance(resource, basestring):
+        resource = GetMatchingIndexValue(index, _GetValue)
+        continue
+
+      return default
+
+    if isinstance(index, basestring):
+      # class-like?
+      name = GetMatchingIndex(index, lambda x: hasattr(resource, x))
+      if name:
+        resource = getattr(resource, name, default)
+        continue
+
+    if hasattr(resource, '__iter__') or isinstance(resource, basestring):
       # list-like
       if index is None:
         if i + 1 < len(key):
           # Inner slice: *.[].*
           return [Get(resource, [k] + key[i + 1:], default)
                   for k in range(len(resource))]
-        else:
-          # Trailing slice: *.[]
-          return resource
-      elif not isinstance(index, (int, long)):
+        # Trailing slice: *.[]
+        return resource
+
+      if not isinstance(index, (int, long)):
         if (isinstance(index, basestring) and
             isinstance(resource, list) and
             len(resource) and
@@ -174,21 +239,76 @@ def Get(resource, key, default=None):
           # See resource_property_test.PropertyGetTest.testGetLastDictSlice for
           # an example.
           return filter(None, [d.get(index) for d in resource]) or default
+
         # Index mismatch.
         return default
-      elif index in xrange(-len(resource), len(resource)):
+
+      if index in xrange(-len(resource), len(resource)):
         resource = resource[index]
-      else:
-        return default
+        continue
 
-    else:
-      # Resource or index mismatch.
-      return default
+    # Resource or index mismatch.
+    return default
 
-    if isinstance(resource, set):
-      resource = sorted(resource)
+  if isinstance(resource, set):
+    resource = sorted(resource)
 
   return resource
+
+
+def EvaluateGlobalRestriction(resource, restriction, pattern):
+  """Returns True if any attribute value in resource matches the RE pattern.
+
+  This function is called to evaluate a global restriction on a resource. For
+  example, --filter="Foo.Bar" results in a call like this on each resource item:
+
+    resource_property.EvaluateGlobalRestriction(
+      resource,
+      'Foo.Bar',
+      re.compile(re.escape('Foo.Bar'), re.IGNORECASE),
+    )
+
+  Args:
+    resource: The object to check.
+    restriction: The global restriction string.
+    pattern: The global restriction pattern for matcing resource values.
+
+  Returns:
+    True if any attribute value in resource matches the RE pattern.
+  """
+  if not resource:
+    return False
+  if isinstance(resource, basestring):
+    try:
+      return bool(pattern.search(resource))
+    except TypeError:
+      pass
+  if isinstance(resource, (float, int)):
+    try:
+      return bool(pattern.search(str(resource)))
+    except TypeError:
+      pass
+  try:
+    for key, value in resource.iteritems():
+      if not key.startswith('_') and EvaluateGlobalRestriction(
+          value, restriction, pattern):
+        return True
+  except AttributeError:
+    try:
+      for value in resource:
+        if EvaluateGlobalRestriction(value, restriction, pattern):
+          return True
+      return False
+    except TypeError:
+      pass
+  try:
+    for key, value in resource.__dict__.iteritems():
+      if not key.startswith('_') and EvaluateGlobalRestriction(
+          value, restriction, pattern):
+        return True
+  except AttributeError:
+    pass
+  return False
 
 
 def IsListLike(resource):

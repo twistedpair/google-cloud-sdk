@@ -26,10 +26,10 @@ that the user may have saved while in the EDITOR.
 
 
 import os
+import subprocess
 import tempfile
-from googlecloudsdk.core.util import platforms
 
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
+from googlecloudsdk.core.util import platforms
 
 
 class Error(Exception):

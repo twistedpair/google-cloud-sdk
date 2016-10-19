@@ -17,12 +17,12 @@
 import errno
 import os
 import re
+import subprocess
 import textwrap
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 import uritemplate
 
 

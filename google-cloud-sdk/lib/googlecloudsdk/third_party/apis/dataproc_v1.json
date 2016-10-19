@@ -134,6 +134,13 @@
           "description": "[Required] The cluster config. Note that Cloud Dataproc may set\ndefault values, and values may change when clusters are updated.",
           "$ref": "ClusterConfig"
         },
+        "labels": {
+          "description": "[Optional] The labels to associate with this cluster.\nLabel **keys** must contain 1 to 63 characters, and must conform to\n[RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt).\nLabel **values** may be empty, but, if present, must contain 1 to 63\ncharacters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt).\nNo more than 32 labels can be associated with a cluster.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "status": {
           "description": "[Output-only] Cluster status.",
           "$ref": "ClusterStatus"
@@ -218,7 +225,7 @@
           }
         },
         "tags": {
-          "description": "The Google Compute Engine tags to add to all instances (see\n[Labeling instances](\/compute\/docs\/label-or-tag-resources#labeling_instances)).",
+          "description": "The Google Compute Engine tags to add to all instances (see\n[Tagging instances](\/compute\/docs\/label-or-tag-resources#tags)).",
           "type": "array",
           "items": {
             "type": "string"
@@ -527,6 +534,13 @@
         "driverControlFilesUri": {
           "description": "[Output-only] If present, the location of miscellaneous control files\nwhich may be used as part of job setup and handling. If not present,\ncontrol files may be placed in the same location as `driver_output_uri`.",
           "type": "string"
+        },
+        "labels": {
+          "description": "[Optional] The labels to associate with this job.\nLabel **keys** must contain 1 to 63 characters, and must conform to\n[RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt).\nLabel **values** may be empty, but, if present, must contain 1 to 63\ncharacters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt).\nNo more than 32 labels can be associated with a job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1372,6 +1386,11 @@
                       "required": true,
                       "type": "string"
                     },
+                    "filter": {
+                      "description": "[Optional] A filter constraining the clusters to list. Filters are\ncase-sensitive and have the following syntax:\n\n    field:value [field:value] ...\n\nor\n\n    field = value [AND [field = value]] ...\n\nwhere **field** is one of `state`, `name`, or `labels.[KEY]`, and `[KEY]`\nis a label key. **value** is optional for labels.\n`state` can be one of the following: `ACTIVE`, `INACTIVE`, `CREATING`,\n`RUNNING`, `ERROR`, `DELETING`, or `UPDATING`. `ACTIVE` contains the\n`CREATING`, `UPDATING`, and `RUNNING` states. `INACTIVE` contains the\n`DELETING` and `ERROR` states.\n`name` is the name of the cluster provided at creation time.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample valid filters are:\n\n    state:ACTIVE name:mycluster labels.env:staging labels.starred\n\nand\n\n    state = ACTIVE AND name = mycluster AND labels.env = staging AND labels.starred",
+                      "location": "query",
+                      "type": "string"
+                    },
                     "pageSize": {
                       "description": "[Optional] The standard List page size.",
                       "location": "query",
@@ -1556,6 +1575,11 @@
                         "ACTIVE",
                         "NON_ACTIVE"
                       ]
+                    },
+                    "filter": {
+                      "description": "[Optional] A filter constraining the jobs to list. Filters are\ncase-sensitive and have the following syntax:\n\n    field:value] ...\n\nor\n\n    [field = value] AND [field [= value]] ...\n\nwhere **field** is `state` or `labels.[KEY]`, and `[KEY]` is a label key.\n**value** is optional for labels.\n`state` can be either `ACTIVE` or `INACTIVE`.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample valid filters are:\n\n    state:ACTIVE labels.env:staging labels.starred\n\nand\n\n    state = ACTIVE AND labels.env = staging AND labels.starred",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [

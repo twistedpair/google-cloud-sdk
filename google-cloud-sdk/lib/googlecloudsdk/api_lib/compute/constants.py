@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Defines tool-wide constants."""
+import collections
 import os
 
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 BYTES_IN_ONE_MB = 2 ** 20
 BYTES_IN_ONE_GB = 2 ** 30
@@ -150,7 +150,7 @@ _SOURCE_REPOS_RO = 'https://www.googleapis.com/auth/source.read_only'
 
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
-    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _SOURCE_REPOS_RO,
+    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE,
 ])
 
 SCOPES = {

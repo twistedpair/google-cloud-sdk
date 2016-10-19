@@ -18,6 +18,7 @@ import errno
 import os
 import random
 import re
+import subprocess
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -28,7 +29,6 @@ from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 import yaml
 
 

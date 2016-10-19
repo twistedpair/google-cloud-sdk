@@ -16,6 +16,7 @@
 
 import os
 import re
+import subprocess
 import textwrap
 
 from gae_ext_runtime import ext_runtime
@@ -25,7 +26,6 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 NAME = 'Ruby'

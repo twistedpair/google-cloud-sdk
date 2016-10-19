@@ -86,6 +86,14 @@ MAP = {
             default_version=True
         ),
     },
+    'bigquery': {
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.bigquery.v2',
+            client_classpath='bigquery_v2_client.BigqueryV2',
+            messages_modulepath='bigquery_v2_messages',
+            default_version=True
+        ),
+    },
     'bigtableadmin': {
         'v2': APIDef(
             class_path='googlecloudsdk.third_party.apis.bigtableadmin.v2',
@@ -99,6 +107,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.bigtableclusteradmin.v1',
             client_classpath='bigtableclusteradmin_v1_client.BigtableclusteradminV1',
             messages_modulepath='bigtableclusteradmin_v1_messages',
+            default_version=True
+        ),
+    },
+    'bio': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.bio.v1',
+            client_classpath='bio_v1_client.BioV1',
+            messages_modulepath='bio_v1_messages',
             default_version=True
         ),
     },

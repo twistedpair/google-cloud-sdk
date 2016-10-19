@@ -65,18 +65,18 @@ def _GetSha1(input_path):
   return file_utils.Checksum().AddFileContents(input_path).HexDigest()
 
 
-def _BuildDeploymentManifest(info, bucket_ref, tmp_dir):
+def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
     info: An instance of yaml_parsing.ServiceInfo.
+    source_dir: str, path to the service's source directory
     bucket_ref: The reference to the bucket files will be placed in.
     tmp_dir: A temp directory for storing generated files (currently just source
         context files).
   Returns:
     A deployment manifest (dict) for use with the Admin API.
   """
-  source_dir = os.path.dirname(info.file)
   excluded_files_regex = info.parsed.skip_files.regex
   manifest = {}
   bucket_url = 'https://storage.googleapis.com/{0}'.format(bucket_ref.bucket)
@@ -240,7 +240,7 @@ def _UploadFiles(files_to_upload, bucket_ref):
         raise MultiError('during file upload', [error])
 
 
-def CopyFilesToCodeBucketNoGsUtil(service, bucket_ref):
+def CopyFilesToCodeBucketNoGsUtil(service, source_dir, bucket_ref):
   """Copies application files to the code bucket without calling gsutil.
 
   Consider the following original structure:
@@ -272,6 +272,7 @@ def CopyFilesToCodeBucketNoGsUtil(service, bucket_ref):
 
   Args:
     service: ServiceYamlInfo, The service being deployed.
+    source_dir: str, path to the service's source directory
     bucket_ref: The bucket reference to upload to.
 
   Returns:
@@ -281,8 +282,8 @@ def CopyFilesToCodeBucketNoGsUtil(service, bucket_ref):
   # Collect a list of files to upload, indexed by the SHA so uploads are
   # deduplicated.
   with file_utils.TemporaryDirectory() as tmp_dir:
-    manifest = _BuildDeploymentManifest(service, bucket_ref, tmp_dir)
-    source_dir = os.path.dirname(service.file)
+    manifest = _BuildDeploymentManifest(service, source_dir, bucket_ref,
+                                        tmp_dir)
     files_to_upload = _BuildFileUploadMap(
         manifest, source_dir, bucket_ref, tmp_dir)
     _UploadFiles(files_to_upload, bucket_ref)
@@ -291,11 +292,12 @@ def CopyFilesToCodeBucketNoGsUtil(service, bucket_ref):
   return manifest
 
 
-def CopyFilesToCodeBucket(service, bucket_ref):
+def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
   """Examines services and copies files to a Google Cloud Storage bucket.
 
   Args:
     service: ServiceYamlInfo, The parsed service information.
+    source_dir: str, path to the service's source directory
     bucket_ref: str A reference to a GCS bucket where the files will be
       uploaded.
 
@@ -303,9 +305,8 @@ def CopyFilesToCodeBucket(service, bucket_ref):
     A dictionary representing the manifest. See _BuildStagingDirectory.
   """
   with file_utils.TemporaryDirectory() as staging_directory:
-    source_directory = os.path.dirname(service.file)
     excluded_files_regex = service.parsed.skip_files.regex
-    manifest = _BuildStagingDirectory(source_directory,
+    manifest = _BuildStagingDirectory(source_dir,
                                       staging_directory,
                                       bucket_ref,
                                       excluded_files_regex)

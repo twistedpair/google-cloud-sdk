@@ -14,8 +14,8 @@
 """Module for miscellaneous utility functions."""
 
 import httplib
-import re
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -152,25 +152,12 @@ def ConvertToServiceAccountException(http_error, address, key_id=None):
   return gcloud_exceptions.ToolException.FromCurrent()
 
 
-def ValidateEmail(email):
-  """Super basic, ultra-permissive validator for emails."""
-  # EMails have a . somewhere after a @
-  return re.match(r'[^@]+@[^.]+\..+', email)
-
-
-def ValidateKeyId(key_id):
-  """Ensures a key id is well structured."""
-  # Keys are hexadecimal
-  return re.match(r'[a-z0-9]+', key_id)
-
-
-def ValidateAccountId(account_id):
-  """Ensures an account id is well structured."""
-  if len(account_id) > 63:
-    return False
-
-  # This regex is from the protobuffer
-  return re.match(r'[a-z]([-a-z0-9]*[a-z0-9])', account_id)
+def AccountNameValidator():
+  return arg_parsers.RegexpValidator(
+      r'[a-z][a-z0-9\-]{3,61}[a-z0-9]',
+      'Service account name must be between 5 and 63 characters (inclusive), '
+      'must begin with a lowercase letter, and consist of alphanumeric '
+      'characters that can be separated by hyphens.')
 
 
 def ProjectToProjectResourceName(project):

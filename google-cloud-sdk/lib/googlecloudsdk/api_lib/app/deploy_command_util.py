@@ -82,12 +82,13 @@ class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
-def _GetDockerfiles(info):
+def _GetDockerfiles(info, dockerfile_dir):
   """Returns file objects to create dockerfiles if the user doesn't have them.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo)
       The service config.
+    dockerfile_dir: str, path to the directory with the Dockerfile
   Raises:
     DockerfileError: Raised if a user supplied a Dockerfile and a non-custom
       runtime.
@@ -98,9 +99,6 @@ def _GetDockerfiles(info):
   Returns:
     A dictionary of filename to (str) Dockerfile contents.
   """
-  # Use the path to app.yaml (info.file) to determine the location of the
-  # Dockerfile.
-  dockerfile_dir = os.path.dirname(info.file)
   dockerfile = os.path.join(dockerfile_dir, 'Dockerfile')
 
   if info.runtime != 'custom' and os.path.exists(dockerfile):
@@ -138,22 +136,19 @@ def _GetDockerfiles(info):
         'again.'.format(info.runtime))
 
 
-def _GetSourceContextsForUpload(service):
+def _GetSourceContextsForUpload(source_dir):
   """Gets source context file information.
 
   Args:
-    service: googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo the service
-      to deploy.
+    source_dir: str, path to the service's source directory
   Returns:
     A dict of filename to (str) source context file contents.
   """
   source_contexts = {}
   try:
-    contexts = context_util.CalculateExtendedSourceContexts(
-        os.path.dirname(service.file))
+    contexts = context_util.CalculateExtendedSourceContexts(source_dir)
     source_contexts[context_util.EXT_CONTEXT_FILENAME] = json.dumps(contexts)
-    context = context_util.BestSourceContext(contexts,
-                                             os.path.dirname(service.file))
+    context = context_util.BestSourceContext(contexts)
     source_contexts[context_util.CONTEXT_FILENAME] = json.dumps(context)
   # This error could either be raised by context_util.BestSourceContext or by
   # context_util.CalculateExtendedSourceContexts (in which case stop looking)
@@ -179,12 +174,14 @@ def _GetImageName(project, service, version):
               display=display, domain=domain, service=service, version=version)
 
 
-def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
+def BuildAndPushDockerImage(project, service, source_dir, version_id,
+                            code_bucket_ref):
   """Builds and pushes a set of docker images.
 
   Args:
     project: str, The project being deployed to.
     service: ServiceYamlInfo, The parsed service config.
+    source_dir: str, path to the service's source directory
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
@@ -196,15 +193,15 @@ def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
     return None
 
   gen_files = {}
-  gen_files.update(_GetDockerfiles(service))
-  gen_files.update(_GetSourceContextsForUpload(service))
+  gen_files.update(_GetDockerfiles(service, source_dir))
+  gen_files.update(_GetSourceContextsForUpload(source_dir))
 
   log.status.Print(
       'Building and pushing image for service [{service}]'
       .format(service=service.module))
 
   image = docker_image.Image(
-      dockerfile_dir=os.path.dirname(service.file),
+      dockerfile_dir=source_dir,
       repo=_GetImageName(project, service.module, version_id),
       nocache=False,
       tag=config.DOCKER_IMAGE_TAG)

@@ -441,7 +441,7 @@ class _ExprOperator(_Expr):
         tzinfo = times.LOCAL if value.tzinfo else None
         self._operand.Initialize(
             self._operand.list_value or self._operand.string_value,
-            normalize=lambda x: times.ParseDateTime(x, tzinfo))
+            normalize=lambda x: times.ParseDateTime(x, tzinfo=tzinfo))
         self._normalize = times.ParseDateTime
       except ValueError:
         pass

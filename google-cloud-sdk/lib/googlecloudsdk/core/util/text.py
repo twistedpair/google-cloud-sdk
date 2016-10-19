@@ -13,7 +13,7 @@
 # limitations under the License.
 """Utilities for manipulating text."""
 
-from googlecloudsdk.third_party.py27 import py27_collections as collections
+import collections
 
 
 def Pluralize(num, word, plural=None):
@@ -37,6 +37,11 @@ _SECONDS_PER = collections.OrderedDict([
     ('hour', 60 * 60),
     ('day', 60 * 60 * 24)
 ])
+
+
+def GetArticle(noun):
+  """Gets article (a or an) for given noun."""
+  return 'an' if noun[0] in ['a', 'e', 'i', 'o', 'u'] else 'a'
 
 
 def _TotalSeconds(delta):

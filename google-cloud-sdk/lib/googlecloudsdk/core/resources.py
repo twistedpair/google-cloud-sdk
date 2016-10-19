@@ -20,6 +20,8 @@ will be accepted, and a consistent python object will be returned for use in
 code.
 """
 
+import collections
+import copy
 import functools
 import re
 import types
@@ -29,8 +31,6 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.py27 import py27_collections as collections
-from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 import uritemplate
 
@@ -261,13 +261,17 @@ class Resource(object):
     self.__collection_path = collection_path
     self._endpoint_url = endpoint_url or collection_info.base_url
     self._param_defaults = param_defaults
+    self._subcollection = subcollection
     self._path = collection_info.GetPath(subcollection)
     self._params = collection_info.GetParams(subcollection)
     for param, value in zip(self._params, param_values):
       setattr(self, param, value)
 
   def Collection(self):
-    return self._collection_info.full_name
+    collection = self._collection_info.full_name
+    if self._subcollection:
+      return collection + '.' + self._subcollection
+    return collection
 
   def GetCollectionInfo(self):
     return self._collection_info
@@ -296,25 +300,6 @@ class Resource(object):
   def SelfLink(self):
     self.Resolve()
     return self.__self_link
-
-  def Request(self):
-    """Creates apitools Get request for this resource."""
-    messages_module = core_apis.GetMessagesModule(
-        self._collection_info.api_name, self._collection_info.api_version)
-    request_type_cls = getattr(messages_module,
-                               self._collection_info.request_type)
-    request = request_type_cls()
-    if self._params != self._collection_info.params:
-      if len(self._collection_info.params) != 1:
-        raise InvalidCollectionException(self.collection_info.full_name)
-      relative_name = self.RelativeName()
-      param_start = self._collection_info.path.index('{')
-      setattr(request, self._collection_info.params[0],
-              relative_name[param_start:])
-    else:
-      for param_name in self._collection_info.params:
-        setattr(request, param_name, getattr(self, param_name))
-    return request
 
   def Resolve(self, suppress_param_default_err=False):
     """Resolve unknown parameters for this resource.
@@ -454,10 +439,11 @@ class Registry(object):
         for _, val in dict_or_parser.iteritems():
           _UpdateParser(val)
       else:
-        dict_or_parser.params_defaults_func = functools.partial(
+        _, parser = dict_or_parser
+        parser.params_defaults_func = functools.partial(
             reg.GetParamDefault,
-            dict_or_parser.collection_info.api_name,
-            dict_or_parser.collection_info.name)
+            parser.collection_info.api_name,
+            parser.collection_info.name)
     _UpdateParser(reg.parsers_by_url)
     return reg
 
@@ -520,9 +506,10 @@ class Registry(object):
                                      existing_parser.collection_info.base_url])
       collection_parsers[collection_name] = parser
 
-      self._AddParserForUriPath(api_name, api_version, parser, path)
+      self._AddParserForUriPath(api_name, api_version, subname, parser, path)
 
-  def _AddParserForUriPath(self, api_name, api_version, parser, path):
+  def _AddParserForUriPath(self, api_name, api_version,
+                           subcollection, parser, path):
     """Registers parser for given path."""
     tokens = [api_name, api_version] + path.split('/')
 
@@ -543,7 +530,7 @@ class Registry(object):
     if None in cur_level:
       raise AmbiguousResourcePath(cur_level[None], parser)
 
-    cur_level[None] = parser
+    cur_level[None] = subcollection, parser
 
   def SetParamDefault(self, api, collection, param, resolver):
     """Provide a function that will be used to fill in missing values.
@@ -654,11 +641,9 @@ class Registry(object):
           base_url += api_version + u'/'
 
     parser_collection = parser.collection_info.full_name
-    if  not parser_collection.startswith(collection):
-      raise InvalidCollectionException(parser_collection)
     subcollection = ''
     if len(parser_collection) != len(collection):
-      subcollection = parser_collection[len(collection)+1:]
+      subcollection = collection[len(parser_collection)+1:]
     return parser.ParseCollectionPath(
         collection_path, kwargs, resolve, base_url, subcollection)
 
@@ -765,10 +750,11 @@ class Registry(object):
       # No more tokens, so look for a parser.
     if None not in cur_level:
       raise InvalidResourceException(url)
-    parser = cur_level[None]
-    params = dict(zip(parser.collection_info.params, params))
+    subcollection, parser = cur_level[None]
+    params = dict(zip(parser.collection_info.GetParams(subcollection), params))
     return parser.ParseCollectionPath(
-        None, params, resolve=True, base_url=endpoint)
+        None, params, resolve=True, base_url=endpoint,
+        subcollection=subcollection)
 
   def ParseStorageURL(self, url):
     """Parse gs://bucket/object_path into storage.v1 api resource."""

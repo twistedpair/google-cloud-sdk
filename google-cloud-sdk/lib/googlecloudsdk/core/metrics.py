@@ -19,6 +19,7 @@ import os
 import pickle
 import platform
 import socket
+import subprocess
 import sys
 import tempfile
 import time
@@ -33,7 +34,6 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 _GA_ENDPOINT = 'https://ssl.google-analytics.com/collect'
@@ -363,7 +363,7 @@ class _MetricsCollector(object):
 
 def _CollectGAMetricAndSetTimerContext(
     category, action, label, value=0, flag_names=None,
-    error=None, error_extra_info=None):
+    error=None, error_extra_info_json=None):
   """Common code for processing a GA event."""
   collector = _MetricsCollector.GetCollector()
 
@@ -377,8 +377,8 @@ def _CollectGAMetricAndSetTimerContext(
       cds['cd6'] = flag_names
     if error is not None:
       cds['cd8'] = error
-    if error_extra_info is not None:
-      cds['cd9'] = str(error_extra_info)
+    if error_extra_info_json is not None:
+      cds['cd9'] = str(error_extra_info_json)
 
     collector.CollectGAMetric(
         _GAEvent(category=category, action=action, label=label, value=value,
@@ -460,6 +460,46 @@ def Shutdown():
     collector.ReportMetrics()
 
 
+def _GetExceptionName(error):
+  """Gets a friendly exception name for the given error.
+
+  Args:
+    error: An exception class.
+
+  Returns:
+    str, The name of the exception to log.
+  """
+  if error:
+    try:
+      return '{0}.{1}'.format(error.__module__, error.__name__)
+    # pylint:disable=bare-except, Never want to fail on metrics reporting.
+    except:
+      return 'unknown'
+  return None
+
+
+def _GetErrorExtraInfo(error_extra_info):
+  """Serializes the extra info into a json string for logging.
+
+  Args:
+    error_extra_info: {str: json-serializable}, A json serializable dict of
+      extra info that we want to log with the error. This enables us to write
+      queries that can understand the keys and values in this dict.
+
+  Returns:
+    str, The value to pass to GA or None.
+  """
+  if error_extra_info:
+    try:
+      # pylint:disable=g-import-not-at-top, Only import if we have an error.
+      import json
+      return json.dumps(error_extra_info, sort_keys=True)
+    # pylint:disable=bare-except, Never want to fail on metrics reporting.
+    except:
+      pass
+  return None
+
+
 @CaptureAndLogException
 def Installs(component_id, version_string):
   """Logs that an SDK component was installed.
@@ -482,25 +522,20 @@ def Commands(command_path, version_string, flag_names,
     version_string: [str], The version of the command.
     flag_names: [str], The names of the flags that were used during this
       execution.
-    error: [class], The class (not the instance) of the Exception if a user
+    error: class, The class (not the instance) of the Exception if a user
       tried to run a command that produced an error.
-    error_extra_info: [str], Extra info that that we want to log with the error.
-      This can be the error message or suggestion for parse error, etc.
+    error_extra_info: {str: json-serializable}, A json serializable dict of
+      extra info that we want to log with the error. This enables us to write
+      queries that can understand the keys and values in this dict.
   """
   if not version_string:
     version_string = 'unknown'
 
-  if error:
-    try:
-      error = '{0}.{1}'.format(error.__module__, error.__name__)
-    # pylint:disable=bare-except, Never want to fail on metrics reporting.
-    except:
-      error = 'unknown'
-
   _CollectGAMetricAndSetTimerContext(
       _GA_COMMANDS_CATEGORY, command_path, version_string,
       flag_names=_GetFlagNameString(flag_names),
-      error=error, error_extra_info=error_extra_info)
+      error=_GetExceptionName(error),
+      error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
 
 
 @CaptureAndLogException
@@ -515,23 +550,23 @@ def Help(command_path, mode):
 
 
 @CaptureAndLogException
-def Error(command_path, exc, flag_names):
+def Error(command_path, error, flag_names, error_extra_info=None):
   """Logs that a top level Exception was caught for a gcloud command.
 
   Args:
     command_path: [str], The '.' separated name of the calliope command.
-    exc: [class], The class (not the instance) of the exception that was caught.
+    error: [class], The class (not the instance) of the exception that was
+      caught.
     flag_names: [str], The names of the flags that were used during this
       execution.
+    error_extra_info: {str: json-serializable}, A json serializable dict of
+      extra info that we want to log with the error. This enables us to write
+      queries that can understand the keys and values in this dict.
   """
-  try:
-    exc_path = '{0}.{1}'.format(exc.__module__, exc.__name__)
-  # pylint:disable=bare-except, Never want to fail on metrics reporting.
-  except:
-    exc_path = 'unknown'
   _CollectGAMetricAndSetTimerContext(
-      _GA_ERROR_CATEGORY, command_path, exc_path,
-      flag_names=_GetFlagNameString(flag_names))
+      _GA_ERROR_CATEGORY, command_path, _GetExceptionName(error),
+      flag_names=_GetFlagNameString(flag_names),
+      error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
 
 
 @CaptureAndLogException

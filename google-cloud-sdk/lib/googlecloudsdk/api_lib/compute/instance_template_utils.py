@@ -24,7 +24,7 @@ def CreateNetworkInterfaceMessage(
   """Creates and returns a new NetworkInterface message.
 
   Args:
-    scope_prompter: Scope prompter object,
+    scope_prompter: generates resource references,
     messages: GCE API messages,
     network: network,
     region: region for subnetwork,
@@ -37,16 +37,21 @@ def CreateNetworkInterfaceMessage(
   Returns:
     network_interface: a NetworkInterface message object
   """
+  # By default interface is attached to default network. If network or subnet
+  # are specified they're used instead.
+  network_interface = messages.NetworkInterface()
   if subnet is not None:
     subnet_ref = scope_prompter.CreateRegionalReference(
         subnet, region, resource_type='subnetworks')
-    network_interface = messages.NetworkInterface(
-        subnetwork=subnet_ref.SelfLink())
-  else:
-    network_ref = scope_prompter.CreateGlobalReference(
-        network or constants.DEFAULT_NETWORK, resource_type='networks')
-    network_interface = messages.NetworkInterface(
-        network=network_ref.SelfLink())
+    network_interface.subnetwork = subnet_ref.SelfLink()
+  resources = scope_prompter.resources
+  if network is not None:
+    network_ref = resources.Parse(network, collection='compute.networks')
+    network_interface.network = network_ref.SelfLink()
+  elif subnet is None:
+    network_ref = resources.Parse(
+        constants.DEFAULT_NETWORK, collection='compute.networks')
+    network_interface.network = network_ref.SelfLink()
 
   if address:
     access_config = messages.AccessConfig(
@@ -68,7 +73,7 @@ def CreateNetworkInterfaceMessages(
   """Create network interface messages.
 
   Args:
-    scope_prompter: generates resource references.
+    scope_prompter: Scope prompter object,
     messages: creates resources.
     network_interface_arg: CLI argument specyfying network interfaces.
     region: region of the subnetwork.

@@ -26,32 +26,31 @@ class Collections(enum.Enum):
       'deployments',
       'projects/{project}/global/deployments/{deployment}',
       {},
-      [u'project', u'deployment'],
-      'DeploymentmanagerDeploymentsGetRequest',)
+      [u'project', u'deployment']
+  )
   MANIFESTS = (
       'manifests',
       'projects/{project}/global/deployments/{deployment}/manifests/'
       '{manifest}',
       {},
-      [u'project', u'deployment', u'manifest'],
-      'DeploymentmanagerManifestsGetRequest',)
+      [u'project', u'deployment', u'manifest']
+  )
   OPERATIONS = (
       'operations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation'],
-      'DeploymentmanagerOperationsGetRequest',)
+      [u'project', u'operation']
+  )
   RESOURCES = (
       'resources',
       'projects/{project}/global/deployments/{deployment}/resources/'
       '{resource}',
       {},
-      [u'project', u'deployment', u'resource'],
-      'DeploymentmanagerResourcesGetRequest',)
+      [u'project', u'deployment', u'resource']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

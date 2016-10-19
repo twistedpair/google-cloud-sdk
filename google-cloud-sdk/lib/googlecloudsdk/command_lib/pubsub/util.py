@@ -27,6 +27,8 @@ MAX_LIST_RESULTS = 10000
 # TODO(user): These are going away, since we are moving to
 # collection paths in CL/125390647.
 PROJECT_PATH_RE = re.compile(r'^projects/(?P<Project>[^/]+)$')
+SNAPSHOTS_PATH_RE = re.compile(
+    r'^projects/(?P<Project>[^/]+)/snapshots/(?P<Resource>[^/]+)$')
 SUBSCRIPTIONS_PATH_RE = re.compile(
     r'^projects/(?P<Project>[^/]+)/subscriptions/(?P<Resource>[^/]+)$')
 TOPICS_PATH_RE = re.compile(
@@ -35,14 +37,18 @@ TOPICS_PATH_RE = re.compile(
 # Collection for various subcommands.
 TOPICS_COLLECTION = 'pubsub.projects.topics'
 TOPICS_PUBLISH_COLLECTION = 'pubsub.topics.publish'
+SNAPSHOTS_COLLECTION = 'pubsub.projects.snapshots'
+SNAPSHOTS_LIST_COLLECTION = 'pubsub.snapshots.list'
 SUBSCRIPTIONS_COLLECTION = 'pubsub.projects.subscriptions'
 SUBSCRIPTIONS_ACK_COLLECTION = 'pubsub.subscriptions.ack'
 SUBSCRIPTIONS_LIST_COLLECTION = 'pubsub.subscriptions.list'
 SUBSCRIPTIONS_MOD_ACK_COLLECTION = 'pubsub.subscriptions.mod_ack'
 SUBSCRIPTIONS_MOD_CONFIG_COLLECTION = 'pubsub.subscriptions.mod_config'
 SUBSCRIPTIONS_PULL_COLLECTION = 'pubsub.subscriptions.pull'
+SUBSCRIPTIONS_SEEK_COLLECTION = 'pubsub.subscriptions.seek'
 
 
+# TODO(b/32275946): Use core.resources.Resource instead of this custom class.
 class ResourceIdentifier(object):
   """Base class to build resource identifiers."""
   __metaclass__ = abc.ABCMeta
@@ -65,7 +71,7 @@ class ResourceIdentifier(object):
     """Returns the valid resource identifier type for this instance.
 
     This function needs to be overriden in subclasses to return a valid
-    resource identifier type (subscriptions, topics).
+    resource identifier type (subscriptions, topics, or snapshots).
     """
     pass
 
@@ -76,15 +82,15 @@ class ResourceIdentifier(object):
     """Initializes a new ResourceIdentifier.
 
     Args:
-      resource_path: (string) Full (ie. projects/my-proj/topics/my-topic)
+      resource_path: (string) Full (e.g., projects/my-proj/topics/my-topic)
                      or partial (my-topic) resource path.
       project_path: (string) Full (projects/my-project) or
                     partial (my-project) project path.
                     If empty, the SDK environment default
                     (gcloud config set project) will be used.
     Returns:
-      An instantiated ResourceIdentifier with correct resource information
-      (project path, full path).
+      A ResourceIdentifier instance that captures the subcomponents of the
+      resource identifier.
 
     Raises:
       HttpException if the provided resource path is not a valid resource
@@ -152,6 +158,16 @@ class ProjectIdentifier(ResourceIdentifier):
     return '{0}/{1}'.format(self._ResourceType(), self.project_name)
 
 
+class SnapshotIdentifier(ResourceIdentifier):
+  """Represents a Cloud Pub/Sub snapshot identifier."""
+
+  def _RegexMatch(self, resource_path):
+    return SNAPSHOTS_PATH_RE.match(resource_path)
+
+  def _ResourceType(self):
+    return 'snapshots'
+
+
 class SubscriptionIdentifier(ResourceIdentifier):
   """Represents a Cloud Pub/Sub subscription identifier."""
 
@@ -208,6 +224,23 @@ def SubscriptionFormat(subscription_name, project_name=''):
   return SubscriptionIdentifier(subscription_name, project_name).GetFullPath()
 
 
+def SnapshotFormat(snapshot_name, project_name=''):
+  """Formats a snapshot name as a fully qualified snapshot path.
+
+  Args:
+    snapshot_name: (string) Name of the snapshot to convert.
+    project_name: (string) Name of the project the given snapshot belongs
+                  to. If not given, then the project defaults to the currently
+                  selected cloud project.
+
+  Returns:
+    Returns a fully qualified snapshot path of the form
+    project/foo/snapshots/snapshot_name.
+  """
+  return SnapshotIdentifier(snapshot_name, project_name).GetFullPath()
+
+
+# TODO(b/32276674): Remove the use of custom *DisplayDict's.
 def TopicDisplayDict(topic, error_msg=''):
   """Creates a serializable from a Cloud Pub/Sub Topic operation for display.
 
@@ -237,24 +270,43 @@ def SubscriptionDisplayDict(subscription, error_msg=''):
                result, if any.
   Returns:
     A serialized object representing a Cloud Pub/Sub Subscription
-    operation (create, delete).
+    operation (create, delete, update).
   """
-  subscription_display_dict = resource_projector.MakeSerializable(subscription)
+  push_endpoint = ''
+  subscription_type = 'pull'
+  if subscription.pushConfig:
+    if subscription.pushConfig.pushEndpoint:
+      push_endpoint = subscription.pushConfig.pushEndpoint
+      subscription_type = 'push'
 
-  if getattr(subscription, 'pushConfig', None):
-    push_endpoint = subscription.pushConfig.pushEndpoint
-    subscription_type = 'push'
-    del subscription_display_dict['pushConfig']
-  else:
-    push_endpoint = ''
-    subscription_type = 'pull'
+  return {
+      'subscriptionId': subscription.name,
+      'topic': subscription.topic,
+      'type': subscription_type,
+      'pushEndpoint': push_endpoint,
+      'ackDeadlineSeconds': subscription.ackDeadlineSeconds,
+      'retainAckedMessages': bool(subscription.retainAckedMessages),
+      'messageRetentionDuration': subscription.messageRetentionDuration,
+      'success': not error_msg,
+      'reason': error_msg or '',
+  }
 
-  subscription_display_dict['subscriptionId'] = subscription.name
-  subscription_display_dict['type'] = subscription_type
-  subscription_display_dict['topic'] = subscription.topic
-  subscription_display_dict['pushEndpoint'] = push_endpoint
-  subscription_display_dict['success'] = not error_msg
-  subscription_display_dict['reason'] = error_msg or ''
-  del subscription_display_dict['name']
 
-  return subscription_display_dict
+def SnapshotDisplayDict(snapshot, error_msg=''):
+  """Creates a serializable from a Cloud Pub/Sub Snapshot operation for display.
+
+  Args:
+    snapshot: (Cloud Pub/Sub Snapshot) Snapshot to be serialized.
+    error_msg: (string) An error message to be added to the serialized
+               result, if any.
+  Returns:
+    A serialized object representing a Cloud Pub/Sub Snapshot operation (create,
+    delete).
+  """
+  return {
+      'snapshotId': snapshot.name,
+      'topic': snapshot.topic,
+      'expirationTime': snapshot.expirationTime,
+      'success': not error_msg,
+      'reason': error_msg or '',
+  }

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Annotates the resource types with extra information."""
+import collections
 import httplib
 
 from apitools.base.protorpclite import messages
@@ -20,7 +21,6 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 def _FirewallRulesToCell(firewall):
@@ -568,8 +568,9 @@ _SPECS_V1 = {
             ('ZONE', 'zone'),
             ('MACHINE_TYPE', _MachineTypeNameToCell),
             ('PREEMPTIBLE', 'scheduling.preemptible'),
-            ('INTERNAL_IP', 'networkInterfaces[0].networkIP'),
-            ('EXTERNAL_IP', 'networkInterfaces[0].accessConfigs[0].natIP'),
+            ('INTERNAL_IP', 'networkInterfaces[].networkIP.notnull().list()'),
+            ('EXTERNAL_IP',
+             'networkInterfaces[].accessConfigs[0].natIP.notnull().list()'),
             ('STATUS', 'status'),
         ],
         transformations=[

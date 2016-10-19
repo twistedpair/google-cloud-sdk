@@ -18,8 +18,8 @@ class AccessConfig(_messages.Message):
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this access configuration and can only take the following
-      values: PREMIUM , STANDARD. If this field is not specified, it is
-      assumed to be PREMIUM.
+      values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is
+      not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -34,8 +34,9 @@ class AccessConfig(_messages.Message):
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
     networkTier: This signifies the networking tier used for configuring this
-      access configuration and can only take the following values: PREMIUM ,
-      STANDARD. If this field is not specified, it is assumed to be PREMIUM.
+      access configuration and can only take the following values:
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     ptrDomainName: The DNS domain name for the public PTR record. This field
       can only be set when the set_ptr field is enabled.
     setPtr: Specifies whether a public DNS ?PTR? record should be created to
@@ -48,8 +49,9 @@ class AccessConfig(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this access
-    configuration and can only take the following values: PREMIUM , STANDARD.
-    If this field is not specified, it is assumed to be PREMIUM.
+    configuration and can only take the following values:
+    CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+    specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
@@ -83,8 +85,9 @@ class Address(_messages.Message):
 
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
-      configuring this Address and can only take the following values: PREMIUM
-      , STANDARD. If this field is not specified, it is assumed to be PREMIUM.
+      configuring this Address and can only take the following values:
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
       reserved and available to use. An IN_USE address is currently being used
@@ -123,8 +126,9 @@ class Address(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     networkTier: This signifies the networking tier used for configuring this
-      Address and can only take the following values: PREMIUM , STANDARD. If
-      this field is not specified, it is assumed to be PREMIUM.
+      Address and can only take the following values: CLOUD_NETWORK_PREMIUM ,
+      CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
+      be CLOUD_NETWORK_PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -138,8 +142,9 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this Address
-    and can only take the following values: PREMIUM , STANDARD. If this field
-    is not specified, it is assumed to be PREMIUM.
+    and can only take the following values: CLOUD_NETWORK_PREMIUM ,
+    CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
+    be CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
@@ -441,6 +446,8 @@ class AttachedDisk(_messages.Message):
       the disk later.  Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
+    diskSizeGb: The size of the disk in base-2 GB. This supersedes
+      disk_size_gb in InitializeParams.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -512,14 +519,15 @@ class AttachedDisk(_messages.Message):
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 6)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
-  kind = _messages.StringField(8, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(9, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 10)
-  source = _messages.StringField(11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  diskSizeGb = _messages.IntegerField(5)
+  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 7)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
+  kind = _messages.StringField(9, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(10, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  source = _messages.StringField(12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1224,7 +1232,7 @@ class BackendService(_messages.Message):
       INTERNAL, this field is not used.
     backendSslPolicy: Backend SSL policies to enforce.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: Cloud CDN Coniguration for this BackendService.
+    cdnPolicy: Cloud CDN configuration for this BackendService.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -4179,22 +4187,14 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -6290,22 +6290,14 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  region = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -10062,8 +10054,8 @@ class ForwardingRule(_messages.Message):
       LB, SSL Proxy)
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      PREMIUM , STANDARD. If this field is not specified, it is assumed to be
-      PREMIUM.
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
 
   Messages:
     LabelsValue: Labels to apply to this resource. These can be later modified
@@ -10133,8 +10125,9 @@ class ForwardingRule(_messages.Message):
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values: PREMIUM ,
-      STANDARD. If this field is not specified, it is assumed to be PREMIUM.
+      load balancer and can only take the following values:
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
@@ -10202,8 +10195,9 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: PREMIUM , STANDARD. If
-    this field is not specified, it is assumed to be PREMIUM.
+    balancer and can only take the following values: CLOUD_NETWORK_PREMIUM ,
+    CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
+    be CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
@@ -10504,16 +10498,25 @@ class GuestOsFeature(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The type of supported feature. Currenty only
-      VIRTIO_SCSI_MULTIQUEUE is supported.
+      VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
+      server might also populate this property with the value WINDOWS to
+      indicate that this is a Windows image. This value is purely
+      informational and does not enable or disable any features.
 
   Fields:
     type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
-      is supported.
+      is supported. For newer Windows images, the server might also populate
+      this property with the value WINDOWS to indicate that this is a Windows
+      image. This value is purely informational and does not enable or disable
+      any features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
-    supported.
+    supported. For newer Windows images, the server might also populate this
+    property with the value WINDOWS to indicate that this is a Windows image.
+    This value is purely informational and does not enable or disable any
+    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -10826,6 +10829,11 @@ class Host(_messages.Message):
       format.
     description: [Output Only] An optional textual description of the
       resource.
+    hostType: Full or partial URL of the host type resource to use for this
+      host, in the format: zones/zone/hostTypes/host-type. This is provided by
+      the client when the host is created. For example, the following is a
+      valid partial url to a predefined host type:  zones/us-
+      central1-f/hostTypes/n1-host-64-416
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instances: A list of resource URLs to the virtual machine instances in
@@ -10868,14 +10876,15 @@ class Host(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  instances = _messages.StringField(4, repeated=True)
-  kind = _messages.StringField(5, default=u'compute#host')
-  name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  zone = _messages.StringField(10)
+  hostType = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  instances = _messages.StringField(5, repeated=True)
+  kind = _messages.StringField(6, default=u'compute#host')
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class HostAggregatedList(_messages.Message):
@@ -11259,11 +11268,14 @@ class Image(_messages.Message):
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
     guestOsFeatures: A list of features to enable on the guest OS. Applicable
-      for bootable images only. Currently, only one feature is supported,
+      for bootable images only. Currently, only one feature can be enabled,
       VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own
       queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE
       on images with driver version 1.2.0.1621 or higher. Linux images with
       kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.
+      For new Windows images, the server might also populate this field with
+      the value WINDOWS, to indicate that this is a Windows image. This value
+      is purely informational and does not enable or disable any features.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -11295,8 +11307,8 @@ class Image(_messages.Message):
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sourceDisk: URL of the The source disk used to create this image. This can
-      be a full or valid partial URL. You must provide either this property or
+    sourceDisk: URL of the source disk used to create this image. This can be
+      a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
       example, the following are valid values:   - https://www.googleapis.com/
       compute/v1/projects/project/zones/zone/disks/disk  -
@@ -12005,7 +12017,8 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
   Fields:
-    healthCheck: The URL for the HealthCheck that signals autohealing.
+    healthCheck: The URL for the HttpHealthCheck or HttpsHealthCheck that
+      signals autohealing.
     initialDelaySec: The number of seconds that the managed instance group
       waits before it applies autohealing policies to new instances or
       recently recreated instances. This initial delay allows instances to
@@ -13545,6 +13558,7 @@ class Network(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    peerings: [Output Only] List of network peerings for the resource.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
       subnetworks in this network.
@@ -13580,8 +13594,9 @@ class Network(_messages.Message):
   kind = _messages.StringField(8, default=u'compute#network')
   loadBalancerVmEncryption = _messages.EnumField('LoadBalancerVmEncryptionValueValuesEnum', 9)
   name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  subnetworks = _messages.StringField(12, repeated=True)
+  peerings = _messages.MessageField('NetworkPeering', 11, repeated=True)
+  selfLink = _messages.StringField(12)
+  subnetworks = _messages.StringField(13, repeated=True)
 
 
 class NetworkInterface(_messages.Message):
@@ -13647,6 +13662,53 @@ class NetworkList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#networkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class NetworkPeering(_messages.Message):
+  """A network peering attached to a network resource. The message includes
+  the peering name, peer network, peering state, and a flag indicating whether
+  Google Compute Engine should automatically create routes for the peering.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] State for the peering.
+
+  Fields:
+    autoCreateRoutes: Whether full mesh connectivity is created and managed
+      automatically. When it is set to true, Google Compute Engine will
+      automatically create and manage the routes between two networks when the
+      state is ACTIVE. Otherwise, user needs to create routes manually to
+      route packets to peer network.
+    name: Name of this peering. Provided by the client when the peering is
+      created. The name must comply with RFC1035. Specifically, the name must
+      be 1-63 characters long and match regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      lowercase letter, and all the following characters must be a dash,
+      lowercase letter, or digit, except the last character, which cannot be a
+      dash.
+    network: The URL of the peer network. It can be either full URL or partial
+      URL. The peer network may belong to a different project. If the partial
+      URL does not contain project, it is assumed that the peer network is in
+      the same project as the current network.
+    state: [Output Only] State for the peering.
+    stateDetails: [Output Only] Details about the current state of the
+      peering.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """[Output Only] State for the peering.
+
+    Values:
+      ACTIVE: <no description>
+      INACTIVE: <no description>
+    """
+    ACTIVE = 0
+    INACTIVE = 1
+
+  autoCreateRoutes = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  network = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  stateDetails = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -14761,6 +14823,8 @@ class Route(_messages.Message):
       matching packets.
     nextHopNetwork: The URL of the local network if it should handle matching
       packets.
+    nextHopPeering: [Output Only] The network peering name that should handle
+      matching packets, which should conform to RFC1035.
     nextHopVpnTunnel: The URL to a VpnTunnel that should handle matching
       packets.
     priority: The priority of this route. Priority is used to break ties in
@@ -14868,11 +14932,12 @@ class Route(_messages.Message):
   nextHopInstance = _messages.StringField(9)
   nextHopIp = _messages.StringField(10)
   nextHopNetwork = _messages.StringField(11)
-  nextHopVpnTunnel = _messages.StringField(12)
-  priority = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(14)
-  tags = _messages.StringField(15, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 16, repeated=True)
+  nextHopPeering = _messages.StringField(12)
+  nextHopVpnTunnel = _messages.StringField(13)
+  priority = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(15)
+  tags = _messages.StringField(16, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 17, repeated=True)
 
 
 class RouteList(_messages.Message):

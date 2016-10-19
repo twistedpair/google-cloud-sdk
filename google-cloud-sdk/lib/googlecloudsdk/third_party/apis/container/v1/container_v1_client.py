@@ -520,6 +520,32 @@ zones.
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      """Cancels the specified operation.
+
+      Args:
+        request: (ContainerProjectsZonesOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.operations.cancel',
+        ordered_params=[u'projectId', u'zone', u'operationId'],
+        path_params=[u'operationId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'ContainerProjectsZonesOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the specified operation.
 

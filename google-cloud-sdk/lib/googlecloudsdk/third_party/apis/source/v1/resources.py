@@ -26,14 +26,14 @@ class Collections(enum.Enum):
       'projects.repos',
       'projects/{projectId}/repos/{repoName}',
       {},
-      [u'projectId', u'repoName'],
-      'SourceProjectsReposGetRequest',)
+      [u'projectId', u'repoName']
+  )
   PROJECTS_REPOS_ALIASES = (
       'projects.repos.aliases',
       'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
       {},
-      [u'projectId', u'repoName', u'kind', u'name'],
-      'SourceProjectsReposAliasesGetRequest',)
+      [u'projectId', u'repoName', u'kind', u'name']
+  )
   PROJECTS_REPOS_ALIASES_FILES = (
       'projects.repos.aliases.files',
       'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/'
@@ -43,14 +43,14 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/'
               'files/{filesId}',
       },
-      [u'projectId', u'repoName', u'kind', u'name', u'path'],
-      'SourceProjectsReposAliasesFilesGetRequest',)
+      [u'projectId', u'repoName', u'kind', u'name', u'path']
+  )
   PROJECTS_REPOS_REVISIONS = (
       'projects.repos.revisions',
       'projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
       {},
-      [u'projectId', u'repoName', u'revisionId'],
-      'SourceProjectsReposRevisionsGetRequest',)
+      [u'projectId', u'repoName', u'revisionId']
+  )
   PROJECTS_REPOS_REVISIONS_FILES = (
       'projects.repos.revisions.files',
       'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/'
@@ -60,14 +60,14 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/'
               'files/{filesId}',
       },
-      [u'projectId', u'repoName', u'revisionId', u'path'],
-      'SourceProjectsReposRevisionsFilesGetRequest',)
+      [u'projectId', u'repoName', u'revisionId', u'path']
+  )
   PROJECTS_REPOS_WORKSPACES = (
       'projects.repos.workspaces',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}',
       {},
-      [u'projectId', u'repoName', u'name'],
-      'SourceProjectsReposWorkspacesGetRequest',)
+      [u'projectId', u'repoName', u'name']
+  )
   PROJECTS_REPOS_WORKSPACES_FILES = (
       'projects.repos.workspaces.files',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
@@ -76,15 +76,15 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
               '{filesId}',
       },
-      [u'projectId', u'repoName', u'name', u'path'],
-      'SourceProjectsReposWorkspacesFilesGetRequest',)
+      [u'projectId', u'repoName', u'name', u'path']
+  )
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS = (
       'projects.repos.workspaces.snapshots',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}',
       {},
-      [u'projectId', u'repoName', u'name', u'snapshotId'],
-      'SourceProjectsReposWorkspacesSnapshotsGetRequest',)
+      [u'projectId', u'repoName', u'name', u'snapshotId']
+  )
   PROJECTS_REPOS_WORKSPACES_SNAPSHOTS_FILES = (
       'projects.repos.workspaces.snapshots.files',
       'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
@@ -94,12 +94,11 @@ class Collections(enum.Enum):
               'projects/{projectId}/repos/{repoName}/workspaces/{name}/'
               'snapshots/{snapshotId}/files/{filesId}',
       },
-      [u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
-      'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',)
+      [u'projectId', u'repoName', u'name', u'snapshotId', u'path']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

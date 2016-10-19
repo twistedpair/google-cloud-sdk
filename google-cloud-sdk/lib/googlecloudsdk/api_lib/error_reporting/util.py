@@ -18,18 +18,26 @@ from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import properties
 
 
+API_VERSION = 'v1beta1'
+API_NAME = 'clouderrorreporting'
+
+
 class ErrorReporting(object):
   """Report errors to errorreporting."""
-  _API_VERSION = 'v1beta1'
-  _API_NAME = 'clouderrorreporting'
 
-  def __init__(self):
-    self.api_client = core_apis.GetClientInstance(
-        self._API_NAME, self._API_VERSION)
-    self.api_messages = core_apis.GetMessagesModule(
-        self._API_NAME, self._API_VERSION)
+  def __init__(self, api_client=None):
+    self.api_client = api_client
+    if self.api_client is None:
+      self.api_client = core_apis.GetClientInstance(API_NAME, API_VERSION)
+    self.api_messages = self.api_client.MESSAGES_MODULE
 
-  def ReportEvent(self, error_message, service, version=None, project=None):
+  def ReportEvent(self,
+                  error_message,
+                  service,
+                  version=None,
+                  project=None,
+                  request_url=None,
+                  user=None):
     """Creates a new error event and sends to StackDriver Reporting API.
 
     Args:
@@ -37,16 +45,27 @@ class ErrorReporting(object):
       service: str, Name of service
       version: str, Service version, defaults to None
       project: str, Project to report errors to, defaults to current
+      request_url: str, The request url that led to the error
+      user: str, The user affected by the error
     """
-    if project is None:
-      project = self._GetGcloudProject()
-
-    project_name = self._MakeProjectName(project)
-
     service_context = self.api_messages.ServiceContext(
         service=service, version=version)
+
     error_event = self.api_messages.ReportedErrorEvent(
         serviceContext=service_context, message=error_message)
+
+    if request_url or user:
+      error_context = self.api_messages.ErrorContext()
+      if request_url:
+        error_context.httpRequest = self.api_messages.HttpRequestContext(
+            url=request_url)
+      if user:
+        error_context.user = user
+      error_event.context = error_context
+
+    if project is None:
+      project = self._GetGcloudProject()
+    project_name = self._MakeProjectName(project)
 
     self.api_client.projects_events.Report(
         self.api_messages.ClouderrorreportingProjectsEventsReportRequest(

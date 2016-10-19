@@ -15,6 +15,8 @@
 """Base classes for abstracting away common logic."""
 
 import abc
+import collections
+import copy
 import cStringIO
 import json
 import textwrap
@@ -45,8 +47,7 @@ from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
-from googlecloudsdk.third_party.py27 import py27_collections as collections
-from googlecloudsdk.third_party.py27 import py27_copy as copy
+from googlecloudsdk.core.util import text
 import yaml
 
 
@@ -583,14 +584,14 @@ def GetMultiScopeListerHelp(resource, scopes):
           To list all {0} in zones ``us-central1-b'' and ``europe-west1-d'',
           run:
 
-            $ {{command}} --zones us-central1 europe-west1
+            $ {{command}} --zones us-central1,europe-west1
   """
   region_example_text = """\
 
           To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
           run:
 
-            $ {{command}} --regions us-central1 europe-west1
+            $ {{command}} --regions us-central1,europe-west1
   """
   global_example_text = """\
 
@@ -903,8 +904,16 @@ class MultiScopeDescriber(BaseDescriber):
 
 
 def GetMultiScopeDescriberHelp(resource, scopes):
-  """Returns the detailed help dict for a multiscope describe command."""
+  """Returns the detailed help dict for a multiscope describe command.
 
+  Args:
+    resource: resource name, singular form with no preposition
+    scopes: global/regional/zonal or mix of them
+
+  Returns:
+    Help for multi-scope describe command.
+  """
+  article = text.GetArticle(resource)
   zone_example_text = """\
 
           To get details about a zonal {0} in the ``us-central1-b'' zone, run:
@@ -925,10 +934,11 @@ def GetMultiScopeDescriberHelp(resource, scopes):
             $ {{command}} --global
   """
   return {
-      'brief': 'Display detailed information about a ' + resource,
+      'brief': ('Display detailed information about {0} {1}'
+                .format(article, resource)),
       'DESCRIPTION': """\
-          *{{command}}* displays all data associated with a {0} in a project.
-          """.format(resource),
+          *{{command}}* displays all data associated with {0} {1} in a project.
+          """.format(article, resource),
       'EXAMPLES': ("""\
           """ + (global_example_text
                  if ScopeType.global_scope in scopes else '')

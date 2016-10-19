@@ -127,6 +127,82 @@ def AddEnableCdn(parser, default):
       """
 
 
+def AddCacheKeyIncludeProtocol(parser, default):
+  """Adds cache key include/exclude protocol flag to the argparse."""
+  cache_key_include_protocol = parser.add_argument(
+      '--cache-key-include-protocol',
+      action='store_true',
+      default=default,
+      help='Enable including protocol in cache key.')
+  cache_key_include_protocol.detailed_help = """\
+      Enable including protocol in cache key. If enabled, http and https
+      requests will be cached separately. Can only be applied for global
+      resources.
+      """
+
+
+def AddCacheKeyIncludeHost(parser, default):
+  """Adds cache key include/exclude host flag to the argparse."""
+  cache_key_include_host = parser.add_argument(
+      '--cache-key-include-host',
+      action='store_true',
+      default=default,
+      help='Enable including host in cache key.')
+  cache_key_include_host.detailed_help = """\
+      Enable including host in cache key. If enabled, requests to different
+      hosts will be cached separately. Can only be applied for global resources.
+      """
+
+
+def AddCacheKeyIncludeQueryString(parser, default):
+  """Adds cache key include/exclude query string flag to the argparse."""
+  cache_key_include_query_string = parser.add_argument(
+      '--cache-key-include-query-string',
+      action='store_true',
+      default=default,
+      help='Enable including query string in cache key.')
+  cache_key_include_query_string.detailed_help = """\
+      Enable including query string in cache key. If enabled, the query string
+      parameters will be included according to
+      --cache-key-query-string-whitelist and --cache-key-query-string-blacklist.
+      If neither is set, the entire query string will be included. If disabled,
+      then the query string will be excluded from the cache key entirely. Can
+      only be applied for global resources.
+      """
+
+
+def AddCacheKeyQueryStringList(parser):
+  cache_key_query_string_list = parser.add_mutually_exclusive_group()
+  cache_key_query_string_whitelist = cache_key_query_string_list.add_argument(
+      '--cache-key-query-string-whitelist',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='QUERY_STRING',
+      default=None,
+      help=('Specifies a comma separated list of query string parameters'
+            'to include in cache keys.'))
+  cache_key_query_string_whitelist.detailed_help = """\
+      Specifies a comma separated list of query string parameters to include
+      in cache keys. All other parameters will be excluded. Either specify
+      --cache-key-query-string-whitelist or --cache-key-query-string-blacklist,
+      not both. '&' and '=' will be percent encoded and not treated as
+      delimiters. Can only be applied for global resources.
+      """
+  cache_key_query_string_blacklist = cache_key_query_string_list.add_argument(
+      '--cache-key-query-string-blacklist',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='QUERY_STRING',
+      default=None,
+      help=('Specifies a comma separated list of query string parameters'
+            'to exclude in cache keys.'))
+  cache_key_query_string_blacklist.detailed_help = """\
+      Specifies a comma separated list of query string parameters to exclude
+      in cache keys. All other parameters will be included. Either specify
+      --cache-key-query-string-whitelist or --cache-key-query-string-blacklist,
+      not both. '&' and '=' will be percent encoded and not treated as
+      delimiters. Can only be applied for global resources.
+      """
+
+
 def AddHealthChecks(parser):
   health_checks = parser.add_argument(
       '--health-checks',
@@ -226,6 +302,7 @@ def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
 
 
 def AddAffinityCookieTtl(parser, hidden=False):
+  """Adds affinity cookie Ttl flag to the argparse."""
   if hidden:
     help_str = argparse.SUPPRESS
   else:

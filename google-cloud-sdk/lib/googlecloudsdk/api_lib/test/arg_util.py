@@ -59,13 +59,31 @@ def AddCommonTestRunArgs(parser):
       'Google account before beginning the test.')
   parser.add_argument(
       '--obb-files',
-      type=arg_parsers.ArgList(min_length=1, max_length=2),
+      type=arg_parsers.ArgList(
+          min_length=1, max_length=2),
       metavar='OBB_FILE',
       help='A list of one or two Android OBB file names which will be copied '
       'to each test device before the tests will run (default: None). Each '
       'OBB file name must conform to the format as specified by Android (e.g. '
       '[main|patch].0300110.com.example.android.obb) and will be installed '
-      'into <shared-storage>/Android/obb/<package-name>/ on the test device')
+      'into <shared-storage>/Android/obb/<package-name>/ on the test device.')
+  parser.add_argument(
+      '--directories-to-pull',
+      type=arg_parsers.ArgList(),
+      metavar='DIR_TO_PULL',
+      help='A list of paths that will be copied from the device\'s storage to '
+      'the designated results bucket after the test is complete. (ex. '
+      '--directories-to-pull /sdcard/tempDir1,/data/tempDir2)')
+  parser.add_argument(
+      '--environment-variables',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help='A comma-separated, key=value, map of environment variables and '
+      'their desired values. The environment variables passed here will '
+      'be mirrored on to the adb run command. For example, specify '
+      '--environment-variables '
+      'coverage=true,coverageFile="/sdcard/tempDir/coverage.ec" to enable code '
+      'coverage and provide a file path to store the coverage results.')
 
 
 def AddSharedCommandArgs(parser):
@@ -236,6 +254,8 @@ def Prepare(args, catalog):
   arg_validate.ValidateResultsBucket(args)
   arg_validate.ValidateObbFileNames(args.obb_files)
   arg_validate.ValidateRoboDirectivesList(args)
+  arg_validate.ValidateEnvironmentVariablesList(args)
+  arg_validate.ValidateDirectoriesToPullList(args)
 
 
 # These nested dictionaries define which test args are required, optional, or
@@ -263,9 +283,12 @@ _TEST_TYPE_ARG_RULES = {
 # Define the test args which are shared among all test types.
 _SHARED_ARG_RULES = {
     'required': ['type', 'app'],
-    'optional': ['device_ids', 'os_version_ids', 'locales', 'orientations',
-                 'app_package', 'async', 'auto_google_login', 'obb_files',
-                 'results_bucket', 'results_history_name', 'timeout'],
+    'optional': [
+        'device_ids', 'os_version_ids', 'locales', 'orientations',
+        'app_package', 'async', 'auto_google_login', 'obb_files',
+        'results_bucket', 'results_history_name', 'timeout',
+        'environment_variables', 'directories_to_pull'
+    ],
     'defaults': {
         'async': False,
         'auto_google_login': False,

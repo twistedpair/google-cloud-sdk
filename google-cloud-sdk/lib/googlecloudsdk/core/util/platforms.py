@@ -303,7 +303,8 @@ class PythonVersion(object):
   The Cloud SDK officially supports Python 2.7.
 
   However, many commands do work with Python 2.6, so we don't error out when
-  users are using this (we consider it "compatible" but not "supported").
+  users are using this (we consider it sometimes "compatible" but not
+  "supported").
   """
 
   # See class docstring for descriptions of what these mean
@@ -324,16 +325,20 @@ class PythonVersion(object):
 
   def __PrintEnvVarMessage(self):
     """Prints how to set CLOUDSDK_PYTHON."""
-    sys.stderr.write('\nIf you have a compatible Python interpreter installed, '
-                     'you can use it by setting the CLOUDSDK_PYTHON '
-                     'environment variable to point to it.\n')
+    sys.stderr.write("""\
+
+If you have a compatible Python interpreter installed, you can use it by setting
+the CLOUDSDK_PYTHON environment variable to point to it.
+
+""")
 
   def IsCompatible(self, print_errors=True):
     """Ensure that the Python version we are using is compatible.
 
     This will print an error message if not compatible.
 
-    Compatible versions are 2.6 and 2.7.
+    Compatible versions are 2.6 and 2.7. Although we don't guarantee support for
+    2.6 so we want to warn about it.
 
     Args:
       print_errors: bool, if False disable the error messages about not being
@@ -362,6 +367,17 @@ class PythonVersion(object):
         sys.stderr.write(error)
         self.__PrintEnvVarMessage()
       return False
+
+    # Warn that 2.6 might not work.
+    if (self.version >= self.MIN_REQUIRED_VERSION and
+        self.version < self.MIN_SUPPORTED_VERSION and
+        print_errors):
+      sys.stderr.write("""\
+WARNING:  Python 2.6.x is no longer officially supported by the Google Cloud SDK
+and may not function correctly.  Please upgrade to Python {0}
+""".format(self.MinSupportedVersionString()))
+      self.__PrintEnvVarMessage()
+
     return True
 
   def IsSupported(self):
@@ -374,11 +390,3 @@ class PythonVersion(object):
     """
     return (self.IsCompatible(print_errors=False) and
             self.version >= self.MIN_SUPPORTED_VERSION)
-
-  def IsPython26(self):
-    """Check specifically if we are running on Python 2.6 so we can warn.
-
-    Returns:
-      True, if running on Python 2.6, False otherwise.
-    """
-    return self.version == (2, 6)

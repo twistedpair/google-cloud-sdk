@@ -61,10 +61,10 @@ class BigqueryDatasetsListRequest(_messages.Message):
   Fields:
     all: Whether to list all datasets, including hidden ones
     filter: An expression for filtering the results of the request by label.
-      The syntax is "labels.[:]". Multiple filters can be ANDed together by
-      connecting with a space. Example: "labels.department:receiving
-      labels.active". See https://cloud.google.com/bigquery/docs/labeling-
-      datasets#filtering_datasets_using_labels for details.
+      The syntax is "labels.<name>[:<value>]". Multiple filters can be ANDed
+      together by connecting with a space. Example:
+      "labels.department:receiving labels.active". See Filtering datasets
+      using labels for details.
     maxResults: The maximum number of results to return
     pageToken: Page token, returned by a previous call, to request the next
       page of results
@@ -527,12 +527,8 @@ class Dataset(_messages.Message):
     AccessValueListEntry: A AccessValueListEntry object.
     LabelsValue: [Experimental] The labels associated with this dataset. You
       can use these to organize and group your datasets. You can set this
-      property when inserting or updating a dataset. Label keys and values can
-      be no longer than 63 characters, can only contain letters, numeric
-      characters, underscores and dashes. International characters are
-      allowed. Label values are optional. Label keys must start with a letter
-      and must be unique within a dataset. Both keys and values are
-      additionally constrained to be <= 128 bytes in size.
+      property when inserting or updating a dataset. See Labeling Datasets for
+      more information.
 
   Fields:
     access: [Optional] An array of objects that define dataset access for one
@@ -567,12 +563,8 @@ class Dataset(_messages.Message):
     kind: [Output-only] The resource type.
     labels: [Experimental] The labels associated with this dataset. You can
       use these to organize and group your datasets. You can set this property
-      when inserting or updating a dataset. Label keys and values can be no
-      longer than 63 characters, can only contain letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter and must be
-      unique within a dataset. Both keys and values are additionally
-      constrained to be <= 128 bytes in size.
+      when inserting or updating a dataset. See Labeling Datasets for more
+      information.
     lastModifiedTime: [Output-only] The date when this dataset or any of its
       tables was last modified, in milliseconds since the epoch.
     location: [Experimental] The geographic location where the dataset should
@@ -618,12 +610,8 @@ class Dataset(_messages.Message):
   class LabelsValue(_messages.Message):
     """[Experimental] The labels associated with this dataset. You can use
     these to organize and group your datasets. You can set this property when
-    inserting or updating a dataset. Label keys and values can be no longer
-    than 63 characters, can only contain letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter and must be unique
-    within a dataset. Both keys and values are additionally constrained to be
-    <= 128 bytes in size.
+    inserting or updating a dataset. See Labeling Datasets for more
+    information.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -999,6 +987,15 @@ class JobCancelResponse(_messages.Message):
 class JobConfiguration(_messages.Message):
   """A JobConfiguration object.
 
+  Messages:
+    LabelsValue: [Experimental] The labels associated with this job. You can
+      use these to organize and group your jobs. Label keys and values can be
+      no longer than 63 characters, can only contain letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and must be unique within a dataset. Both keys and values are
+      additionally constrained to be <= 128 bytes in size.
+
   Fields:
     copy: [Pick one] Copies a table.
     dryRun: [Optional] If set, don't actually run this job. A valid query will
@@ -1006,15 +1003,53 @@ class JobConfiguration(_messages.Message):
       invalid query will return the same error it would if it wasn't a dry
       run. Behavior of non-query jobs is undefined.
     extract: [Pick one] Configures an extract job.
+    labels: [Experimental] The labels associated with this job. You can use
+      these to organize and group your jobs. Label keys and values can be no
+      longer than 63 characters, can only contain letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter and must be
+      unique within a dataset. Both keys and values are additionally
+      constrained to be <= 128 bytes in size.
     load: [Pick one] Configures a load job.
     query: [Pick one] Configures a query job.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Experimental] The labels associated with this job. You can use these
+    to organize and group your jobs. Label keys and values can be no longer
+    than 63 characters, can only contain letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and must be unique
+    within a dataset. Both keys and values are additionally constrained to be
+    <= 128 bytes in size.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   copy = _messages.MessageField('JobConfigurationTableCopy', 1)
   dryRun = _messages.BooleanField(2)
   extract = _messages.MessageField('JobConfigurationExtract', 3)
-  load = _messages.MessageField('JobConfigurationLoad', 4)
-  query = _messages.MessageField('JobConfigurationQuery', 5)
+  labels = _messages.MessageField('LabelsValue', 4)
+  load = _messages.MessageField('JobConfigurationLoad', 5)
+  query = _messages.MessageField('JobConfigurationQuery', 6)
 
 
 class JobConfigurationExtract(_messages.Message):
@@ -1202,11 +1237,14 @@ class JobConfigurationQuery(_messages.Message):
       Queries that will have bytes billed beyond this limit will fail (without
       incurring a charge). If unspecified, this will be set to your project
       default.
+    parameterMode: [Experimental] Standard SQL only. Whether to use positional
+      (?) or named (@myparam) query parameters in this query.
     preserveNulls: [Deprecated] This property is deprecated.
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
     query: [Required] BigQuery SQL query to execute.
-    schemaUpdateOptions: [Experimental] Allows the schema of the desitination
+    queryParameters: Query parameters for standard SQL queries.
+    schemaUpdateOptions: [Experimental] Allows the schema of the destination
       table to be updated as a side effect of the query job. Schema update
       options are supported in two cases: when writeDisposition is
       WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the
@@ -1281,15 +1319,17 @@ class JobConfigurationQuery(_messages.Message):
   flattenResults = _messages.BooleanField(5, default=True)
   maximumBillingTier = _messages.IntegerField(6, variant=_messages.Variant.INT32, default=1)
   maximumBytesBilled = _messages.IntegerField(7)
-  preserveNulls = _messages.BooleanField(8)
-  priority = _messages.StringField(9)
-  query = _messages.StringField(10)
-  schemaUpdateOptions = _messages.StringField(11, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 12)
-  useLegacySql = _messages.BooleanField(13)
-  useQueryCache = _messages.BooleanField(14, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 15, repeated=True)
-  writeDisposition = _messages.StringField(16)
+  parameterMode = _messages.StringField(8)
+  preserveNulls = _messages.BooleanField(9)
+  priority = _messages.StringField(10)
+  query = _messages.StringField(11)
+  queryParameters = _messages.MessageField('QueryParameter', 12, repeated=True)
+  schemaUpdateOptions = _messages.StringField(13, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 14)
+  useLegacySql = _messages.BooleanField(15)
+  useQueryCache = _messages.BooleanField(16, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 17, repeated=True)
+  writeDisposition = _messages.StringField(18)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -1432,6 +1472,9 @@ class JobStatistics2(_messages.Message):
       only for successful dry run of non-legacy SQL queries.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
+    undeclaredQueryParameters: [Output-only, Experimental] Standard SQL only:
+      list of undeclared query parameters detected during a dry run
+      validation.
   """
 
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1442,6 +1485,7 @@ class JobStatistics2(_messages.Message):
   schema = _messages.MessageField('TableSchema', 6)
   totalBytesBilled = _messages.IntegerField(7)
   totalBytesProcessed = _messages.IntegerField(8)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 9, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -1570,6 +1614,98 @@ class ProjectReference(_messages.Message):
   projectId = _messages.StringField(1)
 
 
+class QueryParameter(_messages.Message):
+  """A QueryParameter object.
+
+  Fields:
+    name: [Optional] If unset, this is a positional parameter. Otherwise,
+      should be unique within a query.
+    parameterType: [Required] The type of this parameter.
+    parameterValue: [Required] The value of this parameter.
+  """
+
+  name = _messages.StringField(1)
+  parameterType = _messages.MessageField('QueryParameterType', 2)
+  parameterValue = _messages.MessageField('QueryParameterValue', 3)
+
+
+class QueryParameterType(_messages.Message):
+  """A QueryParameterType object.
+
+  Messages:
+    StructTypesValueListEntry: A StructTypesValueListEntry object.
+
+  Fields:
+    arrayType: [Optional] The type of the array's elements, if this is an
+      array.
+    structTypes: [Optional] The types of the fields of this struct, in order,
+      if this is a struct.
+    type: [Required] The top level type of this field.
+  """
+
+  class StructTypesValueListEntry(_messages.Message):
+    """A StructTypesValueListEntry object.
+
+    Fields:
+      description: [Optional] Human-oriented description of the field.
+      name: [Optional] The name of this field.
+      type: [Required] The type of this field.
+    """
+
+    description = _messages.StringField(1)
+    name = _messages.StringField(2)
+    type = _messages.MessageField('QueryParameterType', 3)
+
+  arrayType = _messages.MessageField('QueryParameterType', 1)
+  structTypes = _messages.MessageField('StructTypesValueListEntry', 2, repeated=True)
+  type = _messages.StringField(3)
+
+
+class QueryParameterValue(_messages.Message):
+  """A QueryParameterValue object.
+
+  Messages:
+    StructValuesValue: [Optional] The struct field values, in order of the
+      struct type's declaration.
+
+  Fields:
+    arrayValues: [Optional] The array values, if this is an array type.
+    structValues: [Optional] The struct field values, in order of the struct
+      type's declaration.
+    value: [Optional] The value of this value, if a simple scalar type.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StructValuesValue(_messages.Message):
+    """[Optional] The struct field values, in order of the struct type's
+    declaration.
+
+    Messages:
+      AdditionalProperty: An additional property for a StructValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type StructValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a StructValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A QueryParameterValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('QueryParameterValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arrayValues = _messages.MessageField('QueryParameterValue', 1, repeated=True)
+  structValues = _messages.MessageField('StructValuesValue', 2)
+  value = _messages.StringField(3)
+
+
 class QueryRequest(_messages.Message):
   """A QueryRequest object.
 
@@ -1589,10 +1725,13 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
+    parameterMode: [Experimental] Standard SQL only. Whether to use positional
+      (?) or named (@myparam) query parameters in this query.
     preserveNulls: [Deprecated] This property is deprecated.
     query: [Required] A query string, following the BigQuery query syntax, of
       the query to execute. Example: "SELECT count(f1) FROM
       [myProjectId:myDatasetId.myTableId]".
+    queryParameters: [Experimental] Query parameters for Standard SQL queries.
     timeoutMs: [Optional] How long to wait for the query to complete, in
       milliseconds, before the request times out and returns. Note that this
       is only a timeout for the request, not the query. If the query takes
@@ -1616,11 +1755,13 @@ class QueryRequest(_messages.Message):
   dryRun = _messages.BooleanField(2)
   kind = _messages.StringField(3, default=u'bigquery#queryRequest')
   maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  preserveNulls = _messages.BooleanField(5)
-  query = _messages.StringField(6)
-  timeoutMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(8)
-  useQueryCache = _messages.BooleanField(9, default=True)
+  parameterMode = _messages.StringField(5)
+  preserveNulls = _messages.BooleanField(6)
+  query = _messages.StringField(7)
+  queryParameters = _messages.MessageField('QueryParameter', 8, repeated=True)
+  timeoutMs = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(10, default=True)
+  useQueryCache = _messages.BooleanField(11, default=True)
 
 
 class QueryResponse(_messages.Message):
@@ -1913,8 +2054,8 @@ class TableFieldSchema(_messages.Message):
       A-Z), numbers (0-9), or underscores (_), and must start with a letter or
       underscore. The maximum length is 128 characters.
     type: [Required] The field data type. Possible values include STRING,
-      BYTES, INTEGER, FLOAT, BOOLEAN, TIMESTAMP or RECORD (where RECORD
-      indicates that the field contains a nested schema).
+      BYTES, INTEGER, FLOAT, BOOLEAN, TIMESTAMP, DATE, TIME, DATETIME, or
+      RECORD (where RECORD indicates that the field contains a nested schema).
   """
 
   description = _messages.StringField(1)

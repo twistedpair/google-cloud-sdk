@@ -48,7 +48,9 @@ def Get(project_ref):
   """Get project information."""
   client = projects_util.GetClient()
   try:
-    return client.projects.Get(project_ref.Request())
+    return client.projects.Get(
+        client.MESSAGES_MODULE.CloudresourcemanagerProjectsGetRequest(
+            projectId=project_ref.projectId))
   except exceptions.HttpError as error:
     raise projects_util.ConvertHttpError(error)
 
@@ -110,7 +112,9 @@ def Update(project_ref, name=None, organization=None, update_labels=None,
   messages = projects_util.GetMessages()
 
   try:
-    project = client.projects.Get(project_ref.Request())
+    project = client.projects.Get(
+        client.MESSAGES_MODULE.CloudresourcemanagerProjectsGetRequest(
+            projectId=project_ref.projectId))
   except exceptions.HttpError as error:
     raise projects_util.ConvertHttpError(error)
 

@@ -46,7 +46,11 @@ def WaitForOperation(client, operation_ref, message):
   """
   with progress_tracker.ProgressTracker(message, autotick=False) as pt:
     while True:
-      operation = client.zoneOperations.Get(operation_ref.Request())
+      operation = client.zoneOperations.Get(
+          client.MESSAGES_MODULE.ReplicapoolupdaterZoneOperationsGetRequest(
+              project=operation_ref.project,
+              zone=operation_ref.zone,
+              operation=operation_ref.operation))
       if operation.error:
         return False
       if operation.status == 'DONE':

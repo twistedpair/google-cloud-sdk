@@ -14,6 +14,7 @@
 
 """A utility library to support interaction with the Tool Results service."""
 
+import collections
 import time
 import urllib
 import urlparse
@@ -21,7 +22,6 @@ import urlparse
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 _STATUS_INTERVAL_SECS = 3

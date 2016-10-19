@@ -321,7 +321,6 @@ def GetApiCollections(api_name, api_version):
           api_version,
           resources_module.BASE_URL,
           collection.collection_name,
-          collection.request_type,
           collection.path,
           collection.flat_paths,
           collection.params)

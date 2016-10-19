@@ -201,7 +201,11 @@ class APIAdapter(object):
       Error: if cluster cannot be found.
     """
     try:
-      return self.client.projects_zones_clusters.Get(cluster_ref.Request())
+      return self.client.projects_zones_clusters.Get(
+          self.messages.ContainerProjectsZonesClustersGetRequest(
+              projectId=cluster_ref.projectId,
+              zone=cluster_ref.zone,
+              clusterId=cluster_ref.clusterId))
     except apitools_exceptions.HttpError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
       if api_error.payload.status_code != 404:
@@ -255,7 +259,14 @@ class APIAdapter(object):
     raise NotImplementedError('Update requires a v1 client.')
 
   def GetOperation(self, operation_ref):
-    return self.client.projects_zones_operations.Get(operation_ref.Request())
+    return self.client.projects_zones_operations.Get(
+        self.messages.ContainerProjectsZonesOperationsGetRequest(
+            projectId=operation_ref.projectId,
+            zone=operation_ref.zone,
+            operationId=operation_ref.operationId))
+
+  def CancelOperation(self, op_ref):
+    raise NotImplementedError('CancelOperation is not overriden')
 
   def GetComputeOperation(self, project, zone, operation_id):
     req = self.compute_messages.ComputeZoneOperationsGetRequest(
@@ -744,6 +755,13 @@ class V1Adapter(APIAdapter):
             projectId=node_pool_ref.projectId,
             nodePoolId=node_pool_ref.nodePoolId))
     return self.ParseOperation(operation.name)
+
+  def CancelOperation(self, op_ref):
+    req = self.messages.ContainerProjectsZonesOperationsCancelRequest(
+        zone=op_ref.zone,
+        projectId=op_ref.projectId,
+        operationId=op_ref.operationId)
+    return self.client.projects_zones_operations.Cancel(req)
 
   def IsRunning(self, cluster):
     return (cluster.status ==

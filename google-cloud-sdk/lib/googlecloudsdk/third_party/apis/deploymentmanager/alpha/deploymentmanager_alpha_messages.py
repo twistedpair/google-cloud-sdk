@@ -79,6 +79,67 @@ class CollectionOverride(_messages.Message):
   options = _messages.MessageField('Options', 2)
 
 
+class CompositeType(_messages.Message):
+  """Holds the composite type.
+
+  Fields:
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    insertTime: [Output Only] Timestamp when the composite type was created,
+      in RFC3339 text format.
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    name: Name of the composite type.
+    operation: [Output Only] The Operation that most recently ran, or is
+      currently running, on this composite type.
+    selfLink: [Output Only] Self link for the type provider.
+    status: A string attribute.
+    templateContents: Files for the template type.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(3)
+  labels = _messages.MessageField('CompositeTypeLabelEntry', 4, repeated=True)
+  name = _messages.StringField(5)
+  operation = _messages.MessageField('Operation', 6)
+  selfLink = _messages.StringField(7)
+  status = _messages.StringField(8)
+  templateContents = _messages.MessageField('TemplateContents', 9)
+
+
+class CompositeTypeLabelEntry(_messages.Message):
+  """A CompositeTypeLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class CompositeTypesListResponse(_messages.Message):
+  """A response that returns all Composite Types supported by Deployment
+  Manager
+
+  Fields:
+    compositeTypes: [Output Only] A list of resource composite types supported
+      by Deployment Manager.
+    nextPageToken: A token used to continue a truncated list request.
+  """
+
+  compositeTypes = _messages.MessageField('CompositeType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class Condition(_messages.Message):
   """A condition to be met.
 
@@ -233,6 +294,121 @@ class DeploymentUpdateLabelEntry(_messages.Message):
 
   key = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class DeploymentmanagerCompositeTypesDeleteRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesDeleteRequest object.
+
+  Fields:
+    compositeType: The name of the type for this request.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesGetRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesGetRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesInsertRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesInsertRequest object.
+
+  Fields:
+    compositeType: A CompositeType resource to be passed as the request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.MessageField('CompositeType', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesListRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class DeploymentmanagerCompositeTypesPatchRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesPatchRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    compositeTypeResource: A CompositeType resource to be passed as the
+      request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  compositeTypeResource = _messages.MessageField('CompositeType', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class DeploymentmanagerCompositeTypesUpdateRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesUpdateRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    compositeTypeResource: A CompositeType resource to be passed as the
+      request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  compositeTypeResource = _messages.MessageField('CompositeType', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsCancelPreviewRequest(_messages.Message):
@@ -703,6 +879,121 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
   project = _messages.StringField(6, required=True)
 
 
+class DeploymentmanagerTypeProvidersDeleteRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersDeleteRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerTypeProvidersGetRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersGetRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerTypeProvidersInsertRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersInsertRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: A TypeProvider resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.MessageField('TypeProvider', 2)
+
+
+class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class DeploymentmanagerTypeProvidersPatchRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersPatchRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+    typeProviderResource: A TypeProvider resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+  typeProviderResource = _messages.MessageField('TypeProvider', 3)
+
+
+class DeploymentmanagerTypeProvidersUpdateRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersUpdateRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+    typeProviderResource: A TypeProvider resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+  typeProviderResource = _messages.MessageField('TypeProvider', 3)
+
+
 class DeploymentmanagerTypesDeleteRequest(_messages.Message):
   """A DeploymentmanagerTypesDeleteRequest object.
 
@@ -876,6 +1167,23 @@ class ImportFile(_messages.Message):
 
   content = _messages.StringField(1)
   name = _messages.StringField(2)
+
+
+class InputMapping(_messages.Message):
+  """InputMapping creates a 'virtual' property that will be injected into the
+  properties before sending the request to the underlying API.
+
+  Fields:
+    fieldName: The name of the field that is going to be injected.
+    location: The location where this mapping applies.
+    methodMatch: Regex to evaluate on method to decide if input applies.
+    value: A jsonPath expression to select an element.
+  """
+
+  fieldName = _messages.StringField(1)
+  location = _messages.StringField(2)
+  methodMatch = _messages.StringField(3)
+  value = _messages.StringField(4)
 
 
 class LogConfig(_messages.Message):
@@ -1108,6 +1416,7 @@ class Options(_messages.Message):
   """Options allows customized resource handling by Deployment Manager.
 
   Fields:
+    inputMappings: The mappings that apply for requests.
     nameProperty: The json path to the field in the resource JSON body into
       which the resource name should be mapped. Leaving this empty indicates
       that there should be no mapping performed.
@@ -1115,8 +1424,9 @@ class Options(_messages.Message):
       resource.
   """
 
-  nameProperty = _messages.StringField(1)
-  validationOptions = _messages.MessageField('ValidationOptions', 2)
+  inputMappings = _messages.MessageField('InputMapping', 1, repeated=True)
+  nameProperty = _messages.StringField(2)
+  validationOptions = _messages.MessageField('ValidationOptions', 3)
 
 
 class Policy(_messages.Message):
@@ -1457,6 +1767,23 @@ class TargetConfiguration(_messages.Message):
   imports = _messages.MessageField('ImportFile', 2, repeated=True)
 
 
+class TemplateContents(_messages.Message):
+  """Files that make up the template contents of a template type.
+
+  Fields:
+    imports: Import files referenced by the main template.
+    interpreter: Which interpreter (python or jinja) should be used during
+      expansion.
+    schema: The contents of the template schema.
+    template: The contents of the main template file.
+  """
+
+  imports = _messages.MessageField('ImportFile', 1, repeated=True)
+  interpreter = _messages.StringField(2)
+  schema = _messages.StringField(3)
+  template = _messages.StringField(4)
+
+
 class TestPermissionsRequest(_messages.Message):
   """A TestPermissionsRequest object.
 
@@ -1523,6 +1850,72 @@ class TypeLabelEntry(_messages.Message):
 
   key = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class TypeProvider(_messages.Message):
+  """A type provider that describes a service-backed Type.
+
+  Fields:
+    collectionOverrides: Allows resource handling overrides for specific
+      collections
+    credential: Credential used when interacting with this type.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    descriptorUrl: Descriptor Url for the this type provider.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    insertTime: [Output Only] Timestamp when the type provider was created, in
+      RFC3339 text format.
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    name: Name of the type provider.
+    operation: [Output Only] The Operation that most recently ran, or is
+      currently running, on this type provider.
+    options: Options to apply when handling any resources in this service.
+    selfLink: [Output Only] Self link for the type provider.
+  """
+
+  collectionOverrides = _messages.MessageField('CollectionOverride', 1, repeated=True)
+  credential = _messages.MessageField('Credential', 2)
+  description = _messages.StringField(3)
+  descriptorUrl = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(6)
+  labels = _messages.MessageField('TypeProviderLabelEntry', 7, repeated=True)
+  name = _messages.StringField(8)
+  operation = _messages.MessageField('Operation', 9)
+  options = _messages.MessageField('Options', 10)
+  selfLink = _messages.StringField(11)
+
+
+class TypeProviderLabelEntry(_messages.Message):
+  """A TypeProviderLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class TypeProvidersListResponse(_messages.Message):
+  """A response that returns all Type Providers supported by Deployment
+  Manager
+
+  Fields:
+    nextPageToken: A token used to continue a truncated list request.
+    typeProviders: [Output Only] A list of resource type providers supported
+      by Deployment Manager.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  typeProviders = _messages.MessageField('TypeProvider', 2, repeated=True)
 
 
 class TypesListResponse(_messages.Message):

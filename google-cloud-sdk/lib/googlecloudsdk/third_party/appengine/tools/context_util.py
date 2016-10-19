@@ -18,15 +18,8 @@ import json
 import logging
 import os
 import re
+import subprocess
 
-try:
-  # This code is also used in googlecloudsdk, which needs the Python
-  # 2.7-compatabile version of subprocess for CentOS support (which uses
-  # Python 2.6). Other environments (which support Python 2.7) can use the
-  # default version.
-  from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess  # pylint: disable=g-import-not-at-top
-except ImportError:
-  import subprocess  # pylint: disable=g-import-not-at-top
 
 _REMOTE_URL_PATTERN = r'remote\.(.*)\.url'
 

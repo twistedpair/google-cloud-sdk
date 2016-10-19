@@ -48,11 +48,11 @@ Example usage:
 
 import argparse
 import copy
-import datetime
 import re
 import sys
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import times
 
 
 __all__ = ['Duration', 'BinarySize']
@@ -469,12 +469,10 @@ class Day(object):
     if not s:
       return None
     try:
-      return datetime.datetime.strptime(s, '%Y-%m-%d').date()
+      return times.ParseDateTime(s, '%Y-%m-%d').date()
     except ValueError:
       raise ArgumentTypeError(
-          _GenerateErrorMessage(
-              "Failed to parse date. Value should be in the form 'YYYY-MM-DD",
-              user_input=s))
+          _GenerateErrorMessage('Failed to parse date.', user_input=s))
 
 
 class Datetime(object):
@@ -485,18 +483,11 @@ class Datetime(object):
     """Parses a string value into a Datetime object."""
     if not s:
       return None
-    accepted_formats = ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M:%S.%f',
-                        '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ')
-    # TODO(user): Add timezone support.
-    for date_format in accepted_formats:
-      try:
-        return datetime.datetime.strptime(s, date_format)
-      except ValueError:
-        pass
-    raise ArgumentTypeError(
-        _GenerateErrorMessage(
-            'Failed to parse date. Value should be in ISO or RFC3339 format',
-            user_input=s))
+    try:
+      return times.ParseDateTime(s)
+    except ValueError:
+      raise ArgumentTypeError(
+          _GenerateErrorMessage('Failed to parse date.', user_input=s))
 
 
 class DayOfWeek(object):

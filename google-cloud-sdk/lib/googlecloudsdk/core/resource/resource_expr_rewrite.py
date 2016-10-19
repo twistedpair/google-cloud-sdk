@@ -102,6 +102,18 @@ class BackendBase(object):
     """Rewrites <key op operand>."""
     return None
 
+  def Parenthesize(self, expression):
+    """Returns expression enclosed in (...) if it contains AND/OR."""
+    # Check for unparenthesized AND|OR.
+    lex = resource_lex.Lexer(expression)
+    while True:
+      tok = lex.Token(' ()', balance_parens=True)
+      if not tok:
+        break
+      if tok in ['AND', 'OR']:
+        return '({expression})'.format(expression=expression)
+    return expression
+
   def Quote(self, value, always=False):
     """Returns value or value "..." quoted with C-style escapes if needed.
 
@@ -143,7 +155,7 @@ class BackendBase(object):
       chars.append(c)
     string = ''.join(chars)
 
-    return '"{0}"'.format(string) if enclose else string
+    return '"{string}"'.format(string=string) if enclose else string
 
   def QuoteOperand(self, operand, always=False):
     """Returns operand enclosed in "..." if necessary.
@@ -170,25 +182,39 @@ class BackendBase(object):
     return _Expr(None)
 
   def ExprAND(self, left, right):
+    """Returns an AND expression node."""
+    if left:
+      left = left.Rewrite()
+    if right:
+      right = right.Rewrite()
     # None AND x => x
-    if left.Rewrite() is None:
-      return right
+    if not left:
+      return _Expr(right) if right else None
     # x AND None => x
-    if right.Rewrite() is None:
-      return left
-    return _Expr(self.RewriteAND(left.Rewrite(), right.Rewrite()))
+    if not right:
+      return _Expr(left)
+    return _Expr(self.RewriteAND(left, right))
 
   def ExprOR(self, left, right):
+    """Returns an OR expression node."""
+    if left:
+      left = left.Rewrite()
     # None OR x => None
-    # x OR None => None
-    if left.Rewrite() is None or right.Rewrite() is None:
+    if not left:
       return _Expr(None)
-    return _Expr(self.RewriteOR(left.Rewrite(), right.Rewrite()))
+    # x OR None => None
+    if right:
+      right = right.Rewrite()
+    if not right:
+      return _Expr(None)
+    return _Expr(self.RewriteOR(left, right))
 
   def ExprNOT(self, expr):
-    if expr.Rewrite() is None:
+    if expr:
+      expr = expr.Rewrite()
+    if not expr:
       return _Expr(None)
-    return _Expr(self.RewriteNOT(expr.Rewrite()))
+    return _Expr(self.RewriteNOT(expr))
 
   def ExprGlobal(self, call):
     return _Expr(self.RewriteGlobal(call))
@@ -235,15 +261,17 @@ class Backend(BackendBase):
 
   def RewriteAND(self, left, right):
     """Rewrites <left AND right>."""
-    return '({left} AND {right})'.format(left=left, right=right)
+    return '{left} AND {right}'.format(left=self.Parenthesize(left),
+                                       right=self.Parenthesize(right))
 
   def RewriteOR(self, left, right):
     """Rewrites <left OR right>."""
-    return '({left} OR {right})'.format(left=left, right=right)
+    return '{left} OR {right}'.format(left=self.Parenthesize(left),
+                                      right=self.Parenthesize(right))
 
-  def RewriteNOT(self, expr):
-    """Rewrites <NOT expr>."""
-    return '(NOT {expr})'.format(expr=expr)
+  def RewriteNOT(self, expression):
+    """Rewrites <NOT expression>."""
+    return 'NOT {expression}'.format(expression=self.Parenthesize(expression))
 
   def RewriteOperand(self, operand):
     """Rewrites an operand."""

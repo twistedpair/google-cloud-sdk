@@ -43,7 +43,6 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.util import files
 
 
 class VersionPromotionError(core_exceptions.Error):
@@ -88,7 +87,7 @@ class DeployOptions(object):
     return cls(promote, stop_previous_version, enable_endpoints, app_create)
 
 
-def _UploadFiles(service, code_bucket_ref):
+def _UploadFiles(service, source_dir, code_bucket_ref):
   """Upload files in the service being deployed, if necessary.
 
   "Necessary" here means that the service is not "hermetic." A hermetic service
@@ -99,6 +98,7 @@ def _UploadFiles(service, code_bucket_ref):
 
   Args:
     service: configuration for service to upload files for
+    source_dir: str, path to the service's source directory
     code_bucket_ref: cloud_storage.BucketReference, the code bucket to upload to
 
   Returns:
@@ -109,11 +109,11 @@ def _UploadFiles(service, code_bucket_ref):
   if not service.is_hermetic:
     if properties.VALUES.app.use_gsutil.GetBool():
       manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-          service, code_bucket_ref)
+          service, source_dir, code_bucket_ref)
       metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
     else:
       manifest = deploy_app_command_util.CopyFilesToCodeBucketNoGsUtil(
-          service, code_bucket_ref)
+          service, source_dir, code_bucket_ref)
       metrics.CustomTimedEvent(metric_names.COPY_APP_FILES_NO_GSUTIL)
   return manifest
 
@@ -135,7 +135,7 @@ class ServiceDeployer(object):
     self.stager = stager
     self.deploy_options = deploy_options
 
-  def _PossiblyConfigureEndpoints(self, service, new_version):
+  def _PossiblyConfigureEndpoints(self, service, source_dir, new_version):
     """Configures endpoints for this service (if enabled).
 
     If the app has enabled Endpoints API Management features, pass control to
@@ -148,23 +148,26 @@ class ServiceDeployer(object):
     Args:
       service: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
+      source_dir: str, path to the service's source directory
       new_version: version_util.Version describing where to deploy the service
 
     Returns:
       EndpointsServiceInfo, or None if endpoints were not created.
     """
     if self.deploy_options.enable_endpoints:
-      return cloud_endpoints.ProcessEndpointsService(service,
+      return cloud_endpoints.ProcessEndpointsService(service, source_dir,
                                                      new_version.project)
     return None
 
-  def _PossiblyBuildAndPush(self, new_version, service, image, code_bucket_ref):
+  def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
+                            code_bucket_ref):
     """Builds and Pushes the Docker image if necessary for this service.
 
     Args:
       new_version: version_util.Version describing where to deploy the service
       service: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
+      source_dir: str, path to the service's source directory
       image: str or None, the URL for the Docker image to be deployed (if image
         already exists).
       code_bucket_ref: cloud_storage.BucketReference where the service's files
@@ -180,7 +183,8 @@ class ServiceDeployer(object):
                     'currently in Beta')
       if not image:
         image = deploy_command_util.BuildAndPushDockerImage(
-            new_version.project, service, new_version.id, code_bucket_ref)
+            new_version.project, service, source_dir, new_version.id,
+            code_bucket_ref)
     else:
       image = None
     return image
@@ -236,26 +240,23 @@ class ServiceDeployer(object):
                      .format(service=new_version.service))
 
     with self.stager.Stage(service.file, service.runtime,
-                           service.env) as app_yaml:
-      if app_yaml:
-        app_dir = os.path.dirname(app_yaml)
-      else:
-        app_dir = os.getcwd()
-      with files.ChDir(app_dir):
-        endpoints_info = self._PossiblyConfigureEndpoints(service, new_version)
-        image = self._PossiblyBuildAndPush(new_version, service, image,
-                                           code_bucket_ref)
-        manifest = _UploadFiles(service, code_bucket_ref)
+                           service.env) as staging_dir:
+      source_dir = staging_dir or os.path.dirname(service.file)
+      endpoints_info = self._PossiblyConfigureEndpoints(
+          service, source_dir, new_version)
+      image = self._PossiblyBuildAndPush(
+          new_version, service, source_dir, image, code_bucket_ref)
+      manifest = _UploadFiles(service, source_dir, code_bucket_ref)
 
-        # Actually create the new version of the service.
-        message = 'Updating service [{service}]'.format(
-            service=new_version.service)
-        with progress_tracker.ProgressTracker(message):
-          self.api_client.DeployService(new_version.service, new_version.id,
-                                        service, manifest, image,
-                                        endpoints_info)
-          metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-          self._PossiblyPromote(all_services, new_version)
+      # Actually create the new version of the service.
+      message = 'Updating service [{service}]'.format(
+          service=new_version.service)
+      with progress_tracker.ProgressTracker(message):
+        self.api_client.DeployService(new_version.service, new_version.id,
+                                      service, manifest, image,
+                                      endpoints_info)
+        metrics.CustomTimedEvent(metric_names.DEPLOY_API)
+        self._PossiblyPromote(all_services, new_version)
 
 
 def ArgsDeploy(parser):

@@ -347,12 +347,20 @@ def _GetGroupFingerprint(compute_client, group_ref):
   compute = compute_client.apitools_client
   if IsZonalGroup(group_ref):
     service = compute.instanceGroups
+    request = compute.MESSAGES_MODULE.ComputeInstanceGroupsGetRequest(
+        project=group_ref.project,
+        zone=group_ref.zone,
+        instanceGroup=group_ref.instanceGroup)
   else:
     service = compute.regionInstanceGroups
+    request = compute.MESSAGES_MODULE.ComputeRegionInstanceGroupsGetRequest(
+        project=group_ref.project,
+        region=group_ref.region,
+        instanceGroup=group_ref.instanceGroup)
 
   errors = []
   resources = compute_client.MakeRequests(
-      requests=[(service, 'Get', group_ref.Request())],
+      requests=[(service, 'Get', request)],
       errors_to_collect=errors)
 
   if errors:

@@ -24,9 +24,7 @@ The interface is defined as follows:
 - A staging command is an executable (binary or script) that takes two
   positional parameters: the path of the `<service>.yaml` in the directory
   containing the unstaged application code, and the path of an empty directory
-  in which to stage the application code. On success, the sole output of the
-  staging command is the path to the `<service>.yaml` file of the staged
-  service.
+  in which to stage the application code.
 - On success, the STDOUT and STDERR of the staging command are logged at the
   INFO level. On failure, a StagingCommandFailedError is raised containing the
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
@@ -63,24 +61,26 @@ class StagingCommandFailedError(exceptions.Error):
 class _Command(object):
   """Represents a cross-platform command.
 
+  Paths are relative to the Cloud SDK Root directory.
+
   Attributes:
-    nix_name: str, the name of the executable on Linux
-    windows_name: str, the name of the executable on Windows
+    nix_path: str, the path to the executable on Linux and OS X
+    windows_path: str, the path to the executable on Windows
     component: str or None, the name of the Cloud SDK component which contains
       the executable
   """
 
-  def __init__(self, nix_name, windows_name, component=None):
-    self.nix_name = nix_name
-    self.windows_name = windows_name
+  def __init__(self, nix_path, windows_path, component=None):
+    self.nix_path = nix_path
+    self.windows_path = windows_path
     self.component = component
 
   @property
   def name(self):
     if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
-      return self.windows_name
+      return self.windows_path
     else:
-      return self.nix_name
+      return self.nix_path
 
   def GetPath(self):
     """Returns the path to the command.
@@ -92,13 +92,10 @@ class _Command(object):
        NoSdkRootError: if no Cloud SDK root could be found (and therefore the
        command is not installed).
     """
-    try:
-      sdk_bin_path = config.Paths().sdk_bin_path
-    except AttributeError:
+    sdk_root = config.Paths().sdk_root
+    if not sdk_root:
       raise NoSdkRootError()
-    if not sdk_bin_path:
-      raise NoSdkRootError()
-    return os.path.join(sdk_bin_path, self.name)
+    return os.path.join(sdk_root, self.name)
 
   def EnsureInstalled(self):
     if self.component is None:
@@ -110,15 +107,20 @@ class _Command(object):
 
 
 # STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
-# name; it should look something like the following:
+# path relative to Cloud SDK Root; it should look something like the following:
 #
 #     from googlecloudsdk.api_lib.app import util
 #     STAGING_REGISTRY = {
 #       ('intercal', util.Environment.FLEXIBLE):
-#           _Command('stage-intercal-flex.sh', 'stage-intercal-flex.cmd',
-#                    component='app-engine-intercal'),
+#           _Command(
+#               os.path.join('command_dir', 'stage-intercal-flex.sh'),
+#               os.path.join('command_dir', 'stage-intercal-flex.exe'),
+#               component='app-engine-intercal'),
 #       ('x86-asm', util.Environment.STANDARD):
-#           _Command('stage-x86-asm-standard', 'stage-x86-asm-standard.exe')
+#           _Command(
+#               os.path.join('command_dir', 'stage-x86-asm-standard'),
+#               os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
+#               component='app-engine-intercal'),
 #     }
 _STAGING_REGISTRY = {}
 
@@ -132,7 +134,23 @@ _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
 """
 
 
+@contextlib.contextmanager
 def _StageUsingGivenCommand(command_path, service_yaml):
+  """Invokes a staging command with a given <service>.yaml and temp dir.
+
+  This is a context manager because the temporary staging directory should
+  always be deleted, independent of potential errors.
+
+  Args:
+    command_path: str, path to the staging command
+    service_yaml: str, path to the unstaged <service>.yaml
+
+  Yields:
+    str, the path to the staged directory.
+
+  Raises:
+    StagingCommandFailedError: if the staging command process exited non-zero.
+  """
   with files.TemporaryDirectory() as temp_directory:
     args = [command_path, service_yaml, temp_directory]
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
@@ -145,7 +163,7 @@ def _StageUsingGivenCommand(command_path, service_yaml):
     log.info(message)
     if return_code:
       raise StagingCommandFailedError(args, return_code, message)
-    yield out.getvalue().strip('\r\n')
+    yield temp_directory
 
 
 class Stager(object):
@@ -169,13 +187,11 @@ class Stager(object):
           application to stage
 
     Yields:
-      str, the path to the `app.yaml` file or None if no corresponding staging
+      str, the path to the staged directory or None if no corresponding staging
           command was found.
 
     Raises:
-      NoSdkRootError: if no Cloud SDK installation root could be found. The
-          staging command binaries are kept in the bin directory of the Cloud
-          SDK installation directory.
+      NoSdkRootError: if no Cloud SDK installation root could be found.
       StagingCommandFailedError: if the staging command process exited non-zero.
     """
     command = self.registry.get((runtime, environment))
@@ -190,8 +206,8 @@ class Stager(object):
     command.EnsureInstalled()
 
     command_path = command.GetPath()
-    for app_yaml in _StageUsingGivenCommand(command_path, service_yaml):
-      yield app_yaml
+    with _StageUsingGivenCommand(command_path, service_yaml) as app_dir:
+      yield app_dir
 
 
 def GetStager():

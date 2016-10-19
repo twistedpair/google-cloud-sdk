@@ -29,24 +29,23 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
-      'CloudbuildOperationsGetRequest',)
+      [u'name']
+  )
   PROJECTS_BUILDS = (
       'projects.builds',
       'projects/{projectId}/builds/{id}',
       {},
-      [u'projectId', u'id'],
-      'CloudbuildProjectsBuildsGetRequest',)
+      [u'projectId', u'id']
+  )
   PROJECTS_TRIGGERS = (
       'projects.triggers',
       'projects/{projectId}/triggers/{triggerId}',
       {},
-      [u'projectId', u'triggerId'],
-      'CloudbuildProjectsTriggersGetRequest',)
+      [u'projectId', u'triggerId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

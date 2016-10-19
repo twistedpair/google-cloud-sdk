@@ -88,9 +88,11 @@ class ServiceRegistryClient(object):
     message = ('Waiting for {0}[{1}]'.format(
         operation_description + ' ' if operation_description else '',
         operation_ref.Name()))
+    request = self.client.MESSAGES_MODULE.ServiceregistryOperationsGetRequest(
+        project=operation_ref.project, operation=operation_ref.operation)
     with progress_tracker.ProgressTracker(message, autotick=False) as ticker:
       while ticks < self.OPERATION_TIMEOUT:
-        operation = self.client.operations.Get(operation_ref.Request())
+        operation = self.client.operations.Get(request)
         # Operation status is one of PENDING, RUNNING, DONE
         if operation.status == 'DONE':
           if operation.error:

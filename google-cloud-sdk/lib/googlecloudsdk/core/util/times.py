@@ -290,13 +290,14 @@ class _TzInfoOrOffsetGetter(object):
     return self._timezone_was_specified
 
 
-def ParseDateTime(string, tzinfo=None):
+def ParseDateTime(string, fmt=None, tzinfo=None):
   """Parses a date/time string and returns a datetime.datetime object.
 
   Args:
     string: The date/time string to parse. This can be a parser.parse()
       date/time or an ISO 8601 duration after Now(tzinfo) or before if prefixed
       by '-'.
+    fmt: The input must satisfy this strptime(3) format string.
     tzinfo: A default timezone tzinfo object to use if string has no timezone.
 
   Raises:
@@ -307,6 +308,11 @@ def ParseDateTime(string, tzinfo=None):
   Returns:
     A datetime.datetime object for the given date/time string.
   """
+  # Check explicit format first.
+  if fmt:
+    dt = datetime.datetime.strptime(string, fmt)
+    return dt.replace(tzinfo=tzinfo or LOCAL)
+
   # Use tzgetter to determine if string contains an explicit timezone name or
   # offset.
   tzgetter = _TzInfoOrOffsetGetter()
@@ -382,3 +388,16 @@ def Now(tzinfo=None):
     A datetime object localized to the timezone tzinfo.
   """
   return datetime.datetime.now(tzinfo)
+
+
+def TzOffset(offset, name=None):
+  """Returns a tzinfo for offset minutes east of UTC with optional name.
+
+  Args:
+    offset: The minutes east of UTC. Minutes west are negative.
+    name: The optional timezone name. NOTE: no dst name.
+
+  Returns:
+    A tzinfo for offset seconds east of UTC.
+  """
+  return tz.tzoffset(name, offset * 60)  # tz.tzoffset needs seconds east of UTC

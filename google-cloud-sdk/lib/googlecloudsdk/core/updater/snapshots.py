@@ -20,6 +20,7 @@ module lets you do operations on snapshots like getting dependency closures,
 as well as diff'ing snapshots.
 """
 
+import collections
 import json
 import os
 import re
@@ -31,7 +32,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 class Error(exceptions.Error):

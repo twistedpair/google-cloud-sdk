@@ -207,6 +207,8 @@ _FILE_ARG_VALIDATORS = {
     'max_steps': _ValidateNonNegativeInteger,
     'max_depth': _ValidatePositiveInteger,
     'robo_directives': _ValidateKeyValueStringPairs,
+    'environment_variables': _ValidateKeyValueStringPairs,
+    'directories_to_pull': ValidateStringList,
 }
 
 
@@ -329,3 +331,28 @@ def ValidateRoboDirectivesList(args):
       raise InvalidArgException(
           'robo_directives',
           'Invalid character ":" in resource name "{0}"'.format(key))
+
+
+_ENVIRONMENT_VARIABLE_REGEX = re.compile(r'^[a-zA-Z]\w+$')
+
+
+def ValidateEnvironmentVariablesList(args):
+  """Validates key-value pairs for 'environment-variables' flag."""
+  for key in (args.environment_variables or []):
+    # Check for illegal characters in the key.
+    if not _ENVIRONMENT_VARIABLE_REGEX.match(key):
+      raise InvalidArgException(
+          'environment_variables',
+          'Invalid environment variable "{0}"'.format(key))
+
+
+_DIRECTORIES_TO_PULL_PATH_REGEX = re.compile(r'^(/.*)+/?$')
+
+
+def ValidateDirectoriesToPullList(args):
+  """Validates list of file paths for 'directories-to-pull' flag."""
+  for file_path in (args.directories_to_pull or []):
+    # Check for correct file path format.
+    if not _DIRECTORIES_TO_PULL_PATH_REGEX.match(file_path):
+      raise InvalidArgException('directories_to_pull',
+                                'Invalid path "{0}"'.format(file_path))

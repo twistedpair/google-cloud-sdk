@@ -16,6 +16,7 @@
 
 import os
 import re
+import subprocess
 import sys
 import textwrap
 
@@ -25,7 +26,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 FLOAT_COMPARE_EPSILON = 1e-6
 
@@ -342,7 +342,7 @@ PROMPT_OPTIONS_OVERFLOW = 50
 
 def PromptChoice(options, default=None, message=None,
                  prompt_string=None, allow_freeform=False,
-                 freeform_suggester=None):
+                 freeform_suggester=None, cancel_option=False):
   """Prompt the user to select a choice from a list of items.
 
   Args:
@@ -360,10 +360,13 @@ def PromptChoice(options, default=None, message=None,
       GetSuggestion which is used to detect if an answer which is not present
       in the options list is a likely typo, and to provide a suggestion
       accordingly.
+    cancel_option: bool, A flag indicating whether an option to cancel the
+      operation should be added to the end of the list of choices.
 
   Raises:
     ValueError: If no options are given or if the default is not in the range of
       available options.
+    OperationCancelledError: If a `cancel` option is selected by user.
 
   Returns:
     The index of the item in the list that was chosen, or the default if prompts
@@ -371,6 +374,7 @@ def PromptChoice(options, default=None, message=None,
   """
   if not options:
     raise ValueError('You must provide at least one option.')
+  options = options + ['cancel'] if cancel_option else options
   maximum = len(options)
   if default is not None and not 0 <= default < maximum:
     raise ValueError(
@@ -411,16 +415,21 @@ def PromptChoice(options, default=None, message=None,
   while True:
     answer = _RawInput()
     if answer is None or (answer is '' and default is not None):
-      # Return default if we failed to read from stdin
-      # Return default if the user hit enter and there is a valid default
+      # Return default if we failed to read from stdin.
+      # Return default if the user hit enter and there is a valid default,
+      # or raise OperationCancelledError if default is the cancel option.
       # Prompt again otherwise
       sys.stderr.write('\n')
+      if cancel_option and default == maximum - 1:
+        raise OperationCancelledError()
       return default
     if answer == 'list':
       _PrintOptions(options)
       _PrintPrompt()
       continue
     num_choice = _ParseAnswer(answer, options, allow_freeform)
+    if cancel_option and num_choice == maximum:
+      raise OperationCancelledError()
     if num_choice is not None and num_choice >= 1 and num_choice <= maximum:
       sys.stderr.write('\n')
       return num_choice - 1
@@ -428,7 +437,9 @@ def PromptChoice(options, default=None, message=None,
     # Arriving here means that there is no choice matching the answer that
     # was given. We now will provide a suggestion, if one exists.
     if allow_freeform and freeform_suggester:
-      suggestion = _SuggestFreeformAnswer(freeform_suggester, answer, options)
+      suggestion = _SuggestFreeformAnswer(freeform_suggester,
+                                          answer,
+                                          options)
       if suggestion is not None:
         sys.stderr.write('[{answer}] not in list. Did you mean [{suggestion}]?'
                          .format(answer=answer, suggestion=suggestion))

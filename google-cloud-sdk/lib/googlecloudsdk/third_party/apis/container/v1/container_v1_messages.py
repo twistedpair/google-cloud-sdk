@@ -134,6 +134,10 @@ class AuthorizeResponse(_messages.Message):
   status = _messages.MessageField('SubjectAccessReviewStatus', 4)
 
 
+class CancelOperationRequest(_messages.Message):
+  """CancelOperationRequest cancels a single operation."""
+
+
 class Cluster(_messages.Message):
   """A Google Container Engine cluster.
 
@@ -608,6 +612,25 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
   zone = _messages.StringField(2, required=True)
 
 
+class ContainerProjectsZonesOperationsCancelRequest(_messages.Message):
+  """A ContainerProjectsZonesOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    operationId: The server-assigned `name` of the operation.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the operation resides.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  operationId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
   """A ContainerProjectsZonesOperationsGetRequest object.
 
@@ -693,6 +716,16 @@ class CreateTokenRequest(_messages.Message):
 
   clusterId = _messages.StringField(1)
   projectNumber = _messages.IntegerField(2)
+
+
+class Empty(_messages.Message):
+  """A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
 
 
 class ExtraValue(_messages.Message):
@@ -1238,11 +1271,13 @@ class Operation(_messages.Message):
       PENDING: The operation has been created.
       RUNNING: The operation is currently running.
       DONE: The operation is done, either cancelled or completed.
+      ABORTING: The operation is aborting.
     """
     STATUS_UNSPECIFIED = 0
     PENDING = 1
     RUNNING = 2
     DONE = 3
+    ABORTING = 4
 
   detail = _messages.StringField(1)
   name = _messages.StringField(2)

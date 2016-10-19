@@ -17,6 +17,7 @@
 import hashlib
 import os
 import shutil
+import subprocess
 import sys
 import textwrap
 
@@ -37,7 +38,6 @@ from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 # These are components that used to exist, but we removed.  In order to prevent
@@ -837,13 +837,6 @@ Please remove the following to avoid accidentally invoking these old tools:
 {0}
 
 """.format('\n'.join(bad_commands)))
-
-    if platforms.PythonVersion().IsPython26():
-      log.warn("""\
-You are running Python 2.6, which is no longer receiving security
-patches as of October 2013.  The Cloud SDK will stop supporting Python 2.6 on
-September 1, 2016.  Please update your Python installation to 2.7 to ensure
-compatibility with future Cloud SDK versions.""")
 
     return True
 

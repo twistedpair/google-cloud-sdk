@@ -25,23 +25,21 @@ class CollectionInfo(object):
       path: str, Atomic URI template for this resource.
       flat_paths: {name->path}, Named detailed URI templates for this resource.
           If there is an entry ''->path it replaces path and corresponding param
-          attributes for resources parsing. path and param are still used when
-          generating requests, see request_type attribute.
+          attributes for resources parsing. path and params are not used
+          in this case.
           Also note that key in this dictionary is referred as subcollection,
           as it extends 'name' attribute.
       params: list(str), description of parameters in the path.
-      request_type: str, name of apitools generated type for Get request.
       name: str, collection name for this resource without leading api_name.
       base_url: str, URL for service providing these resources.
   """
 
   def __init__(self, api_name, api_version, base_url, name,
-               request_type, path, flat_paths, params):
+               path, flat_paths, params):
     self.api_name = api_name
     self.api_version = api_version
     self.base_url = base_url
     self.name = name
-    self.request_type = request_type
     self.path = path
     self.flat_paths = flat_paths
     self.params = params

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20161007",
+ "revision": "20161019",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -114,7 +114,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM , STANDARD. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
      "enum": [
       "CLOUD_NETWORK_PREMIUM",
       "CLOUD_NETWORK_STANDARD"
@@ -200,7 +200,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , STANDARD. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
      "enum": [
       "CLOUD_NETWORK_PREMIUM",
       "CLOUD_NETWORK_STANDARD"
@@ -416,6 +416,11 @@
     "diskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
      "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, this field encrypts the new disk using an encryption key that you provide. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a disk using a customer-supplied key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf you do not provide an encryption key, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later.\n\nInstance templates do not store customer-supplied encryption keys, so you cannot use your own keys to encrypt disks in a managed instance group."
+    },
+    "diskSizeGb": {
+     "type": "string",
+     "description": "The size of the disk in base-2 GB. This supersedes disk_size_gb in InitializeParams.",
+     "format": "int64"
     },
     "index": {
      "type": "integer",
@@ -1107,7 +1112,7 @@
     },
     "cdnPolicy": {
      "$ref": "BackendServiceCdnPolicy",
-     "description": "Cloud CDN Coniguration for this BackendService."
+     "description": "Cloud CDN configuration for this BackendService."
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
@@ -2391,7 +2396,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , STANDARD. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
      "enum": [
       "CLOUD_NETWORK_PREMIUM",
       "CLOUD_NETWORK_STANDARD"
@@ -2597,7 +2602,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "description": "The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is supported.",
+     "description": "The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the server might also populate this property with the value WINDOWS to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
       "VIRTIO_SCSI_MULTIQUEUE",
@@ -2905,6 +2910,10 @@
     "description": {
      "type": "string",
      "description": "[Output Only] An optional textual description of the resource."
+    },
+    "hostType": {
+     "type": "string",
+     "description": "Full or partial URL of the host type resource to use for this host, in the format: zones/zone/hostTypes/host-type. This is provided by the client when the host is created. For example, the following is a valid partial url to a predefined host type:\n\nzones/us-central1-f/hostTypes/n1-host-64-416"
     },
     "id": {
      "type": "string",
@@ -3352,7 +3361,7 @@
     },
     "guestOsFeatures": {
      "type": "array",
-     "description": "A list of features to enable on the guest OS. Applicable for bootable images only. Currently, only one feature is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher. Linux images with kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.",
+     "description": "A list of features to enable on the guest OS. Applicable for bootable images only. Currently, only one feature can be enabled, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher. Linux images with kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.\n\nFor new Windows images, the server might also populate this field with the value WINDOWS, to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
      "items": {
       "$ref": "GuestOsFeature"
      }
@@ -3436,7 +3445,7 @@
     },
     "sourceDisk": {
      "type": "string",
-     "description": "URL of the The source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk"
+     "description": "URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk"
     },
     "sourceDiskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -4018,7 +4027,7 @@
    "properties": {
     "healthCheck": {
      "type": "string",
-     "description": "The URL for the HealthCheck that signals autohealing."
+     "description": "The URL for the HttpHealthCheck or HttpsHealthCheck that signals autohealing."
     },
     "initialDelaySec": {
      "type": "integer",
@@ -5402,6 +5411,13 @@
       ]
      }
     },
+    "peerings": {
+     "type": "array",
+     "description": "[Output Only] List of network peerings for the resource.",
+     "items": {
+      "$ref": "NetworkPeering"
+     }
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
@@ -5485,6 +5501,41 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "NetworkPeering": {
+   "id": "NetworkPeering",
+   "type": "object",
+   "description": "A network peering attached to a network resource. The message includes the peering name, peer network, peering state, and a flag indicating whether Google Compute Engine should automatically create routes for the peering.",
+   "properties": {
+    "autoCreateRoutes": {
+     "type": "boolean",
+     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
+    },
+    "network": {
+     "type": "string",
+     "description": "The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network."
+    },
+    "state": {
+     "type": "string",
+     "description": "[Output Only] State for the peering.",
+     "enum": [
+      "ACTIVE",
+      "INACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "stateDetails": {
+     "type": "string",
+     "description": "[Output Only] Details about the current state of the peering."
     }
    }
   },
@@ -6630,6 +6681,10 @@
     "nextHopNetwork": {
      "type": "string",
      "description": "The URL of the local network if it should handle matching packets."
+    },
+    "nextHopPeering": {
+     "type": "string",
+     "description": "[Output Only] The network peering name that should handle matching packets, which should conform to RFC1035."
     },
     "nextHopVpnTunnel": {
      "type": "string",
@@ -14457,31 +14512,11 @@
      "httpMethod": "POST",
      "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action.",
      "parameters": {
-      "filter": {
-       "type": "string",
-       "location": "query"
-      },
       "instanceGroupManager": {
        "type": "string",
        "description": "The name of the managed instance group.",
        "required": true,
        "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "maximum": "500",
-       "location": "query"
-      },
-      "order_by": {
-       "type": "string",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "location": "query"
       },
       "project": {
        "type": "string",
@@ -18934,31 +18969,11 @@
      "httpMethod": "POST",
      "description": "Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances.",
      "parameters": {
-      "filter": {
-       "type": "string",
-       "location": "query"
-      },
       "instanceGroupManager": {
        "type": "string",
        "description": "The name of the managed instance group.",
        "required": true,
        "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "maximum": "500",
-       "location": "query"
-      },
-      "order_by": {
-       "type": "string",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "location": "query"
       },
       "project": {
        "type": "string",

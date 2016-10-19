@@ -26,30 +26,29 @@ class Collections(enum.Enum):
       'projects.logServices.sinks',
       'projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}',
       {},
-      [u'projectsId', u'logServicesId', u'sinksId'],
-      'LoggingProjectsLogServicesSinksGetRequest',)
+      [u'projectsId', u'logServicesId', u'sinksId']
+  )
   PROJECTS_LOGS_SINKS = (
       'projects.logs.sinks',
       'projects/{projectsId}/logs/{logsId}/sinks/{sinksId}',
       {},
-      [u'projectsId', u'logsId', u'sinksId'],
-      'LoggingProjectsLogsSinksGetRequest',)
+      [u'projectsId', u'logsId', u'sinksId']
+  )
   PROJECTS_METRICS = (
       'projects.metrics',
       'projects/{projectsId}/metrics/{metricsId}',
       {},
-      [u'projectsId', u'metricsId'],
-      'LoggingProjectsMetricsGetRequest',)
+      [u'projectsId', u'metricsId']
+  )
   PROJECTS_SINKS = (
       'projects.sinks',
       'projects/{projectsId}/sinks/{sinksId}',
       {},
-      [u'projectsId', u'sinksId'],
-      'LoggingProjectsSinksGetRequest',)
+      [u'projectsId', u'sinksId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

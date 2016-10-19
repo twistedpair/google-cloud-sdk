@@ -14,12 +14,14 @@
 
 """A library to build a test results summary."""
 
+import collections
+
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.py27 import py27_collections as collections
+
 
 _NATIVE_CRASH = 'Native crash'
 _NATIVE_CRASH_DETAILED_FORMAT = '''\

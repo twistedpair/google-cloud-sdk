@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import log
 
 
@@ -59,7 +60,10 @@ class JobSubmitter(base.Command):
     self.PopulateFilesByType(args)
 
     cluster_ref = util.ParseCluster(args.cluster, self.context)
-    request = cluster_ref.Request()
+    request = messages.DataprocProjectsRegionsClustersGetRequest(
+        projectId=cluster_ref.projectId,
+        region=cluster_ref.region,
+        clusterName=cluster_ref.clusterName)
 
     try:
       cluster = client.projects_regions_clusters.Get(request)
@@ -168,3 +172,24 @@ class JobSubmitter(base.Command):
   def PopulateFilesByType(self, args):
     """Take files out of args to allow for them to be staged."""
     pass
+
+
+@base.ReleaseTracks(base.ReleaseTrack.BETA)
+class JobSubmitterBeta(JobSubmitter):
+  """Submit a job to a cluster."""
+
+  @staticmethod
+  def Args(parser):
+    JobSubmitter.Args(parser)
+    labels_util.AddCreateLabelsFlags(parser)
+
+  def ConfigureJob(self, job, args):
+    messages = self.context['dataproc_messages']
+
+    # Parse labels (if present)
+    labels = labels_util.UpdateLabels(
+        None,
+        messages.Job.LabelsValue,
+        labels_util.GetUpdateLabelsDictFromArgs(args),
+        None)
+    job.labels = labels

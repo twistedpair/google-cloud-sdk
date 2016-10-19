@@ -243,7 +243,7 @@ class BigqueryV2(base_api.BaseApiClient):
         ordered_params=[u'projectId', u'jobId'],
         path_params=[u'jobId', u'projectId'],
         query_params=[],
-        relative_path=u'project/{projectId}/jobs/{jobId}/cancel',
+        relative_path=u'projects/{projectId}/jobs/{jobId}/cancel',
         request_field='',
         request_type_name=u'BigqueryJobsCancelRequest',
         response_type_name=u'JobCancelResponse',

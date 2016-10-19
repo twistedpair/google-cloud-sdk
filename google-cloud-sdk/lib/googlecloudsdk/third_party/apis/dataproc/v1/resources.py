@@ -26,14 +26,14 @@ class Collections(enum.Enum):
       'projects.regions.clusters',
       'projects/{projectId}/regions/{region}/clusters/{clusterName}',
       {},
-      [u'projectId', u'region', u'clusterName'],
-      'DataprocProjectsRegionsClustersGetRequest',)
+      [u'projectId', u'region', u'clusterName']
+  )
   PROJECTS_REGIONS_JOBS = (
       'projects.regions.jobs',
       'projects/{projectId}/regions/{region}/jobs/{jobId}',
       {},
-      [u'projectId', u'region', u'jobId'],
-      'DataprocProjectsRegionsJobsGetRequest',)
+      [u'projectId', u'region', u'jobId']
+  )
   PROJECTS_REGIONS_OPERATIONS = (
       'projects.regions.operations',
       '{+name}',
@@ -42,12 +42,11 @@ class Collections(enum.Enum):
               'projects/{projectsId}/regions/{regionsId}/operations/'
               '{operationsId}',
       },
-      [u'name'],
-      'DataprocProjectsRegionsOperationsGetRequest',)
+      [u'name']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

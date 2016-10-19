@@ -125,9 +125,9 @@ class CaptureManager(object):
       src_name: (string) A directory to capture.
       target_root: (string) Root directory of the target tree in the capture.
     Returns:
-      ([dict], int, int) A 3-tuple containing an array of source contexts,
-      the number of files added to the workspace, and the total size of the
-      files added.
+      ([dict], int, int, int, int) A 4-tuple containing an array of source
+      contexts, the number of files added to the workspace, the total size of
+      the files added, and a count of files that were too big to upload.
     """
 
     src_path = os.path.abspath(src_name)
@@ -148,31 +148,15 @@ class CaptureManager(object):
     paths = [os.path.relpath(f, src_path)
              for f in self._ignore_handler.GetFiles(src_path)
              if not os.path.islink(f)]
-    total_files = len(paths)
-    progress_bar = console_io.ProgressBar(
-        'Uploading {0} files'.format(total_files))
-    (read_progress, write_progress) = console_io.ProgressBar.SplitProgressBar(
-        progress_bar.SetProgress, [1, 6])
-    def UpdateProgress(action_count):
-      write_progress((1.0 * action_count) / total_files)
-    workspace.SetPostCallback(UpdateProgress)
-    progress_bar.Start()
-
-    total_size = 0
-    file_count = 0
-    contents = None
-    for path in paths:
-      with open(os.path.join(src_path, path), 'r') as f:
-        contents = f.read()
-      if contents:
-        total_size += len(contents)
-        file_count += 1
-        read_progress((1.0 * file_count) / total_files)
-        try:
-          workspace.WriteFile(os.path.join(target_root, path), contents)
-        except source.FileTooBigException as e:
-          log.warning(e)
-    return (source_contexts, total_files, total_size)
+    with _Uploader(workspace) as uploader:
+      uploader.Start(len(paths))
+      contents = None
+      for path in paths:
+        with open(os.path.join(src_path, path), 'r') as f:
+          contents = f.read()
+        if contents:
+          uploader.UploadFile(os.path.join(target_root, path), contents)
+      return (source_contexts,) + uploader.GetStatistics()
 
   def _AddSourceJarToWorkspace(self, workspace, src_name, target_root):
     """Add files in the given source jar to a workspace.
@@ -182,41 +166,28 @@ class CaptureManager(object):
       src_name: (string) A directory tree or source jar to capture.
       target_root: (string) Root directory of the target tree in the capture.
     Returns:
-      ([dict], int, int) A 3-tuple containing an array of source contexts,
-      the number of files added to the workspace, and the total size of the
-      files added.
+      ([dict], int, int, int, int) A 4-tuple containing an array of source
+      contexts, the number of files added to the workspace, the total size of
+      the files added, and a count of files that were too big to upload.
     """
 
     source_contexts = []
     jar_file = None
-    try:
-      jar_file = zipfile.ZipFile(src_name, 'r')
-      paths = [zi.filename for zi in jar_file.infolist()
-               if zi.filename.endswith('.java')]
+    with _Uploader(workspace) as uploader:
+      try:
+        jar_file = zipfile.ZipFile(src_name, 'r')
+        paths = [zi.filename for zi in jar_file.infolist()
+                 if zi.filename.endswith('.java')]
 
-      total_files = len(paths)
-      progress_bar = console_io.ProgressBar(
-          'Uploading {0} files'.format(total_files))
-      (read_progress, write_progress) = console_io.ProgressBar.SplitProgressBar(
-          progress_bar.SetProgress, [1, 6])
-      def UpdateProgress(action_count):
-        write_progress((1.0 * action_count) / total_files)
-      workspace.SetPostCallback(UpdateProgress)
-      progress_bar.Start()
-
-      total_size = 0
-      file_count = 0
-      for path in paths:
-        contents = jar_file.read(path)
-        if contents:
-          total_size += len(contents)
-          file_count += 1
-          read_progress((1.0 * file_count) / total_files)
-          workspace.WriteFile(os.path.join(target_root, path), contents)
-    finally:
-      if jar_file:
-        jar_file.close()
-    return (source_contexts, total_files, total_size)
+        uploader.Start(len(paths))
+        for path in paths:
+          contents = jar_file.read(path)
+          if contents:
+            uploader.UploadFile(os.path.join(target_root, path), contents)
+      finally:
+        if jar_file:
+          jar_file.close()
+      return (source_contexts,) + uploader.GetStatistics()
 
   def UploadCapture(self, capture_name, src_name, target_root):
     """Create or upload a capture of the given directory.
@@ -272,18 +243,16 @@ class CaptureManager(object):
           to the capture. This context will be the only one with the value
           'capture' for its 'category' label.
         'files_written': The number of files written in the capture.
+        'files_skipped': The number of files that were skipped due to size
+          limitations.
         'size_written': The total number of bytes in all files in the capture.
     """
-    total_size = 0
-    total_files = 0
     if os.path.isdir(src_name):
-      source_contexts, new_files, new_size = self._AddSourceDirToWorkspace(
-          workspace, src_name, target_root)
+      source_contexts, file_count, total_size, skip_count = (
+          self._AddSourceDirToWorkspace(workspace, src_name, target_root))
     else:
-      source_contexts, new_files, new_size = self._AddSourceJarToWorkspace(
-          workspace, src_name, target_root)
-    total_files += new_files
-    total_size += new_size
+      source_contexts, file_count, total_size, skip_count = (
+          self._AddSourceJarToWorkspace(workspace, src_name, target_root))
     workspace.FlushPendingActions()
     source_contexts.append({
         'context': {
@@ -298,7 +267,8 @@ class CaptureManager(object):
     return {
         'capture': capture,
         'source_contexts': source_contexts,
-        'files_written': total_files,
+        'files_written': file_count,
+        'files_skipped': skip_count,
         'size_written': total_size}
 
   def ListCaptures(self):
@@ -315,3 +285,50 @@ class CaptureManager(object):
     capture = self._FindCapture(capture_id)
     self.GetCaptureRepo().DeleteWorkspace(capture.workspace_name)
     return capture
+
+
+class _Uploader(object):
+  """Uploads files to a workspace and tracks progress."""
+
+  def __init__(self, workspace):
+    self._workspace = workspace
+    self._progress_bar = None
+    self.total_size = 0
+    self.file_count = 0
+    self.skip_count = 0
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, unused_type, unused_value, unused_traceback):
+    if self._progress_bar:
+      self._progress_bar.__exit__()
+
+  def _UpdateWriteProgress(self, action_count):
+    self.write_progress((1.0 * action_count) / self.total_files)
+
+  def Start(self, total_files):
+    self._progress_bar = console_io.ProgressBar(
+        'Uploading {0} file(s)'.format(total_files))
+    (self.read_progress, self.write_progress) = (
+        console_io.ProgressBar.SplitProgressBar(self._progress_bar.SetProgress,
+                                                [1, 6]))
+    self._workspace.SetPostCallback(self._UpdateWriteProgress)
+    self.total_files = total_files
+    self._progress_bar.Start()
+
+  def UploadFile(self, path, contents):
+    # Since we're writing a file, that means we finished reading it. Update
+    # read progress accordingly.
+    self.read_progress((1.0 * self.file_count) / self.total_files)
+    self.file_count += 1
+    try:
+      self._workspace.WriteFile(path, contents)
+      self.total_size += len(contents)
+    except source.FileTooBigException as e:
+      log.warning(e)
+      self.skip_count += 1
+
+  def GetStatistics(self):
+    return (self.total_files - self.skip_count, self.total_size,
+            self.skip_count)

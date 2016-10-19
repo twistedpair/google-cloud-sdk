@@ -358,10 +358,35 @@ class Debugger(DebugObject):
               debuggee.name))
       return debuggee
 
+    try:
+      # Look for active debuggees first, since there are usually very
+      # few of them compared to inactive debuggees.
+      all_debuggees = self.ListDebuggees()
+      return self._FilterDebuggeeList(all_debuggees, pattern)
+    except errors.NoDebuggeeError:
+      # Try looking at inactive debuggees
+      pass
     all_debuggees = self.ListDebuggees(include_inactive=True,
                                        include_stale=True)
+    return self._FilterDebuggeeList(all_debuggees, pattern)
+
+  def _FilterDebuggeeList(self, all_debuggees, pattern):
+    """Finds the debuggee which matches the given pattern.
+
+    Args:
+      all_debuggees: A list of debuggees to search.
+      pattern: A string containing a debuggee ID or a regular expression that
+        matches a single debuggee's name or description. If it matches any
+        debuggee name, the description will not be inspected.
+    Returns:
+      The matching Debuggee.
+    Raises:
+      errors.MultipleDebuggeesError if the pattern matches multiple debuggees.
+      errors.NoDebuggeeError if the pattern matches no debuggees.
+    """
     if not all_debuggees:
       raise errors.NoDebuggeeError()
+
     latest_debuggees = _FilterStaleMinorVersions(all_debuggees)
 
     # Find all debuggees specified by ID, plus all debuggees which are the

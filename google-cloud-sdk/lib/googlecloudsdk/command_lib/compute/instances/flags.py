@@ -569,8 +569,8 @@ def AddAddressArgs(parser, instances=True,
         instance will get an ephemeral IP.
 
         *network*::: Specifies the network that the interface will be part of.
-        This is mutually exclusive with subnet key. If neither is specified,
-        this defaults to the "default" network.
+        If subnet is also specified it must be subnetwork of this network. If
+        neither is specified, this defaults to the "default" network.
 
         *no-address*::: If specified the interface will have no external IP.
         """
@@ -580,7 +580,8 @@ def AddAddressArgs(parser, instances=True,
         interface. """
     network_interface_detailed_help += """
         *subnet*::: Specifies the subnet that the interface will be part of.
-        This is mutally exclusive with network key."""
+        If network key is also specified this must be a subnetwork of the
+        specified network."""
     network_interface.detailed_help = network_interface_detailed_help
 
 
@@ -613,24 +614,24 @@ def AddPreemptibleVmArgs(parser):
 
 def AddNetworkArgs(parser):
   """Set arguments for choosing the network/subnetwork."""
-  netparser = parser.add_mutually_exclusive_group()
-
-  network = netparser.add_argument(
+  network = parser.add_argument(
       '--network',
       help='Specifies the network that the instances will be part of.')
 
   network.detailed_help = """\
-      Specifies the network that the instances will be part of. This is mutually
-      exclusive with --subnet. If neither is specified, this defaults to the
-      "default" network.
+      Specifies the network that the instances will be part of. If --subnet is
+      also specified subnet must be a subnetwork of network specified by
+      --network. If neither is specified, this defaults to the "default"
+      network.
       """
 
-  subnet = netparser.add_argument(
+  subnet = parser.add_argument(
       '--subnet',
       help='Specifies the subnet that the instances will be part of.')
   subnet.detailed_help = """\
-      Specifies the subnet that the instances will be part of. This is mutally
-      exclusive with --network.
+      Specifies the subnet that the instances will be part of. If --network is
+      also specified subnet must be a subnetwork of network specified by
+      --network.
       """
 
 
@@ -949,8 +950,7 @@ def ValidateNicFlags(args):
     args: parsed comandline arguments.
   Raises:
     InvalidArgumentException: when it finds --network-interface that has both
-                              network, and subnet or address, and no-address
-                              keys.
+                              address, and no-address keys.
     ConflictingArgumentsException: when it finds --network-interface and at
                                    least one of --address, --network,
                                    --private_network_ip, or --subnet.
@@ -959,11 +959,6 @@ def ValidateNicFlags(args):
   if network_interface is None:
     return
   for ni in network_interface:
-    if 'network' in ni and 'subnet' in ni:
-      raise exceptions.InvalidArgumentException(
-          '--network-interface',
-          'specifies both network and subnet for one interface')
-
     if 'address' in ni and 'no-address' in ni:
       raise exceptions.InvalidArgumentException(
           '--network-interface',

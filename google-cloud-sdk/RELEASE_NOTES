@@ -2,6 +2,52 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+
+## 132.0.0 (2016/10/19)
+
+### Breaking Changes
+
+* (Cloud SDK-wide) Command line flag abbreviations are no longer supported.
+* (Cloud SDK-wide) Python 2.6 is no longer supported by the Cloud SDK and
+  commands may not function correctly when run under an Python 2.6 interpreter.
+  Please update your Python installation to 2.7 to ensure compatibility.
+  * If you have a 2.7 interpreter on your system that is not the default, you
+    can use the CLOUDSDK_PYTHON environment variable to point to it.
+  * The last version of the SDK that supports Python 2.6 is 131.0.0, which can
+    be downloaded from our archive:
+    <https://cloud.google.com/sdk/downloads#earlier_versions>
+* (Google Compute Engine/Google Cloud Source Repositories): Google Cloud Source
+  Repositories scope no longer added by default on instance creation.
+* (Stackdriver Debugger) Changed the default to true for the `--all-users`
+  option on `gcloud beta debug logpoints list` command.
+
+### Google Cloud Storage
+
+* Update gsutil component to 4.22
+  See: <https://github.com/GoogleCloudPlatform/gsutil/blob/v4.22/CHANGES.md>
+
+### Google Compute Engine
+
+* Allow specifying both `--network` and `--subnet` for the same network
+  interface card.
+
+### Google Cloud Dataproc
+
+* Jobs and clusters now support labels on creation
+* Jobs and clusters now support filtering by labels and state
+
+### Google Container Engine
+
+* Google Container Engine cluster upgrade operations can now be cancelled using
+  the `gcloud alpha container operations cancel` command.  See
+  `gcloud alpha container operations cancel --help` for more details.
+
+### Powershell
+
+* Fix a bug where the module is not picking up the active user credentials correctly.
+* Make `New-GcsObject` `-ObjectName` parameter optional when uploading a file.
+* Add ability to pipeline `GcsObject` to `Write-GcsObject` cmdlet.
+
 ## 131.0.0 (2016/10/19)
 
 ### Cloud SDK
@@ -48,8 +94,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Source Repository
 
-* Change the Cloud Source Repositories scope given by default to GCE Instances
-  and Instance Templates to read_only from full control.
+* Change the Cloud Source Repositories scope given by default to Google Compute
+  Engine Instances and Instance Templates to read_only from full control.
 
 
 ## 130.0.0 (2016/10/12)

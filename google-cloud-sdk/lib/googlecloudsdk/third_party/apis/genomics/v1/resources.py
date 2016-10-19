@@ -26,26 +26,26 @@ class Collections(enum.Enum):
       'annotations',
       'annotations/{annotationId}',
       {},
-      [u'annotationId'],
-      'GenomicsAnnotationsGetRequest',)
+      [u'annotationId']
+  )
   ANNOTATIONSETS = (
       'annotationsets',
       'annotationsets/{annotationSetId}',
       {},
-      [u'annotationSetId'],
-      'GenomicsAnnotationsetsGetRequest',)
+      [u'annotationSetId']
+  )
   CALLSETS = (
       'callsets',
       'callsets/{callSetId}',
       {},
-      [u'callSetId'],
-      'GenomicsCallsetsGetRequest',)
+      [u'callSetId']
+  )
   DATASETS = (
       'datasets',
       'datasets/{datasetId}',
       {},
-      [u'datasetId'],
-      'GenomicsDatasetsGetRequest',)
+      [u'datasetId']
+  )
   OPERATIONS = (
       'operations',
       '{+name}',
@@ -53,42 +53,41 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
-      'GenomicsOperationsGetRequest',)
+      [u'name']
+  )
   READGROUPSETS = (
       'readgroupsets',
       'readgroupsets/{readGroupSetId}',
       {},
-      [u'readGroupSetId'],
-      'GenomicsReadgroupsetsGetRequest',)
+      [u'readGroupSetId']
+  )
   REFERENCES = (
       'references',
       'references/{referenceId}',
       {},
-      [u'referenceId'],
-      'GenomicsReferencesGetRequest',)
+      [u'referenceId']
+  )
   REFERENCESETS = (
       'referencesets',
       'referencesets/{referenceSetId}',
       {},
-      [u'referenceSetId'],
-      'GenomicsReferencesetsGetRequest',)
+      [u'referenceSetId']
+  )
   VARIANTS = (
       'variants',
       'variants/{variantId}',
       {},
-      [u'variantId'],
-      'GenomicsVariantsGetRequest',)
+      [u'variantId']
+  )
   VARIANTSETS = (
       'variantsets',
       'variantsets/{variantSetId}',
       {},
-      [u'variantSetId'],
-      'GenomicsVariantsetsGetRequest',)
+      [u'variantSetId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

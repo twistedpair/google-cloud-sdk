@@ -26,37 +26,36 @@ class Collections(enum.Enum):
       'operations',
       'operations/{operationsId}',
       {},
-      [u'operationsId'],
-      'BigtableadminOperationsGetRequest',)
+      [u'operationsId']
+  )
   PROJECTS_INSTANCES = (
       'projects.instances',
       'projects/{projectsId}/instances/{instancesId}',
       {},
-      [u'projectsId', u'instancesId'],
-      'BigtableadminProjectsInstancesGetRequest',)
+      [u'projectsId', u'instancesId']
+  )
   PROJECTS_INSTANCES_CLUSTERS = (
       'projects.instances.clusters',
       'projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
       {},
-      [u'projectsId', u'instancesId', u'clustersId'],
-      'BigtableadminProjectsInstancesClustersGetRequest',)
+      [u'projectsId', u'instancesId', u'clustersId']
+  )
   PROJECTS_INSTANCES_CLUSTERS_SNAPSHOTS = (
       'projects.instances.clusters.snapshots',
       'projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/'
       'snapshots/{snapshotsId}',
       {},
-      [u'projectsId', u'instancesId', u'clustersId', u'snapshotsId'],
-      'BigtableadminProjectsInstancesClustersSnapshotsGetRequest',)
+      [u'projectsId', u'instancesId', u'clustersId', u'snapshotsId']
+  )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
       'projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
       {},
-      [u'projectsId', u'instancesId', u'tablesId'],
-      'BigtableadminProjectsInstancesTablesGetRequest',)
+      [u'projectsId', u'instancesId', u'tablesId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

@@ -21,6 +21,7 @@ import base64
 import errno
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import urlparse
@@ -31,7 +32,6 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'

@@ -29,8 +29,8 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
-      'CloudfunctionsOperationsGetRequest',)
+      [u'name']
+  )
   OPERATIONS_OPERATIONS = (
       'operations.operations',
       'operations/{+name}',
@@ -38,8 +38,8 @@ class Collections(enum.Enum):
           '':
               'operations/operations/{operationsId}',
       },
-      [u'name'],
-      'CloudfunctionsOperationsOperationsGetRequest',)
+      [u'name']
+  )
   PROJECTS_LOCATIONS_FUNCTIONS = (
       'projects.locations.functions',
       '{+name}',
@@ -48,12 +48,11 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/functions/'
               '{functionsId}',
       },
-      [u'name'],
-      'CloudfunctionsProjectsLocationsFunctionsGetRequest',)
+      [u'name']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

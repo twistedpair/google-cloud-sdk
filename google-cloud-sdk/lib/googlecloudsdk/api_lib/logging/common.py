@@ -76,8 +76,6 @@ def FetchLogs(log_filter=None,
   request = messages.ListLogEntriesRequest(resourceNames=[parent],
                                            filter=combined_filter,
                                            orderBy=order_by)
-  if 'projects/' in parent:
-    request.projectIds = [parent[len('projects/'):]]
   return list_pager.YieldFromList(
       client.entries, request, field='entries', limit=limit,
       batch_size=page_size, batch_size_attribute='pageSize')

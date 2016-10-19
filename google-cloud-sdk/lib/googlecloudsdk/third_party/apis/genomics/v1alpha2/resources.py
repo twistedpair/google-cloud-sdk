@@ -29,18 +29,17 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name'],
-      'GenomicsOperationsGetRequest',)
+      [u'name']
+  )
   PIPELINES = (
       'pipelines',
       'pipelines/{pipelineId}',
       {},
-      [u'pipelineId'],
-      'GenomicsPipelinesGetRequest',)
+      [u'pipelineId']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

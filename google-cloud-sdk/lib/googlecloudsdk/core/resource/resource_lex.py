@@ -67,18 +67,21 @@ Typical resource usage:
     Process(key, args, operator, operand)
 """
 
+import copy
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
-from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
-# Reserved operator characters. Resource keys cannot contain unquoted operator
-# characters. This prevents key/operator clashes in expressions.
-_RESERVED_OPERATOR_CHARS = '[].(){},:=!<>+*/%&|^~@#;?'
+# Resource keys cannot contain unquoted operator characters.
+OPERATOR_CHARS = ':=!<>~()'
+
+# Reserved operator characters. Resource keys cannot contain unquoted reverved
+# operator characters. This prevents key/operator clashes in expressions.
+_RESERVED_OPERATOR_CHARS = OPERATOR_CHARS + '[].{},+*/%&|^@#;?'
 
 
 class _TransformCall(object):
@@ -93,18 +96,16 @@ class _TransformCall(object):
       up to map_transform times. map_transform>1 handles nested lists.
     args: List of function call actual arg strings.
     kwargs: List of function call actual keyword arg strings.
-    restriction: Call is a global restriction that does not have an obj arg.
   """
 
   def __init__(self, name, func, active=0, map_transform=0, args=None,
-               kwargs=None, restriction=False):
+               kwargs=None):
     self.name = name
     self.func = func
     self.active = active
     self.map_transform = map_transform
     self.args = args or []
     self.kwargs = kwargs or {}
-    self.restriction = restriction
 
   def __str__(self):
     args = ['<projecton>' if isinstance(
@@ -165,10 +166,6 @@ class _Transform(object):
     """Sets the conditional expression string."""
     self._conditional = expr
 
-  def SetRestriction(self):
-    """Sets the restriction attribute of the first transform."""
-    self._transforms[0].restriction = True
-
   def Evaluate(self, obj):
     """Apply the list of transforms to obj and return the transformed value."""
     for transform in self._transforms:
@@ -191,14 +188,11 @@ class _Transform(object):
         for item in items:
           obj.append(transform.func(item, *transform.args, **transform.kwargs))
       elif obj or not transform.map_transform:
-        if transform.restriction:
-          obj = transform.func(*transform.args, **transform.kwargs)
-        else:
-          obj = transform.func(obj, *transform.args, **transform.kwargs)
+        obj = transform.func(obj, *transform.args, **transform.kwargs)
     return obj
 
 
-def MakeTransform(func_name, func, args=None, kwargs=None, restriction=False):
+def MakeTransform(func_name, func, args=None, kwargs=None):
   """Returns a transform call object for func(*args, **kwargs).
 
   Args:
@@ -206,14 +200,12 @@ def MakeTransform(func_name, func, args=None, kwargs=None, restriction=False):
     func: The function object.
     args: The actual call args.
     kwargs: The actual call kwargs.
-    restriction: Call is a global restriction that does not have an obj arg.
 
   Returns:
     A transform call object for func(obj, *args, **kwargs).
   """
   calls = _Transform()
-  calls.Add(_TransformCall(func_name, func, args=args, kwargs=kwargs,
-                           restriction=restriction))
+  calls.Add(_TransformCall(func_name, func, args=args, kwargs=kwargs))
   return calls
 
 
@@ -537,7 +529,7 @@ class Lexer(object):
       ['abc', 'def', 123, 'ghi', None, 'jkl']
 
     Raises:
-      ExpressionSyntaxError: The expression has a syntax error.
+      ExpressionKeyError: The expression has a key syntax error.
 
     Returns:
       The parsed key which is a list of string, int and/or None elements.
@@ -554,9 +546,11 @@ class Lexer(object):
           key.append(name)
       elif not self.IsCharacter('[', peek=True):
         # A single . is a valid key that names the top level resource.
-        if (not key and self.IsCharacter('.') and (
-            self.EndOfInput() or self.IsCharacter(
-                _RESERVED_OPERATOR_CHARS, peek=True, eoi_ok=True))):
+        if (not key and
+            self.IsCharacter('.') and
+            not self.IsCharacter('.', peek=True, eoi_ok=True) and (
+                self.EndOfInput() or self.IsCharacter(
+                    _RESERVED_OPERATOR_CHARS, peek=True, eoi_ok=True))):
           break
         raise resource_exceptions.ExpressionSyntaxError(
             'Non-empty key name expected [{0}].'.format(self.Annotate(here)))
@@ -578,8 +572,7 @@ class Lexer(object):
             'Non-empty key name expected [{0}].'.format(self.Annotate()))
     return key
 
-  def _ParseTransform(self, func_name, active=0, map_transform=None,
-                      restriction=False):
+  def _ParseTransform(self, func_name, active=0, map_transform=None):
     """Parses a transform function call.
 
     The cursor is positioned at the '(' after func_name.
@@ -589,8 +582,6 @@ class Lexer(object):
       active: The transform active level or None if always active.
       map_transform: Apply the transform to each resource list item this many
         times.
-      restriction: Transform is a global restriction that does not have an obj
-        arg.
 
     Returns:
       A _TransformCall object. The caller appends these to a list that is used
@@ -623,10 +614,9 @@ class Lexer(object):
       # No kwargs.
       args += self.Args()
     return _TransformCall(func_name, func, active=active,
-                          map_transform=map_transform, args=args,
-                          kwargs=kwargs, restriction=restriction)
+                          map_transform=map_transform, args=args, kwargs=kwargs)
 
-  def Transform(self, func_name, active=0, restriction=False):
+  def Transform(self, func_name, active=0):
     """Parses one or more transform calls and returns a _Transform call object.
 
     The cursor is positioned at the '(' just after the transform name.
@@ -634,8 +624,6 @@ class Lexer(object):
     Args:
       func_name: The name of the first transform function.
       active: The transform active level, None for always active.
-      restriction: Transform is a global restriction that does not have an obj
-        arg.
 
     Returns:
       The _Transform object containing the ordered list of transform calls.
@@ -645,9 +633,7 @@ class Lexer(object):
     map_transform = 0
     while True:
       transform = self._ParseTransform(func_name, active=active,
-                                       map_transform=map_transform,
-                                       restriction=restriction)
-      restriction = False
+                                       map_transform=map_transform)
       if transform.func == resource_transform.TransformAlways:
         active = None  # Always active.
         func_name = None
@@ -681,7 +667,7 @@ class Lexer(object):
     return calls
 
 
-def GetKeyName(key):
+def GetKeyName(key, quote=True):
   """Returns the string representation for a parsed key.
 
   This is the inverse of Lex.Key().
@@ -697,6 +683,7 @@ def GetKeyName(key):
           value None.
         None - A list slice. Selects all members of a list or dict like object.
           A slice of an empty dict or list is an empty dict or list.
+    quote: "..." the key name if it contains non-alphanum characters.
 
   Returns:
     The string representation of the parsed key.
@@ -713,7 +700,7 @@ def GetKeyName(key):
       if parts:
         parts[-1] += part
         continue
-    elif re.search(r'\W', part):
+    elif quote and re.search(r'\W', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
       part = u'"{part}"'.format(part=part)

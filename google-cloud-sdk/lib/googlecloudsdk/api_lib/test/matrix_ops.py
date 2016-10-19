@@ -14,6 +14,7 @@
 
 """Common test matrix operations used by Firebase Test Lab commands."""
 
+import collections
 import datetime
 import os
 import time
@@ -27,7 +28,6 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0
@@ -120,11 +120,25 @@ class MatrixCreator(object):
                 obbFileName=os.path.basename(obb_file),
                 obb=self._BuildFileReference(obb_file))))
 
+    environment_variables = []
+    if self._args.environment_variables:
+      for key, value in self._args.environment_variables.iteritems():
+        environment_variables.append(
+            self._messages.EnvironmentVariable(
+                key=key, value=value))
+
+    directories_to_pull = self._args.directories_to_pull or []
+
     account = None
     if self._args.auto_google_login:
       account = self._messages.Account(googleAuto=self._messages.GoogleAuto())
 
-    setup = self._messages.TestSetup(filesToPush=device_files, account=account)
+    setup = self._messages.TestSetup(
+        filesToPush=device_files,
+        account=account,
+        environmentVariables=environment_variables,
+        directoriesToPull=directories_to_pull)
+
     return self._messages.TestSpecification(
         testTimeout=_ReformatDuration(self._args.timeout),
         testSetup=setup)

@@ -26,24 +26,23 @@ class Collections(enum.Enum):
       'globalAccountsOperations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation'],
-      'ClouduseraccountsGlobalAccountsOperationsGetRequest',)
+      [u'project', u'operation']
+  )
   GROUPS = (
       'groups',
       'projects/{project}/global/groups/{groupName}',
       {},
-      [u'project', u'groupName'],
-      'ClouduseraccountsGroupsGetRequest',)
+      [u'project', u'groupName']
+  )
   USERS = (
       'users',
       'projects/{project}/global/users/{user}',
       {},
-      [u'project', u'user'],
-      'ClouduseraccountsUsersGetRequest',)
+      [u'project', u'user']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

@@ -19,6 +19,7 @@ import errno
 import os
 import re
 import signal
+import subprocess
 import sys
 import time
 
@@ -29,7 +30,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 class PermissionError(exceptions.Error):

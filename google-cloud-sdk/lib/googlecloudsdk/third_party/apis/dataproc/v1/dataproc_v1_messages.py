@@ -20,6 +20,14 @@ class Cluster(_messages.Message):
   """Describes the identifying information, config, and status of a cluster of
   Google Compute Engine instances.
 
+  Messages:
+    LabelsValue: [Optional] The labels to associate with this cluster. Label
+      **keys** must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a cluster.
+
   Fields:
     clusterName: [Required] The cluster name. Cluster names within a project
       must be unique. Names of deleted clusters can be reused.
@@ -27,18 +35,54 @@ class Cluster(_messages.Message):
       Cloud Dataproc generates this value when it creates the cluster.
     config: [Required] The cluster config. Note that Cloud Dataproc may set
       default values, and values may change when clusters are updated.
+    labels: [Optional] The labels to associate with this cluster. Label
+      **keys** must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a cluster.
     projectId: [Required] The Google Cloud Platform project ID that the
       cluster belongs to.
     status: [Output-only] Cluster status.
     statusHistory: [Output-only] The previous cluster status.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Optional] The labels to associate with this cluster. Label **keys**
+    must contain 1 to 63 characters, and must conform to [RFC
+    1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+    empty, but, if present, must contain 1 to 63 characters, and must conform
+    to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more than 32
+    labels can be associated with a cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   config = _messages.MessageField('ClusterConfig', 3)
-  projectId = _messages.StringField(4)
-  status = _messages.MessageField('ClusterStatus', 5)
-  statusHistory = _messages.MessageField('ClusterStatus', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  projectId = _messages.StringField(5)
+  status = _messages.MessageField('ClusterStatus', 6)
+  statusHistory = _messages.MessageField('ClusterStatus', 7, repeated=True)
 
 
 class ClusterConfig(_messages.Message):
@@ -274,6 +318,20 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersListRequest object.
 
   Fields:
+    filter: [Optional] A filter constraining the clusters to list. Filters are
+      case-sensitive and have the following syntax:      field:value
+      [field:value] ...  or      field = value [AND [field = value]] ...
+      where **field** is one of `state`, `name`, or `labels.[KEY]`, and
+      `[KEY]` is a label key. **value** is optional for labels. `state` can be
+      one of the following: `ACTIVE`, `INACTIVE`, `CREATING`, `RUNNING`,
+      `ERROR`, `DELETING`, or `UPDATING`. `ACTIVE` contains the `CREATING`,
+      `UPDATING`, and `RUNNING` states. `INACTIVE` contains the `DELETING` and
+      `ERROR` states. `name` is the name of the cluster provided at creation
+      time. Only the logical `AND` operator is supported; space-separated
+      items are treated as having an implicit `AND` operator.  Example valid
+      filters are:      state:ACTIVE name:mycluster labels.env:staging
+      labels.starred  and      state = ACTIVE AND name = mycluster AND
+      labels.env = staging AND labels.starred
     pageSize: [Optional] The standard List page size.
     pageToken: [Optional] The standard List page token.
     projectId: [Required] The ID of the Google Cloud Platform project that the
@@ -282,10 +340,11 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
       request.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
 
 
 class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
@@ -384,6 +443,15 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   Fields:
     clusterName: [Optional] If set, the returned jobs list includes only jobs
       that were submitted to the named cluster.
+    filter: [Optional] A filter constraining the jobs to list. Filters are
+      case-sensitive and have the following syntax:      field:value] ...  or
+      [field = value] AND [field [= value]] ...  where **field** is `state` or
+      `labels.[KEY]`, and `[KEY]` is a label key. **value** is optional for
+      labels. `state` can be either `ACTIVE` or `INACTIVE`. Only the logical
+      `AND` operator is supported; space-separated items are treated as having
+      an implicit `AND` operator.  Example valid filters are:
+      state:ACTIVE labels.env:staging labels.starred  and      state = ACTIVE
+      AND labels.env = staging AND labels.starred
     jobStateMatcher: [Optional] Specifies enumerated categories of jobs to
       list (default = match ALL jobs).
     pageSize: [Optional] The number of results to return in each response.
@@ -409,11 +477,12 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
     NON_ACTIVE = 2
 
   clusterName = _messages.StringField(1)
-  jobStateMatcher = _messages.EnumField('JobStateMatcherValueValuesEnum', 2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
+  filter = _messages.StringField(2)
+  jobStateMatcher = _messages.EnumField('JobStateMatcherValueValuesEnum', 3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
 
 
 class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
@@ -580,9 +649,8 @@ class GceClusterConfig(_messages.Message):
       Example:
       `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
       east1/sub0`.
-    tags: The Google Compute Engine tags to add to all instances (see
-      [Labeling instances](/compute/docs/label-or-tag-
-      resources#labeling_instances)).
+    tags: The Google Compute Engine tags to add to all instances (see [Tagging
+      instances](/compute/docs/label-or-tag-resources#tags)).
     zoneUri: [Required] The zone where the Google Compute Engine cluster will
       be located. Example: `https://www.googleapis.com/compute/v1/projects/[pr
       oject_id]/zones/[zone]`.
@@ -830,6 +898,14 @@ class InstanceGroupConfig(_messages.Message):
 class Job(_messages.Message):
   """A Cloud Dataproc job resource.
 
+  Messages:
+    LabelsValue: [Optional] The labels to associate with this job. Label
+      **keys** must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a job.
+
   Fields:
     driverControlFilesUri: [Output-only] If present, the location of
       miscellaneous control files which may be used as part of job setup and
@@ -839,6 +915,12 @@ class Job(_messages.Message):
       the stdout of the job's driver program.
     hadoopJob: Job is a Hadoop job.
     hiveJob: Job is a Hive job.
+    labels: [Optional] The labels to associate with this job. Label **keys**
+      must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a job.
     pigJob: Job is a Pig job.
     placement: [Required] Job information, including how, when, and where to
       run the job.
@@ -855,18 +937,48 @@ class Job(_messages.Message):
     statusHistory: [Output-only] The previous job status.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Optional] The labels to associate with this job. Label **keys** must
+    contain 1 to 63 characters, and must conform to [RFC
+    1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+    empty, but, if present, must contain 1 to 63 characters, and must conform
+    to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more than 32
+    labels can be associated with a job.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   driverControlFilesUri = _messages.StringField(1)
   driverOutputResourceUri = _messages.StringField(2)
   hadoopJob = _messages.MessageField('HadoopJob', 3)
   hiveJob = _messages.MessageField('HiveJob', 4)
-  pigJob = _messages.MessageField('PigJob', 5)
-  placement = _messages.MessageField('JobPlacement', 6)
-  pysparkJob = _messages.MessageField('PySparkJob', 7)
-  reference = _messages.MessageField('JobReference', 8)
-  sparkJob = _messages.MessageField('SparkJob', 9)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 10)
-  status = _messages.MessageField('JobStatus', 11)
-  statusHistory = _messages.MessageField('JobStatus', 12, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  pigJob = _messages.MessageField('PigJob', 6)
+  placement = _messages.MessageField('JobPlacement', 7)
+  pysparkJob = _messages.MessageField('PySparkJob', 8)
+  reference = _messages.MessageField('JobReference', 9)
+  sparkJob = _messages.MessageField('SparkJob', 10)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 11)
+  status = _messages.MessageField('JobStatus', 12)
+  statusHistory = _messages.MessageField('JobStatus', 13, repeated=True)
 
 
 class JobPlacement(_messages.Message):

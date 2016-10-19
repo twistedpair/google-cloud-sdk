@@ -233,11 +233,17 @@ def WaitForWaiter(waiter_resource, sleep=None, max_wait=None):
   waiter_client = WaiterClient()
   retryer = retry.Retryer(max_wait_ms=max_wait * 1000)
 
+  request = (waiter_client.client.MESSAGES_MODULE
+             .RuntimeconfigProjectsConfigsWaitersGetRequest(
+                 projectsId=waiter_resource.projectsId,
+                 configsId=waiter_resource.configsId,
+                 waitersId=waiter_resource.waitersId))
+
   with progress_tracker.ProgressTracker(
       'Waiting for waiter [{0}] to finish'.format(waiter_resource.Name())):
     try:
       result = retryer.RetryOnResult(waiter_client.Get,
-                                     args=[waiter_resource.Request()],
+                                     args=[request],
                                      sleep_ms=sleep * 1000,
                                      should_retry_if=lambda w, s: not w.done)
     except retry.WaitException:

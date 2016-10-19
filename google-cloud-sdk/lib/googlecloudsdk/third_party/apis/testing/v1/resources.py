@@ -26,24 +26,23 @@ class Collections(enum.Enum):
       'projects.devices',
       'projects/{projectId}/devices/{deviceId}',
       {},
-      [u'projectId', u'deviceId'],
-      'TestingProjectsDevicesGetRequest',)
+      [u'projectId', u'deviceId']
+  )
   PROJECTS_TESTMATRICES = (
       'projects.testMatrices',
       'projects/{projectId}/testMatrices/{testMatrixId}',
       {},
-      [u'projectId', u'testMatrixId'],
-      'TestingProjectsTestMatricesGetRequest',)
+      [u'projectId', u'testMatrixId']
+  )
   TESTENVIRONMENTCATALOG = (
       'testEnvironmentCatalog',
       'testEnvironmentCatalog/{environmentType}',
       {},
-      [u'environmentType'],
-      'TestingTestEnvironmentCatalogGetRequest',)
+      [u'environmentType']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

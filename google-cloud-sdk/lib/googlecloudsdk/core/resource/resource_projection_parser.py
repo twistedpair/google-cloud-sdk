@@ -14,6 +14,7 @@
 
 """A class for parsing a resource projection expression."""
 
+import copy
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
@@ -21,7 +22,6 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_transform
-from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class Parser(object):
@@ -366,13 +366,12 @@ class Parser(object):
       conditionals = self._projection.symbols.get(
           resource_transform.GetTypeDataName('conditionals'))
 
-      def EvalGlobalRestriction(key):
-        return getattr(conditionals, key, None)
+      def EvalGlobalRestriction(unused_obj, restriction, unused_pattern):
+        return getattr(conditionals, restriction, None)
 
       defaults = resource_projection_spec.ProjectionSpec(
           symbols={resource_projection_spec.GLOBAL_RESTRICTION_NAME:
-                   (resource_projection_spec.GLOBAL_RESTRICTION_EVAL,
-                    EvalGlobalRestriction)})
+                   EvalGlobalRestriction})
       if not resource_filter.Compile(attribute.transform.conditional,
                                      defaults=defaults).Evaluate(conditionals):
         return

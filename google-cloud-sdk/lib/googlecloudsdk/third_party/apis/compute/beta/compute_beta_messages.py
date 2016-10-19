@@ -981,6 +981,59 @@ class Backend(_messages.Message):
   maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
+class BackendBucket(_messages.Message):
+  """A BackendBucket resource. This resource defines a Cloud Storage bucket.
+
+  Fields:
+    bucketName: Cloud Storage bucket name.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    enableCdn: If true, enable Cloud CDN for this BackendBucket.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  bucketName = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  enableCdn = _messages.BooleanField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#backendBucket')
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+
+
+class BackendBucketList(_messages.Message):
+  """Contains a list of BackendBucket resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of BackendBucket resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('BackendBucket', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#backendBucketList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class BackendService(_messages.Message):
   """A BackendService resource. This resource defines a group of backend
   virtual machines and their serving capacity.
@@ -1697,6 +1750,121 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeBackendBucketsDeleteRequest(_messages.Message):
+  """A ComputeBackendBucketsDeleteRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to delete.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsGetRequest(_messages.Message):
+  """A ComputeBackendBucketsGetRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to return.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsInsertRequest(_messages.Message):
+  """A ComputeBackendBucketsInsertRequest object.
+
+  Fields:
+    backendBucket: A BackendBucket resource to be passed as the request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.MessageField('BackendBucket', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsListRequest(_messages.Message):
+  """A ComputeBackendBucketsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeBackendBucketsPatchRequest(_messages.Message):
+  """A ComputeBackendBucketsPatchRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to update.
+    backendBucketResource: A BackendBucket resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  backendBucketResource = _messages.MessageField('BackendBucket', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsUpdateRequest(_messages.Message):
+  """A ComputeBackendBucketsUpdateRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to update.
+    backendBucketResource: A BackendBucket resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  backendBucketResource = _messages.MessageField('BackendBucket', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
@@ -3538,22 +3706,14 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -4434,6 +4594,23 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesSetServiceAccountRequest(_messages.Message):
+  """A ComputeInstancesSetServiceAccountRequest object.
+
+  Fields:
+    instance: Name of the instance resource to start.
+    instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetServiceAccountRequest = _messages.MessageField('InstancesSetServiceAccountRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesSetTagsRequest(_messages.Message):
   """A ComputeInstancesSetTagsRequest object.
 
@@ -4759,6 +4936,29 @@ class ComputeProjectsGetRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnHostRequest(_messages.Message):
+  """A ComputeProjectsGetXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsListXpnHostsRequest(_messages.Message):
+  """A ComputeProjectsListXpnHostsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
+      passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 2)
 
 
 class ComputeProjectsMoveDiskRequest(_messages.Message):
@@ -5202,22 +5402,14 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  region = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -9166,16 +9358,25 @@ class GuestOsFeature(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The type of supported feature. Currenty only
-      VIRTIO_SCSI_MULTIQUEUE is supported.
+      VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
+      server might also populate this property with the value WINDOWS to
+      indicate that this is a Windows image. This value is purely
+      informational and does not enable or disable any features.
 
   Fields:
     type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
-      is supported.
+      is supported. For newer Windows images, the server might also populate
+      this property with the value WINDOWS to indicate that this is a Windows
+      image. This value is purely informational and does not enable or disable
+      any features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
-    supported.
+    supported. For newer Windows images, the server might also populate this
+    property with the value WINDOWS to indicate that this is a Windows image.
+    This value is purely informational and does not enable or disable any
+    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -9187,46 +9388,6 @@ class GuestOsFeature(_messages.Message):
     WINDOWS = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
-
-
-class HTTP2HealthCheck(_messages.Message):
-  """A HTTP2HealthCheck object.
-
-  Enums:
-    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
-      before sending data to the backend, either NONE or PROXY_V1. The default
-      is NONE.
-
-  Fields:
-    host: The value of the host header in the HTTP/2 health check request. If
-      left empty (default value), the IP on behalf of which this health check
-      is performed will be used.
-    port: The TCP port number for the health check request. The default value
-      is 443.
-    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
-      port and port_name are defined, port takes precedence.
-    proxyHeader: Specifies the type of proxy header to append before sending
-      data to the backend, either NONE or PROXY_V1. The default is NONE.
-    requestPath: The request path of the HTTP/2 health check request. The
-      default value is /.
-  """
-
-  class ProxyHeaderValueValuesEnum(_messages.Enum):
-    """Specifies the type of proxy header to append before sending data to the
-    backend, either NONE or PROXY_V1. The default is NONE.
-
-    Values:
-      NONE: <no description>
-      PROXY_V1: <no description>
-    """
-    NONE = 0
-    PROXY_V1 = 1
-
-  host = _messages.StringField(1)
-  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(3)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
-  requestPath = _messages.StringField(5)
 
 
 class HTTPHealthCheck(_messages.Message):
@@ -9328,7 +9489,6 @@ class HealthCheck(_messages.Message):
       property when you create the resource.
     healthyThreshold: A so-far unhealthy instance will be marked healthy after
       this many consecutive successes. The default value is 2.
-    http2HealthCheck: A HTTP2HealthCheck attribute.
     httpHealthCheck: A HTTPHealthCheck attribute.
     httpsHealthCheck: A HTTPSHealthCheck attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -9351,6 +9511,7 @@ class HealthCheck(_messages.Message):
       HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
+    udpHealthCheck: A UDPHealthCheck attribute.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
   """
@@ -9363,34 +9524,34 @@ class HealthCheck(_messages.Message):
 
     Values:
       HTTP: <no description>
-      HTTP2: <no description>
       HTTPS: <no description>
       INVALID: <no description>
       SSL: <no description>
       TCP: <no description>
+      UDP: <no description>
     """
     HTTP = 0
-    HTTP2 = 1
-    HTTPS = 2
-    INVALID = 3
-    SSL = 4
-    TCP = 5
+    HTTPS = 1
+    INVALID = 2
+    SSL = 3
+    TCP = 4
+    UDP = 5
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
-  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
-  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#healthCheck')
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 12)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
-  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 5)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#healthCheck')
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 11)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 12)
+  timeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 15)
   unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
 
 
@@ -9665,11 +9826,14 @@ class Image(_messages.Message):
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
     guestOsFeatures: A list of features to enable on the guest OS. Applicable
-      for bootable images only. Currently, only one feature is supported,
+      for bootable images only. Currently, only one feature can be enabled,
       VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own
       queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE
       on images with driver version 1.2.0.1621 or higher. Linux images with
       kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.
+      For new Windows images, the server might also populate this field with
+      the value WINDOWS, to indicate that this is a Windows image. This value
+      is purely informational and does not enable or disable any features.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -9701,8 +9865,8 @@ class Image(_messages.Message):
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sourceDisk: URL of the The source disk used to create this image. This can
-      be a full or valid partial URL. You must provide either this property or
+    sourceDisk: URL of the source disk used to create this image. This can be
+      a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
       example, the following are valid values:   - https://www.googleapis.com/
       compute/v1/projects/project/zones/zone/disks/disk  -
@@ -10375,7 +10539,8 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
   Fields:
-    healthCheck: The URL for the HealthCheck that signals autohealing.
+    healthCheck: The URL for the HttpHealthCheck or HttpsHealthCheck that
+      signals autohealing.
     initialDelaySec: The number of seconds that the managed instance group
       waits before it applies autohealing policies to new instances or
       recently recreated instances. This initial delay allows instances to
@@ -11229,6 +11394,18 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class InstancesSetServiceAccountRequest(_messages.Message):
+  """A InstancesSetServiceAccountRequest object.
+
+  Fields:
+    email: Email address of the service account.
+    scopes: The list of scopes to be made available for this service account.
+  """
+
+  email = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class InstancesStartWithEncryptionKeyRequest(_messages.Message):
@@ -12376,6 +12553,18 @@ class Project(_messages.Message):
   xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
 
 
+class ProjectsListXpnHostsRequest(_messages.Message):
+  """A ProjectsListXpnHostsRequest object.
+
+  Fields:
+    organization: Optional organization ID managed by Cloud Resource Manager,
+      for which to list XPN host projects. If not specified, the organization
+      will be inferred from the project.
+  """
+
+  organization = _messages.StringField(1)
+
+
 class Quota(_messages.Message):
   """A quotas entry.
 
@@ -12393,6 +12582,7 @@ class Quota(_messages.Message):
 
     Values:
       AUTOSCALERS: <no description>
+      BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -12427,38 +12617,39 @@ class Quota(_messages.Message):
       VPN_TUNNELS: <no description>
     """
     AUTOSCALERS = 0
-    BACKEND_SERVICES = 1
-    CPUS = 2
-    DISKS_TOTAL_GB = 3
-    FIREWALLS = 4
-    FORWARDING_RULES = 5
-    HEALTH_CHECKS = 6
-    IMAGES = 7
-    INSTANCES = 8
-    INSTANCE_GROUPS = 9
-    INSTANCE_GROUP_MANAGERS = 10
-    INSTANCE_TEMPLATES = 11
-    IN_USE_ADDRESSES = 12
-    LOCAL_SSD_TOTAL_GB = 13
-    NETWORKS = 14
-    PREEMPTIBLE_CPUS = 15
-    REGIONAL_AUTOSCALERS = 16
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 17
-    ROUTERS = 18
-    ROUTES = 19
-    SNAPSHOTS = 20
-    SSD_TOTAL_GB = 21
-    SSL_CERTIFICATES = 22
-    STATIC_ADDRESSES = 23
-    SUBNETWORKS = 24
-    TARGET_HTTPS_PROXIES = 25
-    TARGET_HTTP_PROXIES = 26
-    TARGET_INSTANCES = 27
-    TARGET_POOLS = 28
-    TARGET_SSL_PROXIES = 29
-    TARGET_VPN_GATEWAYS = 30
-    URL_MAPS = 31
-    VPN_TUNNELS = 32
+    BACKEND_BUCKETS = 1
+    BACKEND_SERVICES = 2
+    CPUS = 3
+    DISKS_TOTAL_GB = 4
+    FIREWALLS = 5
+    FORWARDING_RULES = 6
+    HEALTH_CHECKS = 7
+    IMAGES = 8
+    INSTANCES = 9
+    INSTANCE_GROUPS = 10
+    INSTANCE_GROUP_MANAGERS = 11
+    INSTANCE_TEMPLATES = 12
+    IN_USE_ADDRESSES = 13
+    LOCAL_SSD_TOTAL_GB = 14
+    NETWORKS = 15
+    PREEMPTIBLE_CPUS = 16
+    REGIONAL_AUTOSCALERS = 17
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 18
+    ROUTERS = 19
+    ROUTES = 20
+    SNAPSHOTS = 21
+    SSD_TOTAL_GB = 22
+    SSL_CERTIFICATES = 23
+    STATIC_ADDRESSES = 24
+    SUBNETWORKS = 25
+    TARGET_HTTPS_PROXIES = 26
+    TARGET_HTTP_PROXIES = 27
+    TARGET_INSTANCES = 28
+    TARGET_POOLS = 29
+    TARGET_SSL_PROXIES = 30
+    TARGET_VPN_GATEWAYS = 31
+    URL_MAPS = 32
+    VPN_TUNNELS = 33
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -15161,6 +15352,25 @@ class TestPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class UDPHealthCheck(_messages.Message):
+  """A UDPHealthCheck object.
+
+  Fields:
+    port: The UDP port number for the health check request.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    request: Raw data of request to send in payload of UDP packet. It is an
+      error if this is empty. The request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      It is an error if this is empty. The response data can only be ASCII.
+  """
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  request = _messages.StringField(3)
+  response = _messages.StringField(4)
+
+
 class UrlMap(_messages.Message):
   """A UrlMap resource. This resource defines the mapping from URL to the
   BackendService resource, based on the "longest-match" of the URL's host and
@@ -15586,6 +15796,30 @@ class VpnTunnelsScopedList(_messages.Message):
 
   vpnTunnels = _messages.MessageField('VpnTunnel', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class XpnHostList(_messages.Message):
+  """A XpnHostList object.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of XPN host project URLs.
+    kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
+      of XPN hosts.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Project', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#xpnHostList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class Zone(_messages.Message):

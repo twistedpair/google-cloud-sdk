@@ -555,14 +555,16 @@
             "Not set.",
             "The operation has been created.",
             "The operation is currently running.",
-            "The operation is done, either cancelled or completed."
+            "The operation is done, either cancelled or completed.",
+            "The operation is aborting."
           ],
           "type": "string",
           "enum": [
             "STATUS_UNSPECIFIED",
             "PENDING",
             "RUNNING",
-            "DONE"
+            "DONE",
+            "ABORTING"
           ]
         },
         "detail": {
@@ -659,6 +661,20 @@
             "type": "string"
           }
         }
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "CancelOperationRequest cancels a single operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
       }
     },
     "ServerConfig": {
@@ -1636,6 +1652,47 @@
                   ],
                   "response": {
                     "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "cancel": {
+                  "id": "container.projects.zones.operations.cancel",
+                  "path": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
+                  "httpMethod": "POST",
+                  "description": "Cancels the specified operation.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the operation resides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "operationId": {
+                      "description": "The server-assigned `name` of the operation.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "operationId"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

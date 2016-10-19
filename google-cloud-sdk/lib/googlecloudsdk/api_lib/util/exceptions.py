@@ -212,28 +212,31 @@ class HttpErrorPayload(string.Formatter):
 
   def _MakeGenericMessage(self):
     """Makes a generic human readable message from the HttpError."""
+    description = self._MakeDescription()
+    if self.status_message:
+      return u'{0}: {1}'.format(description, self.status_message)
+    return description
+
+  def _MakeDescription(self):
+    """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return u'You do not have permission to access {0} [{1}].'.format(
+        return u'You do not have permission to access {0} [{1}]'.format(
             self.resource_item, self.instance_name)
       if self.status_code == 404:
-        return u'{0} [{1}] not found.'.format(
+        return u'{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
-        return u'{0} [{1}] already exists.'.format(
+        return u'{0} [{1}] already exists'.format(
             self.resource_item.capitalize(), self.instance_name)
 
     description = self.status_description
-    if description.endswith('.'):
-      description = description[:-1]
-    if not description and not self.status_message:
-      # Example: 'HTTPError 403'
-      return u'HTTPError {0}'.format(self.status_code)
-    if not description or not self.status_message:
-      # Example: 'PERMISSION_DENIED' or 'You do not have permission to access X'
-      return u'{0}'.format(self.status_message or self.status_description)
-    # Example: 'PERMISSION_DENIED: You do not have permission to access X'
-    return u'{0}: {1}'.format(description, self.status_message)
+    if description:
+      if description.endswith('.'):
+        description = description[:-1]
+      return description
+    # Example: 'HTTPError 403'
+    return u'HTTPError {0}'.format(self.status_code)
 
 
 class HttpException(core_exceptions.Error):

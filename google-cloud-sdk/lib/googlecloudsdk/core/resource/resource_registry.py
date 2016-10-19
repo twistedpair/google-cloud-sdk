@@ -409,8 +409,9 @@ RESOURCE_REGISTRY = {
             zone.basename(),
             machineType.machine_type(),
             scheduling.preemptible.yesno(yes=true, no=''),
-            networkInterfaces[0].networkIP:label=INTERNAL_IP,
-            networkInterfaces[0].accessConfigs[0].natIP:label=EXTERNAL_IP,
+            networkInterfaces[].networkIP.notnull().list():label=INTERNAL_IP,
+            networkInterfaces[].accessConfigs[0].natIP.notnull().list()\
+            :label=EXTERNAL_IP,
             status
           )
         """,
@@ -824,13 +825,13 @@ RESOURCE_REGISTRY = {
     'debug.logpoints': resource_info.ResourceInfo(
         list_format="""
           table(
-            short_status():label=STATUS,
             userEmail.if(all_users),
             location,
             condition,
             logLevel,
             logMessageFormat,
-            id)
+            id,
+            full_status():label=STATUS)
             :(isFinalState:sort=1, createTime:sort=2)
         """,
     ),
@@ -1245,6 +1246,8 @@ RESOURCE_REGISTRY = {
             type,
             pushEndpoint:label=PUSH_ENDPOINT,
             ackDeadlineSeconds:label=ACK_DEADLINE,
+            retainAckedMessages:label=RETAIN_ACKED_MESSAGES,
+            messageRetentionDuration:label=MESSAGE_RETENTION_DURATION,
             success:label=SUCCESS,
             reason:label=REASON
           )
@@ -1298,6 +1301,39 @@ RESOURCE_REGISTRY = {
             topicId:label=TOPIC,
             type,
             ackDeadlineSeconds:label=ACK_DEADLINE
+          )
+        """,
+    ),
+
+    'pubsub.projects.snapshots': resource_info.ResourceInfo(
+        list_format="""
+          table[box](
+            snapshotId:label=SNAPSHOT,
+            topicId:label=TOPIC,
+            exipirationTime:label=EXPIRATION_TIME,
+            success:label=SUCCESS,
+            reason:label=REASON
+            )
+        """,
+    ),
+
+    'pubsub.snapshots.list': resource_info.ResourceInfo(
+        list_format="""
+          table[box](
+            projectId:label=PROJECT,
+            snapshotId:label=SNAPSHOT,
+            topicId:label=TOPIC,
+            expirationTime:label=EXPIRATION_TIME
+            )
+        """,
+    ),
+
+    'pubsub.subscriptions.seek': resource_info.ResourceInfo(
+        list_format="""
+          table[box](
+            time:label=TIME,
+            snapshotId:label=SNAPSHOT
+            subscriptionId:label=SUBSCRIPTION,
           )
         """,
     ),
@@ -1410,6 +1446,12 @@ RESOURCE_REGISTRY = {
             project_id,
             id:label=CAPTURE_ID
           )
+        """,
+    ),
+
+    'source.captures.upload': resource_info.ResourceInfo(
+        list_format="""
+          flattened(capture.id, context_file, extended_context_file)
         """,
     ),
 

@@ -16,40 +16,11 @@
 
 from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.core.resource import resource_expr_rewrite
-from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.util import times
 
 
-def Rewrite(expr):
-  """Returns the server side rewrite of a --filter expression.
-
-  Args:
-    expr: A client side --filter expression.
-
-  Raises:
-    resource_exceptions.ExpressionSyntaxError: Expression syntax error.
-    ValueError: Invalid expression operands.
-
-  Returns:
-    The server side rewrite of a --filter expression, None if the expression is
-    completely client side.
-  """
-
-  # Rewrite the expression.
-  rewrite = resource_filter.Compile(expr, backend=_Backend()).Rewrite()
-
-  # Add a project id restriction.
-  if rewrite:
-    rewrite += ' AND '
-  else:
-    rewrite = ''
-  rewrite += 'projectId={0}'.format(genomics_util.GetProjectId())
-
-  return rewrite
-
-
-def _RewriteCreateTime(key, op, operand):
-  """Rewrites <createTime op operator>."""
+def _RewriteTimeTerm(key, op, operand):
+  """Rewrites <createTime op operand>."""
   if op not in ['<', '<=', '=', ':', '>=', '>']:
     return None
   try:
@@ -70,15 +41,28 @@ def _RewriteCreateTime(key, op, operand):
   return '{key} {op} {seconds}'.format(key=key, op=op, seconds=seconds)
 
 
-class _Backend(resource_expr_rewrite.Backend):
+class Backend(resource_expr_rewrite.BackendBase):
   """Genomics resource filter expression rewrite backend."""
+
+  def Rewrite(self, expr, defaults=None):
+    """Add a project id restriction to the backend rewrite."""
+    rewrite = super(Backend, self).Rewrite(expr, defaults=defaults)
+
+    # Add a project id restriction.
+    if rewrite:
+      rewrite += ' AND '
+    else:
+      rewrite = ''
+    rewrite += 'projectId={0}'.format(genomics_util.GetProjectId())
+
+    return rewrite
 
   def RewriteAND(self, left, right):
     """Rewrites <left AND right>."""
-    return '{left} AND {right})'.format(left=left, right=right)
+    return '{left} AND {right}'.format(left=left, right=right)
 
   def RewriteTerm(self, key, op, operand):
     """Rewrites <key op operand>."""
     if key == 'createTime':
-      return _RewriteCreateTime(key, op, operand)
+      return _RewriteTimeTerm(key, op, operand)
     return None

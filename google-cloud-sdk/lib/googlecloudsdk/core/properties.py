@@ -973,6 +973,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.logging = self._Add('logging')
     self.ml = self._Add('ml')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
+    self.cloudresourcesearch = self._Add('cloudresourcesearch')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')

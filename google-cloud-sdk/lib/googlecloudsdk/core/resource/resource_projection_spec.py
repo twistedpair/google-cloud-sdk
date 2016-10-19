@@ -14,14 +14,14 @@
 
 """A class that creates resource projection specification."""
 
+import copy
 import sys
 
-from googlecloudsdk.third_party.py27 import py27_copy as copy
 
-
-GLOBAL_RESTRICTION_NAME = 'GLOBAL'
-GLOBAL_RESTRICTION_EVAL = 'eval'
-GLOBAL_RESTRICTION_REWRITE = 'rewrite'
+# A transform function name to evaluate global restrictions. A parsed function
+# name cannot contain a '.', so this name will not conflict with any valid
+# transform name.
+GLOBAL_RESTRICTION_NAME = 'global.restriction'
 
 PROJECTION_ARG_DOC = ' projection: The parent ProjectionSpec.'
 

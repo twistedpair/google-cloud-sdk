@@ -26,18 +26,17 @@ class Collections(enum.Enum):
       'deployments',
       'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
       {},
-      [u'projectId', u'region', u'deploymentName'],
-      'ManagerDeploymentsGetRequest',)
+      [u'projectId', u'region', u'deploymentName']
+  )
   TEMPLATES = (
       'templates',
       'projects/{projectId}/templates/{templateName}',
       {},
-      [u'projectId', u'templateName'],
-      'ManagerTemplatesGetRequest',)
+      [u'projectId', u'templateName']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type

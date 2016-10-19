@@ -17,8 +17,18 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+
+
+class CacheKeyQueryStringException(core_exceptions.Error):
+
+  def __init__(self):
+    super(CacheKeyQueryStringException, self).__init__(
+        'cache-key-query-string-whitelist and '
+        'cache-key-query-string-blacklist may only be set when '
+        'cache-key-include-query-string is enabled.')
 
 
 def IsRegionDefaultModeWarnOtherwise(print_warning=True):
@@ -195,3 +205,43 @@ def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
       raise exceptions.InvalidArgumentException(
           invalid_arg,
           'cannot be set with CONNECTION balancing mode')
+
+
+def UpdateCacheKeyPolicy(args, cache_key_policy):
+  """Sets the cache_key_policy according to the command line arguments.
+
+  Args:
+    args: Arguments specified through command line.
+    cache_key_policy: new CacheKeyPolicy to be set (or preexisting one if
+      using update).
+  """
+  if args.cache_key_include_protocol is not None:
+    cache_key_policy.includeProtocol = args.cache_key_include_protocol
+  if args.cache_key_include_host is not None:
+    cache_key_policy.includeHost = args.cache_key_include_host
+  if args.cache_key_include_query_string is not None:
+    cache_key_policy.includeQueryString = args.cache_key_include_query_string
+    if not args.cache_key_include_query_string:
+      cache_key_policy.queryStringWhitelist = []
+      cache_key_policy.queryStringBlacklist = []
+  if args.cache_key_query_string_whitelist is not None:
+    (cache_key_policy.queryStringWhitelist
+    ) = args.cache_key_query_string_whitelist
+    cache_key_policy.includeQueryString = True
+    cache_key_policy.queryStringBlacklist = []
+  if args.cache_key_query_string_blacklist is not None:
+    (cache_key_policy.queryStringBlacklist
+    ) = args.cache_key_query_string_blacklist
+    cache_key_policy.includeQueryString = True
+    cache_key_policy.queryStringWhitelist = []
+
+
+def ValidateCacheKeyPolicyArgs(cache_key_policy_args):
+  # If includeQueryString is not set, it should default to True
+  include_query_string = (
+      cache_key_policy_args.cache_key_include_query_string is None or
+      cache_key_policy_args.cache_key_include_query_string)
+  if not include_query_string:
+    if (cache_key_policy_args.cache_key_query_string_whitelist or
+        cache_key_policy_args.cache_key_query_string_blacklist):
+      raise CacheKeyQueryStringException()

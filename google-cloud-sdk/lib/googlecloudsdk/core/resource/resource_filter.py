@@ -78,10 +78,13 @@ Example:
       ProcessMatchedResource(resource)
 """
 
+import re
+
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_expr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.core.resource import resource_property
 
 
 class _Parser(object):
@@ -183,7 +186,7 @@ class _Parser(object):
           'Term expected [{0}].'.format(self._lex.Annotate(here)))
     if self._lex.IsCharacter('(', eoi_ok=True):
       func_name = key.pop()
-      return key, self._lex.Transform(func_name, 0, restriction=not key)
+      return key, self._lex.Transform(func_name, 0)
     return key, None
 
   def _ParseOperator(self):
@@ -254,7 +257,17 @@ class _Parser(object):
     invert = self._lex.IsCharacter('-')
 
     # Parse the key.
-    key, transform = self._ParseKey()
+    here = self._lex.GetPosition()
+    syntax_error = None
+    try:
+      key, transform = self._ParseKey()
+      restriction = None
+    except resource_exceptions.ExpressionSyntaxError as syntax_error:
+      # An invalid key could be a global restriction.
+      self._lex.SetPosition(here)
+      restriction = self._lex.Token(resource_lex.OPERATOR_CHARS, space=False)
+      transform = None
+      key = None
 
     # Parse the operator.
     here = self._lex.GetPosition()
@@ -263,29 +276,31 @@ class _Parser(object):
       if transform and not key:
         # A global restriction function.
         tree = self._backend.ExprGlobal(transform)
-      elif not transform and len(key) == 1:
-        # A global restriction on key. The symbol lookup returns a (kind, func)
-        # tuple where kind indicates an expression rewrite or eval.
-        kind, func = self._defaults.symbols.get(
-            resource_projection_spec.GLOBAL_RESTRICTION_NAME, (None, None))
-        if kind == resource_projection_spec.GLOBAL_RESTRICTION_REWRITE:
-          tree = Compile(func(key[0]), backend=self._backend,
-                         defaults=self._defaults)
-        elif kind == resource_projection_spec.GLOBAL_RESTRICTION_EVAL:
-          tree = self._backend.ExprGlobal(
-              resource_lex.MakeTransform(
-                  resource_projection_spec.GLOBAL_RESTRICTION_NAME,
-                  func, args=key, restriction=True))
-        else:
-          raise resource_exceptions.ExpressionSyntaxError(
-              'Global restriction not supported [{0}].'.format(
-                  self._lex.Annotate(here)))
-      else:
+      elif transform:
+        # key.transform() must be followed by an operator.
         raise resource_exceptions.ExpressionSyntaxError(
             'Operator expected [{0}].'.format(self._lex.Annotate(here)))
+      elif restriction in ['AND', 'OR']:
+        raise resource_exceptions.ExpressionSyntaxError(
+            'Term expected [{0}].'.format(self._lex.Annotate()))
+      else:
+        # A global restriction on key.
+        if not restriction:
+          restriction = resource_lex.GetKeyName(key, quote=False)
+        pattern = re.compile(re.escape(restriction), re.IGNORECASE)
+        name = resource_projection_spec.GLOBAL_RESTRICTION_NAME
+        tree = self._backend.ExprGlobal(
+            resource_lex.MakeTransform(
+                name,
+                self._defaults.symbols.get(
+                    name,
+                    resource_property.EvaluateGlobalRestriction),
+                args=[restriction, pattern]))
       if invert:
         tree = self._backend.ExprNOT(tree)
       return tree
+    elif syntax_error:
+      raise syntax_error  # pylint: disable=raising-bad-type
 
     # Parse the operand.
     self._lex.SkipSpace(token='Operand')

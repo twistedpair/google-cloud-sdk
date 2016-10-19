@@ -722,6 +722,13 @@ class CLI(object):
       log.SetUserOutputEnabled(None)
       log.SetVerbosity(None)
 
+      # Set the command_name property so it is persisted until the process ends.
+      # Only do this for the top level command that can be detected by looking
+      # at the stack. It will have one initial level, and another level added by
+      # the PushInvocationValues earlier in this method.
+      if len(properties.VALUES.GetInvocationStack()) == 2:
+        properties.VALUES.metrics.command_name.Set(command_path_string)
+      # Set the invocation value for all commands, this is lost when popped
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
       metrics.Commands(
@@ -787,7 +794,8 @@ class CLI(object):
       else:
         # Make sure any uncaught exceptions still make it into the log file.
         log.debug(console_attr.EncodeForOutput(exc), exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc.__class__, flag_collection)
+        metrics.Error(command_path_string, exc.__class__, flag_collection,
+                      error_extra_info={'error_code': 1})
         raise
 
   def _HandleKnownError(self, exc, command_path_string, flag_collection,
@@ -810,7 +818,12 @@ class CLI(object):
       log.error(msg)
     metrics_exc = orig_exc or exc
     metrics_exc_class = metrics_exc.__class__
-    metrics.Error(command_path_string, metrics_exc_class, flag_collection)
+    error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
+    if isinstance(exc, exceptions.HttpException):
+      error_extra_info['http_status_code'] = exc.payload.status_code
+
+    metrics.Error(command_path_string, metrics_exc_class, flag_collection,
+                  error_extra_info=error_extra_info)
     self._Exit(exc)
 
   def _Exit(self, exc):

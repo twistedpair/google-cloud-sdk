@@ -55,6 +55,7 @@ class LogPosition(object):
   def __init__(self):
     self.timestamp = '1970-01-01T01:00:00.000000000Z'
     self.insert_id = ''
+    self.need_insert_id_in_lb_filter = False
 
   def Update(self, timestamp, insert_id):
     """Update the log position based on new log entry data.
@@ -74,12 +75,14 @@ class LogPosition(object):
       # When the timestamp is the same, we need to move forward the insert id.
       if insert_id > self.insert_id:
         self.insert_id = insert_id
+        self.need_insert_id_in_lb_filter = True
         return True
       return False
     else:
       # Once we see a new timestamp, move forward the minimum time that we're
-      # willing to accept and clear the insert_id field.
-      self.insert_id = ''
+      # willing to accept.
+      self.need_insert_id_in_lb_filter = False
+      self.insert_id = insert_id
       self.timestamp = timestamp
       return True
 
@@ -90,7 +93,7 @@ class LogPosition(object):
         The lower bound filter text that we should use.
     """
 
-    if self.insert_id:
+    if self.need_insert_id_in_lb_filter:
       return '((timestamp="{0}" AND insertId>"{1}") OR timestamp>"{2}")'.format(
           self.timestamp, self.insert_id, self.timestamp)
     else:
@@ -113,13 +116,16 @@ class LogPosition(object):
         times.FormatDateTime(upper_bound, '%Y-%m-%dT%H:%M:%S.%6f%Ez'))
 
 
-class ApiAccessor(object):
-  """Handles making calls to cloud APIs."""
+class LogFetcher(object):
+  """A class which fetches job logs."""
 
   LOG_BATCH_SIZE = 5000
 
-  def __init__(self, job_id):
+  def __init__(self, job_id, polling_interval, allow_multiline_logs):
     self.job_id = job_id
+    self.polling_interval = polling_interval
+    self.log_position = LogPosition()
+    self.allow_multiline_logs = allow_multiline_logs
     self.client = apis.GetClientInstance('ml', 'v1beta1')
 
   def GetLogs(self, log_position):
@@ -140,18 +146,6 @@ class ApiAccessor(object):
         projectsId=res.projectsId, jobsId=res.jobsId)
     resp = self.client.projects_jobs.Get(req)
     return resp.endTime is not None
-
-
-class LogFetcher(object):
-  """A class which fetches job logs."""
-
-  def __init__(self, job_id, polling_interval, allow_multiline_logs,
-               api_accessor):
-    self.job_id = job_id
-    self.polling_interval = polling_interval
-    self.log_position = LogPosition()
-    self.allow_multiline_logs = allow_multiline_logs
-    self.api_accessor = api_accessor
 
   def YieldLogs(self):
     """Return log messages from the given job.
@@ -179,7 +173,7 @@ class LogFetcher(object):
     periods_without_progress = 0
     last_progress_time = datetime.datetime.utcnow()
     while True:
-      log_retriever = self.api_accessor.GetLogs(self.log_position)
+      log_retriever = self.GetLogs(self.log_position)
       made_progress = False
       while True:
         try:
@@ -196,6 +190,8 @@ class LogFetcher(object):
           yield multiline_log_dict
         else:
           message_lines = multiline_log_dict['message'].splitlines()
+          if not message_lines:
+            message_lines = ['']
           for message_line in message_lines:
             single_line_dict = copy.deepcopy(multiline_log_dict)
             single_line_dict['message'] = message_line
@@ -211,7 +207,7 @@ class LogFetcher(object):
         if periods_without_progress > 1:
           if last_progress_time + datetime.timedelta(
               seconds=5) <= datetime.datetime.utcnow():
-            if self.api_accessor.CheckJobFinished():
+            if self.CheckJobFinished():
               raise StopIteration
         time.sleep(self.polling_interval)
 
@@ -230,7 +226,8 @@ class LogFetcher(object):
       # 'message' contains a free-text message that we want to pull out of the
       # JSON.
       if 'message' in json_data:
-        output['message'] += json_data['message']
+        if json_data['message']:
+          output['message'] += json_data['message']
         del json_data['message']
       # Don't put 'levelname' in the JSON, since it duplicates the
       # information in log_entry.severity.name
@@ -263,14 +260,6 @@ def ToDict(message):
     return message
   else:
     return encoding.MessageToDict(message)
-
-
-def StreamLogs(args):
-  log_fetcher = LogFetcher(job_id=args.job,
-                           polling_interval=args.polling_interval,
-                           allow_multiline_logs=args.allow_multiline_logs,
-                           api_accessor=ApiAccessor(args.job))
-  return log_fetcher.YieldLogs()
 
 
 def List():

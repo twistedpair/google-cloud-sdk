@@ -29,8 +29,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
       },
-      [u'name'],
-      'IamProjectsServiceAccountsGetRequest',)
+      [u'name']
+  )
   PROJECTS_SERVICEACCOUNTS_KEYS = (
       'projects.serviceAccounts.keys',
       '{+name}',
@@ -39,12 +39,11 @@ class Collections(enum.Enum):
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
               'keys/{keysId}',
       },
-      [u'name'],
-      'IamProjectsServiceAccountsKeysGetRequest',)
+      [u'name']
+  )
 
-  def __init__(self, collection_name, path, flat_paths, params, request_type):
+  def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
-    self.request_type = request_type
