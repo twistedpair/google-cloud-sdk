@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20160925",
+ "revision": "20161007",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -149,7 +149,7 @@
    "properties": {
     "members": {
      "type": "array",
-     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
      "items": {
       "type": "string"
      }
@@ -172,6 +172,82 @@
     "options": {
      "$ref": "Options",
      "description": "The options to apply to this resource-level override"
+    }
+   }
+  },
+  "CompositeType": {
+   "id": "CompositeType",
+   "type": "object",
+   "description": "Holds the composite type.",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "An optional textual description of the resource; provided by the client when the resource is created."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+     "format": "uint64"
+    },
+    "insertTime": {
+     "type": "string",
+     "description": "[Output Only] Timestamp when the composite type was created, in RFC3339 text format."
+    },
+    "labels": {
+     "type": "array",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "items": {
+      "$ref": "CompositeTypeLabelEntry"
+     }
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the composite type."
+    },
+    "operation": {
+     "$ref": "Operation",
+     "description": "[Output Only] The Operation that most recently ran, or is currently running, on this composite type."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Self link for the type provider."
+    },
+    "status": {
+     "type": "string"
+    },
+    "templateContents": {
+     "$ref": "TemplateContents",
+     "description": "Files for the template type."
+    }
+   }
+  },
+  "CompositeTypeLabelEntry": {
+   "id": "CompositeTypeLabelEntry",
+   "type": "object",
+   "properties": {
+    "key": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
+    }
+   }
+  },
+  "CompositeTypesListResponse": {
+   "id": "CompositeTypesListResponse",
+   "type": "object",
+   "description": "A response that returns all Composite Types supported by Deployment Manager",
+   "properties": {
+    "compositeTypes": {
+     "type": "array",
+     "description": "[Output Only] A list of resource composite types supported by Deployment Manager.",
+     "items": {
+      "$ref": "CompositeType"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "A token used to continue a truncated list request."
     }
    }
   },
@@ -618,7 +694,7 @@
     },
     "targetLink": {
      "type": "string",
-     "description": "[Output Only] The URL of the resource that the operation modifies. If creating a persistent disk snapshot, this points to the persistent disk that the snapshot was created from."
+     "description": "[Output Only] The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from."
     },
     "user": {
      "type": "string",
@@ -1033,6 +1109,10 @@
       "$ref": "ImportFile"
      }
     },
+    "interpreter": {
+     "type": "string",
+     "description": "Which interpreter (python or jinja) should be used during expansion."
+    },
     "schema": {
      "type": "string",
      "description": "The contents of the template schema."
@@ -1040,10 +1120,6 @@
     "template": {
      "type": "string",
      "description": "The contents of the main template file."
-    },
-    "templateFileType": {
-     "type": "string",
-     "description": "The template file type (python or jinja). This signifies what interpreter should be used during expansion."
     }
    }
   },
@@ -1117,6 +1193,57 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Self link for the type."
+    }
+   }
+  },
+  "TypeInfo": {
+   "id": "TypeInfo",
+   "type": "object",
+   "description": "Contains detailed information about a composite type, base type, or base type with specific collection.",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "The description of the type."
+    },
+    "documentationLink": {
+     "type": "string",
+     "description": "For swagger 2.0 externalDocs field will be used. For swagger 1.2 this field will be empty."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the output. Always deploymentManager#TypeInfo for TypeInfo.",
+     "default": "deploymentmanager#typeInfo"
+    },
+    "name": {
+     "type": "string",
+     "description": "The base type or composite type name."
+    },
+    "schema": {
+     "$ref": "TypeInfoSchemaInfo",
+     "description": "For base types with a collection, we return a schema and documentation link For template types, we return only a schema"
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "title": {
+     "type": "string",
+     "description": "The title on the API descriptor URL provided."
+    }
+   }
+  },
+  "TypeInfoSchemaInfo": {
+   "id": "TypeInfoSchemaInfo",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "input": {
+     "type": "string",
+     "description": "The properties that this composite type or base type collection accept as input, represented as a json blob, format is: JSON Schema Draft V4"
+    },
+    "output": {
+     "type": "string",
+     "description": "The properties that this composite type or base type collection exposes as output, these properties can be used for references, represented as json blob, format is: JSON Schema Draft V4"
     }
    }
   },
@@ -1220,6 +1347,24 @@
     }
    }
   },
+  "TypeProvidersListTypesResponse": {
+   "id": "TypeProvidersListTypesResponse",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "nextPageToken": {
+     "type": "string",
+     "description": "A token used to continue a truncated list request."
+    },
+    "types": {
+     "type": "array",
+     "description": "[Output Only] A list of resource type info.",
+     "items": {
+      "$ref": "TypeInfo"
+     }
+    }
+   }
+  },
   "TypesListResponse": {
    "id": "TypesListResponse",
    "type": "object",
@@ -1255,6 +1400,229 @@
   }
  },
  "resources": {
+  "compositeTypes": {
+   "methods": {
+    "delete": {
+     "id": "deploymentmanager.compositeTypes.delete",
+     "path": "{project}/global/compositeTypes/{compositeType}",
+     "httpMethod": "DELETE",
+     "description": "Deletes a composite type.",
+     "parameters": {
+      "compositeType": {
+       "type": "string",
+       "description": "The name of the type for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "compositeType"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "get": {
+     "id": "deploymentmanager.compositeTypes.get",
+     "path": "{project}/global/compositeTypes/{compositeType}",
+     "httpMethod": "GET",
+     "description": "Gets information about a specific composite type.",
+     "parameters": {
+      "compositeType": {
+       "type": "string",
+       "description": "The name of the composite type for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "compositeType"
+     ],
+     "response": {
+      "$ref": "CompositeType"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "insert": {
+     "id": "deploymentmanager.compositeTypes.insert",
+     "path": "{project}/global/compositeTypes",
+     "httpMethod": "POST",
+     "description": "Creates a composite type.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "CompositeType"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "list": {
+     "id": "deploymentmanager.compositeTypes.list",
+     "path": "{project}/global/compositeTypes",
+     "httpMethod": "GET",
+     "description": "Lists all composite types for Deployment Manager.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "CompositeTypesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "patch": {
+     "id": "deploymentmanager.compositeTypes.patch",
+     "path": "{project}/global/compositeTypes/{compositeType}",
+     "httpMethod": "PATCH",
+     "description": "Updates a composite type. This method supports patch semantics.",
+     "parameters": {
+      "compositeType": {
+       "type": "string",
+       "description": "The name of the composite type for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "compositeType"
+     ],
+     "request": {
+      "$ref": "CompositeType"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "update": {
+     "id": "deploymentmanager.compositeTypes.update",
+     "path": "{project}/global/compositeTypes/{compositeType}",
+     "httpMethod": "PUT",
+     "description": "Updates a composite type.",
+     "parameters": {
+      "compositeType": {
+       "type": "string",
+       "description": "The name of the composite type for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "compositeType"
+     ],
+     "request": {
+      "$ref": "CompositeType"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    }
+   }
+  },
   "deployments": {
    "methods": {
     "cancelPreview": {
@@ -2098,6 +2466,48 @@
       "https://www.googleapis.com/auth/ndev.cloudman.readonly"
      ]
     },
+    "getType": {
+     "id": "deploymentmanager.typeProviders.getType",
+     "path": "{project}/global/typeProviders/{typeProvider}/types/{type}",
+     "httpMethod": "GET",
+     "description": "Gets a type info for a type provided by a TypeProvider.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "type": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider",
+      "type"
+     ],
+     "response": {
+      "$ref": "TypeInfo"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
     "insert": {
      "id": "deploymentmanager.typeProviders.insert",
      "path": "{project}/global/typeProviders",
@@ -2169,6 +2579,65 @@
      ],
      "response": {
       "$ref": "TypeProvidersListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "listTypes": {
+     "id": "deploymentmanager.typeProviders.listTypes",
+     "path": "{project}/global/typeProviders/{typeProvider}/types",
+     "httpMethod": "GET",
+     "description": "Lists all the type info for a TypeProvider.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider"
+     ],
+     "response": {
+      "$ref": "TypeProvidersListTypesResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

@@ -140,7 +140,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -231,7 +231,7 @@
           "type": "string"
         },
         "defaultCookieExpiration": {
-          "description": "Cookie expiration policy for this application.\n\n@OutputOnly",
+          "description": "Cookie expiration policy for this application.",
           "type": "string",
           "format": "google-duration"
         },
@@ -1099,7 +1099,7 @@
       "type": "object",
       "properties": {
         "image": {
-          "description": "URI to the hosted container image in a Docker repository. The URI must be\nfully qualified and include a tag or digest.\nExamples: \"gcr.io\/my-project\/image:tag\" or \"gcr.io\/my-project\/image@digest\"",
+          "description": "URI to the hosted container image in a Docker repository. The URI must be\nfully qualified and include a tag or digest.\nExamples: \"gcr.io\/my-project\/image:tag\" or \"gcr.io\/my-project\/image@digest\"\nor \"gcr-staging.sandbox.google.com\/my-project\/image:tag\"",
           "type": "string"
         }
       }
@@ -1218,6 +1218,10 @@
         "vmDebugEnabled": {
           "description": "Whether this instance is in debug mode. Only applicable for instances in\nApp Engine flexible environment.\n\n@OutputOnly",
           "type": "boolean"
+        },
+        "vmIp": {
+          "description": "The IP address of this instance. Only applicable for instances in App\nEngine Flexibile environment.\n\n@OutputOnly",
+          "type": "string"
         }
       }
     },
@@ -1226,6 +1230,10 @@
       "description": "Request message for `Instances.DebugInstance`.",
       "type": "object",
       "properties": {
+        "sshKey": {
+          "description": "Public SSH key to push to the instance. Example:\n`[USERNAME]:ssh-rsa KEY_VALUE` or\n`[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh {\"userName\":\"[USERNAME]\",\"expireOn\":\"[EXPIRE_TIME]\"}`\nSee https:\/\/cloud.google.com\/compute\/docs\/instances\/adding-removing-ssh-keys",
+          "type": "string"
+        }
       }
     },
     "ListLocationsResponse": {
@@ -1401,7 +1409,7 @@
                       "description": "The name of the operation resource.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/operations\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1426,7 +1434,7 @@
                       "description": "The name of the operation collection.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1475,7 +1483,7 @@
               "description": "Name of the Application resource to get. Example: `apps\/myapp`.",
               "location": "path",
               "required": true,
-              "pattern": "^apps\/[^\/]*$",
+              "pattern": "^apps\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1484,6 +1492,40 @@
           ],
           "response": {
             "$ref": "Application"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "patch": {
+          "id": "appengine.apps.patch",
+          "path": "v1/{+name}",
+          "flatPath": "v1/apps/{appsId}",
+          "httpMethod": "PATCH",
+          "description": "Updates application parameters.",
+          "parameters": {
+            "name": {
+              "description": "Name of the application to update. Example: `apps\/myapp`.",
+              "location": "path",
+              "required": true,
+              "pattern": "^apps\/[^\/]+$",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Standard field mask for the set of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "Application"
+          },
+          "response": {
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
@@ -1500,7 +1542,7 @@
               "description": "Name of the application to repair. Example: `apps\/myapp`",
               "location": "path",
               "required": true,
-              "pattern": "^apps\/[^\/]*$",
+              "pattern": "^apps\/[^\/]+$",
               "type": "string"
             }
           },
@@ -1533,7 +1575,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*\/operations\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1558,7 +1600,7 @@
                   "description": "The name of the operation collection.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1603,7 +1645,7 @@
                   "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -1639,7 +1681,7 @@
                   "description": "Name of the resource requested. Example: `apps\/myapp\/services\/default`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*\/services\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1664,7 +1706,7 @@
                   "description": "Name of the resource to update. Example: `apps\/myapp\/services\/default`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*\/services\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 },
                 "updateMask": {
@@ -1703,7 +1745,7 @@
                   "description": "Name of the resource requested. Example: `apps\/myapp\/services\/default`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*\/services\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+\/services\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1733,7 +1775,7 @@
                       "description": "Name of the parent Service resource. Example:\n`apps\/myapp\/services\/default`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/services\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -1778,7 +1820,7 @@
                       "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -1812,7 +1854,7 @@
                       "description": "Name of the parent resource to create this version under. Example:\n`apps\/myapp\/services\/default`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/services\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/services\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1840,7 +1882,7 @@
                       "description": "Name of the resource to update. Example:\n`apps\/myapp\/services\/default\/versions\/1`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -1874,7 +1916,7 @@
                       "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*$",
+                      "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1904,7 +1946,7 @@
                           "description": "Name of the parent Version resource. Example:\n`apps\/myapp\/services\/default\/versions\/v1`.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*$",
+                          "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1940,7 +1982,7 @@
                           "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1`.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*\/instances\/[^\/]*$",
+                          "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+\/instances\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1965,7 +2007,7 @@
                           "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1`.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*\/instances\/[^\/]*$",
+                          "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+\/instances\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1990,7 +2032,7 @@
                           "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1`.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^apps\/[^\/]*\/services\/[^\/]*\/versions\/[^\/]*\/instances\/[^\/]*$",
+                          "pattern": "^apps\/[^\/]+\/services\/[^\/]+\/versions\/[^\/]+\/instances\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -2026,7 +2068,7 @@
                   "description": "The resource that owns the locations collection, if applicable.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -2067,7 +2109,7 @@
                   "description": "Resource name for the location.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^apps\/[^\/]*\/locations\/[^\/]*$",
+                  "pattern": "^apps\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },

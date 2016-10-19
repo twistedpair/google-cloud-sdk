@@ -19,6 +19,24 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+ZONAL_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--instance-group',
+    resource_name='instance group',
+    completion_resource_id='compute.instanceGroups',
+    zonal_collection='compute.instanceGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--instance-group',
+    resource_name='instance group',
+    completion_resource_id='compute.instanceGroups',
+    zonal_collection='compute.instanceGroups',
+    regional_collection='compute.regionInstanceGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     resource_name='backend service',
     completion_resource_id='compute.backendServices',

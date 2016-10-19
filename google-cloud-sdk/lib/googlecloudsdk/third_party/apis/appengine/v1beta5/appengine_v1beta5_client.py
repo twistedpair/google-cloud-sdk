@@ -644,3 +644,30 @@ details about creating a project without an application, see the
         response_type_name=u'Application',
         supports_download=False,
     )
+
+    def Patch(self, request, global_params=None):
+      """Updates application parameters.
+
+      Args:
+        request: (AppengineAppsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}',
+        http_method=u'PATCH',
+        method_id=u'appengine.apps.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'mask'],
+        relative_path=u'v1beta5/{+name}',
+        request_field=u'application',
+        request_type_name=u'AppengineAppsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )

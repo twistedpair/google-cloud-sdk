@@ -84,21 +84,50 @@ class ClusterConfig(_messages.Message):
 class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
+  Messages:
+    LabelsValue: [Output-only] labels associated with the operation
+
   Fields:
     clusterName: [Output-only] Name of the cluster for the operation.
     clusterUuid: [Output-only] Cluster UUID for the operation.
     description: [Output-only] Short description of operation.
+    labels: [Output-only] labels associated with the operation
     operationType: [Output-only] The operation type.
     status: [Output-only] Current operation status.
     statusHistory: [Output-only] The previous operation status.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Output-only] labels associated with the operation
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   description = _messages.StringField(3)
-  operationType = _messages.StringField(4)
-  status = _messages.MessageField('ClusterOperationStatus', 5)
-  statusHistory = _messages.MessageField('ClusterOperationStatus', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  operationType = _messages.StringField(5)
+  status = _messages.MessageField('ClusterOperationStatus', 6)
+  statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
 
 
 class ClusterOperationStatus(_messages.Message):
@@ -1083,7 +1112,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method

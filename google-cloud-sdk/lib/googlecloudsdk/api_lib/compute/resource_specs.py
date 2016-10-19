@@ -62,6 +62,15 @@ def _FirewallTargetTagsToCell(firewall):
   return ','.join(firewall.get('targetTags', []))
 
 
+def _ForwardingRuleTarget(forwarding_rule):
+  """Gets the API-level target or backend-service of the given rule."""
+  backend_service = forwarding_rule.get('backendService', None)
+  if backend_service is not None:
+    return backend_service
+  else:
+    return forwarding_rule.get('target', None)
+
+
 def _StatusToCell(zone_or_region):
   """Returns status of a machine with deprecation information if applicable."""
   deprecated = zone_or_region.get('deprecated', '')
@@ -434,7 +443,7 @@ _SPECS_V1 = {
             ('REGION', 'region'),
             ('IP_ADDRESS', 'IPAddress'),
             ('IP_PROTOCOL', 'IPProtocol'),
-            ('TARGET', 'target'),
+            ('TARGET', _ForwardingRuleTarget),
         ],
         transformations=[
             ('region', path_simplifier.Name),

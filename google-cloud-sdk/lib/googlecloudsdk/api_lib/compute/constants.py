@@ -146,16 +146,18 @@ _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
 _SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
 _SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management.readonly'
 _SOURCE_REPOS = 'https://www.googleapis.com/auth/source.full_control'
+_SOURCE_REPOS_RO = 'https://www.googleapis.com/auth/source.read_only'
 
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
-    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _SOURCE_REPOS,
+    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _SOURCE_REPOS_RO,
 ])
 
 SCOPES = {
     'bigquery': 'https://www.googleapis.com/auth/bigquery',
     'cloud-platform': 'https://www.googleapis.com/auth/cloud-platform',
     'cloud-source-repos': _SOURCE_REPOS,
+    'cloud-source-repos-ro': _SOURCE_REPOS_RO,
     'compute-ro': 'https://www.googleapis.com/auth/compute.readonly',
     'compute-rw': 'https://www.googleapis.com/auth/compute',
     'useraccounts-ro': _USERACCOUNTS_RO,

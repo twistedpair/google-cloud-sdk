@@ -56,7 +56,7 @@ The default Kubernetes version are available using the following command.
   return parser.add_argument('--cluster-version', help=help_text)
 
 
-def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=False):
+def AddClusterAutoscalingFlags(parser, update_group=None, suppressed=False):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
@@ -64,7 +64,7 @@ def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=False):
 
   Args:
     parser: A given parser.
-    exclusive_group: An optional group of mutually exclusive flag options
+    update_group: An optional group of mutually exclusive flag options
         to which an --enable-autoscaling flag is added.
     suppressed: If true, supress help text for added options.
   """
@@ -72,15 +72,28 @@ def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=False):
   hide_or = lambda x: argparse.SUPPRESS if suppressed else x
 
   group = parser.add_argument_group('Cluster autoscaling')
-  autoscaling_group = group if exclusive_group is None else exclusive_group
+  autoscaling_group = group if update_group is None else update_group
   autoscaling_group.add_argument(
       '--enable-autoscaling',
+      default=None if update_group else False,
       help=hide_or("""\
 Enables autoscaling for a node pool.
 
-Enables autoscaling in the node pool specified by --node-pool or the
-default node pool if --node-pool is not provided."""),
+Enables autoscaling in the node pool specified by --node-pool or
+the default node pool if --node-pool is not provided."""),
       action='store_true')
+  # If we have an update group, add a custom inverted arg.
+  if update_group:
+    autoscaling_group.add_argument(
+        '--disable-autoscaling',
+        default=None,
+        help=hide_or("""\
+Disables autoscaling for a node pool.
+
+Disables autoscaling in the node pool specified by --node-pool or
+the default node pool if --node-pool is not provided."""),
+        action='store_false',
+        dest='enable_autoscaling')
   group.add_argument(
       '--max-nodes',
       help=hide_or("""\
@@ -217,3 +230,33 @@ See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
       '--node-labels',
       type=arg_parsers.ArgDict(),
       help=help_text)
+
+
+def AddPreemptibleFlag(parser, for_node_pool=False, suppressed=False):
+  """Adds a --preemptible flag to parser."""
+  if suppressed:
+    help_text = argparse.SUPPRESS
+  else:
+    if for_node_pool:
+      help_text = """\
+Create nodes using preemptible VM instances in the new nodepool.
+
+  $ {command} node-pool-1 --cluster=example-cluster --preemptible
+"""
+    else:
+      help_text = """\
+Create nodes using preemptible VM instances in the new cluster.
+
+  $ {command} example-cluster --preemptible
+"""
+    help_text += """
+New nodes, including ones created by resize or recreate, will use preemptible
+VM instances. See https://cloud.google.com/compute/docs/instances/preemptible
+for more information on preemptible VM instances."""
+
+  parser.add_argument(
+      '--preemptible',
+      action='store_true',
+      help=help_text)
+
+

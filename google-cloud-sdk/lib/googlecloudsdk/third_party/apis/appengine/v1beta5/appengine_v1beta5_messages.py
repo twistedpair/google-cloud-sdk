@@ -191,6 +191,20 @@ class AppengineAppsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AppengineAppsPatchRequest(_messages.Message):
+  """A AppengineAppsPatchRequest object.
+
+  Fields:
+    application: A Application resource to be passed as the request body.
+    mask: Standard field mask for the set of fields to be updated.
+    name: Name of the application to update. Example: `apps/myapp`.
+  """
+
+  application = _messages.MessageField('Application', 1)
+  mask = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+
+
 class AppengineAppsServicesDeleteRequest(_messages.Message):
   """A AppengineAppsServicesDeleteRequest object.
 
@@ -420,7 +434,6 @@ class Application(_messages.Message):
     defaultBucket: A Google Cloud Storage bucket that can be used by the
       application to store content.  @OutputOnly
     defaultCookieExpiration: Cookie expiration policy for this application.
-      @OutputOnly
     defaultHostname: Hostname used to reach the application, as resolved by
       App Engine.  @OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
@@ -517,7 +530,8 @@ class ContainerInfo(_messages.Message):
   Fields:
     image: URI to the hosted container image in a Docker repository. The URI
       must be fully qualified and include a tag or digest. Examples: "gcr.io
-      /my-project/image:tag" or "gcr.io/my-project/image@digest"
+      /my-project/image:tag" or "gcr.io/my-project/image@digest" or "gcr-
+      staging.sandbox.google.com/my-project/image:tag"
   """
 
   image = _messages.StringField(1)
@@ -538,7 +552,16 @@ class CpuUtilization(_messages.Message):
 
 
 class DebugInstanceRequest(_messages.Message):
-  """Request message for `Instances.DebugInstance`."""
+  """Request message for `Instances.DebugInstance`.
+
+  Fields:
+    sshKey: Public SSH key to push to the instance. Example: `[USERNAME]:ssh-
+      rsa KEY_VALUE` or `[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh
+      {"userName":"[USERNAME]","expireOn":"[EXPIRE_TIME]"}` See
+      https://cloud.google.com/compute/docs/instances/adding-removing-ssh-keys
+  """
+
+  sshKey = _messages.StringField(1)
 
 
 class Deployment(_messages.Message):
@@ -712,6 +735,8 @@ class Instance(_messages.Message):
     startTimestamp: Time that this instance was started.  @OutputOnly
     vmId: Virtual machine ID of this instance. Only applicable for instances
       in App Engine flexible environment.  @OutputOnly
+    vmIp: The IP address of this instance. Only applicable for instances in
+      App Engine Flexibile environment.  @OutputOnly
     vmName: Name of the virtual machine where this instance lives. Only
       applicable for instances in App Engine flexible environment.
       @OutputOnly
@@ -747,10 +772,11 @@ class Instance(_messages.Message):
   requests = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   startTimestamp = _messages.StringField(10)
   vmId = _messages.StringField(11)
-  vmName = _messages.StringField(12)
-  vmStatus = _messages.StringField(13)
-  vmUnlocked = _messages.BooleanField(14)
-  vmZoneName = _messages.StringField(15)
+  vmIp = _messages.StringField(12)
+  vmName = _messages.StringField(13)
+  vmStatus = _messages.StringField(14)
+  vmUnlocked = _messages.BooleanField(15)
+  vmZoneName = _messages.StringField(16)
 
 
 class Library(_messages.Message):
@@ -987,7 +1013,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method

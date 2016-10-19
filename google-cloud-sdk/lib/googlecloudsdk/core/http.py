@@ -257,31 +257,33 @@ def _LogRequest(*args, **kwargs):
   if 'headers' in kwargs:
     headers = kwargs['headers']
 
-  log.status.Print('--request-start--')
+  log.status.Print('=======================')
+  log.status.Print('==== request start ====')
   log.status.Print('uri: {uri}'.format(uri=uri))
   log.status.Print('method: {method}'.format(method=method))
-  log.status.Print('-headers-start-')
+  log.status.Print('== headers start ==')
   for h, v in sorted(headers.iteritems()):
     log.status.Print('{0}: {1}'.format(h, v))
-  log.status.Print('-headers-end-')
-  log.status.Print('-body-start-')
+  log.status.Print('== headers end ==')
+  log.status.Print('== body start ==')
   log.status.Print(body)
-  log.status.Print('-body-end-')
-  log.status.Print('--request-end--')
+  log.status.Print('== body end ==')
+  log.status.Print('==== request end ====')
 
 
 def _LogResponse(response, time_taken):
   """Logs response headers and content."""
 
   headers, content = response
-  log.status.Print('--response-start--')
-  log.status.Print('-headers-start-')
+  log.status.Print('---- response start ----')
+  log.status.Print('-- headers start --')
   for h, v in sorted(headers.iteritems()):
     log.status.Print('{0}: {1}'.format(h, v))
-  log.status.Print('-headers-end-')
-  log.status.Print('-body-start-')
+  log.status.Print('-- headers end --')
+  log.status.Print('-- body start --')
   log.status.Print(content)
-  log.status.Print('-body-end-')
-  log.status.Print('total latency (request+response): {0:.3f} secs'
+  log.status.Print('-- body end --')
+  log.status.Print('total round trip time (request+response): {0:.3f} secs'
                    .format(time_taken))
-  log.status.Print('--response-end--')
+  log.status.Print('---- response end ----')
+  log.status.Print('----------------------')

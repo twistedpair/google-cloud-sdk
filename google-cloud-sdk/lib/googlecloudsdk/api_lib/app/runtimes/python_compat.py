@@ -72,29 +72,23 @@ class PythonConfigurator(ext_runtime.Configurator):
         fingerprinters.
       runtime: (str) The runtime name.
     """
-
     self.root = path
     self.params = params
     self.runtime = runtime
 
-  def GenerateConfigs(self):
-    """Generate all config files for the module."""
-    # Write "Writing file" messages to the user or to log depending on whether
-    # we're in "deploy."
-    if self.params.deploy:
-      notify = log.info
-    else:
-      notify = log.status.Print
+  def GenerateAppYaml(self, notify):
+    """Generate app.yaml.
 
-    if self.runtime == 'python-compat':
-      dockerfile_preamble = COMPAT_DOCKERFILE_PREAMBLE
-    else:
-      dockerfile_preamble = PYTHON27_DOCKERFILE_PREAMBLE
+    Args:
+      notify: depending on whether we're in deploy, write messages to the
+        user or to log.
+    Returns:
+      (bool) True if file was written
 
-    # Generate app.yaml.  Note: this is not a recommended use-case,
-    # python-compat users likely have an existing app.yaml.  But users can
-    # still get here with the --runtime flag.
-    cleaner = ext_runtime.Cleaner()
+    Note: this is not a recommended use-case,
+    python-compat users likely have an existing app.yaml.  But users can
+    still get here with the --runtime flag.
+    """
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
@@ -102,33 +96,70 @@ class PythonConfigurator(ext_runtime.Configurator):
         runtime = 'custom' if self.params.custom else self.runtime
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(runtime=runtime))
-        cleaner.Add(app_yaml)
         log.warn(APP_YAML_WARNING)
+        return True
+    return False
 
+  def GenerateDockerfileData(self):
+    """Generates dockerfiles.
+
+    Returns:
+      list(ext_runtime.GeneratedFile) the list of generated dockerfiles
+    """
+    if self.runtime == 'python-compat':
+      dockerfile_preamble = COMPAT_DOCKERFILE_PREAMBLE
+    else:
+      dockerfile_preamble = PYTHON27_DOCKERFILE_PREAMBLE
+
+    all_config_files = []
+
+    dockerfile_name = config.DOCKERFILE
+    dockerfile_components = [dockerfile_preamble, DOCKERFILE_INSTALL_APP]
+    if self.runtime == 'python-compat':
+      dockerfile_components.append(DOCKERFILE_INSTALL_REQUIREMENTS_TXT)
+    dockerfile_contents = ''.join(c for c in dockerfile_components)
+    dockerfile = ext_runtime.GeneratedFile(dockerfile_name,
+                                           dockerfile_contents)
+    all_config_files.append(dockerfile)
+
+    dockerignore = ext_runtime.GeneratedFile('.dockerignore', DOCKERIGNORE)
+    all_config_files.append(dockerignore)
+
+    return all_config_files
+
+  def GenerateConfigs(self):
+    """Generate all config files for the module."""
+    # Write messages to user or to log depending on whether we're in "deploy."
+    notify = log.info if self.params.deploy else log.status.Print
+
+    self.GenerateAppYaml(notify)
+
+    created = False
     if self.params.custom or self.params.deploy:
-      dockerfile = os.path.join(self.root, config.DOCKERFILE)
-      if not os.path.exists(dockerfile):
-        notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
-        # Customize the dockerfile.
-        with open(dockerfile, 'w') as out:
-          out.write(dockerfile_preamble)
-          out.write(DOCKERFILE_INSTALL_APP)
-          if self.runtime == 'python-compat':
-            out.write(DOCKERFILE_INSTALL_REQUIREMENTS_TXT)
+      dockerfiles = self.GenerateDockerfileData()
+      for dockerfile in dockerfiles:
+        if dockerfile.WriteTo(self.root, notify):
+          created = True
+      if not created:
+        notify('All config files already exist, not generating anything.')
+    return created
 
-        cleaner.Add(dockerfile)
+  def GenerateConfigData(self):
+    """Generate all config files for the module.
 
-      dockerignore = os.path.join(self.root, '.dockerignore')
-      if not os.path.exists(dockerignore):
-        notify('Writing [.dockerignore] to [%s].' % self.root)
-        with open(dockerignore, 'w') as f:
-          f.write(DOCKERIGNORE)
-        cleaner.Add(dockerignore)
+    Returns:
+      list(ext_runtime.GeneratedFile) A list of the config files
+        that were generated
+    """
+    # Write messages to user or to log depending on whether we're in "deploy."
+    notify = log.info if self.params.deploy else log.status.Print
 
-    if not cleaner.HasFiles():
-      notify('All config files already exist, not generating anything.')
-
-    return cleaner
+    self.GenerateAppYaml(notify)
+    if not (self.params.custom or self.params.deploy):
+      return []
+    all_config_files = self.GenerateDockerfileData()
+    return [f for f in all_config_files
+            if not os.path.exists(os.path.join(self.root, f.filename))]
 
 
 def Fingerprint(path, params):

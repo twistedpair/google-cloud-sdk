@@ -164,7 +164,6 @@ class RubyConfigurator(ext_runtime.Configurator):
       entrypoint: (str) The entrypoint command
       packages: ([str, ...]) A set of packages to install
     """
-
     self.root = path
     self.params = params
     self.ruby_version = ruby_version
@@ -182,78 +181,85 @@ class RubyConfigurator(ext_runtime.Configurator):
     """Generates all config files for the module.
 
     Returns:
-      (ext_runtime.Cleaner) A cleaner populated with the generated files
+      (bool) True if files were written.
     """
-    self.notify('')
-
-    cleaner = ext_runtime.Cleaner()
-
+    all_config_files = []
     if not self.params.appinfo:
-      self._GenerateAppYaml(cleaner)
+      all_config_files.append(self._GenerateAppYaml())
     if self.params.custom or self.params.deploy:
-      self._GenerateDockerfile(cleaner)
-      self._GenerateDockerignore(cleaner)
+      all_config_files.append(self._GenerateDockerfile())
+      all_config_files.append(self._GenerateDockerignore())
 
-    if not cleaner.HasFiles():
+    created = [config_file.WriteTo(self.root, self.notify)
+               for config_file in all_config_files]
+    if not any(created):
       self.notify('All config files already exist. No files generated.')
 
-    return cleaner
+    return any(created)
 
-  def _GenerateAppYaml(self, cleaner):
+  def GenerateConfigData(self):
+    """Generates all config files for the module.
+
+    Returns:
+      list(ext_runtime.GeneratedFile):
+        The generated files
+    """
+    if not self.params.appinfo:
+      app_yaml = self._GenerateAppYaml()
+      app_yaml.WriteTo(self.root, self.notify)
+
+    all_config_files = []
+    if self.params.custom or self.params.deploy:
+      all_config_files.append(self._GenerateDockerfile())
+      all_config_files.append(self._GenerateDockerignore())
+
+    return [f for f in all_config_files
+            if not os.path.exists(os.path.join(self.root, f.filename))]
+
+  def _GenerateAppYaml(self):
     """Generates an app.yaml file appropriate to this application.
 
-    Args:
-      cleaner: (ext_runtime.Cleaner) A cleaner to populate
+    Returns:
+      (ext_runtime.GeneratedFile) A file wrapper for app.yaml
     """
     app_yaml = os.path.join(self.root, 'app.yaml')
-    if not os.path.exists(app_yaml):
-      runtime = 'custom' if self.params.custom else 'ruby'
-      with open(app_yaml, 'w') as f:
-        f.write(APP_YAML_CONTENTS.format(runtime=runtime,
-                                         entrypoint=self.entrypoint))
-      self.notify('Created app.yaml in {0}'.format(self.root))
+    runtime = 'custom' if self.params.custom else 'ruby'
+    app_yaml_contents = APP_YAML_CONTENTS.format(runtime=runtime,
+                                                 entrypoint=self.entrypoint)
+    app_yaml = ext_runtime.GeneratedFile('app.yaml', app_yaml_contents)
+    return app_yaml
 
-  def _GenerateDockerfile(self, cleaner):
+  def _GenerateDockerfile(self):
     """Generates a Dockerfile appropriate to this application.
 
-    Args:
-      cleaner: (ext_runtime.Cleaner) A cleaner to populate
+    Returns:
+      (ext_runtime.GeneratedFile) A file wrapper for Dockerignore
     """
-    dockerfile = os.path.join(self.root, config.DOCKERFILE)
-    if not os.path.exists(dockerfile):
-      dockerfile_content = [DOCKERFILE_HEADER]
-      if self.ruby_version:
-        dockerfile_content.append(
-            DOCKERFILE_CUSTOM_INTERPRETER.format(self.ruby_version))
-      else:
-        dockerfile_content.append(DOCKERFILE_DEFAULT_INTERPRETER)
-      if self.packages:
-        dockerfile_content.append(
-            DOCKERFILE_MORE_PACKAGES.format(' '.join(self.packages)))
-      else:
-        dockerfile_content.append(DOCKERFILE_NO_MORE_PACKAGES)
-      dockerfile_content.append(DOCKERFILE_GEM_INSTALL)
+    dockerfile_content = [DOCKERFILE_HEADER]
+    if self.ruby_version:
       dockerfile_content.append(
-          DOCKERFILE_ENTRYPOINT.format(self.entrypoint))
+          DOCKERFILE_CUSTOM_INTERPRETER.format(self.ruby_version))
+    else:
+      dockerfile_content.append(DOCKERFILE_DEFAULT_INTERPRETER)
+    if self.packages:
+      dockerfile_content.append(
+          DOCKERFILE_MORE_PACKAGES.format(' '.join(self.packages)))
+    else:
+      dockerfile_content.append(DOCKERFILE_NO_MORE_PACKAGES)
+    dockerfile_content.append(DOCKERFILE_GEM_INSTALL)
+    dockerfile_content.append(
+        DOCKERFILE_ENTRYPOINT.format(self.entrypoint))
 
-      with open(dockerfile, 'a') as f:
-        f.write('\n'.join(dockerfile_content))
-      self.notify('Created Dockerfile in {0}'.format(self.root))
+    dockerfile = ext_runtime.GeneratedFile(config.DOCKERFILE,
+                                           '\n'.join(dockerfile_content))
+    return dockerfile
 
-      cleaner.Add(dockerfile)
-
-  def _GenerateDockerignore(self, cleaner):
-    """Generates a .dockerignore file appropriate to this application.
-
-    Args:
-      cleaner: (ext_runtime.Cleaner) A cleaner to populate
-    """
+  def _GenerateDockerignore(self):
+    """Generates a .dockerignore file appropriate to this application."""
     dockerignore = os.path.join(self.root, '.dockerignore')
-    if not os.path.exists(dockerignore):
-      with open(dockerignore, 'w') as f:
-        f.write(DOCKERIGNORE_CONTENTS)
-      self.notify('Created .dockerignore in {0}'.format(self.root))
-      cleaner.Add(dockerignore)
+    dockerignore = ext_runtime.GeneratedFile('.dockerignore',
+                                             DOCKERIGNORE_CONTENTS)
+    return dockerignore
 
 
 def Fingerprint(path, params):

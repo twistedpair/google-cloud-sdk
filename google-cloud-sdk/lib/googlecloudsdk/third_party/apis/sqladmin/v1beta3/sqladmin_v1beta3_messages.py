@@ -138,6 +138,8 @@ class DatabaseInstance(_messages.Message):
   """A Cloud SQL instance resource.
 
   Fields:
+    connectionName: Connection name of the Cloud SQL instance used in
+      connection strings.
     currentDiskSize: The current disk usage of the instance in bytes.
     databaseVersion: The database engine type and version. Can be MYSQL_5_5 or
       MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion cannot be changed
@@ -172,23 +174,24 @@ class DatabaseInstance(_messages.Message):
       UNKNOWN_STATE: The state of the instance is unknown.
   """
 
-  currentDiskSize = _messages.IntegerField(1)
-  databaseVersion = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  instance = _messages.StringField(4)
-  instanceType = _messages.StringField(5)
-  ipAddresses = _messages.MessageField('IpMapping', 6, repeated=True)
-  ipv6Address = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(9)
-  maxDiskSize = _messages.IntegerField(10)
-  project = _messages.StringField(11)
-  region = _messages.StringField(12)
-  replicaNames = _messages.StringField(13, repeated=True)
-  serverCaCert = _messages.MessageField('SslCert', 14)
-  serviceAccountEmailAddress = _messages.StringField(15)
-  settings = _messages.MessageField('Settings', 16)
-  state = _messages.StringField(17)
+  connectionName = _messages.StringField(1)
+  currentDiskSize = _messages.IntegerField(2)
+  databaseVersion = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  instance = _messages.StringField(5)
+  instanceType = _messages.StringField(6)
+  ipAddresses = _messages.MessageField('IpMapping', 7, repeated=True)
+  ipv6Address = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(10)
+  maxDiskSize = _messages.IntegerField(11)
+  project = _messages.StringField(12)
+  region = _messages.StringField(13)
+  replicaNames = _messages.StringField(14, repeated=True)
+  serverCaCert = _messages.MessageField('SslCert', 15)
+  serviceAccountEmailAddress = _messages.StringField(16)
+  settings = _messages.MessageField('Settings', 17)
+  state = _messages.StringField(18)
 
 
 class ExportContext(_messages.Message):

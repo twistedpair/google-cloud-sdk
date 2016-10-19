@@ -904,7 +904,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method

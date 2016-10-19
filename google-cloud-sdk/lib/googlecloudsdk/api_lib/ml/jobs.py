@@ -30,9 +30,8 @@ import yaml
 def Cancel(job):
   """Cancels given job."""
   client = apis.GetClientInstance('ml', 'v1beta1')
-  msgs = apis.GetMessagesModule('ml', 'v1beta1')
   res = resources.REGISTRY.Parse(job, collection='ml.projects.jobs')
-  req = msgs.MlProjectsJobsCancelRequest(
+  req = client.MESSAGES_MODULE.MlProjectsJobsCancelRequest(
       projectsId=res.projectsId, jobsId=res.Name())
   resp = client.projects_jobs.Cancel(req)
   return resp
@@ -40,10 +39,10 @@ def Cancel(job):
 
 def Get(job):
   client = apis.GetClientInstance('ml', 'v1beta1')
-  res = resources.REGISTRY.Parse(job, collection='ml.projects.jobs')
-  req = res.Request()
-  resp = client.projects_jobs.Get(req)
-  return resp
+  ref = resources.REGISTRY.Parse(job, collection='ml.projects.jobs')
+  req = client.MESSAGES_MODULE.MlProjectsJobsGetRequest(
+      projectsId=ref.projectsId, jobsId=ref.jobsId)
+  return client.projects_jobs.Get(req)
 
 
 class LogPosition(object):
@@ -137,7 +136,8 @@ class ApiAccessor(object):
   def CheckJobFinished(self):
     """Returns True if the job is finished."""
     res = resources.REGISTRY.Parse(self.job_id, collection='ml.projects.jobs')
-    req = res.Request()
+    req = self.client.MESSAGES_MODULE.MlProjectsJobsGetRequest(
+        projectsId=res.projectsId, jobsId=res.jobsId)
     resp = self.client.projects_jobs.Get(req)
     return resp.endTime is not None
 

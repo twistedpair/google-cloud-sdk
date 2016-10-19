@@ -145,7 +145,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -354,7 +354,7 @@
           "format": "int32"
         },
         "noAddress": {
-          "description": "Whether to assign an external IP to the instance. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time.  ** Note: To use this\noption, your project must be in Google Access for Private IPs Early Access\nProgram.**",
+          "description": "Whether to assign an external IP to the instance. This is an experimental\nfeature that may go away. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time. If you need to ssh into\na private IP VM for debugging, you can ssh to a public VM and then ssh into\nthe private VM's Internal IP.  If noAddress is set, this pipeline run may\nonly load docker images from Google Container Registry and not Docker Hub.\n** Note: To use this option, your project must be in Google Access for\nPrivate IPs Early Access Program.**",
           "type": "boolean"
         }
       }
@@ -482,7 +482,7 @@
           "type": "string"
         },
         "scopes": {
-          "description": "List of scopes to be enabled for this service account on the\npipeline virtual machine.\nThe following scopes are automatically included:\n\n  * https:\/\/www.googleapis.com\/auth\/genomics\n  * https:\/\/www.googleapis.com\/auth\/compute\n  * https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "List of scopes to be enabled for this service account on the VM.\nThe following scopes are automatically included:\n\n* https:\/\/www.googleapis.com\/auth\/compute\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control\n* https:\/\/www.googleapis.com\/auth\/genomics\n* https:\/\/www.googleapis.com\/auth\/logging.write\n* https:\/\/www.googleapis.com\/auth\/monitoring.write",
           "type": "array",
           "items": {
             "type": "string"
@@ -823,7 +823,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },
@@ -891,7 +891,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.*$",
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },

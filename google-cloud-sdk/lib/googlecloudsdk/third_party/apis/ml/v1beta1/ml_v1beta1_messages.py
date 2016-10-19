@@ -60,8 +60,10 @@ class GoogleCloudMlV1beta1GetConfigResponse(_messages.Message):
 
 
 class GoogleCloudMlV1beta1HyperparameterOutput(_messages.Message):
-  """Represents the result of a hyperparameter tuning trial from a training
-  job.
+  """Represents the result of a single hyperparameter tuning trial from a
+  training job. The TrainingOutput object that is returned on successful
+  completion of a training job with hyperparameter tuning includes a list of
+  HyperparameterOutput objects, one for each successful trial.
 
   Messages:
     HyperparametersValue: The hyperparameters given to this trial.
@@ -120,22 +122,27 @@ class GoogleCloudMlV1beta1HyperparameterSpec(_messages.Message):
   """Represents a set of hyperparameters to optimize.
 
   Enums:
-    GoalValueValuesEnum: Required. Should the evaluation metric be maximized
-      or minimized?
+    GoalValueValuesEnum: Required. The type of goal to use for tuning.
+      Available types are `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
 
   Fields:
-    goal: Required. Should the evaluation metric be maximized or minimized?
-    maxParallelTrials: Optional. How many training trials should be run in
-      parallel. More parallelization will be faster, but parallel trials only
-      benefit from the information gained by previous trials. Each trial will
-      use the same scale tier and machine types. Defaults to one.
+    goal: Required. The type of goal to use for tuning. Available types are
+      `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
+    maxParallelTrials: Optional. The number of training trials to run
+      concurrently. You can reduce the time it takes to perform hyperparameter
+      tuning by adding trials in parallel. However, each trail only benefits
+      from the information gained in completed trials. That means that a trial
+      does not get access to the results of trials running at the same time,
+      which could reduce the quality of the overall optimization.  Each trial
+      will use the same scale tier and machine types.  Defaults to one.
     maxTrials: Optional. How many training trials should be attempted to
-      optimize. Defaults to one.
+      optimize the specified hyperparameters.  Defaults to one.
     params: Required. The set of parameters to tune.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
-    """Required. Should the evaluation metric be maximized or minimized?
+    """Required. The type of goal to use for tuning. Available types are
+    `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
 
     Values:
       GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
@@ -213,8 +220,8 @@ class GoogleCloudMlV1beta1ListJobsResponse(_messages.Message):
 
   Fields:
     jobs: The list of jobs.
-    nextPageToken: Optional pagination token to use for retrieving the next
-      page of results.
+    nextPageToken: Optional. Pass this token as the `page_token` field of the
+      request for a subsequent call.
   """
 
   jobs = _messages.MessageField('GoogleCloudMlV1beta1Job', 1, repeated=True)
@@ -226,8 +233,8 @@ class GoogleCloudMlV1beta1ListModelsResponse(_messages.Message):
 
   Fields:
     models: The list of models.
-    nextPageToken: Optional pagination token to use for retrieving the next
-      page of results.
+    nextPageToken: Optional. Pass this token as the `page_token` field of the
+      request for a subsequent call.
   """
 
   models = _messages.MessageField('GoogleCloudMlV1beta1Model', 1, repeated=True)
@@ -238,8 +245,8 @@ class GoogleCloudMlV1beta1ListVersionsResponse(_messages.Message):
   """Response message for the ListVersions method.
 
   Fields:
-    nextPageToken: Optional pagination token to use for retrieving the next
-      page of results.
+    nextPageToken: Optional. Pass this token as the `page_token` field of the
+      request for a subsequent call.
     versions: The list of versions.
   """
 
@@ -248,21 +255,20 @@ class GoogleCloudMlV1beta1ListVersionsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1beta1Model(_messages.Message):
-  """Represents a trained machine learning model that can be used to handle
-  prediction requests. A model can have many versions, each of which is a
-  deployed, trained model ready to receive prediction requests. In that way, a
-  model resource is a container for one or more versions. However, each model
-  has a default version that will be used for prediction when a version isn't
-  specified.
+  """Represents a machine learning solution.  A model can have multiple
+  versions, each of which is a deployed, trained model ready to receive
+  prediction requests. The model itself is just a container.
 
   Fields:
     defaultVersion: Output only. The default version of the model. This
       version will be used to handle prediction requests that do not specify a
-      version. You can change the default version by calling [projects.methods
-      .versions.setDefault](/ml/reference/rest/v1beta1/projects.models.version
-      s/setDefault).
-    description: Optional. The description of the model.
-    name: Required. The user-specified name of the model.
+      version.  You can change the default version by calling [projects.method
+      s.versions.setDefault](/ml/reference/rest/v1beta1/projects.models.versio
+      ns/setDefault).
+    description: Optional. The description specified for the model when it was
+      created.
+    name: Required. The name specified for the model when it was created.  The
+      model name must be unique within the project it is created in.
   """
 
   defaultVersion = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
@@ -416,26 +422,27 @@ class GoogleCloudMlV1beta1PredictRequest(_messages.Message):
   encoding, you must base64 encode the data and mark it as binary. To mark a
   JSON string as binary, replace it with an object with a single attribute
   named `b`: <pre>{"b": "..."} </pre> For example:  Two Serialized tf.Examples
-  (fake data, for illustrative purposes only): <pre> {"instances": [{"b":
-  "X5ad6u"}, {"b": "IA9j4nx"}]} </pre> Two JPEG image byte strings (fake data,
-  for illustrative purposes only): <pre> {"instances": [{"b": "ASa8asdf"},
-  {"b": "JLK7ljk3"}]} </pre> If your data includes named references, format
-  each instance as a JSON object with the named references as the keys:  JSON
-  input data to be preprocessed: <pre> {"instances": [{"a": 1.0,  "b": true,
-  "c": "x"},                {"a": -2.0, "b": false, "c": "y"}]} </pre> Some
-  models have an underlying TensorFlow graph that accepts multiple input
-  tensors. In this case, you should use the names of JSON name/value pairs to
-  identify the input tensors, as shown in the following exmaples:  For a graph
-  with input tensor aliases "tag" (string) and "image" (base64-encoded
-  string): <pre> {"instances": [{"tag": "beach", "image": {"b": "ASa8asdf"}},
-  {"tag": "car", "image": {"b": "JLK7ljk3"}}]} </pre> For a graph with input
-  tensor aliases "tag" (string) and "image" (3-dimensional array of 8-bit
-  ints): <pre> {"instances": [{"tag": "beach", "image": [[[263, 1, 10], [262,
-  2, 11], ...]]},                {"tag": "car", "image": [[[10, 11, 24], [23,
-  10, 15], ...]]}]} </pre> If the call is successful, the response body will
-  contain one prediction entry per instance in the request body. If prediction
-  fails for any instance, the response body will contain no predictions and
-  will contian a single error entry instead.
+  (fake data, for illustrative purposes only): <pre> {"instances": [{"b64":
+  "X5ad6u"}, {"b64": "IA9j4nx"}]} </pre> Two JPEG image byte strings (fake
+  data, for illustrative purposes only): <pre> {"instances": [{"b64":
+  "ASa8asdf"}, {"b64": "JLK7ljk3"}]} </pre> If your data includes named
+  references, format each instance as a JSON object with the named references
+  as the keys:  JSON input data to be preprocessed: <pre> {"instances": [{"a":
+  1.0,  "b": true,  "c": "x"},                {"a": -2.0, "b": false, "c":
+  "y"}]} </pre> Some models have an underlying TensorFlow graph that accepts
+  multiple input tensors. In this case, you should use the names of JSON
+  name/value pairs to identify the input tensors, as shown in the following
+  exmaples:  For a graph with input tensor aliases "tag" (string) and "image"
+  (base64-encoded string): <pre> {"instances": [{"tag": "beach", "image":
+  {"b64": "ASa8asdf"}},                {"tag": "car", "image": {"b64":
+  "JLK7ljk3"}}]} </pre> For a graph with input tensor aliases "tag" (string)
+  and "image" (3-dimensional array of 8-bit ints): <pre> {"instances":
+  [{"tag": "beach", "image": [[[263, 1, 10], [262, 2, 11], ...]]},
+  {"tag": "car", "image": [[[10, 11, 24], [23, 10, 15], ...]]}]} </pre> If the
+  call is successful, the response body will contain one prediction entry per
+  instance in the request body. If prediction fails for any instance, the
+  response body will contain no predictions and will contian a single error
+  entry instead.
 
   Fields:
     httpBody:  Required. The prediction request body.
@@ -454,15 +461,18 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
     dataFormat: Required. The format of the input data files.
     inputPaths: Required. The Google Cloud Storage location of the input data
       files. May contain wildcards.
-    maxWorkerCount: Optional. The maximum amount of workers to be used for
-      parallel processing. Defaults to 10.
-    modelName: The name of the model. The default version will be used. E.g
-      "project/your_project/models/your_model"
+    maxWorkerCount: Optional. The maximum number of workers to be used for
+      parallel processing. Defaults to 10 if not specified.
+    modelName: Use this field if you want to use the default version for the
+      specified model. The string must use the following format:
+      `"projects/<var>[YOUR_PROJECT]</var>/models/<var>[YOUR_MODEL]</var>"`
     outputPath: Required. The output Google Cloud Storage location.
     region: Required. The Google Compute Engine region to run the prediction
       job in.
-    versionName: The version to be used. E.g
-      "project/your_project/models/your_model/versions/your_version"
+    versionName: Use this field if you want to specify a version of the model
+      to use. The string is formatted the same way as `model_version`, with
+      the addition of the version information:  `"projects/<var>[YOUR_PROJECT]
+      </var>/models/<var>YOUR_MODEL/versions/<var>[YOUR_VERSION]</var>"`
   """
 
   class DataFormatValueValuesEnum(_messages.Enum):
@@ -473,12 +483,12 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
       TEXT: The source file is a text file with instances separated by the
         new-line character.
       TF_RECORD: The source file is a TFRecord file.
-      TF_RECORD_ZLIB: The source file is a TFRecord file compressed by zlib.
+      TF_RECORD_GZIP: The source file is a GZIP-compressed TFRecord file.
     """
     DATA_FORMAT_UNSPECIFIED = 0
     TEXT = 1
     TF_RECORD = 2
-    TF_RECORD_ZLIB = 3
+    TF_RECORD_GZIP = 3
 
   dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
   inputPaths = _messages.StringField(2, repeated=True)
@@ -529,20 +539,24 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       workers of the cluster when your   model requires more computation than
       the standard machine can handle   satisfactorily.   </dd>
       <dt>complex_model_m</dt>   <dd>   A machine with roughly twice the
-      number of cores and roughly double the   memory of `complex_model_s`.
-      </dd>   <dt>complex_model_l</dt>   <dd>   A machine with roughly twice
-      the number of cores and roughly double the   memory of
-      `complex_model_m`.   </dd> </dl>  This value can only be used when
-      `ScaleTier` is set to `CUSTOM`.
+      number of cores and roughly double the   memory of <code
+      suppresswarning="true">complex_model_s</code>.   </dd>
+      <dt>complex_model_l</dt>   <dd>   A machine with roughly twice the
+      number of cores and roughly double the   memory of <code
+      suppresswarning="true">complex_model_m</code>.   </dd> </dl>  You must
+      set this value when `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies.
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
-      type specified in `parameter_server_type`.
+      type specified in `parameter_server_type`.  This value can only be used
+      when `scale_tier` is set to `CUSTOM`.If you set this value, you must
+      also set `parameter_server_type`.
     parameterServerType: Optional. Specifies the type of virtual machine to
       use for your training job's parameter server.  The supported values are
       the same as those described in the entry for `master_type`.  This value
-      can only be used when `ScaleTier` is set to `CUSTOM`.
+      must be present when `scaleTier` is set to `CUSTOM` and
+      `parameter_server_count` is greater than zero.
     pythonModule: Required. The Python module name to run after installing the
       packages.
     region: Required. The Google Compute Engine region to run the training job
@@ -551,12 +565,13 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       for workers and parameter servers.
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
-      in `worker_type`. Cannot be used in combination with a standard scale
-      tier.
+      in `worker_type`.  This value can only be used when `scale_tier` is set
+      to `CUSTOM`. If you set this value, you must also set `worker_type`.
     workerType: Optional. Specifies the type of virtual machine to use for
       your training job's worker nodes.  The supported values are the same as
-      those described in the entry for `master_type`.  This value can only be
-      used when `ScaleTier` is set to `CUSTOM`.
+      those described in the entry for `masterType`.  This value must be
+      present when `scaleTier` is set to `CUSTOM` and `workerCount` is greater
+      than zero.
   """
 
   class ScaleTierValueValuesEnum(_messages.Enum):
@@ -567,24 +582,30 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       BASIC: A single worker instance. This tier is suitable for learning how
         to use Cloud ML, and for experimenting with new models using small
         datasets.
-      STANDARD_1: A few workers and one parameter server.
-      STANDARD_2: A medium amount of workers and a few parameter servers.
-      PREMIUM_1: A large amount of worker with more parameter servers.
-      PREMIUM_2: A very large amount of workers with even more parameter
-        servers.
+      STANDARD_1: Many workers and a few parameter servers.
+      PREMIUM_1: A large number of workers with many parameter servers.
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
-        your own cluster specification. When you use this tier, you must also
-        set valid values for `worker_count` and `parameter_server_count`, and
-        you can specify the type of virtual machines to use for the different
-        types of workers by setting `master_type`, `worker_type`, and
-        `parameter_server_type`.
+        your own cluster specification. When you use this tier, set values to
+        configure your processing cluster according to these guidelines:  *
+        You _must_ set `TrainingInput.masterType` to specify the type     of
+        machine to use for your master node. This is the only required
+        setting.  *   You _may_ set `TrainingInput.workerCount` to specify the
+        number of     workers to use. If you specify one or more workers, you
+        _must_ also     set `TrainingInput.workerType` to specify the type of
+        machine to use     for your worker nodes.  *   You _may_ set
+        `TrainingInput.parameterServerCount` to specify the     number of
+        parameter servers to use. If you specify one or more     parameter
+        servers, you _must_ also set     `TrainingInput.parameterServerType`
+        to specify the type of machine to     use for your parameter servers.
+        Note that all of your workers must use the same machine type, which
+        can be different from your parameter server type and master type. Your
+        parameter servers must likewise use the same machine type, which can
+        be different from your worker type and master type.
     """
     BASIC = 0
     STANDARD_1 = 1
-    STANDARD_2 = 2
-    PREMIUM_1 = 3
-    PREMIUM_2 = 4
-    CUSTOM = 5
+    PREMIUM_1 = 2
+    CUSTOM = 3
 
   args = _messages.StringField(1, repeated=True)
   hyperparameters = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterSpec', 2)
@@ -603,7 +624,8 @@ class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
   """Represents results of a training job.
 
   Fields:
-    completedTrialCount: The number of tuning trials completed successfully.
+    completedTrialCount: The number of hyperparameter tuning trials that
+      completed successfully.
     trials: Results for individual Hyperparameter trials.
   """
 
@@ -612,24 +634,32 @@ class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):
-  """Represents a version of the model. Each version is a trained model
-  deployed in the cloud, ready to handle prediction requests.
+  """Represents a version of the model.  Each version is a trained model
+  deployed in the cloud, ready to handle prediction requests. A model can have
+  multiple versions. You can get information about all of the versions of a
+  given model by calling [projects.models.versions.list](/ml/reference/rest/v1
+  beta1/projects.models.versions/list).
 
   Fields:
-    createTime: Output only. The creation time of the version.
-    deploymentUri: Required. Google Cloud Storage object containing the
-      TensorFlow graph, weights, and additional metadata that constitute a
-      trained model. This model information is captured from the Cloud Storage
-      location when the version is created, and all relevant model information
-      is stored by the Cloud ML prediction service.
-    description: Optional. The description of the model version. This value is
-      specified when the version is created.
-    isDefault: Output only. If true, indicates that this version is the
-      default for the model.
-    lastUseTime: Output only. The time when the version was last used for
+    createTime: Output only. The time the version was created.
+    deploymentUri: Required. The Google Cloud Storage location of the trained
+      model used to create the version. See the [overview of model
+      deployment](/ml/docs/concepts/deployment-overview) for more informaiton.
+      When passing Version to [projects.models.versions.create](/ml/reference/
+      rest/v1beta1/projects.models.versions/create) the model service uses the
+      specified location as the source of the model. Once deployed, the model
+      version is hosted by the prediction service, so this location is useful
+      only as a historical record.
+    description: Optional. The description specified for the version when it
+      was created.
+    isDefault: Output only. If true, this version will be used to handle
+      prediction requests that do not specify a version.  You can change the
+      default version by calling [projects.methods.versions.setDefault](/ml/re
+      ference/rest/v1beta1/projects.models.versions/setDefault).
+    lastUseTime: Output only. The time the version was last used for
       prediction.
-    name: Required.The name of the model version. This value is specified when
-      the version is created.
+    name: Required.The name specified for the version when it was created.
+      The version name must be unique within the model it is created in.
   """
 
   createTime = _messages.StringField(1)
@@ -675,7 +705,8 @@ class GoogleLongrunningOperation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method
@@ -909,14 +940,12 @@ class MlProjectsJobsListRequest(_messages.Message):
   Fields:
     filter: Optional. Specifies the subset of jobs to retrieve.
     pageSize: Optional. The number of jobs to retrieve per "page" of results.
-      If you specify a page size, and the size you provide is less than the
-      total number of jobs, the response will include a list of that many jobs
-      and a `next_page_token`, that you can use on a subsequent call as
-      `page_toiken` to get the next group of jobs.
-    pageToken: Optional. A token for continuing the enumeration. When you
-      request a list of jobs and specify a `page_size` that is less than the
-      total number of jobs, you'll get a `next_page_token` in your response.
-      Use that value here to get the next page of results.
+      If there are more remaining results than this number, the response
+      message will contain a valid value in the `next_page_token` field.  The
+      default value is 20, and the maximum page size is 100.
+    pageToken: Optional. A page token to request the next page of results.
+      You get the token from the `next_page_token` field of the response from
+      the previous call.
     projectsId: Part of `parent`. Required. The name of the project for which
       to list jobs.  Authorization: requires `Viewer` role on the specified
       project.
@@ -972,8 +1001,13 @@ class MlProjectsModelsListRequest(_messages.Message):
   """A MlProjectsModelsListRequest object.
 
   Fields:
-    pageSize: Optional. The page size.
-    pageToken: Optional. A token for for continuing the enumeration.
+    pageSize: Optional. The number of models to retrieve per "page" of
+      results. If there are more remaining results than this number, the
+      response message will contain a valid value in the `next_page_token`
+      field.  The default value is 20, and the maximum page size is 100.
+    pageToken: Optional. A page token to request the next page of results.
+      You get the token from the `next_page_token` field of the response from
+      the previous call.
     projectsId: Part of `parent`. Required. The name of the project whose
       models are to be listed.  Authorization: requires `Viewer` role on the
       specified project.
@@ -1008,6 +1042,7 @@ class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
     projectsId: Part of `name`. Required. The name of the version. You can get
       the names of all the versions of a model by calling [projects.models.ver
       sions.list](/ml/reference/rest/v1beta1/projects.models.versions/list).
+      Authorization: requires `Editor` role on the parent project.
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1036,8 +1071,13 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
 
   Fields:
     modelsId: Part of `parent`. See documentation of `projectsId`.
-    pageSize: Optional. The page size.
-    pageToken: Optional. A token for continuing the enumeration.
+    pageSize: Optional. The number of versions to retrieve per "page" of
+      results. If there are more remaining results than this number, the
+      response message will contain a valid value in the `next_page_token`
+      field.  The default value is 20, and the maximum page size is 100.
+    pageToken: Optional. A page token to request the next page of results.
+      You get the token from the `next_page_token` field of the response from
+      the previous call.
     projectsId: Part of `parent`. Required. The name of the model for which to
       list the version.  Authorization: requires `Viewer` role on the parent
       project.

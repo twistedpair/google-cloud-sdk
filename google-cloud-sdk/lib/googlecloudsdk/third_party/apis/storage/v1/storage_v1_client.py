@@ -349,7 +349,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a bucket. This method supports patch semantics.
+      """Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate. This method supports patch semantics.
 
       Args:
         request: (StorageBucketsPatchRequest) input message
@@ -427,7 +427,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a bucket.
+      """Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
 
       Args:
         request: (StorageBucketsUpdateRequest) input message

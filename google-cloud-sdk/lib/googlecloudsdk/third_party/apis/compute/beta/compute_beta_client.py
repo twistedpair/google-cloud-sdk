@@ -848,7 +848,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id=u'compute.disks.createSnapshot',
         ordered_params=[u'project', u'zone', u'disk'],
         path_params=[u'disk', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'guestFlush'],
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/createSnapshot',
         request_field=u'snapshot',
         request_type_name=u'ComputeDisksCreateSnapshotRequest',
@@ -2848,7 +2848,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.instanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'zone', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -5030,7 +5030,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'region', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',
@@ -6342,6 +6342,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeSubnetworksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.subnetworks.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeSubnetworksGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a subnetwork in the specified project using the data included in the request.
 
@@ -6391,6 +6417,32 @@ For more information, see Deleting snaphots.
         request_field='',
         request_type_name=u'ComputeSubnetworksListRequest',
         response_type_name=u'SubnetworkList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeSubnetworksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.subnetworks.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 

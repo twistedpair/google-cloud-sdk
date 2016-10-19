@@ -33,9 +33,8 @@ def AddInstanceGroup(parser, operation_type,
       required=True,
       help='The name or URI of a Google Cloud Instance Group.')
 
-  scope_parser = parser
+  scope_parser = parser.add_mutually_exclusive_group()
   if multizonal:
-    scope_parser = parser.add_mutually_exclusive_group()
     flags.AddRegionFlag(
         scope_parser,
         resource_type='instance group',
@@ -43,7 +42,6 @@ def AddInstanceGroup(parser, operation_type,
         flag_prefix='instance-group',
         explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
   if with_deprecated_zone:
-    scope_parser = scope_parser.add_mutually_exclusive_group()
     flags.AddZoneFlag(
         scope_parser,
         resource_type='instance group',

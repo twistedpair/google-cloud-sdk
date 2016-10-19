@@ -114,7 +114,7 @@ class ResultsBucketOps(object):
         raise exceptions.BadFileException(
             'Could not access bucket [{b}]. Response error {c}: {e}. '
             'Please supply a valid bucket name or use the default bucket '
-            'provided by Google Cloud Test Lab.'
+            'provided by Firebase Test Lab.'
             .format(b=bucket_name, c=code, e=err_msg))
 
     # The bucket does not exist in any project, so create it in user's project.
@@ -155,7 +155,7 @@ class ResultsBucketOps(object):
     Raises:
       BadFileException if the file upload is not successful.
     """
-    log.status.Print('Uploading [{f}] to the Cloud Test Lab...'.format(f=path))
+    log.status.Print('Uploading [{f}] to Firebase Test Lab...'.format(f=path))
     try:
       if path.startswith(GCS_PREFIX):
         # Perform a GCS object to GCS object copy

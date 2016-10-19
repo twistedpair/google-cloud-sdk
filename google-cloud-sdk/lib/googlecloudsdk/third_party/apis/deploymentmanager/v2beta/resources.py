@@ -22,6 +22,12 @@ BASE_URL = 'https://www.googleapis.com/deploymentmanager/v2beta/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  COMPOSITETYPES = (
+      'compositeTypes',
+      'projects/{project}/global/compositeTypes/{compositeType}',
+      {},
+      [u'project', u'compositeType'],
+      'DeploymentmanagerCompositeTypesGetRequest',)
   DEPLOYMENTS = (
       'deployments',
       'projects/{project}/global/deployments/{deployment}',

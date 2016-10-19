@@ -51,7 +51,7 @@ class MlV1beta1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancel a running job.
+      """Cancels a running job.
 
       Args:
         request: (MlProjectsJobsCancelRequest) input message
@@ -77,7 +77,7 @@ class MlV1beta1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      """Create a training or a batch prediction job.
+      """Creates a training or a batch prediction job.
 
       Args:
         request: (MlProjectsJobsCreateRequest) input message
@@ -103,7 +103,7 @@ class MlV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Describe a job.
+      """Describes a job.
 
       Args:
         request: (MlProjectsJobsGetRequest) input message
@@ -129,7 +129,7 @@ class MlV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """List jobs in the project.
+      """Lists the jobs in the project.
 
       Args:
         request: (MlProjectsJobsListRequest) input message
@@ -165,8 +165,14 @@ class MlV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Upload a trained TensorFlow model version. The result of the operation.
-is a Version.
+      """Creates a new version of a model from a trained TensorFlow model.
+
+If the version created in the cloud by this call is the first deployed
+version of the specified model, it will be made the default version of the
+model. When you add a version to a model that already has one or more
+versions, the default version does not automatically change. If you want a
+new version to be the default, you must call
+[projects.models.versions.setDefault](/ml/reference/rest/v1beta1/projects.models.versions/setDefault).
 
       Args:
         request: (MlProjectsModelsVersionsCreateRequest) input message
@@ -192,8 +198,13 @@ is a Version.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a model version. Each model can have multiple versions deployed and.
-in use at any given time. Use this method to remove a single version.
+      """Deletes a model version.
+
+Each model can have multiple versions deployed and in use at any given
+time. Use this method to remove a single version.
+
+Note: You cannot delete the version that is set as the default version
+of the model unless it is the only remaining version.
 
       Args:
         request: (MlProjectsModelsVersionsDeleteRequest) input message
@@ -219,7 +230,12 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def Get(self, request, global_params=None):
-      """Get version metadata.
+      """Gets information about a model version.
+
+Models can have multiple versions. You can call
+[projects.models.versions.list](/ml/reference/rest/v1beta1/projects.models.versions/list)
+to get the same information that this method returns for all of the
+versions of a model.
 
       Args:
         request: (MlProjectsModelsVersionsGetRequest) input message
@@ -245,7 +261,11 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def List(self, request, global_params=None):
-      """List versions in the model.
+      """Gets basic information about all the versions of a model.
+
+If you expect that a model has a lot of versions, or if you need to handle
+only a limited number of results at a time, you can request that the list
+be retrieved in batches (called pages):
 
       Args:
         request: (MlProjectsModelsVersionsListRequest) input message
@@ -271,7 +291,14 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def SetDefault(self, request, global_params=None):
-      """Mark the version as default within the model.
+      """Designates a version to be the default for the model.
+
+The default version is used for prediction requests made against the model
+that don't specify a version.
+
+The first version to be created for a model is automatically set as the
+default. You must make any subsequent changes to the default version
+setting manually using this method.
 
       Args:
         request: (MlProjectsModelsVersionsSetDefaultRequest) input message
@@ -307,7 +334,11 @@ in use at any given time. Use this method to remove a single version.
           }
 
     def Create(self, request, global_params=None):
-      """Create a model which will later contain a set of model versions.
+      """Creates a model which will later contain one or more versions.
+
+You must add at least one version before you can request predictions from
+the model. Add versions by calling
+[projects.models.versions.create](/ml/reference/rest/v1beta1/projects.models.versions/create).
 
       Args:
         request: (MlProjectsModelsCreateRequest) input message
@@ -333,7 +364,11 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def Delete(self, request, global_params=None):
-      """Delete the model and all versions in it.
+      """Deletes a model.
+
+You can only delete a model if there are no versions in it. You can delete
+versions by calling
+[projects.models.versions.delete](/ml/reference/rest/v1beta1/projects.models.versions/delete).
 
       Args:
         request: (MlProjectsModelsDeleteRequest) input message
@@ -359,7 +394,9 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def Get(self, request, global_params=None):
-      """Describe a model and versions in it.
+      """Gets information about a model, including its name, the description (if.
+set), and the default version (if at least one version of the model has
+been deployed).
 
       Args:
         request: (MlProjectsModelsGetRequest) input message
@@ -385,7 +422,10 @@ in use at any given time. Use this method to remove a single version.
     )
 
     def List(self, request, global_params=None):
-      """List models in the project.
+      """Lists the models in a project.
+
+Each project can contain multiple models, and each model can have multiple
+versions.
 
       Args:
         request: (MlProjectsModelsListRequest) input message
@@ -427,7 +467,10 @@ guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
 Operations.GetOperation or
 other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation.
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
 
       Args:
         request: (MlProjectsOperationsCancelRequest) input message

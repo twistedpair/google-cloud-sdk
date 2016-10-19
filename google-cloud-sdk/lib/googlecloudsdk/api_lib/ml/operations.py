@@ -48,9 +48,12 @@ def WaitForOperation(operation_service, operation, registry=None):
     return operation
   if not registry:
     registry = resources.REGISTRY
-  request = registry.Parse(
+  ref = registry.Parse(
       operation.name.split('/')[-1],
-      collection='ml.projects.operations').Request()
+      collection='ml.projects.operations')
+  request = (operation_service.client
+             .MESSAGES_MODULE.MlProjectsOperationsGetRequest(
+                 projectsId=ref.projectsId, operationsId=ref.operationsId))
   try:
     operation = retry.Retryer(max_wait_ms=60 * 60 * 1000).RetryOnResult(
         operation_service.Get,

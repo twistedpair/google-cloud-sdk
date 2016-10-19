@@ -130,7 +130,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method
@@ -243,11 +244,18 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
     projectsId: Part of `parent`. The [project ID](https://support.google.com/
       cloud/answer/6158840?hl=en&ref_topic=6158848) for this request, in the
       format `projects/[PROJECT_ID]`.
+    requestId: An optional unique request_id. If server receives two Create
+      requests with the same request_id then second request will be ignored
+      and the resource stored in the backend will be returned. Empty
+      request_id fields are ignored. It is responsibility of the client to
+      ensure uniqueness of the request_id strings. The strings are limited to
+      64 characters.
     runtimeConfig: A RuntimeConfig resource to be passed as the request body.
   """
 
   projectsId = _messages.StringField(1, required=True)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 2)
+  requestId = _messages.StringField(2)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 3)
 
 
 class RuntimeconfigProjectsConfigsDeleteRequest(_messages.Message):
@@ -333,12 +341,19 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
       this variable should belong to. The configuration must exist beforehand;
       the path must by in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    requestId: An optional unique request_id. If server receives two Create
+      requests with the same request_id then second request will be ignored
+      and the resource stored in the backend will be returned. Empty
+      request_id fields are ignored. It is responsibility of the client to
+      ensure uniqueness of the request_id strings. The strings are limited to
+      64 characters.
     variable: A Variable resource to be passed as the request body.
   """
 
   configsId = _messages.StringField(1, required=True)
   projectsId = _messages.StringField(2, required=True)
-  variable = _messages.MessageField('Variable', 3)
+  requestId = _messages.StringField(3)
+  variable = _messages.MessageField('Variable', 4)
 
 
 class RuntimeconfigProjectsConfigsVariablesDeleteRequest(_messages.Message):
@@ -446,12 +461,19 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
     projectsId: Part of `parent`. The path to the configuration that will own
       the waiter. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
+    requestId: An optional unique request_id. If server receives two Create
+      requests with the same request_id then second request will be ignored
+      and information stored in the backend will be returned. Empty request_id
+      fields are ignored. It is responsibility of the client to ensure
+      uniqueness of the request_id strings. The strings are limited to 64
+      characters.
     waiter: A Waiter resource to be passed as the request body.
   """
 
   configsId = _messages.StringField(1, required=True)
   projectsId = _messages.StringField(2, required=True)
-  waiter = _messages.MessageField('Waiter', 3)
+  requestId = _messages.StringField(3)
+  waiter = _messages.MessageField('Waiter', 4)
 
 
 class RuntimeconfigProjectsConfigsWaitersDeleteRequest(_messages.Message):

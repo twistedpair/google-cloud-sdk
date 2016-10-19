@@ -210,7 +210,7 @@
               "description": "The resource name of the billing account to retrieve. For example,\n`billingAccounts\/012345-567890-ABCDEF`.",
               "location": "path",
               "required": true,
-              "pattern": "^billingAccounts\/[^\/]*$",
+              "pattern": "^billingAccounts\/[^\/]+$",
               "type": "string"
             }
           },
@@ -268,7 +268,7 @@
                   "description": "The resource name of the billing account associated with the projects that\nyou want to list. For example, `billingAccounts\/012345-567890-ABCDEF`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^billingAccounts\/[^\/]*$",
+                  "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -310,7 +310,7 @@
               "description": "The resource name of the project for which billing information is\nretrieved. For example, `projects\/tokyo-rain-123`.",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]*$",
+              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -335,7 +335,7 @@
               "description": "The resource name of the project associated with the billing information\nthat you want to update. For example, `projects\/tokyo-rain-123`.",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/[^\/]*$",
+              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },

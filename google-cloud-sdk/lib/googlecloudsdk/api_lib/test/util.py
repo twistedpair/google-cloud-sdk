@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A shared library to support implementation of Cloud Test Lab commands."""
+"""A shared library to support implementation of Firebase Test Lab commands."""
 
 import json
 

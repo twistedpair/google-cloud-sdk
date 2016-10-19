@@ -264,16 +264,22 @@ class _Parser(object):
         # A global restriction function.
         tree = self._backend.ExprGlobal(transform)
       elif not transform and len(key) == 1:
-        # A global restriction on key[0].
-        func_name = 'global'
-        func = self._defaults.symbols.get(func_name, None)
-        if not func:
+        # A global restriction on key. The symbol lookup returns a (kind, func)
+        # tuple where kind indicates an expression rewrite or eval.
+        kind, func = self._defaults.symbols.get(
+            resource_projection_spec.GLOBAL_RESTRICTION_NAME, (None, None))
+        if kind == resource_projection_spec.GLOBAL_RESTRICTION_REWRITE:
+          tree = Compile(func(key[0]), backend=self._backend,
+                         defaults=self._defaults)
+        elif kind == resource_projection_spec.GLOBAL_RESTRICTION_EVAL:
+          tree = self._backend.ExprGlobal(
+              resource_lex.MakeTransform(
+                  resource_projection_spec.GLOBAL_RESTRICTION_NAME,
+                  func, args=key, restriction=True))
+        else:
           raise resource_exceptions.ExpressionSyntaxError(
               'Global restriction not supported [{0}].'.format(
                   self._lex.Annotate(here)))
-        transform = resource_lex.MakeTransform(func_name, func, args=key,
-                                               restriction=True)
-        tree = self._backend.ExprGlobal(transform)
       else:
         raise resource_exceptions.ExpressionSyntaxError(
             'Operator expected [{0}].'.format(self._lex.Annotate(here)))

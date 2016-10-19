@@ -34,12 +34,179 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.compositeTypes = self.CompositeTypesService(self)
     self.deployments = self.DeploymentsService(self)
     self.manifests = self.ManifestsService(self)
     self.operations = self.OperationsService(self)
     self.resources = self.ResourcesService(self)
     self.typeProviders = self.TypeProvidersService(self)
     self.types = self.TypesService(self)
+
+  class CompositeTypesService(base_api.BaseApiService):
+    """Service class for the compositeTypes resource."""
+
+    _NAME = u'compositeTypes'
+
+    def __init__(self, client):
+      super(DeploymentmanagerV2beta.CompositeTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes a composite type.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'deploymentmanager.compositeTypes.delete',
+        ordered_params=[u'project', u'compositeType'],
+        path_params=[u'compositeType', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerCompositeTypesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets information about a specific composite type.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.compositeTypes.get',
+        ordered_params=[u'project', u'compositeType'],
+        path_params=[u'compositeType', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerCompositeTypesGetRequest',
+        response_type_name=u'CompositeType',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a composite type.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.compositeTypes.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/compositeTypes',
+        request_field=u'compositeType',
+        request_type_name=u'DeploymentmanagerCompositeTypesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all composite types for Deployment Manager.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeTypesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.compositeTypes.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/compositeTypes',
+        request_field='',
+        request_type_name=u'DeploymentmanagerCompositeTypesListRequest',
+        response_type_name=u'CompositeTypesListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a composite type. This method supports patch semantics.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'deploymentmanager.compositeTypes.patch',
+        ordered_params=[u'project', u'compositeType'],
+        path_params=[u'compositeType', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        request_field=u'compositeTypeResource',
+        request_type_name=u'DeploymentmanagerCompositeTypesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates a composite type.
+
+      Args:
+        request: (DeploymentmanagerCompositeTypesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'deploymentmanager.compositeTypes.update',
+        ordered_params=[u'project', u'compositeType'],
+        path_params=[u'compositeType', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/compositeTypes/{compositeType}',
+        request_field=u'compositeTypeResource',
+        request_type_name=u'DeploymentmanagerCompositeTypesUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class DeploymentsService(base_api.BaseApiService):
     """Service class for the deployments resource."""
@@ -585,6 +752,32 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetType(self, request, global_params=None):
+      """Gets a type info for a type provided by a TypeProvider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersGetTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeInfo) The response message.
+      """
+      config = self.GetMethodConfig('GetType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetType.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.getType',
+        ordered_params=[u'project', u'typeProvider', u'type'],
+        path_params=[u'project', u'type', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types/{type}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersGetTypeRequest',
+        response_type_name=u'TypeInfo',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a type provider.
 
@@ -634,6 +827,32 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DeploymentmanagerTypeProvidersListRequest',
         response_type_name=u'TypeProvidersListResponse',
+        supports_download=False,
+    )
+
+    def ListTypes(self, request, global_params=None):
+      """Lists all the type info for a TypeProvider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersListTypesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeProvidersListTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListTypes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListTypes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.listTypes',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersListTypesRequest',
+        response_type_name=u'TypeProvidersListTypesResponse',
         supports_download=False,
     )
 

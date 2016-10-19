@@ -17,7 +17,8 @@
 
 import gzip
 import os
-import tempfile
+import StringIO
+import tarfile
 
 from docker import docker
 from googlecloudsdk.api_lib.app.api import operations
@@ -45,17 +46,35 @@ class BuildFailedError(exceptions.Error):
   """Raised when a Google Cloud Builder build fails."""
 
 
-# This class is a workaround for the fact that the last line of
-# docker.utils.tar does "fileobj.seek(0)" and gzip fails to seek in write mode,
-# throwing "IOError: Negative seek in write mode".
-class _GzipFileIgnoreSeek(gzip.GzipFile):
-  """Wrapper around GzipFile that ignores seek requests."""
+def _CreateTar(source_dir, gen_files, exclude, gz):
+  """Replicate basic logic of docker.utils.tar() and write additional files.
 
-  def seek(self, offset, whence=0):
-    return self.offset
+  The third-party code closes the tarfile after creating, which does not
+  allow us to write the generated file since gzipped tarfiles can't be
+  opened in append mode.
+
+  Args:
+    source_dir: the directory to be archived
+    gen_files: dict of filenames to (str) contents, to be added to tar
+    exclude: list of paths to exclude from tar
+    gz: gzipped tarfile object
+  """
+  t = tarfile.open(mode='w', fileobj=gz)
+  root = os.path.abspath(source_dir)
+  exclude = exclude or []
+  paths = docker.utils.exclude_paths(root, exclude)
+  for path in sorted(paths):
+    t.add(os.path.join(root, path), arcname=path, recursive=False)
+  for name, contents in gen_files.iteritems():
+    genfileobj = StringIO.StringIO(contents)
+    tar_info = tarfile.TarInfo(name=name)
+    tar_info.size = len(genfileobj.buf)
+    t.addfile(tar_info, fileobj=genfileobj)
+    genfileobj.close()
+  t.close()
 
 
-def UploadSource(source_dir, bucket, obj):
+def UploadSource(source_dir, bucket, obj, gen_files=None):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
@@ -64,42 +83,40 @@ def UploadSource(source_dir, bucket, obj):
     source_dir: the directory to be archived.
     bucket: the GCS bucket where the tarball will be stored.
     obj: the GCS object where the tarball will be stored, in the above bucket.
+    gen_files: dict of filename to (str) contents of generated config and
+      source context files.
 
   Raises:
     UploadFailedError: when the source fails to upload to GCS.
   """
+  gen_files = gen_files or {}
+
   dockerignore = os.path.join(source_dir, '.dockerignore')
   exclude = None
+  ignore_contents = None
   if os.path.exists(dockerignore):
     with open(dockerignore) as f:
-      # Read the exclusions, filtering out blank lines.
-      exclude = set(filter(bool, f.read().splitlines()))
-      # Remove paths that shouldn't be excluded on the client.
-      exclude -= set(BLACKLISTED_DOCKERIGNORE_PATHS)
+      ignore_contents = f.read()
+  else:
+    ignore_contents = gen_files.get('.dockerignore')
+  if ignore_contents:
+    # Read the exclusions, filtering out blank lines.
+    exclude = set(filter(bool, ignore_contents.splitlines()))
+    # Remove paths that shouldn't be excluded on the client.
+    exclude -= set(BLACKLISTED_DOCKERIGNORE_PATHS)
+
   # We can't use tempfile.NamedTemporaryFile here because ... Windows.
   # See https://bugs.python.org/issue14243. There are small cleanup races
   # during process termination that will leave artifacts on the filesystem.
   # eg, CTRL-C on windows leaves both the directory and the file. Unavoidable.
   # On Posix, `kill -9` has similar behavior, but CTRL-C allows cleanup.
-  try:
-    temp_dir = tempfile.mkdtemp()
+  with files.TemporaryDirectory() as temp_dir:
     f = open(os.path.join(temp_dir, 'src.tgz'), 'w+b')
-    # We are able to leverage the source archiving code from docker-py;
-    # however, there are two wrinkles:
-    # 1) The 3P code doesn't support gzip (it's expecting a local unix socket).
-    #    So we create a GzipFile object and let the 3P code write into that.
-    # 2) The .seek(0) call at the end of the 3P code causes GzipFile to throw an
-    #    exception. So we use GzipFileIgnoreSeek as a workaround.
-    with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
-      docker.utils.tar(source_dir, exclude, fileobj=gz)
+    with gzip.GzipFile(mode='wb', fileobj=f) as gz:
+      _CreateTar(source_dir, gen_files, exclude, gz)
     f.close()
     storage_client = storage_api.StorageClient()
     storage_client.CopyFileToGCS(bucket, f.name, obj)
-  finally:
-    try:
-      files.RmTree(temp_dir)
-    except OSError:
-      log.warn('Could not remove temporary directory [{0}]'.format(temp_dir))
 
 
 def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):

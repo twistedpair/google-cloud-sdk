@@ -71,13 +71,15 @@ def Get(model, version):
   client = apis.GetClientInstance('ml', 'v1beta1')
   registry = resources.REGISTRY.Clone()
   registry.RegisterApiByName('ml', 'v1beta1')
-  res = registry.Parse(
+  ref = registry.Parse(
       version,
       params={'modelsId': model},
       collection='ml.projects.models.versions')
-  req = res.Request()
-  resp = client.projects_models_versions.Get(req)
-  return resp
+  req = client.MESSAGES_MODULE.MlProjectsModelsVersionsGetRequest(
+      projectsId=ref.projectsId,
+      modelsId=ref.modelsId,
+      versionsId=ref.versionsId)
+  return client.projects_models_versions.Get(req)
 
 
 def List(model):

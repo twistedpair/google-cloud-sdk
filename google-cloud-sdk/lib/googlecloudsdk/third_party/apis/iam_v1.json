@@ -365,7 +365,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -527,7 +527,7 @@
                   "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -563,7 +563,7 @@
                   "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -588,7 +588,7 @@
                   "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -616,7 +616,7 @@
                   "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\n\nRequests using `-` as a wildcard for the project will infer the project\nfrom the `account` and the `account` value can be the `email` address or\nthe `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{project}\/serviceAccounts\/{email}`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -644,7 +644,7 @@
                   "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -669,7 +669,7 @@
                   "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -697,7 +697,7 @@
                   "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -722,7 +722,7 @@
                   "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -750,7 +750,7 @@
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -783,7 +783,7 @@
                       "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\n\nUsing `-` as a wildcard for the project, will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     },
                     "keyTypes": {
@@ -819,7 +819,7 @@
                       "description": "The resource name of the service account key in the following format:\n`projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}`.\n\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*\/keys\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "type": "string"
                     },
                     "publicKeyType": {
@@ -854,7 +854,7 @@
                       "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -882,7 +882,7 @@
                       "description": "The resource name of the service account key in the following format:\n`projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*\/keys\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
                       "type": "string"
                     }
                   },

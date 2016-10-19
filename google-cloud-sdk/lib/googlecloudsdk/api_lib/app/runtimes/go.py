@@ -21,7 +21,7 @@ import textwrap
 
 from gae_ext_runtime import ext_runtime
 
-from googlecloudsdk.api_lib.app.images import config
+from googlecloudsdk.api_lib.app.images import config as images_config
 from googlecloudsdk.core import log
 
 NAME ='go'
@@ -65,11 +65,39 @@ class GoConfigurator(ext_runtime.Configurator):
     self.root = path
     self.params = params
 
+  def GetAllConfigFiles(self):
+
+    all_config_files = []
+
+    # Generate app.yaml.
+    if not self.params.appinfo:
+      app_yaml_path = os.path.join(self.root, 'app.yaml')
+      if not os.path.exists(app_yaml_path):
+        runtime = 'custom' if self.params.custom else 'go'
+        app_yaml_contents = GO_APP_YAML.format(runtime=runtime)
+        app_yaml = ext_runtime.GeneratedFile('app.yaml', app_yaml_contents)
+        all_config_files.append(app_yaml)
+
+    if self.params.custom or self.params.deploy:
+      dockerfile_path = os.path.join(self.root, images_config.DOCKERFILE)
+      if not os.path.exists(dockerfile_path):
+        dockerfile = ext_runtime.GeneratedFile(images_config.DOCKERFILE,
+                                               DOCKERFILE)
+        all_config_files.append(dockerfile)
+
+      # Generate .dockerignore TODO(mmuller): eventually this file will just be
+      # copied verbatim.
+      dockerignore_path = os.path.join(self.root, '.dockerignore')
+      if not os.path.exists(dockerignore_path):
+        dockerignore = ext_runtime.GeneratedFile('.dockerignore', DOCKERIGNORE)
+        all_config_files.append(dockerignore)
+    return all_config_files
+
   def GenerateConfigs(self):
-    """Generate all config files for the module.
+    """Generate config files for the module.
 
     Returns:
-      (callable()) ext_runtime.Cleaner instance.
+      (bool) True if files were created
     """
     # Write "Writing file" messages to the user or to log depending on whether
     # we're in "deploy."
@@ -77,38 +105,38 @@ class GoConfigurator(ext_runtime.Configurator):
       notify = log.info
     else:
       notify = log.status.Print
-
-    # Generate app.yaml.
-    cleaner = ext_runtime.Cleaner()
-    if not self.params.appinfo:
-      app_yaml = os.path.join(self.root, 'app.yaml')
-      if not os.path.exists(app_yaml):
-        notify('Writing [app.yaml] to [%s].' % self.root)
-        runtime = 'custom' if self.params.custom else 'go'
-        with open(app_yaml, 'w') as f:
-          f.write(GO_APP_YAML.format(runtime=runtime))
-
-    if self.params.custom or self.params.deploy:
-      dockerfile = os.path.join(self.root, config.DOCKERFILE)
-      if not os.path.exists(dockerfile):
-        notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
-        with open(dockerfile, 'w') as f:
-          f.write(DOCKERFILE)
-        cleaner.Add(dockerfile)
-
-      # Generate .dockerignore TODO(mmuller): eventually this file will just be
-      # copied verbatim.
-      dockerignore = os.path.join(self.root, '.dockerignore')
-      if not os.path.exists(dockerignore):
-        notify('Writing [.dockerignore] to [%s].' % self.root)
-        with open(dockerignore, 'w') as f:
-          f.write(DOCKERIGNORE)
-        cleaner.Add(dockerignore)
-
-    if not cleaner.HasFiles():
+    cfg_files = self.GetAllConfigFiles()
+    created = False
+    for cfg_file in cfg_files:
+      if cfg_file.WriteTo(self.root, notify):
+        created = True
+    if not created:
       notify('All config files already exist, not generating anything.')
 
-    return cleaner
+    return created
+
+  def GenerateConfigData(self):
+    """Generate config files for the module.
+
+    Returns:
+      list(ext_runtime.GeneratedFile) list of generated files.
+    """
+    # Write "Writing file" messages to the user or to log depending on whether
+    # we're in "deploy."
+    if self.params.deploy:
+      notify = log.info
+    else:
+      notify = log.status.Print
+    cfg_files = self.GetAllConfigFiles()
+    for cfg_file in cfg_files:
+      if cfg_file.filename == 'app.yaml':
+        cfg_file.WriteTo(self.root, notify)
+    final_cfg_files = []
+    for f in cfg_files:
+      if f.filename != 'app.yaml' and not os.path.exists(
+          os.path.join(self.root, f.filename)):
+        final_cfg_files.append(f)
+    return final_cfg_files
 
 
 def _GoFiles(path):

@@ -214,18 +214,22 @@ class Projector(object):
     Returns:
       The projected obj.
     """
-    if isinstance(obj, set):
-      # Convert set to an ordered list. This does empty set => [] without an
-      # explicit check for None.
-      obj = sorted(obj)
+    if obj is None:
+      return None
     if not obj:
-      # This catches the empty list and None.
-      return obj
+      return []
+
     # No iterators or generators beyond this point.
     try:
       _ = len(obj)
+      try:
+        _ = obj[0]
+      except TypeError:
+        # Convert a set like object to an ordered list.
+        obj = sorted(obj)
     except TypeError:
       obj = list(obj)
+
     # Determine the explicit indices or slice.
     # If there is a slice index then every index is projected.
     indices = set([])

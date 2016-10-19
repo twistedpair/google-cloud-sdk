@@ -293,7 +293,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -441,11 +441,11 @@
           "type": "string"
         },
         "operationType": {
-          "description": "The type of folder operation.",
+          "description": "The type of this operation.",
           "enumDescriptions": [
-            "Operation type was unspecified.",
-            "Operation was create folder.",
-            "Operation was move folder."
+            "Operation type not specified.",
+            "A create folder operation.",
+            "A move folder operation."
           ],
           "type": "string",
           "enum": [
@@ -466,25 +466,25 @@
     },
     "FolderOperationError": {
       "id": "FolderOperationError",
-      "description": "Information about a failed folder operation.\nIf a long running folder operations fails, then we will return\nthis message in the Operation.error.details field.",
+      "description": "A classification of the Folder Operation error.",
       "type": "object",
       "properties": {
         "errorMessageId": {
-          "description": "The message id for the operation error that was experienced.",
+          "description": "The type of operation error experienced.",
           "enumDescriptions": [
-            "An undefined error type.",
+            "The error type was unrecognized or unspecified.",
             "The attempted action would violate the max folder depth constraint.",
             "The attempted action would violate the max child folders constraint.",
-            "The attempted action would violate the folder name locally-unique\nconstraint.",
+            "The attempted action would violate the locally-unique folder\ndisplay_name constraint.",
             "The resource being moved has been deleted.",
-            "The folder or organization a resource was being added to has been\ndeleted.",
+            "The resource a folder was being added to has been deleted.",
             "The attempted action would introduce cycle in resource path.",
             "The attempted action would move a folder that is already being moved.",
             "The folder the caller is trying to delete contains active resources."
           ],
           "type": "string",
           "enum": [
-            "UNDEFINED_ERROR",
+            "ERROR_TYPE_UNSPECIFIED",
             "FOLDER_HEIGHT_VIOLATION",
             "MAX_CHILD_FOLDERS_VIOLATION",
             "FOLDER_NAME_UNIQUENESS_VIOLATION",

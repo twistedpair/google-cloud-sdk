@@ -21,6 +21,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
 
+class InstancesEncodeError(core_exceptions.Error):
+  """Indicates that error occurs while decoding the instances in http body."""
+  pass
+
+
 class HttpRequestFailError(core_exceptions.Error):
   """Indicates that the http request fails in some way."""
   pass
@@ -57,12 +62,17 @@ def Predict(model_name=None, version_name=None, instances=None):
   body = {'instances': instances}
 
   headers = {'Content-Type': 'application/json'}
+  try:
+    http_body = json.dumps(body, sort_keys=True)
+  except UnicodeDecodeError:
+    raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
+                               'because the input is not utf-8 encoded.')
+
   # Workaround since current gcloud sdk cannot handle the httpbody properly.
   # TODO(b/31403673): use M1V1beta1.ProjectsService.Predict once b/31403673
   # is fixed.
   response, response_body = http.Http().request(
-      uri=url, method='POST', body=json.dumps(body, sort_keys=True),
-      headers=headers)
+      uri=url, method='POST', body=http_body, headers=headers)
   if response.get('status') != '200':
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)

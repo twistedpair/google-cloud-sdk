@@ -64,7 +64,7 @@ PACKAGES = base.Argument(
     '--packages',
     nargs='+',
     default=[],
-    help='Path to .tar.gz archives of Python code to be used for training')
+    help='Path to Python archives used for training')
 STAGING_BUCKET = base.Argument(
     '--staging-bucket',
     help='Bucket in which to stage training archives',

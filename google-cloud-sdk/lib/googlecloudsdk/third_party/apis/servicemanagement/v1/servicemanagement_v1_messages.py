@@ -230,7 +230,7 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.  * `serviceAccount:{emailid}`: An email address
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.  *
@@ -378,8 +378,9 @@ class Condition(_messages.Message):
 
     Values:
       NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority
-      ATTRIBUTION: selector Always the original principal, but making clear
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -1593,21 +1594,18 @@ class LogDescriptor(_messages.Message):
 class Logging(_messages.Message):
   """Logging configuration of the service.  The following example shows how to
   configure logs to be sent to the producer and consumer projects. In the
-  example, the `library.googleapis.com/activity_history` log is sent to both
-  the producer and consumer projects, whereas the
-  `library.googleapis.com/purchase_history` log is only sent to the producer
-  project:      monitored_resources:     - type: library.googleapis.com/branch
-  labels:       - key: /city         description: The city where the library
-  branch is located in.       - key: /name         description: The name of
-  the branch.     logs:     - name: library.googleapis.com/activity_history
-  labels:       - key: /customer_id     - name:
-  library.googleapis.com/purchase_history     logging:
-  producer_destinations:       - monitored_resource:
-  library.googleapis.com/branch         logs:         -
-  library.googleapis.com/activity_history         -
-  library.googleapis.com/purchase_history       consumer_destinations:       -
+  example, the `activity_history` log is sent to both the producer and
+  consumer projects, whereas the `purchase_history` log is only sent to the
+  producer project.      monitored_resources:     - type:
+  library.googleapis.com/branch       labels:       - key: /city
+  description: The city where the library branch is located in.       - key:
+  /name         description: The name of the branch.     logs:     - name:
+  activity_history       labels:       - key: /customer_id     - name:
+  purchase_history     logging:       producer_destinations:       -
   monitored_resource: library.googleapis.com/branch         logs:         -
-  library.googleapis.com/activity_history
+  activity_history         - purchase_history       consumer_destinations:
+  - monitored_resource: library.googleapis.com/branch         logs:         -
+  activity_history
 
   Fields:
     consumerDestinations: Logging configurations for sending logs to the
@@ -1630,9 +1628,11 @@ class LoggingDestination(_messages.Message):
 
   Fields:
     logs: Names of the logs to be sent to this destination. Each name must be
-      defined in the Service.logs section.
+      defined in the Service.logs section. If the log name is not a domain
+      scoped name, it will be automatically prefixed with the service name
+      followed by "/".
     monitoredResource: The monitored resource type. The type must be defined
-      in Service.monitored_resources section.
+      in the Service.monitored_resources section.
   """
 
   logs = _messages.StringField(1, repeated=True)
@@ -2038,7 +2038,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method

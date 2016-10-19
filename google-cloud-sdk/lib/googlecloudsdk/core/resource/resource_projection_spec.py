@@ -19,12 +19,39 @@ import sys
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
+GLOBAL_RESTRICTION_NAME = 'GLOBAL'
+GLOBAL_RESTRICTION_EVAL = 'eval'
+GLOBAL_RESTRICTION_REWRITE = 'rewrite'
+
 PROJECTION_ARG_DOC = ' projection: The parent ProjectionSpec.'
 
 ALIGN_DEFAULT = 'left'
 ALIGNMENTS = {'left': lambda s, w: s.ljust(w),
               'center': lambda s, w: s.center(w),
               'right': lambda s, w: s.rjust(w)}
+
+
+def CombineDefaults(defaults):
+  """Combines a list of defaults into a new defaults object.
+
+  Args:
+    defaults: An ordered list of ProjectionSpec objects to combine. alias and
+      symbol names from higher index objects in the list take precedence.
+
+  Returns:
+    A new ProjectionSpec object that is a combination of the objects in the
+    defaults list.
+  """
+  aliases = {}
+  symbols = {}
+  for default in defaults:
+    if not default:
+      continue
+    if default.symbols:
+      symbols.update(default.symbols)
+    if default.aliases:
+      aliases.update(default.aliases)
+  return ProjectionSpec(symbols=symbols, aliases=aliases)
 
 
 class ProjectionSpec(object):
@@ -82,7 +109,7 @@ class ProjectionSpec(object):
     """Initializes a projection.
 
     Args:
-      defaults: resource_projection_spec.ProjectionSpec defaults.
+      defaults: A list of resource_projection_spec.ProjectionSpec defaults.
       symbols: Transform function symbol table dict indexed by function name.
       aliases: Resource key alias dictionary.
       compiler: The projection compiler method for nested projections.

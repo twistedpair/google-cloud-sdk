@@ -210,6 +210,10 @@ class _ProcessHolder(object):
   # pylint: disable=unused-argument
   def Handler(self, signum, frame):
     if self.process:
+      log.debug('Subprocess [{pid}] got [{signum}]'.format(
+          signum=signum,
+          pid=self.process.pid
+      ))
       self.process.terminate()
       ret_val = self.process.wait()
       sys.exit(ret_val)
@@ -266,26 +270,26 @@ def Exec(args,
 
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
-    if out_func:
-      extra_popen_kwargs['stdout'] = subprocess.PIPE
-    if err_func:
-      extra_popen_kwargs['stderr'] = subprocess.PIPE
-    try:
-      p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-    except OSError as err:
-      if err.errno == errno.EACCES:
-        raise PermissionError(err.strerror)
-      elif err.errno == errno.ENOENT:
-        raise InvalidCommandError(args[0])
-      raise
-    process_holder.process = p
-
-    stdout, stderr = p.communicate()
-    if out_func:
-      out_func(stdout)
-    if err_func:
-      err_func(stderr)
-    ret_val = p.returncode
+    with _ReplaceSignal(signal.SIGINT, process_holder.Handler):
+      if out_func:
+        extra_popen_kwargs['stdout'] = subprocess.PIPE
+      if err_func:
+        extra_popen_kwargs['stderr'] = subprocess.PIPE
+      try:
+        p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
+      except OSError as err:
+        if err.errno == errno.EACCES:
+          raise PermissionError(err.strerror)
+        elif err.errno == errno.ENOENT:
+          raise InvalidCommandError(args[0])
+        raise
+      process_holder.process = p
+      stdout, stderr = p.communicate()
+      if out_func:
+        out_func(stdout)
+      if err_func:
+        err_func(stderr)
+      ret_val = p.returncode
 
   if no_exit:
     return ret_val

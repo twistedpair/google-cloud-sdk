@@ -50,17 +50,20 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 128MB.
-    conditionTrigger: A source that fires events in response to a condition in
-      another service.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
       the system will try to use function named 'function'. For Node.js this
       is name of a function exported by the module specified in
       source_location.
+    eventTrigger: A source that fires events in response to a condition in
+      another service.
     gcsTrigger: Google Cloud Storage resource whose changes trigger the
       events. Currently, it must have the form gs://<bucket>/ (that is, it
-      must refer to a bucket, rather than an object).
+      must refer to a bucket, rather than an object).  Deprecated: To be
+      removed by Beta. Replacement:   condition_trigger: {     action:
+      "sources/cloud.pubsub/actions/publish"     resource:
+      "projects/[PROJECT_NAME]/buckets/[BUCKET_NAME]"   }
     gcsUrl: GCS URL pointing to the zip archive which contains the function.
     httpsTrigger: A https endpoint type of source that can be trigger via URL.
     latestOperation: [Output only] Name of the most recent operation modifying
@@ -68,7 +71,11 @@ class CloudFunction(_messages.Message):
       points to the active operation.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern: projects/*/locations/*/functions/*
-    pubsubTrigger: A pub/sub type of source.
+    pubsubTrigger: A pub/sub type of source.  Deprecated: To be removed by
+      Beta. Replacement:   condition_trigger: {     action:
+      "sources/cloud.pubsub/actions/publish"     resource:
+      "projects/[PROJECT_ID]/topics/[TOPIC_NAME]"   }
+    serviceAccount: [Output only] Name of the service account function run as.
     sourceRepository: The hosted repository where the function is defined.
     status: [Output only] Status of the function deployment.
     timeout: The cloud function execution timeout. Execution is considered
@@ -94,17 +101,18 @@ class CloudFunction(_messages.Message):
     DELETING = 4
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  conditionTrigger = _messages.MessageField('ConditionTrigger', 2)
-  entryPoint = _messages.StringField(3)
+  entryPoint = _messages.StringField(2)
+  eventTrigger = _messages.MessageField('EventTrigger', 3)
   gcsTrigger = _messages.StringField(4)
   gcsUrl = _messages.StringField(5)
   httpsTrigger = _messages.MessageField('HTTPSTrigger', 6)
   latestOperation = _messages.StringField(7)
   name = _messages.StringField(8)
   pubsubTrigger = _messages.StringField(9)
-  sourceRepository = _messages.MessageField('SourceRepository', 10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  timeout = _messages.StringField(12)
+  serviceAccount = _messages.StringField(10)
+  sourceRepository = _messages.MessageField('SourceRepository', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  timeout = _messages.StringField(13)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -207,18 +215,19 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class ConditionTrigger(_messages.Message):
-  """Describes ConditionTrigger, used to request events be sent from another
+class EventTrigger(_messages.Message):
+  """Describes EventTrigger, used to request events be sent from another
   service.
 
   Fields:
-    action: Action names contain the service that is sending an event and the
-      kind of action that fired the event. Must be of the form
-      sources/*/actions/* e.g. Directly handle a Message published to Google
-      Cloud PubSub      sources/cloud.pubsub/actions/publish       Handle an
-      object changing in Google Cloud Storage
-      sources/cloud.storage/actions/change       Handle a write to the
-      Firebase Realtime Database      sources/firebase.database/actions/write
+    eventType: event_type names contain the service that is sending an event
+      and the kind of event that was fired. Must be of the form
+      providers/*/eventTypes/* e.g. Directly handle a Message published to
+      Google Cloud PubSub      providers/cloud.pubsub/eventTypes/topic.publish
+      Handle an object changing in Google Cloud Storage
+      providers/cloud.storage/eventTypes/object.change       Handle a write to
+      the Firebase Realtime Database
+      providers/firebase.database/eventTypes/data.write
     path: Optional path within the resource that should be used to filter
       events. Named wildcards may be written in curly brackets (e.g.
       {variable}). The value that matched this parameter will be included  in
@@ -231,7 +240,7 @@ class ConditionTrigger(_messages.Message):
       the name of the project (projects/*)
   """
 
-  action = _messages.StringField(1)
+  eventType = _messages.StringField(1)
   path = _messages.StringField(2)
   resource = _messages.StringField(3)
 
@@ -372,7 +381,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method

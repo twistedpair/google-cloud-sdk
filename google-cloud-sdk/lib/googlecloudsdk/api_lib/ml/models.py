@@ -56,7 +56,8 @@ def Get(model):
   registry.RegisterApiByName('ml', 'v1beta1')
 
   res = registry.Parse(model, collection='ml.projects.models')
-  req = res.Request()
+  req = client.MESSAGES_MODULE.MlProjectsModelsGetRequest(
+      projectsId=res.projectsId, modelsId=res.modelsId)
   resp = client.projects_models.Get(req)
   return resp
 

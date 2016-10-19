@@ -110,7 +110,11 @@ class OperationsV1Beta3(_BaseOperations):
     if progress_tracker:
       progress_tracker.Tick()
     try:
-      op = sql_client.operations.Get(operation_ref.Request())
+      op = sql_client.operations.Get(
+          sql_client.MESSAGES_MODULE.SqlOperationsGetRequest(
+              project=operation_ref.project,
+              instance=operation_ref.instance,
+              operation=operation_ref.operation))
     except Exception as e:  # pylint:disable=broad-except
       # Since we use this function in a retryer.RetryOnResult block, where we
       # retry for different exceptions up to different amounts of time, we
@@ -153,7 +157,10 @@ class OperationsV1Beta4(_BaseOperations):
     if progress_tracker:
       progress_tracker.Tick()
     try:
-      op = sql_client.operations.Get(operation_ref.Request())
+      op = sql_client.operations.Get(
+          sql_client.MESSAGES_MODULE.SqlOperationsGetRequest(
+              project=operation_ref.project,
+              operation=operation_ref.operation))
     except Exception as e:  # pylint:disable=broad-except
       # Since we use this function in a retryer.RetryOnResult block, where we
       # retry for different exceptions up to different amounts of time, we

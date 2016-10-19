@@ -16,7 +16,7 @@
 import enum
 
 
-BASE_URL = 'https://appengine.googleapis.com/v1/'
+BASE_URL = 'https://appengine.googleapis.com/experimental/'
 
 
 class Collections(enum.Enum):

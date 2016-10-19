@@ -448,7 +448,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: An OperationMetadata object. This will always be returned with
       the Operation.
     name: The server-assigned name, which is only unique within the same
@@ -732,13 +733,17 @@ class PipelineResources(_messages.Message):
     disks: Disks to attach.
     minimumCpuCores: The minimum number of cores to use. Defaults to 1.
     minimumRamGb: The minimum amount of RAM to use. Defaults to 3.75 (GB)
-    noAddress: Whether to assign an external IP to the instance. Defaults to
-      false. Corresponds to `--no_address` flag for [gcloud compute instances
-      create] (https://cloud.google.com/sdk/gcloud/reference/compute/instances
-      /create). In order to use this, must be true for both create time and
-      run time. Cannot be true at run time if false at create time.  ** Note:
-      To use this option, your project must be in Google Access for Private
-      IPs Early Access Program.**
+    noAddress: Whether to assign an external IP to the instance. This is an
+      experimental feature that may go away. Defaults to false. Corresponds to
+      `--no_address` flag for [gcloud compute instances create] (https://cloud
+      .google.com/sdk/gcloud/reference/compute/instances/create). In order to
+      use this, must be true for both create time and run time. Cannot be true
+      at run time if false at create time. If you need to ssh into a private
+      IP VM for debugging, you can ssh to a public VM and then ssh into the
+      private VM's Internal IP.  If noAddress is set, this pipeline run may
+      only load docker images from Google Container Registry and not Docker
+      Hub. ** Note: To use this option, your project must be in Google Access
+      for Private IPs Early Access Program.**
     preemptible: Whether to use preemptible VMs. Defaults to `false`. In order
       to use this, must be true for both create time and run time. Cannot be
       true at run time if false at create time.
@@ -903,11 +908,13 @@ class ServiceAccount(_messages.Message):
   Fields:
     email: Email address of the service account. Defaults to `default`, which
       uses the compute service account associated with the project.
-    scopes: List of scopes to be enabled for this service account on the
-      pipeline virtual machine. The following scopes are automatically
-      included:    * https://www.googleapis.com/auth/genomics   *
-      https://www.googleapis.com/auth/compute   *
-      https://www.googleapis.com/auth/devstorage.full_control
+    scopes: List of scopes to be enabled for this service account on the VM.
+      The following scopes are automatically included:  *
+      https://www.googleapis.com/auth/compute *
+      https://www.googleapis.com/auth/devstorage.full_control *
+      https://www.googleapis.com/auth/genomics *
+      https://www.googleapis.com/auth/logging.write *
+      https://www.googleapis.com/auth/monitoring.write
   """
 
   email = _messages.StringField(1)

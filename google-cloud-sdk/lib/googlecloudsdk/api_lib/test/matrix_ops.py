@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Common test matrix operations used by Cloud Test Lab commands."""
+"""Common test matrix operations used by Firebase Test Lab commands."""
 
 import datetime
 import os
@@ -35,7 +35,7 @@ _TIMESTAMP_FORMAT = '%H:%M:%S'
 
 
 def CreateMatrix(args, context, history_id, gcs_results_root):
-  """Creates a new matrix test in Cloud Test Lab from the supplied user params.
+  """Creates a new matrix test in Firebase Test Lab from the user's params.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
@@ -112,19 +112,20 @@ class MatrixCreator(object):
 
   def _BuildGenericTestSpec(self):
     """Build a generic TestSpecification without test-type specifics."""
+    device_files = []
     if self._args.obb_files:
-      device_files = []
       for obb_file in self._args.obb_files:
         device_files.append(self._messages.DeviceFile(
             obbFile=self._messages.ObbFile(
                 obbFileName=os.path.basename(obb_file),
                 obb=self._BuildFileReference(obb_file))))
-      setup = self._messages.TestSetup(filesToPush=device_files)
-    else:
-      setup = None
 
+    account = None
+    if self._args.auto_google_login:
+      account = self._messages.Account(googleAuto=self._messages.GoogleAuto())
+
+    setup = self._messages.TestSetup(filesToPush=device_files, account=account)
     return self._messages.TestSpecification(
-        autoGoogleLogin=self._args.auto_google_login or None,
         testTimeout=_ReformatDuration(self._args.timeout),
         testSetup=setup)
 
@@ -306,7 +307,7 @@ class MatrixMonitor(object):
           'Some device dimensions are not compatible and will be skipped:'
           '\n  {d}'.format(d='\n  '.join(unsupported_dimensions)))
     log.status.Print(
-        'Cloud Test Lab will execute your {t} test on {n} device(s).'
+        'Firebase Test Lab will execute your {t} test on {n} device(s).'
         .format(t=self._test_type, n=len(supported_tests)))
     return supported_tests
 
@@ -365,7 +366,7 @@ class MatrixMonitor(object):
 
       if status.state == states.ERROR:
         raise exceptions.ToolException(
-            'Cloud Test Lab infrastructure failure: {e}'.format(e=error),
+            'Firebase Test Lab infrastructure failure: {e}'.format(e=error),
             exit_code=exit_code.INFRASTRUCTURE_ERR)
 
       if status.state == states.UNSUPPORTED_ENVIRONMENT:

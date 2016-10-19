@@ -35,7 +35,7 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_keys_expr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_projection_parser
+from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
@@ -74,14 +74,13 @@ class Displayer(object):
     self._args = args
     self._command = command
     self._default_format_used = False
-    self._defaults = None
     self._format = None
     self._info = command.ResourceInfo(args)
     self._printer = None
     self._printer_is_initialized = False
     self._resources = resources
-    self._defaults = resource_projection_parser.Parse(
-        None, defaults=command.Defaults())
+    self._defaults = resource_projection_spec.ProjectionSpec(
+        defaults=command.Defaults())
     self._defaults.symbols[
         resource_transform.GetTypeDataName('conditionals')] = args
     if self._info:
@@ -179,8 +178,10 @@ class Displayer(object):
     symbols = self._info.GetTransforms()
     if not symbols and not self._info.defaults:
       return self._defaults
-    return resource_projection_parser.Parse(
-        self._info.defaults, defaults=self._defaults, symbols=symbols)
+    return resource_projection_spec.ProjectionSpec(
+        defaults=resource_projection_spec.CombineDefaults(
+            [self._info.defaults, self._defaults]),
+        symbols=symbols)
 
   def _GetExplicitFormat(self):
     """Determines the explicit format.

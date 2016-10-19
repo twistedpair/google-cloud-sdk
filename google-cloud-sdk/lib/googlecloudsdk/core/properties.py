@@ -675,10 +675,6 @@ class _SectionCore(_Section):
         'run `gcloud auth list` to see the accounts you currently have '
         'available.',
         callbacks=[_GetDevshellAccount, _GetGCEAccount])
-    self.activate_on_create = self._AddBool(
-        'activate_on_create',
-        help_text='If True, creating a new configuration using `gcloud config '
-        'configurations create` will also activate it.')
     self.default_regional_backend_service = self._AddBool(
         'default_regional_backend_service',
         help_text='If True, backend services in `gcloud compute '

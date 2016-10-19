@@ -351,8 +351,11 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks. Note
-      that for InstanceTemplate, it is just disk name, not URL for the disk.
+      Disk resource. When creating a new instance, one of
+      initializeParams.sourceImage or disks.source is required.  If desired,
+      you can also attach existing non-root persistent disks using this
+      property. This field is only applicable for persistent disks.  Note that
+      for InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -428,18 +431,20 @@ class AttachedDiskInitializeParams(_messages.Message):
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
-    sourceImage: The source image used to create this disk. If the source
-      image is deleted, this field will not be set.  To create a disk with one
-      of the public operating system images, specify the image by its family
-      name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
-      Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
-      To create a disk with a private image that you created, specify the
-      image name in the following format:  global/images/my-private-image
-      You can also specify a private image by its image family, which returns
-      the latest version of the image in that family. Replace the image name
-      with family/family-name:  global/images/family/my-private-family
+    sourceImage: The source image to create this disk. When creating a new
+      instance, one of initializeParams.sourceImage or disks.source is
+      required.  To create a disk with one of the public operating system
+      images, specify the image by its family name. For example, specify
+      family/debian-8 to use the latest Debian 8 image:  projects/debian-
+      cloud/global/images/family/debian-8   Alternatively, use a specific
+      version of a public operating system image:  projects/debian-
+      cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
+      private image that you created, specify the image name in the following
+      format:  global/images/my-private-image   You can also specify a private
+      image by its image family, which returns the latest version of the image
+      in that family. Replace the image name with family/family-name:
+      global/images/family/my-private-family   If the source image is deleted
+      later, this field will not be set.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.  Instance templates do not store customer-
@@ -2964,14 +2969,20 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -4019,6 +4030,18 @@ class ComputeNetworksListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
+  """A ComputeNetworksSwitchToCustomModeRequest object.
+
+  Fields:
+    network: Name of the network to be updated.
+    project: Project ID for this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeProjectsGetRequest(_messages.Message):
   """A ComputeProjectsGetRequest object.
 
@@ -4733,6 +4756,23 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A ComputeSubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to update.
+    subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 4)
 
 
 class ComputeSubnetworksGetRequest(_messages.Message):
@@ -6184,12 +6224,17 @@ class DeprecationStatus(_messages.Message):
       result in an error.
 
   Fields:
-    deleted: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to DELETED.
-    deprecated: An optional RFC3339 timestamp on or after which the
-      deprecation state of this resource will be changed to DEPRECATED.
-    obsolete: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to OBSOLETE.
+    deleted: An optional RFC3339 timestamp on or after which the state of this
+      resource is intended to change to DELETED. This is only informational
+      and the status will not change unless the client explicitly changes it.
+    deprecated: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to DEPRECATED. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
+    obsolete: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to OBSOLETE. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
@@ -6230,7 +6275,6 @@ class Disk(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
-      Applicable statuses includes: CREATING, FAILED, READY, RESTORING.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -6304,8 +6348,7 @@ class Disk(_messages.Message):
       persistent disk from a snapshot that was later deleted and recreated
       under the same name, the source snapshot ID would identify the exact
       version of the snapshot that was used.
-    status: [Output Only] The status of disk creation. Applicable statuses
-      includes: CREATING, FAILED, READY, RESTORING.
+    status: [Output Only] The status of disk creation.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk.
     users: [Output Only] Links to the users of the disk (attached instances)
@@ -6314,8 +6357,7 @@ class Disk(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The status of disk creation. Applicable statuses
-    includes: CREATING, FAILED, READY, RESTORING.
+    """[Output Only] The status of disk creation.
 
     Values:
       CREATING: <no description>
@@ -7637,8 +7679,8 @@ class Image(_messages.Message):
       be a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
       example, the following are valid values:   - https://www.googleapis.com/
-      compute/v1/projects/project/zones/zone/disk/disk  -
-      projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
+      compute/v1/projects/project/zones/zone/disks/disk  -
+      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
@@ -9572,8 +9614,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies. If creating a persistent disk snapshot, this points to the
-      persistent disk that the snapshot was created from.
+      modifies. For operations related to creating a snapshot, this points to
+      the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during
@@ -10359,8 +10401,8 @@ class Router(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
-      resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g.
-      ipRange).
+      resource (e.g. linkedVpnTunnel), or IP address and IP address range
+      (e.g. ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -11157,6 +11199,19 @@ class SubnetworkList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#subnetworkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A SubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    ipCidrRange: The IP (in CIDR format or netmask) of internal addresses that
+      are legal on this Subnetwork. This range should be disjoint from other
+      subnetworks within this network. This range can only be larger than
+      (i.e. a superset of) the range previously defined before the update.
+  """
+
+  ipCidrRange = _messages.StringField(1)
 
 
 class SubnetworksScopedList(_messages.Message):

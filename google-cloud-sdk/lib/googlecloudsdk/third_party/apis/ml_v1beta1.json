@@ -198,41 +198,37 @@
           "description": "Required. Specifies the machine types, the number of replicas for workers\nand parameter servers.",
           "enumDescriptions": [
             "A single worker instance. This tier is suitable for learning how to use\nCloud ML, and for experimenting with new models using small datasets.",
-            "A few workers and one parameter server.",
-            "A medium amount of workers and a few parameter servers.",
-            "A large amount of worker with more parameter servers.",
-            "A very large amount of workers with even more parameter servers.",
-            "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, you must also set\nvalid values for `worker_count` and `parameter_server_count`, and you can\nspecify the type of virtual machines to use for the different types of\nworkers by setting `master_type`, `worker_type`, and\n`parameter_server_type`."
+            "Many workers and a few parameter servers.",
+            "A large number of workers with many parameter servers.",
+            "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
           "enum": [
             "BASIC",
             "STANDARD_1",
-            "STANDARD_2",
             "PREMIUM_1",
-            "PREMIUM_2",
             "CUSTOM"
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of `complex_model_s`.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of `complex_model_m`.\n  <\/dd>\n<\/dl>\n\nThis value can only be used when `ScaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "workerType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's worker nodes.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value can only be used when `ScaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's worker nodes.\n\nThe supported values are the same as those described in the entry for\n`masterType`.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`workerCount` is greater than zero.",
           "type": "string"
         },
         "parameterServerType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's parameter server.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value can only be used when `ScaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's parameter server.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`parameter_server_count` is greater than zero.",
           "type": "string"
         },
         "workerCount": {
-          "description": "Optional. The number of worker replicas to use for the training job. Each\nreplica in the cluster will be of the type specified in `worker_type`.\nCannot be used in combination with a standard scale tier.",
+          "description": "Optional. The number of worker replicas to use for the training job. Each\nreplica in the cluster will be of the type specified in `worker_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`. If you\nset this value, you must also set `worker_type`.",
           "type": "string",
           "format": "int64"
         },
         "parameterServerCount": {
-          "description": "Optional. The number of parameter server replicas to use for the training\njob. Each replica in the cluster will be of the type specified in\n`parameter_server_type`.",
+          "description": "Optional. The number of parameter server replicas to use for the training\njob. Each replica in the cluster will be of the type specified in\n`parameter_server_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`.If you\nset this value, you must also set `parameter_server_type`.",
           "type": "string",
           "format": "int64"
         },
@@ -270,7 +266,7 @@
       "type": "object",
       "properties": {
         "goal": {
-          "description": "Required. Should the evaluation metric be maximized or minimized?",
+          "description": "Required. The type of goal to use for tuning. Available types are\n`MAXIMIZE` and `MINIMIZE`.\n\nDefaults to `MAXIMIZE`.",
           "enumDescriptions": [
             "Goal Type will default to maximize.",
             "Maximize the goal metric.",
@@ -291,12 +287,12 @@
           }
         },
         "maxTrials": {
-          "description": "Optional. How many training trials should be attempted to optimize.\nDefaults to one.",
+          "description": "Optional. How many training trials should be attempted to optimize\nthe specified hyperparameters.\n\nDefaults to one.",
           "type": "integer",
           "format": "int32"
         },
         "maxParallelTrials": {
-          "description": "Optional. How many training trials should be run in parallel.\nMore parallelization will be faster, but parallel trials only benefit\nfrom the information gained by previous trials.\nEach trial will use the same scale tier and machine types.\nDefaults to one.",
+          "description": "Optional. The number of training trials to run concurrently.\nYou can reduce the time it takes to perform hyperparameter tuning by adding\ntrials in parallel. However, each trail only benefits from the information\ngained in completed trials. That means that a trial does not get access to\nthe results of trials running at the same time, which could reduce the\nquality of the overall optimization.\n\nEach trial will use the same scale tier and machine types.\n\nDefaults to one.",
           "type": "integer",
           "format": "int32"
         }
@@ -378,11 +374,11 @@
       "type": "object",
       "properties": {
         "modelName": {
-          "description": "The name of the model. The default version will be used.\nE.g \"project\/your_project\/models\/your_model\"",
+          "description": "Use this field if you want to use the default version for the specified\nmodel. The string must use the following format:\n\n`\"projects\/<var>[YOUR_PROJECT]<\/var>\/models\/<var>[YOUR_MODEL]<\/var>\"`",
           "type": "string"
         },
         "versionName": {
-          "description": "The version to be used.\nE.g \"project\/your_project\/models\/your_model\/versions\/your_version\"",
+          "description": "Use this field if you want to specify a version of the model to use. The\nstring is formatted the same way as `model_version`, with the addition\nof the version information:\n\n`\"projects\/<var>[YOUR_PROJECT]<\/var>\/models\/<var>YOUR_MODEL\/versions\/<var>[YOUR_VERSION]<\/var>\"`",
           "type": "string"
         },
         "dataFormat": {
@@ -391,14 +387,14 @@
             "Unspecified format.",
             "The source file is a text file with instances separated by the\nnew-line character.",
             "The source file is a TFRecord file.",
-            "The source file is a TFRecord file compressed by zlib."
+            "The source file is a GZIP-compressed TFRecord file."
           ],
           "type": "string",
           "enum": [
             "DATA_FORMAT_UNSPECIFIED",
             "TEXT",
             "TF_RECORD",
-            "TF_RECORD_ZLIB"
+            "TF_RECORD_GZIP"
           ]
         },
         "inputPaths": {
@@ -413,7 +409,7 @@
           "type": "string"
         },
         "maxWorkerCount": {
-          "description": "Optional. The maximum amount of workers to be used for parallel processing.\nDefaults to 10.",
+          "description": "Optional. The maximum number of workers to be used for parallel processing.\nDefaults to 10 if not specified.",
           "type": "string",
           "format": "int64"
         },
@@ -429,7 +425,7 @@
       "type": "object",
       "properties": {
         "completedTrialCount": {
-          "description": "The number of tuning trials completed successfully.",
+          "description": "The number of hyperparameter tuning trials that completed successfully.",
           "type": "string",
           "format": "int64"
         },
@@ -444,7 +440,7 @@
     },
     "GoogleCloudMlV1beta1__HyperparameterOutput": {
       "id": "GoogleCloudMlV1beta1__HyperparameterOutput",
-      "description": "Represents the result of a hyperparameter tuning trial from a training job.",
+      "description": "Represents the result of a single hyperparameter tuning trial from a\ntraining job. The TrainingOutput object that is returned on successful\ncompletion of a training job with hyperparameter tuning includes a list\nof HyperparameterOutput objects, one for each successful trial.",
       "type": "object",
       "properties": {
         "trialId": {
@@ -522,7 +518,7 @@
           }
         },
         "nextPageToken": {
-          "description": "Optional pagination token to use for retrieving the next page of results.",
+          "description": "Optional. Pass this token as the `page_token` field of the request for a\nsubsequent call.",
           "type": "string"
         }
       }
@@ -543,51 +539,51 @@
     },
     "GoogleCloudMlV1beta1__Model": {
       "id": "GoogleCloudMlV1beta1__Model",
-      "description": "Represents a trained machine learning model that can be used to handle\nprediction requests. A model can have many versions, each of which is a\ndeployed, trained model ready to receive prediction requests. In that way, a\nmodel resource is a container for one or more versions. However, each model\nhas a default version that will be used for prediction when a version isn't\nspecified.",
+      "description": "Represents a machine learning solution.\n\nA model can have multiple versions, each of which is a deployed, trained\nmodel ready to receive prediction requests. The model itself is just a\ncontainer.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The user-specified name of the model.",
+          "description": "Required. The name specified for the model when it was created.\n\nThe model name must be unique within the project it is created in.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. The description of the model.",
+          "description": "Optional. The description specified for the model when it was created.",
           "type": "string"
         },
         "defaultVersion": {
-          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version. You can change\nthe default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
+          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
           "$ref": "GoogleCloudMlV1beta1__Version"
         }
       }
     },
     "GoogleCloudMlV1beta1__Version": {
       "id": "GoogleCloudMlV1beta1__Version",
-      "description": "Represents a version of the model. Each version is a trained model deployed\nin the cloud, ready to handle prediction requests.",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required.The name of the model version. This value is specified when the\nversion is created.",
+          "description": "Required.The name specified for the version when it was created.\n\nThe version name must be unique within the model it is created in.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. The description of the model version. This value is specified\nwhen the version is created.",
+          "description": "Optional. The description specified for the version when it was created.",
           "type": "string"
         },
         "isDefault": {
-          "description": "Output only. If true, indicates that this version is the default for the\nmodel.",
+          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. Google Cloud Storage object containing the TensorFlow graph,\nweights, and additional metadata that constitute a trained model. This\nmodel information is captured from the Cloud Storage location when the\nversion is created, and all relevant model information is stored by the\nCloud ML prediction service.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model deployment](\/ml\/docs\/concepts\/deployment-overview) for\nmore informaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The creation time of the version.",
+          "description": "Output only. The time the version was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastUseTime": {
-          "description": "Output only. The time when the version was last used for prediction.",
+          "description": "Output only. The time the version was last used for prediction.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -606,7 +602,7 @@
           }
         },
         "nextPageToken": {
-          "description": "Optional pagination token to use for retrieving the next page of results.",
+          "description": "Optional. Pass this token as the `page_token` field of the request for a\nsubsequent call.",
           "type": "string"
         }
       }
@@ -633,7 +629,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "GoogleRpc__Status"
         },
         "response": {
@@ -686,7 +682,7 @@
           }
         },
         "nextPageToken": {
-          "description": "Optional pagination token to use for retrieving the next page of results.",
+          "description": "Optional. Pass this token as the `page_token` field of the request for a\nsubsequent call.",
           "type": "string"
         }
       }
@@ -700,7 +696,7 @@
     },
     "GoogleCloudMlV1beta1__PredictRequest": {
       "id": "GoogleCloudMlV1beta1__PredictRequest",
-      "description": "Request for predictions to be issued against a trained model.\n\nThe body of the request is a single JSON object with a single top-level\nfield:\n\n<dl>\n  <dt>instances<\/dt>\n  <dd>A JSON array containing values representing the instances to use for\n      prediction.<\/dd>\n<\/dl>\n\nThe structure of each element of the instances list is determined by your\nmodel's input definition. Instances can include named inputs or can contain\nonly unlabeled values.\n\nMost data does not include named inputs. Some instances will be simple\nJSON values (boolean, number, or string). However, instances are often lists\nof simple values, or complex nested lists. Here are some examples of request\nbodies:\n\nCSV data with each row encoded as a string value:\n<pre>\n{\"instances\": [\"1.0,true,\\\\\"x\\\\\"\", \"-2.0,false,\\\\\"y\\\\\"\"]}\n<\/pre>\nPlain text:\n<pre>\n{\"instances\": [\"the quick brown fox\", \"la bruja le dio\"]}\n<\/pre>\nSentences encoded as lists of words (vectors of strings):\n<pre>\n{\"instances\": [[\"the\",\"quick\",\"brown\"], [\"la\",\"bruja\",\"le\"]]}\n<\/pre>\nFloating point scalar values:\n<pre>\n{\"instances\": [0.0, 1.1, 2.2]}\n<\/pre>\nVectors of integers:\n<pre>\n{\"instances\": [[0, 1, 2], [3, 4, 5],...]}\n<\/pre>\nTensors (in this case, two-dimensional tensors):\n<pre>\n{\"instances\": [[[0, 1, 2], [3, 4, 5]], ...]}\n<\/pre>\nImages represented as a three-dimensional list. In this encoding scheme the\nfirst two dimensions represent the rows and columns of the image, and the\nthird contains the R, G, and B values for each pixel.\n<pre>\n{\"instances\": [[[[138, 30, 66], [130, 20, 56], ...]]]]}\n<\/pre>\nData must be encoded as UTF-8. If your data uses another character encoding,\nyou must base64 encode the data and mark it as binary. To mark a JSON string\nas binary, replace it with an object with a single attribute named `b`:\n<pre>{\"b\": \"...\"} <\/pre>\nFor example:\n\nTwo Serialized tf.Examples (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b\": \"X5ad6u\"}, {\"b\": \"IA9j4nx\"}]}\n<\/pre>\nTwo JPEG image byte strings (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b\": \"ASa8asdf\"}, {\"b\": \"JLK7ljk3\"}]}\n<\/pre>\nIf your data includes named references, format each instance as a JSON object\nwith the named references as the keys:\n\nJSON input data to be preprocessed:\n<pre>\n{\"instances\": [{\"a\": 1.0,  \"b\": true,  \"c\": \"x\"},\n               {\"a\": -2.0, \"b\": false, \"c\": \"y\"}]}\n<\/pre>\nSome models have an underlying TensorFlow graph that accepts multiple input\ntensors. In this case, you should use the names of JSON name\/value pairs to\nidentify the input tensors, as shown in the following exmaples:\n\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(base64-encoded string):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": {\"b\": \"ASa8asdf\"}},\n               {\"tag\": \"car\", \"image\": {\"b\": \"JLK7ljk3\"}}]}\n<\/pre>\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(3-dimensional array of 8-bit ints):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": [[[263, 1, 10], [262, 2, 11], ...]]},\n               {\"tag\": \"car\", \"image\": [[[10, 11, 24], [23, 10, 15], ...]]}]}\n<\/pre>\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.",
+      "description": "Request for predictions to be issued against a trained model.\n\nThe body of the request is a single JSON object with a single top-level\nfield:\n\n<dl>\n  <dt>instances<\/dt>\n  <dd>A JSON array containing values representing the instances to use for\n      prediction.<\/dd>\n<\/dl>\n\nThe structure of each element of the instances list is determined by your\nmodel's input definition. Instances can include named inputs or can contain\nonly unlabeled values.\n\nMost data does not include named inputs. Some instances will be simple\nJSON values (boolean, number, or string). However, instances are often lists\nof simple values, or complex nested lists. Here are some examples of request\nbodies:\n\nCSV data with each row encoded as a string value:\n<pre>\n{\"instances\": [\"1.0,true,\\\\\"x\\\\\"\", \"-2.0,false,\\\\\"y\\\\\"\"]}\n<\/pre>\nPlain text:\n<pre>\n{\"instances\": [\"the quick brown fox\", \"la bruja le dio\"]}\n<\/pre>\nSentences encoded as lists of words (vectors of strings):\n<pre>\n{\"instances\": [[\"the\",\"quick\",\"brown\"], [\"la\",\"bruja\",\"le\"]]}\n<\/pre>\nFloating point scalar values:\n<pre>\n{\"instances\": [0.0, 1.1, 2.2]}\n<\/pre>\nVectors of integers:\n<pre>\n{\"instances\": [[0, 1, 2], [3, 4, 5],...]}\n<\/pre>\nTensors (in this case, two-dimensional tensors):\n<pre>\n{\"instances\": [[[0, 1, 2], [3, 4, 5]], ...]}\n<\/pre>\nImages represented as a three-dimensional list. In this encoding scheme the\nfirst two dimensions represent the rows and columns of the image, and the\nthird contains the R, G, and B values for each pixel.\n<pre>\n{\"instances\": [[[[138, 30, 66], [130, 20, 56], ...]]]]}\n<\/pre>\nData must be encoded as UTF-8. If your data uses another character encoding,\nyou must base64 encode the data and mark it as binary. To mark a JSON string\nas binary, replace it with an object with a single attribute named `b`:\n<pre>{\"b\": \"...\"} <\/pre>\nFor example:\n\nTwo Serialized tf.Examples (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"X5ad6u\"}, {\"b64\": \"IA9j4nx\"}]}\n<\/pre>\nTwo JPEG image byte strings (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"ASa8asdf\"}, {\"b64\": \"JLK7ljk3\"}]}\n<\/pre>\nIf your data includes named references, format each instance as a JSON object\nwith the named references as the keys:\n\nJSON input data to be preprocessed:\n<pre>\n{\"instances\": [{\"a\": 1.0,  \"b\": true,  \"c\": \"x\"},\n               {\"a\": -2.0, \"b\": false, \"c\": \"y\"}]}\n<\/pre>\nSome models have an underlying TensorFlow graph that accepts multiple input\ntensors. In this case, you should use the names of JSON name\/value pairs to\nidentify the input tensors, as shown in the following exmaples:\n\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(base64-encoded string):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": {\"b64\": \"ASa8asdf\"}},\n               {\"tag\": \"car\", \"image\": {\"b64\": \"JLK7ljk3\"}}]}\n<\/pre>\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(3-dimensional array of 8-bit ints):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": [[[263, 1, 10], [262, 2, 11], ...]]},\n               {\"tag\": \"car\", \"image\": [[[10, 11, 24], [23, 10, 15], ...]]}]}\n<\/pre>\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.",
       "type": "object",
       "properties": {
         "httpBody": {
@@ -874,7 +870,7 @@
               "path": "v1beta1/projects/{projectsId}/jobs",
               "flatPath": "v1beta1/projects/{projectsId}/jobs",
               "httpMethod": "POST",
-              "description": "Create a training or a batch prediction job.",
+              "description": "Creates a training or a batch prediction job.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
@@ -901,7 +897,7 @@
               "path": "v1beta1/projects/{projectsId}/jobs",
               "flatPath": "v1beta1/projects/{projectsId}/jobs",
               "httpMethod": "GET",
-              "description": "List jobs in the project.",
+              "description": "Lists the jobs in the project.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. Required. The name of the project for which to list jobs.\n\nAuthorization: requires `Viewer` role on the specified project.",
@@ -915,12 +911,12 @@
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. A token for continuing the enumeration. When you request a list\nof jobs and specify a `page_size` that is less than the total number of\njobs, you'll get a `next_page_token` in your response. Use that value\nhere to get the next page of results.",
+                  "description": "Optional. A page token to request the next page of results.\n\nYou get the token from the `next_page_token` field of the response from\nthe previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The number of jobs to retrieve per \"page\" of results. If you\nspecify a page size, and the size you provide is less than the total number\nof jobs, the response will include a list of that many jobs and a\n`next_page_token`, that you can use on a subsequent call as `page_toiken`\nto get the next group of jobs.",
+                  "description": "Optional. The number of jobs to retrieve per \"page\" of results. If there\nare more remaining results than this number, the response message will\ncontain a valid value in the `next_page_token` field.\n\nThe default value is 20, and the maximum page size is 100.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -941,7 +937,7 @@
               "path": "v1beta1/projects/{projectsId}/jobs/{jobsId}",
               "flatPath": "v1beta1/projects/{projectsId}/jobs/{jobsId}",
               "httpMethod": "GET",
-              "description": "Describe a job.",
+              "description": "Describes a job.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Required. The name of the job to get the description of.\n\nAuthorization: requires `Viewer` role on the parent project.",
@@ -972,7 +968,7 @@
               "path": "v1beta1/projects/{projectsId}/jobs/{jobsId}:cancel",
               "flatPath": "v1beta1/projects/{projectsId}/jobs/{jobsId}:cancel",
               "httpMethod": "POST",
-              "description": "Cancel a running job.",
+              "description": "Cancels a running job.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Required. The name of the job to cancel.\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1010,7 +1006,7 @@
               "path": "v1beta1/projects/{projectsId}/models",
               "flatPath": "v1beta1/projects/{projectsId}/models",
               "httpMethod": "POST",
-              "description": "Create a model which will later contain a set of model versions.",
+              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/create).",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
@@ -1037,7 +1033,7 @@
               "path": "v1beta1/projects/{projectsId}/models",
               "flatPath": "v1beta1/projects/{projectsId}/models",
               "httpMethod": "GET",
-              "description": "List models in the project.",
+              "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. Required. The name of the project whose models are to be listed.\n\nAuthorization: requires `Viewer` role on the specified project.",
@@ -1046,12 +1042,12 @@
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. A token for for continuing the enumeration.",
+                  "description": "Optional. A page token to request the next page of results.\n\nYou get the token from the `next_page_token` field of the response from\nthe previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The page size.",
+                  "description": "Optional. The number of models to retrieve per \"page\" of results. If there\nare more remaining results than this number, the response message will\ncontain a valid value in the `next_page_token` field.\n\nThe default value is 20, and the maximum page size is 100.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1072,7 +1068,7 @@
               "path": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "GET",
-              "description": "Describe a model and versions in it.",
+              "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed).",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Required. The name of the model.\n\nAuthorization: requires `Viewer` role on the parent project.",
@@ -1103,7 +1099,7 @@
               "path": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "DELETE",
-              "description": "Delete the model and all versions in it.",
+              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/delete).",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1139,7 +1135,7 @@
                   "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "POST",
-                  "description": "Upload a trained TensorFlow model version. The result of the operation\nis a Version.",
+                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `parent`. Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1173,7 +1169,7 @@
                   "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "GET",
-                  "description": "List versions in the model.",
+                  "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has a lot of versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages):",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `parent`. Required. The name of the model for which to list the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
@@ -1188,12 +1184,12 @@
                       "type": "string"
                     },
                     "pageToken": {
-                      "description": "Optional. A token for continuing the enumeration.",
+                      "description": "Optional. A page token to request the next page of results.\n\nYou get the token from the `next_page_token` field of the response from\nthe previous call.",
                       "location": "query",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The page size.",
+                      "description": "Optional. The number of versions to retrieve per \"page\" of results. If\nthere are more remaining results than this number, the response message\nwill contain a valid value in the `next_page_token` field.\n\nThe default value is 20, and the maximum page size is 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1215,7 +1211,7 @@
                   "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "GET",
-                  "description": "Get version metadata.",
+                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `name`. Required. The name of the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
@@ -1253,10 +1249,10 @@
                   "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a model version. Each model can have multiple versions deployed and\nin use at any given time. Use this method to remove a single version.",
+                  "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).",
+                      "description": "Part of `name`. Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1291,7 +1287,7 @@
                   "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault",
                   "httpMethod": "POST",
-                  "description": "Mark the version as default within the model.",
+                  "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `name`. Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1409,7 +1405,7 @@
               "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
               "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
               "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation.",
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. The name of the operation resource to be cancelled.",

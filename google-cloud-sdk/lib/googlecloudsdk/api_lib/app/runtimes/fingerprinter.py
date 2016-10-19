@@ -128,11 +128,8 @@ def IdentifyDirectory(path, params=None):
   return None
 
 
-def GenerateConfigs(path, params=None, config_filename=None):
-  """Generate all config files for the path into the current directory.
-
-  As a side-effect, if there is a config file in 'params' with a runtime of
-  'custom', this sets params.custom to True.
+def _GetModule(path, params=None, config_filename=None):
+  """Helper function for generating configs.
 
   Args:
     path: (basestring) Root directory to identify.
@@ -145,7 +142,7 @@ def GenerateConfigs(path, params=None, config_filename=None):
     ConflictingConfigError: Current app.yaml conflicts with other params.
 
   Returns:
-    (callable()) Function to remove all generated files (if desired).
+    ext_runtime.Configurator, the configurator for the path
   """
   if not params:
     params = ext_runtime.Params()
@@ -178,6 +175,28 @@ def GenerateConfigs(path, params=None, config_filename=None):
   module = IdentifyDirectory(path, params)
   if not module:
     raise UnidentifiedDirectoryError(path)
+  return module
+
+
+def GenerateConfigs(path, params=None, config_filename=None):
+  """Identify runtime and generate config files for a directory.
+
+  If a runtime can be identified for the given directory, calls the runtime's
+  GenerateConfigs method, which writes configs to the directory.
+
+  Args:
+    path: (basestring) Root directory to identify.
+    params: (ext_runtime.Params or None) Parameters passed through to the
+      fingerprinters.  Uses defaults if not provided.
+    config_filename: (str or None) Filename of the config file (app.yaml).
+
+  Raises:
+    ExtRuntimeError: if there was an error generating configs
+
+  Returns:
+    (bool): True if files were written
+  """
+  module = _GetModule(path, params=params, config_filename=config_filename)
 
   try:
     return module.GenerateConfigs()
@@ -185,3 +204,27 @@ def GenerateConfigs(path, params=None, config_filename=None):
     raise ExtRuntimeError(ex.message)
 
 
+def GenerateConfigData(path, params=None, config_filename=None):
+  """Identify runtime and generate contents of config files for a directory.
+
+  If a runtime can be identified for the given directory, calls the runtime's
+  GenerateConfigData method, which generates the contents of config files.
+
+  Args:
+    path: (basestring) Root directory to identify.
+    params: (ext_runtime.Params or None) Parameters passed through to the
+      fingerprinters.  Uses defaults if not provided.
+    config_filename: (str or None) Filename of the config file (app.yaml).
+
+  Raises:
+    ExtRuntimeError: if there was an error generating configs
+
+  Returns:
+    [ext_runtime.GeneratedFile] generated config files.
+  """
+  module = _GetModule(path, params=params, config_filename=config_filename)
+
+  try:
+    return module.GenerateConfigData()
+  except ext_runtime.Error as ex:
+    raise ExtRuntimeError(ex.message)

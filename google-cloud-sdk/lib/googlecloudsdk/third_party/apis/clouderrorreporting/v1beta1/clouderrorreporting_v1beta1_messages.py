@@ -110,8 +110,6 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     alignmentTime: [Optional] Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
     groupId: [Optional] List all <code>ErrorGroupStats</code> with these IDs.
-      If not specified, all error group stats with a non-zero error count for
-      the given selection criteria are returned.
     order: [Optional] The sort order in which the results are returned.
       Default is `COUNT_DESC`.
     pageSize: [Optional] The maximum number of results to return per response.
@@ -278,32 +276,33 @@ class ErrorGroup(_messages.Message):
 
 
 class ErrorGroupStats(_messages.Message):
-  """Data extracted for a specific group based on certain selection criteria,
+  """Data extracted for a specific group based on certain filter criteria,
   such as a given time period and/or service filter.
 
   Fields:
     affectedServices: Service contexts with a non-zero error count for the
-      given selection criteria. This list can be truncated if multiple
-      services are affected. Refer to `num_affected_services` for the total
-      count.
+      given filter criteria. This list can be truncated if multiple services
+      are affected. Refer to `num_affected_services` for the total count.
     affectedUsersCount: Approximate number of affected users in the given
-      group that match the selection criteria. Users are distinguished by data
-      in the `ErrorContext` of the individual error events, such as their
-      login name or their remote IP address in case of HTTP requests. The
-      number of affected users can be zero even if the number of errors is
-      non-zero if no data was provided from which the affected user could be
-      deduced. Users are counted based on data in the request context that was
-      provided in the error report. If more users are implicitly affected,
-      such as due to a crash of the whole service, this is not reflected here.
+      group that match the filter criteria. Users are distinguished by data in
+      the `ErrorContext` of the individual error events, such as their login
+      name or their remote IP address in case of HTTP requests. The number of
+      affected users can be zero even if the number of errors is non-zero if
+      no data was provided from which the affected user could be deduced.
+      Users are counted based on data in the request context that was provided
+      in the error report. If more users are implicitly affected, such as due
+      to a crash of the whole service, this is not reflected here.
     count: Approximate total number of events in the given group that match
-      the selection criteria.
-    firstSeenTime: Approximate first occurrence that was seen for this group
-      and which matches the given selection criteria.
-    group: Group data that is independent of the selection criteria.
-    lastSeenTime: Approximate last occurrence that was seen for this group and
-      which matches the given selection criteria.
+      the filter criteria.
+    firstSeenTime: Approximate first occurrence that was ever seen for this
+      group and which matches the given filter criteria, ignoring the
+      time_range that was specified in the request.
+    group: Group data that is independent of the filter criteria.
+    lastSeenTime: Approximate last occurrence that was ever seen for this
+      group and which matches the given filter criteria, ignoring the
+      time_range that was specified in the request.
     numAffectedServices: The total number of services with a non-zero error
-      count for the given selection criteria.
+      count for the given filter criteria.
     representative: An arbitrary event that is chosen as representative for
       the whole group. The representative event is intended to be used as a
       quick preview for the whole group. Events in the group are usually

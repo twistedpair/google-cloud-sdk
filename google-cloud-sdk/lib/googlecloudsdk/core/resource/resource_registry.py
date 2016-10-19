@@ -15,68 +15,14 @@
 """Resource info registry."""
 
 from googlecloudsdk.core.resource import resource_exceptions
-from googlecloudsdk.core.resource import resource_transform
-
-
-class ResourceInfo(object):
-  """collection => resource information mapping support.
-
-  Attributes:
-    async_collection: The operations collection when --async is set.
-    bypass_cache: True if cache_command output should be used instead of cache.
-    collection: Memoized collection name set by Get().
-    cache_command: The gcloud command string that updates the URI cache.
-    list_format: The default list format string for resource_printer.Print().
-    defaults: The resource projection transform defaults.
-    transforms: Memoized combined transform symbols dict set by GetTransforms().
-
-  Special format values:
-    None: Ignore this format.
-    'default': calliope.base.DEFAULT_FORMAT.
-    'error': Resource print using this format is an error.
-    'none': Do not print anything.
-  """
-
-  def __init__(self, async_collection=None, bypass_cache=False,
-               cache_command=None, list_format=None, defaults=None,
-               transforms=None):
-    self.collection = None  # memoized by Get().
-    self.async_collection = async_collection
-    self.bypass_cache = bypass_cache
-    self.cache_command = cache_command
-    self.list_format = list_format
-    self.defaults = defaults
-    self.transforms = transforms  # memoized by GetTransforms().
-
-  def GetTransforms(self):
-    """Returns the combined transform symbols dict.
-
-    Returns:
-      The builtin transforms combined with the collection specific transforms
-      if any.
-    """
-    if self.transforms:
-      return self.transforms
-
-    # The builtin transforms are always available.
-    self.transforms = resource_transform.GetTransforms()
-
-    # Check if there are any collection specific transforms.
-    specific_transforms = resource_transform.GetTransforms(self.collection)
-    if not specific_transforms:
-      return self.transforms
-    builtin_transforms = self.transforms
-    self.transforms = {}
-    self.transforms.update(builtin_transforms)
-    self.transforms.update(specific_transforms)
-    return self.transforms
+from googlecloudsdk.core.resource import resource_info
 
 
 RESOURCE_REGISTRY = {
 
     # appengine
 
-    'appengine.instances': ResourceInfo(
+    'appengine.instances': resource_info.ResourceInfo(
         list_format="""
           table(
             service:sort=1,
@@ -88,7 +34,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'appengine.module_versions': ResourceInfo(
+    'appengine.module_versions': resource_info.ResourceInfo(
         list_format="""
           table(
             module,
@@ -98,7 +44,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'appengine.regions': ResourceInfo(
+    'appengine.regions': resource_info.ResourceInfo(
         list_format="""
           table(
            region:sort=1,
@@ -108,7 +54,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'appengine.services': ResourceInfo(
+    'appengine.services': resource_info.ResourceInfo(
         list_format="""
           table(
             id:label=SERVICE:sort=1,
@@ -117,7 +63,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'appengine.versions': ResourceInfo(
+    'appengine.versions': resource_info.ResourceInfo(
         list_format="""
           table(
             service,
@@ -132,7 +78,7 @@ RESOURCE_REGISTRY = {
 
     # bigtable
 
-    'bigtable.clusters.list.alpha': ResourceInfo(
+    'bigtable.clusters.list.alpha': resource_info.ResourceInfo(
         list_format="""
           table[box](
             displayName:label=NAME,
@@ -143,7 +89,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'bigtable.clusters.list': ResourceInfo(
+    'bigtable.clusters.list': resource_info.ResourceInfo(
         list_format="""
           table(
             name.segment(3):sort=1:label=INSTANCE,
@@ -156,7 +102,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'bigtable.instances.list': ResourceInfo(
+    'bigtable.instances.list': resource_info.ResourceInfo(
         list_format="""
           table(
             name.basename():sort=1,
@@ -168,7 +114,7 @@ RESOURCE_REGISTRY = {
 
     # cloud billing
 
-    'cloudbilling.billingAccounts': ResourceInfo(
+    'cloudbilling.billingAccounts': resource_info.ResourceInfo(
         cache_command='billing accounts list',
         # TODO(b/22402915) Delete this when OP resource completion is supported.
         bypass_cache=True,
@@ -181,7 +127,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'cloudbilling.projectBillingInfo': ResourceInfo(
+    'cloudbilling.projectBillingInfo': resource_info.ResourceInfo(
         list_format="""
           table(
             projectId,
@@ -193,7 +139,7 @@ RESOURCE_REGISTRY = {
 
     # cloud build
 
-    'cloudbuild.projects.builds': ResourceInfo(
+    'cloudbuild.projects.builds': resource_info.ResourceInfo(
         cache_command='cloud build list',
         bypass_cache=True,
         async_collection='cloudbuild.projects.builds',
@@ -209,7 +155,7 @@ RESOURCE_REGISTRY = {
 
     # cloud resource manager
 
-    'cloudresourcemanager.projects': ResourceInfo(
+    'cloudresourcemanager.projects': resource_info.ResourceInfo(
         cache_command='projects list',
         list_format="""
           table(
@@ -220,7 +166,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'cloudresourcemanager.organizations': ResourceInfo(
+    'cloudresourcemanager.organizations': resource_info.ResourceInfo(
         cache_command='organizations list',
         list_format="""
           table(
@@ -237,7 +183,7 @@ RESOURCE_REGISTRY = {
 
     # compute
 
-    'compute.addresses': ResourceInfo(
+    'compute.addresses': resource_info.ResourceInfo(
         cache_command='compute addresses list',
         list_format="""
           table(
@@ -249,7 +195,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.autoscalers': ResourceInfo(
+    'compute.autoscalers': resource_info.ResourceInfo(
         async_collection='compute.operations',
         cache_command='compute autoscaler list',
         list_format="""
@@ -261,7 +207,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.backendBuckets': ResourceInfo(
+    'compute.backendBuckets': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -271,13 +217,13 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.backendServiceGroupHealth': ResourceInfo(
+    'compute.backendServiceGroupHealth': resource_info.ResourceInfo(
         list_format="""
           default
         """,
     ),
 
-    'compute.backendServices': ResourceInfo(
+    'compute.backendServices': resource_info.ResourceInfo(
         cache_command='compute backend-services list',
         list_format="""
           table(
@@ -288,7 +234,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.backendServices.alpha': ResourceInfo(
+    'compute.backendServices.alpha': resource_info.ResourceInfo(
         cache_command='compute backend-services list',
         list_format="""
           table(
@@ -301,7 +247,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.regionBackendServices': ResourceInfo(
+    'compute.regionBackendServices': resource_info.ResourceInfo(
         cache_command='compute backend-services list',
         list_format="""
           table(
@@ -314,7 +260,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.disks': ResourceInfo(
+    'compute.disks': resource_info.ResourceInfo(
         cache_command='compute disks list',
         list_format="""
           table(
@@ -327,7 +273,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.diskTypes': ResourceInfo(
+    'compute.diskTypes': resource_info.ResourceInfo(
         cache_command='compute disk-types list',
         list_format="""
           table(
@@ -338,7 +284,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.firewalls': ResourceInfo(
+    'compute.firewalls': resource_info.ResourceInfo(
         cache_command='compute firewall-rules list',
         list_format="""
           table(
@@ -352,7 +298,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.forwardingRules': ResourceInfo(
+    'compute.forwardingRules': resource_info.ResourceInfo(
         cache_command='compute forwarding-rules list',
         list_format="""
           table(
@@ -360,12 +306,14 @@ RESOURCE_REGISTRY = {
             region.basename(),
             IPAddress,
             IPProtocol,
-            target.scope()
+            firstof(
+                target,
+                backendService).scope():label=TARGET
           )
         """,
     ),
 
-    'compute.groups': ResourceInfo(
+    'compute.groups': resource_info.ResourceInfo(
         cache_command='compute groups list',
         list_format="""
           table(
@@ -376,7 +324,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.healthChecks': ResourceInfo(
+    'compute.healthChecks': resource_info.ResourceInfo(
         cache_command='compute health-checks list',
         list_format="""
           table(
@@ -386,7 +334,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.httpHealthChecks': ResourceInfo(
+    'compute.httpHealthChecks': resource_info.ResourceInfo(
         cache_command='compute http-health-checks list',
         list_format="""
           table(
@@ -398,7 +346,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.httpsHealthChecks': ResourceInfo(
+    'compute.httpsHealthChecks': resource_info.ResourceInfo(
         cache_command='compute https-health-checks list',
         list_format="""
           table(
@@ -410,7 +358,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.images': ResourceInfo(
+    'compute.images': resource_info.ResourceInfo(
         cache_command='compute images list',
         list_format="""
           table(
@@ -423,7 +371,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.instanceGroups': ResourceInfo(
+    'compute.instanceGroups': resource_info.ResourceInfo(
         cache_command='compute instance-groups list',
         list_format="""
           table(
@@ -437,7 +385,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.instanceGroupManagers': ResourceInfo(
+    'compute.instanceGroupManagers': resource_info.ResourceInfo(
         cache_command='compute instance-groups managed list',
         list_format="""
           table(
@@ -453,7 +401,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.instances': ResourceInfo(
+    'compute.instances': resource_info.ResourceInfo(
         cache_command='compute instances list',
         list_format="""
           table(
@@ -468,7 +416,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.instanceTemplates': ResourceInfo(
+    'compute.instanceTemplates': resource_info.ResourceInfo(
         cache_command='compute instance-templates list',
         list_format="""
           table(
@@ -480,7 +428,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.invalidations': ResourceInfo(
+    'compute.invalidations': resource_info.ResourceInfo(
         cache_command='beta compute url-maps list-cdn-cache-invalidations',
         list_format="""
           table(
@@ -492,7 +440,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.machineTypes': ResourceInfo(
+    'compute.machineTypes': resource_info.ResourceInfo(
         cache_command='compute machine-types list',
         list_format="""
           table(
@@ -505,7 +453,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.networks': ResourceInfo(
+    'compute.networks': resource_info.ResourceInfo(
         cache_command='compute networks list',
         list_format="""
           table(
@@ -517,7 +465,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.operations': ResourceInfo(
+    'compute.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -530,7 +478,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.projects': ResourceInfo(
+    'compute.projects': resource_info.ResourceInfo(
         list_format="""
           value(
             format("There is no API support yet.")
@@ -538,7 +486,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.xpnProjects': ResourceInfo(
+    'compute.xpnProjects': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -548,7 +496,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.xpnResourceId': ResourceInfo(
+    'compute.xpnResourceId': resource_info.ResourceInfo(
         list_format="""
           table(
             id:label=RESOURCE_ID,
@@ -556,7 +504,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.regions': ResourceInfo(
+    'compute.regions': resource_info.ResourceInfo(
         cache_command='compute regions list',
         list_format="""
           table(
@@ -571,7 +519,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.routers': ResourceInfo(
+    'compute.routers': resource_info.ResourceInfo(
         cache_command='compute routers list',
         list_format="""
           table(
@@ -582,7 +530,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.routes': ResourceInfo(
+    'compute.routes': resource_info.ResourceInfo(
         cache_command='compute routes list',
         list_format="""
           table(
@@ -600,7 +548,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.snapshots': ResourceInfo(
+    'compute.snapshots': resource_info.ResourceInfo(
         cache_command='compute snapshots list',
         list_format="""
           table(
@@ -612,7 +560,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.sslCertificates': ResourceInfo(
+    'compute.sslCertificates': resource_info.ResourceInfo(
         cache_command='compute ssl-certificates list',
         list_format="""
           table(
@@ -622,7 +570,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.subnetworks': ResourceInfo(
+    'compute.subnetworks': resource_info.ResourceInfo(
         cache_command='compute networks subnets list',
         list_format="""
           table(
@@ -634,7 +582,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetHttpProxies': ResourceInfo(
+    'compute.targetHttpProxies': resource_info.ResourceInfo(
         cache_command='compute target-http-proxies list',
         list_format="""
           table(
@@ -644,7 +592,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetHttpsProxies': ResourceInfo(
+    'compute.targetHttpsProxies': resource_info.ResourceInfo(
         cache_command='compute target-https-proxies list',
         list_format="""
           table(
@@ -655,7 +603,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetInstances': ResourceInfo(
+    'compute.targetInstances': resource_info.ResourceInfo(
         cache_command='compute target-instances list',
         list_format="""
           table(
@@ -667,13 +615,13 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetPoolInstanceHealth': ResourceInfo(
+    'compute.targetPoolInstanceHealth': resource_info.ResourceInfo(
         list_format="""
           default
         """,
     ),
 
-    'compute.targetPools': ResourceInfo(
+    'compute.targetPools': resource_info.ResourceInfo(
         cache_command='compute target-pools list',
         list_format="""
           table(
@@ -686,7 +634,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetSslProxies': ResourceInfo(
+    'compute.targetSslProxies': resource_info.ResourceInfo(
         cache_command='compute target-ssl-proxies list',
         list_format="""
           table(
@@ -698,7 +646,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetVpnGateways': ResourceInfo(
+    'compute.targetVpnGateways': resource_info.ResourceInfo(
         cache_command='compute target-vpn-gateways list',
         list_format="""
           table(
@@ -709,7 +657,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.urlMaps': ResourceInfo(
+    'compute.urlMaps': resource_info.ResourceInfo(
         cache_command='compute url-maps list',
         list_format="""
           table(
@@ -719,7 +667,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.users': ResourceInfo(
+    'compute.users': resource_info.ResourceInfo(
         cache_command='compute users list',
         list_format="""
           table(
@@ -730,7 +678,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.vpnTunnels': ResourceInfo(
+    'compute.vpnTunnels': resource_info.ResourceInfo(
         cache_command='compute vpn-tunnels list',
         list_format="""
           table(
@@ -742,7 +690,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.zones': ResourceInfo(
+    'compute.zones': resource_info.ResourceInfo(
         cache_command='compute zones list',
         list_format="""
           table(
@@ -756,7 +704,7 @@ RESOURCE_REGISTRY = {
     ),
 
     # container
-    'container.images': ResourceInfo(
+    'container.images': resource_info.ResourceInfo(
         list_format="""
           table(
             name
@@ -764,7 +712,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'container.tags': ResourceInfo(
+    'container.tags': resource_info.ResourceInfo(
         list_format="""
           table(
             digest.slice(7:19).join(''),
@@ -774,7 +722,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'container.projects.zones.clusters': ResourceInfo(
+    'container.projects.zones.clusters': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -789,7 +737,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'container.projects.zones.clusters.nodePools': ResourceInfo(
+    'container.projects.zones.clusters.nodePools': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -800,7 +748,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'container.projects.zones.operations': ResourceInfo(
+    'container.projects.zones.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -815,7 +763,7 @@ RESOURCE_REGISTRY = {
 
     # dataflow
 
-    'dataflow.jobs': ResourceInfo(
+    'dataflow.jobs': resource_info.ResourceInfo(
         list_format="""
           table(
             id:label=ID,
@@ -827,7 +775,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'dataflow.logs': ResourceInfo(
+    'dataflow.logs': resource_info.ResourceInfo(
         list_format="""
           table[no-heading,pad=1](
             messageImportance.enum(dataflow.JobMessage),
@@ -840,18 +788,18 @@ RESOURCE_REGISTRY = {
 
     # dataproc
 
-    'dataproc.clusters': ResourceInfo(
+    'dataproc.clusters': resource_info.ResourceInfo(
         list_format="""
           table(
             clusterName:label=NAME,
-            configuration.numWorkers:label=WORKER_COUNT,
+            config.workerConfig.numInstances:label=WORKER_COUNT,
             status.state:label=STATUS,
-            configuration.gceClusterConfiguration.zoneUri.scope(zone)
+            config.gceClusterConfig.zoneUri.scope(zone):label=ZONE
           )
         """,
     ),
 
-    'dataproc.jobs': ResourceInfo(
+    'dataproc.jobs': resource_info.ResourceInfo(
         async_collection='dataproc.operations',
         list_format="""
           table(
@@ -862,7 +810,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'dataproc.operations': ResourceInfo(
+    'dataproc.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name:label=OPERATION_NAME,
@@ -873,7 +821,7 @@ RESOURCE_REGISTRY = {
 
     # debug
 
-    'debug.logpoints': ResourceInfo(
+    'debug.logpoints': resource_info.ResourceInfo(
         list_format="""
           table(
             short_status():label=STATUS,
@@ -887,7 +835,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'debug.logpoints.create': ResourceInfo(
+    'debug.logpoints.create': resource_info.ResourceInfo(
         list_format="""
           list(
             format("id: {0}", id),
@@ -901,7 +849,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'debug.snapshots': ResourceInfo(
+    'debug.snapshots': resource_info.ResourceInfo(
         list_format="""
           table(
             short_status():label=STATUS,
@@ -915,7 +863,7 @@ RESOURCE_REGISTRY = {
         """
     ),
 
-    'debug.snapshots.create': ResourceInfo(
+    'debug.snapshots.create': resource_info.ResourceInfo(
         list_format="""
           list(
             format("id: {0}", id),
@@ -926,7 +874,7 @@ RESOURCE_REGISTRY = {
         """
     ),
 
-    'debug.targets': ResourceInfo(
+    'debug.targets': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -938,7 +886,7 @@ RESOURCE_REGISTRY = {
 
     # deployment manager v2
 
-    'deploymentmanager.deployments': ResourceInfo(
+    'deploymentmanager.deployments': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -951,7 +899,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'deploymentmanager.operations': ResourceInfo(
+    'deploymentmanager.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -963,7 +911,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'deploymentmanager.resources': ResourceInfo(
+    'deploymentmanager.resources': resource_info.ResourceInfo(
         async_collection='deploymentmanager.operations',
         list_format="""
           table(
@@ -976,7 +924,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'deploymentmanager.resources_and_outputs': ResourceInfo(
+    'deploymentmanager.resources_and_outputs': resource_info.ResourceInfo(
         async_collection='deploymentmanager.operations',
         list_format="""
           table(
@@ -993,28 +941,29 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'deploymentmanager.deployments_and_resources_and_outputs': ResourceInfo(
-        list_format="""
-          table(
-            deployment:format='default(name, id, fingerprint, insertTime,
-            manifest.basename(), operation.operationType, operation.name,
-            operation.progress, operation.status, operation.user,
-            operation.endTime, operation.startTime,operation.error)',
-            resources:format='table(
-              name:label=NAME,
-              type:label=TYPE,
-              update.state.yesno(no="COMPLETED"),
-              update.intent)',
-            outputs:format='table(
-              name:label=OUTPUTS,
-              finalValue:label=VALUE)'
-          )
-        """,
-    ),
+    'deploymentmanager.deployments_and_resources_and_outputs':
+        resource_info.ResourceInfo(
+            list_format="""
+              table(
+                deployment:format='default(name, id, fingerprint, insertTime,
+                manifest.basename(), operation.operationType, operation.name,
+                operation.progress, operation.status, operation.user,
+                operation.endTime, operation.startTime,operation.error)',
+                resources:format='table(
+                  name:label=NAME,
+                  type:label=TYPE,
+                  update.state.yesno(no="COMPLETED"),
+                  update.intent)',
+              outputs:format='table(
+                name:label=OUTPUTS,
+                finalValue:label=VALUE)'
+             )
+             """,
+        ),
 
     # dns
 
-    'dns.changes': ResourceInfo(
+    'dns.changes': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1024,7 +973,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'dns.managedZones': ResourceInfo(
+    'dns.managedZones': resource_info.ResourceInfo(
         cache_command='dns managed-zones list',
         list_format="""
           table(
@@ -1035,7 +984,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'dns.resourceRecordSets': ResourceInfo(
+    'dns.resourceRecordSets': resource_info.ResourceInfo(
         list_format="""
           table(
                 name,
@@ -1048,7 +997,7 @@ RESOURCE_REGISTRY = {
 
     # functions
 
-    'functions.projects.locations': ResourceInfo(
+    'functions.projects.locations': resource_info.ResourceInfo(
         list_format="""
           table(
             name
@@ -1056,7 +1005,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'functions.projects.locations.functions': ResourceInfo(
+    'functions.projects.locations.functions': resource_info.ResourceInfo(
         list_format="""
           table(
             name.basename(),
@@ -1068,7 +1017,7 @@ RESOURCE_REGISTRY = {
 
     # genomics
 
-    'genomics.alignments': ResourceInfo(
+    'genomics.alignments': resource_info.ResourceInfo(
         list_format="""
           table(
             alignment.position.referenceName,
@@ -1080,7 +1029,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.callSets': ResourceInfo(
+    'genomics.callSets': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1090,7 +1039,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.datasets': ResourceInfo(
+    'genomics.datasets': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1099,7 +1048,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.readGroupSets': ResourceInfo(
+    'genomics.readGroupSets': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1109,7 +1058,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.references': ResourceInfo(
+    'genomics.references': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1121,7 +1070,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.referenceSets': ResourceInfo(
+    'genomics.referenceSets': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1131,7 +1080,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.variants': ResourceInfo(
+    'genomics.variants': resource_info.ResourceInfo(
         list_format="""
           table(
             variantSetId,
@@ -1144,7 +1093,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.variantsets': ResourceInfo(
+    'genomics.variantsets': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1156,7 +1105,7 @@ RESOURCE_REGISTRY = {
 
     # iam
 
-    'iam.service_accounts': ResourceInfo(
+    'iam.service_accounts': resource_info.ResourceInfo(
         list_format="""
           table(
             displayName:label=NAME,
@@ -1165,7 +1114,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'iam.service_accounts.keys': ResourceInfo(
+    'iam.service_accounts.keys': resource_info.ResourceInfo(
         list_format="""
           table(
             name.scope(keys):label=KEY_ID,
@@ -1177,7 +1126,7 @@ RESOURCE_REGISTRY = {
 
     # logging
 
-    'logging.logs': ResourceInfo(
+    'logging.logs': resource_info.ResourceInfo(
         list_format="""
           table(
             name.scope(logs):label=ID
@@ -1185,7 +1134,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'logging.metrics': ResourceInfo(
+    'logging.metrics': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1195,7 +1144,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'logging.resourceDescriptors': ResourceInfo(
+    'logging.resourceDescriptors': resource_info.ResourceInfo(
         list_format="""
           table(
             type,
@@ -1205,7 +1154,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'logging.sinks': ResourceInfo(
+    'logging.sinks': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1219,7 +1168,7 @@ RESOURCE_REGISTRY = {
 
     # ml
 
-    'ml.operations': ResourceInfo(
+    'ml.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name
@@ -1227,7 +1176,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'ml.beta.jobs': ResourceInfo(
+    'ml.beta.jobs': resource_info.ResourceInfo(
         list_format="""
           table(
             jobId.basename(),
@@ -1237,7 +1186,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'ml.models.versions': ResourceInfo(
+    'ml.models.versions': resource_info.ResourceInfo(
         async_collection='ml.operations',
         list_format="""
           table(
@@ -1247,7 +1196,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'ml.models': ResourceInfo(
+    'ml.models': resource_info.ResourceInfo(
         list_format="""
           table(
             name.basename(),
@@ -1258,7 +1207,7 @@ RESOURCE_REGISTRY = {
 
     # projects
 
-    'developerprojects.projects': ResourceInfo(
+    'developerprojects.projects': resource_info.ResourceInfo(
         list_format="""
           table(
             projectId,
@@ -1270,7 +1219,7 @@ RESOURCE_REGISTRY = {
 
     # pubsub
 
-    'pubsub.projects.topics': ResourceInfo(
+    'pubsub.projects.topics': resource_info.ResourceInfo(
         list_format="""
           table[box](
             topicId:label=TOPIC,
@@ -1280,7 +1229,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.topics.publish': ResourceInfo(
+    'pubsub.topics.publish': resource_info.ResourceInfo(
         list_format="""
           table[box](
             messageIds:label=MESSAGE_ID,
@@ -1288,7 +1237,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.projects.subscriptions': ResourceInfo(
+    'pubsub.projects.subscriptions': resource_info.ResourceInfo(
         list_format="""
           table[box](
             subscriptionId:label=SUBSCRIPTION,
@@ -1302,7 +1251,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions.ack': ResourceInfo(
+    'pubsub.subscriptions.ack': resource_info.ResourceInfo(
         list_format="""
           table[box](
             subscriptionId:label=SUBSCRIPTION,
@@ -1311,7 +1260,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions.mod_ack': ResourceInfo(
+    'pubsub.subscriptions.mod_ack': resource_info.ResourceInfo(
         list_format="""
           table[box](
             subscriptionId:label=SUBSCRIPTION,
@@ -1321,7 +1270,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions.mod_config': ResourceInfo(
+    'pubsub.subscriptions.mod_config': resource_info.ResourceInfo(
         list_format="""
           table[box](
             subscriptionId:label=SUBSCRIPTION,
@@ -1330,7 +1279,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions.pull': ResourceInfo(
+    'pubsub.subscriptions.pull': resource_info.ResourceInfo(
         list_format="""
           table[box](
             message.data.decode(base64),
@@ -1341,7 +1290,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions.list': ResourceInfo(
+    'pubsub.subscriptions.list': resource_info.ResourceInfo(
         list_format="""
           table[box](
             projectId:label=PROJECT,
@@ -1353,7 +1302,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'replicapoolupdater.rollingUpdates': ResourceInfo(
+    'replicapoolupdater.rollingUpdates': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1365,18 +1314,19 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'replicapoolupdater.rollingUpdates.instanceUpdates': ResourceInfo(
-        list_format="""
-          table(
-            instance.basename():label=INSTANCE_NAME,
-            status
-          )
-        """,
-    ),
+    'replicapoolupdater.rollingUpdates.instanceUpdates':
+        resource_info.ResourceInfo(
+            list_format="""
+              table(
+                instance.basename():label=INSTANCE_NAME,
+                status
+              )
+            """,
+        ),
 
     # runtime config
 
-    'runtimeconfig.configurations': ResourceInfo(
+    'runtimeconfig.configurations': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1385,7 +1335,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'runtimeconfig.variables': ResourceInfo(
+    'runtimeconfig.variables': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1394,7 +1344,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'runtimeconfig.waiters': ResourceInfo(
+    'runtimeconfig.waiters': resource_info.ResourceInfo(
         async_collection='runtimeconfig.waiters',
         list_format="""
           table(
@@ -1408,7 +1358,7 @@ RESOURCE_REGISTRY = {
 
     # service management (inception)
 
-    'servicemanagement-v1.services': ResourceInfo(
+    'servicemanagement-v1.services': resource_info.ResourceInfo(
         list_format="""
           table(
             serviceName:label=NAME,
@@ -1417,7 +1367,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'servicemanagement-v1.serviceConfigs': ResourceInfo(
+    'servicemanagement-v1.serviceConfigs': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1428,7 +1378,7 @@ RESOURCE_REGISTRY = {
 
     # service registry
 
-    'service_registry.endpoints': ResourceInfo(
+    'service_registry.endpoints': resource_info.ResourceInfo(
         async_collection='service_registry.operations',
         list_format="""
           table[box](
@@ -1439,7 +1389,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'service_registry.operations': ResourceInfo(
+    'service_registry.operations': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1454,7 +1404,7 @@ RESOURCE_REGISTRY = {
 
     # source
 
-    'source.captures': ResourceInfo(
+    'source.captures': resource_info.ResourceInfo(
         list_format="""
           table(
             project_id,
@@ -1463,7 +1413,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'source.jobs': ResourceInfo(
+    'source.jobs': resource_info.ResourceInfo(
         list_format="""
           table(
             name.yesno(no="default"):label=REPO_NAME,
@@ -1477,7 +1427,7 @@ RESOURCE_REGISTRY = {
 
     # sql
 
-    'sql.backupRuns': ResourceInfo(
+    'sql.backupRuns': resource_info.ResourceInfo(
         list_format="""
           table(
             dueTime.iso(),
@@ -1487,7 +1437,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.backupRuns.v1beta4': ResourceInfo(
+    'sql.backupRuns.v1beta4': resource_info.ResourceInfo(
         list_format="""
           table(
             id,
@@ -1498,7 +1448,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.flags': ResourceInfo(
+    'sql.flags': resource_info.ResourceInfo(
         list_format="""
           table(
             name,
@@ -1508,7 +1458,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.instances': ResourceInfo(
+    'sql.instances': resource_info.ResourceInfo(
         async_collection='sql.operations',
         cache_command='sql instances list',
         list_format="""
@@ -1522,7 +1472,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.instances.v1beta4': ResourceInfo(
+    'sql.instances.v1beta4': resource_info.ResourceInfo(
         async_collection='sql.operations.v1beta4',
         cache_command='sql instances list',
         list_format="""
@@ -1536,7 +1486,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.operations': ResourceInfo(
+    'sql.operations': resource_info.ResourceInfo(
         async_collection='default',
         list_format="""
           table(
@@ -1550,7 +1500,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.operations.v1beta4': ResourceInfo(
+    'sql.operations.v1beta4': resource_info.ResourceInfo(
         async_collection='default',
         list_format="""
           table(
@@ -1564,7 +1514,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.sslCerts': ResourceInfo(
+    'sql.sslCerts': resource_info.ResourceInfo(
         async_collection='sql.operations',
         list_format="""
           table(
@@ -1575,7 +1525,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.tiers': ResourceInfo(
+    'sql.tiers': resource_info.ResourceInfo(
         list_format="""
           table(
             tier,
@@ -1586,7 +1536,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'sql.users.v1beta4': ResourceInfo(
+    'sql.users.v1beta4': resource_info.ResourceInfo(
         async_collection='sql.operations.v1beta4',
         list_format="""
           table(
@@ -1598,7 +1548,7 @@ RESOURCE_REGISTRY = {
 
     # test
 
-    'test.android.devices': ResourceInfo(
+    'test.android.devices': resource_info.ResourceInfo(
         list_format="""
           table[box](
             id:label=DEVICE_ID,
@@ -1612,7 +1562,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.android.versions': ResourceInfo(
+    'test.android.versions': resource_info.ResourceInfo(
         list_format="""
           table[box](
             id:label=OS_VERSION_ID:align=center,
@@ -1625,7 +1575,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.android.locales': ResourceInfo(
+    'test.android.locales': resource_info.ResourceInfo(
         list_format="""
           table[box](
             id:label=LOCALE,
@@ -1636,7 +1586,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.android.run.outcomes': ResourceInfo(
+    'test.android.run.outcomes': resource_info.ResourceInfo(
         async_collection='test.android.run.url',
         list_format="""
           table[box](
@@ -1647,7 +1597,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.android.run.url': ResourceInfo(
+    'test.android.run.url': resource_info.ResourceInfo(
         list_format="""
           value(format(
             'Final test results will be available at [{0}].', [])
@@ -1655,7 +1605,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.web.browsers': ResourceInfo(
+    'test.web.browsers': resource_info.ResourceInfo(
         list_format="""
           table[box](
             id:label=BROWSER_ID,
@@ -1671,19 +1621,19 @@ RESOURCE_REGISTRY = {
 
     # special IAM roles completion case
 
-    'iam.roles': ResourceInfo(
+    'iam.roles': resource_info.ResourceInfo(
         bypass_cache=True,
     ),
 
     # generic
 
-    'default': ResourceInfo(
+    'default': resource_info.ResourceInfo(
         list_format="""
           default
         """,
     ),
 
-    'uri': ResourceInfo(
+    'uri': resource_info.ResourceInfo(
         list_format="""
           table(
             uri():sort=1:label=""

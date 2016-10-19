@@ -2,6 +2,56 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 131.0.0 (2016/10/19)
+
+### Cloud SDK
+
+* Added PowerShell provider for Google Cloud Storage; allows navigation of
+  Google Cloud Storage buckets as if they were a local file system.
+  When using Cloud Tools for PowerShell `cd` into gs:\ and type `dir` to begin.
+  Learn more at https://cloud.google.com/tools/powershell/docs/backup.
+
+* App Engine updated to 1.9.45. Java SDK updated to 1.9.44.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+* `gcloud config configurations create` will now automatically activate
+  specified empty configuration. Use `gcloud config set` to populate its
+  properties.
+
+### Google Cloud Compute
+
+* The Customer-Supplied Encryption Keys (CSEK) feature for Google Compute Engine
+  image creation is now available in the beta release track. See
+  https://cloud.google.com/compute/docs/disks/customer-supplied-encryption for
+  details.
+
+### Google Container Engine
+
+* Added support for for creating new clusters and nodepools on preemptible
+  VM instances in Beta by adding `--preemptible`. See
+  `gcloud beta container clusters create --help` and
+  `gcloud beta container node-pools create --help` for more details.
+
+* Fixed a bug in `gcloud alpha container clusters update` that
+  prevented disabling cluster autoscaling. Cluster autoscaling
+  can now be disabled by running:
+  `gcloud alpha container clusters update --disable-autoscaling`
+
+* Update kubectl to version 1.4.1.
+
+### Google Cloud BigQuery
+
+* Added support for setting labels on query jobs.
+  Example usage: bq query --label "foo:bar" "select 123"
+  The show command outputs any labels set on a job.
+
+### Google Source Repository
+
+* Change the Cloud Source Repositories scope given by default to GCE Instances
+  and Instance Templates to read_only from full control.
+
+
 ## 130.0.0 (2016/10/12)
 
 ### Breaking Changes

@@ -68,8 +68,8 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@gmail.com` or
-      `joe@example.com`.  * `serviceAccount:{emailid}`: An email address that
-      represents a service account. For example, `my-other-
+      `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
+      that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group. For example, `admins@example.com`.  *
       `domain:{domain}`: A Google Apps domain name that represents all the
@@ -94,6 +94,67 @@ class CollectionOverride(_messages.Message):
 
   collection = _messages.StringField(1)
   options = _messages.MessageField('Options', 2)
+
+
+class CompositeType(_messages.Message):
+  """Holds the composite type.
+
+  Fields:
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    insertTime: [Output Only] Timestamp when the composite type was created,
+      in RFC3339 text format.
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    name: Name of the composite type.
+    operation: [Output Only] The Operation that most recently ran, or is
+      currently running, on this composite type.
+    selfLink: [Output Only] Self link for the type provider.
+    status: A string attribute.
+    templateContents: Files for the template type.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(3)
+  labels = _messages.MessageField('CompositeTypeLabelEntry', 4, repeated=True)
+  name = _messages.StringField(5)
+  operation = _messages.MessageField('Operation', 6)
+  selfLink = _messages.StringField(7)
+  status = _messages.StringField(8)
+  templateContents = _messages.MessageField('TemplateContents', 9)
+
+
+class CompositeTypeLabelEntry(_messages.Message):
+  """A CompositeTypeLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class CompositeTypesListResponse(_messages.Message):
+  """A response that returns all Composite Types supported by Deployment
+  Manager
+
+  Fields:
+    compositeTypes: [Output Only] A list of resource composite types supported
+      by Deployment Manager.
+    nextPageToken: A token used to continue a truncated list request.
+  """
+
+  compositeTypes = _messages.MessageField('CompositeType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class Condition(_messages.Message):
@@ -233,6 +294,121 @@ class DeploymentUpdateLabelEntry(_messages.Message):
 
   key = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class DeploymentmanagerCompositeTypesDeleteRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesDeleteRequest object.
+
+  Fields:
+    compositeType: The name of the type for this request.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesGetRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesGetRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesInsertRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesInsertRequest object.
+
+  Fields:
+    compositeType: A CompositeType resource to be passed as the request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.MessageField('CompositeType', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerCompositeTypesListRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class DeploymentmanagerCompositeTypesPatchRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesPatchRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    compositeTypeResource: A CompositeType resource to be passed as the
+      request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  compositeTypeResource = _messages.MessageField('CompositeType', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class DeploymentmanagerCompositeTypesUpdateRequest(_messages.Message):
+  """A DeploymentmanagerCompositeTypesUpdateRequest object.
+
+  Fields:
+    compositeType: The name of the composite type for this request.
+    compositeTypeResource: A CompositeType resource to be passed as the
+      request body.
+    project: The project ID for this request.
+  """
+
+  compositeType = _messages.StringField(1, required=True)
+  compositeTypeResource = _messages.MessageField('CompositeType', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsCancelPreviewRequest(_messages.Message):
@@ -727,6 +903,20 @@ class DeploymentmanagerTypeProvidersGetRequest(_messages.Message):
   typeProvider = _messages.StringField(2, required=True)
 
 
+class DeploymentmanagerTypeProvidersGetTypeRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersGetTypeRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    type: The name of the type provider for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  type = _messages.StringField(2, required=True)
+  typeProvider = _messages.StringField(3, required=True)
+
+
 class DeploymentmanagerTypeProvidersInsertRequest(_messages.Message):
   """A DeploymentmanagerTypeProvidersInsertRequest object.
 
@@ -786,6 +976,57 @@ class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class DeploymentmanagerTypeProvidersListTypesRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersListTypesRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  typeProvider = _messages.StringField(6, required=True)
 
 
 class DeploymentmanagerTypeProvidersPatchRequest(_messages.Message):
@@ -1133,8 +1374,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies. If creating a persistent disk snapshot, this points to the
-      persistent disk that the snapshot was created from.
+      modifies. For operations related to creating a snapshot, this points to
+      the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during
@@ -1611,16 +1852,16 @@ class TemplateContents(_messages.Message):
 
   Fields:
     imports: Import files referenced by the main template.
+    interpreter: Which interpreter (python or jinja) should be used during
+      expansion.
     schema: The contents of the template schema.
     template: The contents of the main template file.
-    templateFileType: The template file type (python or jinja). This signifies
-      what interpreter should be used during expansion.
   """
 
   imports = _messages.MessageField('ImportFile', 1, repeated=True)
-  schema = _messages.StringField(2)
-  template = _messages.StringField(3)
-  templateFileType = _messages.StringField(4)
+  interpreter = _messages.StringField(2)
+  schema = _messages.StringField(3)
+  template = _messages.StringField(4)
 
 
 class TestPermissionsRequest(_messages.Message):
@@ -1679,6 +1920,48 @@ class Type(_messages.Message):
   name = _messages.StringField(7)
   operation = _messages.MessageField('Operation', 8)
   selfLink = _messages.StringField(9)
+
+
+class TypeInfo(_messages.Message):
+  """Contains detailed information about a composite type, base type, or base
+  type with specific collection.
+
+  Fields:
+    description: The description of the type.
+    documentationLink: For swagger 2.0 externalDocs field will be used. For
+      swagger 1.2 this field will be empty.
+    kind: [Output Only] Type of the output. Always deploymentManager#TypeInfo
+      for TypeInfo.
+    name: The base type or composite type name.
+    schema: For base types with a collection, we return a schema and
+      documentation link For template types, we return only a schema
+    selfLink: [Output Only] Server-defined URL for the resource.
+    title: The title on the API descriptor URL provided.
+  """
+
+  description = _messages.StringField(1)
+  documentationLink = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'deploymentmanager#typeInfo')
+  name = _messages.StringField(4)
+  schema = _messages.MessageField('TypeInfoSchemaInfo', 5)
+  selfLink = _messages.StringField(6)
+  title = _messages.StringField(7)
+
+
+class TypeInfoSchemaInfo(_messages.Message):
+  """TypeInfoSchemaInfo message type.
+
+  Fields:
+    input: The properties that this composite type or base type collection
+      accept as input, represented as a json blob, format is: JSON Schema
+      Draft V4
+    output: The properties that this composite type or base type collection
+      exposes as output, these properties can be used for references,
+      represented as json blob, format is: JSON Schema Draft V4
+  """
+
+  input = _messages.StringField(1)
+  output = _messages.StringField(2)
 
 
 class TypeLabelEntry(_messages.Message):
@@ -1757,6 +2040,18 @@ class TypeProvidersListResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   typeProviders = _messages.MessageField('TypeProvider', 2, repeated=True)
+
+
+class TypeProvidersListTypesResponse(_messages.Message):
+  """TypeProvidersListTypesResponse message type.
+
+  Fields:
+    nextPageToken: A token used to continue a truncated list request.
+    types: [Output Only] A list of resource type info.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  types = _messages.MessageField('TypeInfo', 2, repeated=True)
 
 
 class TypesListResponse(_messages.Message):

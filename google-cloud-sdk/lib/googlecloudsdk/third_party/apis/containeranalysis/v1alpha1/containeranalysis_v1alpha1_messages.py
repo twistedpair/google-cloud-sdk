@@ -57,7 +57,7 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.  * `serviceAccount:{emailid}`: An email address
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.  *
@@ -247,8 +247,9 @@ class Condition(_messages.Message):
 
     Values:
       NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority
-      ATTRIBUTION: selector Always the original principal, but making clear
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -1197,9 +1198,7 @@ class VulnerabilityDetails(_messages.Message):
       vulnerability. @OutputOnly
 
   Fields:
-    affectedLocation: The location of the vulnerability.
     cvssScore: The CVSS score of this vulnerability. @OutputOnly
-    fixedLocation: The location of the available fix for vulnerability.
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
     severity: The provider assigned Severity of the vulnerability. @OutputOnly
@@ -1225,12 +1224,10 @@ class VulnerabilityDetails(_messages.Message):
     HIGH = 4
     CRITICAL = 5
 
-  affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
-  cvssScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
-  packageIssue = _messages.MessageField('PackageIssue', 4, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
-  type = _messages.StringField(6)
+  cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  packageIssue = _messages.MessageField('PackageIssue', 2, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  type = _messages.StringField(4)
 
 
 class VulnerabilityLocation(_messages.Message):

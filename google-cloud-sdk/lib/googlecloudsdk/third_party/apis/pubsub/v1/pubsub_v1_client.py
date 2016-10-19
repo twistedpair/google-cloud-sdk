@@ -50,6 +50,69 @@ class PubsubV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      """Creates a snapshot from the requested subscription.
+If the snapshot already exists, returns `ALREADY_EXISTS`.
+If the requested subscription doesn't exist, returns `NOT_FOUND`.
+
+If the name is not provided in the request, the server will assign a random
+name for this snapshot on the same project as the subscription. Note that
+for REST API requests, you must specify a name.
+
+      Args:
+        request: (PubsubProjectsSnapshotsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots/{snapshotsId}',
+        http_method=u'PUT',
+        method_id=u'pubsub.projects.snapshots.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'createSnapshotRequest',
+        request_type_name=u'PubsubProjectsSnapshotsCreateRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Removes an existing snapshot. All messages retained in the snapshot.
+are immediately dropped. After a snapshot is deleted, a new one may be
+created with the same name, but the new one has no association with the old
+snapshot or its subscription, unless the same subscription is specified.
+
+      Args:
+        request: (PubsubProjectsSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots/{snapshotsId}',
+        http_method=u'DELETE',
+        method_id=u'pubsub.projects.snapshots.delete',
+        ordered_params=[u'snapshot'],
+        path_params=[u'snapshot'],
+        query_params=[],
+        relative_path=u'v1/{+snapshot}',
+        request_field='',
+        request_type_name=u'PubsubProjectsSnapshotsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
@@ -76,6 +139,33 @@ set.
         request_field='',
         request_type_name=u'PubsubProjectsSnapshotsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the existing snapshots.
+
+      Args:
+        request: (PubsubProjectsSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.snapshots.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+project}/snapshots',
+        request_field='',
+        request_type_name=u'PubsubProjectsSnapshotsListRequest',
+        response_type_name=u'ListSnapshotsResponse',
         supports_download=False,
     )
 
@@ -211,11 +301,11 @@ for REST API requests, you must specify a name.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an existing subscription. All pending messages in the subscription.
+      """Deletes an existing subscription. All messages retained in the subscription.
 are immediately dropped. Calls to `Pull` after deletion will return
 `NOT_FOUND`. After a subscription is deleted, a new one may be created with
 the same name, but the new one has no association with the old
-subscription, or its topic unless the same topic is specified.
+subscription or its topic unless the same topic is specified.
 
       Args:
         request: (PubsubProjectsSubscriptionsDeleteRequest) input message
@@ -387,6 +477,34 @@ continuously through the call regardless of changes to the `PushConfig`.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates an existing subscription. Note that certain properties of a.
+subscription, such as its topic, are not modifiable.
+
+      Args:
+        request: (PubsubProjectsSubscriptionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Subscription) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
+        http_method=u'PATCH',
+        method_id=u'pubsub.projects.subscriptions.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateSubscriptionRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsPatchRequest',
+        response_type_name=u'Subscription',
+        supports_download=False,
+    )
+
     def Pull(self, request, global_params=None):
       """Pulls messages from the server. Returns an empty list if there are no.
 messages available in the backlog. The server may return `UNAVAILABLE` if
@@ -414,6 +532,34 @@ subscription.
         request_field=u'pullRequest',
         request_type_name=u'PubsubProjectsSubscriptionsPullRequest',
         response_type_name=u'PullResponse',
+        supports_download=False,
+    )
+
+    def Seek(self, request, global_params=None):
+      """Seeks an existing subscription to a point in time or to a given snapshot,.
+whichever is provided in the request.
+
+      Args:
+        request: (PubsubProjectsSubscriptionsSeekRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SeekResponse) The response message.
+      """
+      config = self.GetMethodConfig('Seek')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Seek.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:seek',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.seek',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}:seek',
+        request_field=u'seekRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsSeekRequest',
+        response_type_name=u'SeekResponse',
         supports_download=False,
     )
 

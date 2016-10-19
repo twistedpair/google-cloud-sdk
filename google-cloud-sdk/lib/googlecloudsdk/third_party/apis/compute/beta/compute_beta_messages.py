@@ -351,8 +351,11 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks. Note
-      that for InstanceTemplate, it is just disk name, not URL for the disk.
+      Disk resource. When creating a new instance, one of
+      initializeParams.sourceImage or disks.source is required.  If desired,
+      you can also attach existing non-root persistent disks using this
+      property. This field is only applicable for persistent disks.  Note that
+      for InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -432,18 +435,20 @@ class AttachedDiskInitializeParams(_messages.Message):
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
-    sourceImage: The source image used to create this disk. If the source
-      image is deleted, this field will not be set.  To create a disk with one
-      of the public operating system images, specify the image by its family
-      name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
-      Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
-      To create a disk with a private image that you created, specify the
-      image name in the following format:  global/images/my-private-image
-      You can also specify a private image by its image family, which returns
-      the latest version of the image in that family. Replace the image name
-      with family/family-name:  global/images/family/my-private-family
+    sourceImage: The source image to create this disk. When creating a new
+      instance, one of initializeParams.sourceImage or disks.source is
+      required.  To create a disk with one of the public operating system
+      images, specify the image by its family name. For example, specify
+      family/debian-8 to use the latest Debian 8 image:  projects/debian-
+      cloud/global/images/family/debian-8   Alternatively, use a specific
+      version of a public operating system image:  projects/debian-
+      cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
+      private image that you created, specify the image name in the following
+      format:  global/images/my-private-image   You can also specify a private
+      image by its image family, which returns the latest version of the image
+      in that family. Replace the image name with family/family-name:
+      global/images/family/my-private-family   If the source image is deleted
+      later, this field will not be set.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.  Instance templates do not store customer-
@@ -468,6 +473,23 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   sourceImage = _messages.StringField(5)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
+
+
+class AuditConfig(_messages.Message):
+  """Enables "data access" audit logging for a service and specifies a list of
+  members that are log-exempted.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services.
+  """
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  service = _messages.StringField(2)
 
 
 class Autoscaler(_messages.Message):
@@ -1287,14 +1309,42 @@ class BackendServicesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@gmail.com` or
+      `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
+      that represents a service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group. For example, `admins@example.com`.  *
+      `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class CacheInvalidationRule(_messages.Message):
   """A CacheInvalidationRule object.
 
   Fields:
+    host: If set, this invalidation rule will only apply to requests with a
+      Host header matching host.
     path: A string attribute.
   """
 
-  path = _messages.StringField(1)
+  host = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -2013,15 +2063,17 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the persistent disk to snapshot.
+    guestFlush: A boolean attribute.
     project: Project ID for this request.
     snapshot: A Snapshot resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
 
   disk = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  snapshot = _messages.MessageField('Snapshot', 3)
-  zone = _messages.StringField(4, required=True)
+  guestFlush = _messages.BooleanField(2)
+  project = _messages.StringField(3, required=True)
+  snapshot = _messages.MessageField('Snapshot', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeDisksDeleteRequest(_messages.Message):
@@ -3486,14 +3538,22 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -5142,14 +5202,22 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -6251,6 +6319,20 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
   subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 4)
 
 
+class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
+  """A ComputeSubnetworksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSubnetworksGetRequest(_messages.Message):
   """A ComputeSubnetworksGetRequest object.
 
@@ -6328,6 +6410,22 @@ class ComputeSubnetworksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
+  """A ComputeSubnetworksSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
@@ -7794,6 +7892,83 @@ class ComputeZonesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class Condition(_messages.Message):
+  """A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by the IAM system.
+
+    Values:
+      ATTRIBUTION: <no description>
+      AUTHORITY: <no description>
+      NO_ATTR: <no description>
+      SECURITY_REALM: <no description>
+    """
+    ATTRIBUTION = 0
+    AUTHORITY = 1
+    NO_ATTR = 2
+    SECURITY_REALM = 3
+
+  class OpValueValuesEnum(_messages.Enum):
+    """An operator to apply the subject with.
+
+    Values:
+      DISCHARGED: <no description>
+      EQUALS: <no description>
+      IN: <no description>
+      NOT_EQUALS: <no description>
+      NOT_IN: <no description>
+      NO_OP: <no description>
+    """
+    DISCHARGED = 0
+    EQUALS = 1
+    IN = 2
+    NOT_EQUALS = 3
+    NOT_IN = 4
+    NO_OP = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by any service that owns resources and uses
+    the IAM system for access control.
+
+    Values:
+      IP: <no description>
+      NAME: <no description>
+      NO_ATTR: <no description>
+      REGION: <no description>
+      SERVICE: <no description>
+    """
+    IP = 0
+    NAME = 1
+    NO_ATTR = 2
+    REGION = 3
+    SERVICE = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
+
+
 class ConnectionDraining(_messages.Message):
   """Message containing connection draining configuration.
 
@@ -7854,12 +8029,17 @@ class DeprecationStatus(_messages.Message):
       result in an error.
 
   Fields:
-    deleted: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to DELETED.
-    deprecated: An optional RFC3339 timestamp on or after which the
-      deprecation state of this resource will be changed to DEPRECATED.
-    obsolete: An optional RFC3339 timestamp on or after which the deprecation
-      state of this resource will be changed to OBSOLETE.
+    deleted: An optional RFC3339 timestamp on or after which the state of this
+      resource is intended to change to DELETED. This is only informational
+      and the status will not change unless the client explicitly changes it.
+    deprecated: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to DEPRECATED. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
+    obsolete: An optional RFC3339 timestamp on or after which the state of
+      this resource is intended to change to OBSOLETE. This is only
+      informational and the status will not change unless the client
+      explicitly changes it.
     replacement: The URL of the suggested replacement for a deprecated
       resource. The suggested replacement resource must be the same kind of
       resource as the deprecated resource.
@@ -7900,7 +8080,6 @@ class Disk(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
-      Applicable statuses includes: CREATING, FAILED, READY, RESTORING.
     StorageTypeValueValuesEnum: [Deprecated] Storage type of the persistent
       disk.
 
@@ -7991,8 +8170,7 @@ class Disk(_messages.Message):
       persistent disk from a snapshot that was later deleted and recreated
       under the same name, the source snapshot ID would identify the exact
       version of the snapshot that was used.
-    status: [Output Only] The status of disk creation. Applicable statuses
-      includes: CREATING, FAILED, READY, RESTORING.
+    status: [Output Only] The status of disk creation.
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk.
@@ -8002,8 +8180,7 @@ class Disk(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The status of disk creation. Applicable statuses
-    includes: CREATING, FAILED, READY, RESTORING.
+    """[Output Only] The status of disk creation.
 
     Values:
       CREATING: <no description>
@@ -8700,15 +8877,17 @@ class ForwardingRule(_messages.Message):
     Values:
       AH: <no description>
       ESP: <no description>
+      ICMP: <no description>
       SCTP: <no description>
       TCP: <no description>
       UDP: <no description>
     """
     AH = 0
     ESP = 1
-    SCTP = 2
-    TCP = 3
-    UDP = 4
+    ICMP = 2
+    SCTP = 3
+    TCP = 4
+    UDP = 5
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     """This signifies what the ForwardingRule will be used for and can only
@@ -9526,8 +9705,8 @@ class Image(_messages.Message):
       be a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
       example, the following are valid values:   - https://www.googleapis.com/
-      compute/v1/projects/project/zones/zone/disk/disk  -
-      projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
+      compute/v1/projects/project/zones/zone/disks/disk  -
+      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
@@ -11084,6 +11263,28 @@ class License(_messages.Message):
   selfLink = _messages.StringField(4)
 
 
+class LogConfig(_messages.Message):
+  """Specifies what kind of log the caller must write
+
+  Fields:
+    counter: Counter options.
+  """
+
+  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+
+
+class LogConfigCounterOptions(_messages.Message):
+  """Options for counters
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
 class MachineType(_messages.Message):
   """A Machine Type resource.
 
@@ -11690,8 +11891,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies. If creating a persistent disk snapshot, this points to the
-      persistent disk that the snapshot was created from.
+      modifies. For operations related to creating a snapshot, this points to
+      the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during
@@ -12063,6 +12264,55 @@ class PathRule(_messages.Message):
 
   paths = _messages.StringField(1, repeated=True)
   service = _messages.StringField(2)
+
+
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.    A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**  { "bindings": [ { "role": "roles/owner",
+  "members": [ "user:mike@example.com", "group:admins@example.com",
+  "domain:google.com", "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
+  ["user:sean@example.com"] } ] }  For a description of IAM and its features,
+  see the [IAM developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
+    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
+      must not be specified for the same `role`. `bindings` with no members
+      will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned:
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class Project(_messages.Message):
@@ -12712,8 +12962,8 @@ class Router(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
-      resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g.
-      ipRange).
+      resource (e.g. linkedVpnTunnel), or IP address and IP address range
+      (e.g. ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -13047,6 +13297,54 @@ class RoutersScopedList(_messages.Message):
 
   routers = _messages.MessageField('Router', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class Rule(_messages.Message):
+  """A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met
+    description: Human-readable description of the rule.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """Required
+
+    Values:
+      ALLOW: <no description>
+      ALLOW_WITH_LOG: <no description>
+      DENY: <no description>
+      DENY_WITH_LOG: <no description>
+      LOG: <no description>
+      NO_ACTION: <no description>
+    """
+    ALLOW = 0
+    ALLOW_WITH_LOG = 1
+    DENY = 2
+    DENY_WITH_LOG = 3
+    LOG = 4
+    NO_ACTION = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  ins = _messages.StringField(4, repeated=True)
+  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIns = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
 
 
 class SSLHealthCheck(_messages.Message):

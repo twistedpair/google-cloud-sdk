@@ -396,7 +396,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -1022,6 +1022,13 @@
         "description": {
           "description": "[Output-only] Short description of operation.",
           "type": "string"
+        },
+        "labels": {
+          "description": "[Output-only] labels associated with the operation",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1656,7 +1663,7 @@
                       "description": "The name of the operation resource.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/regions\/[^\/]*\/operations\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1681,7 +1688,7 @@
                       "description": "The name of the operation collection.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/regions\/[^\/]*\/operations$",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations$",
                       "type": "string"
                     },
                     "filter": {
@@ -1716,13 +1723,13 @@
                   "path": "v1/{+name}:cancel",
                   "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation.",
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/regions\/[^\/]*\/operations\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1747,7 +1754,7 @@
                       "description": "The name of the operation resource to be deleted.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/regions\/[^\/]*\/operations\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },

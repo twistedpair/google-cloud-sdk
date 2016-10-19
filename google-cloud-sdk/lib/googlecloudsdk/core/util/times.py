@@ -45,6 +45,7 @@ import re
 from dateutil import parser
 from dateutil import tz
 
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
 
@@ -53,6 +54,8 @@ try:
 except ImportError:
   tzwin = None
 
+
+tz.PY3 = True  # MONKEYPATCH!!! Fixes a Python 2 standard module bug.
 
 LOCAL = tz.tzlocal()  # The local timezone.
 UTC = tz.tzutc()  # The UTC timezone.
@@ -171,6 +174,12 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     %Ez   Format +/-HHMM offsets as ISO RFC 3339 Z for +0000 otherwise +/-HH:MM.
     %Oz   Format +/-HHMM offsets as ISO RFC 3339 +/-HH:MM.
 
+  NOTE: The standard Python 2 strftime() borks non-ascii time parts. It does
+  so by encoding non-ascii names to bytes, presumably under the assumption that
+  the return value will be immediately output. This code works around that by
+  decoding strftime() values to unicode if necessary and then returning either
+  an ASCII or UNICODE string.
+
   Args:
     dt: The datetime object to be formatted.
     fmt: The strftime(3) format string, None for the RFC 3339 format in the dt
@@ -187,7 +196,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
   extension = re.compile('%[1-9]?[EO]?[fz]')
   m = extension.search(fmt)
   if not m:
-    return dt.strftime(fmt)
+    return console_attr.DecodeFromInput(dt.strftime(fmt))
 
   # Split the format into standard and extension parts.
   parts = []
@@ -196,7 +205,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     match = start + m.start()
     if start < match:
       # Format the preceeding standard part.
-      parts.append(dt.strftime(fmt[start:match]))
+      parts.append(console_attr.DecodeFromInput(dt.strftime(fmt[start:match])))
 
     # Format the standard variant of the exetended spec. The extensions only
     # have one modifier char.
@@ -232,14 +241,14 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
         elif len(val) == 5:
           val = val[:3] + ':' + val[3:]
     if val:
-      parts.append(val)
+      parts.append(console_attr.DecodeFromInput(val))
 
     start += m.end()
     m = extension.search(fmt[start:])
 
   # Format the trailing part if any.
   if start < len(fmt):
-    parts.append(dt.strftime(fmt[start:]))
+    parts.append(console_attr.DecodeFromInput(dt.strftime(fmt[start:])))
 
   # Combine the parts.
   return ''.join(parts)

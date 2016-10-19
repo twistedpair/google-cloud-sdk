@@ -1768,7 +1768,7 @@
                           "description": "Path to the file or directory from the root directory of the source\ncontext. It must not have leading or trailing slashes.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^.*$",
+                          "pattern": "^.+$",
                           "type": "string"
                         },
                         "sourceContext.cloudRepo.repoId.uid": {
@@ -2233,7 +2233,7 @@
                           "description": "Path to the file or directory from the root directory of the source\ncontext. It must not have leading or trailing slashes.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^.*$",
+                          "pattern": "^.+$",
                           "type": "string"
                         },
                         "sourceContext.cloudRepo.repoId.uid": {
@@ -2393,7 +2393,7 @@
                       "description": "Path to the file or directory from the root directory of the source\ncontext. It must not have leading or trailing slashes.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^.*$",
+                      "pattern": "^.+$",
                       "type": "string"
                     },
                     "repoId.uid": {
@@ -3001,7 +3001,7 @@
                           "description": "Path to the file or directory from the root directory of the source\ncontext. It must not have leading or trailing slashes.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^.*$",
+                          "pattern": "^.+$",
                           "type": "string"
                         },
                         "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {
@@ -3428,7 +3428,7 @@
                               "description": "Path to the file or directory from the root directory of the source\ncontext. It must not have leading or trailing slashes.",
                               "location": "path",
                               "required": true,
-                              "pattern": "^.*$",
+                              "pattern": "^.+$",
                               "type": "string"
                             },
                             "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {

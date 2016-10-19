@@ -420,7 +420,8 @@ class CreateClusterOptions(object):
                max_nodes=None,
                image_type=None,
                max_nodes_per_pool=None,
-               enable_kubernetes_alpha=None):
+               enable_kubernetes_alpha=None,
+               preemptible=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -446,6 +447,7 @@ class CreateClusterOptions(object):
     self.image_type = image_type
     self.max_nodes_per_pool = max_nodes_per_pool
     self.enable_kubernetes_alpha = enable_kubernetes_alpha
+    self.preemptible = preemptible
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -493,7 +495,8 @@ class CreateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
-               image_type=None):
+               image_type=None,
+               preemptible=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -506,6 +509,7 @@ class CreateNodePoolOptions(object):
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
     self.image_type = image_type
+    self.preemptible = preemptible
 
 
 class V1Adapter(APIAdapter):
@@ -542,6 +546,9 @@ class V1Adapter(APIAdapter):
       node_config.imageType = options.image_type
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+
+    if options.preemptible:
+      node_config.preemptible = options.preemptible
 
     max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
     pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
@@ -625,11 +632,13 @@ class V1Adapter(APIAdapter):
           disable_ingress=options.disable_addons.get(INGRESS),
           disable_hpa=options.disable_addons.get(HPA))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
-    elif options.enable_autoscaling:
+    elif options.enable_autoscaling is not None:
+      # For update, we can either enable or disable
       autoscaling = self.messages.NodePoolAutoscaling(
-          enabled=options.enable_autoscaling,
-          minNodeCount=options.min_nodes,
-          maxNodeCount=options.max_nodes)
+          enabled=options.enable_autoscaling)
+      if options.enable_autoscaling:
+        autoscaling.minNodeCount = options.min_nodes
+        autoscaling.maxNodeCount = options.max_nodes
       update = self.messages.ClusterUpdate(
           desiredNodePoolId=options.node_pool,
           desiredNodePoolAutoscaling=autoscaling)
@@ -690,6 +699,9 @@ class V1Adapter(APIAdapter):
       node_config.tags = []
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+
+    if options.preemptible:
+      node_config.preemptible = options.preemptible
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,

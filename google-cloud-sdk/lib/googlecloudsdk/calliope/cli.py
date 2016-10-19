@@ -787,7 +787,7 @@ class CLI(object):
       else:
         # Make sure any uncaught exceptions still make it into the log file.
         log.debug(console_attr.EncodeForOutput(exc), exc_info=sys.exc_info())
-        metrics.Error(exc)
+        metrics.Error(command_path_string, exc.__class__, flag_collection)
         raise
 
   def _HandleKnownError(self, exc, command_path_string, flag_collection,

@@ -51,7 +51,7 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.  * `serviceAccount:{emailid}`: An email address
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.  *
@@ -94,12 +94,21 @@ class Condition(_messages.Message):
 
     Values:
       NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority
-      ATTRIBUTION: selector Always the original principal, but making clear
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext (go
+        /security-realms). When used with IN, the condition indicates "any of
+        the request's realms match one of the given values; with NOT_IN, "none
+        of the realms match any of the given values". It is not permitted to
+        grant access based on the *absence* of a realm, so realm conditions
+        can only be used in a "positive" context (e.g., ALLOW/IN or
+        DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
     ATTRIBUTION = 2
+    SECURITY_REALM = 3
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -156,6 +165,23 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
+class CreateSnapshotRequest(_messages.Message):
+  """Request for the `CreateSnapshot` method.
+
+  Fields:
+    subscription: The subscription whose backlog the snapshot retains.
+      Specifically, the created snapshot is guaranteed to retain:  (a) The
+      existing backlog on the subscription. More precisely, this is
+      defined as the messages in the subscription's backlog that are
+      unacknowledged upon the successful completion of the
+      `CreateSnapshot` request; as well as:  (b) Any messages published to the
+      subscription's topic following the      successful completion of the
+      CreateSnapshot request.
+  """
+
+  subscription = _messages.StringField(1)
+
+
 class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log"""
 
@@ -168,6 +194,20 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ListSnapshotsResponse(_messages.Message):
+  """Response for the `ListSnapshots` method.
+
+  Fields:
+    nextPageToken: If not empty, indicates that there may be more snapshot
+      that match the request; this value should be passed in a new
+      `ListSnapshotsRequest`.
+    snapshots: The resulting snapshots.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  snapshots = _messages.MessageField('Snapshot', 2, repeated=True)
 
 
 class ListSubscriptionsResponse(_messages.Message):
@@ -393,6 +433,32 @@ class PubsubMessage(_messages.Message):
   publishTime = _messages.StringField(4)
 
 
+class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsCreateRequest object.
+
+  Fields:
+    createSnapshotRequest: A CreateSnapshotRequest resource to be passed as
+      the request body.
+    name: Optional user-provided name for this snapshot. If the name is not
+      provided in the request, the server will assign a random name for this
+      snapshot on the same project as the subscription. Note that for REST API
+      requests, you must specify a name.
+  """
+
+  createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class PubsubProjectsSnapshotsDeleteRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsDeleteRequest object.
+
+  Fields:
+    snapshot: The name of the snapshot to delete.
+  """
+
+  snapshot = _messages.StringField(1, required=True)
+
+
 class PubsubProjectsSnapshotsGetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsSnapshotsGetIamPolicyRequest object.
 
@@ -403,6 +469,22 @@ class PubsubProjectsSnapshotsGetIamPolicyRequest(_messages.Message):
   """
 
   resource = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSnapshotsListRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of snapshots to return.
+    pageToken: The value returned by the last `ListSnapshotsResponse`;
+      indicates that this is a continuation of a prior `ListSnapshots` call,
+      and that the system should return the next page of data.
+    project: The name of the cloud project that snapshots belong to.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
 
 
 class PubsubProjectsSnapshotsSetIamPolicyRequest(_messages.Message):
@@ -522,6 +604,24 @@ class PubsubProjectsSubscriptionsModifyPushConfigRequest(_messages.Message):
   subscription = _messages.StringField(2, required=True)
 
 
+class PubsubProjectsSubscriptionsPatchRequest(_messages.Message):
+  """A PubsubProjectsSubscriptionsPatchRequest object.
+
+  Fields:
+    name: The name of the subscription. It must have the format
+      `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
+      must start with a letter, and contain only letters (`[A-Za-z]`), numbers
+      (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
+      plus (`+`) or percent signs (`%`). It must be between 3 and 255
+      characters in length, and it must not start with `"goog"`.
+    updateSubscriptionRequest: A UpdateSubscriptionRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSubscriptionRequest = _messages.MessageField('UpdateSubscriptionRequest', 2)
+
+
 class PubsubProjectsSubscriptionsPullRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsPullRequest object.
 
@@ -531,6 +631,18 @@ class PubsubProjectsSubscriptionsPullRequest(_messages.Message):
   """
 
   pullRequest = _messages.MessageField('PullRequest', 1)
+  subscription = _messages.StringField(2, required=True)
+
+
+class PubsubProjectsSubscriptionsSeekRequest(_messages.Message):
+  """A PubsubProjectsSubscriptionsSeekRequest object.
+
+  Fields:
+    seekRequest: A SeekRequest resource to be passed as the request body.
+    subscription: The subscription to affect.
+  """
+
+  seekRequest = _messages.MessageField('SeekRequest', 1)
   subscription = _messages.StringField(2, required=True)
 
 
@@ -850,6 +962,32 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class SeekRequest(_messages.Message):
+  """Request for the `Seek` method.
+
+  Fields:
+    snapshot: The snapshot to seek to. The snapshot's topic must be the same
+      as that of the provided subscription.
+    time: The time to seek to. Messages retained in the subscription that were
+      published before this time are marked as acknowledged, and messages
+      retained in the subscription that were published after this time are
+      marked as unacknowledged. Note that this operation affects only those
+      messages retained in the subscription (configured by the combination of
+      `message_retention_duration` and `retain_acked_messages`). For example,
+      if `time` corresponds to a point before the message retention window (or
+      to a point before the system's notion of the subscription creation
+      time), only retained messages will be marked as unacknowledged, and
+      already-expunged messages will not be restored.
+  """
+
+  snapshot = _messages.StringField(1)
+  time = _messages.StringField(2)
+
+
+class SeekResponse(_messages.Message):
+  """A SeekResponse object."""
+
+
 class SetIamPolicyRequest(_messages.Message):
   """Request message for `SetIamPolicy` method.
 
@@ -861,6 +999,29 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+
+
+class Snapshot(_messages.Message):
+  """A snapshot resource.
+
+  Fields:
+    expirationTime: The snapshot is guaranteed to exist up until this time. A
+      newly-created snapshot expires no later than 7 days from the time of its
+      creation. Its exact lifetime is determined at creation by the existing
+      backlog in the source subscription. Specifically, the lifetime of the
+      snapshot is `7 days - (age of oldest unacked message in the
+      subscription)`. For example, consider a subscription whose oldest
+      unacked message is 3 days old. If a snapshot is created from this
+      subscription, the snapshot -- which will always capture this 3-day-old
+      backlog as long as the snapshot exists -- will expire in 4 days.
+    name: The name of the snapshot.
+    topic: The name of the topic from which this snapshot is retaining
+      messages.
+  """
+
+  expirationTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  topic = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -947,6 +1108,19 @@ class Subscription(_messages.Message):
       for the call to the push endpoint.  If the subscriber never acknowledges
       the message, the Pub/Sub system will eventually redeliver the message.
       If this parameter is 0, a default value of 10 seconds is used.
+    initialSnapshot: Used only in a `CreateSubscription` request; this field
+      will be ignored in all other requests and blank in any response. The
+      name of the snapshot to seek the new subscription to. Either this field
+      or the `topic` field must be provided in a `CreateSubscription` call,
+      but not both. If `initial_snapshot` is provided, the newly-created
+      subscription will seek to this snapshot, and its topic will be set to
+      that of the snapshot's.
+    messageRetentionDuration: How long to retain unacknowledged messages in
+      the subscription's backlog, from the moment a message is published. If
+      `retain_acked_messages` is true, then this also configures the retention
+      of acknowledged messages, and thus configures how far back in time a
+      `Seek` can be done. Defaults to 7 days. Cannot be more than 7 days or
+      less than 10 minutes.
     name: The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers
@@ -956,15 +1130,22 @@ class Subscription(_messages.Message):
     pushConfig: If push delivery is used with this subscription, this field is
       used to configure it. An empty `pushConfig` signifies that the
       subscriber will pull and ack messages using API methods.
+    retainAckedMessages: Indicates whether to retain acknowledged messages. If
+      true, then messages are not expunged from the subscription's backlog,
+      even if they are acknowledged, until they fall out of the
+      `message_retention_duration` window.
     topic: The name of the topic from which this subscription is receiving
       messages. The value of this field will be `_deleted-topic_` if the topic
       has been deleted.
   """
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  name = _messages.StringField(2)
-  pushConfig = _messages.MessageField('PushConfig', 3)
-  topic = _messages.StringField(4)
+  initialSnapshot = _messages.StringField(2)
+  messageRetentionDuration = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pushConfig = _messages.MessageField('PushConfig', 5)
+  retainAckedMessages = _messages.BooleanField(6)
+  topic = _messages.StringField(7)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1004,6 +1185,19 @@ class Topic(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class UpdateSubscriptionRequest(_messages.Message):
+  """Request for the UpdateSubscription method.
+
+  Fields:
+    subscription: The updated subscription object.
+    updateMask: Indicates which fields in the provided subscription to update.
+      Must be specified and non-empty.
+  """
+
+  subscription = _messages.MessageField('Subscription', 1)
+  updateMask = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

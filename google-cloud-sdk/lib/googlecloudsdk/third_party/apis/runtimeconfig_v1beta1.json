@@ -362,7 +362,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -460,6 +460,11 @@
                   "description": "Part of `parent`. The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
+                  "type": "string"
+                },
+                "requestId": {
+                  "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and the resource\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                  "location": "query",
                   "type": "string"
                 }
               },
@@ -696,6 +701,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "requestId": {
+                      "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and the resource\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -902,6 +912,11 @@
                       "description": "Part of `parent`. See documentation of `projectsId`.",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and information\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

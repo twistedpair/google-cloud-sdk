@@ -5,7 +5,7 @@
  "name": "bigtableclusteradmin",
  "canonicalName": "Bigtable Cluster Admin",
  "version": "v1",
- "revision": "20160923",
+ "revision": "20161004",
  "title": "Google Cloud Bigtable Cluster Admin API",
  "description": "This is a OnePlatform service.",
  "ownerDomain": "google.com",
@@ -271,7 +271,7 @@
      "id": "bigtableclusteradmin.operations.cancel",
      "path": "{+name}:cancel",
      "httpMethod": "POST",
-     "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use [Operations.GetOperation][google.longrunning.Operations.GetOperation] or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation.",
+     "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use [Operations.GetOperation][google.longrunning.Operations.GetOperation] or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an [Operation.error][google.longrunning.Operation.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to `Code.CANCELLED`.",
      "parameters": {
       "name": {
        "type": "string",

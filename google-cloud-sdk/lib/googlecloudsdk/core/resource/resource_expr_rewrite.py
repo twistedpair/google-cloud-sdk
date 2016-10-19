@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Cloud resource filter expression rewrite backend.
+"""Cloud resource filter expression rewrite backend classes.
+
+These classes are alternate resource_filter.Compile backends that rewrite
+expressions instead of evaluating them. To rewrite a filter expression string:
+
+  rewriter = resource_expr_rewrite.Backend()
+  rewritten_expression_string = rewriter.Rewrite(filter_expression_string)
 
 It is possible for a rewritten expression to collapse to None. This means that
 there is no equivalent server-side expression, i.e., no server-side pruning is
@@ -37,6 +43,7 @@ ExprTRUE, ExprAND, ExprOR and ExprNOT do expression rewrites based on None:
   NOT None => None
 """
 
+from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 
 
@@ -51,8 +58,25 @@ class _Expr(object):
     return self.expr
 
 
-class Backend(object):
-  """Cloud resource filter expression rewrite backend."""
+class BackendBase(object):
+  """Cloud resource filter expression rewrite backend base.
+
+  All rewrites default to None. Use this class for target expressions that
+  implement a small subset of OnePlatform expressions.
+  """
+
+  def Rewrite(self, expression, defaults=None):
+    """Returns the rewrite of expression.
+
+    Args:
+      expression: The expression string to rewrite.
+      defaults: resource_projection_spec.ProjectionSpec defaults.
+
+    Returns:
+      The rewritten expression string, None if the rewrite collapses to nothing.
+    """
+    return resource_filter.Compile(
+        expression, backend=self, defaults=defaults).Rewrite()
 
   def RewriteAND(self, unused_left, unused_right):
     """Rewrites <left AND right>."""
@@ -70,13 +94,26 @@ class Backend(object):
     """Rewrites global restriction <call>."""
     return None
 
+  def RewriteOperand(self, unused_operand):
+    """Rewrites an operand."""
+    return None
+
   def RewriteTerm(self, unused_key, unused_op, unused_operand):
     """Rewrites <key op operand>."""
     return None
 
-  @staticmethod
-  def Quote(value):
-    """Returns value enclosed in '...' if necessary."""
+  def Quote(self, value, always=False):
+    """Returns value or value "..." quoted with C-style escapes if needed.
+
+    Args:
+      value: The string value to quote if needed.
+      always: Always quote non-numeric value if True.
+
+    Returns:
+      A string: value or value "..." quoted with C-style escapes if needed or
+      requested.
+    """
+    # First check for numeric constants that are never quoted.
     try:
       return str(int(value))
     except ValueError:
@@ -85,7 +122,44 @@ class Backend(object):
       return str(float(value))
     except ValueError:
       pass
-    return repr(value)
+
+    # value is a string.
+    chars = []
+    enclose = always
+    escaped = False
+    for c in value:
+      if escaped:
+        escaped = False
+      elif c == '\\':
+        chars.append(c)
+        chars.append(c)
+        escaped = True
+        enclose = True
+      elif c == '"':
+        chars.append('\\')
+        enclose = True
+      elif c.isspace() or c == "'":
+        enclose = True
+      chars.append(c)
+    string = ''.join(chars)
+
+    return '"{0}"'.format(string) if enclose else string
+
+  def QuoteOperand(self, operand, always=False):
+    """Returns operand enclosed in "..." if necessary.
+
+    Args:
+      operand: A string operand or list of string operands. If a list then each
+        list item is quoted.
+      always: Always quote if True.
+
+    Returns:
+      A string: operand enclosed in "..." if necessary.
+    """
+    if isinstance(operand, list):
+      operands = [self.Quote(x, always=always) for x in operand]
+      return '(' + ','.join([x for x in operands if x is not None]) + ')'
+    return self.Quote(operand, always=always)
 
   def Term(self, key, op, operand, transform, args):
     if transform or args:
@@ -148,3 +222,38 @@ class Backend(object):
 
   def ExprNotRE(self, key, operand, transform=None, args=None):
     return self.Term(key, '!~', operand, transform, args)
+
+
+class Backend(BackendBase):
+  """Rewrites for OnePlatform server side filter expressions.
+
+  This class rewrites client side expressions to OnePlatform server side
+  expressions. The only difference is the server side does not support the
+  regular expression ~ and !~ operators. Use this class for target expressions
+  that implement a large subset of OnePlatform expressions.
+  """
+
+  def RewriteAND(self, left, right):
+    """Rewrites <left AND right>."""
+    return '({left} AND {right})'.format(left=left, right=right)
+
+  def RewriteOR(self, left, right):
+    """Rewrites <left OR right>."""
+    return '({left} OR {right})'.format(left=left, right=right)
+
+  def RewriteNOT(self, expr):
+    """Rewrites <NOT expr>."""
+    return '(NOT {expr})'.format(expr=expr)
+
+  def RewriteOperand(self, operand):
+    """Rewrites an operand."""
+    return self.QuoteOperand(operand)
+
+  def RewriteTerm(self, key, op, operand):
+    """Rewrites <key op operand>."""
+    if op in ['~', '!~']:
+      return None
+    arg = self.RewriteOperand(operand)
+    if arg is None:
+      return None
+    return '{key}{op}{operand}'.format(key=key, op=op, operand=arg)

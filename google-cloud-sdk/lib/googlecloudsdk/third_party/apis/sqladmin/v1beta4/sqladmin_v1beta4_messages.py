@@ -194,6 +194,8 @@ class DatabaseInstance(_messages.Message):
       managed container. SECOND_GEN: A newer Cloud SQL backend that runs in a
       Compute Engine VM. EXTERNAL: A MySQL server that is not managed by
       Google.
+    connectionName: Connection name of the Cloud SQL instance used in
+      connection strings.
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Users should use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
@@ -266,28 +268,29 @@ class DatabaseInstance(_messages.Message):
     name = _messages.StringField(2)
 
   backendType = _messages.StringField(1)
-  currentDiskSize = _messages.IntegerField(2)
-  databaseVersion = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 5)
-  instanceType = _messages.StringField(6)
-  ipAddresses = _messages.MessageField('IpMapping', 7, repeated=True)
-  ipv6Address = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(10)
-  maxDiskSize = _messages.IntegerField(11)
-  name = _messages.StringField(12)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 13)
-  project = _messages.StringField(14)
-  region = _messages.StringField(15)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 16)
-  replicaNames = _messages.StringField(17, repeated=True)
-  selfLink = _messages.StringField(18)
-  serverCaCert = _messages.MessageField('SslCert', 19)
-  serviceAccountEmailAddress = _messages.StringField(20)
-  settings = _messages.MessageField('Settings', 21)
-  state = _messages.StringField(22)
-  suspensionReason = _messages.StringField(23, repeated=True)
+  connectionName = _messages.StringField(2)
+  currentDiskSize = _messages.IntegerField(3)
+  databaseVersion = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 6)
+  instanceType = _messages.StringField(7)
+  ipAddresses = _messages.MessageField('IpMapping', 8, repeated=True)
+  ipv6Address = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(11)
+  maxDiskSize = _messages.IntegerField(12)
+  name = _messages.StringField(13)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 14)
+  project = _messages.StringField(15)
+  region = _messages.StringField(16)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 17)
+  replicaNames = _messages.StringField(18, repeated=True)
+  selfLink = _messages.StringField(19)
+  serverCaCert = _messages.MessageField('SslCert', 20)
+  serviceAccountEmailAddress = _messages.StringField(21)
+  settings = _messages.MessageField('Settings', 22)
+  state = _messages.StringField(23)
+  suspensionReason = _messages.StringField(24, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):

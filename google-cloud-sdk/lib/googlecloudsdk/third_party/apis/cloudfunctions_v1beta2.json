@@ -140,7 +140,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -216,20 +216,20 @@
           "$ref": "SourceRepository"
         },
         "pubsubTrigger": {
-          "description": "A pub\/sub type of source.",
+          "description": "A pub\/sub type of source.\n\nDeprecated: To be removed by Beta.\nReplacement:\n  condition_trigger: {\n    action: \"sources\/cloud.pubsub\/actions\/publish\"\n    resource: \"projects\/[PROJECT_ID]\/topics\/[TOPIC_NAME]\"\n  }",
           "type": "string"
         },
         "gcsTrigger": {
-          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form gs:\/\/<bucket>\/ (that is, it must refer\nto a bucket, rather than an object).",
+          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form gs:\/\/<bucket>\/ (that is, it must refer\nto a bucket, rather than an object).\n\nDeprecated: To be removed by Beta.\nReplacement:\n  condition_trigger: {\n    action: \"sources\/cloud.pubsub\/actions\/publish\"\n    resource: \"projects\/[PROJECT_NAME]\/buckets\/[BUCKET_NAME]\"\n  }",
           "type": "string"
         },
         "httpsTrigger": {
           "description": "A https endpoint type of source that can be trigger via URL.",
           "$ref": "HTTPSTrigger"
         },
-        "conditionTrigger": {
+        "eventTrigger": {
           "description": "A source that fires events in response to a condition in another service.",
-          "$ref": "ConditionTrigger"
+          "$ref": "EventTrigger"
         },
         "status": {
           "description": "[Output only] Status of the function deployment.",
@@ -266,6 +266,10 @@
           "description": "The amount of memory in MB available for a function.\nDefaults to 128MB.",
           "type": "integer",
           "format": "int32"
+        },
+        "serviceAccount": {
+          "description": "[Output only] Name of the service account function run as.",
+          "type": "string"
         }
       }
     },
@@ -311,13 +315,13 @@
         }
       }
     },
-    "ConditionTrigger": {
-      "id": "ConditionTrigger",
-      "description": "Describes ConditionTrigger, used to request events be sent from another\nservice.",
+    "EventTrigger": {
+      "id": "EventTrigger",
+      "description": "Describes EventTrigger, used to request events be sent from another\nservice.",
       "type": "object",
       "properties": {
-        "action": {
-          "description": "Action names contain the service that is sending an event and the kind of\naction that fired the event. Must be of the form sources\/*\/actions\/*\ne.g. Directly handle a Message published to Google Cloud PubSub\n     sources\/cloud.pubsub\/actions\/publish\n\n     Handle an object changing in Google Cloud Storage\n     sources\/cloud.storage\/actions\/change\n\n     Handle a write to the Firebase Realtime Database\n     sources\/firebase.database\/actions\/write",
+        "eventType": {
+          "description": "event_type names contain the service that is sending an event and the kind\nof event that was fired. Must be of the form providers\/*\/eventTypes\/*\ne.g. Directly handle a Message published to Google Cloud PubSub\n     providers\/cloud.pubsub\/eventTypes\/topic.publish\n\n     Handle an object changing in Google Cloud Storage\n     providers\/cloud.storage\/eventTypes\/object.change\n\n     Handle a write to the Firebase Realtime Database\n     providers\/firebase.database\/eventTypes\/data.write",
           "type": "string"
         },
         "resource": {
@@ -493,7 +497,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]*$",
+              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
@@ -523,7 +527,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^operations\/[^\/]*$",
+                  "pattern": "^operations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -556,7 +560,7 @@
                   "description": "The resource that owns the locations collection, if applicable.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]*$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -602,7 +606,7 @@
                       "description": "The project and location from which the function should be listed,\nspecified in the format: projects\/*\/locations\/*\nIf you want to list functions in all locations, use '-' in place of a\nlocation.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -638,7 +642,7 @@
                       "description": "The name of the function which details should be obtained.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*\/functions\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -663,7 +667,7 @@
                       "description": "The project and location in which the function should be created, specified\nin the format: projects\/*\/locations\/*",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -691,7 +695,7 @@
                       "description": "The name of the function to be updated.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*\/functions\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -719,7 +723,7 @@
                       "description": "The name of the function which should be deleted.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*\/functions\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -744,7 +748,7 @@
                       "description": "The name of the function to be called.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]*\/locations\/[^\/]*\/functions\/[^\/]*$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
                       "type": "string"
                     }
                   },

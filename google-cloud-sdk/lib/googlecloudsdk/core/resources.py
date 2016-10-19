@@ -276,11 +276,16 @@ class Resource(object):
     self.Resolve()
     return self.__name
 
-  def FullName(self):
-    """Full resource name without leading /.
+  def RelativeName(self):
+    """Relative resource name.
+
+    A URI path ([path-noscheme](http://tools.ietf.org/html/rfc3986#appendix-A))
+    without the leading "/". It identifies a resource within the API service.
+    For example:
+      "shelves/shelf1/books/book2"
 
     Returns:
-       Unescaped part of SelfLink which is essentially base_url + full_name.
+       Unescaped part of SelfLink which is essentially base_url + relative_name.
     """
     self.Resolve()
     effective_params = dict(
@@ -302,10 +307,10 @@ class Resource(object):
     if self._params != self._collection_info.params:
       if len(self._collection_info.params) != 1:
         raise InvalidCollectionException(self.collection_info.full_name)
-      full_name = self.FullName()
+      relative_name = self.RelativeName()
       param_start = self._collection_info.path.index('{')
       setattr(request, self._collection_info.params[0],
-              full_name[param_start:])
+              relative_name[param_start:])
     else:
       for param_name in self._collection_info.params:
         setattr(request, param_name, getattr(self, param_name))

@@ -355,7 +355,7 @@ class Parser(object):
       func_name = key.pop()
       attribute.transform = self._lex.Transform(func_name,
                                                 self._projection.active)
-      func_name = attribute.transform.Name()
+      func_name = attribute.transform.name
     else:
       func_name = None
     self._lex.SkipSpace()
@@ -366,11 +366,13 @@ class Parser(object):
       conditionals = self._projection.symbols.get(
           resource_transform.GetTypeDataName('conditionals'))
 
-      def GlobalRestriction(key):
+      def EvalGlobalRestriction(key):
         return getattr(conditionals, key, None)
 
       defaults = resource_projection_spec.ProjectionSpec(
-          symbols={'global': GlobalRestriction})
+          symbols={resource_projection_spec.GLOBAL_RESTRICTION_NAME:
+                   (resource_projection_spec.GLOBAL_RESTRICTION_EVAL,
+                    EvalGlobalRestriction)})
       if not resource_filter.Compile(attribute.transform.conditional,
                                      defaults=defaults).Evaluate(conditionals):
         return

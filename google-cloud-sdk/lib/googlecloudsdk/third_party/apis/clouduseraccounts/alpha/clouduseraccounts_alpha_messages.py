@@ -52,8 +52,8 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@gmail.com` or
-      `joe@example.com`.  * `serviceAccount:{emailid}`: An email address that
-      represents a service account. For example, `my-other-
+      `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
+      that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group. For example, `admins@example.com`.  *
       `domain:{domain}`: A Google Apps domain name that represents all the
@@ -556,10 +556,12 @@ class Condition(_messages.Message):
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       NO_ATTR: <no description>
+      SECURITY_REALM: <no description>
     """
     ATTRIBUTION = 0
     AUTHORITY = 1
     NO_ATTR = 2
+    SECURITY_REALM = 3
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -821,8 +823,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies. If creating a persistent disk snapshot, this points to the
-      persistent disk that the snapshot was created from.
+      modifies. For operations related to creating a snapshot, this points to
+      the persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during

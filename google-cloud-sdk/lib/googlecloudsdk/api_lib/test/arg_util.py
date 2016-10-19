@@ -54,8 +54,7 @@ def AddCommonTestRunArgs(parser):
       '--async', action='store_true',
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
-      '--auto-google-login', action='store_true',
-      hidden=True,
+      '--auto-google-login', action='store_true', default=True,
       help='Automatically log into the test device using a preconfigured '
       'Google account before beginning the test.')
   parser.add_argument(
@@ -81,7 +80,7 @@ def AddSharedCommandArgs(parser):
   parser.add_argument(
       '--results-bucket',
       help='The name of a Google Cloud Storage bucket where test results will '
-      'be stored (default: "cloud-test-<PROJECT-ID>").')
+      'be stored (default: "test-lab-<random-UUID>").')
   parser.add_argument(
       '--results-history-name',
       help='The history name for your test results (an arbitrary string label; '
@@ -113,20 +112,20 @@ def AddMatrixArgs(parser):
       type=arg_parsers.ArgList(min_length=1),
       metavar='DEVICE_ID',
       help='The list of DEVICE_IDs to test against (default: one device '
-      'determined by Google Cloud Test Lab\'s device catalog; see TAGS listed '
+      'determined by the Firebase Test Lab device catalog; see TAGS listed '
       'by the *$ {parent_command} devices list* command).')
   parser.add_argument(
       '--os-version-ids', '-v',
       type=arg_parsers.ArgList(min_length=1),
       metavar='OS_VERSION_ID',
       help='The list of OS_VERSION_IDs to test against (default: a version ID '
-      'determined by Google Cloud Test Lab\'s device catalog).')
+      'determined by the Firebase Test Lab device catalog).')
   parser.add_argument(
       '--locales', '-l',
       type=arg_parsers.ArgList(min_length=1),
       metavar='LOCALE',
       help='The list of LOCALEs to test against (default: a single locale '
-      'determined by Google Cloud Test Lab\'s device catalog).')
+      'determined by the Firebase Test Lab device catalog).')
   orientation = parser.add_argument(
       '--orientations', '-o',
       metavar='ORIENTATION',

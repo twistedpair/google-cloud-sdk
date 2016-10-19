@@ -619,6 +619,33 @@ environment and type of scaling that the version resource uses:
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates application parameters.
+
+      Args:
+        request: (AppengineAppsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/apps/{appsId}',
+        http_method=u'PATCH',
+        method_id=u'appengine.apps.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'application',
+        request_type_name=u'AppengineAppsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Repair(self, request, global_params=None):
       """Recreates the required App Engine features for the application in your.
 project, for example a Cloud Storage bucket or App Engine service account.

@@ -148,6 +148,11 @@ class _Transform(object):
     """The if() transform conditional expression string."""
     return self._conditional
 
+  @property
+  def name(self):
+    """The name of the last transform."""
+    return self._transforms[-1].name if self._transforms else ''
+
   def IsActive(self, active):
     """Returns True if the Transform active level is None or active."""
     return self._transforms and self.active in (None, active)
@@ -155,10 +160,6 @@ class _Transform(object):
   def Add(self, transform):
     """Adds a transform to the list."""
     self._transforms.append(transform)
-
-  def Name(self):
-    """Returns the name of the last transform."""
-    return self._transforms[-1].name if self._transforms else ''
 
   def SetConditional(self, expr):
     """Sets the conditional expression string."""

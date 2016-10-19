@@ -126,3 +126,16 @@ def JobsUriFunc(resource):
 
   ref = resources.REGISTRY.Parse(resource.id, collection=JOBS_COLLECTION)
   return ref.SelfLink()
+
+
+def JobsUriFromId(job_id):
+  """Transform a job ID into a URL string.
+
+  Args:
+    job_id: The job ID
+
+  Returns:
+    URL to the job
+  """
+  ref = resources.REGISTRY.Parse(job_id, collection=JOBS_COLLECTION)
+  return ref.SelfLink()

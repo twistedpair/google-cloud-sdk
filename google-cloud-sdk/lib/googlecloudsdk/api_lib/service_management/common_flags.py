@@ -30,7 +30,7 @@ def operation_flag(suffix='to act on'):
 def service_flag(suffix='to act on'):
   return base.Argument(
       'service',
-      help='The service {0}.'.format(suffix))
+      help='The name of the service {0}.'.format(suffix))
 
 
 def key_flag(suffix='to act on'):

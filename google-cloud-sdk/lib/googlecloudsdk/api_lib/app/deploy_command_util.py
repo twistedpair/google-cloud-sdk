@@ -15,6 +15,7 @@
 
 """Utility methods used by the deploy command."""
 
+import json
 import os
 import re
 
@@ -81,13 +82,12 @@ class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
-def _GetDockerfileCreator(info):
-  """Returns a function to create a dockerfile if the user doesn't have one.
+def _GetDockerfiles(info):
+  """Returns file objects to create dockerfiles if the user doesn't have them.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo)
       The service config.
-
   Raises:
     DockerfileError: Raised if a user supplied a Dockerfile and a non-custom
       runtime.
@@ -96,8 +96,7 @@ def _GetDockerfileCreator(info):
     UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
       satisfy the requirements of the specified runtime type.
   Returns:
-    callable(), a function that can be used to create the correct Dockerfile
-    later on.
+    A dictionary of filename to (str) Dockerfile contents.
   """
   # Use the path to app.yaml (info.file) to determine the location of the
   # Dockerfile.
@@ -116,9 +115,7 @@ def _GetDockerfileCreator(info):
   if info.runtime == 'custom':
     if os.path.exists(dockerfile):
       log.info('Using %s found in %s', config.DOCKERFILE, dockerfile_dir)
-      def NullGenerator():
-        return lambda: None
-      return NullGenerator
+      return {}
     else:
       raise NoDockerfileError(
           'You must provide your own Dockerfile when using a custom runtime.  '
@@ -126,16 +123,44 @@ def _GetDockerfileCreator(info):
           'runtimes.')
 
   # Check the fingerprinting based code.
+  gen_files = {}
   params = ext_runtime.Params(appinfo=info.parsed, deploy=True)
   configurator = fingerprinter.IdentifyDirectory(dockerfile_dir, params)
   if configurator:
-    return configurator.GenerateConfigs
+    dockerfiles = configurator.GenerateConfigData()
+    gen_files.update((d.filename, d.contents) for d in dockerfiles)
+    return gen_files
   # Then throw an error.
   else:
     raise UnsatisfiedRequirementsError(
         'Your application does not satisfy all of the requirements for a '
         'runtime of type [{0}].  Please correct the errors and try '
         'again.'.format(info.runtime))
+
+
+def _GetSourceContextsForUpload(service):
+  """Gets source context file information.
+
+  Args:
+    service: googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo the service
+      to deploy.
+  Returns:
+    A dict of filename to (str) source context file contents.
+  """
+  source_contexts = {}
+  try:
+    contexts = context_util.CalculateExtendedSourceContexts(
+        os.path.dirname(service.file))
+    source_contexts[context_util.EXT_CONTEXT_FILENAME] = json.dumps(contexts)
+    context = context_util.BestSourceContext(contexts,
+                                             os.path.dirname(service.file))
+    source_contexts[context_util.CONTEXT_FILENAME] = json.dumps(context)
+  # This error could either be raised by context_util.BestSourceContext or by
+  # context_util.CalculateExtendedSourceContexts (in which case stop looking)
+  except context_util.GenerateSourceContextError as e:
+    log.warn('Could not generate [{name}]: {error}'.format(
+        name=context_util.CONTEXT_FILENAME, error=e))
+  return source_contexts
 
 
 def _GetDomainAndDisplayId(project_id):
@@ -163,46 +188,39 @@ def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
-
   Returns:
     str, The name of the pushed container image.
   """
-  #  Nothing to do if this is not an image based deployment.
+  # Nothing to do if this is not an image-based deployment.
   if not service.RequiresImage():
     return None
 
-  dockerfile_creator = _GetDockerfileCreator(service)
-  context_creator = context_util.GetSourceContextFilesCreator(
-      os.path.dirname(service.file), None)
+  gen_files = {}
+  gen_files.update(_GetDockerfiles(service))
+  gen_files.update(_GetSourceContextsForUpload(service))
 
   log.status.Print(
       'Building and pushing image for service [{service}]'
       .format(service=service.module))
 
-  cleanup_dockerfile = dockerfile_creator()
-  cleanup_context = context_creator()
+  image = docker_image.Image(
+      dockerfile_dir=os.path.dirname(service.file),
+      repo=_GetImageName(project, service.module, version_id),
+      nocache=False,
+      tag=config.DOCKER_IMAGE_TAG)
   try:
-    image = docker_image.Image(
-        dockerfile_dir=os.path.dirname(service.file),
-        repo=_GetImageName(project, service.module, version_id),
-        nocache=False,
-        tag=config.DOCKER_IMAGE_TAG)
-    try:
-      cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                               image.tagged_repo)
-    except (OSError, IOError) as err:
-      if platforms.OperatingSystem.IsWindows():
-        if len(err.filename) > _WINDOWS_MAX_PATH:
-          raise WindowMaxPathError(err.filename)
-      raise
-    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-    cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
-                                  image.tagged_repo)
-    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-    return image.tagged_repo
-  finally:
-    cleanup_dockerfile()
-    cleanup_context()
+    cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
+                             image.tagged_repo, gen_files=gen_files)
+  except (OSError, IOError) as err:
+    if platforms.OperatingSystem.IsWindows():
+      if len(err.filename) > _WINDOWS_MAX_PATH:
+        raise WindowMaxPathError(err.filename)
+    raise
+  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
+  cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
+                                image.tagged_repo)
+  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
+  return image.tagged_repo
 
 
 def DoPrepareManagedVms(gae_client):
@@ -214,11 +232,13 @@ def DoPrepareManagedVms(gae_client):
       # for the project via an undocumented Admin API.
       gae_client.PrepareVmRuntime()
     log.status.Print()
-  except util.RPCError:
-    # Any failures due to an unprepared project will be noisy
+  except util.RPCError as err:
+    # Any failures later due to an unprepared project will be noisy, so it's
+    # okay not to fail here.
     log.warn(
-        "We couldn't validate that your project is ready to deploy to App "
-        'Engine Flexible Environment. If deployment fails, please try again.')
+        ("We couldn't validate that your project is ready to deploy to App "
+         'Engine Flexible Environment. If deployment fails, please check the '
+         'following message and try again:\n') + str(err))
 
 
 def UseSsl(handlers):
@@ -363,3 +383,4 @@ def CreateAppYamlForAppDirectory(directory):
         'Please prepare an app.yaml file for your application manually '
         'and deploy again.')
   return yaml_path
+
