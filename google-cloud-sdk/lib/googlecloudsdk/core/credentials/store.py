@@ -17,7 +17,9 @@
 A detailed description of auth.
 """
 
+import base64
 import datetime
+import json
 import os
 import textwrap
 
@@ -28,11 +30,11 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
-from googlecloudsdk.core.credentials import legacy
 from googlecloudsdk.core.util import files
 import httplib2
 from oauth2client import client
 from oauth2client import multistore_file
+from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 
 
@@ -101,6 +103,11 @@ class InvalidCredentialFileException(Error):
     super(InvalidCredentialFileException, self).__init__(
         'Failed to load credential file: [{f}].  {message}'
         .format(f=f, message=str(e)))
+
+
+class CredentialFileSaveError(Error):
+  """An error for when we fail to save a credential file."""
+  pass
 
 
 class FlowError(Error):
@@ -347,7 +354,7 @@ def Store(creds, account=None, scopes=None):
 def _GetLegacyGen(account, creds, scopes=None):
   if scopes is None:
     scopes = config.CLOUDSDK_SCOPES
-  return legacy.LegacyGenerator(
+  return _LegacyGenerator(
       multistore_path=config.Paths().LegacyCredentialsMultistorePath(account),
       json_path=config.Paths().LegacyCredentialsJSONPath(account),
       gae_java_path=config.Paths().LegacyCredentialsGAEJavaPath(account),
@@ -529,3 +536,146 @@ def AcquireFromGCE(account=None):
   creds = oauth2client_gce.AppAssertionCredentials()
   Refresh(creds)
   return creds
+
+
+def SaveCredentialsAsADC(creds, file_path):
+  """Saves the credentials to the given file.
+
+  Args:
+    creds: client.OAuth2Credentials, obtained from a web flow
+        or service account.
+    file_path: str, file path to store credentials to. The file will be created.
+
+
+  Raises:
+    CredentialFileSaveError, on file io errors.
+  """
+  google_creds = client.GoogleCredentials(
+      creds.access_token, creds.client_id, creds.client_secret,
+      creds.refresh_token, creds.token_expiry, creds.token_uri,
+      creds.user_agent, creds.revoke_uri)
+  try:
+    with files.OpenForWritingPrivate(file_path) as f:
+      json.dump(google_creds.serialization_data, f, sort_keys=True,
+                indent=2, separators=(',', ': '))
+  except IOError as e:
+    log.debug(e, exc_info=True)
+    raise CredentialFileSaveError(
+        'Error saving Application Default Credentials: ' + str(e))
+
+
+class _LegacyGenerator(object):
+  """A class to generate the credential file for legacy tools."""
+
+  def __init__(self, multistore_path, json_path, gae_java_path, gsutil_path,
+               key_path, json_key_path, credentials, scopes):
+    self.credentials = credentials
+    self.scopes = scopes
+
+    self._multistore_path = multistore_path
+    self._json_path = json_path
+    self._gae_java_path = gae_java_path
+    self._gsutil_path = gsutil_path
+    self._key_path = key_path
+    self._json_key_path = json_key_path
+
+  def Clean(self):
+    """Remove the credential file."""
+
+    paths = [
+        self._multistore_path,
+        self._json_path,
+        self._gae_java_path,
+        self._gsutil_path,
+        self._key_path,
+    ]
+    for p in paths:
+      try:
+        os.remove(p)
+      except OSError:
+        # file did not exist, so we're already done.
+        pass
+
+  def WriteTemplate(self):
+    """Write the credential file."""
+
+    # straight up credentials in JSON
+    self._WriteFileContents(self._json_path,
+                            self.credentials.to_json())
+    # multistore version
+    self._WriteFileContents(self._multistore_path, '')
+    storage = multistore_file.get_credential_storage(
+        self._multistore_path,
+        self.credentials.client_id,
+        self.credentials.user_agent,
+        self.scopes)
+    storage.put(self.credentials)
+
+    if self.credentials.refresh_token:
+      # gae java wants something special
+      self._WriteFileContents(self._gae_java_path, textwrap.dedent("""\
+          oauth2_client_secret: {secret}
+          oauth2_client_id: {id}
+          oauth2_refresh_token: {token}
+          """).format(secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
+                      id=config.CLOUDSDK_CLIENT_ID,
+                      token=self.credentials.refresh_token))
+
+      # we create a small .boto file for gsutil, to be put in BOTO_PATH
+      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
+          [Credentials]
+          gs_oauth2_refresh_token = {token}
+          """).format(token=self.credentials.refresh_token))
+
+    if (client.HAS_CRYPTO and
+        isinstance(self.credentials, client.SignedJwtAssertionCredentials)):
+      with files.OpenForWritingPrivate(self._key_path) as pk:
+        pk.write(base64.b64decode(self.credentials.private_key))
+      # the .boto file gets some different fields
+      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
+          [Credentials]
+          gs_service_client_id = {account}
+          gs_service_key_file = {key_file}
+          gs_service_key_file_password = {key_password}
+          """).format(account=self.credentials.service_account_name,
+                      key_file=self._key_path,
+                      key_password=self.credentials.private_key_password))
+
+    # pylint: disable=protected-access
+    # Remove linter directive when
+    # https://github.com/google/oauth2client/issues/165 is addressed.
+    if isinstance(self.credentials, service_account._ServiceAccountCredentials):
+      # TODO(user): Currently activate-service-account discards the JSON
+      # key file after reading it; save it so that we can hand it to gsutil.
+      # For now, serialize the credentials back to their original
+      # JSON key file form.
+      json_key_dict = {
+          'client_id': self.credentials._service_account_id,
+          'client_email': self.credentials._service_account_email,
+          'private_key': self.credentials._private_key_pkcs8_text,
+          'private_key_id': self.credentials._private_key_id,
+          'type': 'service_account'
+      }
+      with files.OpenForWritingPrivate(self._json_key_path) as pk:
+        pk.write(json.dumps(json_key_dict))
+      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
+          [Credentials]
+          gs_service_key_file = {key_file}
+          """).format(key_file=self._json_key_path))
+    # pylint: enable=protected-access
+
+  def _WriteFileContents(self, filepath, contents):
+    """Writes contents to a path, ensuring mkdirs.
+
+    Args:
+      filepath: str, The path of the file to write.
+      contents: str, The contents to write to the file.
+    """
+
+    full_path = os.path.realpath(os.path.expanduser(filepath))
+
+    try:
+      with files.OpenForWritingPrivate(full_path) as cred_file:
+        cred_file.write(contents)
+    except (OSError, IOError), e:
+      raise Exception('Failed to open %s for writing: %s' % (filepath, e))

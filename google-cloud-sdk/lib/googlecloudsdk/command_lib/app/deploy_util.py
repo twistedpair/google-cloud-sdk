@@ -178,7 +178,7 @@ class ServiceDeployer(object):
         service does not require an image.
     """
     if service.RequiresImage():
-      if service.env == util.Environment.FLEXIBLE:
+      if service.env in [util.Environment.FLEX, util.Environment.MANAGED_VMS]:
         log.warning('Deployment of App Engine Flexible Environment apps is '
                     'currently in Beta')
       if not image:
@@ -321,8 +321,23 @@ def ArgsDeploy(parser):
       help=argparse.SUPPRESS)
 
 
-def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
-  """Perform a deployment based on the given args."""
+def RunDeploy(args, enable_endpoints=False, app_create=False,
+              use_beta_stager=False):
+  """Perform a deployment based on the given args.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+        arguments specified in the ArgsDeploy() function.
+    enable_endpoints: Enable Cloud Endpoints for the deployed app.
+    app_create: Offer to create an app if current GCP project is appless.
+    use_beta_stager: Use the stager registry defined for the beta track rather
+        than the default stager registry.
+
+  Returns:
+    A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
+    where new_versions is a list of version_util.Version, and updated_configs
+    is a list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
+  """
   version_id = args.version or util.GenerateVersionId()
   flags.ValidateVersion(version_id)
   project = properties.VALUES.core.project.Get(required=True)
@@ -339,6 +354,7 @@ def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
   else:
     app_config = yaml_parsing.AppConfigSet(args.deployables)
 
+  # If applicable, sort services by order they were passed to the command.
   services = app_config.Services()
 
   if not args.skip_image_url_validation:
@@ -379,11 +395,16 @@ def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
   else:
     code_bucket_ref = None
     all_services = {}
-
   new_versions = []
-  stager = staging.GetNoopStager() if args.skip_staging else staging.GetStager()
+  if args.skip_staging:
+    stager = staging.GetNoopStager()
+  elif use_beta_stager:
+    stager = staging.GetBetaStager()
+  else:
+    stager = staging.GetStager()
   deployer = ServiceDeployer(api_client, stager, deploy_options)
-  for (name, service) in services.iteritems():
+
+  for name, service in services.iteritems():
     new_version = version_util.Version(project, name, version_id)
     deployer.Deploy(service, new_version, code_bucket_ref, args.image_url,
                     all_services)

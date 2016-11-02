@@ -296,8 +296,7 @@ class BaseLister(base.ListCommand, BaseCommand):
     items = self.FilterResults(args, self.GetResources(args, errors))
     items = lister.ProcessResults(
         resources=items,
-        field_selector=field_selector,
-        limit=args.limit)
+        field_selector=field_selector)
     items = self.ComputeDynamicProperties(args, items)
 
     for item in items:

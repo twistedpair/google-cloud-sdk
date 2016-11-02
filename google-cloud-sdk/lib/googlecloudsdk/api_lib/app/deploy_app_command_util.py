@@ -61,10 +61,6 @@ class MultiError(core_exceptions.Error):
     self.errors = errors
 
 
-def _GetSha1(input_path):
-  return file_utils.Checksum().AddFileContents(input_path).HexDigest()
-
-
 def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
@@ -84,7 +80,7 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   # Normal application files.
   for rel_path in util.FileIterator(source_dir, excluded_files_regex):
     full_path = os.path.join(source_dir, rel_path)
-    sha1_hash = _GetSha1(full_path)
+    sha1_hash = file_utils.Checksum.HashSingleFile(full_path)
     manifest_path = '/'.join([bucket_url, sha1_hash])
     manifest[rel_path] = {
         'sourceUrl': manifest_path,
@@ -102,7 +98,7 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
       log.debug('Source context already exists. Using the existing file.')
       continue
     else:
-      sha1_hash = _GetSha1(context_file)
+      sha1_hash = file_utils.Checksum.HashSingleFile(context_file)
       manifest_path = '/'.join([bucket_url, sha1_hash])
       manifest[rel_path] = {
           'sourceUrl': manifest_path,

@@ -30,6 +30,7 @@ import urllib
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 import uritemplate
@@ -217,6 +218,14 @@ class _ResourceParser(object):
 
     if resolve:
       ref.Resolve(suppress_param_default_err=True)
+
+     # Multiple parameters are specified, a full or partial collection path.
+    if (collection_path is not None and '/' in collection_path and not
+        properties.VALUES.core
+        .disable_collection_path_deprecation_warning.Get()):
+      log.warn('Resource ids like [{0}] (specifying multiple parameters '
+               'separated by "/") are undocumented and deprecated, support for '
+               'which will be removed in the near future.'.format(path))
 
     return ref
 

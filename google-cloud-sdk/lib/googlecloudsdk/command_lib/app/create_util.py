@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 
@@ -28,7 +29,7 @@ class AppAlreadyExistsError(exceptions.Error):
   """The app which is getting created already exists."""
 
 
-def CreateApp(api_client, project, region):
+def CreateApp(api_client, project, region, suppress_warning=False):
   """Create an App Engine app in the given region.
 
   Prints info about the app being created and displays a progress tracker.
@@ -37,10 +38,15 @@ def CreateApp(api_client, project, region):
     api_client: The App Engine Admin API client
     project: The GCP project
     region: The region to create the app
+    suppress_warning: True if user doesn't need to be warned this is
+        irreversible.
 
   Raises:
     AppAlreadyExistsError if app already exists
   """
+  if not suppress_warning:
+    log.warn('You are creating an app for project [{project}]. Creating '
+             'an app for a project is irreversible.\n'.format(project=project))
   message = ('Creating App Engine application in project [{project}] and '
              'region [{region}].'.format(project=project, region=region))
   with progress_tracker.ProgressTracker(message):
@@ -65,6 +71,7 @@ def CreateAppInteractively(api_client, project):
         [1] us-east1      (supports standard and flexible)
         [2] europe-west   (supports standard)
         [3] us-central    (supports standard and flexible)
+        [4] cancel
       Please enter your numeric choice:  1
 
   Args:
@@ -74,10 +81,16 @@ def CreateAppInteractively(api_client, project):
   Raises:
     AppAlreadyExistsError if app already exists
   """
+  log.warn('You are creating an app for project [{project}]. Creating '
+           'an app for a project is irreversible.\n'.format(project=project))
   all_regions = sorted(set(api_client.ListRegions()))
-  idx = console_io.PromptChoice(all_regions, message=(
-      'Please choose a region for your application. After choosing a region, '
-      'it cannot be changed. Which region would you like to choose?\n\n'))
+  idx = console_io.PromptChoice(all_regions,
+                                message=('Please choose a region for your '
+                                         'application. After choosing a '
+                                         'region, you cannot change it. Which '
+                                         'region would you like to choose?'
+                                         '\n\n'),
+                                cancel_option=True)
   region = all_regions[idx]
-  CreateApp(api_client, project, region.region)
+  CreateApp(api_client, project, region.region, suppress_warning=True)
 

@@ -440,6 +440,8 @@ def GetFlagSections(command, argument_interceptor):
         is_priority - True if this is a priority section. Priority sections are
           grouped first. The first 2 priority sections appear in short help.
         flags - The list of flags in the section.
+        attrs - a dict of calliope.backend.ArgumentGroupAttr objects indexed by
+          group_id
       has_global_flags - True if command has global flags not included in the
         section list.
   """
@@ -454,7 +456,9 @@ def GetFlagSections(command, argument_interceptor):
     if flag.is_global and not is_top_element:
       has_global_flags = True
     else:
-      group_id = argument_interceptor.mutex_groups.get(flag.dest, flag.dest)
+      group_id = argument_interceptor.mutex_groups.get(
+          flag.dest,
+          argument_interceptor.argument_groups.get(flag.dest, flag.dest))
       if group_id not in groups:
         groups[group_id] = []
       groups[group_id].append(flag)
@@ -464,12 +468,14 @@ def GetFlagSections(command, argument_interceptor):
   # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
   # over categorized.
   categorized_groups = {}
+  attrs = {}
   for group_id, group in groups.iteritems():
     flags = FilterOutSuppressed(group)
     if not flags:
       continue
 
-    if argument_interceptor.is_mutex_group_required(group_id):
+    attr = argument_interceptor.group_attr.get(group_id)
+    if attr and attr.is_mutex and attr.is_required:
       category = 'REQUIRED'
     else:
       category = 'OTHER'
@@ -484,6 +490,9 @@ def GetFlagSections(command, argument_interceptor):
     if category not in categorized_groups:
       categorized_groups[category] = {}
     categorized_groups[category][group_id] = flags
+    if category not in attrs:
+      attrs[category] = {}
+    attrs[category][group_id] = attr
 
   # Collect the priority sections first in order:
   #   REQUIRED, COMMON, OTHER, and categorized.
@@ -505,13 +514,15 @@ def GetFlagSections(command, argument_interceptor):
         heading = 'GLOBAL'
       sections.append((GetFlagHeading(heading),
                        other is not None,
-                       categorized_groups[category]))
+                       categorized_groups[category],
+                       attrs[category]))
       # This prevents the category from being re-added in the loop below.
       del categorized_groups[category]
 
   # Add the remaining categories in sorted order.
   for category, groups in sorted(categorized_groups.iteritems()):
-    sections.append((GetFlagHeading(category), False, groups))
+    sections.append(
+        (GetFlagHeading(category), False, groups, attrs[category]))
 
   return sections, has_global_flags
 
@@ -606,7 +617,7 @@ def ShortHelpText(command, argument_interceptor):
     sections, has_global_flags = GetFlagSections(command, argument_interceptor)
 
     # Add the top 2 is_priority sections.
-    for index, (heading, is_priority, groups) in enumerate(sections):
+    for index, (heading, is_priority, groups, _) in enumerate(sections):
       if not is_priority or index >= 2:
         # More sections remain. Long help will list those.
         all_messages.append(TextIfExists(

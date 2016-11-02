@@ -210,7 +210,7 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
                              image.tagged_repo, gen_files=gen_files)
   except (OSError, IOError) as err:
     if platforms.OperatingSystem.IsWindows():
-      if len(err.filename) > _WINDOWS_MAX_PATH:
+      if err.filename and len(err.filename) > _WINDOWS_MAX_PATH:
         raise WindowMaxPathError(err.filename)
     raise
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)

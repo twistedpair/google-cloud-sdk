@@ -470,9 +470,10 @@ class Day(object):
       return None
     try:
       return times.ParseDateTime(s, '%Y-%m-%d').date()
-    except ValueError:
+    except times.Error as e:
       raise ArgumentTypeError(
-          _GenerateErrorMessage('Failed to parse date.', user_input=s))
+          _GenerateErrorMessage('Failed to parse date: {0}'.format(unicode(e)),
+                                user_input=s))
 
 
 class Datetime(object):
@@ -485,9 +486,11 @@ class Datetime(object):
       return None
     try:
       return times.ParseDateTime(s)
-    except ValueError:
+    except times.Error as e:
       raise ArgumentTypeError(
-          _GenerateErrorMessage('Failed to parse date.', user_input=s))
+          _GenerateErrorMessage(
+              'Failed to parse date/time: {0}'.format(unicode(e)),
+              user_input=s))
 
 
 class DayOfWeek(object):

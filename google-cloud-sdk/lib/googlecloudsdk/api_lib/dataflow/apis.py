@@ -139,6 +139,45 @@ class Metrics(object):
       raise exceptions.HttpException(error)
 
 
+class Templates(object):
+  """The Templates set of Dataflow API functions."""
+
+  CREATE_REQUEST = GetMessagesModule().CreateJobFromTemplateRequest
+  PARAMETERS_VALUE = CREATE_REQUEST.ParametersValue
+
+  @staticmethod
+  def GetService():
+    return GetClientInstance().projects_templates
+
+  @staticmethod
+  def Create(project_id=None, gcs_location=None, parameters=None):
+    """Calls the Dataflow Templates.CreateFromJob method.
+
+    Args:
+      project_id: The project which owns the job.
+      gcs_location: The location of the template.
+      parameters: Parameters to pass to the template.
+    Returns:
+      (Job)
+    """
+    params_list = []
+    for k, v in parameters.iteritems() if parameters else {}:
+      params_list.append(
+          Templates.PARAMETERS_VALUE.AdditionalProperty(
+              key=k, value=v))
+    body = Templates.CREATE_REQUEST(
+        gcsPath=gcs_location,
+        parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
+        if parameters else None)
+    request = GetMessagesModule().DataflowProjectsTemplatesCreateRequest(
+        projectId=project_id or GetProject(), createJobFromTemplateRequest=body)
+
+    try:
+      return Templates.GetService().Create(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+
 class Messages(object):
   """The Messages set of Dataflow API functions."""
 

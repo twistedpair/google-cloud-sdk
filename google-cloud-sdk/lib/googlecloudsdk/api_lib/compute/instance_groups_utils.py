@@ -18,7 +18,6 @@ import enum
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
-from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
@@ -80,39 +79,6 @@ def _UnwrapResponse(responses, attr_name):
       yield item
 
 
-class InstanceGroupDescribe(base_classes.ZonalDescriber):
-  """Describe an instance group."""
-
-  @staticmethod
-  def Args(parser):
-    base_classes.ZonalDescriber.Args(parser)
-
-  @property
-  def service(self):
-    return self.compute.instanceGroups
-
-  @property
-  def resource_type(self):
-    return 'instanceGroups'
-
-  def ComputeDynamicProperties(self, args, items):
-    return ComputeInstanceGroupManagerMembership(
-        compute=self.compute,
-        project=self.project,
-        http=self.http,
-        batch_url=self.batch_url,
-        items=items,
-        filter_mode=InstanceGroupFilteringMode.ALL_GROUPS)
-
-  detailed_help = {
-      'brief': 'Describe an instance group',
-      'DESCRIPTION': """\
-          *{command}* displays detailed information about a Google Compute
-          Engine instance group.
-          """,
-  }
-
-
 class InstanceGroupListInstancesBase(base_classes.BaseLister):
   """Base class for listing instances present in instance group."""
 
@@ -166,8 +132,7 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
       utils.RaiseToolException(errors)
     items = lister.ProcessResults(
         resources=list(_UnwrapResponse(responses, self.list_field)),
-        field_selector=None,
-        limit=args.limit)
+        field_selector=None)
 
     for item in items:
       yield item
@@ -198,39 +163,6 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
           *{command}* list instances in an instance group.
           """,
   }
-
-
-class InstanceGroupListInstances(InstanceGroupListInstancesBase):
-  """List Google Compute Engine instances present in instance group."""
-
-  def GetResources(self, args):
-    """Retrieves response with instance in the instance group."""
-    group_ref = self.resources.Parse(
-        args.name,
-        collection='compute.' + self.resource_type,
-        params={'zone': args.zone})
-    if args.regexp:
-      filter_expr = 'instance eq {0}'.format(args.regexp)
-    else:
-      filter_expr = None
-
-    request = self.service.GetRequestType(self.method)(
-        instanceGroup=group_ref.Name(),
-        instanceGroupsListInstancesRequest=(
-            self.messages.InstanceGroupsListInstancesRequest()),
-        zone=group_ref.zone,
-        filter=filter_expr,
-        project=group_ref.project)
-
-    errors = []
-    results = list(request_helper.MakeRequests(
-        requests=[(self.service, self.method, request)],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
-
-    return results, errors
 
 
 def CreateInstanceGroupReferences(

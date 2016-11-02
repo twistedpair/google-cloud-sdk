@@ -20,7 +20,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from oauth2client import client
 from oauth2client import clientsecrets
@@ -48,11 +47,6 @@ _DISPLAY_VARIABLES = ['DISPLAY', 'WAYLAND_DISPLAY', 'MIR_SOCKET']
 
 class Error(exceptions.Error):
   """A base exception for this class."""
-  pass
-
-
-class CredentialFileSaveError(Error):
-  """An error for when we fail to save a credential file."""
   pass
 
 
@@ -182,17 +176,6 @@ def SaveCredentialsAsADC(creds):
   Returns:
     str, The full path to the ADC file that was written.
   """
-  google_creds = client.GoogleCredentials(
-      creds.access_token, creds.client_id, creds.client_secret,
-      creds.refresh_token, creds.token_expiry, creds.token_uri,
-      creds.user_agent, creds.revoke_uri)
   adc_file = ADCFilePath()
-  try:
-    with files.OpenForWritingPrivate(adc_file) as f:
-      json.dump(google_creds.serialization_data, f, sort_keys=True,
-                indent=2, separators=(',', ': '))
-  except IOError as e:
-    log.debug(e, exc_info=True)
-    raise CredentialFileSaveError(
-        'Error saving Application Default Credentials: ' + str(e))
+  c_store.SaveCredentialsAsADC(creds, adc_file)
   return os.path.abspath(adc_file)

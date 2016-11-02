@@ -38,7 +38,8 @@ def _GetMetaDict(items, key, value):
     value: The dict key value.
 
   Returns:
-    The dict in items that contains key==value or None if no match.
+    The dict in items that contains key==value or None if no match or not a
+    metadict.
   """
   try:
     for item in items:
@@ -131,7 +132,7 @@ def GetMatchingIndexValue(index, func):
   return None
 
 
-def Get(resource, key, default=None):
+def Get(resource_obj, resource_key, default=None):
   """Gets the value referenced by key in the object resource.
 
   Since it is common for resource instances to be sparse it is not an error if
@@ -139,8 +140,8 @@ def Get(resource, key, default=None):
   not match the resource type.
 
   Args:
-    resource: The resource object possibly containing a value for key.
-    key: Ordered list of key names/indices, applied left to right. Each
+    resource_obj: The resource object possibly containing a value for key.
+    resource_key: Ordered list of key names/indices, applied left to right. Each
       element in the list may be one of:
         str - A resource property name. This could be a class attribute name or
           a dict index.
@@ -157,8 +158,14 @@ def Get(resource, key, default=None):
       intentionally not an error. In this context a value can be any data
       object: dict, list, tuple, class, str, int, float, ...
   """
-  meta = None
-  for i, index in enumerate(key):
+  key = list(resource_key)
+  resource = resource_obj
+  while key:
+
+    # Get the next key index. Some iterations may access the next key.
+    index = key.pop(0)
+
+    # Serialized sets are sorted lists.
     if isinstance(resource, set):
       resource = sorted(resource)
 
@@ -170,20 +177,14 @@ def Get(resource, key, default=None):
       # None is different than an empty dict or list.
       return default
 
-    if meta:
-      resource = _GetMetaDict(resource, meta, index)
-      meta = None
-      continue
-
     if hasattr(resource, 'iteritems'):
       # dict-like
       if index is None:
-        if i + 1 < len(key):
+        if key:
           # Inner slice: *.[].*
-          return [Get(resource, [k] + key[i + 1:], default) for k in resource]
-        else:
-          # Trailing slice: *.[]
-          return resource
+          return [Get(resource, [k] + key, default) for k in resource]
+        # Trailing slice: *.[]
+        return resource
 
       name = GetMatchingIndex(index, lambda x: x in resource)
       if name:
@@ -199,7 +200,7 @@ def Get(resource, key, default=None):
         def _GetValue(index):
           # pylint: disable=cell-var-from-loop
           return _GetMetaDataValue(
-              resource['items'], index, deserialize=i + 1 < len(key))
+              resource['items'], index, deserialize=bool(key))
 
         resource = GetMatchingIndexValue(index, _GetValue)
         continue
@@ -216,29 +217,39 @@ def Get(resource, key, default=None):
     if hasattr(resource, '__iter__') or isinstance(resource, basestring):
       # list-like
       if index is None:
-        if i + 1 < len(key):
-          # Inner slice: *.[].*
-          return [Get(resource, [k] + key[i + 1:], default)
+        if key:
+          # explicit inner slice: *.[].*
+          return [Get(resource, [k] + key, default)
                   for k in range(len(resource))]
-        # Trailing slice: *.[]
+        # explicit trailing slice: *.[]
         return resource
 
       if not isinstance(index, (int, long)):
-        if (isinstance(index, basestring) and
-            isinstance(resource, list) and
-            len(resource) and
-            isinstance(resource[0], dict)):
-          if i + 1 < len(key):
-            # There will be at least one more loop iteration.
-            # Let the next iteration check for a meta dict.
-            meta = index
-            continue
-          # This is the last loop iteration. If we fell through the index would
-          # be ignored and the resource would be returned (incorrect). Instead
-          # we return the list of non-None index values from the list of dicts.
-          # See resource_property_test.PropertyGetTest.testGetLastDictSlice for
-          # an example.
-          return filter(None, [d.get(index) for d in resource]) or default
+        if isinstance(index, basestring) and isinstance(resource, list):
+          if len(resource) and isinstance(resource[0], dict):
+            if key:
+              # See the _GetMetaDict docstring for the proto meta dict layout.
+              r = _GetMetaDict(resource, index, key[0])
+              if r is not None:
+                # meta-dict-like
+                resource = r
+                index = key.pop(0)
+                continue
+            if index in resource[0]:
+              # implicit inner slice
+              # resource is a list. An explicit reference would be
+              # "resource[].foo" which would be caught above. Implicit
+              # "resource.foo" references are handled here.
+              return [Get(resource, [k, index] + key, default)
+                      for k in range(len(resource))]
+
+            # This is the last chance for index. If we fell through the index
+            # would be ignored and the resource would be returned (incorrect).
+            # Instead we return the list of non-None index values from the list
+            # of dicts. See
+            # resource_property_test.PropertyGetTest.testGetLastDictSlice for
+            # an example.
+            return filter(None, [d.get(index) for d in resource]) or default
 
         # Index mismatch.
         return default
@@ -250,6 +261,7 @@ def Get(resource, key, default=None):
     # Resource or index mismatch.
     return default
 
+  # Sets serialize to sorted lists.
   if isinstance(resource, set):
     resource = sorted(resource)
 

@@ -164,7 +164,7 @@ def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
 
   disks_messages = []
   for disk in create_disks or []:
-    name = disk['name']
+    name = disk.get('name')
     # Resolves the mode.
     mode_value = disk.get('mode', 'rw')
     if mode_value == 'rw':

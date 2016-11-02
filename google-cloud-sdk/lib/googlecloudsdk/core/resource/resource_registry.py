@@ -112,6 +112,22 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # bio
+
+    'bio.projects.operations': resource_info.ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            metadata.request.'@type'.split('.').slice(-1:):label=TYPE,
+            metadata.request.workflowName,
+            metadata.createTime.date(),
+            done,
+            error.code:label=ERROR_CODE,
+            format('{0:40}', error.message):label=ERROR_MESSAGE
+          )
+        """,
+    ),
+
     # cloud billing
 
     'cloudbilling.billingAccounts': resource_info.ResourceInfo(
@@ -155,6 +171,17 @@ RESOURCE_REGISTRY = {
 
     # cloud resource manager
 
+    'cloudresourcemanager.folders': resource_info.ResourceInfo(
+        async_collection='cloudresourcemanager.operations',
+        list_format="""
+          table(
+            displayName,
+            name:sort=101,
+            parent
+          )
+        """,
+    ),
+
     'cloudresourcemanager.projects': resource_info.ResourceInfo(
         cache_command='projects list',
         list_format="""
@@ -162,6 +189,18 @@ RESOURCE_REGISTRY = {
             projectId:sort=1,
             name,
             projectNumber
+          )
+        """,
+    ),
+
+    'cloudresourcemanager.operations': resource_info.ResourceInfo(
+        list_format="""
+          table(
+            name:sort=101,
+            done,
+            response,
+            metadata,
+            error
           )
         """,
     ),
@@ -961,6 +1000,14 @@ RESOURCE_REGISTRY = {
              )
              """,
         ),
+
+    'deploymentmanager.types': resource_info.ResourceInfo(
+        list_format="""
+          table(
+            name
+          )
+        """,
+    ),
 
     # dns
 

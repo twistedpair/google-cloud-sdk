@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
+import httplib
 
-from apitools.base.protorpclite.messages import DecodeError
+from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions as gcloud_exceptions
+from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+
+
+msgs = core_apis.GetMessagesModule('iam', 'v1')
+MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
+              .KeyTypesValueValuesEnum)
+CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
+                    .PrivateKeyTypeValueValuesEnum)
+KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
 
 
 def _AddRoleArgument(
@@ -164,21 +176,22 @@ def ParseJsonPolicyFile(policy_file_path, policy_message_type):
   except EnvironmentError:
     # EnvironmnetError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
-    raise exceptions.Error(
+    raise core_exceptions.Error(
         'Unable to read policy file {0}'.format(policy_file_path))
 
   try:
     policy = encoding.JsonToMessage(policy_message_type, policy_json)
-  except (ValueError, DecodeError) as e:
+  except (ValueError, apitools_messages.DecodeError) as e:
     # ValueError is raised when JSON is badly formatted
     # DecodeError is raised when etag is badly formatted (not proper Base64)
-    raise exceptions.Error(
+    raise core_exceptions.Error(
         'Policy file {0} is not a properly formatted JSON policy file. {1}'
         .format(policy_file_path, str(e)))
   return policy
 
+
 def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
-  """Returns a detailed_help for a set-iam-policy command
+  """Returns a detailed_help for a set-iam-policy command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
@@ -208,7 +221,7 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
 
 
 def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
-  """Returns a detailed_help for an add-iam-policy-binding command
+  """Returns a detailed_help for an add-iam-policy-binding command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
@@ -232,8 +245,9 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
           """.format(collection, example_id)
   }
 
+
 def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
-  """Returns a detailed_help for a remove-iam-policy-binding command
+  """Returns a detailed_help for a remove-iam-policy-binding command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
@@ -256,3 +270,154 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
           of policy role and member types.
           """.format(collection, example_id)
   }
+
+
+def ManagedByFromString(managed_by):
+  """Parses a string into a MANAGED_BY enum.
+
+  MANAGED_BY is an enum of who manages a service account key resource. IAM
+  will rotate any SYSTEM_MANAGED keys by default.
+
+  Args:
+    managed_by: A string representation of a MANAGED_BY. Can be one of *user*,
+    *system* or *any*.
+
+  Returns:
+    A KeyTypeValueValuesEnum (MANAGED_BY) value.
+  """
+  if managed_by == 'user':
+    return [MANAGED_BY.USER_MANAGED]
+  elif managed_by == 'system':
+    return [MANAGED_BY.SYSTEM_MANAGED]
+  elif managed_by == 'any':
+    return []
+  else:
+    return [MANAGED_BY.KEY_TYPE_UNSPECIFIED]
+
+
+def KeyTypeFromString(key_str):
+  """Parses a string into a KeyType enum.
+
+  Args:
+    key_str: A string representation of a KeyType. Can be either *p12* or
+    *json*.
+
+  Returns:
+    A PrivateKeyTypeValueValuesEnum value.
+  """
+  if key_str == 'p12':
+    return KEY_TYPES.TYPE_PKCS12_FILE
+  elif key_str == 'json':
+    return KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE
+  else:
+    return KEY_TYPES.TYPE_UNSPECIFIED
+
+
+def KeyTypeToString(key_type):
+  """Get a string version of a KeyType enum.
+
+  Args:
+    key_type: An enum of either KEY_TYPES or CREATE_KEY_TYPES.
+
+  Returns:
+    The string representation of the key_type, such that
+    parseKeyType(keyTypeToString(x)) is a no-op.
+  """
+  if (key_type == KEY_TYPES.TYPE_PKCS12_FILE or
+      key_type == CREATE_KEY_TYPES.TYPE_PKCS12_FILE):
+    return 'p12'
+  elif (key_type == KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE or
+        key_type == CREATE_KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE):
+    return 'json'
+  else:
+    return 'unspecified'
+
+
+def KeyTypeToCreateKeyType(key_type):
+  """Transforms between instances of KeyType enums.
+
+  Transforms KeyTypes into CreateKeyTypes.
+
+  Args:
+    key_type: A ServiceAccountKey.PrivateKeyTypeValueValuesEnum value.
+
+  Returns:
+    A IamProjectsServiceAccountKeysCreateRequest.PrivateKeyTypeValueValuesEnum
+    value.
+  """
+  # For some stupid reason, HTTP requests generates different enum types for
+  # each instance of an enum in the proto buffer. What's worse is that they're
+  # not equal to one another.
+  if key_type == KEY_TYPES.TYPE_PKCS12_FILE:
+    return CREATE_KEY_TYPES.TYPE_PKCS12_FILE
+  elif key_type == KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE:
+    return CREATE_KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE
+  else:
+    return CREATE_KEY_TYPES.TYPE_UNSPECIFIED
+
+
+def KeyTypeFromCreateKeyType(key_type):
+  """The inverse of *toCreateKeyType*."""
+  if key_type == CREATE_KEY_TYPES.TYPE_PKCS12_FILE:
+    return KEY_TYPES.TYPE_PKCS12_FILE
+  elif key_type == CREATE_KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE:
+    return KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE
+  else:
+    return KEY_TYPES.TYPE_UNSPECIFIED
+
+
+class IAMServiceAccountException(core_exceptions.Error):
+  """An exception for IAM service account related errors."""
+
+  def __init__(self, status_msg, address, key_id=None):
+    error_msg = status_msg
+    if key_id:
+      error_msg = '{0}: key [{1}] for service account [{2}]'.format(
+          error_msg, key_id, address)
+    else:
+      error_msg = '{0}: service account [{1}]'.format(error_msg, address)
+    super(IAMServiceAccountException, self).__init__(error_msg)
+
+
+def ConvertToServiceAccountException(http_error, address, key_id=None):
+  """Convert HTTP error to IAM specific exception, based on the status code."""
+  error_msg = None
+  if http_error.status_code == httplib.NOT_FOUND:
+    error_msg = 'Not found'
+  elif http_error.status_code == httplib.FORBIDDEN:
+    error_msg = 'Permission denied'
+  elif http_error.status_code == httplib.CONFLICT:
+    return http_error  # Let it retry.
+
+  if error_msg:
+    return IAMServiceAccountException(error_msg, address, key_id)
+  # TODO(user): Add a test for this exception type.
+  return gcloud_exceptions.ToolException.FromCurrent()
+
+
+def AccountNameValidator():
+  return arg_parsers.RegexpValidator(
+      r'[a-z][a-z0-9\-]{3,61}[a-z0-9]',
+      'Service account name must be between 5 and 63 characters (inclusive), '
+      'must begin with a lowercase letter, and consist of alphanumeric '
+      'characters that can be separated by hyphens.')
+
+
+def ProjectToProjectResourceName(project):
+  """Turns a project id into a project resource name."""
+  return 'projects/{0}'.format(project)
+
+
+def EmailToAccountResourceName(email):
+  """Turns an email into a service account resource name."""
+  return 'projects/-/serviceAccounts/{0}'.format(email)
+
+
+def EmailAndKeyToResourceName(email, key):
+  """Turns an email and key id into a key resource name."""
+  return 'projects/-/serviceAccounts/{0}/keys/{1}'.format(email, key)
+
+
+def GetKeyIdFromResourceName(name):
+  """Gets the key id from a resource name. No validation is done."""
+  return name.split('/')[5]

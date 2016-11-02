@@ -19,9 +19,9 @@ import time
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
+from googlecloudsdk.api_lib.deployment_manager import exceptions
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
@@ -84,8 +84,9 @@ def WaitForOperation(client, messages, operation_name, project,
   Raises:
       HttpException: A http error response was received while executing api
           request. Will be raised if the operation cannot be found.
-      DeploymentManagerError: The operation finished with error(s) or exceeded
-          the timeout without completing.
+      OperationError: The operation finished with error(s).
+      OperationTimeOutError: The operation exceeded the timeout without
+        completing.
   """
   ticks = 0
   message = ('Waiting for '
@@ -104,20 +105,21 @@ def WaitForOperation(client, messages, operation_name, project,
             )
         )
       except apitools_exceptions.HttpError as error:
-        raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+        raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
       ticker.Tick()
       # Operation status will be one of PENDING, RUNNING, DONE
       if operation.status == 'DONE':
         if operation.error:
-          raise DeploymentManagerError(
+          raise exceptions.OperationError(
               'Error in Operation ' + operation_name +
               ':\n' + GetOperationError(operation.error))
         else:  # Operation succeeded
           return
       time.sleep(1)  # wait one second and try again
     # Timeout exceeded
-    raise DeploymentManagerError(
-        'Wait for Operation ' + operation_name + ' exceeded timeout.')
+    raise exceptions.OperationTimeoutError(
+        'Wait for Operation {0} exceeded {1} second timeout.'.format(
+            operation_name, timeout))
 
 
 def PrintTable(header, resource_list):
@@ -169,7 +171,7 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
                else [])
     return (results, return_token)
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+    raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
 def ExtractManifestName(deployment_response):
@@ -245,7 +247,7 @@ def YieldWithHttpExceptions(generator):
     for y in generator:
       yield y
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+    raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
 def FetchResourcesAndOutputs(client, messages, project, deployment_name):
@@ -283,4 +285,4 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
     # TODO(user): Pagination b/28298504
     return ResourcesAndOutputs(resources, outputs)
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+    raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)

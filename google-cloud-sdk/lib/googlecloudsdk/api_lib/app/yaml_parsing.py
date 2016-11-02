@@ -14,6 +14,7 @@
 
 """Module to parse .yaml files for an appengine app."""
 
+import collections
 import os
 
 from googlecloudsdk.api_lib.app import util
@@ -182,10 +183,17 @@ class ServiceYamlInfo(_YamlInfo):
     super(ServiceYamlInfo, self).__init__(file_path, parsed)
     self.module = parsed.module
 
+    if util.IsFlex(parsed.env):
+      self.env = util.Environment.FLEX
+    elif parsed.vm or parsed.runtime == 'vm':
+      self.env = util.Environment.MANAGED_VMS
+    else:
+      self.env = util.Environment.STANDARD
+
     # All env: 2 apps are hermetic. All vm: false apps are not hermetic except
     # for those with (explicit) env: 1 and runtime: custom. vm: true apps are
     # hermetic IFF they don't use static files.
-    if util.IsFlex(parsed.env):
+    if self.env is util.Environment.FLEX:
       self.is_hermetic = True
     elif util.IsStandard(parsed.env):
       self.is_hermetic = parsed.runtime == 'custom'
@@ -199,15 +207,12 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.is_hermetic = False
 
-    if util.IsStandard(parsed.env) and self.is_hermetic:
-      self.env = util.Environment.STANDARD
+    if self.env is util.Environment.STANDARD and self.is_hermetic:
       self.runtime = parsed.runtime
-    elif parsed.runtime == 'vm' or self.is_hermetic:
-      self.env = util.Environment.FLEXIBLE
+    elif (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
       self.runtime = parsed.GetEffectiveRuntime()
-      self._UpdateManagedVMConfig()
+      self._UpdateVMSettings()
     else:
-      self.env = util.Environment.STANDARD
       self.runtime = parsed.runtime
 
   @staticmethod
@@ -274,10 +279,10 @@ class ServiceYamlInfo(_YamlInfo):
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""
-    return self.env is util.Environment.FLEXIBLE or self.is_hermetic
+    return self.env is util.Environment.MANAGED_VMS or self.is_hermetic
 
-  def _UpdateManagedVMConfig(self):
-    """Overwrites vm_settings for App Engine Flexible services.
+  def _UpdateVMSettings(self):
+    """Overwrites vm_settings for App Engine services with VMs.
 
     Sets has_docker_image to be always True. Required for transition period
     until all images in production are pushed via gcloud (and therefore all
@@ -286,12 +291,13 @@ class ServiceYamlInfo(_YamlInfo):
     Also sets module_yaml_path which is needed for some runtimes.
 
     Raises:
-      AppConfigError: if the function was called for the service which is not an
-        App Engine Flexible service.
+      AppConfigError: if the function was called for a standard service
     """
-    if self.env is not util.Environment.FLEXIBLE:
-      raise AppConfigError('This is not an App Engine Flexible service. '
-                           'The `vm` field is not set to `true`.')
+    if self.env not in [util.Environment.MANAGED_VMS, util.Environment.FLEX]:
+      # TODO(b/32357859): Change this message to `env: flex`
+      raise AppConfigError(
+          'This is not an App Engine Managed VM service. Please set `vm` field '
+          'to `true`.')
     if not self.parsed.vm_settings:
       self.parsed.vm_settings = appinfo.VmSettings()
     self.parsed.vm_settings['has_docker_image'] = True
@@ -340,7 +346,7 @@ class AppConfigSet(object):
       YamlParserError: If a file fails to parse.
     """
     self.__config_yamls = {}
-    self.__service_yamls = {}
+    self.__service_yamls = collections.OrderedDict()
     self.__error = False
 
     for f in files:
@@ -370,7 +376,7 @@ class AppConfigSet(object):
     Returns:
       {str, ServiceYamlInfo}, A mapping of service name to definition.
     """
-    return dict(self.__service_yamls)
+    return collections.OrderedDict(self.__service_yamls)
 
   def HermeticServices(self):
     """Gets the hermetic services that were found.

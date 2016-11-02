@@ -24,34 +24,57 @@ class Collections(enum.Enum):
 
   OPERATIONS = (
       'operations',
-      'operations/{operationsId}',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name']
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
       {},
-      [u'operationsId']
+      ['projectId']
   )
   PROJECTS_INSTANCES = (
       'projects.instances',
-      'projects/{projectsId}/instances/{instancesId}',
-      {},
-      [u'projectsId', u'instancesId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}',
+      },
+      [u'name']
   )
   PROJECTS_INSTANCES_CLUSTERS = (
       'projects.instances.clusters',
-      'projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
-      {},
-      [u'projectsId', u'instancesId', u'clustersId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/clusters/'
+              '{clustersId}',
+      },
+      [u'name']
   )
   PROJECTS_INSTANCES_CLUSTERS_SNAPSHOTS = (
       'projects.instances.clusters.snapshots',
-      'projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/'
-      'snapshots/{snapshotsId}',
-      {},
-      [u'projectsId', u'instancesId', u'clustersId', u'snapshotsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/clusters/'
+              '{clustersId}/snapshots/{snapshotsId}',
+      },
+      [u'name']
   )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
-      'projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
-      {},
-      [u'projectsId', u'instancesId', u'tablesId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/tables/'
+              '{tablesId}',
+      },
+      [u'name']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

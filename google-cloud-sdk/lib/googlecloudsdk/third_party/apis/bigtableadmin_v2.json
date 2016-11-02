@@ -712,20 +712,21 @@
           "methods": {
             "create": {
               "id": "bigtableadmin.projects.instances.create",
-              "path": "v2/projects/{projectsId}/instances",
+              "path": "v2/{+parent}/instances",
               "flatPath": "v2/projects/{projectsId}/instances",
               "httpMethod": "POST",
               "description": "Create an instance within a project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`.",
+                "parent": {
+                  "description": "The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "request": {
                 "$ref": "CreateInstanceRequest"
@@ -739,27 +740,21 @@
             },
             "get": {
               "id": "bigtableadmin.projects.instances.get",
-              "path": "v2/projects/{projectsId}/instances/{instancesId}",
+              "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "GET",
               "description": "Gets information about an instance.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The unique name of the requested instance. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                "name": {
+                  "description": "The unique name of the requested instance. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "instancesId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "instancesId"
+                "name"
               ],
               "response": {
                 "$ref": "Instance"
@@ -771,15 +766,16 @@
             },
             "list": {
               "id": "bigtableadmin.projects.instances.list",
-              "path": "v2/projects/{projectsId}/instances",
+              "path": "v2/{+parent}/instances",
               "flatPath": "v2/projects/{projectsId}/instances",
               "httpMethod": "GET",
               "description": "Lists information about instances in a project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. The unique name of the project for which a list of instances is requested.\nValues are of the form `projects\/<project>`.",
+                "parent": {
+                  "description": "The unique name of the project for which a list of instances is requested.\nValues are of the form `projects\/<project>`.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -789,7 +785,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "response": {
                 "$ref": "ListInstancesResponse"
@@ -801,27 +797,21 @@
             },
             "update": {
               "id": "bigtableadmin.projects.instances.update",
-              "path": "v2/projects/{projectsId}/instances/{instancesId}",
+              "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "PUT",
               "description": "Updates an instance within a project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`.",
+                "name": {
+                  "description": "(`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "instancesId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "instancesId"
+                "name"
               ],
               "request": {
                 "$ref": "Instance"
@@ -835,27 +825,21 @@
             },
             "delete": {
               "id": "bigtableadmin.projects.instances.delete",
-              "path": "v2/projects/{projectsId}/instances/{instancesId}",
+              "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "DELETE",
               "description": "Delete an instance from a project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The unique name of the instance to be deleted.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
+                "name": {
+                  "description": "The unique name of the instance to be deleted.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "instancesId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "instancesId"
+                "name"
               ],
               "response": {
                 "$ref": "Empty"
@@ -871,21 +855,16 @@
               "methods": {
                 "create": {
                   "id": "bigtableadmin.projects.instances.clusters.create",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters",
+                  "path": "v2/{+parent}/clusters",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters",
                   "httpMethod": "POST",
                   "description": "Creates a cluster within an instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
+                    "parent": {
+                      "description": "The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "clusterId": {
@@ -895,8 +874,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "Cluster"
@@ -910,34 +888,21 @@
                 },
                 "get": {
                   "id": "bigtableadmin.projects.instances.clusters.get",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
+                  "path": "v2/{+name}",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
                   "httpMethod": "GET",
                   "description": "Gets information about a cluster.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the requested cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
+                    "name": {
+                      "description": "The unique name of the requested cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clustersId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "clustersId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Cluster"
@@ -949,21 +914,16 @@
                 },
                 "list": {
                   "id": "bigtableadmin.projects.instances.clusters.list",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters",
+                  "path": "v2/{+parent}/clusters",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters",
                   "httpMethod": "GET",
                   "description": "Lists information about clusters in an instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance for which a list of clusters is requested.\nValues are of the form `projects\/<project>\/instances\/<instance>`.\nUse `<instance> = '-'` to list Clusters for all Instances in a project,\ne.g., `projects\/myproject\/instances\/-`.",
+                    "parent": {
+                      "description": "The unique name of the instance for which a list of clusters is requested.\nValues are of the form `projects\/<project>\/instances\/<instance>`.\nUse `<instance> = '-'` to list Clusters for all Instances in a project,\ne.g., `projects\/myproject\/instances\/-`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -973,8 +933,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "ListClustersResponse"
@@ -986,34 +945,21 @@
                 },
                 "update": {
                   "id": "bigtableadmin.projects.instances.clusters.update",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
+                  "path": "v2/{+name}",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
                   "httpMethod": "PUT",
                   "description": "Updates a cluster within an instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
+                    "name": {
+                      "description": "(`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clustersId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "clustersId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "Cluster"
@@ -1027,34 +973,21 @@
                 },
                 "delete": {
                   "id": "bigtableadmin.projects.instances.clusters.delete",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
+                  "path": "v2/{+name}",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes a cluster from an instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the cluster to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
+                    "name": {
+                      "description": "The unique name of the cluster to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clustersId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "clustersId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Empty"
@@ -1070,41 +1003,21 @@
                   "methods": {
                     "get": {
                       "id": "bigtableadmin.projects.instances.clusters.snapshots.get",
-                      "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
+                      "path": "v2/{+name}",
                       "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
                       "httpMethod": "GET",
                       "description": "Gets metadata information about the specified snapshot.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. The unique name of the requested snapshot.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
+                        "name": {
+                          "description": "The unique name of the requested snapshot.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "instancesId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "clustersId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "snapshotsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/snapshots\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "instancesId",
-                        "clustersId",
-                        "snapshotsId"
+                        "name"
                       ],
                       "response": {
                         "$ref": "Snapshot"
@@ -1115,27 +1028,16 @@
                     },
                     "list": {
                       "id": "bigtableadmin.projects.instances.clusters.snapshots.list",
-                      "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots",
+                      "path": "v2/{+parent}/snapshots",
                       "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots",
                       "httpMethod": "GET",
                       "description": "Lists all snapshots associated with the specified cluster.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `parent`. The unique name of the cluster for which snapshots should be listed.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
+                        "parent": {
+                          "description": "The unique name of the cluster for which snapshots should be listed.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "instancesId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "clustersId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1151,9 +1053,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "instancesId",
-                        "clustersId"
+                        "parent"
                       ],
                       "response": {
                         "$ref": "ListSnapshotsResponse"
@@ -1164,41 +1064,21 @@
                     },
                     "delete": {
                       "id": "bigtableadmin.projects.instances.clusters.snapshots.delete",
-                      "path": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
+                      "path": "v2/{+name}",
                       "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
                       "httpMethod": "DELETE",
                       "description": "Permanently deletes the specified snapshot.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. The unique name of the snapshot to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
+                        "name": {
+                          "description": "The unique name of the snapshot to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "instancesId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "clustersId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "snapshotsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/snapshots\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "instancesId",
-                        "clustersId",
-                        "snapshotsId"
+                        "name"
                       ],
                       "response": {
                         "$ref": "Empty"
@@ -1215,27 +1095,21 @@
               "methods": {
                 "create": {
                   "id": "bigtableadmin.projects.instances.tables.create",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables",
+                  "path": "v2/{+parent}/tables",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables",
                   "httpMethod": "POST",
                   "description": "Creates a new table in the specified instance.\nThe table can be created with a full set of initial column families,\nspecified in the request.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
+                    "parent": {
+                      "description": "The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "CreateTableRequest"
@@ -1249,27 +1123,21 @@
                 },
                 "createFromSnapshot": {
                   "id": "bigtableadmin.projects.instances.tables.createFromSnapshot",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables:createFromSnapshot",
+                  "path": "v2/{+parent}/tables:createFromSnapshot",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables:createFromSnapshot",
                   "httpMethod": "POST",
                   "description": "Creates a new table from the specified snapshot. The target table must\nnot exist. The snapshot and the table must be in the same instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
+                    "parent": {
+                      "description": "The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "CreateTableFromSnapshotRequest"
@@ -1283,21 +1151,16 @@
                 },
                 "list": {
                   "id": "bigtableadmin.projects.instances.tables.list",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables",
+                  "path": "v2/{+parent}/tables",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables",
                   "httpMethod": "GET",
                   "description": "Lists all tables served from a specified instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance for which tables should be listed.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
+                    "parent": {
+                      "description": "The unique name of the instance for which tables should be listed.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -1318,8 +1181,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "ListTablesResponse"
@@ -1331,27 +1193,16 @@
                 },
                 "get": {
                   "id": "bigtableadmin.projects.instances.tables.get",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}",
+                  "path": "v2/{+name}",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}",
                   "httpMethod": "GET",
                   "description": "Gets metadata information about the specified table.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the requested table.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                    "name": {
+                      "description": "The unique name of the requested table.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "tablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     },
                     "view": {
@@ -1367,9 +1218,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "tablesId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Table"
@@ -1381,34 +1230,21 @@
                 },
                 "delete": {
                   "id": "bigtableadmin.projects.instances.tables.delete",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}",
+                  "path": "v2/{+name}",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}",
                   "httpMethod": "DELETE",
                   "description": "Permanently deletes a specified table and all of its data.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the table to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                    "name": {
+                      "description": "The unique name of the table to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "tablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "tablesId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Empty"
@@ -1419,34 +1255,21 @@
                 },
                 "modifyColumnFamilies": {
                   "id": "bigtableadmin.projects.instances.tables.modifyColumnFamilies",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:modifyColumnFamilies",
+                  "path": "v2/{+name}:modifyColumnFamilies",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:modifyColumnFamilies",
                   "httpMethod": "POST",
                   "description": "Atomically performs a series of column family modifications\non the specified table.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the table whose families should be modified.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                    "name": {
+                      "description": "The unique name of the table whose families should be modified.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "tablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "tablesId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "ModifyColumnFamiliesRequest"
@@ -1460,34 +1283,21 @@
                 },
                 "dropRowRange": {
                   "id": "bigtableadmin.projects.instances.tables.dropRowRange",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:dropRowRange",
+                  "path": "v2/{+name}:dropRowRange",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:dropRowRange",
                   "httpMethod": "POST",
                   "description": "Permanently drop\/delete a row range from a specified table. The request can\nspecify whether to delete all rows in a table, or only those that match a\nparticular prefix.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the table on which to drop a range of rows.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                    "name": {
+                      "description": "The unique name of the table on which to drop a range of rows.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "tablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "tablesId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "DropRowRangeRequest"
@@ -1501,34 +1311,21 @@
                 },
                 "snapshot": {
                   "id": "bigtableadmin.projects.instances.tables.snapshot",
-                  "path": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:snapshot",
+                  "path": "v2/{+name}:snapshot",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:snapshot",
                   "httpMethod": "POST",
                   "description": "Creates a new snapshot in the specified cluster from the specified\nsource table. The cluster and the table must be in the same instance.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The unique name of the table to have the snapshot taken.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                    "name": {
+                      "description": "The unique name of the table to have the snapshot taken.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "instancesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "tablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "instancesId",
-                    "tablesId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "SnapshotTableRequest"
@@ -1550,20 +1347,21 @@
       "methods": {
         "get": {
           "id": "bigtableadmin.operations.get",
-          "path": "v2/operations/{operationsId}",
+          "path": "v2/{+name}",
           "flatPath": "v2/operations/{operationsId}",
           "httpMethod": "GET",
           "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
-            "operationsId": {
-              "description": "Part of `name`. The name of the operation resource.",
+            "name": {
+              "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "operationsId"
+            "name"
           ],
           "response": {
             "$ref": "Operation"
@@ -1575,11 +1373,18 @@
         },
         "list": {
           "id": "bigtableadmin.operations.list",
-          "path": "v2/operations",
+          "path": "v2/{+name}",
           "flatPath": "v2/operations",
           "httpMethod": "GET",
           "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
           "parameters": {
+            "name": {
+              "description": "The name of the operation collection.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations$",
+              "type": "string"
+            },
             "filter": {
               "description": "The standard list filter.",
               "location": "query",
@@ -1598,6 +1403,7 @@
             }
           },
           "parameterOrder": [
+            "name"
           ],
           "response": {
             "$ref": "ListOperationsResponse"
@@ -1609,20 +1415,21 @@
         },
         "cancel": {
           "id": "bigtableadmin.operations.cancel",
-          "path": "v2/operations/{operationsId}:cancel",
+          "path": "v2/{+name}:cancel",
           "flatPath": "v2/operations/{operationsId}:cancel",
           "httpMethod": "POST",
           "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
           "parameters": {
-            "operationsId": {
-              "description": "Part of `name`. The name of the operation resource to be cancelled.",
+            "name": {
+              "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "operationsId"
+            "name"
           ],
           "response": {
             "$ref": "Empty"
@@ -1633,20 +1440,21 @@
         },
         "delete": {
           "id": "bigtableadmin.operations.delete",
-          "path": "v2/operations/{operationsId}",
+          "path": "v2/{+name}",
           "flatPath": "v2/operations/{operationsId}",
           "httpMethod": "DELETE",
           "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
           "parameters": {
-            "operationsId": {
-              "description": "Part of `name`. The name of the operation resource to be deleted.",
+            "name": {
+              "description": "The name of the operation resource to be deleted.",
               "location": "path",
               "required": true,
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "operationsId"
+            "name"
           ],
           "response": {
             "$ref": "Empty"

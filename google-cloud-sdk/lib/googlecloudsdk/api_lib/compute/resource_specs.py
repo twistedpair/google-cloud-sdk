@@ -536,7 +536,6 @@ _SPECS_V1 = {
         ],
         transformations=[
             ('zone', path_simplifier.Name),
-            ('network', path_simplifier.Name),
             ('size', str),
         ],
         editables=None,
@@ -955,7 +954,6 @@ _SPECS_ALPHA['instanceGroups'] = _InternalSpec(
         ('INSTANCES', 'size'),
     ],
     transformations=[
-        ('network', path_simplifier.Name),
         ('size', str),
     ],
     editables=None,

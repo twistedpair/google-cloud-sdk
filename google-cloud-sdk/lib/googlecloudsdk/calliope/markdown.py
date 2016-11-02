@@ -32,8 +32,6 @@ _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
 
-_REQUIRED_FLAGS_HEADING = 'REQUIRED FLAGS'
-
 
 class ExampleCommandLineSplitter(object):
   """Example command line splitter.
@@ -266,8 +264,9 @@ class MarkdownGenerator(object):
       self._out(' ' + em + 'GROUP' + em)
 
     # Generate the flag usage string with flags in section order.
-    for heading, _, groups in sections:
-      for group in sorted(groups.values(), key=usage_text.FlagGroupSortKey):
+    for _, _, groups, attrs in sections:
+      for group_id, group in sorted(
+          groups.iteritems(), key=lambda x: usage_text.FlagGroupSortKey(x[1])):
         flag = group[0]
         if len(group) == 1:
           show_inverted = getattr(flag, 'show_inverted', None)
@@ -282,14 +281,20 @@ class MarkdownGenerator(object):
             self._out(' [{msg}]'.format(msg=msg))
         else:
           group.sort(key=lambda f: f.option_strings)
-          msg = ' | '.join(usage_text.FlagDisplayString(flag, markdown=True)
-                           for flag in group)
-          if not msg:
-            continue
-          if heading == _REQUIRED_FLAGS_HEADING:
-            self._out(' ({msg})'.format(msg=msg))
+          attr = attrs.get(group_id)
+          if not attr or not attr.is_mutex:
+            for flag in group:
+              self._out(' [{0}]'.format(
+                  usage_text.FlagDisplayString(flag, markdown=True)))
           else:
-            self._out(' [{msg}]'.format(msg=msg))
+            msg = ' | '.join(usage_text.FlagDisplayString(flag, markdown=True)
+                             for flag in group)
+            if not msg:
+              continue
+            if attr.is_required:
+              self._out(' ({msg})'.format(msg=msg))
+            else:
+              self._out(' [{msg}]'.format(msg=msg))
 
     if has_global_flags:
       self._out(' [' + em + 'GLOBAL-FLAG ...' + em + ']')
@@ -306,21 +311,19 @@ class MarkdownGenerator(object):
         usage_text.FlagDisplayString(flag, markdown=True)))
     self._out('\n{arghelp}\n'.format(arghelp=self._Details(flag)))
 
-  def _PrintFlagSection(self, heading, groups):
+  def _PrintFlagSection(self, heading, groups, attrs):
     """Prints a flag section."""
     self._Section(heading, sep=False)
-    for group in sorted(groups.values(), key=usage_text.FlagGroupSortKey):
+    for group_id, group in sorted(
+        groups.iteritems(), key=lambda x: usage_text.FlagGroupSortKey(x[1])):
       if len(group) == 1 or any([getattr(f, 'show_inverted', None)
                                  for f in group]):
         self._PrintFlagDefinition(group[0])
       else:
         if len(group) > 1:
-          # Introduce the group with a line that differentialtes required vs
-          # optional.
-          if heading == _REQUIRED_FLAGS_HEADING:
-            self._out('\nExactly one of these must be specified:\n')
-          else:
-            self._out('\nAt most one of these may be specified:\n')
+          attr = attrs.get(group_id)
+          if attr and attr.description:
+            self._out('\n' + attr.description + '\n')
         for flag in sorted(group, key=lambda f: f.option_strings):
           self._PrintFlagDefinition(flag)
 
@@ -336,8 +339,8 @@ class MarkdownGenerator(object):
         self._out('\n{arghelp}\n'.format(arghelp=self._Details(arg)))
 
     # List the sections in order.
-    for heading, _, groups in sections:
-      self._PrintFlagSection(heading, groups)
+    for heading, _, groups, attrs in sections:
+      self._PrintFlagSection(heading, groups, attrs)
 
     if has_global_flags:
       self._Section('GLOBAL FLAGS', sep=False)

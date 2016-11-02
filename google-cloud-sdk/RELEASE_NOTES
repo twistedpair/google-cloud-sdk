@@ -2,6 +2,30 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 133.0.0 (2016/11/02)
+
+### Google Cloud Container Builder
+
+* `gcloud alpha container builds` promoted to beta. The following has changed:
+  * The 'create' command is now called 'submit'.
+  * The 'stream-logs' command is now called 'log', and will only stream the log
+    if the '--stream' flag is used. Otherwise, it will print only the log
+    contents available at the time the command was run.
+
+The alpha commands will remain, as is, until at least March of 2017.
+
+### Google Compute Engine
+
+* regional instance groups are now GA. `gcloud compute instance-groups managed`
+
+* Customer-Supplied Encryption Keys (CSEK) for image creation is now GA. See
+  https://cloud.google.com/compute/docs/disks/customer-supplied-encryption for
+  details.
+
+### Google Container Engine
+
+* Update kubectl to version 1.4.4.
+
 
 ## 132.0.0 (2016/10/19)
 
@@ -89,8 +113,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 ### Google Cloud BigQuery
 
 * Added support for setting labels on query jobs.
-  Example usage: bq query --label "foo:bar" "select 123"
-  The show command outputs any labels set on a job.
+  Example usage: `bq query --label "foo:bar" "select 123"`.
+  The `show` command outputs any labels set on a job.
 
 ### Google Source Repository
 

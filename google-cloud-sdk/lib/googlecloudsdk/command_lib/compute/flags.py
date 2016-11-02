@@ -260,6 +260,161 @@ class ResourceArgScopes(object):
     return len(self.scopes)
 
 
+class ResourceResolver(object):
+  """Object responsible for resolving resources."""
+
+  def __init__(self, scopes, resource_name):
+    """Initilize ResourceResolver instance.
+
+    Args:
+      scopes: dict, with keys should be instances of ScopeEnum, values
+              should be instances of ResourceArgScope.
+      resource_name: str, human readable name for resources eg
+                     "instance group".
+    TODO(user): give usage example.
+    """
+    self.scopes = scopes
+    self.resource_name = resource_name
+
+  def ResolveResource(self,
+                      names,
+                      resource_scope,
+                      scope_value,
+                      api_resource_registry,
+                      default_scope=None,
+                      scope_lister=None):
+    """Resolve this resource against the arguments.
+
+    Args:
+      names: list of st, list of resource names
+      resource_scope: ScopeEnum, kind of scope of resources; if this is not None
+                   scope_value should be name of scope of type specified by this
+                   argument. If this is None scope_value should be None, in that
+                   case if prompting is possible user will be prompted to
+                   select scope (if prompting is forbidden it will raise an
+                   exception).
+      scope_value: ScopeEnum, scope of resources; if this is not None
+                   resource_scope should be type of scope specified by this
+                   argument. If this is None resource_scope should be None, in
+                   that case if prompting is possible user will be prompted to
+                   select scope (if prompting is forbidden it will raise an
+                   exception).
+      api_resource_registry: instance of core.resources.Registry.
+      default_scope: ScopeEnum, ZONE, REGION, GLOBAL, or None when resolving
+          name and scope was not specified use this as default. If there is
+          exactly one possible scope it will be used, there is no need to
+          specify default_scope.
+      scope_lister: func(scope, underspecified_names), a callback which returns
+        list of items (with 'name' attribute) for given scope.
+    Returns:
+      Resource reference or list of references if plural.
+    """
+    if isinstance(names, basestring):
+      names = [names]
+    if resource_scope is not None:
+      resource_scope = self.scopes[resource_scope]
+    if default_scope is not None:
+      if default_scope not in self.scopes:
+        raise exceptions.Error(
+            'Unexpected value for default_scope {0}, expected None or {1}'
+            .format(default_scope,
+                    ' or '.join([s.scope_enum.name for s in self.scopes])))
+      default_scope = self.scopes[default_scope]
+    params = {}
+    if scope_value is not None:
+      if resource_scope.scope_enum == ScopeEnum.GLOBAL:
+        stored_value = scope_value
+      else:
+        collection = ScopeEnum.CollectionForScope(resource_scope.scope_enum)
+        stored_value = api_resource_registry.Parse(
+            scope_value, collection=collection).Name()
+      params[resource_scope.scope_enum.param_name] = stored_value
+    else:
+      resource_scope = self.scopes.GetImplicitScope(default_scope)
+
+    collection = resource_scope and resource_scope.collection
+
+    # See if we can resolve names with so far deduced scope and its value.
+    refs = []
+    underspecified_names = []
+    for name in names:
+      try:
+        # Make each element an array so that we can do in place updates.
+        ref = [api_resource_registry.Parse(name, params=params,
+                                           collection=collection,
+                                           enforce_collection=False)]
+      except (resources.UnknownCollectionException,
+              resources.UnknownFieldException):
+        if scope_value:
+          raise
+        ref = [name]
+        underspecified_names.append(ref)
+      refs.append(ref)
+
+    # If we still have some resources which need to be resolve see if we can
+    # prompt the user and try to resolve these again.
+    if underspecified_names:
+      resource_scope, scope_value = self._PromptForScope(
+          [n[0] for n in underspecified_names], default_scope, scope_lister)
+      for name in underspecified_names:
+        name[0] = api_resource_registry.Parse(
+            name[0],
+            params={resource_scope.scope_enum.param_name: scope_value},
+            collection=resource_scope.collection,
+            enforce_collection=True)
+    # Now unpack each element.
+    refs = [ref[0] for ref in refs]
+
+    # Make sure correct collection was given for each resource, for example
+    # URLs have implicit collections.
+    expected_collections = [scope.collection for scope in self.scopes]
+    for ref in refs:
+      if ref.Collection() not in expected_collections:
+        raise resources.WrongResourceCollectionException(
+            expected=','.join(expected_collections),
+            got=ref.Collection(),
+            path=ref.SelfLink())
+    return refs
+
+  def _PromptForScope(self, underspecified_names, default_scope, scope_lister):
+    """Prompt user to specify a scope.
+
+    Args:
+      underspecified_names: list(str), names which lack scope context.
+      default_scope: ResourceArgScope, force this scope to be used.
+      scope_lister: func(scope, underspecified_names), callback to provide
+          possible values for given scope.
+    Returns:
+      chosen scope and scope value.
+    Raises:
+      UnderSpecifiedResourceError: if scope could not be determined.
+    """
+    if not console_io.CanPrompt():
+      raise UnderSpecifiedResourceError(underspecified_names,
+                                        [s.flag for s in self.scopes])
+    implicit_scope = self.scopes.GetImplicitScope(default_scope)
+    if implicit_scope:
+      suggested_value = _GetSuggestedScopeValue(implicit_scope.scope_enum)
+      if suggested_value is not None:
+        if _PromptDidYouMeanScope(self.resource_name, underspecified_names,
+                                  implicit_scope, suggested_value):
+          return implicit_scope, suggested_value
+
+    if not scope_lister:
+      raise UnderSpecifiedResourceError(underspecified_names,
+                                        [s.flag_name for s in self.scopes])
+    scope_value_choices = scope_lister(
+        # Sort to make it deterministic.
+        sorted([s.scope_enum for s in self.scopes],
+               key=operator.attrgetter('name')),
+        underspecified_names)
+
+    resource_scope_enum, scope_value = _PromptWithScopeChoices(
+        self.resource_name, underspecified_names, scope_value_choices)
+
+    return self.scopes[resource_scope_enum], scope_value
+
+
 class ResourceArgument(object):
   """Encapsulates concept of compute resource as command line argument.
 
@@ -362,6 +517,7 @@ class ResourceArgument(object):
       self.scopes.AddScope(ScopeEnum.GLOBAL, collection=global_collection)
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
+    self._resource_resolver = ResourceResolver(self.scopes, resource_name)
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
@@ -442,75 +598,19 @@ class ResourceArgument(object):
     Returns:
       Resource reference or list of references if plural.
     """
-    if default_scope is not None:
-      if default_scope not in self.scopes:
-        raise exceptions.Error(
-            'Unexpected value for default_scope {0}, expected None or {1}'
-            .format(default_scope,
-                    ' or '.join([s.scope_enum.name for s in self.scopes])))
-      default_scope = self.scopes[default_scope]
     names = self._GetResourceNames(args)
     resource_scope, scope_value = self.scopes.SpecifiedByArgs(args)
-    params = {}
-    if scope_value is not None:
+    if resource_scope is not None:
+      resource_scope = resource_scope.scope_enum
       # Complain if scope was specified without actual resource(s).
       if not self.required and not names:
+        # TODO(user): b/32473406 use flag actualy used in error message.
         raise exceptions.Error('Can\'t specify --zone, --region or --global'
                                ' without specifying resource via {0}'
                                .format(self.name))
-      if resource_scope.scope_enum == ScopeEnum.GLOBAL:
-        stored_value = scope_value
-      else:
-        collection = ScopeEnum.CollectionForScope(resource_scope.scope_enum)
-        stored_value = api_resource_registry.Parse(
-            scope_value, collection=collection).Name()
-      params[resource_scope.scope_enum.param_name] = stored_value
-    else:
-      resource_scope = self.scopes.GetImplicitScope(default_scope)
-
-    collection = resource_scope and resource_scope.collection
-
-    # See if we can resolve names with so far deduced scope and its value.
-    refs = []
-    underspecified_names = []
-    for name in names:
-      try:
-        # Make each element an array so that we can do in place updates.
-        ref = [api_resource_registry.Parse(name, params=params,
-                                           collection=collection,
-                                           enforce_collection=False)]
-      except (resources.UnknownCollectionException,
-              resources.UnknownFieldException):
-        if scope_value:
-          raise
-        ref = [name]
-        underspecified_names.append(ref)
-      refs.append(ref)
-
-    # If we still have some resources which need to be resolve see if we can
-    # prompt the user and try to resolve these again.
-    if underspecified_names:
-      resource_scope, scope_value = self._PromptForScope(
-          [n[0] for n in underspecified_names], default_scope, scope_lister)
-      for name in underspecified_names:
-        name[0] = api_resource_registry.Parse(
-            name[0],
-            params={resource_scope.scope_enum.param_name: scope_value},
-            collection=resource_scope.collection,
-            enforce_collection=True)
-    # Now unpack each element.
-    refs = [ref[0] for ref in refs]
-
-    # Make sure correct collection was given for each resource, for example
-    # URLs have implicit collections.
-    expected_collections = [scope.collection for scope in self.scopes]
-    for ref in refs:
-      if ref.Collection() not in expected_collections:
-        raise resources.WrongResourceCollectionException(
-            expected=','.join(expected_collections),
-            got=ref.Collection(),
-            path=ref.SelfLink())
-
+    refs = self._resource_resolver.ResolveResource(
+        names, resource_scope, scope_value, api_resource_registry,
+        default_scope, scope_lister)
     if self.plural:
       return refs
     if refs:
@@ -526,44 +626,6 @@ class ResourceArgument(object):
     if name_value is not None:
       return [name_value]
     return []
-
-  def _PromptForScope(self, underspecified_names, default_scope, scope_lister):
-    """Prompt user to specify a scope.
-
-    Args:
-      underspecified_names: list(str), names which lack scope context.
-      default_scope: ResourceArgScope, force this scope to be used.
-      scope_lister: func(scope, underspecified_names), callback to provide
-          possible values for given scope.
-    Returns:
-      chosen scope and scope value.
-    Raises:
-      UnderSpecifiedResourceError: if scope could not be determined.
-    """
-    if not console_io.CanPrompt():
-      raise UnderSpecifiedResourceError(underspecified_names,
-                                        [s.flag for s in self.scopes])
-    implicit_scope = self.scopes.GetImplicitScope(default_scope)
-    if implicit_scope:
-      suggested_value = _GetSuggestedScopeValue(implicit_scope.scope_enum)
-      if suggested_value is not None:
-        if _PromptDidYouMeanScope(self.resource_name, underspecified_names,
-                                  implicit_scope, suggested_value):
-          return implicit_scope, suggested_value
-
-    if not scope_lister:
-      raise UnderSpecifiedResourceError(underspecified_names,
-                                        [s.flag_name for s in self.scopes])
-    scope_value_choices = scope_lister(
-        # Sort to make it deterministic.
-        sorted([s.scope_enum for s in self.scopes],
-               key=operator.attrgetter('name')),
-        underspecified_names)
-
-    resource_scope_enum, scope_value = _PromptWithScopeChoices(
-        self.resource_name, underspecified_names, scope_value_choices)
-
-    return self.scopes[resource_scope_enum], scope_value
 
 
 def _PromptDidYouMeanScope(resource_name, underspecified_names, scope,

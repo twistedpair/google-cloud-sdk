@@ -222,5 +222,7 @@ def WaitForOperations(operations, project, operation_service, resource_service,
 
     # Sleeps before trying to poll the operations again.
     sleep_sec += 1
-    log.debug('Sleeping for %ss.', sleep_sec)
-    time_utils.Sleep(min(sleep_sec, _MAX_TIME_BETWEEN_POLLS_SEC))
+    # Don't re-use sleep_sec, since we want to keep the same time increment
+    sleep_time = min(sleep_sec, _MAX_TIME_BETWEEN_POLLS_SEC)
+    log.debug('Sleeping for %ss.', sleep_time)
+    time_utils.Sleep(sleep_time)

@@ -242,6 +242,6 @@ def ValidateCacheKeyPolicyArgs(cache_key_policy_args):
       cache_key_policy_args.cache_key_include_query_string is None or
       cache_key_policy_args.cache_key_include_query_string)
   if not include_query_string:
-    if (cache_key_policy_args.cache_key_query_string_whitelist or
-        cache_key_policy_args.cache_key_query_string_blacklist):
+    if (cache_key_policy_args.cache_key_query_string_whitelist is not None or
+        cache_key_policy_args.cache_key_query_string_blacklist is not None):
       raise CacheKeyQueryStringException()

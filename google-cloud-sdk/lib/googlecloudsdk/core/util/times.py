@@ -45,6 +45,7 @@ import re
 from dateutil import parser
 from dateutil import tz
 
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
@@ -55,10 +56,48 @@ except ImportError:
   tzwin = None
 
 
+class Error(exceptions.Error):
+  """Base errors for this module."""
+
+
+class DateTimeSyntaxError(Error):
+  """Date/Time string syntax error."""
+
+
+class DateTimeValueError(Error):
+  """Date/Time part overflow error."""
+
+
+class DurationSyntaxError(Error):
+  """Duration string syntax error."""
+
+
+class DurationValueError(Error):
+  """Duration part overflow error."""
+
+
 tz.PY3 = True  # MONKEYPATCH!!! Fixes a Python 2 standard module bug.
 
 LOCAL = tz.tzlocal()  # The local timezone.
 UTC = tz.tzutc()  # The UTC timezone.
+
+
+def _StrFtime(dt, fmt):
+  """Convert strftime exceptions to Datetime Errors."""
+  try:
+    return dt.strftime(fmt)
+  except (AttributeError, OverflowError, TypeError, ValueError) as e:
+    raise DateTimeValueError(unicode(e))
+
+
+def _StrPtime(string, fmt):
+  """Convert strptime exceptions to Datetime Errors."""
+  try:
+    return datetime.datetime.strptime(string, fmt)
+  except (AttributeError, OverflowError, TypeError) as e:
+    raise DateTimeValueError(unicode(e))
+  except ValueError as e:
+    raise DateTimeSyntaxError(unicode(e))
 
 
 def FormatDuration(duration, parts=3, precision=3):
@@ -75,6 +114,9 @@ def FormatDuration(duration, parts=3, precision=3):
       non-zero part.
     precision: Format the last duration part with precision digits after the
       decimal point. Trailing "0" and "." are always stripped.
+
+  Raises:
+    DurationValueError: A Duration numeric constant exceeded its range.
 
   Returns:
     An ISO 8601 string representation of the duration.
@@ -104,15 +146,19 @@ def ParseDuration(string, calendar=False):
     calendar: Use duration units larger than hours if True.
 
   Raises:
-    ValueError: Invalid duration syntax.
-    OverflowError: A Duration numeric constant exceeded the largest system
-      dependent integer value.
+    DurationSyntaxError: Invalid duration syntax.
+    DurationValueError: A Duration numeric constant exceeded its range.
 
   Returns:
     An iso_duration.Duration object for the given ISO 8601 duration/period
     string.
   """
-  return iso_duration.Duration(calendar=calendar).Parse(string)
+  try:
+    return iso_duration.Duration(calendar=calendar).Parse(string)
+  except (AttributeError, OverflowError) as e:
+    raise DurationValueError(unicode(e))
+  except ValueError as e:
+    raise DurationSyntaxError(unicode(e))
 
 
 def GetDurationFromTimeDelta(delta, calendar=False):
@@ -186,6 +232,9 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       timezone ('%Y-%m-%dT%H:%M:%S.%3f%Ez').
     tzinfo: Format dt relative to this timezone.
 
+  Raises:
+    DateTimeValueError: A DateTime numeric constant exceeded its range.
+
   Returns:
     A string of a datetime object formatted by an extended strftime().
   """
@@ -196,7 +245,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
   extension = re.compile('%[1-9]?[EO]?[fz]')
   m = extension.search(fmt)
   if not m:
-    return console_attr.DecodeFromInput(dt.strftime(fmt))
+    return console_attr.DecodeFromInput(_StrFtime(dt, fmt))
 
   # Split the format into standard and extension parts.
   parts = []
@@ -205,7 +254,8 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     match = start + m.start()
     if start < match:
       # Format the preceeding standard part.
-      parts.append(console_attr.DecodeFromInput(dt.strftime(fmt[start:match])))
+      parts.append(console_attr.DecodeFromInput(
+          _StrFtime(dt, fmt[start:match])))
 
     # Format the standard variant of the exetended spec. The extensions only
     # have one modifier char.
@@ -222,7 +272,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       alternate = None
     spec = fmt[match]
     std_fmt = '%' + spec
-    val = dt.strftime(std_fmt)
+    val = _StrFtime(dt, std_fmt)
 
     if spec == 'f':
       # Round the fractional part to n digits.
@@ -248,7 +298,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
 
   # Format the trailing part if any.
   if start < len(fmt):
-    parts.append(console_attr.DecodeFromInput(dt.strftime(fmt[start:])))
+    parts.append(console_attr.DecodeFromInput(_StrFtime(dt, fmt[start:])))
 
   # Combine the parts.
   return ''.join(parts)
@@ -301,16 +351,15 @@ def ParseDateTime(string, fmt=None, tzinfo=None):
     tzinfo: A default timezone tzinfo object to use if string has no timezone.
 
   Raises:
-    ValueError: Invalid date/time/duration syntax.
-    OverflowError: A date/time numeric constant exceeded the largest system
-      dependent integer value.
+    DateTimeSyntaxError: Invalid date/time/duration syntax.
+    DateTimeValueError: A date/time numeric constant exceeds its range.
 
   Returns:
     A datetime.datetime object for the given date/time string.
   """
   # Check explicit format first.
   if fmt:
-    dt = datetime.datetime.strptime(string, fmt)
+    dt = _StrPtime(string, fmt)
     return dt.replace(tzinfo=tzinfo or LOCAL)
 
   # Use tzgetter to determine if string contains an explicit timezone name or
@@ -318,19 +367,24 @@ def ParseDateTime(string, fmt=None, tzinfo=None):
   tzgetter = _TzInfoOrOffsetGetter()
   try:
     # Check if it's a datetime string.
-    dt = parser.parse(string, tzinfos=tzgetter.Get)
+    defaults = GetDateTimeDefaults(tzinfo=tzinfo)
+    dt = parser.parse(string, tzinfos=tzgetter.Get, default=defaults)
     if tzinfo and not tzgetter.timezone_was_specified:
       # The string had no timezone name or offset => localize dt to tzinfo.
-      dt = parser.parse(string, tzinfos=None)
+      dt = parser.parse(string, tzinfos=None, default=defaults)
       dt = dt.replace(tzinfo=tzinfo)
-  except (OverflowError, ValueError) as e:
-    try:
-      # Check if its an iso_duration string.
-      dt = ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
-    except (OverflowError, ValueError):
-      # Raise the datetime parse error.
-      raise e
-  return dt
+    return dt
+  except OverflowError as e:
+    exc = DateTimeValueError
+  except (AttributeError, ValueError) as e:
+    exc = DateTimeSyntaxError
+
+  try:
+    # Check if its an iso_duration string.
+    return ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
+  except Error:
+    # Not a duration - reraise the datetime parse error.
+    raise exc(unicode(e))
 
 
 def GetDateTimeFromTimeStamp(timestamp, tzinfo=None):
@@ -342,10 +396,16 @@ def GetDateTimeFromTimeStamp(timestamp, tzinfo=None):
     tzinfo: A tzinfo object for the timestamp timezone or None for the local
       timezone.
 
+  Raises:
+    DateTimeValueError: A date/time numeric constant exceeds its range.
+
   Returns:
     The datetime object for a UNIX timestamp.
   """
-  return datetime.datetime.fromtimestamp(timestamp, tzinfo)
+  try:
+    return datetime.datetime.fromtimestamp(timestamp, tzinfo)
+  except ValueError as e:
+    raise DateTimeValueError(unicode(e))
 
 
 def GetTimeStampFromDateTime(dt):
@@ -388,6 +448,23 @@ def Now(tzinfo=None):
     A datetime object localized to the timezone tzinfo.
   """
   return datetime.datetime.now(tzinfo)
+
+
+def GetDateTimeDefaults(tzinfo=None):
+  """Returns a datetime object of default values for parsing partial datetimes.
+
+  The year, month and day default to today (right now), and the hour, minute,
+  second and fractional second values default to 0.
+
+  Args:
+    tzinfo: The timezone of the localized dt. If None then the result is naive,
+      otherwise it is aware.
+
+  Returns:
+    A datetime object of default values for parsing partial datetimes.
+  """
+  return datetime.datetime.combine(Now(tzinfo=tzinfo).date(),
+                                   datetime.time.min)
 
 
 def TzOffset(offset, name=None):

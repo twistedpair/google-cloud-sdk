@@ -16,5 +16,25 @@
 from googlecloudsdk.core import exceptions
 
 
-class DeploymentManagerError(exceptions.Error):
+class Error(exceptions.Error):
   """Exceptions for Deployment Manager errors."""
+
+
+class ArgumentError(Error):
+  """Command argument error."""
+
+
+class ConfigError(Error):
+  """Config file read, parse or content error."""
+
+
+class ManifestError(Error):
+  """Manfest read, parse or content error."""
+
+
+class OperationError(Error):
+  """Operation encountered an error."""
+
+
+class OperationTimeoutError(OperationError):
+  """Operation timed out."""

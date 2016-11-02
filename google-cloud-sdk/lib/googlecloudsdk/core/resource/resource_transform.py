@@ -204,10 +204,14 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
   # Check if r is a timestamp.
   try:
     timestamp = float(r) / float(unit)
-    dt = times.GetDateTimeFromTimeStamp(timestamp, tz_in)
-    return times.FormatDateTime(dt, format)
   except (TypeError, ValueError):
-    pass
+    timestamp = None
+  if timestamp is not None:
+    try:
+      dt = times.GetDateTimeFromTimeStamp(timestamp, tz_in)
+      return times.FormatDateTime(dt, format)
+    except times.Error:
+      pass
 
   # Check if r is a serialized datetime object.
   original_repr = resource_property.Get(r, ['datetime'], None)
@@ -219,7 +223,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
   try:
     dt = times.ParseDateTime(r, tzinfo=tz_in)
     return times.FormatDateTime(dt, format, tz_out)
-  except (AttributeError, ImportError, TypeError, ValueError):
+  except times.Error:
     pass
 
   def _FormatFromParts():
@@ -348,7 +352,7 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
         end_datetime = times.ParseDateTime(end_value)
       else:
         end_datetime = times.Now(tzinfo=start_datetime.tzinfo)
-    except (AttributeError, ImportError, TypeError, ValueError):
+    except times.Error:
       return undefined
 
     # Finally format the duration of the delta.
@@ -358,23 +362,28 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
 
   # Check if the resource is a float duration.
   try:
-    duration = times.ParseDuration('PT{0}S'.format(float(r) / unit),
-                                   calendar=calendar)
-    return duration.Format(parts=parts, precision=precision)
+    seconds = float(r) / float(unit)
   except (TypeError, ValueError):
-    pass
+    seconds = None
+  if seconds is not None:
+    try:
+      duration = times.ParseDuration('PT{0}S'.format(seconds),
+                                     calendar=calendar)
+      return duration.Format(parts=parts, precision=precision)
+    except times.Error:
+      pass
 
   # Check if the resource is an ISO 8601 duration.
   try:
     duration = times.ParseDuration(r)
     return duration.Format(parts=parts, precision=precision)
-  except (AttributeError, TypeError, ValueError):
+  except times.Error:
     pass
 
   # Check if the resource is a datetime.
   try:
     start_datetime = times.ParseDateTime(r)
-  except (AttributeError, ImportError, TypeError, ValueError):
+  except times.Error:
     return undefined
 
   # Format the duration of (now - r).

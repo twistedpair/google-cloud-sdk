@@ -15,32 +15,30 @@ class BigtableadminOperationsCancelRequest(_messages.Message):
   """A BigtableadminOperationsCancelRequest object.
 
   Fields:
-    operationsId: Part of `name`. The name of the operation resource to be
-      cancelled.
+    name: The name of the operation resource to be cancelled.
   """
 
-  operationsId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminOperationsDeleteRequest(_messages.Message):
   """A BigtableadminOperationsDeleteRequest object.
 
   Fields:
-    operationsId: Part of `name`. The name of the operation resource to be
-      deleted.
+    name: The name of the operation resource to be deleted.
   """
 
-  operationsId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminOperationsGetRequest(_messages.Message):
   """A BigtableadminOperationsGetRequest object.
 
   Fields:
-    operationsId: Part of `name`. The name of the operation resource.
+    name: The name of the operation resource.
   """
 
-  operationsId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminOperationsListRequest(_messages.Message):
@@ -48,13 +46,15 @@ class BigtableadminOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
+    name: The name of the operation collection.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
@@ -65,180 +65,114 @@ class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
     clusterId: The ID to be used when referring to the new cluster within its
       instance, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`.
-    instancesId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The unique name of the instance in which to
-      create the new cluster. Values are of the form
+    parent: The unique name of the instance in which to create the new
+      cluster. Values are of the form
       `projects/<project>/instances/<instance>/clusters/a-z*`.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
   clusterId = _messages.StringField(2)
-  instancesId = _messages.StringField(3, required=True)
-  projectsId = _messages.StringField(4, required=True)
+  parent = _messages.StringField(3, required=True)
 
 
 class BigtableadminProjectsInstancesClustersDeleteRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersDeleteRequest object.
 
   Fields:
-    clustersId: Part of `name`. See documentation of `projectsId`.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the cluster to be deleted.
-      Values are of the form
+    name: The unique name of the cluster to be deleted. Values are of the form
       `projects/<project>/instances/<instance>/clusters/<cluster>`.
   """
 
-  clustersId = _messages.StringField(1, required=True)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesClustersGetRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersGetRequest object.
 
   Fields:
-    clustersId: Part of `name`. See documentation of `projectsId`.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the requested cluster.
-      Values are of the form
+    name: The unique name of the requested cluster. Values are of the form
       `projects/<project>/instances/<instance>/clusters/<cluster>`.
   """
 
-  clustersId = _messages.StringField(1, required=True)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersListRequest object.
 
   Fields:
-    instancesId: Part of `parent`. See documentation of `projectsId`.
     pageToken: The value of `next_page_token` returned by a previous call.
-    projectsId: Part of `parent`. The unique name of the instance for which a
-      list of clusters is requested. Values are of the form
+    parent: The unique name of the instance for which a list of clusters is
+      requested. Values are of the form
       `projects/<project>/instances/<instance>`. Use `<instance> = '-'` to
       list Clusters for all Instances in a project, e.g.,
       `projects/myproject/instances/-`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
+  pageToken = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest object.
 
   Fields:
-    clustersId: Part of `name`. See documentation of `projectsId`.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the snapshot to be deleted.
-      Values are of the form `projects/<project>/instances/<instance>/clusters
-      /<cluster>/snapshots/<snapshot>`.
-    snapshotsId: Part of `name`. See documentation of `projectsId`.
+    name: The unique name of the snapshot to be deleted. Values are of the
+      form `projects/<project>/instances/<instance>/clusters/<cluster>/snapsho
+      ts/<snapshot>`.
   """
 
-  clustersId = _messages.StringField(1, required=True)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-  snapshotsId = _messages.StringField(4, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesClustersSnapshotsGetRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersSnapshotsGetRequest object.
 
   Fields:
-    clustersId: Part of `name`. See documentation of `projectsId`.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the requested snapshot.
-      Values are of the form `projects/<project>/instances/<instance>/clusters
-      /<cluster>/snapshots/<snapshot>`.
-    snapshotsId: Part of `name`. See documentation of `projectsId`.
+    name: The unique name of the requested snapshot. Values are of the form `p
+      rojects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<sna
+      pshot>`.
   """
 
-  clustersId = _messages.StringField(1, required=True)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-  snapshotsId = _messages.StringField(4, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesClustersSnapshotsListRequest(_messages.Message):
   """A BigtableadminProjectsInstancesClustersSnapshotsListRequest object.
 
   Fields:
-    clustersId: Part of `parent`. See documentation of `projectsId`.
-    instancesId: Part of `parent`. See documentation of `projectsId`.
     pageSize: The maximum number of snapshots to return.
     pageToken: The value of `next_page_token` returned by a previous call.
-    projectsId: Part of `parent`. The unique name of the cluster for which
-      snapshots should be listed. Values are of the form
+    parent: The unique name of the cluster for which snapshots should be
+      listed. Values are of the form
       `projects/<project>/instances/<instance>/clusters/<cluster>`.
   """
 
-  clustersId = _messages.StringField(1, required=True)
-  instancesId = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectsId = _messages.StringField(5, required=True)
-
-
-class BigtableadminProjectsInstancesClustersUpdateRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesClustersUpdateRequest object.
-
-  Fields:
-    cluster: A Cluster resource to be passed as the request body.
-    clustersId: Part of `name`. See documentation of `projectsId`.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. (`OutputOnly`) The unique name of the cluster.
-      Values are of the form
-      `projects/<project>/instances/<instance>/clusters/a-z*`.
-  """
-
-  cluster = _messages.MessageField('Cluster', 1)
-  clustersId = _messages.StringField(2, required=True)
-  instancesId = _messages.StringField(3, required=True)
-  projectsId = _messages.StringField(4, required=True)
-
-
-class BigtableadminProjectsInstancesCreateRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesCreateRequest object.
-
-  Fields:
-    createInstanceRequest: A CreateInstanceRequest resource to be passed as
-      the request body.
-    projectsId: Part of `parent`. The unique name of the project in which to
-      create the new instance. Values are of the form `projects/<project>`.
-  """
-
-  createInstanceRequest = _messages.MessageField('CreateInstanceRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BigtableadminProjectsInstancesDeleteRequest(_messages.Message):
   """A BigtableadminProjectsInstancesDeleteRequest object.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the instance to be deleted.
-      Values are of the form `projects/<project>/instances/<instance>`.
+    name: The unique name of the instance to be deleted. Values are of the
+      form `projects/<project>/instances/<instance>`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesGetRequest(_messages.Message):
   """A BigtableadminProjectsInstancesGetRequest object.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the requested instance.
-      Values are of the form `projects/<project>/instances/<instance>`.
+    name: The unique name of the requested instance. Values are of the form
+      `projects/<project>/instances/<instance>`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesListRequest(_messages.Message):
@@ -246,13 +180,12 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
 
   Fields:
     pageToken: The value of `next_page_token` returned by a previous call.
-    projectsId: Part of `parent`. The unique name of the project for which a
-      list of instances is requested. Values are of the form
-      `projects/<project>`.
+    parent: The unique name of the project for which a list of instances is
+      requested. Values are of the form `projects/<project>`.
   """
 
   pageToken = _messages.StringField(1)
-  projectsId = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest(_messages.Message):
@@ -261,15 +194,12 @@ class BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest(_messages.Me
   Fields:
     createTableFromSnapshotRequest: A CreateTableFromSnapshotRequest resource
       to be passed as the request body.
-    instancesId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The unique name of the instance in which to
-      create the table. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: The unique name of the instance in which to create the table.
+      Values are of the form `projects/<project>/instances/<instance>`.
   """
 
   createTableFromSnapshotRequest = _messages.MessageField('CreateTableFromSnapshotRequest', 1)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesCreateRequest(_messages.Message):
@@ -278,31 +208,23 @@ class BigtableadminProjectsInstancesTablesCreateRequest(_messages.Message):
   Fields:
     createTableRequest: A CreateTableRequest resource to be passed as the
       request body.
-    instancesId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The unique name of the instance in which to
-      create the table. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: The unique name of the instance in which to create the table.
+      Values are of the form `projects/<project>/instances/<instance>`.
   """
 
   createTableRequest = _messages.MessageField('CreateTableRequest', 1)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesDeleteRequest(_messages.Message):
   """A BigtableadminProjectsInstancesTablesDeleteRequest object.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the table to be deleted.
-      Values are of the form
+    name: The unique name of the table to be deleted. Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
-    tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  tablesId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminProjectsInstancesTablesDropRowRangeRequest(_messages.Message):
@@ -311,17 +233,13 @@ class BigtableadminProjectsInstancesTablesDropRowRangeRequest(_messages.Message)
   Fields:
     dropRowRangeRequest: A DropRowRangeRequest resource to be passed as the
       request body.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the table on which to drop
-      a range of rows. Values are of the form
+    name: The unique name of the table on which to drop a range of rows.
+      Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
-    tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
   dropRowRangeRequest = _messages.MessageField('DropRowRangeRequest', 1)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-  tablesId = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
@@ -332,11 +250,8 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
       fields. Defaults to SCHEMA_ONLY if unspecified.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the requested table. Values
-      are of the form
+    name: The unique name of the requested table. Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
-    tablesId: Part of `name`. See documentation of `projectsId`.
     view: The view to be applied to the returned table's fields. Defaults to
       SCHEMA_ONLY if unspecified.
   """
@@ -356,10 +271,8 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
     SCHEMA_VIEW = 2
     FULL = 3
 
-  instancesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  tablesId = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
@@ -371,11 +284,9 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       supported).
 
   Fields:
-    instancesId: Part of `parent`. See documentation of `projectsId`.
     pageToken: The value of `next_page_token` returned by a previous call.
-    projectsId: Part of `parent`. The unique name of the instance for which
-      tables should be listed. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: The unique name of the instance for which tables should be listed.
+      Values are of the form `projects/<project>/instances/<instance>`.
     view: The view to be applied to the returned tables' fields. Defaults to
       NAME_ONLY if unspecified (no others are currently supported).
   """
@@ -395,64 +306,38 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
     SCHEMA_VIEW = 2
     FULL = 3
 
-  instancesId = _messages.StringField(1, required=True)
-  pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  pageToken = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.Message):
   """A BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest object.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
     modifyColumnFamiliesRequest: A ModifyColumnFamiliesRequest resource to be
       passed as the request body.
-    projectsId: Part of `name`. The unique name of the table whose families
-      should be modified. Values are of the form
+    name: The unique name of the table whose families should be modified.
+      Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
-    tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  modifyColumnFamiliesRequest = _messages.MessageField('ModifyColumnFamiliesRequest', 2)
-  projectsId = _messages.StringField(3, required=True)
-  tablesId = _messages.StringField(4, required=True)
+  modifyColumnFamiliesRequest = _messages.MessageField('ModifyColumnFamiliesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesTablesSnapshotRequest(_messages.Message):
   """A BigtableadminProjectsInstancesTablesSnapshotRequest object.
 
   Fields:
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The unique name of the table to have the
-      snapshot taken. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: The unique name of the table to have the snapshot taken. Values are
+      of the form `projects/<project>/instances/<instance>/tables/<table>`.
     snapshotTableRequest: A SnapshotTableRequest resource to be passed as the
       request body.
-    tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
-  instancesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  snapshotTableRequest = _messages.MessageField('SnapshotTableRequest', 3)
-  tablesId = _messages.StringField(4, required=True)
-
-
-class BigtableadminProjectsInstancesUpdateRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesUpdateRequest object.
-
-  Fields:
-    instance: A Instance resource to be passed as the request body.
-    instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. (`OutputOnly`) The unique name of the
-      instance. Values are of the form
-      `projects/<project>/instances/a-z+[a-z0-9]`.
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  instancesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
+  snapshotTableRequest = _messages.MessageField('SnapshotTableRequest', 2)
 
 
 class Cluster(_messages.Message):

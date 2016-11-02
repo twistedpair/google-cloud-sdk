@@ -111,7 +111,7 @@ class _Command(object):
 #
 #     from googlecloudsdk.api_lib.app import util
 #     STAGING_REGISTRY = {
-#       ('intercal', util.Environment.FLEXIBLE):
+#       ('intercal', util.Environment.FLEX):
 #           _Command(
 #               os.path.join('command_dir', 'stage-intercal-flex.sh'),
 #               os.path.join('command_dir', 'stage-intercal-flex.exe'),
@@ -123,6 +123,10 @@ class _Command(object):
 #               component='app-engine-intercal'),
 #     }
 _STAGING_REGISTRY = {}
+
+# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
+# same key is used.
+_STAGING_REGISTRY_BETA = {}
 
 
 _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
@@ -211,8 +215,17 @@ class Stager(object):
 
 
 def GetStager():
+  """Get the default stager."""
   return Stager(_STAGING_REGISTRY)
 
 
+def GetBetaStager():
+  """Get the beta stager, used for `gcloud beta *` commands."""
+  registry = _STAGING_REGISTRY.copy()
+  registry.update(_STAGING_REGISTRY_BETA)
+  return Stager(registry)
+
+
 def GetNoopStager():
+  """Get a stager with an empty registry."""
   return Stager({})

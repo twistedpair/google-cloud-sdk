@@ -161,14 +161,26 @@ def AddCacheKeyIncludeQueryString(parser, default):
       action='store_true',
       default=default,
       help='Enable including query string in cache key.')
-  cache_key_include_query_string.detailed_help = """\
-      Enable including query string in cache key. If enabled, the query string
-      parameters will be included according to
-      --cache-key-query-string-whitelist and --cache-key-query-string-blacklist.
-      If neither is set, the entire query string will be included. If disabled,
-      then the query string will be excluded from the cache key entirely. Can
-      only be applied for global resources.
-      """
+  update_command = default is None
+  if update_command:
+    cache_key_include_query_string.detailed_help = """\
+        Enable including query string in cache key. If enabled, the query string
+        parameters will be included according to
+        --cache-key-query-string-whitelist and
+        --cache-key-query-string-blacklist. If disabled, the entire query string
+        will be excluded. Use "--cache-key-query-string-blacklist=" (sets the
+        blacklist to the empty list) to include the entire query string. Can
+        only be applied for global resources.
+        """
+  else:  # create command
+    cache_key_include_query_string.detailed_help = """\
+        Enable including query string in cache key. If enabled, the query string
+        parameters will be included according to
+        --cache-key-query-string-whitelist and
+        --cache-key-query-string-blacklist. If neither is set, the entire query
+        string will be included. If disabled, then the entire query string will
+        be excluded. Can only be applied for global resources.
+        """
 
 
 def AddCacheKeyQueryStringList(parser):
@@ -189,7 +201,7 @@ def AddCacheKeyQueryStringList(parser):
       """
   cache_key_query_string_blacklist = cache_key_query_string_list.add_argument(
       '--cache-key-query-string-blacklist',
-      type=arg_parsers.ArgList(min_length=1),
+      type=arg_parsers.ArgList(),
       metavar='QUERY_STRING',
       default=None,
       help=('Specifies a comma separated list of query string parameters'

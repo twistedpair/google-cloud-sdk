@@ -85,7 +85,7 @@ def TransformMasterVersion(r, undefined=''):
       else:
         version += ' (! {0} days left !)'.format(time_left.days)
     return version
-  except (ValueError, TypeError):
+  except times.Error:
     return undefined
   return version
 

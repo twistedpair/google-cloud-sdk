@@ -27,8 +27,8 @@ MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     completion_resource_id='compute.instanceGroups',
     zonal_collection='compute.instanceGroups',
     regional_collection='compute.regionInstanceGroups',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
-    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
 
 ZONAL_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
@@ -49,8 +49,8 @@ MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     completion_resource_id='compute.regionInstanceGroupManagers',
     zonal_collection='compute.instanceGroupManagers',
     regional_collection='compute.regionInstanceGroupManagers',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
-    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
 
 MULTISCOPE_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
@@ -59,8 +59,8 @@ MULTISCOPE_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
     completion_resource_id='compute.regionInstanceGroupManagers',
     zonal_collection='compute.instanceGroupManagers',
     regional_collection='compute.regionInstanceGroupManagers',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
-    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
 
 
 def AddGroupArg(parser):

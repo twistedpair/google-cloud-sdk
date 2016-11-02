@@ -20,8 +20,8 @@ import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.deployment_manager import exceptions
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 
 import requests
 import yaml
@@ -73,8 +73,8 @@ class _ImportFile(_BaseImport):
         with open(self.full_path, 'r') as resource:
           self.content = resource.read()
       except IOError as e:
-        raise exceptions.BadFileException("Unable to read file '%s'. %s"
-                                          % (self.full_path, e.message))
+        raise exceptions.ConfigError(
+            "Unable to read file '%s'. %s" % (self.full_path, e.message))
     return self.content
 
   def BuildChildPath(self, child_path):
@@ -146,15 +146,15 @@ class _ImportUrl(_BaseImport):
     parsed_url = urlparse.urlparse(url)
 
     if parsed_url.scheme not in ('http', 'https'):
-      raise exceptions.BadFileException(
+      raise exceptions.ConfigError(
           "URL '%s' scheme was '%s'; it must be either 'https' or 'http'."
           % (url, parsed_url.scheme))
 
     if not parsed_url.path or parsed_url.path == '/':
-      raise exceptions.BadFileException("URL '%s' doesn't have a path." % url)
+      raise exceptions.ConfigError("URL '%s' doesn't have a path." % url)
 
     if parsed_url.params or parsed_url.query or parsed_url.fragment:
-      raise exceptions.BadFileException(
+      raise exceptions.ConfigError(
           "URL '%s' should only have a path, no params, queries, or fragments."
           % url)
 
@@ -186,7 +186,7 @@ def _GetYamlImports(import_object):
     file to import. If no name was found, we populate it with the value of path.
 
   Raises:
-   BadFileException: If we cannont read the file, the yaml is malformed, or
+   ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
   try:
@@ -198,7 +198,7 @@ def _GetYamlImports(import_object):
       # Validate the yaml imports, and make sure the optional name is set.
       for i in imports:
         if PATH not in i:
-          raise exceptions.BadFileException(
+          raise exceptions.ConfigError(
               'Missing required field %s in import in file %s.'
               % (PATH, import_object.full_path))
         # Populate the name field.
@@ -206,8 +206,8 @@ def _GetYamlImports(import_object):
           i[NAME] = i[PATH]
     return imports
   except yaml.YAMLError as e:
-    raise exceptions.BadFileException('Invalid yaml file %s. %s'
-                                      % (import_object.full_path, str(e)))
+    raise exceptions.ConfigError(
+        'Invalid yaml file %s. %s' % (import_object.full_path, str(e)))
 
 
 def _GetImportObjects(parent_object):
@@ -220,7 +220,7 @@ def _GetImportObjects(parent_object):
     A list of import objects representing the files imported by the parent.
 
   Raises:
-    BadFileException: If we cannont read the file, the yaml is malformed, or
+    ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
   yaml_imports = _GetYamlImports(parent_object)
@@ -244,7 +244,7 @@ def _HandleTemplateImport(import_object):
     List of import_objects that the schema is importing.
 
   Raises:
-    BadFileException: If any of the schema's imported items are missing the
+    ConfigError: If any of the schema's imported items are missing the
         'path' field.
   """
   schema_path = import_object.GetFullPath() + '.schema'
@@ -276,7 +276,7 @@ def _CreateImports(messages, config_object):
     List of ImportFiles containing the name and content of the imports.
 
   Raises:
-    BadFileException: if the import files cannot be read from the specified
+    ConfigError: if the import files cannot be read from the specified
         location, the import does not have a 'path' attribute, or the filename
         has already been imported.
   """
@@ -308,7 +308,7 @@ def _CreateImports(messages, config_object):
         process_object = False
       else:
         # If the full path is different, fail.
-        raise exceptions.BadFileException(
+        raise exceptions.ConfigError(
             'Files %s and %s both being imported as %s.' %
             (import_object.GetFullPath(),
              import_resource_map[import_object.GetName()],
@@ -358,14 +358,14 @@ def _BuildConfig(full_path, properties):
     A tuple of base_path, config_contents, and a list of import objects.
 
   Raises:
-    DeploymentManagerError: If using the properties flag for a config file
+    ArgumentError: If using the properties flag for a config file
         instead of a template.
   """
   config_obj = _BuildImportObject(full_path)
 
   if not config_obj.IsTemplate():
     if properties:
-      raise DeploymentManagerError(
+      raise exceptions.ArgumentError(
           'The properties flag should only be used '
           'when passing in a template as your config file.')
 
@@ -405,8 +405,8 @@ def _BuildConfig(full_path, properties):
               {'name': output_name,
                'value': '$(ref.' + config_name + '.' + output_name + ')'})
     except yaml.YAMLError as e:
-      raise exceptions.BadFileException('Invalid schema file %s. %s' %
-                                        (schema_path, str(e)))
+      raise exceptions.ConfigError(
+          'Invalid schema file %s. %s' % (schema_path, str(e)))
 
   if custom_outputs:
     custom_dict['outputs'] = custom_outputs
@@ -432,7 +432,7 @@ def BuildTargetConfig(messages, full_path, properties=None):
     contents of any imports.
 
   Raises:
-    BadFileException: if the config file or import files cannot be read from
+    ConfigError: if the config file or import files cannot be read from
         the specified locations, or if they are malformed.
   """
   config_object = _BuildConfig(full_path, properties)
@@ -465,7 +465,7 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
   Raises:
     HttpException: in the event that there is a failure to pull the manifest
         from deployment manager
-    DeploymentManagerError: When the manifest being revived has more than one
+    ManifestError: When the manifest being revived has more than one
         resource
   """
   try:
@@ -479,15 +479,16 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
     config_file = manifest.config
     imports = manifest.imports
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(error)
+    raise api_exceptions.HttpException(error)
 
   # If properties were specified, then we need to ensure that the
   # configuration in the manifest retrieved has only a single resource.
   if properties:
     config_yaml = yaml.load(config_file.content)
     if len(config_yaml['resources']) != 1:
-      raise DeploymentManagerError('Manifest reuse with properties requires '
-                                   'there only be a single resource.')
+      raise exceptions.ManifestError(
+          'Manifest reuse with properties requires '
+          'there only be a single resource.')
     single_resource = config_yaml['resources'][0]
     if not single_resource.has_key('properties'):
       single_resource['properties'] = {}

@@ -675,6 +675,11 @@ class _SectionCore(_Section):
         'run `gcloud auth list` to see the accounts you currently have '
         'available.',
         callbacks=[_GetDevshellAccount, _GetGCEAccount])
+    self.disable_collection_path_deprecation_warning = self._AddBool(
+        'disable_collection_path_deprecation_warning',
+        hidden=True,
+        help_text='If False, any usage of collection paths will result in '
+                  'deprecation warning. Set it to False to disable it.')
     self.default_regional_backend_service = self._AddBool(
         'default_regional_backend_service',
         help_text='If True, backend services in `gcloud compute '

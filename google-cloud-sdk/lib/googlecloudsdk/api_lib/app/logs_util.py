@@ -133,8 +133,9 @@ class LogPrinter(object):
     text = text.strip().replace('\n', '  ')
 
     try:
-      time = times.ParseDateTime(entry.timestamp).strftime(self.api_time_format)
-    except ValueError:
+      time = times.FormatDateTime(times.ParseDateTime(entry.timestamp),
+                                  self.api_time_format)
+    except times.Error:
       log.warn('Received timestamp [{0}] does not match expected'
                ' format.'.format(entry.timestamp))
       time = '????-??-?? ??:??:??'

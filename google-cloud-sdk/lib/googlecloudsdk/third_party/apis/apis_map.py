@@ -73,12 +73,6 @@ MAP = {
         ),
     },
     'appengine': {
-        'v1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.appengine.v1',
-            client_classpath='appengine_v1_client.AppengineV1',
-            messages_modulepath='appengine_v1_messages',
-            default_version=False
-        ),
         'v1beta5': APIDef(
             class_path='googlecloudsdk.third_party.apis.appengine.v1beta5',
             client_classpath='appengine_v1beta5_client.AppengineV1beta5',
@@ -169,6 +163,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1',
             client_classpath='cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1',
             messages_modulepath='cloudresourcemanager_v1beta1_messages',
+            default_version=False
+        ),
+        'v2alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v2alpha1',
+            client_classpath='cloudresourcemanager_v2alpha1_client.CloudresourcemanagerV2alpha1',
+            messages_modulepath='cloudresourcemanager_v2alpha1_messages',
             default_version=False
         ),
     },

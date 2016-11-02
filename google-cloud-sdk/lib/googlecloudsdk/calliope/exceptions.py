@@ -31,6 +31,41 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 
 
+def NewErrorFromCurrentException(error, *args):
+  """Creates a new error based on the current exception being handled.
+
+  If no exception is being handled, a new error with the given args
+  is created.  If there is a current exception, the original exception is
+  first logged (to file only).  A new error is then created with the
+  same args as the current one.
+
+  Args:
+    error: The new error to create.
+    *args: The standard args taken by the constructor of Exception for the new
+      exception that is created.  If None, the args from the exception
+      currently being handled will be used.
+
+  Returns:
+    The generated error exception.
+  """
+  (_, current_exception, _) = sys.exc_info()
+
+  # Log original exception details and traceback to the log file if we are
+  # currently handling an exception.
+  if current_exception:
+    file_logger = log.file_only_logger
+    file_logger.error('Handling the source of a tool exception, '
+                      'original details follow.')
+    file_logger.exception(current_exception)
+
+  if args:
+    return error(*args)
+  elif current_exception:
+    return error(*current_exception.args)
+  return error('An unknown error has occurred')
+
+
+# TODO(b/32328530): Remove ToolException when the last ref is gone
 class ToolException(core_exceptions.Error):
   """ToolException is for Run methods to throw for non-code-bug errors.
 
@@ -41,36 +76,7 @@ class ToolException(core_exceptions.Error):
 
   @staticmethod
   def FromCurrent(*args):
-    """Creates a new ToolException based on the current exception being handled.
-
-    If no exception is being handled, a new ToolException with the given args
-    is created.  If there is a current exception, the original exception is
-    first logged (to file only).  A new ToolException is then created with the
-    same args as the current one.
-
-    Args:
-      *args: The standard args taken by the constructor of Exception for the new
-        exception that is created.  If None, the args from the exception
-        currently being handled will be used.
-
-    Returns:
-      The generated ToolException.
-    """
-    (_, current_exception, _) = sys.exc_info()
-
-    # Log original exception details and traceback to the log file if we are
-    # currently handling an exception.
-    if current_exception:
-      file_logger = log.file_only_logger
-      file_logger.error('Handling the source of a tool exception, '
-                        'original details follow.')
-      file_logger.exception(current_exception)
-
-    if args:
-      return ToolException(*args)
-    elif current_exception:
-      return ToolException(*current_exception.args)
-    return ToolException('An unknown error has occurred')
+    return NewErrorFromCurrentException(ToolException, *args)
 
 
 class ExitCodeNoError(core_exceptions.Error):
@@ -91,13 +97,14 @@ class FailedSubCommand(core_exceptions.Error):
         exit_code=code)
 
 
-def RaiseToolExceptionInsteadOf(*error_types):
-  """RaiseToolExceptionInsteadOf is a decorator that re-raises as ToolException.
+def RaiseErrorInsteadOf(error, *error_types):
+  """A decorator that re-raises as an error.
 
   If any of the error_types are raised in the decorated function, this decorator
-  will re-raise the as a ToolException.
+  will re-raise as an error.
 
   Args:
+    error: Exception, The new exception to raise.
     *error_types: [Exception], A list of exception types that this decorator
         will watch for.
 
@@ -116,9 +123,15 @@ def RaiseToolExceptionInsteadOf(*error_types):
         # element is an instance, it is used as the type and instance and the
         # second element must be None.  This preserves the original traceback.
         # pylint:disable=nonstandard-exception, ToolException is an Exception.
-        raise ToolException.FromCurrent(), None, exc_traceback
+        raise NewErrorFromCurrentException(error), None, exc_traceback
     return TryFunc
   return Wrap
+
+
+# TODO(b/32328530): Remove RaiseToolExceptionInsteadOf when the last ref is gone
+def RaiseToolExceptionInsteadOf(*error_types):
+  """A decorator that re-raises as ToolException."""
+  return RaiseErrorInsteadOf(ToolException, *error_types)
 
 
 def _TruncateToLineWidth(string, align, width, fill=''):

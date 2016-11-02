@@ -54,6 +54,12 @@ def RemovePrivateInformationFromTraceback(traceback):
       continue
     remove_path_stacktrace_list.append(line)
 
+  # Last line will be the exception type followed by message.
+  # Remove the message since it could contain PII.
+  exception_line = remove_path_stacktrace_list[-1]
+  exception_line = exception_line.split(':', 1)[0]
+  remove_path_stacktrace_list[-1] = exception_line
+
   formatted_stacktrace = '\n'.join(
       line for line in remove_path_stacktrace_list) + '\n'
   return formatted_stacktrace

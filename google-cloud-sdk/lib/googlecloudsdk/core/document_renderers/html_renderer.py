@@ -14,6 +14,7 @@
 
 """Cloud SDK markdown document HTML renderer."""
 
+import collections
 import re
 
 from googlecloudsdk.core.document_renderers import renderer
@@ -377,7 +378,9 @@ class HTMLRenderer(renderer.Renderer):
     self._out.write('<dl class="notopmargin"><dt class="hangingindent">'
                     '<span class="normalfont">\n')
     nest = 0
-    for c in line:
+    chars = collections.deque(line)
+    while chars:
+      c = chars.popleft()
       if c in '[(':
         nest += 1
         if nest == 1:
@@ -386,6 +389,9 @@ class HTMLRenderer(renderer.Renderer):
         nest -= 1
         if not nest:
           c += '</nobr>'
+      elif nest == 1 and c == ' ' and chars and chars[0] == '|':
+        # A top level group has nest == 1. 4 &nbsp; is aesthetically pleasing.
+        c = '</nobr> <nobr>&nbsp;&nbsp;&nbsp;&nbsp;' + chars.popleft()
       self._out.write(c)
     self._out.write('\n</span></dt></dl>\n')
 

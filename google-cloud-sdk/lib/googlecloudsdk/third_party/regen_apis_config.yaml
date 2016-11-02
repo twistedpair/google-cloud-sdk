@@ -52,6 +52,8 @@ apis:
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
+      resources:
+        projects: "projects/{projectId}"
   bigtableclusteradmin:
     v1:
       discovery_doc: bigtableclusteradmin_v1.json
@@ -91,6 +93,8 @@ apis:
     v1:
       discovery_doc: cloudresourcemanager_v1.json
       default: true
+    v2alpha1:
+      discovery_doc: cloudresourcemanager_v2alpha1.json
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json
@@ -198,4 +202,3 @@ apis:
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
-

@@ -16,8 +16,8 @@
 from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 
-from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
+from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import labels_util
 
@@ -55,12 +55,13 @@ def Get(project_ref):
     raise projects_util.ConvertHttpError(error)
 
 
-def Create(project_ref, display_name=None, update_labels=None):
+def Create(project_ref, display_name=None, parent=None, update_labels=None):
   """Create a new project.
 
   Args:
     project_ref: The identifier for the project
     display_name: Optional display name for the project
+    parent: Optional for the project (ex. folders/123 or organizations/5231)
     update_labels: Optional labels to apply to the project
 
   Returns:
@@ -73,6 +74,7 @@ def Create(project_ref, display_name=None, update_labels=None):
       messages.Project(
           projectId=project_ref.Name(),
           name=display_name if display_name else project_ref.Name(),
+          parent=parent,
           labels=labels_util.UpdateLabels(
               None, messages.Project.LabelsValue, update_labels=update_labels)))
 
@@ -105,7 +107,10 @@ def Undelete(project_ref):
   return projects_util.DeletedResource(project_ref.Name())
 
 
-def Update(project_ref, name=None, organization=None, update_labels=None,
+def Update(project_ref,
+           name=None,
+           parent=None,
+           update_labels=None,
            remove_labels=None):
   """Update project information."""
   client = projects_util.GetClient()
@@ -120,10 +125,10 @@ def Update(project_ref, name=None, organization=None, update_labels=None,
 
   if name:
     project.name = name
-  if organization:
-    if project.parent is not None:
-      raise errors.ProjectMoveError(project, organization)
-    project.parent = messages.ResourceId(id=organization, type='organization')
+
+  if parent:
+    project.parent = parent
+
   project.labels = labels_util.UpdateLabels(project.labels,
                                             messages.Project.LabelsValue,
                                             update_labels=update_labels,
@@ -197,3 +202,15 @@ def RemoveIamPolicyBinding(project_ref, member, role):
     return SetIamPolicy(project_ref, policy)
   except exceptions.HttpError as error:
     raise projects_util.ConvertHttpError(error)
+
+
+def ParentNameToResourceId(parent_name):
+  messages = projects_util.GetMessages()
+  if not parent_name:
+    return None
+  elif parent_name.startswith('folders/'):
+    return messages.ResourceId(
+        id=folders.FolderNameToId(parent_name), type='folder')
+  elif parent_name.startswith('organizations/'):
+    return messages.ResourceId(
+        id=parent_name[len('organizations/'):], type='organization')

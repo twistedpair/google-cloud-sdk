@@ -39,6 +39,10 @@ from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
 
 
+_MUTEX_GROUP_REQUIRED_DESCRIPTION = 'Exactly one of these must be specified:'
+_MUTEX_GROUP_OPTIONAL_DESCRIPTION = 'At most one of these may be specified:'
+
+
 class ArgumentException(Exception):
   """ArgumentException is for problems with the provided arguments."""
   pass
@@ -583,6 +587,15 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
         parser, namespace, values, option_string=option_string)
 
 
+class ArgumentGroupAttr(object):
+  """Argument group attributes."""
+
+  def __init__(self, description=None, is_mutex=False, is_required=False):
+    self.description = description
+    self.is_mutex = is_mutex
+    self.is_required = is_required
+
+
 class ArgumentInterceptor(object):
   """ArgumentInterceptor intercepts calls to argparse parsers.
 
@@ -612,14 +625,17 @@ class ArgumentInterceptor(object):
       self.defaults = {}
       self.required = []
       self.dests = []
+      self.group_attr = {}
+      self.argument_groups = {}
       self.mutex_groups = {}
       self.required_mutex_groups = set()
       self.positional_args = []
       self.flag_args = []
       self.ancestor_flag_args = []
+      self.groups = {}
 
   def __init__(self, parser, is_root, cli_generator, allow_positional,
-               data=None, mutex_group_id=None):
+               data=None, mutex_group_id=None, argument_group_id=None):
     self.parser = parser
     self.is_root = is_root
     self.cli_generator = cli_generator
@@ -633,22 +649,27 @@ class ArgumentInterceptor(object):
       self.data = ArgumentInterceptor.ParserData(
           command_name=self.parser._calliope_command.GetPath())
     self.mutex_group_id = mutex_group_id
+    self.argument_group_id = argument_group_id
 
   @property
   def defaults(self):
     return self.data.defaults
-
-  # pylint: disable=g-bad-name
-  def is_mutex_group_required(self, group_id):
-    return group_id in self.required_mutex_groups
 
   @property
   def required(self):
     return self.data.required
 
   @property
+  def group_attr(self):
+    return self.data.group_attr
+
+  @property
   def dests(self):
     return self.data.dests
+
+  @property
+  def argument_groups(self):
+    return self.data.argument_groups
 
   @property
   def mutex_groups(self):
@@ -741,6 +762,30 @@ class ArgumentInterceptor(object):
       self.mutex_groups[dest] = self.mutex_group_id
       if self.parser.required:
         self.required_mutex_groups.add(self.mutex_group_id)
+        self.group_attr[self.mutex_group_id] = ArgumentGroupAttr(
+            description=_MUTEX_GROUP_REQUIRED_DESCRIPTION,
+            is_mutex=True,
+            is_required=True,
+        )
+      else:
+        self.group_attr[self.mutex_group_id] = ArgumentGroupAttr(
+            description=_MUTEX_GROUP_OPTIONAL_DESCRIPTION,
+            is_mutex=True,
+            is_required=False,
+        )
+    elif self.argument_group_id:
+      self.argument_groups[dest] = self.argument_group_id
+      if self.parser.description:
+        description = self.parser.description
+      elif self.parser.title:
+        description = self.parser.title.rstrip('.') + ':'
+      else:
+        description = None
+      self.group_attr[self.argument_group_id] = ArgumentGroupAttr(
+          description=description,
+          is_mutex=False,
+          is_required=False,
+      )
     if required:
       self.required.append(dest)
     self.dests.append(dest)
@@ -812,7 +857,8 @@ class ArgumentInterceptor(object):
                                is_root=self.is_root,
                                cli_generator=self.cli_generator,
                                allow_positional=self.allow_positional,
-                               data=self.data)
+                               data=self.data,
+                               argument_group_id=id(new_parser))
 
   def add_mutually_exclusive_group(self, **kwargs):
     new_parser = self.parser.add_mutually_exclusive_group(**kwargs)

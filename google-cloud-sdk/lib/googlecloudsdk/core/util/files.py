@@ -509,8 +509,9 @@ class TemporaryDirectory(object):
         raise
       message = (u'Got exception {0}'
                  u'while another exception was active {1} [{2}]'
-                 .format(traceback.format_exc(),
-                         prev_exc_type, prev_exc_val))
+                 .format(console_attr.DecodeFromInput(traceback.format_exc()),
+                         prev_exc_type,
+                         console_attr.DecodeFromInput(prev_exc_val)))
       raise prev_exc_type, message, prev_exc_trace
     # always return False so any exceptions will be re-raised
     return False
@@ -616,6 +617,30 @@ class Checksum(object):
       directory tree.
     """
     return self.__files
+
+  @staticmethod
+  def FromSingleFile(input_path):
+    """Creates a Checksum containing one file.
+
+    Args:
+      input_path: str, The file path of the contents to add.
+
+    Returns:
+      Checksum, The checksum containing the file.
+    """
+    return Checksum().AddFileContents(input_path)
+
+  @staticmethod
+  def HashSingleFile(input_path):
+    """Gets the hex digest of a single file.
+
+    Args:
+      input_path: str, The file path of the contents to add.
+
+    Returns:
+      str, The checksum digest of the file as a hex string.
+    """
+    return Checksum.FromSingleFile(input_path).HexDigest()
 
 
 def OpenForWritingPrivate(path, access_mode='w'):

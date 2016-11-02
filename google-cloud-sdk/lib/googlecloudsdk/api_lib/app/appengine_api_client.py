@@ -14,6 +14,7 @@
 """Functions for creating a client to talk to the App Engine Admin API."""
 
 import json
+import operator
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.app import instances_util
@@ -483,6 +484,14 @@ class AppengineApiClient(object):
                 key=key, value=value))
       version_resource.betaSettings = self.messages.Version.BetaSettingsValue(
           additionalProperties=attributes)
+
+    # The files in the deployment manifest also need to be sorted for unit
+    # testing purposes.
+    try:
+      version_resource.deployment.files.additionalProperties.sort(
+          key=operator.attrgetter('key'))
+    except AttributeError:  # manifest not present, or no files in manifest
+      pass
 
     # Add an ID for the version which is to be created.
     version_resource.id = version_id
