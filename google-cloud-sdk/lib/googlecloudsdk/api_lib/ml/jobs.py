@@ -121,19 +121,25 @@ class LogFetcher(object):
 
   LOG_BATCH_SIZE = 5000
 
-  def __init__(self, job_id, polling_interval, allow_multiline_logs):
+  def __init__(self, job_id, polling_interval, allow_multiline_logs,
+               task_name=None):
     self.job_id = job_id
     self.polling_interval = polling_interval
     self.log_position = LogPosition()
     self.allow_multiline_logs = allow_multiline_logs
     self.client = apis.GetClientInstance('ml', 'v1beta1')
+    self.task_name = task_name
 
-  def GetLogs(self, log_position):
+  def GetLogs(self, log_position, utcnow=None):
     """Retrieve a batch of logs."""
+    if utcnow is None:
+      utcnow = datetime.datetime.utcnow()
     filters = ['resource.type="ml_job"',
                'resource.labels.job_id="{0}"'.format(self.job_id),
                log_position.GetFilterLowerBound(),
-               log_position.GetFilterUpperBound(datetime.datetime.utcnow())]
+               log_position.GetFilterUpperBound(utcnow)]
+    if self.task_name:
+      filters.append('resource.labels.task_name="{}"'.format(self.task_name))
     return logging_common.FetchLogs(
         log_filter=' AND '.join(filters),
         order_by='ASC',
@@ -173,7 +179,7 @@ class LogFetcher(object):
     periods_without_progress = 0
     last_progress_time = datetime.datetime.utcnow()
     while True:
-      log_retriever = self.GetLogs(self.log_position)
+      log_retriever = self.GetLogs(log_position=self.log_position)
       made_progress = False
       while True:
         try:

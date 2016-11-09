@@ -163,3 +163,6 @@ def HandleGcloudCrash(err):
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')
+    log.err.Print('\nTo check gcloud for common problems, please run the '
+                  'following command:')
+    log.err.Print('  gcloud info --run-diagnostics')

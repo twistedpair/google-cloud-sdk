@@ -545,18 +545,18 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource):
   autoscaler_resource.name = new_name
 
 
-def BuildAutoscaler(args, messages, autoscaler_ref, igm_ref):
+def BuildAutoscaler(args, messages, igm_ref, name, zone=None, region=None):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(args, messages),
       description=args.description,
-      name=autoscaler_ref.Name(),
+      name=name,
       target=igm_ref.SelfLink(),
   )
-  if hasattr(igm_ref, 'zone'):
-    autoscaler.zone = autoscaler_ref.zone
-  if hasattr(igm_ref, 'region'):
-    autoscaler.region = autoscaler_ref.region
+  if zone:
+    autoscaler.zone = zone
+  if region:
+    autoscaler.region = region
   return autoscaler
 
 

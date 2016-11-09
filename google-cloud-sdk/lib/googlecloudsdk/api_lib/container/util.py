@@ -49,15 +49,22 @@ client [kubectl]. To install, run
   $ gcloud components install kubectl
 """
 
+_KUBECTL_COMPONENT_NAME = 'kubectl'
 
-# Verify that the kubectl component is installed or print a warning.
-def CheckKubectlInstalled():
+
+def _KubectlInstalledAsComponent():
   if config.Paths().sdk_root is not None:
     platform = platforms.Platform.Current()
     manager = update_manager.UpdateManager(platform_filter=platform, warn=False)
     installed_components = manager.GetCurrentVersionsInformation()
-    if 'kubectl' not in installed_components:
-      log.warn(MISSING_KUBECTL_MSG)
+    return _KUBECTL_COMPONENT_NAME in installed_components
+
+
+def CheckKubectlInstalled():
+  """Verify that the kubectl component is installed or print a warning."""
+  if (not file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME) and
+      not _KubectlInstalledAsComponent()):
+    log.warn(MISSING_KUBECTL_MSG)
 
 
 KUBECONFIG_USAGE_FMT = '''\

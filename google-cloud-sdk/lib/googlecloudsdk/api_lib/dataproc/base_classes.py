@@ -70,7 +70,7 @@ class JobSubmitter(base.Command):
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
 
-    self._staging_dir = self.GetStagingDir(cluster)
+    self._staging_dir = self.GetStagingDir(cluster, job_ref.jobId)
     self.ValidateAndStageFiles()
 
     job = messages.Job(
@@ -143,12 +143,14 @@ class JobSubmitter(base.Command):
               self.files_to_stage, self._staging_dir))
       storage_helpers.Upload(self.files_to_stage, self._staging_dir)
 
-  def GetStagingDir(self, cluster):
+  def GetStagingDir(self, cluster, job_id):
     """Determine the GCS directory to stage job resources in."""
-    # Get bucket from cluster.
-    bucket = cluster.config.configBucket
-    staging_dir = 'gs://{0}/{1}/{2}/'.format(
-        bucket, constants.GCS_STAGING_PREFIX, cluster.clusterUuid)
+    staging_dir = (
+        'gs://{bucket}/{prefix}/{uuid}/jobs/{job_id}/staging/'.format(
+            bucket=cluster.config.configBucket,
+            prefix=constants.GCS_METADATA_PREFIX,
+            uuid=cluster.clusterUuid,
+            job_id=job_id))
     return staging_dir
 
   def BuildLoggingConfig(self, driver_logging):

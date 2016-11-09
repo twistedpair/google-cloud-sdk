@@ -60,10 +60,6 @@ IMAGE_ALIASES = {
         project='debian-cloud',
         name_prefix='debian-8-jessie',
         family='debian-8'),
-    'opensuse-13': ImageAlias(
-        project='opensuse-cloud',
-        name_prefix='opensuse-13',
-        family=None),
     'rhel-6': ImageAlias(
         project='rhel-cloud',
         name_prefix='rhel-6',
@@ -88,14 +84,6 @@ IMAGE_ALIASES = {
         project='ubuntu-os-cloud',
         name_prefix='ubuntu-1404-trusty',
         family='ubuntu-1404-lts'),
-    'ubuntu-15-04': ImageAlias(
-        project='ubuntu-os-cloud',
-        name_prefix='ubuntu-1504-vivid',
-        family=None),
-    'ubuntu-15-10': ImageAlias(
-        project='ubuntu-os-cloud',
-        name_prefix='ubuntu-1510-wily',
-        family='ubuntu-1510'),
     'windows-2008-r2': ImageAlias(
         project='windows-cloud',
         name_prefix='windows-server-2008-r2',
@@ -112,6 +100,10 @@ HIDDEN_IMAGE_ALIASES = {
         project='goog-vmruntime-images',
         name_prefix='gae-builder-vm',
         family=None),
+    'opensuse-13': ImageAlias(
+        project='opensuse-cloud',
+        name_prefix='opensuse-13',
+        family=None),
 }
 
 WINDOWS_IMAGE_PROJECTS = [
@@ -122,7 +114,6 @@ PUBLIC_IMAGE_PROJECTS = [
     'centos-cloud',
     'coreos-cloud',
     'debian-cloud',
-    'opensuse-cloud',
     'rhel-cloud',
     'suse-cloud',
     'ubuntu-os-cloud',

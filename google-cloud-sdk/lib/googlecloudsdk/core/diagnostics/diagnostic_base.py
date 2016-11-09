@@ -15,6 +15,7 @@
 """Base classes for diagnostics."""
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 
 
@@ -54,6 +55,9 @@ class Diagnostic(object):
     num_checks_passed = 0
     for check in self.checklist:
       result, fixer = self._RunCheck(check)
+
+      if properties.VALUES.core.disable_prompts.GetBool():
+        continue
 
       # If the initial check failed, and a fixer is available try to fix issue
       # and recheck.

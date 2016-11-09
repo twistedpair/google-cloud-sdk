@@ -313,7 +313,24 @@ def UninterruptibleSection(stream, message=None):
       message=(message or 'This operation cannot be cancelled.'))
   def _Handler(unused_signal, unused_frame):
     stream.write(message)
-  return _ReplaceSignal(signal.SIGINT, _Handler)
+  return CtrlCSection(_Handler)
+
+
+def CtrlCSection(handler=None):
+  """Run a section of code with CTRL-C redirected handler.
+
+  Args:
+    handler: func(), handler to call if SIGINT is received. Default None, which
+        implies noop handler. In every case original Ctrl-C handler
+        is not invoked.
+
+  Returns:
+    Context manager that redirects ctrl-c handler during its lifetime.
+  """
+
+  def _Handler(unused_signal, unused_frame):
+    pass
+  return _ReplaceSignal(signal.SIGINT, handler or _Handler)
 
 
 def KillSubprocess(p):

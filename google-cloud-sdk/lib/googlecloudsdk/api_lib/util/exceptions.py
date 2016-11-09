@@ -221,8 +221,9 @@ class HttpErrorPayload(string.Formatter):
     """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return u'You do not have permission to access {0} [{1}]'.format(
-            self.resource_item, self.instance_name)
+        return (u'You do not have permission to access {0} [{1}] (or it may '
+                u'not exist)').format(
+                    self.resource_item, self.instance_name)
       if self.status_code == 404:
         return u'{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)

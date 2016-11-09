@@ -38,6 +38,15 @@ from googlecloudsdk.core.document_renderers import renderer
 from googlecloudsdk.core.document_renderers import text_renderer
 
 
+STYLES = {
+    'devsite': devsite_renderer.DevSiteRenderer,
+    'html': html_renderer.HTMLRenderer,
+    'man': man_renderer.ManRenderer,
+    'markdown': markdown_renderer.MarkdownRenderer,
+    'text': text_renderer.TextRenderer
+}
+
+
 def _GetNestedGroup(buf, i, beg, end):
   """Returns the index in buf of the end of the nested beg...end group.
 
@@ -76,7 +85,7 @@ class DocumentStyleError(exceptions.Error):
   def __init__(self, style):
     message = ('Unknown markdown document style [{style}] -- must be one of:'
                ' {styles}.'.format(style=style,
-                                   styles=', '.join(sorted(_STYLES.keys()))))
+                                   styles=', '.join(sorted(STYLES.keys()))))
     super(DocumentStyleError, self).__init__(message)
 
 
@@ -709,19 +718,12 @@ class _MarkdownConverter(object):
     self._Finish()
 
 
-_STYLES = {'devsite': devsite_renderer.DevSiteRenderer,
-           'html': html_renderer.HTMLRenderer,
-           'man': man_renderer.ManRenderer,
-           'markdown': markdown_renderer.MarkdownRenderer,
-           'text': text_renderer.TextRenderer}
-
-
 def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
                    title=None):
   """Renders markdown to a selected document style.
 
   Args:
-    style: The rendered document style name, must be one of the _STYLES keys.
+    style: The rendered document style name, must be one of the STYLES keys.
     fin: The input stream containing the markdown.
     out: The output stream for the rendered document.
     width: The page width in characters.
@@ -731,17 +733,15 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
   Raises:
     DocumentStyleError: The markdown style was unknown.
   """
-  if style not in _STYLES:
+  if style not in STYLES:
     raise DocumentStyleError(style)
-  style_renderer = _STYLES[style](out=out or sys.stdout, title=title,
-                                  width=width)
+  style_renderer = STYLES[style](out=out or sys.stdout, title=title,
+                                 width=width)
   _MarkdownConverter(style_renderer, fin=fin or sys.stdin, notes=notes).Run()
 
 
 def main(argv):
   """Standalone markdown document renderer."""
-
-  styles = sorted(_STYLES.keys())
 
   parser = argparse.ArgumentParser(
       description='Renders markdown on the standard input into a document on '
@@ -756,10 +756,9 @@ def main(argv):
   parser.add_argument(
       '--style',
       metavar='STYLE',
-      choices=styles,
+      choices=sorted(STYLES.keys()),
       default='text',
-      help='The output style. Must be one of {styles}. The default is '
-      'text.'.format(styles=styles))
+      help='The output style.')
 
   parser.add_argument(
       '--title',

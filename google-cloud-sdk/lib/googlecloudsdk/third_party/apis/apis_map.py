@@ -309,10 +309,10 @@ MAP = {
             messages_modulepath='logging_v1beta3_messages',
             default_version=True
         ),
-        'v2beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.logging.v2beta1',
-            client_classpath='logging_v2beta1_client.LoggingV2beta1',
-            messages_modulepath='logging_v2beta1_messages',
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.logging.v2',
+            client_classpath='logging_v2_client.LoggingV2',
+            messages_modulepath='logging_v2_messages',
             default_version=False
         ),
     },

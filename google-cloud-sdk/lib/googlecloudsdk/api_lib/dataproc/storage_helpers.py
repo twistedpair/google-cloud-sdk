@@ -30,6 +30,7 @@ from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import platforms
 
 
@@ -40,6 +41,7 @@ STORAGE_SCHEME = 'gs'
 HTTP_TIMEOUT = 60
 
 # Fix urlparse for storage paths.
+# This allows using urljoin in other files (that import this).
 urlparse.uses_relative.append(STORAGE_SCHEME)
 urlparse.uses_netloc.append(STORAGE_SCHEME)
 
@@ -104,34 +106,9 @@ def Upload(files, destination):
 
 
 def GetObjectRef(path, messages):
-  """Build an Object proto message from a GCS path.
-
-  Args:
-    path: The GCS path of the form "gs://<bucket>/<object>"
-    messages: Storage v1 messages module
-
-  Returns:
-    A proto message of the parsed objects
-
-  Raises:
-    ToolException: If there is a parsing issue or the bucket is unspecified.
-  """
-  # TODO(user): resources.REGISTRY.Parse now supports GCS paths.
-  url = urlparse.urlparse(path)
-  if url.scheme != STORAGE_SCHEME:
-    log.warn(path)
-    log.warn(url)
-    raise exceptions.ToolException(
-        'Invalid scheme [{0}] for a GCS path [{1}].'.format(url.scheme, path))
-  gcs_bucket = url.netloc
-  gcs_object = url.path.lstrip('/')
-  if not gcs_bucket:
-    raise exceptions.ToolException(
-        'Missing bucket in GCS path [{0}].'.format(path))
-  if not gcs_object:
-    raise exceptions.ToolException(
-        'Missing object in GCS path [{0}].'.format(path))
-  return messages.Object(bucket=gcs_bucket, name=gcs_object)
+  """Build an Object proto message from a GCS path."""
+  resource = resources.REGISTRY.ParseStorageURL(path)
+  return messages.Object(bucket=resource.bucket, name=resource.object)
 
 
 class StorageClient(object):

@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for the container images commands."""
 
+from apitools.base.py import list_pager
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_image
@@ -113,27 +114,25 @@ def FetchOccurrences(repository):
   """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
 
-  # Construct a filter of all of the resource urls we are displaying
-  filters = []
-
-  # Retrieve all resource urls prefixed with the image path
-  filters.append('has_prefix(resource_url, "{repo}")'.format(
-      repo=_UnqualifiedResourceUrl(repository)))
-
   client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
   messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
 
-  request = messages.ContaineranalysisProjectsOccurrencesListRequest(
-      projectsId=project_id,
-      filter=' OR '.join(filters))
-  response = client.projects_occurrences.List(request)
+  # Retrieve all resource urls prefixed with the image path
+  resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
+      repo=_UnqualifiedResourceUrl(repository))
 
-  occurrences = {}
-  for occ in response.occurrences:
-    if occ.resourceUrl not in occurrences:
-      occurrences[occ.resourceUrl] = []
-    occurrences[occ.resourceUrl].append(occ)
-  return occurrences
+  occurrences = list_pager.YieldFromList(
+      client.projects_occurrences,
+      request=messages.ContaineranalysisProjectsOccurrencesListRequest(
+          projectsId=project_id, filter=resource_filter),
+      field='occurrences',
+      batch_size_attribute='pageSize')
+  occurrences_by_resources = {}
+  for occ in occurrences:
+    if occ.resourceUrl not in occurrences_by_resources:
+      occurrences_by_resources[occ.resourceUrl] = []
+    occurrences_by_resources[occ.resourceUrl].append(occ)
+  return occurrences_by_resources
 
 
 def TransformManifests(manifests, repository, show_occurrences=True):
@@ -248,7 +247,7 @@ def GetDockerDigestFromPrefix(digest):
     matches = [d for d in image.manifests() if d.startswith(prefix)]
 
     if len(matches) == 1:
-      return repository_path + '@' +  matches.pop()
+      return repository_path + '@' + matches.pop()
     elif len(matches) > 1:
       raise InvalidImageNameError(
           '{0} is not a unique digest prefix. Options are {1}.]'

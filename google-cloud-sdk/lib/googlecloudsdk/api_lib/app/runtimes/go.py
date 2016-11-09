@@ -29,7 +29,7 @@ ALLOWED_RUNTIME_NAMES = ('go', 'custom')
 GO_RUNTIME_NAME = 'go'
 
 GO_APP_YAML = textwrap.dedent("""\
-    vm: true
+    env: flex
     runtime: {runtime}
     api_version: go1
     """)

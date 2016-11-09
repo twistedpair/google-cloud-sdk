@@ -153,8 +153,8 @@ apis:
     v1beta3:
       discovery_doc: logging_v1beta3.json
       default: true
-    v2beta1:
-      discovery_doc: logging_v2beta1.json
+    v2:
+      discovery_doc: logging_v2.json
   manager:
     v1beta2:
       discovery_doc: manager_v1beta2.json

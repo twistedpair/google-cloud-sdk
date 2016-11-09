@@ -26,3 +26,8 @@ def SubnetworkArgument(required=True):
       regional_collection='compute.subnetworks',
       short_help='The name of the subnetwork.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
+def SubnetworkResolver():
+  return compute_flags.ResourceResolver.FromMap(
+      'subnetwork', {compute_flags.ScopeEnum.REGION: 'compute.subnetworks'})

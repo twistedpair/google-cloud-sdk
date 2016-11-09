@@ -18,6 +18,10 @@ import logging
 from apitools.base.py import batch
 from apitools.base.py import exceptions
 
+# Upper bound on batch size
+# https://cloud.google.com/compute/docs/api/how-tos/batch
+_BATCH_SIZE_LIMIT = 1000
+
 
 def MakeRequests(requests, http, batch_url=None):
   """Makes batch requests.
@@ -33,39 +37,43 @@ def MakeRequests(requests, http, batch_url=None):
     from the calls and the second is a list of error messages.
   """
   logging.debug('Starting batch request...')
-  batch_request = batch.BatchApiRequest(batch_url=batch_url)
-  for service, method, request in requests:
-    logging.debug('Adding request: %s', (service, method, request))
-    batch_request.Add(service, method, request)
+  for requests_quant in [
+      requests[i:i + _BATCH_SIZE_LIMIT]
+      for i in xrange(0, len(requests), _BATCH_SIZE_LIMIT)
+  ]:
+    batch_request = batch.BatchApiRequest(batch_url=batch_url)
+    for service, method, request in requests_quant:
+      logging.debug('Adding request: %s', (service, method, request))
+      batch_request.Add(service, method, request)
 
-  logging.debug('Making batch request...')
-  responses = batch_request.Execute(http)
+    logging.debug('Making batch request...')
+    responses = batch_request.Execute(http)
 
-  objects = []
-  errors = []
+    objects = []
+    errors = []
 
-  for response in responses:
-    objects.append(response.response)
+    for response in responses:
+      objects.append(response.response)
 
-    if response.is_error:
-      logging.debug('Error response: %s', response.exception)
+      if response.is_error:
+        logging.debug('Error response: %s', response.exception)
 
-      error_message = None
-      if isinstance(response.exception, exceptions.HttpError):
-        try:
-          data = json.loads(response.exception.content)
-          error_message = (
-              response.exception.status_code,
-              data.get('error', {}).get('message'))
-        except ValueError:
-          pass
-        if not error_message:
-          error_message = (response.exception.status_code,
-                           response.exception.content)
-      else:
-        error_message = (None, response.exception.message)
+        error_message = None
+        if isinstance(response.exception, exceptions.HttpError):
+          try:
+            data = json.loads(response.exception.content)
+            error_message = (
+                response.exception.status_code,
+                data.get('error', {}).get('message'))
+          except ValueError:
+            pass
+          if not error_message:
+            error_message = (response.exception.status_code,
+                             response.exception.content)
+        else:
+          error_message = (None, response.exception.message)
 
-      errors.append(error_message)
+        errors.append(error_message)
 
   logging.debug('Batch request done; responses %s', objects)
   return objects, errors

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for cloud resources."""
 
+import re
+
 from googlecloudsdk.core import exceptions
 
 
@@ -47,6 +49,27 @@ class CollectionInfo(object):
   @property
   def full_name(self):
     return self.api_name + '.'  + self.name
+
+  def GetSubcollection(self, collection_name):
+    name = self.full_name
+    if collection_name.startswith(name + '.'):
+      return collection_name[len(name) + 1:]
+    raise KeyError('{0} does not exist in {1}'.format(collection_name, name))
+
+  def GetPathRegEx(self, subcollection):
+    """Returns regex for matching path template."""
+    path = self.GetPath(subcollection)
+    parts = []
+    prev_end = 0
+    for match in re.finditer('({[^}]+}/)|({[^}]+})$', path):
+      parts.append(path[prev_end:match.start()])
+      parts.append('([^/]+)')
+      if match.group(1):
+        parts.append('/')
+      prev_end = match.end()
+    if prev_end == len(path):
+      parts[-1] = '(.*)$'
+    return ''.join(parts)
 
   def GetParams(self, subcollection):
     """Returns ordered list of parameters for given subcollection.

@@ -459,6 +459,8 @@ class _ExprOperator(_Expr):
       The value of the operator applied to the key value and operand.
     """
     value = resource_property.Get(obj, self._key)
+    if self._transform:
+      value = self._transform.Evaluate(value)
     # Arbitrary choice: value == []  =>  values = [[]]
     resource_values = value if value and isinstance(value, list) else [value]
     values = []
@@ -468,11 +470,6 @@ class _ExprOperator(_Expr):
           value = self._normalize(value)
         except (TypeError, ValueError):
           pass
-      if self._transform:
-        try:
-          value = self._transform.Evaluate(value)
-        except (AttributeError, TypeError, ValueError):
-          value = None
       values.append(value)
 
     if self._operand.list_value:

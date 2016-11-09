@@ -32,7 +32,12 @@ DEFAULT_CREDENTIALS_DEFAULT_CLIENT_ID = '764086051850-6qr4p6gpi6hn506pt8ejuq83di
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_SECRET = 'd-FL95Q19q7MQmFpd7hHD0Ty'
 CLOUD_PLATFORM_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
+USER_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 
+DEFAULT_SCOPES = [
+    USER_EMAIL_SCOPE,
+    CLOUD_PLATFORM_SCOPE
+]
 
 # A list of results for webbrowser.get().name that indicate we should not
 # attempt to open a web browser for the user.

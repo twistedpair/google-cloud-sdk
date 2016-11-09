@@ -90,6 +90,10 @@ class ScopesFetchingException(exceptions.Error):
   pass
 
 
+class BadArgumentException(exceptions.Error):
+  pass
+
+
 def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                 explanation=ZONE_PROPERTY_EXPLANATION):
   """Adds a --zone flag to the given parser.
@@ -261,32 +265,84 @@ class ResourceArgScopes(object):
 
 
 class ResourceResolver(object):
-  """Object responsible for resolving resources."""
+  """Object responsible for resolving resources.
+
+  There are two ways to build an instance of this object:
+  1. Preffered when you don't have instance of ResourceArgScopes already built,
+     using .FromMap static function. For example:
+
+     resolver = ResourceResolver.FromMap(
+         'instance',
+         {compute_flags.ScopeEnum.ZONE: 'compute.instances'})
+
+     where:
+     - 'instance' is human readable name of the resource,
+     - dictionary maps allowed scope (in this case only zone) to resource types
+       in those scopes.
+     - optional prefix of scope flags was skipped.
+
+  2. Using constructior. Recommended only if you have instance of
+     ResourceArgScopes available.
+
+  Once you've built the resover you can use it to build resource references (and
+  prompt for scope if it was not specified):
+
+  resolver.ResolveResources(
+        instance_name, flags.ScopeEnum.ZONE, instance_zone, self.resources,
+        scope_lister=flags.GetDefaultScopeLister(
+            self.compute_client, self.project))
+
+  will return a list of instances (of length 0 or 1 in this case, because we
+  pass a name of single instance or None). It will prompt if and only if
+  instance_name was not None but instance_zone was None.
+
+  scope_lister is necessary for prompting.
+  """
 
   def __init__(self, scopes, resource_name):
     """Initilize ResourceResolver instance.
 
+    Prefer building with FromMap unless you have ResourceArgScopes object
+    already built.
+
     Args:
-      scopes: dict, with keys should be instances of ScopeEnum, values
-              should be instances of ResourceArgScope.
+      scopes: ResourceArgScopes, allowed scopes and resource types in those
+              scopes.
       resource_name: str, human readable name for resources eg
                      "instance group".
-    TODO(user): give usage example.
     """
     self.scopes = scopes
     self.resource_name = resource_name
 
-  def ResolveResource(self,
-                      names,
-                      resource_scope,
-                      scope_value,
-                      api_resource_registry,
-                      default_scope=None,
-                      scope_lister=None):
+  @staticmethod
+  def FromMap(resource_name, scopes_map, scope_flag_prefix=None):
+    """Initilize ResourceResolver instance.
+
+    Args:
+      resource_name: str, human readable name for resources eg
+                     "instance group".
+      scopes_map: dict, with keys should be instances of ScopeEnum, values
+              should be instances of ResourceArgScope.
+      scope_flag_prefix: str, prefix of flags specyfying scope.
+    Returns:
+      New instance of ResourceResolver.
+    """
+    scopes = ResourceArgScopes(flag_prefix=scope_flag_prefix)
+    for scope, resource in scopes_map.iteritems():
+      scopes.AddScope(scope, resource)
+    return ResourceResolver(scopes, resource_name)
+
+  def ResolveResources(self,
+                       names,
+                       resource_scope,
+                       scope_value,
+                       api_resource_registry,
+                       default_scope=None,
+                       scope_lister=None):
     """Resolve this resource against the arguments.
 
     Args:
-      names: list of st, list of resource names
+      names: list of str, list of resource names
       resource_scope: ScopeEnum, kind of scope of resources; if this is not None
                    scope_value should be name of scope of type specified by this
                    argument. If this is None scope_value should be None, in that
@@ -308,9 +364,12 @@ class ResourceResolver(object):
         list of items (with 'name' attribute) for given scope.
     Returns:
       Resource reference or list of references if plural.
+    Raises:
+      BadArgumentException: when names is not a list.
     """
-    if isinstance(names, basestring):
-      names = [names]
+    if not isinstance(names, list):
+      raise BadArgumentException(
+          'Expected names to be a list but it is {0!r}'.format(names))
     if resource_scope is not None:
       resource_scope = self.scopes[resource_scope]
     if default_scope is not None:
@@ -604,11 +663,15 @@ class ResourceArgument(object):
       resource_scope = resource_scope.scope_enum
       # Complain if scope was specified without actual resource(s).
       if not self.required and not names:
-        # TODO(user): b/32473406 use flag actualy used in error message.
-        raise exceptions.Error('Can\'t specify --zone, --region or --global'
-                               ' without specifying resource via {0}'
-                               .format(self.name))
-    refs = self._resource_resolver.ResolveResource(
+        if self.scopes.flag_prefix:
+          flag = '--{0}-{1}'.format(
+              self.scopes.flag_prefix, resource_scope.flag_name)
+        else:
+          flag = '--' + resource_scope
+        raise exceptions.Error(
+            'Can\'t specify {0} without specifying resource via {1}'.format(
+                flag, self.name))
+    refs = self._resource_resolver.ResolveResources(
         names, resource_scope, scope_value, api_resource_registry,
         default_scope, scope_lister)
     if self.plural:

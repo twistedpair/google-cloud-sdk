@@ -39,6 +39,9 @@ def ChangeGcloudProxySettings():
   else:
     _DisplayGcloudProxyInfo(proxy_info, is_existing_proxy)
 
+  if properties.VALUES.core.disable_prompts.GetBool():
+    return False
+
   if is_existing_proxy:
     options = ['Change Cloud SDK network proxy properties',
                'Clear all gcloud proxy properties',

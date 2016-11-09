@@ -33,6 +33,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
@@ -114,6 +115,10 @@ class InstallationInfo(object):
       self.old_tool_paths = []
       self.on_path = False
 
+    self.kubectl = file_utils.SearchForExecutableOnPath('kubectl')
+    if self.kubectl:
+      self.kubectl = self.kubectl[0]
+
   def __str__(self):
     out = StringIO.StringIO()
     out.write(u'Installation Root: [{0}]\n'.format(
@@ -133,6 +138,7 @@ class InstallationInfo(object):
 
     out.write(u'System PATH: [{0}]\n'.format(self.path))
     out.write(u'Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
+    out.write(u'Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
 
     if self.old_tool_paths:
       out.write(u'\nWARNING: There are old versions of the Google Cloud '

@@ -13,23 +13,6 @@ from apitools.base.py import extra_types
 package = 'cloudresourcemanager'
 
 
-class AuditConfig(_messages.Message):
-  """Enables "data access" audit logging for a service and specifies a list of
-  members that are log-exempted.
-
-  Fields:
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services.
-  """
-
-  exemptedMembers = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
-
-
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -53,62 +36,6 @@ class Binding(_messages.Message):
 
   members = _messages.StringField(1, repeated=True)
   role = _messages.StringField(2)
-
-
-class BooleanPolicy(_messages.Message):
-  """Used in policy_type to specify how boolean_policy will behave at this
-  resource.
-
-  Fields:
-    suggestedValue: Optional. If the constraint applies to a UI element, this
-      field will determine how it is initially set. This can be used as a hint
-      from the org on the prefered way to configure resources.  For example,
-      if constraint has default_open set to true, the organization may choose
-      not to enforce the constraint at a lower level, but have the preferred
-      choice preselected in the configuration ui.  By setting the
-      suggested_value field (without setting the value field to true) a policy
-      administrator can achieve that.
-    value: If true, then the policy is enforced. If false, then any
-      configuration is acceptable.  Take for example a constraint
-      'requirePrivateIps' that requires that all ip addresses attached to a vm
-      instance are private (i.e. the vm is not publicly addressable). Setting
-      the value field to true would cause the system to enforce the
-      constraint, while setting it to false would allow the association of any
-      addresses with the instance.
-  """
-
-  suggestedValue = _messages.BooleanField(1)
-  value = _messages.BooleanField(2)
-
-
-class ClearOrgPolicyRequest(_messages.Message):
-  """The request sent to the ClearOrgPolicy method.
-
-  Fields:
-    constraint: Name of the Constraint of the Policy to delete.
-    etag: The current version, for concurrency control. Not sending an etag
-      will force the deletion.
-  """
-
-  constraint = _messages.StringField(1)
-  etag = _messages.BytesField(2)
-
-
-class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
-
-
-class CloudresourcemanagerFoldersClearOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersClearOrgPolicyRequest object.
-
-  Fields:
-    clearOrgPolicyRequest: A ClearOrgPolicyRequest resource to be passed as
-      the request body.
-    foldersId: Part of `resource`. Name of the Policy to delete.
-  """
-
-  clearOrgPolicyRequest = _messages.MessageField('ClearOrgPolicyRequest', 1)
-  foldersId = _messages.StringField(2, required=True)
 
 
 class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
@@ -135,20 +62,6 @@ class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
   foldersId = _messages.StringField(1, required=True)
 
 
-class CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest object.
-
-  Fields:
-    foldersId: Part of `resource`. The name of the resource to start computing
-      the effective policy at.
-    getEffectiveOrgPolicyRequest: A GetEffectiveOrgPolicyRequest resource to
-      be passed as the request body.
-  """
-
-  foldersId = _messages.StringField(1, required=True)
-  getEffectiveOrgPolicyRequest = _messages.MessageField('GetEffectiveOrgPolicyRequest', 2)
-
-
 class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerFoldersGetIamPolicyRequest object.
 
@@ -162,19 +75,6 @@ class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
 
   foldersId = _messages.StringField(1, required=True)
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 2)
-
-
-class CloudresourcemanagerFoldersGetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetOrgPolicyRequest object.
-
-  Fields:
-    foldersId: Part of `resource`. Name of the resource the Policy is set on.
-    getOrgPolicyRequest: A GetOrgPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  foldersId = _messages.StringField(1, required=True)
-  getOrgPolicyRequest = _messages.MessageField('GetOrgPolicyRequest', 2)
 
 
 class CloudresourcemanagerFoldersGetRequest(_messages.Message):
@@ -239,20 +139,6 @@ class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class CloudresourcemanagerFoldersSetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersSetOrgPolicyRequest object.
-
-  Fields:
-    foldersId: Part of `resource`. resource name of the resource to attach the
-      Policy to.
-    setOrgPolicyRequest: A SetOrgPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  foldersId = _messages.StringField(1, required=True)
-  setOrgPolicyRequest = _messages.MessageField('SetOrgPolicyRequest', 2)
-
-
 class CloudresourcemanagerFoldersTestIamPermissionsRequest(_messages.Message):
   """A CloudresourcemanagerFoldersTestIamPermissionsRequest object.
 
@@ -296,116 +182,6 @@ class CloudresourcemanagerFoldersUpdateRequest(_messages.Message):
   foldersId = _messages.StringField(2, required=True)
 
 
-class Condition(_messages.Message):
-  """A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext (go
-        /security-realms). When used with IN, the condition indicates "any of
-        the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". It is not permitted to
-        grant access based on the *absence* of a realm, so realm conditions
-        can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    SECURITY_REALM = 3
-
-  class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: Set-inclusion check.
-      NOT_IN: Set-exclusion check.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
-
-
-class CounterOptions(_messages.Message):
-  """Options for counters
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
-class DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log"""
-
-
-class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
 class Folder(_messages.Message):
   """A Folder in an Organization's resource hierarchy, used to organize that
   Organization's resources.
@@ -432,7 +208,6 @@ class Folder(_messages.Message):
       `folders/{folder_id}`, for example: "folders/1234".
     parent: Output only. The Folder\u2019s parent's resource name. Updates to the
       folder's parent must be performed via [MoveFolders].
-    updateTime: Output only. Timestamp when the Folder was last modified.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -453,7 +228,6 @@ class Folder(_messages.Message):
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
   name = _messages.StringField(4)
   parent = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
 
 
 class FolderOperation(_messages.Message):
@@ -533,29 +307,8 @@ class FolderOperationError(_messages.Message):
   errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
 
 
-class GetEffectiveOrgPolicyRequest(_messages.Message):
-  """The request sent to the GetEffectiveOrgPolicy method.
-
-  Fields:
-    constraint: The name of the Constraint to compute the effective policy
-      for.
-  """
-
-  constraint = _messages.StringField(1)
-
-
 class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
-
-
-class GetOrgPolicyRequest(_messages.Message):
-  """The request sent to the GetOrgPolicy method.
-
-  Fields:
-    constraint: Name of the Constraint to get the Policy for.
-  """
-
-  constraint = _messages.StringField(1)
 
 
 class ListFoldersResponse(_messages.Message):
@@ -571,66 +324,6 @@ class ListFoldersResponse(_messages.Message):
 
   folders = _messages.MessageField('Folder', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListPolicy(_messages.Message):
-  """Used in policy_type to specify how both whitelist_policy and
-  blacklist_policy behave at this resource.
-
-  Fields:
-    all: If true, this Policy restricts all values. For whitelists, setting
-      this means that any value is in the whitelist (any value is permitted).
-      For blacklists, setting this blacklists all values (no value is
-      permitted).  If all is True then values field above is ignored. If all
-      is False then the restrictions set in values are applied.
-    inheritFromParent: If False, terminates recursive evaluation of the
-      effective policy at the node this constraint is applied to.  If no
-      restriction is applied with this field being set to False, the effective
-      restriction at this node is the no_policy_default for this Constraint.
-      For example, suppose you have a constraint for allowed_vms which is a
-      ListRestriction with blacklist = false (i.e. it is a whitelist) with a
-      no_policy_default of true. Then suppose that at the org level a Policy
-      is applied that restricts images to {\u2018I1\u2019, \u2018I2\u2019}. Then, if a Policy is
-      applied to a project below that org that has inherit_from_parent set to
-      False and an empty restriction list, a call to CheckPolicySetting will
-      results in is_valid_value being unconditionally True.
-    suggestedValue: Optional. The UI will try to default to a configuration
-      that matches the value specified in this Policy.
-    values: List of values allowed (or disallowed for blacklists) at this
-      node.
-  """
-
-  all = _messages.BooleanField(1)
-  inheritFromParent = _messages.BooleanField(2)
-  suggestedValue = _messages.StringField(3)
-  values = _messages.StringField(4, repeated=True)
-
-
-class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present the
-  only supported field names are    - "iam_principal", corresponding to
-  IAMContext.principal;    - "" (empty string), resulting in one aggretated
-  counter with no field.  Examples:   counter { metric: "/debug_access_count"
-  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class MoveFolderRequest(_messages.Message):
@@ -752,32 +445,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OrgPolicy(_messages.Message):
-  """Defines a Cloud Organization Policy which is used to specify constraints
-  for configurations of Cloud Platform resources.
-
-  Fields:
-    blacklistPolicy: For blacklist constraints, the values that are
-      blacklisted.
-    booleanPolicy: For boolean constraints, whether to enforce the constraint
-      or not.
-    constraint: The name of the constraint this is an instance of, e.g.
-      "constraints/appengine.allowedEnvs".  Immutable after creation.
-    etag: The current policy tag for concurrency control.
-    restoreDefault: Restores the default behavior of the constraint;
-      independent of constraint type.
-    whitelistPolicy: For whitelist constraints, the values that are
-      whitelisted.
-  """
-
-  blacklistPolicy = _messages.MessageField('ListPolicy', 1)
-  booleanPolicy = _messages.MessageField('BooleanPolicy', 2)
-  constraint = _messages.StringField(3)
-  etag = _messages.BytesField(4)
-  restoreDefault = _messages.MessageField('RestoreDefault', 5)
-  whitelistPolicy = _messages.MessageField('ListPolicy', 6)
-
-
 class Policy(_messages.Message):
   """Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
@@ -794,10 +461,6 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -810,23 +473,12 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Version of the `Policy`. The default version is 0.
   """
 
-  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
-  bindings = _messages.MessageField('Binding', 2, repeated=True)
-  etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ProjectCreationStatus(_messages.Message):
@@ -847,73 +499,6 @@ class ProjectCreationStatus(_messages.Message):
   ready = _messages.BooleanField(3)
 
 
-class RestoreDefault(_messages.Message):
-  """Ignores policies set above this resource and restores the 'default_open'
-  nature of the specific Constraint at this resource.  For example, suppose
-  that default_open is set to true on GAE's allowedEnvs constraint.  Suppose
-  that organization foo.com sets an org level policy that restricts all their
-  app engine apps to be in the standard environment. Lets also say that
-  foo.com has several projects that are experimental for which they want to
-  allow the default behvior.  For each of these projects, foo.com would set a
-  policy with policy_type having the restore_default message set (thus
-  allowing all envs for apps bellow these projects).
-  """
-
-
-
-class Rule(_messages.Message):
-  """A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
-
-
 class SetIamPolicyRequest(_messages.Message):
   """Request message for `SetIamPolicy` method.
 
@@ -925,16 +510,6 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
-
-
-class SetOrgPolicyRequest(_messages.Message):
-  """The request sent to the SetOrgPolicyRequest method.
-
-  Fields:
-    policy: Policy to set for on the resource.
-  """
-
-  policy = _messages.MessageField('OrgPolicy', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1110,9 +685,6 @@ class UndeleteFolderRequest(_messages.Message):
   """The UndeleteFolder request message."""
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'cloudresourcemanager')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv',
     package=u'cloudresourcemanager')

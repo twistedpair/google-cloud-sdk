@@ -499,14 +499,22 @@ class BaseSSHCommand(base_classes.BaseCommand,
         The path to the SSH key file. By default, this is ``{0}''.
         """.format(constants.DEFAULT_SSH_KEY_FILE)
 
-  def GetProject(self):
-    """Returns the project object."""
+  def GetProject(self, project):
+    """Returns the project object.
+
+    Args:
+      project: str, the project we are requesting or None for value from
+        from properties
+
+    Returns:
+      The project object
+    """
     errors = []
     objects = list(request_helper.MakeRequests(
         requests=[(self.compute.projects,
                    'Get',
                    self.messages.ComputeProjectsGetRequest(
-                       project=properties.VALUES.core.project.Get(
+                       project=project or properties.VALUES.core.project.Get(
                            required=True),
                    ))],
         http=self.http,
@@ -609,12 +617,13 @@ class BaseSSHCommand(base_classes.BaseCommand,
     else:
       return False
 
-  def EnsureSSHKeyIsInProject(self, user):
+  def EnsureSSHKeyIsInProject(self, user, project_name=None):
     """Ensures that the user's public SSH key is in the project metadata.
 
     Args:
       user: str, the name of the user associated with the SSH key in the
           metadata
+      project_name: str, the project SSH key will be added to
 
     Returns:
       bool, True if the key was newly added, False if it was in the metadata
@@ -625,7 +634,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
     public_key = self.GetPublicKey()
 
     # Second, let's make sure the public key is in the project metadata.
-    project = self.GetProject()
+    project = self.GetProject(project_name)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
         self.messages, user, public_key, existing_metadata)
@@ -793,7 +802,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
                'Get',
                self.messages.ComputeInstancesGetRequest(
                    instance=instance_ref.Name(),
-                   project=self.project,
+                   project=instance_ref.project,
                    zone=instance_ref.zone))
 
     errors = []
@@ -939,7 +948,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
                 'StrictHostKeyChecking={0}'.format(strict_host_key_value)]
     return cmd_args
 
-  def ActuallyRun(self, args, cmd_args, user, instance,
+  def ActuallyRun(self, args, cmd_args, user, instance, project,
                   strict_error_checking=True, use_account_service=False,
                   wait_for_sshable=True):
     """Runs the scp/ssh command specified in cmd_args.
@@ -952,6 +961,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
       cmd_args: [str], The argv for the command to execute.
       user: str, The user name.
       instance: Instance, the instance to connect to
+      project: str, the project instance is in
       strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
         code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
@@ -1011,7 +1021,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
         # Otherwise, try to add to the project-wide metadata. If we don't have
         # permissions to do that, add to the instance 'ssh-keys' metadata.
         try:
-          keys_newly_added = self.EnsureSSHKeyIsInProject(user)
+          keys_newly_added = self.EnsureSSHKeyIsInProject(user, project)
         except SetProjectMetadataError:
           log.info('Could not set project metadata:', exc_info=True)
           # If we can't write to the project metadata, it may be because of a

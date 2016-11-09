@@ -90,6 +90,11 @@ ALLOW_MULTILINE_LOGS = base.Argument(
     '--allow-multiline-logs',
     action='store_true',
     help='Output multiline log messages as single records.')
+TASK_NAME = base.Argument(
+    '--task-name',
+    required=False,
+    default=None,
+    help='If set, display only the logs for this particular task.')
 
 
 def GetModelName(positional=True, required=False):

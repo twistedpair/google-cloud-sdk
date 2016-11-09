@@ -83,6 +83,10 @@ def CheckSinksCommandArguments(args):
     raise exceptions.InvalidArgumentException(
         '--output-version-format', 'Only project sinks support V2 format')
 
+  if not is_project_sink and args.unique_writer_identity:
+    raise exceptions.InvalidArgumentException(
+        '--unique-writer-identity', 'Only project sinks support this feature')
+
 
 def FormatTimestamp(timestamp):
   """Returns a string representing timestamp in RFC3339 format.
@@ -104,6 +108,25 @@ def ConvertToJsonObject(json_string):
     raise exceptions.ToolException('Invalid JSON value: %s' % e.message)
 
 
+def CreateResourceName(parent, collection, resource_id):
+  """Creates the full resource name.
+
+  Args:
+    parent: The project or organization id as a resource name, e.g.
+      'projects/my-project' or 'organizations/123'.
+    collection: The resource collection. e.g. 'logs'
+    resource_id: The id within the collection , e.g. 'my-log'.
+
+  Returns:
+    resource, e.g. projects/my-project/logs/my-log.
+  """
+  # id needs to be escaped to create a valid resource name - i.e it is a
+  # requirement of the Stackdriver Logging API that each component of a resource
+  # name must have no slashes.
+  return '{0}/{1}/{2}'.format(
+      parent, collection, resource_id.replace('/', '%2F'))
+
+
 def CreateLogResourceName(parent, log_id):
   """Creates the full log resource name.
 
@@ -120,7 +143,7 @@ def CreateLogResourceName(parent, log_id):
   """
   if '/logs/' in log_id:
     return log_id
-  return '%s/logs/%s' % (parent, log_id.replace('/', '%2F'))
+  return CreateResourceName(parent, 'logs', log_id)
 
 
 def ExtractLogId(log_resource):
@@ -158,5 +181,7 @@ def PrintPermissionInstructions(destination, writer_identity):
   elif destination.startswith('pubsub'):
     sdk_log.status.Print('Please remember to grant {0} '
                          'EDIT permission to the project.'.format(grantee))
+  sdk_log.status.Print('Please use --unique_writer_identity for all project '
+                       'sinks. This will soon become the default.')
   sdk_log.status.Print('More information about sinks can be found at https://'
                        'cloud.google.com/logging/docs/export/configure_export')

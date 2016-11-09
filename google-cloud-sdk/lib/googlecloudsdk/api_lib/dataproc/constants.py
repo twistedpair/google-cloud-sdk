@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Constants for the dataproc tool."""
 
 # TODO(user): Move defaults to the server
@@ -25,8 +24,8 @@ TERMINAL_JOB_STATES = [
     messages.JobStatus.StateValueValuesEnum.ERROR,
 ]
 
-# Path inside of GCS bucket to stage files.
-GCS_STAGING_PREFIX = 'google-cloud-dataproc-staging'
+# Path inside of GCS bucket, where Dataproc stores metadata.
+GCS_METADATA_PREFIX = 'google-cloud-dataproc-metainfo'
 
 # Beginning of driver output files.
 JOB_OUTPUT_PREFIX = 'driveroutput'

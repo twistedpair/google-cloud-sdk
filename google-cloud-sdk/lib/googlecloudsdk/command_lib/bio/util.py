@@ -34,12 +34,7 @@ def ParseOperation(name):
   Returns:
     Resource: resource object of the operation
   """
-
-  # Override the default API map version so we can increment API versions on a
-  # API interface basis.
-  registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('bio', BIO_API_VERSION)
-  return registry.Parse(name, collection=OPERATIONS_COLLECTION)
+  return resources.REGISTRY.Parse(name, collection=OPERATIONS_COLLECTION)
 
 
 def OperationsUriFunc(resource):

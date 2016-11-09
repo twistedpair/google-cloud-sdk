@@ -563,10 +563,18 @@ class ProgressBar(object):
     self._total_ticks = total_ticks
     self._first = first
     self._last = last
-    attr = console_attr.ConsoleAttr()
+    attr = console_attr.ConsoleAttr(out=stream)
     self._box = attr.GetBoxLineCharacters()
     self._redraw = (self._box.d_dr != self._box.d_vr or
                     self._box.d_dl != self._box.d_vl)
+    # If not interactive, we can't use carriage returns, so treat every progress
+    # bar like it is independent, do not try to merge and redraw them. We only
+    # need to do this if it was going to attempt to redraw them in the first
+    # place (there is no redraw if the character set does not support different
+    # characters for the corners).
+    if self._redraw and not IsInteractive(error=True):
+      self._first = True
+      self._last = True
 
     max_label_width = self._total_ticks - 4
     if len(label) > max_label_width:

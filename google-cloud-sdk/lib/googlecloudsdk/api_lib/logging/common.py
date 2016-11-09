@@ -71,8 +71,8 @@ def FetchLogs(log_filter=None,
   else:
     order_by = 'timestamp asc'
 
-  client = apis.GetClientInstance('logging', 'v2beta1')
-  messages = apis.GetMessagesModule('logging', 'v2beta1')
+  client = apis.GetClientInstance('logging', 'v2')
+  messages = apis.GetMessagesModule('logging', 'v2')
   request = messages.ListLogEntriesRequest(resourceNames=[parent],
                                            filter=combined_filter,
                                            orderBy=order_by)

@@ -2,6 +2,41 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 134.0.0 (2016/11/09)
+
+### Cloud SDK
+
+* `gcloud info --run-diagnostics` flag is now available to diagnose common
+  installation and local network issues.
+* `gcloud init` now has a `--skip-diagnostics` flag.
+
+### Google AppEngine
+
+* App Engine Java SDK updated to 1.9.46.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+* Added `gcloud app create` command, which creates an App Engine app in the
+  current project.
+* Added `gcloud app regions list` command, which lists support for App Engine
+  Standard and Flexible environments for each geographical region.
+* `gcloud app deploy` now offers to create an App Engine app interactively, if
+  the current project does not have an app yet.
+
+### Google Cloud BigQuery
+
+* Add support for specifying a null marker when loading data. See the
+  `null_marker` flag within the `load` command.
+
+### Google Compute Engine
+
+* `gcloud compute instance-groups managed delete` shows clean error message
+  instead of bare exception on attempt to delete zonal and regional Managed
+  Instance Groups in one gcloud invocation. Old behavior was to accept and
+  invoke such request and then fail on waiting for operation complete.
+* Remove OpenSUSE as a default image option. OpenSUSE images are still available
+  in the opensuse-cloud project.
+
+
 ## 133.0.0 (2016/11/02)
 
 ### Google Cloud Container Builder
@@ -27,7 +62,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Update kubectl to version 1.4.4.
 
 
-## 132.0.0 (2016/10/19)
+## 132.0.0 (2016/10/26)
 
 ### Breaking Changes
 

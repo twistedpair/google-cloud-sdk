@@ -46,32 +46,6 @@ class CloudresourcemanagerV2alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def ClearOrgPolicy(self, request, global_params=None):
-      """Remove an Org Policy from a folder.
-
-      Args:
-        request: (CloudresourcemanagerFoldersClearOrgPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('ClearOrgPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.clearOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
-        query_params=[],
-        relative_path=u'v2alpha1/folders/{foldersId}:clearOrgPolicy',
-        request_field=u'clearOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersClearOrgPolicyRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       """Creates a Folder in the resource hierarchy.
 Returns an Operation which can be used to track the progress of the
@@ -182,35 +156,6 @@ identified folder.
         supports_download=False,
     )
 
-    def GetEffectiveOrgPolicy(self, request, global_params=None):
-      """Get the effective Org Policy on a particular folder. This is the result.
-of merging Org Policies set up the resource hierarchy. The returned Org
-Policy will not have an etag set because it is a computed Policy across
-many resources.
-
-      Args:
-        request: (CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OrgPolicy) The response message.
-      """
-      config = self.GetMethodConfig('GetEffectiveOrgPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.getEffectiveOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
-        query_params=[],
-        relative_path=u'v2alpha1/folders/{foldersId}:getEffectiveOrgPolicy',
-        request_field=u'getEffectiveOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a Folder. The returned policy may be.
 empty if no such policy or resource exists. The `resource` field should
@@ -238,35 +183,6 @@ on the identified folder.
         request_field=u'getIamPolicyRequest',
         request_type_name=u'CloudresourcemanagerFoldersGetIamPolicyRequest',
         response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def GetOrgPolicy(self, request, global_params=None):
-      """Get an Org Policy on a particular folder. If no Org Policy has been.
-set at this folder then an empty Policy with a sentinel etag is returned;
-this can be used with SetOrgPolicy to create an Org Policy on the
-folder.
-
-      Args:
-        request: (CloudresourcemanagerFoldersGetOrgPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OrgPolicy) The response message.
-      """
-      config = self.GetMethodConfig('GetOrgPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.getOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
-        query_params=[],
-        relative_path=u'v2alpha1/folders/{foldersId}:getOrgPolicy',
-        request_field=u'getOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersGetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
         supports_download=False,
     )
 
@@ -370,36 +286,6 @@ on the identified folder.
         request_field=u'setIamPolicyRequest',
         request_type_name=u'CloudresourcemanagerFoldersSetIamPolicyRequest',
         response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetOrgPolicy(self, request, global_params=None):
-      """Updates the Org policy on the folder, creating a new Org Policy.
-resource for that Constraint on the folder if one does not exist.
-
-Not supplying an etag on the request Org Policy results in an
-unconditional write of the Policy.
-
-      Args:
-        request: (CloudresourcemanagerFoldersSetOrgPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OrgPolicy) The response message.
-      """
-      config = self.GetMethodConfig('SetOrgPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'cloudresourcemanager.folders.setOrgPolicy',
-        ordered_params=[u'foldersId'],
-        path_params=[u'foldersId'],
-        query_params=[],
-        relative_path=u'v2alpha1/folders/{foldersId}:setOrgPolicy',
-        request_field=u'setOrgPolicyRequest',
-        request_type_name=u'CloudresourcemanagerFoldersSetOrgPolicyRequest',
-        response_type_name=u'OrgPolicy',
         supports_download=False,
     )
 

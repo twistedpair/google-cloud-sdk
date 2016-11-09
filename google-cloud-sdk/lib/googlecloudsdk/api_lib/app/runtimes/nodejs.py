@@ -22,8 +22,8 @@ import textwrap
 
 # TODO(mmuller): move these into the node_app directory.
 NODEJS_APP_YAML = textwrap.dedent("""\
+    env: flex
     runtime: {runtime}
-    vm: true
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     # Copyright 2015 Google Inc. All Rights Reserved.

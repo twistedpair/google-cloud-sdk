@@ -19,26 +19,26 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 
 
-DEPLOY_MESSAGE_TEMPLATE = """\
+DEPLOY_MESSAGE_TEMPLATE = u"""\
 {project}/{service}/{version} (from [{file}])
 """
 
-DEPLOYED_URL_TEMPLATE = """\
+DEPLOYED_URL_TEMPLATE = u"""\
      Deploying to URL: [{url}]
 """
 
-PROMOTE_MESSAGE_TEMPLATE = """\
+PROMOTE_MESSAGE_TEMPLATE = u"""\
      (add --promote if you also want to make this service available from
      [{default_url}])
 """
 
-RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
-                        'for your application.  To use this Dockerfile, '
-                        'the runtime field in [{0}] must be set to custom.')
+RUNTIME_MISMATCH_MSG = (u"You've generated a Dockerfile that may be customized "
+                        u'for your application.  To use this Dockerfile, '
+                        u'the runtime field in [{0}] must be set to custom.')
 
-CREATE_APP_PROMPT = ('The current Google Cloud project [{project}] does not '
-                     'contain an App Engine application. Do you want to create '
-                     'an app now?')
+CREATE_APP_PROMPT = (u'The current Google Cloud project [{project}] does not '
+                     u'contain an App Engine application. Do you want to '
+                     u'create an app now?')
 
 
 def DisplayProposedDeployment(app, project, app_config, version, promote):
@@ -87,7 +87,7 @@ def DisplayProposedDeployment(app, project, app_config, version, promote):
   if app_config.Configs():
     fmt = 'list[title="You are about to deploy the following configurations:"]'
     resource_printer.Print(
-        ['{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
+        [u'{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
          for c in app_config.Configs().values()], fmt, out=log.status)
 
   return deployed_urls

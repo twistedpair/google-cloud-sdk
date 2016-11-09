@@ -66,8 +66,8 @@ GEM_PACKAGES = {
 }
 
 APP_YAML_CONTENTS = textwrap.dedent("""\
+    env: flex
     runtime: {runtime}
-    vm: true
     entrypoint: {entrypoint}
     """)
 DOCKERIGNORE_CONTENTS = textwrap.dedent("""\

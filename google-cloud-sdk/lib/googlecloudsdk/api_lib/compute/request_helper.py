@@ -176,6 +176,7 @@ def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
       # function that does the actual waiting. For now, we have to
       # deal with existing interfaces to keep the scopes of the
       # refactoring CLs small.
+      # TODO(b/32276307)
       if not operation_service:
         resource_service = service
         project = request_body.project

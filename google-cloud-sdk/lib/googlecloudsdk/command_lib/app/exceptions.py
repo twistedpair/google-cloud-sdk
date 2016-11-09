@@ -86,6 +86,6 @@ class MissingApplicationError(exceptions.Error):
   def __str__(self):
     return (
         'The current Google Cloud project [{0}] does not contain an App Engine '
-        'application. Use `gcloud beta app create` to initialize an App Engine '
+        'application. Use `gcloud app create` to initialize an App Engine '
         'application within the project.').format(self.project)
 

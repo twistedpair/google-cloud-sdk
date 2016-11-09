@@ -21,6 +21,7 @@ import subprocess
 import textwrap
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import uritemplate
@@ -67,11 +68,8 @@ class InvalidGitException(Error):
     super(InvalidGitException, self).__init__(message)
 
 
-class MissingCredentialHelper(Error):
-  """Exception for when the gcloud credential helper cannot be found."""
-
-  def __init__(self, message):
-    super(MissingCredentialHelper, self).__init__(message)
+class GcloudIsNotInPath(Error):
+  """Exception for when the gcloud cannot be found."""
 
 
 def CheckGitVersion(version_lower_bound=None):
@@ -146,37 +144,24 @@ def _GetRepositoryURI(project, alias):
       {'project': project, 'alias': alias})
 
 
-def _GetCredentialHelper():
-  """Get a path to the credential helper.
+def _GetGcloudScript():
+  """Get name of the gcloud script."""
 
-  Tries to find the credential helper installed with this version of gcloud.
-  If the credential helper is not in PATH, it throws an error instructing the
-  user to add the Cloud SDK on PATH. If the helper is in PATH, it returns the
-  relative git suffix for the helper. Git adds the 'git-credential-' prefix
-  automatically.
-
-  Returns:
-    str, credential helper command name without 'git-credential-' prefix
-
-  Raises:
-    MissingCredentialHelper: if the credential helper cannot be found
-  """
   if (platforms.OperatingSystem.Current() ==
       platforms.OperatingSystem.WINDOWS):
-    helper_ext = '.cmd'
+    gcloud_ext = '.cmd'
   else:
-    helper_ext = '.sh'
-  helper_name = 'gcloud'
-  helper_prefix = 'git-credential-'
-  helper = files.FindExecutableOnPath(helper_prefix + helper_name,
-                                      pathext=[helper_ext])
+    gcloud_ext = ''
 
-  if not helper:
-    raise MissingCredentialHelper(
-        'Could not find gcloud\'s git credential helper. '
+  gcloud_name = 'gcloud'
+  gcloud = files.FindExecutableOnPath(gcloud_name, pathext=[gcloud_ext])
+
+  if not gcloud:
+    raise GcloudIsNotInPath(
+        'Could not verify that gcloud is in the PATH. '
         'Please make sure the Cloud SDK bin folder is in PATH.')
 
-  return helper_name + helper_ext
+  return gcloud_name + gcloud_ext
 
 
 def _NormalizeToUnixPath(path, strip=True):
@@ -511,7 +496,14 @@ class Git(object):
         else:
           cmd = ['git', 'clone', self._uri, abs_repository_path,
                  '--config',
-                 'credential.helper="{0}"'.format(_GetCredentialHelper())]
+                 # Use git alias "!shell command" syntax so we can configure
+                 # the helper with options. Also git-credential is not
+                 # prefixed when it starts with "!".
+                 # See https://git-scm.com/docs/git-config
+                 'credential.helper=!{0} auth git-helper --account={1} '
+                 '--ignore-unknown $@'
+                 .format(_GetGcloudScript(),
+                         properties.VALUES.core.account.Get(required=True))]
         self._RunCommand(cmd, dry_run)
       else:
         # Otherwise, just do a simple clone. We do this clone, without the

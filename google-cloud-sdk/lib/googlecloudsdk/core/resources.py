@@ -765,6 +765,19 @@ class Registry(object):
         None, params, resolve=True, base_url=endpoint,
         subcollection=subcollection)
 
+  def ParseRelativeName(self, relative_name, collection):
+    """Parser relative names. See Resource.RelativeName() method."""
+    collection_info = self.GetCollectionInfo(collection)
+    subcollection = collection_info.GetSubcollection(collection)
+    path_template = collection_info.GetPathRegEx(subcollection)
+    match = re.match(path_template, relative_name)
+    if not match:
+      raise InvalidResourceException(
+          '{0} is not in {1} collection as it does not match path template {2}'
+          .format(relative_name, collection, path_template))
+    params = collection_info.GetParams(subcollection)
+    return self.Create(collection, **dict(zip(params, match.groups())))
+
   def ParseStorageURL(self, url):
     """Parse gs://bucket/object_path into storage.v1 api resource."""
     match = _GCS_URL_RE.match(url)

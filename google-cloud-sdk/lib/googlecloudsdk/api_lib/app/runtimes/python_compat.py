@@ -29,8 +29,8 @@ PYTHON_RUNTIME_NAME = 'python27'
 # TODO(mmuller): this generated app.yaml doesn't work because the compat
 # runtimes need a "handlers" section.  Query the user for this information.
 PYTHON_APP_YAML = textwrap.dedent("""\
+    env: flex
     runtime: {runtime}
-    vm: true
     api_version: 1
     threadsafe: false
     # You must add a handlers section here.  Example:

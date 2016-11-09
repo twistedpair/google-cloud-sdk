@@ -252,7 +252,7 @@ class ServiceYamlInfo(_YamlInfo):
 
     if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(
-          'The "python27" is not a valid runtime in env: 2.  '
+          'The "python27" is not a valid runtime in env: flex.  '
           'Please use [python-compat] instead.')
 
     if parsed.module:
@@ -294,10 +294,9 @@ class ServiceYamlInfo(_YamlInfo):
       AppConfigError: if the function was called for a standard service
     """
     if self.env not in [util.Environment.MANAGED_VMS, util.Environment.FLEX]:
-      # TODO(b/32357859): Change this message to `env: flex`
       raise AppConfigError(
-          'This is not an App Engine Managed VM service. Please set `vm` field '
-          'to `true`.')
+          'This is not an App Engine Flexible service. Please set `env` '
+          'field to `flex`.')
     if not self.parsed.vm_settings:
       self.parsed.vm_settings = appinfo.VmSettings()
     self.parsed.vm_settings['has_docker_image'] = True

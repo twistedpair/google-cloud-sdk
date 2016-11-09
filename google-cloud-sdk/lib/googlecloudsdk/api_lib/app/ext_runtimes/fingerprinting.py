@@ -14,9 +14,6 @@
 
 """Common functionality to support source fingerprinting."""
 
-import os
-
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 _PROMPTS_DISABLED_ERROR_MESSAGE = (
@@ -52,35 +49,6 @@ class Params(object):
             'custom': self.custom,
             'runtime': self.runtime,
             'deploy': self.deploy}
-
-
-class Cleaner(object):
-  """Class to manage cleanup of a set of files.
-
-  Instances of this class are callable, when called they delete all of the
-  files.
-  """
-
-  def __init__(self):
-    self.__files = []
-
-  def Add(self, filename):
-    self.__files.append(filename)
-
-  def HasFiles(self):
-    """Returns true if the cleaner has files in it (would delete something)."""
-    return self.__files
-
-  def GetFiles(self):
-    """Returns the list of files in the cleaner."""
-    return self.__files
-
-  def __call__(self):
-    for filename in self.__files:
-      try:
-        os.remove(filename)
-      except (OSError, IOError) as ex:
-        log.error('Error deleting [%s]: %s', filename, ex)
 
 
 class Configurator(object):

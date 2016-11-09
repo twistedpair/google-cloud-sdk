@@ -48,6 +48,9 @@ INSTANCES_ARG = compute_flags.ResourceArgument(
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     plural=True)
 
+SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
+    'instance', {compute_flags.ScopeEnum.ZONE: 'compute.instances'})
+
 
 def InstanceArgumentForRoute(required=True):
   return compute_flags.ResourceArgument(

@@ -20,8 +20,8 @@ runtimes_test, which should also mostly go away.
 import textwrap
 
 JAVA_APP_YAML = textwrap.dedent("""\
+    env: flex
     runtime: {runtime}
-    vm: true
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore
