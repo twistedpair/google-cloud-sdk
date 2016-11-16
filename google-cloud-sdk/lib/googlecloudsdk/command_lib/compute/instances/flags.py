@@ -519,7 +519,8 @@ def ValidateCreateDiskFlags(args):
 
 
 def AddAddressArgs(parser, instances=True,
-                   multiple_network_interface_cards=False):
+                   multiple_network_interface_cards=False,
+                   support_alias_ip_ranges=False):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   addresses.add_argument(
@@ -551,6 +552,8 @@ def AddAddressArgs(parser, instances=True,
   if instances:
     multiple_network_interface_cards_spec['private-network-ip'] = str
   if multiple_network_interface_cards:
+    if support_alias_ip_ranges:
+      multiple_network_interface_cards_spec['aliases'] = str
     network_interface = parser.add_argument(
         '--network-interface',
         type=arg_parsers.ArgDict(
@@ -585,6 +588,34 @@ def AddAddressArgs(parser, instances=True,
         *subnet*::: Specifies the subnet that the interface will be part of.
         If network key is also specified this must be a subnetwork of the
         specified network."""
+    if support_alias_ip_ranges:
+      network_interface_detailed_help += """
+        *aliases*::: Specifies the IP aliase ranges to allocate for this
+        interface.  If there are multiple IP aliase ranges, they are seperated
+        by semicolons. Currently, only one IP alias range is supported."""
+      if instances:
+        network_interface_detailed_help += """
+          Each IP alias range consists of a range name and an IP range
+          separated by a colon, or just the IP range.
+          The range name is the name of the range within the network
+          interface's subnet from which to allocate an IP alias range. If
+          unspecified, it defaults to the primary IP range of the subnet.
+          The IP range can be a CIDR range (e.g. 192.168.100.0/24), a single
+          IP address (e.g. 192.168.100.1), or a net mask in CIDR format (e.g.
+          /24). If the IP range is specified by CIDR range or single IP
+          address, it must belong to the CIDR range specified by the range
+          name on the subnet. If the IP range is specified by net mask, the
+          IP allocator will pick an available range with the specified netmask
+          and allocate it to this network interface."""
+      else:
+        network_interface_detailed_help += """
+          Each IP alias range consists of a range name and an CIDR net mask
+          (e.g. /24) separated by a colon, or just the net mask.
+          The range name is the name of the range within the network
+          interface's subnet from which to allocate an IP alias range. If
+          unspecified, it defaults to the primary IP range of the subnet.
+          IP allocator will pick an available range with the specified netmask
+          and allocate it to this network interface."""
     network_interface.detailed_help = network_interface_detailed_help
 
 

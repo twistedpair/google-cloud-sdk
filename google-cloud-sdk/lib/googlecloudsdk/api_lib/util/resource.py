@@ -52,7 +52,9 @@ class CollectionInfo(object):
 
   def GetSubcollection(self, collection_name):
     name = self.full_name
-    if collection_name.startswith(name + '.'):
+    # collection_name could be equal to name in which case subcollection is
+    # empty string or have additional suffix .subcollection.
+    if collection_name.startswith(name):
       return collection_name[len(name) + 1:]
     raise KeyError('{0} does not exist in {1}'.format(collection_name, name))
 

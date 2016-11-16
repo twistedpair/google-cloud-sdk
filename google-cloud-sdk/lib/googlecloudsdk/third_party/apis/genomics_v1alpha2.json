@@ -6,14 +6,14 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Genomics API",
-  "description": "Stores, processes, explores and shares genomic data.",
+  "description": "Upload, process, query, and search Genomics data in the cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/genomics/",
+  "documentationLink": "https://cloud.google.com/genomics",
   "protocol": "rest",
   "rootUrl": "https://genomics.googleapis.com/",
   "servicePath": "",
@@ -123,6 +123,24 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -182,24 +200,6 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
-        }
-      }
-    },
-    "ListOperationsResponse": {
-      "id": "ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Operation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
         }
       }
     },
@@ -394,7 +394,7 @@
           "type": "string"
         },
         "autoDelete": {
-          "description": "Specifies whether or not to delete the disk when the pipeline\ncompletes. This field is applicable only for newly created disks. See\nhttps:\/\/cloud.google.com\/compute\/docs\/reference\/latest\/instances#resource\nfor more details.\nBy default, `autoDelete` is `false`. `autoDelete` will be enabled if set\nto `true` at create time or run time.",
+          "description": "Deprecated. Disks created by the Pipelines API will be deleted at the end\nof the pipeline run, regardless of what this field is set to.",
           "type": "boolean"
         },
         "readOnly": {
@@ -454,7 +454,7 @@
           "$ref": "ServiceAccount"
         },
         "clientId": {
-          "description": "Client-specified pipeline operation identifier.",
+          "description": "This field is deprecated. Use `labels` instead. Client-specified pipeline\noperation identifier.",
           "type": "string"
         },
         "resources": {
@@ -469,6 +469,13 @@
           "description": "How long to keep the VM up after a failure (for example docker command\nfailed, copying input or output files failed, etc). While the VM is up, one\ncan ssh into the VM to debug. Default is 0; maximum allowed value is 1 day.",
           "type": "string",
           "format": "google-duration"
+        },
+        "labels": {
+          "description": "Labels to apply to this pipeline run. Labels will also be applied to\ncompute resources (VM, disks) created by this pipeline run. When listing\noperations, operations can filtered by labels.\nLabel keys may not be empty; label values may be empty. Non-empty labels\nmust be 1-63 characters long, and comply with [RFC1035]\n(https:\/\/www.ietf.org\/rfc\/rfc1035.txt).\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first\ncharacter must be a lowercase letter, and all following characters must be\na dash, lowercase letter, or digit, except the last character, which cannot\nbe a dash.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -737,7 +744,7 @@
           }
         },
         "clientId": {
-          "description": "Optionally provided by the caller when submitting the request that creates\nthe operation.",
+          "description": "This field is deprecated. Use `labels` instead. Optionally provided by the\ncaller when submitting the request that creates the operation.",
           "type": "string"
         },
         "runtimeMetadata": {
@@ -746,6 +753,13 @@
           "additionalProperties": {
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "labels": {
+          "description": "Optionally provided by the caller when submitting the request that creates\nthe operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -812,32 +826,6 @@
   "resources": {
     "operations": {
       "methods": {
-        "get": {
-          "id": "genomics.operations.get",
-          "path": "v1alpha2/{+name}",
-          "flatPath": "v1alpha2/operations/{operationsId}",
-          "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/genomics"
-          ]
-        },
         "list": {
           "id": "genomics.operations.list",
           "path": "v1alpha2/{+name}",
@@ -853,7 +841,7 @@
               "type": "string"
             },
             "filter": {
-              "description": "A string for filtering Operations.\nThe following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`",
+              "description": "A string for filtering Operations.\nThe following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n* labels.key where key is a label key.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`\n* `projectId = my-project AND labels.color = *`\n* `projectId = my-project AND labels.color = red`",
               "location": "query",
               "type": "string"
             },
@@ -874,6 +862,32 @@
           ],
           "response": {
             "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "get": {
+          "id": "genomics.operations.get",
+          "path": "v1alpha2/{+name}",
+          "flatPath": "v1alpha2/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",

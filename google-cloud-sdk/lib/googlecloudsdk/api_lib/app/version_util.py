@@ -328,7 +328,7 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
             old_default_version))
     return
 
-  log.status.Print('Stopping version [{0}].')
+  log.status.Print('Stopping version [{0}].'.format(old_default_version))
   try:
     # We don't block here because stopping the previous version adds a long time
     # (reports of 2.5 minutes) to deployment. The risk is that if we don't wait,
@@ -351,6 +351,6 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
     log.status.Print(
         'Sent request to stop version [{0}]. This operation may take some time '
         'to complete. If you would like to verify that it succeeded, run:\n'
-        '  $ gcloud app versions describe {0}\n'
+        '  $ gcloud app versions describe -s {0.service} {0.id}\n'
         'until it shows that the version has stopped.'.format(
             old_default_version))

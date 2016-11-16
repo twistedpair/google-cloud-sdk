@@ -125,15 +125,8 @@ def GetEnabledListRequest(project_id):
   )
 
 
-def GetAvailableListRequest(project_id):
-  # The constant strings here are special settings that will make Inception
-  # return all services available to a project.
-  return GetMessagesModule().ServicemanagementServicesListRequest(
-      consumerProjectId=project_id,
-      category=('servicemanagement.googleapis.com/'
-                'categories/google-services'),
-      expand='consumerSettings',
-  )
+def GetAvailableListRequest():
+  return GetMessagesModule().ServicemanagementServicesListRequest()
 
 
 def GetProducedListRequest(project_id):
@@ -168,8 +161,8 @@ def PrettyPrint(resource, print_format='json'):
       out=log.out)
 
 
-def PushGoogleServiceConfig(service_name, project, config_contents):
-  """Pushes a given Google service configuration.
+def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
+  """Pushes a given normalized Google service configuration.
 
   Args:
     service_name: name of the service
@@ -177,7 +170,7 @@ def PushGoogleServiceConfig(service_name, project, config_contents):
     config_contents: the contents of the Google Service Config file.
 
   Returns:
-    Config Id assigned by the server which is the service configuration version
+    Config Id assigned by the server which is the service configuration Id
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -193,31 +186,23 @@ def PushGoogleServiceConfig(service_name, project, config_contents):
   return service_resource.id
 
 
-def PushOpenApiServiceConfig(
-    service_name, spec_file_contents, spec_file_path, async):
-  """Pushes a given Open API service configuration.
+def PushMultipleServiceConfigFiles(service_name, config_files, async):
+  """Pushes a given set of service configuration files.
 
   Args:
-    service_name: name of the service
-    spec_file_contents: the contents of the Open API spec file.
-    spec_file_path: the path of the Open API spec file.
+    service_name: name of the service.
+    config_files: a list of ConfigFile message objects.
     async: whether to wait for aync operations or not.
 
   Returns:
-    Config Id assigned by the server which is the service configuration version
+    Config Id assigned by the server which is the service configuration Id
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
 
-  config_file = messages.ConfigFile(
-      fileContents=spec_file_contents,
-      filePath=spec_file_path,
-      # Always use YAML because JSON is a subset of YAML.
-      fileType=(messages.ConfigFile.
-                FileTypeValueValuesEnum.OPEN_API_YAML),
-  )
   config_source = messages.ConfigSource()
-  config_source.files.append(config_file)
+  config_source.files.extend(config_files)
+
   config_source_request = messages.SubmitConfigSourceRequest(
       configSource=config_source,
   )
@@ -241,6 +226,31 @@ def PushOpenApiServiceConfig(
         l=diagnostic.get('location'), m=diagnostic.get('message')))
 
   return svc_config.get('id')
+
+
+def PushOpenApiServiceConfig(
+    service_name, spec_file_contents, spec_file_path, async):
+  """Pushes a given Open API service configuration.
+
+  Args:
+    service_name: name of the service
+    spec_file_contents: the contents of the Open API spec file.
+    spec_file_path: the path of the Open API spec file.
+    async: whether to wait for aync operations or not.
+
+  Returns:
+    Config Id assigned by the server which is the service configuration Id
+  """
+  messages = GetMessagesModule()
+
+  config_file = messages.ConfigFile(
+      fileContents=spec_file_contents,
+      filePath=spec_file_path,
+      # Always use YAML because JSON is a subset of YAML.
+      fileType=(messages.ConfigFile.
+                FileTypeValueValuesEnum.OPEN_API_YAML),
+  )
+  return PushMultipleServiceConfigFiles(service_name, [config_file], async)
 
 
 def CreateServiceIfNew(service_name, project):

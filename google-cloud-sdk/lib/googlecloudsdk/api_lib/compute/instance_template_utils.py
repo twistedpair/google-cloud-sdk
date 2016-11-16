@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instance templates."""
+from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import flags
@@ -22,7 +23,8 @@ EPHEMERAL_ADDRESS = object()
 
 # TODO(user): Add unit tests for utilities
 def CreateNetworkInterfaceMessage(
-    resources, scope_lister, messages, network, region, subnet, address):
+    resources, scope_lister, messages, network, region, subnet, address,
+    alias_ip_ranges_string=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -36,7 +38,8 @@ def CreateNetworkInterfaceMessage(
                * None - no address,
                * EPHEMERAL_ADDRESS - ephemeral address,
                * string - address name to be fetched from GCE API.
-
+    alias_ip_ranges_string: command line string specifying a list of alias
+        IP ranges.
   Returns:
     network_interface: a NetworkInterface message object
   """
@@ -68,6 +71,11 @@ def CreateNetworkInterfaceMessage(
 
     network_interface.accessConfigs = [access_config]
 
+  if alias_ip_ranges_string:
+    network_interface.aliasIpRanges = (
+        alias_ip_range_utils.CreateAliasIpRangeMessagesFromString(
+            messages, False, alias_ip_ranges_string))
+
   return network_interface
 
 
@@ -79,7 +87,7 @@ def CreateNetworkInterfaceMessages(
     resources: generates resource references,
     scope_lister: function, provides scopes for prompting subnet region,
     messages: creates resources.
-    network_interface_arg: CLI argument specyfying network interfaces.
+    network_interface_arg: CLI argument specifying network interfaces.
     region: region of the subnetwork.
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -95,7 +103,8 @@ def CreateNetworkInterfaceMessages(
           resources, scope_lister, messages, interface.get('network', None),
           region,
           interface.get('subnet', None),
-          address))
+          address,
+          interface.get('aliases', None)))
   return result
 
 

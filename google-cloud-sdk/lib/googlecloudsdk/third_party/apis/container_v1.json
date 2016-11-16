@@ -206,7 +206,7 @@
           }
         },
         "enableKubernetesAlpha": {
-          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after creation.",
+          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after\ncreation.",
           "type": "boolean"
         },
         "selfLink": {
@@ -475,6 +475,10 @@
         "autoscaling": {
           "description": "Autoscaler configuration for this NodePool. Autoscaler is enabled\nonly if a valid configuration is present.",
           "$ref": "NodePoolAutoscaling"
+        },
+        "management": {
+          "description": "NodeManagement configuration for this NodePool.",
+          "$ref": "NodeManagement"
         }
       }
     },
@@ -496,6 +500,44 @@
           "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There\nhas to enough quota to scale up the cluster.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "NodeManagement": {
+      "id": "NodeManagement",
+      "description": "NodeManagement defines the set of node management services turned on for the\nnode pool.",
+      "type": "object",
+      "properties": {
+        "autoUpgrade": {
+          "description": "Whether the nodes will be automatically upgraded.",
+          "type": "boolean"
+        },
+        "autoRepair": {
+          "description": "Whether the nodes will be automatically repaired.",
+          "type": "boolean"
+        },
+        "upgradeOptions": {
+          "description": "Specifies the Auto Upgrade knobs for the node pool.",
+          "$ref": "AutoUpgradeOptions"
+        }
+      }
+    },
+    "AutoUpgradeOptions": {
+      "id": "AutoUpgradeOptions",
+      "description": "AutoUpgradeOptions defines the set of options for the user to control how\nthe Auto Upgrades will proceed.",
+      "type": "object",
+      "properties": {
+        "autoUpgradeStartTime": {
+          "description": "[Output only] This filed is set by GKE when upgrades are about to commence\nwith the approximate start time for the upgrades, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        },
+        "description": {
+          "description": "[Output only] This filed is set by GKE when upgrades are about to commence\nwith the description of the upgrade.",
+          "type": "string"
+        },
+        "requestedUpgradeStartTime": {
+          "description": "User requested start time, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
         }
       }
     },
@@ -739,6 +781,24 @@
         "nodePool": {
           "description": "The node pool to create.",
           "$ref": "NodePool"
+        }
+      }
+    },
+    "RollbackNodePoolUpgradeRequest": {
+      "id": "RollbackNodePoolUpgradeRequest",
+      "description": "RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or Failed\nNodePool upgrade. This will be an no-op if the last upgrade successfully\ncompleted.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SetNodePoolManagementRequest": {
+      "id": "SetNodePoolManagementRequest",
+      "description": "SetNodePoolManagementRequest sets the node management properties of a node\npool.",
+      "type": "object",
+      "properties": {
+        "management": {
+          "description": "NodeManagement configuration for the node pool.",
+          "$ref": "NodeManagement"
         }
       }
     },
@@ -1575,6 +1635,102 @@
                         "clusterId",
                         "nodePoolId"
                       ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
+                    },
+                    "rollback": {
+                      "id": "container.projects.zones.clusters.nodePools.rollback",
+                      "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
+                      "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
+                      "httpMethod": "POST",
+                      "description": "Rollback the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "zone": {
+                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "clusterId": {
+                          "description": "The name of the cluster to rollback.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "nodePoolId": {
+                          "description": "The name of the node pool to rollback.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "zone",
+                        "clusterId",
+                        "nodePoolId"
+                      ],
+                      "request": {
+                        "$ref": "RollbackNodePoolUpgradeRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
+                    },
+                    "setManagement": {
+                      "id": "container.projects.zones.clusters.nodePools.setManagement",
+                      "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
+                      "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
+                      "httpMethod": "POST",
+                      "description": "Sets the NodeManagement options for a node pool.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "zone": {
+                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "clusterId": {
+                          "description": "The name of the cluster to update.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "nodePoolId": {
+                          "description": "The name of the node pool to update.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "zone",
+                        "clusterId",
+                        "nodePoolId"
+                      ],
+                      "request": {
+                        "$ref": "SetNodePoolManagementRequest"
+                      },
                       "response": {
                         "$ref": "Operation"
                       },

@@ -330,42 +330,48 @@ class HTMLRenderer(renderer.Renderer):
 
     Args:
       level: The list nesting level.
-      definition: Definition list text if not None, bullet list otherwise.
+      definition: Bullet list if None, end of list if empty, definition list
+        otherwise.
     """
     self._Flush()
-    while self._level > level:
+    while self._level and self._level > level:
       self._out.write(self._pop[self._level])
       self._level -= 1
-    if level:
-      if definition:
-        if self._level < level:
-          self._level += 1
-          if self._level >= len(self._pop):
-            self._pop.append('')
-          self._pop[self._level] = '</dd>\n</dl>\n'
-          if self._section:
-            self._section = False
-            self._out.write('<dl class="notopmargin">\n')
-          else:
-            self._out.write('<dl>\n')
+    # pylint: disable=g-explicit-bool-comparison, '' is different from None here
+    if definition == '' or not level:
+      # End of list.
+      return
+    if definition:
+      # Definition list item.
+      if self._level < level:
+        self._level += 1
+        if self._level >= len(self._pop):
+          self._pop.append('')
+        self._pop[self._level] = '</dd>\n</dl>\n'
+        if self._section:
+          self._section = False
+          self._out.write('<dl class="notopmargin">\n')
         else:
-          self._out.write('</dd>\n')
-        self._out.write('<dt id="{document_id}"><span class="normalfont">'
-                        '{definition}</span></dt>\n<dd>\n'.format(
-                            document_id=self.GetDocumentID(definition),
-                            definition=definition))
+          self._out.write('<dl>\n')
       else:
-        if self._level < level:
-          self._level += 1
-          if self._level >= len(self._pop):
-            self._pop.append('')
-          self._pop[self._level] = '</li>\n</ul>\n'
-          self._out.write('<ul style="list-style-type:' +
-                          self._BULLET[(level - 1) % len(self._BULLET)] +
-                          '">\n')
-        else:
-          self._out.write('</li>\n')
-        self._out.write('<li>\n')
+        self._out.write('</dd>\n')
+      self._out.write('<dt id="{document_id}"><span class="normalfont">'
+                      '{definition}</span></dt>\n<dd>\n'.format(
+                          document_id=self.GetDocumentID(definition),
+                          definition=definition))
+    else:  # definition is None
+      # Bullet list item.
+      if self._level < level:
+        self._level += 1
+        if self._level >= len(self._pop):
+          self._pop.append('')
+        self._pop[self._level] = '</li>\n</ul>\n'
+        self._out.write('<ul style="list-style-type:' +
+                        self._BULLET[(level - 1) % len(self._BULLET)] +
+                        '">\n')
+      else:
+        self._out.write('</li>\n')
+      self._out.write('<li>\n')
 
   def Synopsis(self, line):
     """Renders NAME and SYNOPSIS lines as a hanging indent.

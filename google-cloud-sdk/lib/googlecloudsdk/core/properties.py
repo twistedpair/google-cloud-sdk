@@ -436,7 +436,7 @@ class _Section(object):
       return self.__properties[property_name]
     except KeyError:
       raise NoSuchPropertyError(
-          'Section "{s}" has no property "{p}".'.format(
+          'Section [{s}] has no property [{p}].'.format(
               s=self.__name,
               p=property_name))
 
@@ -1384,7 +1384,7 @@ def PersistProperty(prop, value, scope=None):
     if not config_file:
       raise MissingInstallationConfig()
     prop_files_lib.PersistProperty(config_file, prop.section, prop.name, value)
-    named_configs.ActivePropertiesFile.Invalidate()
+    named_configs.ActivePropertiesFile.Invalidate(mark_changed=True)
   else:
     active_config = named_configs.ConfigurationStore.ActiveConfig()
     active_config.PersistProperty(prop.section, prop.name, value)

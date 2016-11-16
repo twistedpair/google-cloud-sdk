@@ -150,13 +150,15 @@ class Templates(object):
     return GetClientInstance().projects_templates
 
   @staticmethod
-  def Create(project_id=None, gcs_location=None, parameters=None):
+  def Create(project_id=None, gcs_location=None, parameters=None,
+             job_name=None):
     """Calls the Dataflow Templates.CreateFromJob method.
 
     Args:
       project_id: The project which owns the job.
       gcs_location: The location of the template.
       parameters: Parameters to pass to the template.
+      job_name: The name to assign to the job.
     Returns:
       (Job)
     """
@@ -167,6 +169,7 @@ class Templates(object):
               key=k, value=v))
     body = Templates.CREATE_REQUEST(
         gcsPath=gcs_location,
+        jobName=job_name,
         parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
         if parameters else None)
     request = GetMessagesModule().DataflowProjectsTemplatesCreateRequest(

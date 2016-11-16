@@ -160,26 +160,31 @@ class ManRenderer(renderer.Renderer):
 
     Args:
       level: The list nesting level.
-      definition: Definition list text if not None, bullet list otherwise.
+      definition: Bullet list if None, end of list if empty, definition list
+        otherwise.
     """
     self._Flush()
-    while self._level >= level:
-      if not self._level:
-        break
+    need_sp = False
+    while self._level and self._level > level:
       self._out.write('.RE\n')
       self._level -= 1
-    if level:
-      if definition:
-        self._out.write(definition + '\n')
-        if self._level < level:
-          self._level += 1
-          self._out.write('.RS 2m\n')
-      else:
-        if self._level < level:
-          self._level += 1
-          self._out.write('.RS 2m\n')
-        self._out.write('.IP "%s" 2m\n' % self._BULLET[(level - 1) %
-                                                       len(self._BULLET)])
+      need_sp = True
+    if need_sp:
+      self._out.write('.sp\n')
+    # pylint: disable=g-explicit-bool-comparison, '' is different from None here
+    if definition == '' or not level:
+      # End of list.
+      return
+    if self._level < level:
+      self._level += 1
+      self._out.write('.RS 2m\n')
+    if definition:
+      # Definition list item.
+      self._out.write('.TP 2m\n' + definition + '\n')
+    else:
+      # Bullet list item.
+      self._out.write('.IP "%s" 2m\n' %
+                      self._BULLET[(level - 1) % len(self._BULLET)])
 
   def Synopsis(self, line):
     """Renders NAME and SYNOPSIS lines as a hanging indent.

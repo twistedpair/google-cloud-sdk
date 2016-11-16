@@ -75,20 +75,15 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
     return cls(batch_url, compute, project, resources)
 
   def _GetResourceUri(
-      self, resource_name, resource_type, region=None, zone=None):
+      self, resource_name, collection, region=None, zone=None):
     """Convert a GCE resource short-name into a URI."""
     if not resource_name:
       # Resource must be optional and server-specified. Ignore it.
       return resource_name
-    if region:
-      resource_ref = self.CreateRegionalReference(
-          resource_name, region, resource_type=resource_type)
-    elif zone:
-      resource_ref = self.CreateZonalReference(
-          resource_name, zone, resource_type=resource_type)
-    else:
-      resource_ref = self.CreateGlobalReference(
-          resource_name, resource_type=resource_type)
+    resource_ref = self.resources.Parse(
+        resource_name,
+        {'region': region, 'zone': zone},
+        collection=collection)
     return resource_ref.SelfLink()
 
   def _GetZoneRef(self, cluster_name):
@@ -124,16 +119,17 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
     zone = zone_ref.Name()
     region = compute_utils.ZoneNameToRegionName(zone)
     uris = {
-        'image': self._GetResourceUri(image, 'images'),
+        'image': self._GetResourceUri(image, 'compute.images'),
         'master_machine_type':
             self._GetResourceUri(
-                master_machine_type, 'machineTypes', zone=zone),
+                master_machine_type, 'compute.machineTypes', zone=zone),
         'worker_machine_type':
             self._GetResourceUri(
-                worker_machine_type, 'machineTypes', zone=zone),
-        'network': self._GetResourceUri(network, 'networks'),
+                worker_machine_type, 'compute.machineTypes', zone=zone),
+        'network': self._GetResourceUri(network, 'compute.networks'),
         'subnetwork':
-            self._GetResourceUri(subnetwork, 'subnetworks', region=region),
+            self._GetResourceUri(
+                subnetwork, 'compute.subnetworks', region=region),
         'zone': zone_ref.SelfLink(),
     }
     return uris

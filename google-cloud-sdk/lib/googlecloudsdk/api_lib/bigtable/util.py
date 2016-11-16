@@ -17,6 +17,7 @@
 import re
 import time
 
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
@@ -140,3 +141,9 @@ def WaitForOpV2(operation, spinner_text):
       tick_limit -= tick_freq
       time.sleep(tick_freq)
   return resp.done
+
+
+def WaitForInstance(client, operation_ref, message):
+  poller = waiter.CloudOperationPoller(
+      client.projects_instances, client.operations)
+  return waiter.WaitFor(poller, operation_ref, message)

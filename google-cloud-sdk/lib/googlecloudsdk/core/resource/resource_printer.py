@@ -101,7 +101,7 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
   Each projection key must have a subformat defined by the
   :format=FORMAT-STRING attribute. For example,
 
-    _--format='multi(data:format=json, info:format="table[box](a, b, c)")'_
+    `--format="multi(data:format=json, info:format='table[box](a, b, c)')"`
 
   formats the *data* field as JSON and the *info* field as a boxed table.
   """

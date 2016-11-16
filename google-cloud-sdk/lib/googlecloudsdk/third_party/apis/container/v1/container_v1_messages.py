@@ -134,6 +134,25 @@ class AuthorizeResponse(_messages.Message):
   status = _messages.MessageField('SubjectAccessReviewStatus', 4)
 
 
+class AutoUpgradeOptions(_messages.Message):
+  """AutoUpgradeOptions defines the set of options for the user to control how
+  the Auto Upgrades will proceed.
+
+  Fields:
+    autoUpgradeStartTime: [Output only] This filed is set by GKE when upgrades
+      are about to commence with the approximate start time for the upgrades,
+      in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    description: [Output only] This filed is set by GKE when upgrades are
+      about to commence with the description of the upgrade.
+    requestedUpgradeStartTime: User requested start time, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+  """
+
+  autoUpgradeStartTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  requestedUpgradeStartTime = _messages.StringField(3)
+
+
 class CancelOperationRequest(_messages.Message):
   """CancelOperationRequest cancels a single operation."""
 
@@ -577,6 +596,48 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
   clusterId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
+
+
+class ContainerProjectsZonesClustersNodePoolsRollbackRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsRollbackRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to rollback.
+    nodePoolId: The name of the node pool to rollback.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    rollbackNodePoolUpgradeRequest: A RollbackNodePoolUpgradeRequest resource
+      to be passed as the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  nodePoolId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  rollbackNodePoolUpgradeRequest = _messages.MessageField('RollbackNodePoolUpgradeRequest', 4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ContainerProjectsZonesClustersNodePoolsSetManagementRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsSetManagementRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to update.
+    nodePoolId: The name of the node pool to update.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setNodePoolManagementRequest: A SetNodePoolManagementRequest resource to
+      be passed as the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  nodePoolId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  setNodePoolManagementRequest = _messages.MessageField('SetNodePoolManagementRequest', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ContainerProjectsZonesClustersUpdateRequest(_messages.Message):
@@ -1106,6 +1167,21 @@ class NodeConfig(_messages.Message):
   tags = _messages.StringField(10, repeated=True)
 
 
+class NodeManagement(_messages.Message):
+  """NodeManagement defines the set of node management services turned on for
+  the node pool.
+
+  Fields:
+    autoRepair: Whether the nodes will be automatically repaired.
+    autoUpgrade: Whether the nodes will be automatically upgraded.
+    upgradeOptions: Specifies the Auto Upgrade knobs for the node pool.
+  """
+
+  autoRepair = _messages.BooleanField(1)
+  autoUpgrade = _messages.BooleanField(2)
+  upgradeOptions = _messages.MessageField('AutoUpgradeOptions', 3)
+
+
 class NodePool(_messages.Message):
   """NodePool contains the name and configuration for a cluster's node pool.
   Node pools are a set of nodes (i.e. VM's), with a common configuration and
@@ -1128,6 +1204,7 @@ class NodePool(_messages.Message):
       You must also have available firewall and routes quota.
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this node pool.
+    management: NodeManagement configuration for this NodePool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -1168,11 +1245,12 @@ class NodePool(_messages.Message):
   config = _messages.MessageField('NodeConfig', 2)
   initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  status = _messages.EnumField('StatusValueValuesEnum', 7)
-  statusMessage = _messages.StringField(8)
-  version = _messages.StringField(9)
+  management = _messages.MessageField('NodeManagement', 5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  version = _messages.StringField(10)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -1312,6 +1390,14 @@ class ResourceAttributes(_messages.Message):
   version = _messages.StringField(7)
 
 
+class RollbackNodePoolUpgradeRequest(_messages.Message):
+  """RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or Failed
+  NodePool upgrade. This will be an no-op if the last upgrade successfully
+  completed.
+  """
+
+
+
 class ServerConfig(_messages.Message):
   """Container Engine service configuration.
 
@@ -1331,6 +1417,17 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(4, repeated=True)
   validMasterVersions = _messages.StringField(5, repeated=True)
   validNodeVersions = _messages.StringField(6, repeated=True)
+
+
+class SetNodePoolManagementRequest(_messages.Message):
+  """SetNodePoolManagementRequest sets the node management properties of a
+  node pool.
+
+  Fields:
+    management: NodeManagement configuration for the node pool.
+  """
+
+  management = _messages.MessageField('NodeManagement', 1)
 
 
 class SignedUrls(_messages.Message):

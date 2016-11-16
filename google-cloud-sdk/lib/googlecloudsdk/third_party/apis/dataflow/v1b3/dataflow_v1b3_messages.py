@@ -332,6 +332,7 @@ class CreateJobFromTemplateRequest(_messages.Message):
 
   Fields:
     gcsPath: A path to the serialized JSON representation of the job.
+    jobName: The job name to use for the created job..
     parameters: Dynamic parameterization of the job's runtime environment.
   """
 
@@ -360,7 +361,8 @@ class CreateJobFromTemplateRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   gcsPath = _messages.StringField(1)
-  parameters = _messages.MessageField('ParametersValue', 2)
+  jobName = _messages.StringField(2)
+  parameters = _messages.MessageField('ParametersValue', 3)
 
 
 class CustomSourceLocation(_messages.Message):
@@ -398,6 +400,7 @@ class DataflowProjectsJobsCreateRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
+    location: The location which contains this job.
     projectId: The project which owns the job.
     replaceJobId: DEPRECATED. This field is now on the Job message.
     view: Level of information requested in response.
@@ -416,9 +419,10 @@ class DataflowProjectsJobsCreateRequest(_messages.Message):
     JOB_VIEW_ALL = 2
 
   job = _messages.MessageField('Job', 1)
-  projectId = _messages.StringField(2, required=True)
-  replaceJobId = _messages.StringField(3)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  location = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  replaceJobId = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class DataflowProjectsJobsDebugGetConfigRequest(_messages.Message):
@@ -456,14 +460,16 @@ class DataflowProjectsJobsGetMetricsRequest(_messages.Message):
 
   Fields:
     jobId: The job to get messages for.
+    location: The location which contains the job specified by job_id.
     projectId: A project id.
     startTime: Return only metric data that has changed since this time.
       Default is to return all information about all metrics for the job.
   """
 
   jobId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  startTime = _messages.StringField(3)
+  location = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  startTime = _messages.StringField(4)
 
 
 class DataflowProjectsJobsGetRequest(_messages.Message):
@@ -474,6 +480,7 @@ class DataflowProjectsJobsGetRequest(_messages.Message):
 
   Fields:
     jobId: Identifies a single job.
+    location: The location which contains this job.
     projectId: The project which owns the job.
     view: Level of information requested in response.
   """
@@ -491,8 +498,9 @@ class DataflowProjectsJobsGetRequest(_messages.Message):
     JOB_VIEW_ALL = 2
 
   jobId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 3)
+  location = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class DataflowProjectsJobsListRequest(_messages.Message):
@@ -505,6 +513,7 @@ class DataflowProjectsJobsListRequest(_messages.Message):
 
   Fields:
     filter: The kind of filter to use.
+    location: The location which contains this job.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -541,10 +550,11 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     JOB_VIEW_ALL = 2
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
+  location = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class DataflowProjectsJobsMessagesListRequest(_messages.Message):
@@ -558,6 +568,7 @@ class DataflowProjectsJobsMessagesListRequest(_messages.Message):
     endTime: Return only messages with timestamps < end_time. The default is
       now (i.e. return up to the latest messages available).
     jobId: The job to get messages about.
+    location: The location which contains the job specified by job_id.
     minimumImportance: Filter to only get messages with importance >= level
     pageSize: If specified, determines the maximum number of messages to
       return.  If unspecified, the service may choose an appropriate default,
@@ -591,11 +602,12 @@ class DataflowProjectsJobsMessagesListRequest(_messages.Message):
 
   endTime = _messages.StringField(1)
   jobId = _messages.StringField(2, required=True)
-  minimumImportance = _messages.EnumField('MinimumImportanceValueValuesEnum', 3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  projectId = _messages.StringField(6, required=True)
-  startTime = _messages.StringField(7)
+  location = _messages.StringField(3)
+  minimumImportance = _messages.EnumField('MinimumImportanceValueValuesEnum', 4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  projectId = _messages.StringField(7, required=True)
+  startTime = _messages.StringField(8)
 
 
 class DataflowProjectsJobsUpdateRequest(_messages.Message):
@@ -604,12 +616,14 @@ class DataflowProjectsJobsUpdateRequest(_messages.Message):
   Fields:
     job: A Job resource to be passed as the request body.
     jobId: Identifies a single job.
+    location: The location which contains this job.
     projectId: The project which owns the job.
   """
 
   job = _messages.MessageField('Job', 1)
   jobId = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
+  location = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
 
 
 class DataflowProjectsJobsWorkItemsLeaseRequest(_messages.Message):
@@ -640,6 +654,244 @@ class DataflowProjectsJobsWorkItemsReportStatusRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 3)
+
+
+class DataflowProjectsLocationsJobsCreateRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsCreateRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Level of information requested in response.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    location: The location which contains this job.
+    projectId: The project which owns the job.
+    replaceJobId: DEPRECATED. This field is now on the Job message.
+    view: Level of information requested in response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Level of information requested in response.
+
+    Values:
+      JOB_VIEW_UNKNOWN: <no description>
+      JOB_VIEW_SUMMARY: <no description>
+      JOB_VIEW_ALL: <no description>
+    """
+    JOB_VIEW_UNKNOWN = 0
+    JOB_VIEW_SUMMARY = 1
+    JOB_VIEW_ALL = 2
+
+  job = _messages.MessageField('Job', 1)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  replaceJobId = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class DataflowProjectsLocationsJobsGetMetricsRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsGetMetricsRequest object.
+
+  Fields:
+    jobId: The job to get messages for.
+    location: The location which contains the job specified by job_id.
+    projectId: A project id.
+    startTime: Return only metric data that has changed since this time.
+      Default is to return all information about all metrics for the job.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  startTime = _messages.StringField(4)
+
+
+class DataflowProjectsLocationsJobsGetRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Level of information requested in response.
+
+  Fields:
+    jobId: Identifies a single job.
+    location: The location which contains this job.
+    projectId: The project which owns the job.
+    view: Level of information requested in response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Level of information requested in response.
+
+    Values:
+      JOB_VIEW_UNKNOWN: <no description>
+      JOB_VIEW_SUMMARY: <no description>
+      JOB_VIEW_ALL: <no description>
+    """
+    JOB_VIEW_UNKNOWN = 0
+    JOB_VIEW_SUMMARY = 1
+    JOB_VIEW_ALL = 2
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class DataflowProjectsLocationsJobsListRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsListRequest object.
+
+  Enums:
+    FilterValueValuesEnum: The kind of filter to use.
+    ViewValueValuesEnum: Level of information requested in response. Default
+      is SUMMARY.
+
+  Fields:
+    filter: The kind of filter to use.
+    location: The location which contains this job.
+    pageSize: If there are many jobs, limit response to at most this many. The
+      actual number of jobs returned will be the lesser of max_responses and
+      an unspecified server-defined limit.
+    pageToken: Set this to the 'next_page_token' field of a previous response
+      to request additional results in a long list.
+    projectId: The project which owns the jobs.
+    view: Level of information requested in response. Default is SUMMARY.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    """The kind of filter to use.
+
+    Values:
+      UNKNOWN: <no description>
+      ALL: <no description>
+      TERMINATED: <no description>
+      ACTIVE: <no description>
+    """
+    UNKNOWN = 0
+    ALL = 1
+    TERMINATED = 2
+    ACTIVE = 3
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Level of information requested in response. Default is SUMMARY.
+
+    Values:
+      JOB_VIEW_UNKNOWN: <no description>
+      JOB_VIEW_SUMMARY: <no description>
+      JOB_VIEW_ALL: <no description>
+    """
+    JOB_VIEW_UNKNOWN = 0
+    JOB_VIEW_SUMMARY = 1
+    JOB_VIEW_ALL = 2
+
+  filter = _messages.EnumField('FilterValueValuesEnum', 1)
+  location = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class DataflowProjectsLocationsJobsMessagesListRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsMessagesListRequest object.
+
+  Enums:
+    MinimumImportanceValueValuesEnum: Filter to only get messages with
+      importance >= level
+
+  Fields:
+    endTime: Return only messages with timestamps < end_time. The default is
+      now (i.e. return up to the latest messages available).
+    jobId: The job to get messages about.
+    location: The location which contains the job specified by job_id.
+    minimumImportance: Filter to only get messages with importance >= level
+    pageSize: If specified, determines the maximum number of messages to
+      return.  If unspecified, the service may choose an appropriate default,
+      or may return an arbitrarily large number of results.
+    pageToken: If supplied, this should be the value of next_page_token
+      returned by an earlier call. This will cause the next page of results to
+      be returned.
+    projectId: A project id.
+    startTime: If specified, return only messages with timestamps >=
+      start_time. The default is the job creation time (i.e. beginning of
+      messages).
+  """
+
+  class MinimumImportanceValueValuesEnum(_messages.Enum):
+    """Filter to only get messages with importance >= level
+
+    Values:
+      JOB_MESSAGE_IMPORTANCE_UNKNOWN: <no description>
+      JOB_MESSAGE_DEBUG: <no description>
+      JOB_MESSAGE_DETAILED: <no description>
+      JOB_MESSAGE_BASIC: <no description>
+      JOB_MESSAGE_WARNING: <no description>
+      JOB_MESSAGE_ERROR: <no description>
+    """
+    JOB_MESSAGE_IMPORTANCE_UNKNOWN = 0
+    JOB_MESSAGE_DEBUG = 1
+    JOB_MESSAGE_DETAILED = 2
+    JOB_MESSAGE_BASIC = 3
+    JOB_MESSAGE_WARNING = 4
+    JOB_MESSAGE_ERROR = 5
+
+  endTime = _messages.StringField(1)
+  jobId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  minimumImportance = _messages.EnumField('MinimumImportanceValueValuesEnum', 4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  projectId = _messages.StringField(7, required=True)
+  startTime = _messages.StringField(8)
+
+
+class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsUpdateRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    jobId: Identifies a single job.
+    location: The location which contains this job.
+    projectId: The project which owns the job.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  jobId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
+class DataflowProjectsLocationsJobsWorkItemsLeaseRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsWorkItemsLeaseRequest object.
+
+  Fields:
+    jobId: Identifies the workflow job this worker belongs to.
+    leaseWorkItemRequest: A LeaseWorkItemRequest resource to be passed as the
+      request body.
+    location: The location which contains the WorkItem's job.
+    projectId: Identifies the project this worker belongs to.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  leaseWorkItemRequest = _messages.MessageField('LeaseWorkItemRequest', 2)
+  location = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
+class DataflowProjectsLocationsJobsWorkItemsReportStatusRequest(_messages.Message):
+  """A DataflowProjectsLocationsJobsWorkItemsReportStatusRequest object.
+
+  Fields:
+    jobId: The job which the WorkItem is part of.
+    location: The location which contains the WorkItem's job.
+    projectId: The project which owns the WorkItem's job.
+    reportWorkItemStatusRequest: A ReportWorkItemStatusRequest resource to be
+      passed as the request body.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 4)
 
 
 class DataflowProjectsTemplatesCreateRequest(_messages.Message):
@@ -908,6 +1160,17 @@ class Environment(_messages.Message):
   workerPools = _messages.MessageField('WorkerPool', 10, repeated=True)
 
 
+class FailedLocation(_messages.Message):
+  """FailedLocation indicates which location failed to respond to a request
+  for data.
+
+  Fields:
+    name: The name of the failed location.
+  """
+
+  name = _messages.StringField(1)
+
+
 class FlattenInstruction(_messages.Message):
   """An instruction that copies its inputs (zero or more) to its (single)
   output.
@@ -1111,6 +1374,7 @@ class Job(_messages.Message):
       \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
+    location: The location which contains this job.
     name: The user-specified Dataflow job name.  Only one Job with a given
       name may exist in a project at any given time.  If a caller attempts to
       create a Job with the same name as an already-existing Job, the attempt
@@ -1325,15 +1589,16 @@ class Job(_messages.Message):
   executionInfo = _messages.MessageField('JobExecutionInfo', 6)
   id = _messages.StringField(7)
   labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  projectId = _messages.StringField(10)
-  replaceJobId = _messages.StringField(11)
-  replacedByJobId = _messages.StringField(12)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 13)
-  steps = _messages.MessageField('Step', 14, repeated=True)
-  tempFiles = _messages.StringField(15, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  location = _messages.StringField(9)
+  name = _messages.StringField(10)
+  projectId = _messages.StringField(11)
+  replaceJobId = _messages.StringField(12)
+  replacedByJobId = _messages.StringField(13)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 14)
+  steps = _messages.MessageField('Step', 15, repeated=True)
+  tempFiles = _messages.StringField(16, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class JobExecutionInfo(_messages.Message):
@@ -1509,6 +1774,7 @@ class LeaseWorkItemRequest(_messages.Message):
 
   Fields:
     currentWorkerTime: The current timestamp at the worker.
+    location: The location which contains the WorkItem's job.
     requestedLeaseDuration: The initial lease period.
     workItemTypes: Filter for WorkItem type.
     workerCapabilities: Worker capabilities. WorkItems might be limited to
@@ -1518,10 +1784,11 @@ class LeaseWorkItemRequest(_messages.Message):
   """
 
   currentWorkerTime = _messages.StringField(1)
-  requestedLeaseDuration = _messages.StringField(2)
-  workItemTypes = _messages.StringField(3, repeated=True)
-  workerCapabilities = _messages.StringField(4, repeated=True)
-  workerId = _messages.StringField(5)
+  location = _messages.StringField(2)
+  requestedLeaseDuration = _messages.StringField(3)
+  workItemTypes = _messages.StringField(4, repeated=True)
+  workerCapabilities = _messages.StringField(5, repeated=True)
+  workerId = _messages.StringField(6)
 
 
 class LeaseWorkItemResponse(_messages.Message):
@@ -1552,12 +1819,15 @@ class ListJobsResponse(_messages.Message):
   response, depending on the page size in the ListJobsRequest.
 
   Fields:
+    failedLocation: Zero or more messages describing locations that failed to
+      respond.
     jobs: A subset of the requested job information.
     nextPageToken: Set if there may be more results than fit in this response.
   """
 
-  jobs = _messages.MessageField('Job', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  failedLocation = _messages.MessageField('FailedLocation', 1, repeated=True)
+  jobs = _messages.MessageField('Job', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class MapTask(_messages.Message):
@@ -1975,6 +2245,8 @@ class PubsubLocation(_messages.Message):
       /<project-id>/<topic-name>"
     trackingSubscription: If set, specifies the pubsub subscription that will
       be used for tracking custom time timestamps for watermark estimation.
+    withAttributes: If true, then the client has requested to get pubsub
+      attributes.
   """
 
   dropLateData = _messages.BooleanField(1)
@@ -1983,6 +2255,7 @@ class PubsubLocation(_messages.Message):
   timestampLabel = _messages.StringField(4)
   topic = _messages.StringField(5)
   trackingSubscription = _messages.StringField(6)
+  withAttributes = _messages.BooleanField(7)
 
 
 class ReadInstruction(_messages.Message):
@@ -2000,6 +2273,7 @@ class ReportWorkItemStatusRequest(_messages.Message):
 
   Fields:
     currentWorkerTime: The current timestamp at the worker.
+    location: The location which contains the WorkItem's job.
     workItemStatuses: The order is unimportant, except that the order of the
       WorkItemServiceState messages in the ReportWorkItemStatusResponse
       corresponds to the order of WorkItemStatus messages here.
@@ -2010,8 +2284,9 @@ class ReportWorkItemStatusRequest(_messages.Message):
   """
 
   currentWorkerTime = _messages.StringField(1)
-  workItemStatuses = _messages.MessageField('WorkItemStatus', 2, repeated=True)
-  workerId = _messages.StringField(3)
+  location = _messages.StringField(2)
+  workItemStatuses = _messages.MessageField('WorkItemStatus', 3, repeated=True)
+  workerId = _messages.StringField(4)
 
 
 class ReportWorkItemStatusResponse(_messages.Message):

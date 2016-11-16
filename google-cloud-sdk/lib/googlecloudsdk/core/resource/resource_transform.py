@@ -69,22 +69,25 @@ def GetBooleanArgValue(arg):
   return True
 
 
+def _GetParsedKey(key):
+  """Returns a parsed key from a dotted key string."""
+  # pylint: disable=g-import-not-at-top, circular dependency
+  from googlecloudsdk.core.resource import resource_lex
+  return resource_lex.Lexer(key).Key()
+
+
 def _GetKeyValue(r, key, undefined=None):
   """Returns the value for key in r.
 
   Args:
     r: The resource object.
-    key: The dotted attribute name.
+    key: The dotted attribute name string.
     undefined: This is returned if key is not in r.
 
   Returns:
     The value for key in r.
   """
-  # Circular dependency on resource_lex for
-  #   parsed_key = resource_lex.Lexer(key).Key()
-  # so we settle for simple keys here.
-  parsed_key = key.split('.')
-  return resource_property.Get(r, parsed_key, undefined)
+  return resource_property.Get(r, _GetParsedKey(key), undefined)
 
 
 def TransformAlways(r):
@@ -94,7 +97,8 @@ def TransformAlways(r):
   sequence causes the sequence to always be evaluated.
 
   Example:
-    some_field.always().foo().bar() will always apply foo() and then bar().
+    `some_field.always().foo().bar()`:::
+    Always applies foo() and then bar().
 
   Args:
     r: A resource.
@@ -161,8 +165,8 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
     otherwise.
 
   Example:
-    For the resource string "CAUTION means GO FASTER", the
-    *color(red=STOP,yellow=CAUTION,green=GO)* transform will display the
+    `color(red=STOP,yellow=CAUTION,green=GO)`:::
+    For the resource string "CAUTION means GO FASTER" displays the
     substring "CAUTION" in yellow.
   """
   string = unicode(r)
@@ -171,6 +175,34 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
     if pattern and re.search(pattern, string):
       return console_attr.Colorizer(string, color, **kwargs)
   return string
+
+
+def TransformCount(r):
+  """Counts the number of each item in the list.
+
+  A string resource is treated as a list of characters.
+
+  Args:
+    r: A string or list.
+
+  Returns:
+    A dictionary mapping list elements to the number of them in the input list.
+
+  Example:
+    `"b/a/b/c".split("/").count()`:::
+    Returns {a: 1, b: 2, c: 1}.
+  """
+  if not r:
+    return {}
+
+  try:
+    count = {}
+    for item in r:
+      c = count.get(item, 0)
+      count[item] = c + 1
+    return count
+  except TypeError:
+    return {}
 
 
 # pylint: disable=redefined-builtin, external expression expects format kwarg.
@@ -330,9 +362,10 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
     The ISO 8601 duration string for r or undefined if r is not a duration.
 
   Example:
-    *duration(start=createTime,end=updateTime)* is the duration from resource
-    creation to the most recent update. *updateTime.duration()* is the duration
-    since the most recent resource update.
+    `duration(start=createTime,end=updateTime)`:::
+    The duration from resource creation to the most recent update.
+    `updateTime.duration()`:::
+    The duration since the most recent resource update.
   """
   try:
     parts = int(parts)
@@ -468,7 +501,9 @@ def TransformExtract(r, *keys):
     The list of extracted values.
   """
   try:
-    return [r[k] for k in keys if k in r]
+    # Use undefined=TransformExtract to test if k is in r.
+    values = [_GetKeyValue(r, k, TransformExtract) for k in keys]
+    return [v for v in values if v is not TransformExtract]
   except TypeError:
     return []
 
@@ -488,22 +523,23 @@ def TransformFatal(r, message=None):
                                           else str(r))
 
 
-def TransformFirstOf(r, *args):
-  """Returns the first non-empty .name attribute value for name in args.
+def TransformFirstOf(r, *keys):
+  """Returns the first non-empty attribute value for key in keys.
 
   Args:
     r: A JSON-serializable object.
-    *args: Names to check for resource attribute values,
+    *keys: Keys to check for resource attribute values,
 
   Returns:
-    The first non-empty r.name value for name in args, '' otherwise.
+    The first non-empty r.key value for key in keys, '' otherwise.
 
   Example:
-    x.firstof(bar_foo, barFoo, BarFoo, BAR_FOO) will check x.bar_foo, x.barFoo,
-    x.BarFoo, and x.BAR_FOO in order for the first non-empty value.
+    `x.firstof(bar_foo, barFoo, BarFoo, BAR_FOO)`:::
+    Checks x.bar_foo, x.barFoo, x.BarFoo, and x.BAR_FOO in order for the first
+    non-empty value.
   """
-  for name in args:
-    v = resource_property.Get(r, [name], None)
+  for key in keys:
+    v = _GetKeyValue(r, key)
     if v is not None:
       return v
   return ''
@@ -573,7 +609,8 @@ def TransformFormat(r, projection, fmt, *args):
     The formatted string.
 
   Example:
-    --format='value(format("{0:f.1}/{0:f.1}", q.CPU.default, q.CPU.limit))'
+    `--format='value(format("{0:f.1}/{1:f.1}", q.CPU.default, q.CPU.limit))'`:::
+    Formats q.CPU.default and q.CPU.limit as floating point numbers.
   """
   if args:
     columns = projection.compiler('({0})'.format(','.join(args)),
@@ -586,7 +623,7 @@ def TransformFormat(r, projection, fmt, *args):
   return fmt.format(*columns)
 
 
-def TransformGroup(r, *args):
+def TransformGroup(r, *keys):
   """Formats a [...] grouped list.
 
   Each group is enclosed in [...]. The first item separator is ':', subsequent
@@ -597,7 +634,7 @@ def TransformGroup(r, *args):
 
   Args:
     r: A JSON-serializable object.
-    *args: Optional attribute names to select from the list. Otherwise
+    *keys: Optional attribute keys to select from the list. Otherwise
       the string value of each list item is selected.
 
   Returns:
@@ -607,26 +644,24 @@ def TransformGroup(r, *args):
     return '[]'
   buf = StringIO.StringIO()
   sep = None
+  parsed_keys = [_GetParsedKey(key) for key in keys]
   for item in r:
     if sep:
       buf.write(sep)
     else:
       sep = ' '
-    if not args:
+    if not parsed_keys:
       buf.write('[{0}]'.format(unicode(item)))
     else:
       buf.write('[')
       sub = None
-      for attr in args:
+      for key in parsed_keys:
         if sub:
           buf.write(sub)
           sub = ', '
         else:
           sub = ': '
-        if isinstance(item, dict):
-          value = item.get(attr)
-        else:
-          value = getattr(item, attr, None)
+        value = resource_property.Get(item, key, None)
         if value is not None:
           buf.write(unicode(value))
       buf.write(']')
@@ -643,8 +678,9 @@ def TransformIf(r, expr):
       without the leading *--* prefix and dashes replaced by underscores.
 
   Example:
-    The "table(name, value.if(NOT short_format))" format will list a value
-    column if the *--short-format* command line flag is not specified.
+    `table(name, value.if(NOT short_format))`:::
+    Lists a value column if the *--short-format* command line flag is not
+    specified.
 
   Returns:
     r
@@ -682,7 +718,8 @@ def TransformJoin(r, sep='/', undefined=''):
     A new string containing the resource values joined by sep.
 
   Example:
-    "a/b/c/d".split("/").join("!") returns "a!b!c!d"
+    `"a/b/c/d".split("/").join("!")`:::
+    Returns "a!b!c!d".
   """
   try:
     parts = [unicode(i) for i in r]
@@ -738,11 +775,14 @@ def TransformMap(r, depth=1):
   """Applies the next transform in the sequence to each resource list item.
 
   Example:
-    list_field.map().foo().list() applies foo() to each item in list_field and
-    then list() to the resulting value to return a compact comma-separated list.
-    list_field.map().foo().map().bar() applies foo() to each item in list_field
-    and then bar() to each item in the resulting list. abc[].xyz[].map(2).foo()
-    applies foo() to each item in xyz[] for all items in abc[].
+    `list_field.map().foo().list()`:::
+    Applies foo() to each item in list_field and then list() to the resulting
+    value to return a compact comma-separated list.
+    `list_field.map().foo().map().bar()`:::
+    Applies foo() to each item in list_field and then bar() to each item in the
+    resulting list.
+    `abc.xyz.map(2).foo()`:::
+    Applies foo() to each item in xyz[] for all items in abc[].
 
   Args:
     r: A resource.
@@ -840,8 +880,10 @@ def TransformScope(r, *args):
       component in r if none found.
 
   Example:
-    "https://abc/foo/projects/bar/xyz".scope("projects") returns "bar/xyz".
-    "https://xyz/foo/regions/abc".scope() returns "abc".
+    `"https://abc/foo/projects/bar/xyz".scope("projects")`:::
+    Returns "bar/xyz".
+    `"https://xyz/foo/regions/abc".scope()`:::
+    Returns "abc".
   """
   if not r:
     return ''
@@ -990,11 +1032,16 @@ def TransformSlice(r, op=':', undefined=''):
     A new array containing the specified slice of the resource.
 
   Example:
-    [1,2,3].slice(1:) returns [2,3].
-    [1,2,3].slice(:2) returns [1,2].
-    [1,2,3].slice(-1:) returns [3].
-    [1,2,3].slice(::-1) returns [3,2,1].
-    [1,2,3].slice(1) returns [2].
+    `[1,2,3].slice(1:)`:::
+    Returns [2,3].
+    `[1,2,3].slice(:2)`:::
+    Returns [1,2].
+    `[1,2,3].slice(-1:)`:::
+    Returns [3].
+    `[1,2,3].slice(: :-1)`:::
+    Returns [3,2,1].
+    `[1,2,3].slice(1)`:::
+    Returns [2].
   """
   op = op.strip()
   if not op:
@@ -1020,6 +1067,32 @@ def TransformSlice(r, op=':', undefined=''):
     return undefined
 
 
+def TransformSort(r, attr=''):
+  """Sorts the elements of the resource list by a given attribute (or itself).
+
+  A string resource is treated as a list of characters.
+
+  Args:
+    r: A string or list.
+    attr: The optional field of an object or dict by which to sort.
+
+  Returns:
+    A resource list ordered by the specified key.
+
+  Example:
+    `"b/a/d/c".split("/").sort()`:::
+    Returns "[a, b, c, d]".
+  """
+  if not r:
+    return []
+
+  def SortKey(item):
+    if not attr:
+      return item
+    return _GetKeyValue(item, attr)
+  return sorted(r, key=SortKey)
+
+
 def TransformSplit(r, sep='/', undefined=''):
   """Splits a string by the value of sep.
 
@@ -1032,7 +1105,8 @@ def TransformSplit(r, sep='/', undefined=''):
     A new array containing the split components of the resource.
 
   Example:
-    "a/b/c/d".split() returns ["a", "b", "c", "d"]
+    `"a/b/c/d".split()`:::
+    Returns ["a", "b", "c", "d"].
   """
   if not r:
     return undefined
@@ -1041,6 +1115,54 @@ def TransformSplit(r, sep='/', undefined=''):
     return r.split(sep)
   except (AttributeError, TypeError, ValueError):
     return undefined
+
+
+def TransformSynthesize(r, *args):
+  """Synthesizes a new resource from the schema arguments.
+
+  A list of tuple arguments controls the resource synthesis. Each tuple is a
+  schema that defines the synthesis of one resource list item. Each schema
+  item defines the synthesis of one synthesized_resource attribute from an
+  original_resource attribute.
+
+  There are three kinds of schema items:
+
+  *name:literal*:::
+  The value for the name attribute in the synthesized resource is the literal
+  value.
+  *name=key*:::
+  The value for the name attribute in the synthesized_resource is the
+  value of key in the original_resource.
+  *key*:::
+  All the attributes of the value of key in the original_resource are
+  added to the attributes in the synthesized_resource.
+  :::
+
+  Args:
+    r: A resource list.
+    *args: The list of schema tuples.
+
+  Example:
+    This returns a list of two resource items:::
+    `synthesize((name:up, upInfo), (name:down, downInfo))`
+    If upInfo and downInfo serialize to:::
+    `{"foo": 1, "bar": "yes"}`
+    and:::
+    `{"foo": 0, "bar": "no"}`
+    then the synthesized resource list is:::
+    `[{"name": "up", "foo": 1, "bar": "yes"},
+      {"name": "down", "foo": 0, "bar": "no"}]`
+    This could then be displayed by a nested table using:::
+    `synthesize(...):format="table(name, foo, bar)"`
+
+
+  Returns:
+    A synthesized resource list.
+  """
+  # This method is used as a decorator in transform expressions. It is
+  # recognized at parse time and discarded.
+  _ = args
+  return r
 
 
 def TransformUri(r, undefined='.'):
@@ -1101,6 +1223,7 @@ _BUILTIN_TRANSFORMS = {
     'basename': TransformBaseName,
     'collection': TransformCollection,
     'color': TransformColor,
+    'count': TransformCount,
     'date': TransformDate,
     'decode': TransformDecode,
     'duration': TransformDuration,
@@ -1125,7 +1248,9 @@ _BUILTIN_TRANSFORMS = {
     'segment': TransformSegment,
     'size': TransformSize,
     'slice': TransformSlice,
+    'sort': TransformSort,
     'split': TransformSplit,
+    'synthesize': TransformSynthesize,
     'uri': TransformUri,
     'yesno': TransformYesNo,
 }
@@ -1135,6 +1260,8 @@ _BUILTIN_TRANSFORMS = {
 #   module_path: A dotted module path that contains a transform dict.
 #   method_name: A method name in the module that returns the transform dict.
 _API_TO_TRANSFORMS = {
+    'cloudbuild': ('googlecloudsdk.api_lib.cloudbuild.transforms',
+                   'GetTransforms'),
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
     'container': ('googlecloudsdk.api_lib.container.transforms',
                   'GetTransforms'),

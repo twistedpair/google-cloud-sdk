@@ -302,8 +302,13 @@ class UpdateManager(object):
     if fast_mode_impossible:
       force_fast = False
 
-    cwd = console_attr.DecodeFromInput(os.path.realpath(os.getcwd()))
-    if not cwd.startswith(self.__sdk_root):
+    cwd = None
+    try:
+      cwd = console_attr.DecodeFromInput(os.path.realpath(os.getcwd()))
+    except OSError:
+      log.debug('Could not determine CWD, assuming detached directory not '
+                'under SDK root.')
+    if not (cwd and cwd.startswith(self.__sdk_root)):
       # Outside of the root entirely, this is always fine.
       return force_fast
 

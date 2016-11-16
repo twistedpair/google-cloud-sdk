@@ -47,7 +47,8 @@ def TransformWaiterStatus(r, undefined=''):
     One of WAITING, SUCCESS, FAILURE, or TIMEOUT
 
   Example:
-    --format="table(name, status())"
+    `--format="table(name, status())"`:::
+    Displays the status in table column two.
   """
   if not isinstance(r, dict):
     return undefined

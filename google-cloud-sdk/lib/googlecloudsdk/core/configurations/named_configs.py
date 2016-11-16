@@ -313,7 +313,7 @@ class ConfigurationStore(object):
                                                 paths.named_config_directory),
           e)
 
-    ActivePropertiesFile.Invalidate()
+    ActivePropertiesFile.Invalidate(mark_changed=True)
 
 
 class Configuration(object):
@@ -361,7 +361,7 @@ class Configuration(object):
 
     properties_file.PersistProperty(self.file_path, section, name, value)
     if self.is_active:
-      ActivePropertiesFile.Invalidate()
+      ActivePropertiesFile.Invalidate(mark_changed=True)
 
   def Activate(self):
     """Mark this configuration as active in the activator file."""
@@ -395,9 +395,18 @@ class ActivePropertiesFile(object):
     return ActivePropertiesFile._PROPERTIES
 
   @staticmethod
-  def Invalidate():
-    """Invalidate the cached property values."""
+  def Invalidate(mark_changed=False):
+    """Invalidate the cached property values.
+
+    Args:
+      mark_changed: bool, True if we are invalidating because we persisted
+        a change to the installation config, the active configuration, or
+        changed the active configuration. If so, the config sentinel is touched.
+    """
     ActivePropertiesFile._PROPERTIES = None
+    if mark_changed:
+      with open(config.Paths().config_sentinel_file, 'w'):
+        pass
 
 
 def _ActiveConfig(force_create):

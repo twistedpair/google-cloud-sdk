@@ -28,6 +28,12 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'jobId']
   )
+  PROJECTS_LOCATIONS_JOBS = (
+      'projects.locations.jobs',
+      'projects/{projectId}/locations/{location}/jobs/{jobId}',
+      {},
+      [u'projectId', u'location', u'jobId']
+  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

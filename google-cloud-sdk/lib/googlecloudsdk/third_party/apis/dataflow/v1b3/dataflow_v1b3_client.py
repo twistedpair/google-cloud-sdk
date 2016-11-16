@@ -38,6 +38,10 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_jobs_messages = self.ProjectsJobsMessagesService(self)
     self.projects_jobs_workItems = self.ProjectsJobsWorkItemsService(self)
     self.projects_jobs = self.ProjectsJobsService(self)
+    self.projects_locations_jobs_messages = self.ProjectsLocationsJobsMessagesService(self)
+    self.projects_locations_jobs_workItems = self.ProjectsLocationsJobsWorkItemsService(self)
+    self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_templates = self.ProjectsTemplatesService(self)
     self.projects = self.ProjectsService(self)
 
@@ -131,7 +135,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.messages.list',
         ordered_params=[u'projectId', u'jobId'],
         path_params=[u'jobId', u'projectId'],
-        query_params=[u'endTime', u'minimumImportance', u'pageSize', u'pageToken', u'startTime'],
+        query_params=[u'endTime', u'location', u'minimumImportance', u'pageSize', u'pageToken', u'startTime'],
         relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/messages',
         request_field='',
         request_type_name=u'DataflowProjectsJobsMessagesListRequest',
@@ -229,7 +233,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.create',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'replaceJobId', u'view'],
+        query_params=[u'location', u'replaceJobId', u'view'],
         relative_path=u'v1b3/projects/{projectId}/jobs',
         request_field=u'job',
         request_type_name=u'DataflowProjectsJobsCreateRequest',
@@ -255,7 +259,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.get',
         ordered_params=[u'projectId', u'jobId'],
         path_params=[u'jobId', u'projectId'],
-        query_params=[u'view'],
+        query_params=[u'location', u'view'],
         relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}',
         request_field='',
         request_type_name=u'DataflowProjectsJobsGetRequest',
@@ -281,7 +285,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.getMetrics',
         ordered_params=[u'projectId', u'jobId'],
         path_params=[u'jobId', u'projectId'],
-        query_params=[u'startTime'],
+        query_params=[u'location', u'startTime'],
         relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}/metrics',
         request_field='',
         request_type_name=u'DataflowProjectsJobsGetMetricsRequest',
@@ -307,7 +311,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.list',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'view'],
+        query_params=[u'filter', u'location', u'pageSize', u'pageToken', u'view'],
         relative_path=u'v1b3/projects/{projectId}/jobs',
         request_field='',
         request_type_name=u'DataflowProjectsJobsListRequest',
@@ -333,13 +337,261 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.jobs.update',
         ordered_params=[u'projectId', u'jobId'],
         path_params=[u'jobId', u'projectId'],
-        query_params=[],
+        query_params=[u'location'],
         relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}',
         request_field=u'job',
         request_type_name=u'DataflowProjectsJobsUpdateRequest',
         response_type_name=u'Job',
         supports_download=False,
     )
+
+  class ProjectsLocationsJobsMessagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs_messages resource."""
+
+    _NAME = u'projects_locations_jobs_messages'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsJobsMessagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Request the job status.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsMessagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListJobMessagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.locations.jobs.messages.list',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[u'endTime', u'minimumImportance', u'pageSize', u'pageToken', u'startTime'],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/messages',
+        request_field='',
+        request_type_name=u'DataflowProjectsLocationsJobsMessagesListRequest',
+        response_type_name=u'ListJobMessagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsJobsWorkItemsService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs_workItems resource."""
+
+    _NAME = u'projects_locations_jobs_workItems'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsJobsWorkItemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Lease(self, request, global_params=None):
+      """Leases a dataflow WorkItem to run.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsWorkItemsLeaseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LeaseWorkItemResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lease')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lease.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.locations.jobs.workItems.lease',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:lease',
+        request_field=u'leaseWorkItemRequest',
+        request_type_name=u'DataflowProjectsLocationsJobsWorkItemsLeaseRequest',
+        response_type_name=u'LeaseWorkItemResponse',
+        supports_download=False,
+    )
+
+    def ReportStatus(self, request, global_params=None):
+      """Reports the status of dataflow WorkItems leased by a worker.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsWorkItemsReportStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReportWorkItemStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReportStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.locations.jobs.workItems.reportStatus',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:reportStatus',
+        request_field=u'reportWorkItemStatusRequest',
+        request_type_name=u'DataflowProjectsLocationsJobsWorkItemsReportStatusRequest',
+        response_type_name=u'ReportWorkItemStatusResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs resource."""
+
+    _NAME = u'projects_locations_jobs'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a dataflow job.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.locations.jobs.create',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[u'replaceJobId', u'view'],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs',
+        request_field=u'job',
+        request_type_name=u'DataflowProjectsLocationsJobsCreateRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the state of the specified dataflow job.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.locations.jobs.get',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[u'view'],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
+        request_field='',
+        request_type_name=u'DataflowProjectsLocationsJobsGetRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def GetMetrics(self, request, global_params=None):
+      """Request the job status.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsGetMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (JobMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.locations.jobs.getMetrics',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[u'startTime'],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/metrics',
+        request_field='',
+        request_type_name=u'DataflowProjectsLocationsJobsGetMetricsRequest',
+        response_type_name=u'JobMetrics',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List the jobs of a project.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.locations.jobs.list',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[u'filter', u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs',
+        request_field='',
+        request_type_name=u'DataflowProjectsLocationsJobsListRequest',
+        response_type_name=u'ListJobsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the state of an existing dataflow job.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'dataflow.projects.locations.jobs.update',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}',
+        request_field=u'job',
+        request_type_name=u'DataflowProjectsLocationsJobsUpdateRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsTemplatesService(base_api.BaseApiService):
     """Service class for the projects_templates resource."""

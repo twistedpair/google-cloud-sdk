@@ -48,8 +48,11 @@ class UnattendedPromptError(Error):
 class OperationCancelledError(Error):
   """An exception for when a prompt cannot be answered."""
 
-  def __init__(self):
-    super(OperationCancelledError, self).__init__('Operation cancelled.')
+  DEFAULT_MESSAGE = 'Aborted by user.'
+
+  def __init__(self, message=None):
+    super(OperationCancelledError, self).__init__(
+        message or self.DEFAULT_MESSAGE)
 
 
 TEXTWRAP = textwrap.TextWrapper(replace_whitespace=False,
@@ -142,7 +145,8 @@ def CanPrompt():
 
 
 def PromptContinue(message=None, prompt_string=None, default=True,
-                   throw_if_unattended=False, cancel_on_no=False):
+                   throw_if_unattended=False, cancel_on_no=False,
+                   cancel_string=None):
   """Prompts the user a yes or no question and asks if they want to continue.
 
   Args:
@@ -157,6 +161,8 @@ def PromptContinue(message=None, prompt_string=None, default=True,
       cancel the entire operation.  Useful if you know you don't want to
       continue doing anything and don't want to have to raise your own
       exception.
+    cancel_string: str, An alternate error to display on No. If None, it
+      defaults to 'Aborted by user.'.
 
   Raises:
     UnattendedPromptError: If there is no input to consume and this is not
@@ -200,10 +206,10 @@ def PromptContinue(message=None, prompt_string=None, default=True,
         else:
           sys.stderr.write('\n')
           return default
-      elif answer.lower() in ['y', 'yes']:
+      elif answer.strip().lower() in ['y', 'yes']:
         sys.stderr.write('\n')
         return True
-      elif answer.lower() in ['n', 'no']:
+      elif answer.strip().lower() in ['n', 'no']:
         sys.stderr.write('\n')
         return False
       else:
@@ -211,7 +217,7 @@ def PromptContinue(message=None, prompt_string=None, default=True,
 
   answer = GetAnswer()
   if not answer and cancel_on_no:
-    raise OperationCancelledError()
+    raise OperationCancelledError(cancel_string)
   return answer
 
 

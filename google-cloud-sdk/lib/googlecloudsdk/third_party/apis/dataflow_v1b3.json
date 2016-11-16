@@ -312,6 +312,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "location": {
+          "description": "The location which contains this job.",
+          "type": "string"
         }
       }
     },
@@ -769,6 +773,24 @@
         "nextPageToken": {
           "description": "Set if there may be more results than fit in this response.",
           "type": "string"
+        },
+        "failedLocation": {
+          "description": "Zero or more messages describing locations that failed to respond.",
+          "type": "array",
+          "items": {
+            "$ref": "FailedLocation"
+          }
+        }
+      }
+    },
+    "FailedLocation": {
+      "id": "FailedLocation",
+      "description": "FailedLocation indicates which location failed to respond to a\nrequest for data.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the failed location.",
+          "type": "string"
         }
       }
     },
@@ -920,6 +942,10 @@
       "description": "Request to create a Dataflow job.",
       "type": "object",
       "properties": {
+        "jobName": {
+          "description": "The job name to use for the created job..",
+          "type": "string"
+        },
         "gcsPath": {
           "description": "A path to the serialized JSON representation of the job.",
           "type": "string"
@@ -953,6 +979,10 @@
           "description": "The current timestamp at the worker.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "location": {
+          "description": "The location which contains the WorkItem's job.",
+          "type": "string"
         }
       }
     },
@@ -1828,6 +1858,10 @@
         "workerId": {
           "description": "Identifies the worker leasing work -- typically the ID of the\nvirtual machine running the worker.",
           "type": "string"
+        },
+        "location": {
+          "description": "The location which contains the WorkItem's job.",
+          "type": "string"
         }
       }
     },
@@ -2490,6 +2524,10 @@
         "trackingSubscription": {
           "description": "If set, specifies the pubsub subscription that will be used for tracking\ncustom time timestamps for watermark estimation.",
           "type": "string"
+        },
+        "withAttributes": {
+          "description": "If true, then the client has requested to get pubsub attributes.",
+          "type": "boolean"
         }
       }
     },
@@ -2933,6 +2971,11 @@
                   "description": "DEPRECATED.\nThis field is now on the Job message.",
                   "location": "query",
                   "type": "string"
+                },
+                "location": {
+                  "description": "The location which contains this job.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -2977,6 +3020,11 @@
                     "JOB_VIEW_SUMMARY",
                     "JOB_VIEW_ALL"
                   ]
+                },
+                "location": {
+                  "description": "The location which contains this job.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3008,6 +3056,11 @@
                   "description": "Identifies a single job.",
                   "location": "path",
                   "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location which contains this job.",
+                  "location": "query",
                   "type": "string"
                 }
               },
@@ -3070,6 +3123,11 @@
                   "description": "Set this to the 'next_page_token' field of a previous response\nto request additional results in a long list.",
                   "location": "query",
                   "type": "string"
+                },
+                "location": {
+                  "description": "The location which contains this job.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3107,6 +3165,11 @@
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"
+                },
+                "location": {
+                  "description": "The location which contains the job specified by job_id.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3254,6 +3317,11 @@
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
+                    },
+                    "location": {
+                      "description": "The location which contains the job specified by job_id.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -3341,6 +3409,434 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ]
+                }
+              }
+            }
+          }
+        },
+        "locations": {
+          "resources": {
+            "jobs": {
+              "methods": {
+                "create": {
+                  "id": "dataflow.projects.locations.jobs.create",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs",
+                  "httpMethod": "POST",
+                  "description": "Creates a dataflow job.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project which owns the job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location which contains this job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Level of information requested in response.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "JOB_VIEW_UNKNOWN",
+                        "JOB_VIEW_SUMMARY",
+                        "JOB_VIEW_ALL"
+                      ]
+                    },
+                    "replaceJobId": {
+                      "description": "DEPRECATED.\nThis field is now on the Job message.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "Job"
+                  },
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                },
+                "get": {
+                  "id": "dataflow.projects.locations.jobs.get",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}",
+                  "httpMethod": "GET",
+                  "description": "Gets the state of the specified dataflow job.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project which owns the job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location which contains this job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "Identifies a single job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Level of information requested in response.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "JOB_VIEW_UNKNOWN",
+                        "JOB_VIEW_SUMMARY",
+                        "JOB_VIEW_ALL"
+                      ]
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location",
+                    "jobId"
+                  ],
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                },
+                "update": {
+                  "id": "dataflow.projects.locations.jobs.update",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}",
+                  "httpMethod": "PUT",
+                  "description": "Updates the state of an existing dataflow job.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project which owns the job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location which contains this job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "Identifies a single job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location",
+                    "jobId"
+                  ],
+                  "request": {
+                    "$ref": "Job"
+                  },
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                },
+                "list": {
+                  "id": "dataflow.projects.locations.jobs.list",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs",
+                  "httpMethod": "GET",
+                  "description": "List the jobs of a project",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project which owns the jobs.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location which contains this job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The kind of filter to use.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "UNKNOWN",
+                        "ALL",
+                        "TERMINATED",
+                        "ACTIVE"
+                      ]
+                    },
+                    "view": {
+                      "description": "Level of information requested in response. Default is SUMMARY.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "JOB_VIEW_UNKNOWN",
+                        "JOB_VIEW_SUMMARY",
+                        "JOB_VIEW_ALL"
+                      ]
+                    },
+                    "pageSize": {
+                      "description": "If there are many jobs, limit response to at most this many.\nThe actual number of jobs returned will be the lesser of max_responses\nand an unspecified server-defined limit.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Set this to the 'next_page_token' field of a previous response\nto request additional results in a long list.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location"
+                  ],
+                  "response": {
+                    "$ref": "ListJobsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                },
+                "getMetrics": {
+                  "id": "dataflow.projects.locations.jobs.getMetrics",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/metrics",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/metrics",
+                  "httpMethod": "GET",
+                  "description": "Request the job status.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "A project id.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location which contains the job specified by job_id.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "The job to get messages for.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "startTime": {
+                      "description": "Return only metric data that has changed since this time.\nDefault is to return all information about all metrics for the job.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location",
+                    "jobId"
+                  ],
+                  "response": {
+                    "$ref": "JobMetrics"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                }
+              }
+              ,
+              "resources": {
+                "messages": {
+                  "methods": {
+                    "list": {
+                      "id": "dataflow.projects.locations.jobs.messages.list",
+                      "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/messages",
+                      "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/messages",
+                      "httpMethod": "GET",
+                      "description": "Request the job status.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "A project id.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "location": {
+                          "description": "The location which contains the job specified by job_id.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "description": "The job to get messages about.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "minimumImportance": {
+                          "description": "Filter to only get messages with importance >= level",
+                          "location": "query",
+                          "type": "string",
+                          "enum": [
+                            "JOB_MESSAGE_IMPORTANCE_UNKNOWN",
+                            "JOB_MESSAGE_DEBUG",
+                            "JOB_MESSAGE_DETAILED",
+                            "JOB_MESSAGE_BASIC",
+                            "JOB_MESSAGE_WARNING",
+                            "JOB_MESSAGE_ERROR"
+                          ]
+                        },
+                        "pageSize": {
+                          "description": "If specified, determines the maximum number of messages to\nreturn.  If unspecified, the service may choose an appropriate\ndefault, or may return an arbitrarily large number of results.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "If supplied, this should be the value of next_page_token returned\nby an earlier call. This will cause the next page of results to\nbe returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "startTime": {
+                          "description": "If specified, return only messages with timestamps >= start_time.\nThe default is the job creation time (i.e. beginning of messages).",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "endTime": {
+                          "description": "Return only messages with timestamps < end_time. The default is now\n(i.e. return up to the latest messages available).",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "location",
+                        "jobId"
+                      ],
+                      "response": {
+                        "$ref": "ListJobMessagesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/userinfo.email"
+                      ]
+                    }
+                  }
+                },
+                "workItems": {
+                  "methods": {
+                    "reportStatus": {
+                      "id": "dataflow.projects.locations.jobs.workItems.reportStatus",
+                      "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:reportStatus",
+                      "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:reportStatus",
+                      "httpMethod": "POST",
+                      "description": "Reports the status of dataflow WorkItems leased by a worker.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "The project which owns the WorkItem's job.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "location": {
+                          "description": "The location which contains the WorkItem's job.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "description": "The job which the WorkItem is part of.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "location",
+                        "jobId"
+                      ],
+                      "request": {
+                        "$ref": "ReportWorkItemStatusRequest"
+                      },
+                      "response": {
+                        "$ref": "ReportWorkItemStatusResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/userinfo.email"
+                      ]
+                    },
+                    "lease": {
+                      "id": "dataflow.projects.locations.jobs.workItems.lease",
+                      "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:lease",
+                      "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/workItems:lease",
+                      "httpMethod": "POST",
+                      "description": "Leases a dataflow WorkItem to run.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "Identifies the project this worker belongs to.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "location": {
+                          "description": "The location which contains the WorkItem's job.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "description": "Identifies the workflow job this worker belongs to.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "location",
+                        "jobId"
+                      ],
+                      "request": {
+                        "$ref": "LeaseWorkItemRequest"
+                      },
+                      "response": {
+                        "$ref": "LeaseWorkItemResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/userinfo.email"
+                      ]
+                    }
+                  }
                 }
               }
             }

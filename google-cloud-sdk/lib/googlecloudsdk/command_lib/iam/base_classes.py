@@ -95,7 +95,7 @@ class BaseIamCommand(base.Command):
     """
     try:
       if make_private:
-        with files.OpenForWritingPrivate(file_name, access_mode='wb') as handle:
+        with files.OpenForWritingPrivate(file_name, binary=True) as handle:
           handle.write(contents)
       else:
         with open(file_name, 'wb') as handle:

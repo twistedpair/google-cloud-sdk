@@ -15,6 +15,7 @@
 """Common utilities for the gcloud dataproc tool."""
 
 import time
+import urlparse
 import uuid
 
 from apitools.base.py import encoding
@@ -249,6 +250,18 @@ def ParseJob(job_id, context):
   resources = context['resources']
   ref = resources.Parse(job_id, collection='dataproc.projects.regions.jobs')
   return ref
+
+
+def ParseOperation(operation, context):
+  resources = context['resources']
+  collection = 'dataproc.projects.regions.operations'
+  # Dataproc usually refers to Operations by relative name, which must be
+  # parsed explicitly until resources.Parse supports it.
+  # TODO(user): Remove once Parse delegates to ParseRelativeName.
+  url = urlparse.urlparse(operation)
+  if not url.scheme and '/' in url.path and not url.path.startswith('/'):
+    return resources.ParseRelativeName(operation, collection=collection)
+  return resources.Parse(operation, collection=collection)
 
 
 def GetJobId(job_id=None):

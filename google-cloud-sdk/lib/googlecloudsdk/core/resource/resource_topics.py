@@ -81,6 +81,56 @@ def ResourceDescription(name):
 _DOC_MAIN, _DOC_ARGS, _DOC_ATTRIBUTES, _DOC_EXAMPLE, _DOC_SKIP = range(5)
 
 
+def _AppendParagraph(lines):
+  """Appends paragraph markdown to lines.
+
+  Paragraph markdown is used to add paragraphs in nested lists at the list
+  prevaling indent. _AppendParagraph does not append the markdown if the last
+  line in lines is already a paragraph markdown.
+
+  A line containing only the + character is a paragraph markdown. It renders
+  a blank line and starts the next paragraph of lines using the prevailing
+  indent. A blank line would also start a new paragraph but would decrease the
+  prevailing indent.
+
+  Args:
+    lines: The lines to append to.
+  """
+  if lines and not lines[-1].endswith('\n+\n'):
+    # The last line in lines is not a paragrpah markdown.
+    if lines[-1].endswith('\n'):
+      # Don't append a blank line -- that would decrease the indentation.
+      lines.append('+\n')
+    else:
+      lines.append('\n+\n')
+
+
+def _AppendLine(lines, line, paragraph):
+  """Appends line to lines handling list markdown.
+
+  Args:
+    lines: The lines to append to.
+    line: The line to append.
+    paragraph: Start a new paragraph if True.
+
+  Returns:
+    The new paragraph value. This will always be False.
+  """
+  if paragraph:
+    paragraph = False
+    _AppendParagraph(lines)
+  elif lines and not lines[-1].endswith('\n'):
+    lines.append(' ')
+  if line.startswith('* ') or line.endswith('::'):
+    if lines and not lines[-1].endswith('\n'):
+      lines.append('\n')
+    lines.append(line)
+    lines.append('\n')
+  else:
+    lines.append(line)
+  return paragraph
+
+
 def _ParseFormatDocString(printer):
   """Parses the doc string for printer.
 
@@ -116,12 +166,14 @@ def _ParseFormatDocString(printer):
   collect = _DOC_MAIN
   attribute = None
   attribute_description = []
+  paragraph = False
   for line in textwrap.dedent(doc).split('\n'):
     if not line.startswith(' ') and line.endswith(':'):
       # The start of a new section.
+      paragraph = False
       if attribute:
         # The current attribute description is done.
-        attributes.append((attribute, ' '.join(attribute_description)))
+        attributes.append((attribute, ''.join(attribute_description)))
         attribute = None
       if line == 'Printer attributes:':
         # Now collecting Printer attributes: section lines.
@@ -131,66 +183,70 @@ def _ParseFormatDocString(printer):
         collect = _DOC_EXAMPLE
       else:
         collect = _DOC_SKIP
-      continue
-
-    if not line or collect == _DOC_SKIP:
+    elif collect == _DOC_SKIP:
       # Only interested in the description body and the Printer args: section.
       continue
+    elif not line:
+      # Blank line for new paragraph at current indendataion.
+      paragraph = True
     elif collect == _DOC_MAIN:
       # The main description line.
-      descriptions.append(line.strip())
+      paragraph = _AppendLine(descriptions, line, paragraph)
     elif line.startswith('    '):
       if collect == _DOC_ATTRIBUTES:
         # An attribute description line.
-        attribute_description.append(line.strip())
+        paragraph = _AppendLine(attribute_description, line.strip(), paragraph)
     elif collect == _DOC_EXAMPLE and line.startswith('  '):
       # An example section line.
-      example.append(line.strip())
+      paragraph = _AppendLine(example, line, paragraph)
     else:
       # The current attribute description is done.
       if attribute:
-        attributes.append((attribute, ' '.join(attribute_description)))
+        attributes.append((attribute, ''.join(attribute_description)))
       # A new attribute description.
       attribute, _, text = line.partition(':')
       attribute = attribute.strip()
       attribute = attribute.lstrip('*')
       attribute_description = [text.strip()]
   if attribute:
-    attributes.append((attribute, ' '.join(attribute_description)))
-  return ' '.join(descriptions), attributes, example
+    attributes.append((attribute, ''.join(attribute_description)))
+  return ''.join(descriptions), attributes, example
 
 
 def FormatRegistryDescriptions():
   """Returns help markdown for all registered resource printer formats."""
   # Generate the printer markdown.
-  descriptions = ['The formats and format specific attributes are:']
+  descriptions = ['The formats and format specific attributes are:\n']
   for name, printer in sorted(resource_printer.GetFormatRegistry().iteritems()):
     description, attributes, example = _ParseFormatDocString(printer)
-    descriptions.append('\n*{name}*::\n{description}'.format(
+    descriptions.append('\n*{name}*::\n{description}\n'.format(
         name=name, description=description))
     if attributes:
-      descriptions.append('+\nThe format attributes are:\n')
+      _AppendParagraph(descriptions)
+      descriptions.append('The format attributes are:\n\n')
       for attribute, description in attributes:
-        descriptions.append('*{attribute}*:::\n{description}'.format(
+        descriptions.append('*{attribute}*:::\n{description}\n'.format(
             attribute=attribute, description=description))
     if example:
-      descriptions.append('+\nFor example`:`:::\n')
-      descriptions.append(' '.join(example))
+      _AppendParagraph(descriptions)
+      descriptions.append('For example:\n+\n{example}\n'.format(
+          example=''.join(example)))
 
   # Generate the "attributes for all printers" markdown.
   description, attributes, example = _ParseFormatDocString(
       resource_printer.PrinterAttributes)
   if attributes:
-    descriptions.append('\n{description}:\n'.format(
+    descriptions.append('\n{description}:\n+\n'.format(
         description=description[:-1]))
     for attribute, description in attributes:
-      descriptions.append('*{attribute}*:::\n{description}'.format(
+      descriptions.append('*{attribute}*:::\n{description}\n'.format(
           attribute=attribute, description=description))
   if example:
-    descriptions.append('+\nFor example`:`:::\n')
-    descriptions.append(' '.join(example))
-  descriptions.append('')
-  return '\n'.join(descriptions)
+    _AppendParagraph(descriptions)
+    descriptions.append('For example:\n+\n{example}\n'.format(
+        example=''.join(example)))
+  descriptions.append('\n')
+  return ''.join(descriptions)
 
 
 def _StripUnusedNotation(string):
@@ -241,25 +297,30 @@ def _ParseTransformDocString(func):
   example = []
   args = []
   arg_description = []
+  paragraph = False
   for line in textwrap.dedent(doc).split('\n'):
-    if line == 'Args:':
+    if not line:
+      paragraph = True
+    elif line == 'Args:':
       # Now collecting Args: section lines.
       collect = _DOC_ARGS
+      paragraph = False
     elif line == 'Example:':
       # Now collecting Example: section lines.
       collect = _DOC_EXAMPLE
-    elif not line or collect == _DOC_SKIP:
-      # Only interested in the main description and the Args: section.
+      paragraph = False
+    elif collect == _DOC_SKIP:
+      # Not interested in this line.
       continue
     elif collect == _DOC_MAIN:
       # The main description line.
-      descriptions.append(line.strip())
-    elif line.startswith('    '):
+      paragraph = _AppendLine(descriptions, line, paragraph)
+    elif collect == _DOC_ARGS and line.startswith('    '):
       # An arg description line.
-      arg_description.append(line.strip())
+      paragraph = _AppendLine(arg_description, line, paragraph)
     elif collect == _DOC_EXAMPLE and line.startswith('  '):
       # An example description line.
-      example.append(line.strip())
+      paragraph = _AppendLine(example, line[2:], paragraph)
     else:
       # The current arg description is done.
       if arg:
@@ -302,7 +363,7 @@ def _ParseTransformDocString(func):
     formals.append(argspec.varargs)
   prototype = '({formals})'.format(formals=', '.join(formals))
 
-  return ' '.join(descriptions), prototype, args, example
+  return ''.join(descriptions), prototype, args, example
 
 
 def _TransformsDescriptions(transforms):
@@ -319,16 +380,19 @@ def _TransformsDescriptions(transforms):
     description, prototype, args, example = _ParseTransformDocString(transform)
     if not description:
       continue
-    descriptions.append('\n*{name}*{prototype}::\n{description}\n'.format(
+    descriptions.append('\n\n*{name}*{prototype}::\n{description}'.format(
         name=name, prototype=prototype, description=description))
     if args:
-      descriptions.append('+\n+\nThe arguments are:\n\n')
+      _AppendParagraph(descriptions)
+      descriptions.append('The arguments are:\n+\n')
       for arg, description in args:
         descriptions.append('*```{arg}```*:::\n{description}\n'.format(
             arg=arg, description=description))
+        descriptions.append(':::\n')
     if example:
-      descriptions.append('+\nFor example`:`:::\n\n{example}\n'.format(
-          example=' '.join(example)))
+      _AppendParagraph(descriptions)
+      descriptions.append('For example:\n+\n{example}\n'.format(
+          example=''.join(example)))
   return ''.join(descriptions)
 
 

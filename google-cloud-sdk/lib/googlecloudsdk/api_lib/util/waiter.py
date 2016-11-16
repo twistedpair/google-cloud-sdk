@@ -18,6 +18,7 @@ import abc
 import sys
 import time
 
+from apitools.base.py import encoding
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.console import progress_tracker
@@ -32,6 +33,10 @@ class AbortWaitError(exceptions.Error):
   pass
 
 
+class OperationError(exceptions.Error):
+  pass
+
+
 class OperationPoller(object):
   """Interface for defining operation which can be polled and waited on.
 
@@ -43,15 +48,6 @@ class OperationPoller(object):
     3. Given operation object fetch result object
   """
   __metaclass__ = abc.ABCMeta
-
-  # Override any of these settings.
-  PRE_START_SLEEP_MS = 1000  # Time to wait before making first poll request.
-  MAX_RETRIALS = None  # max number of retrials before raising RetryException.
-  MAX_WAIT_MS = 300000  # number of ms to wait before raising WaitException
-  EXPONENTIAL_SLEEP_MULTIPLIER = 1.409  # factor to use on subsequent retries
-  JITTER_MS = 1000  # random (up to the value) additional sleep between retries
-  WAIT_CEILING_MS = 180000  # Maximum wait between retries.
-  SLEEP_MS = 2000  # int or iterable, for how long to wait between trials.
 
   @abc.abstractmethod
   def IsDone(self, operation):
@@ -89,13 +85,83 @@ class OperationPoller(object):
     return None
 
 
-def WaitFor(poller, operation_ref, message):
+class CloudOperationPoller(OperationPoller):
+  """Manages a longrunning Operations.
+
+  See https://cloud.google.com/speech/reference/rpc/google.longrunning
+  """
+
+  def __init__(self, result_service, operation_service):
+    """Sets up poller for cloud operations.
+
+    Args:
+      result_service: apitools.base.py.base_api.BaseApiService, api service for
+        retrieving created result of initiated operation.
+      operation_service: apitools.base.py.base_api.BaseApiService, api service
+        for retrieving information about ongoing operation.
+
+      Note that result_service and operation_service Get request must have
+      single attribute called 'name'.
+    """
+    self.result_service = result_service
+    self.operation_service = operation_service
+
+  def IsDone(self, operation):
+    """Overrides."""
+    if operation.done:
+      if operation.error:
+        raise OperationError(operation.error.message)
+      return True
+    return False
+
+  def Poll(self, operation_ref):
+    """Overrides.
+
+    Args:
+      operation_ref: googlecloudsdk.core.resources.Resource.
+
+    Returns:
+      fetched operation message.
+    """
+    request_type = self.operation_service.GetRequestType('Get')
+    return self.operation_service.Get(
+        request_type(name=operation_ref.RelativeName()))
+
+  def GetResult(self, operation):
+    """Overrides.
+
+    Args:
+      operation: api_name_messages.Operation.
+
+    Returns:
+      result of result_service.Get request.
+    """
+    request_type = self.result_service.GetRequestType('Get')
+    response_dict = encoding.MessageToPyValue(operation.response)
+    return self.result_service.Get(request_type(name=response_dict['name']))
+
+
+def WaitFor(poller, operation_ref, message,
+            pre_start_sleep_ms=1000,
+            max_retrials=None,
+            max_wait_ms=300000,
+            exponential_sleep_multiplier=1.4,
+            jitter_ms=1000,
+            wait_ceiling_ms=180000,
+            sleep_ms=2000):
   """Waits with retrues for operation to be done given poller.
 
   Args:
     poller: OperationPoller, poller to use during retrials.
     operation_ref: object, passed to operation poller poll method.
     message: str, string to display for progrss_tracker.
+    pre_start_sleep_ms: int, Time to wait before making first poll request.
+    max_retrials: int, max number of retrials before raising RetryException.
+    max_wait_ms: int, number of ms to wait before raising WaitException.
+    exponential_sleep_multiplier: float, factor to use on subsequent retries.
+    jitter_ms: int, random (up to the value) additional sleep between retries.
+    wait_ceiling_ms: int, Maximum wait between retries.
+    sleep_ms: int or iterable: for how long to wait between trials.
 
   Returns:
     poller.GetResult(operation).
@@ -113,17 +179,18 @@ def WaitFor(poller, operation_ref, message):
       try:
         with progress_tracker.ProgressTracker(message) as tracker:
 
-          if poller.PRE_START_SLEEP_MS:
-            _SleepMs(poller.PRE_START_SLEEP_MS)
+          if pre_start_sleep_ms:
+            _SleepMs(pre_start_sleep_ms)
 
           def _StatusUpdate(unused_result, unused_status):
             tracker.Tick()
 
           retryer = retry.Retryer(
-              max_retrials=poller.MAX_RETRIALS,
-              max_wait_ms=poller.MAX_WAIT_MS,
-              exponential_sleep_multiplier=poller.EXPONENTIAL_SLEEP_MULTIPLIER,
-              jitter_ms=poller.JITTER_MS,
+              max_retrials=max_retrials,
+              max_wait_ms=max_wait_ms,
+              exponential_sleep_multiplier=exponential_sleep_multiplier,
+              jitter_ms=jitter_ms,
+              wait_ceiling_ms=wait_ceiling_ms,
               status_update_func=_StatusUpdate)
 
           def _IsNotDone(operation, unused_state):
@@ -133,12 +200,18 @@ def WaitFor(poller, operation_ref, message):
               func=poller.Poll,
               args=(operation_ref,),
               should_retry_if=_IsNotDone,
-              sleep_ms=poller.SLEEP_MS)
-      except retry.RetryException:
+              sleep_ms=sleep_ms)
+      except retry.WaitException:
         raise TimeoutError(
             'Operation {0} has not finished in {1} seconds'
+            .format(operation_ref, int(max_wait_ms / 1000)))
+      except retry.MaxRetrialsException as e:
+        raise TimeoutError(
+            'Operation {0} has not finished in {1} seconds '
+            'after max {2} retrials'
             .format(operation_ref,
-                    int(poller.MAX_WAIT_MS / 1000)))
+                    int(e.state.time_passed_ms / 1000), e.state.retrial))
+
   except AbortWaitError:
     # Write this out now that progress tracker is done.
     sys.stderr.write('Aborting wait for operation {0}.\n'.format(operation_ref))

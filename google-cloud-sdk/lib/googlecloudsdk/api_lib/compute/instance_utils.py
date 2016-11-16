@@ -15,6 +15,7 @@
 import collections
 import re
 
+from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import utils
@@ -239,7 +240,7 @@ def CreateMachineTypeUris(
 def CreateNetworkInterfaceMessage(
     resources, compute_client,
     network, subnet, private_network_ip, no_address, address,
-    instance_refs):
+    instance_refs, alias_ip_ranges_string=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   region = utils.ZoneNameToRegionName(instance_refs[0].zone.split('/')[-1])
@@ -263,6 +264,11 @@ def CreateNetworkInterfaceMessage(
 
   if private_network_ip is not None:
     network_interface.networkIP = private_network_ip
+
+  if alias_ip_ranges_string:
+    network_interface.aliasIpRanges = (
+        alias_ip_range_utils.CreateAliasIpRangeMessagesFromString(
+            messages, True, alias_ip_ranges_string))
 
   if not no_address:
     access_config = messages.AccessConfig(
@@ -306,7 +312,7 @@ def CreateNetworkInterfaceMessages(
           resources, compute_client, interface.get('network', None),
           interface.get('subnet', None),
           interface.get('private-network-ip', None), no_address,
-          address, instance_refs))
+          address, instance_refs, interface.get('aliases', None)))
   return result
 
 

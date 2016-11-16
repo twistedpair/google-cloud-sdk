@@ -547,6 +547,9 @@ class _MarkdownConverter(object):
     while i < len(self._line) and self._line[i] == ':':
       i += 1
       level += 1
+    if not index_at_definition_markdown:
+      # Bare :::* pops to previous list level.
+      level -= 1
     if (self._lists[self._depth].bullet or
         self._lists[self._depth].level < level):
       self._depth += 1
@@ -555,14 +558,19 @@ class _MarkdownConverter(object):
     else:
       while self._lists[self._depth].level > level:
         self._depth -= 1
-    self._lists[self._depth].bullet = False
-    self._lists[self._depth].ignore_line = 2
-    self._lists[self._depth].level = level
-    while i < len(self._line) and self._line[i] == ' ':
-      i += 1
     self._Fill()
-    self._buf = self._line[:index_at_definition_markdown]
-    self._renderer.List(self._depth, self._Attributes())
+    if not index_at_definition_markdown:
+      i = len(self._line)
+      definition = ''
+    else:
+      self._lists[self._depth].bullet = False
+      self._lists[self._depth].ignore_line = 2
+      self._lists[self._depth].level = level
+      while i < len(self._line) and self._line[i] == ' ':
+        i += 1
+      self._buf = self._line[:index_at_definition_markdown]
+      definition = self._Attributes()
+    self._renderer.List(self._depth, definition)
     if i < len(self._line):
       self._buf += self._line[i:]
     return -1

@@ -11,6 +11,37 @@ from apitools.base.py import encoding
 package = 'containeranalysis'
 
 
+class AliasContext(_messages.Message):
+  """An alias to a repo revision.
+
+  Enums:
+    KindValueValuesEnum: The alias kind.
+
+  Fields:
+    kind: The alias kind.
+    name: The alias name.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: Do not use.
+      FIXED: Git tag
+      MOVABLE: Git branch
+      OTHER: OTHER is used to specify non-standard aliases, those not of the
+        kinds above. For example, if a Git repo has a ref named
+        "refs/foo/bar", it is considered to be of kind OTHER.
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class Artifact(_messages.Message):
   """Artifact destribes a build product.
 
@@ -46,6 +77,22 @@ class AuditConfig(_messages.Message):
   service = _messages.StringField(2)
 
 
+class Basis(_messages.Message):
+  """Basis describes the base image portion (Note) of the DockerImage
+  relationship.  Linked occurrences are derived from this or an equivalent
+  image via:   FROM <Basis.resource_url> Or an equivalent reference, e.g. a
+  tag of the resource_url.
+
+  Fields:
+    fingerprint: The fingerprint of the base image
+    resourceUrl: The resource_url for the resource representing the basis of
+      associated occurrence images.
+  """
+
+  fingerprint = _messages.MessageField('Fingerprint', 1)
+  resourceUrl = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -79,11 +126,12 @@ class BuildDetails(_messages.Message):
     provenanceBytes: Serialized json representation of the provenance, used in
       generating the BuildSignature in the corresponding Result. After
       verifying the signature, provenance_bytes can be unmarshalled and
-      compared to the provenance to confirm that it is unchanged. String is a
-      base64-encoded representation of the provenance bytes used in the
-      signature.  We store the serialized form both to avoid ambiguity in how
-      the Provenance is marshalled to json as well to prevent
-      incompatibilities with future changes.
+      compared to the provenance to confirm that it is unchanged. A
+      base64-encoded string representation of the provenance bytes is used for
+      the signature in order to interoperate with openssl which expects this
+      format for signature verification.  The serialized form is captured both
+      to avoid ambiguity in how the provenance is marshalled to json as well
+      to prevent incompatibilities with future changes.
   """
 
   provenance = _messages.MessageField('BuildProvenance', 1)
@@ -198,6 +246,52 @@ class CloudAuditOptions(_messages.Message):
   """Write a Cloud Audit log"""
 
 
+class CloudRepoSourceContext(_messages.Message):
+  """A CloudRepoSourceContext denotes a particular revision in a cloud repo (a
+  repo hosted by the Google Cloud Platform).
+
+  Fields:
+    aliasContext: An alias, which may be a branch or tag.
+    aliasName: The name of an alias (branch, tag, etc.).
+    repoId: The ID of the repo.
+    revisionId: A revision ID.
+  """
+
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  repoId = _messages.MessageField('RepoId', 3)
+  revisionId = _messages.StringField(4)
+
+
+class CloudWorkspaceId(_messages.Message):
+  """A CloudWorkspaceId is a unique identifier for a cloud workspace. A cloud
+  workspace is a place associated with a repo where modified files can be
+  stored before they are committed.
+
+  Fields:
+    name: The unique name of the workspace within the repo.  This is the name
+      chosen by the client in the Source API's CreateWorkspace method.
+    repoId: The ID of the repo containing the workspace.
+  """
+
+  name = _messages.StringField(1)
+  repoId = _messages.MessageField('RepoId', 2)
+
+
+class CloudWorkspaceSourceContext(_messages.Message):
+  """A CloudWorkspaceSourceContext denotes a workspace at a particular
+  snapshot.
+
+  Fields:
+    snapshotId: The ID of the snapshot. An empty snapshot_id refers to the
+      most recent snapshot.
+    workspaceId: The ID of the workspace.
+  """
+
+  snapshotId = _messages.StringField(1)
+  workspaceId = _messages.MessageField('CloudWorkspaceId', 2)
+
+
 class Command(_messages.Message):
   """Command describes a step performed as part of the build pipeline.
 
@@ -298,30 +392,153 @@ class Condition(_messages.Message):
   values = _messages.StringField(6, repeated=True)
 
 
+class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesCreateRequest object.
+
+  Fields:
+    name: The name of the project. Should be of the form
+      "providers/{provider_id}". @deprecated
+    note: A Note resource to be passed as the request body.
+    noteId: The ID to use for this note.
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
+  """
+
+  name = _messages.StringField(1)
+  note = _messages.MessageField('Note', 2)
+  noteId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ContaineranalysisProjectsNotesDeleteRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesDeleteRequest object.
+
+  Fields:
+    name: The name of the note in the form
+      "providers/{provider_id}/notes/{note_id}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsNotesGetIamPolicyRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsNotesGetRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesGetRequest object.
+
+  Fields:
+    name: The name of the occurrence in the form
+      "providers/{provider_id}/notes/{note_id}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsNotesListRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    name: The name field will contain the projectId for example:
+      "providers/{provider_id} @deprecated
+    pageSize: Number of notes to return in the list.
+    pageToken: Token to provide to skip to a particular spot in the list.
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesOccurrencesListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    name: The name field will contain the note name for example:
+      "provider/{provider_id}/notes/{note_id}"
+    pageSize: Number of notes to return in the list.
+    pageToken: Token to provide to skip to a particular spot in the list.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ContaineranalysisProjectsNotesTestIamPermissionsRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesCreateRequest object.
 
   Fields:
+    name: The name of the project.  Should be of the form
+      "projects/{project_id}". @deprecated
     occurrence: A Occurrence resource to be passed as the request body.
-    projectsId: Part of `name`. The name of the project.  Should be of the
-      form "projects/{project_id}".
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
   """
 
-  occurrence = _messages.MessageField('Occurrence', 1)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
+  occurrence = _messages.MessageField('Occurrence', 2)
+  parent = _messages.StringField(3)
 
 
 class ContaineranalysisProjectsOccurrencesDeleteRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesDeleteRequest object.
 
   Fields:
-    occurrencesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the occurrence in the form
+    name: The name of the occurrence in the form
       "projects/{project_id}/occurrences/{occurrence_id}"
   """
 
-  occurrencesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message):
@@ -330,41 +547,35 @@ class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message)
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    occurrencesId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  occurrencesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesGetNotesRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesGetNotesRequest object.
 
   Fields:
-    occurrencesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the occurrence in the form
+    name: The name of the occurrence in the form
       "projects/{project_id}/occurrences/{occurrence_id}"
   """
 
-  occurrencesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesGetRequest object.
 
   Fields:
-    occurrencesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the occurrence in the form
+    name: The name of the occurrence in the form
       "projects/{project_id}/occurrences/{occurrence_id}"
   """
 
-  occurrencesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
@@ -372,94 +583,78 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
 
   Fields:
     filter: The filter expression.
+    name: The name field will contain the projectId for example:
+      "projects/{project_id} @deprecated
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    projectsId: Part of `name`. The name field will contain the projectId for
-      example: "projects/{project_id}
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectsId = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
 
 
 class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesSetIamPolicyRequest object.
 
   Fields:
-    occurrencesId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
 
-  occurrencesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 3)
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest object.
 
   Fields:
-    occurrencesId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
 
-  occurrencesId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 3)
-
-
-class ContaineranalysisProjectsOccurrencesUpdateRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesUpdateRequest object.
-
-  Fields:
-    occurrence: A Occurrence resource to be passed as the request body.
-    occurrencesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the occurrence. Should be of the
-      form "projects/{project_id}/occurrences/{occurrence_id}".
-  """
-
-  occurrence = _messages.MessageField('Occurrence', 1)
-  occurrencesId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesCreateRequest object.
 
   Fields:
+    name: The name of the project. Should be of the form
+      "providers/{provider_id}". @deprecated
     note: A Note resource to be passed as the request body.
     noteId: The ID to use for this note.
-    providersId: Part of `name`. The name of the project. Should be of the
-      form "providers/{provider_id}".
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
   """
 
-  note = _messages.MessageField('Note', 1)
-  noteId = _messages.StringField(2)
-  providersId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
+  note = _messages.MessageField('Note', 2)
+  noteId = _messages.StringField(3)
+  parent = _messages.StringField(4)
 
 
 class ContaineranalysisProvidersNotesDeleteRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesDeleteRequest object.
 
   Fields:
-    notesId: Part of `name`. See documentation of `providersId`.
-    providersId: Part of `name`. The name of the note in the form
+    name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
   """
 
-  notesId = _messages.StringField(1, required=True)
-  providersId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProvidersNotesGetIamPolicyRequest(_messages.Message):
@@ -468,28 +663,24 @@ class ContaineranalysisProvidersNotesGetIamPolicyRequest(_messages.Message):
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    notesId: Part of `resource`. See documentation of `providersId`.
-    providersId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  notesId = _messages.StringField(2, required=True)
-  providersId = _messages.StringField(3, required=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class ContaineranalysisProvidersNotesGetRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesGetRequest object.
 
   Fields:
-    notesId: Part of `name`. See documentation of `providersId`.
-    providersId: Part of `name`. The name of the occurrence in the form
+    name: The name of the occurrence in the form
       "providers/{provider_id}/notes/{note_id}"
   """
 
-  notesId = _messages.StringField(1, required=True)
-  providersId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProvidersNotesListRequest(_messages.Message):
@@ -497,16 +688,19 @@ class ContaineranalysisProvidersNotesListRequest(_messages.Message):
 
   Fields:
     filter: The filter expression.
+    name: The name field will contain the projectId for example:
+      "providers/{provider_id} @deprecated
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    providersId: Part of `name`. The name field will contain the projectId for
-      example: "providers/{provider_id}
+    parent: The parent field will contain the projectId for example:
+      "project/{project_id}
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  providersId = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
 
 
 class ContaineranalysisProvidersNotesOccurrencesListRequest(_messages.Message):
@@ -514,68 +708,46 @@ class ContaineranalysisProvidersNotesOccurrencesListRequest(_messages.Message):
 
   Fields:
     filter: The filter expression.
-    notesId: Part of `name`. See documentation of `providersId`.
+    name: The name field will contain the note name for example:
+      "provider/{provider_id}/notes/{note_id}"
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    providersId: Part of `name`. The name field will contain the note name for
-      example:   "provider/{provider_id}/notes/{note_id}"
   """
 
   filter = _messages.StringField(1)
-  notesId = _messages.StringField(2, required=True)
+  name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-  providersId = _messages.StringField(5, required=True)
 
 
 class ContaineranalysisProvidersNotesSetIamPolicyRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesSetIamPolicyRequest object.
 
   Fields:
-    notesId: Part of `resource`. See documentation of `providersId`.
-    providersId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
 
-  notesId = _messages.StringField(1, required=True)
-  providersId = _messages.StringField(2, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 3)
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesTestIamPermissionsRequest object.
 
   Fields:
-    notesId: Part of `resource`. See documentation of `providersId`.
-    providersId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
 
-  notesId = _messages.StringField(1, required=True)
-  providersId = _messages.StringField(2, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 3)
-
-
-class ContaineranalysisProvidersNotesUpdateRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesUpdateRequest object.
-
-  Fields:
-    note: A Note resource to be passed as the request body.
-    notesId: Part of `name`. See documentation of `providersId`.
-    providersId: Part of `name`. The name of the note. Should be of the form
-      "providers/{provider_id}/notes/{note_id}".
-  """
-
-  note = _messages.MessageField('Note', 1)
-  notesId = _messages.StringField(2, required=True)
-  providersId = _messages.StringField(3, required=True)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class CounterOptions(_messages.Message):
@@ -592,6 +764,28 @@ class CounterOptions(_messages.Message):
 
 class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log"""
+
+
+class Derived(_messages.Message):
+  """Derived describes the derived image portion (Occurrence) of the
+  DockerImage relationship.  This image would be produced from a Dockerfile
+  with FROM <DockerImage.Basis in attached Note>.
+
+  Fields:
+    baseResourceUrl: This contains the base image url for the derived image
+      Occurrence @OutputOnly
+    distance: The number of layers by which this image differs from the
+      associated image basis. @OutputOnly
+    fingerprint: The fingerprint of the derived image
+    layerInfo: This contains layer-specific metadata, if populated it has
+      length \u201cdistance\u201d and is ordered with [distance] being the layer
+      immediately following the base image and [1] being the final layer.
+  """
+
+  baseResourceUrl = _messages.StringField(1)
+  distance = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  fingerprint = _messages.MessageField('Fingerprint', 3)
+  layerInfo = _messages.MessageField('Layer', 4, repeated=True)
 
 
 class Detail(_messages.Message):
@@ -613,7 +807,7 @@ class Detail(_messages.Message):
       vulnerability exists.
     package: The name of the package where the vulnerability was found. This
       field can be used as a filter in list requests.
-    severity: The severity (eg: distro assigned severity) for this
+    severityName: The severity (eg: distro assigned severity) for this
       vulnerability.
   """
 
@@ -623,7 +817,49 @@ class Detail(_messages.Message):
   maxAffectedVersion = _messages.MessageField('Version', 4)
   minAffectedVersion = _messages.MessageField('Version', 5)
   package = _messages.StringField(6)
-  severity = _messages.StringField(7)
+  severityName = _messages.StringField(7)
+
+
+class Distribution(_messages.Message):
+  """This represents a particular channel of distribution for a given package.
+  e.g. Debian's jessie-backports dpkg mirror
+
+  Enums:
+    ArchitectureValueValuesEnum: The CPU architecture for which packages in
+      this distribution channel were built
+
+  Fields:
+    architecture: The CPU architecture for which packages in this distribution
+      channel were built
+    cpeUri: The cpe_uri in [cpe format](https://cpe.mitre.org/specification/)
+      denoting the package manager version distributing a package.
+    description: The distribution channel-specific description of this
+      package.
+    latestVersion: The latest available version of this package in this
+      distribution channel.
+    maintainer: A freeform string denoting the maintainer of this package.
+    url: The distribution channel-specific homepage for this package.
+  """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    """The CPU architecture for which packages in this distribution channel
+    were built
+
+    Values:
+      UNKNOWN: <no description>
+      X86: <no description>
+      X64: <no description>
+    """
+    UNKNOWN = 0
+    X86 = 1
+    X64 = 2
+
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  cpeUri = _messages.StringField(2)
+  description = _messages.StringField(3)
+  latestVersion = _messages.MessageField('Version', 4)
+  maintainer = _messages.StringField(5)
+  url = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -634,6 +870,46 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ExtendedSourceContext(_messages.Message):
+  """An ExtendedSourceContext is a SourceContext combined with additional
+  details describing the context.
+
+  Messages:
+    LabelsValue: Labels with user defined metadata.
+
+  Fields:
+    context: Any source context.
+    labels: Labels with user defined metadata.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels with user defined metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  context = _messages.MessageField('SourceContext', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class FileHashes(_messages.Message):
@@ -647,8 +923,59 @@ class FileHashes(_messages.Message):
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
 
 
+class Fingerprint(_messages.Message):
+  """A set of properties that uniquely identify a given Docker image.
+
+  Fields:
+    v1Name: The layer-id of the final layer in the Docker image\u2019s v1
+      representation. This field can be used as a filter in list requests.
+    v2Blob: The ordered list of v2 blobs that represent a given image.
+    v2Name: The name of the image\u2019s v2 blobs computed via:   [bottom] :=
+      v2_blobbottom := sha256(v2_blob[N] + \u201c \u201d + v2_name[N+1]) Only the name
+      of the final blob is kept. This field can be used as a filter in list
+      requests. @OutputOnly
+  """
+
+  v1Name = _messages.StringField(1)
+  v2Blob = _messages.StringField(2, repeated=True)
+  v2Name = _messages.StringField(3)
+
+
+class GerritSourceContext(_messages.Message):
+  """A SourceContext referring to a Gerrit project.
+
+  Fields:
+    aliasContext: An alias, which may be a branch or tag.
+    aliasName: The name of an alias (branch, tag, etc.).
+    gerritProject: The full project name within the host. Projects may be
+      nested, so "project/subproject" is a valid project name. The "repo name"
+      is hostURI/project.
+    hostUri: The URI of a running Gerrit instance.
+    revisionId: A revision (commit) ID.
+  """
+
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  gerritProject = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
+
+
 class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
+
+
+class GitSourceContext(_messages.Message):
+  """A GitSourceContext denotes a particular revision in a third party Git
+  repository (e.g. GitHub).
+
+  Fields:
+    revisionId: Git commit hash. required.
+    url: Git repository URL.
+  """
+
+  revisionId = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class Hash(_messages.Message):
@@ -674,6 +1001,79 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
+
+
+class Installation(_messages.Message):
+  """This represents how a particular software package may be installed on a
+  system.
+
+  Fields:
+    location: All of the places within the filesystem versions of this package
+      have been found.
+    name: The name of the installed package. @OutputOnly
+  """
+
+  location = _messages.MessageField('Location', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class Layer(_messages.Message):
+  """Layer holds metadata specific to a layer of a Docker image.
+
+  Enums:
+    DirectiveValueValuesEnum: The recovered Dockerfile directive used to
+      construct this layer.
+
+  Fields:
+    arguments: The recovered arguments to the Dockerfile directive.
+    directive: The recovered Dockerfile directive used to construct this
+      layer.
+  """
+
+  class DirectiveValueValuesEnum(_messages.Enum):
+    """The recovered Dockerfile directive used to construct this layer.
+
+    Values:
+      UNKNOWN_DIRECTIVE: <no description>
+      MAINTAINER: https://docs.docker.com/reference/builder/#maintainer
+      RUN: https://docs.docker.com/reference/builder/#run
+      CMD: https://docs.docker.com/reference/builder/#cmd
+      LABEL: https://docs.docker.com/reference/builder/#label
+      EXPOSE: https://docs.docker.com/reference/builder/#expose
+      ENV: https://docs.docker.com/reference/builder/#env
+      ADD: https://docs.docker.com/reference/builder/#add
+      COPY: https://docs.docker.com/reference/builder/#copy
+      ENTRYPOINT: https://docs.docker.com/reference/builder/#entrypoint
+      VOLUME: https://docs.docker.com/reference/builder/#volume
+      USER: https://docs.docker.com/reference/builder/#user
+      WORKDIR: https://docs.docker.com/reference/builder/#workdir
+      ARG: https://docs.docker.com/reference/builder/#arg
+      ONBUILD: https://docs.docker.com/reference/builder/#onbuild
+      STOPSIGNAL: https://docs.docker.com/reference/builder/#stopsignal
+      HEALTHCHECK: https://docs.docker.com/reference/builder/#healthcheck
+      SHELL: https://docs.docker.com/reference/builder/#shell
+    """
+    UNKNOWN_DIRECTIVE = 0
+    MAINTAINER = 1
+    RUN = 2
+    CMD = 3
+    LABEL = 4
+    EXPOSE = 5
+    ENV = 6
+    ADD = 7
+    COPY = 8
+    ENTRYPOINT = 9
+    VOLUME = 10
+    USER = 11
+    WORKDIR = 12
+    ARG = 13
+    ONBUILD = 14
+    STOPSIGNAL = 15
+    HEALTHCHECK = 16
+    SHELL = 17
+
+  arguments = _messages.StringField(1)
+  directive = _messages.EnumField('DirectiveValueValuesEnum', 2)
 
 
 class ListNoteOccurrencesResponse(_messages.Message):
@@ -717,6 +1117,23 @@ class ListOccurrencesResponse(_messages.Message):
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
 
 
+class Location(_messages.Message):
+  """An occurrence of a particular package installation found within a
+  system's filesystem. e.g. glibc was found in /var/lib/dpkg/status
+
+  Fields:
+    cpeUri: The cpe_uri in [cpe format](https://cpe.mitre.org/specification/)
+      denoting the package manager version distributing a package.
+    path: The path from which we gathered that this package/version is
+      installed.
+    version: The version installed at this location.
+  """
+
+  cpeUri = _messages.StringField(1)
+  path = _messages.StringField(2)
+  version = _messages.MessageField('Version', 3)
+
+
 class LogConfig(_messages.Message):
   """Specifies what kind of log the caller must write Increment a streamz
   counter with the specified metric and field names.  Metric names should
@@ -753,6 +1170,7 @@ class Note(_messages.Message):
       specified. @OutputOnly
 
   Fields:
+    baseImage: A note describing a base image.
     buildType: Build provenance type for a verifiable build.
     createTime: The time this note was created. This field can be used as a
       filter in list requests. @OutputOnly
@@ -762,6 +1180,7 @@ class Note(_messages.Message):
     longDescription: A detailed description of this note
     name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
+    package: A note describing a package hosted by various package managers.
     relatedUrl: Urls associated with this note
     shortDescription: A one sentence description of this note
     updateTime: The time this note was last updated. This field can be used as
@@ -777,21 +1196,28 @@ class Note(_messages.Message):
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD_DETAILS: The note and occurrence  assert build provenance.
+      IMAGE_BASIS: This represents an image basis relationship.
+      PACKAGE_MANAGER: This represents a package installed via a package
+        manager.
     """
     UNKNOWN = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
+    IMAGE_BASIS = 3
+    PACKAGE_MANAGER = 4
 
-  buildType = _messages.MessageField('BuildType', 1)
-  createTime = _messages.StringField(2)
-  expirationTime = _messages.StringField(3)
-  kind = _messages.EnumField('KindValueValuesEnum', 4)
-  longDescription = _messages.StringField(5)
-  name = _messages.StringField(6)
-  relatedUrl = _messages.MessageField('RelatedUrl', 7, repeated=True)
-  shortDescription = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 10)
+  baseImage = _messages.MessageField('Basis', 1)
+  buildType = _messages.MessageField('BuildType', 2)
+  createTime = _messages.StringField(3)
+  expirationTime = _messages.StringField(4)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  longDescription = _messages.StringField(6)
+  name = _messages.StringField(7)
+  package = _messages.MessageField('Package', 8)
+  relatedUrl = _messages.MessageField('RelatedUrl', 9, repeated=True)
+  shortDescription = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 12)
 
 
 class Occurrence(_messages.Message):
@@ -805,6 +1231,10 @@ class Occurrence(_messages.Message):
   Fields:
     buildDetails: Build details for a verifiable build.
     createTime: The time this occurrence was created. @OutputOnly
+    derivedImage: Describes how this resource derives from the basis in the
+      associated note.
+    installation: Describes the installation of a package on the linked
+      resource.
     kind: This explicitly denotes which of the occurrence details is
       specified. @OutputOnly
     name: The name of the occurrence in the form
@@ -829,20 +1259,41 @@ class Occurrence(_messages.Message):
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD_DETAILS: The note and occurrence  assert build provenance.
+      IMAGE_BASIS: This represents an image basis relationship.
+      PACKAGE_MANAGER: This represents a package installed via a package
+        manager.
     """
     UNKNOWN = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
+    IMAGE_BASIS = 3
+    PACKAGE_MANAGER = 4
 
   buildDetails = _messages.MessageField('BuildDetails', 1)
   createTime = _messages.StringField(2)
-  kind = _messages.EnumField('KindValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  noteName = _messages.StringField(5)
-  remediation = _messages.StringField(6)
-  resourceUrl = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 9)
+  derivedImage = _messages.MessageField('Derived', 3)
+  installation = _messages.MessageField('Installation', 4)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  noteName = _messages.StringField(7)
+  remediation = _messages.StringField(8)
+  resourceUrl = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 11)
+
+
+class Package(_messages.Message):
+  """This represents a particular package that is distributed over various
+  channels. e.g. glibc (aka libc6) is distributed by many, at various
+  versions.
+
+  Fields:
+    distribution: The various channels by which a package is distributed.
+    name: The name of the package.
+  """
+
+  distribution = _messages.MessageField('Distribution', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class PackageIssue(_messages.Message):
@@ -909,6 +1360,19 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class ProjectRepoId(_messages.Message):
+  """Selects a repo using a Google Cloud Platform project ID (e.g. winged-
+  cargo-31) and a repo name within that project.
+
+  Fields:
+    projectId: The ID of the project.
+    repoName: The name of the repo. Leave empty for the default repo.
+  """
+
+  projectId = _messages.StringField(1)
+  repoName = _messages.StringField(2)
+
+
 class RelatedUrl(_messages.Message):
   """Metadata for any related url information
 
@@ -919,6 +1383,18 @@ class RelatedUrl(_messages.Message):
 
   label = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class RepoId(_messages.Message):
+  """A unique identifier for a cloud repo.
+
+  Fields:
+    projectRepoId: A combination of a project ID and a repo name.
+    uid: A server-assigned, globally unique identifier.
+  """
+
+  projectRepoId = _messages.MessageField('ProjectRepoId', 1)
+  uid = _messages.StringField(2)
 
 
 class RepoSource(_messages.Message):
@@ -1018,6 +1494,12 @@ class Source(_messages.Message):
       for the single path to that file.
 
   Fields:
+    additionalSourceContexts: If provided, some of the source code used for
+      the build may be found in these locations, in the case where the source
+      repository had multiple remotes or submodules. This list will not
+      include the context specified in the source_context field.
+    artifactStorageSource: If provided, the input binary artifacts for the
+      build came from this location.
     fileHashes: Hash(es) of the build source, which can be used to verify that
       the original source integrity was maintained in the build.  The keys to
       this map are file paths used as build source and the values contain the
@@ -1025,6 +1507,8 @@ class Source(_messages.Message):
       package such as a gzipped tarfile (.tar.gz), the FileHash will be for
       the single path to that file.
     repoSource: If provided, get source from this location in a Cloud Repo.
+    sourceContext: If provided, the source code used for the build came from
+      this location.
     storageSource: If provided, get the source from this location in in Google
       Cloud Storage.
   """
@@ -1058,9 +1542,31 @@ class Source(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  fileHashes = _messages.MessageField('FileHashesValue', 1)
-  repoSource = _messages.MessageField('RepoSource', 2)
-  storageSource = _messages.MessageField('StorageSource', 3)
+  additionalSourceContexts = _messages.MessageField('ExtendedSourceContext', 1, repeated=True)
+  artifactStorageSource = _messages.MessageField('StorageSource', 2)
+  fileHashes = _messages.MessageField('FileHashesValue', 3)
+  repoSource = _messages.MessageField('RepoSource', 4)
+  sourceContext = _messages.MessageField('ExtendedSourceContext', 5)
+  storageSource = _messages.MessageField('StorageSource', 6)
+
+
+class SourceContext(_messages.Message):
+  """A SourceContext is a reference to a tree of files. A SourceContext
+  together with a path point to a unique revision of a single file or
+  directory.
+
+  Fields:
+    cloudRepo: A SourceContext referring to a revision in a cloud repo.
+    cloudWorkspace: A SourceContext referring to a snapshot in a cloud
+      workspace.
+    gerrit: A SourceContext referring to a Gerrit project.
+    git: A SourceContext referring to any third party Git repo (e.g. GitHub).
+  """
+
+  cloudRepo = _messages.MessageField('CloudRepoSourceContext', 1)
+  cloudWorkspace = _messages.MessageField('CloudWorkspaceSourceContext', 2)
+  gerrit = _messages.MessageField('GerritSourceContext', 3)
+  git = _messages.MessageField('GitSourceContext', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1178,15 +1684,38 @@ class Version(_messages.Message):
   For a discussion of this in Redhat/Fedora/Centos:
   http://blog.jasonantman.com/2014/07/how-yum-and-rpm-compare-versions/
 
+  Enums:
+    KindValueValuesEnum: Distinguish between sentinel MIN/MAX versions and
+      normal versions. If kind is not NORMAL, then the other fields are
+      ignored.
+
   Fields:
     epoch: Used to correct mistakes in the version numbering scheme.
+    kind: Distinguish between sentinel MIN/MAX versions and normal versions.
+      If kind is not NORMAL, then the other fields are ignored.
     name: The main part of the version name.
     revision: The iteration of the package build from the above version.
   """
 
+  class KindValueValuesEnum(_messages.Enum):
+    """Distinguish between sentinel MIN/MAX versions and normal versions. If
+    kind is not NORMAL, then the other fields are ignored.
+
+    Values:
+      NORMAL: A standard package version, defined by the other fields.
+      MINIMUM: A special version representing negative infinity, other fields
+        are ignored.
+      MAXIMUM: A special version representing positive infinity, other fields
+        are ignored.
+    """
+    NORMAL = 0
+    MINIMUM = 1
+    MAXIMUM = 2
+
   epoch = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  name = _messages.StringField(2)
-  revision = _messages.StringField(3)
+  kind = _messages.EnumField('KindValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  revision = _messages.StringField(4)
 
 
 class VulnerabilityDetails(_messages.Message):
@@ -1194,20 +1723,23 @@ class VulnerabilityDetails(_messages.Message):
   fix it.
 
   Enums:
-    SeverityValueValuesEnum: The provider assigned Severity of the
+    SeverityValueValuesEnum: The note provider assigned Severity of the
       vulnerability. @OutputOnly
 
   Fields:
-    cvssScore: The CVSS score of this vulnerability. @OutputOnly
+    cvssScore: The CVSS score of this vulnerability. CVSS score is on a scale
+      of 0-10 where 0 indicates low severity and 10 indicates high severity.
+      @OutputOnly
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
-    severity: The provider assigned Severity of the vulnerability. @OutputOnly
+    severity: The note provider assigned Severity of the vulnerability.
+      @OutputOnly
     type: The type of package; whether native or non native(ruby gems, node.js
       packages etc)
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """The provider assigned Severity of the vulnerability. @OutputOnly
+    """The note provider assigned Severity of the vulnerability. @OutputOnly
 
     Values:
       UNKNOWN: Unknown Impact
@@ -1251,18 +1783,19 @@ class VulnerabilityType(_messages.Message):
   """VulnerabilityType provides metadata about a security vulnerability.
 
   Enums:
-    SeverityValueValuesEnum: Provider assigned impact of the vulnerability
+    SeverityValueValuesEnum: Note provider assigned impact of the
+      vulnerability
 
   Fields:
     cvssScore: The CVSS score for this Vulnerability.
     details: All information about the package to specifically identify this
       vulnerability. One entry per (version range and cpe_uri) the package
       vulnerability has manifested in.
-    severity: Provider assigned impact of the vulnerability
+    severity: Note provider assigned impact of the vulnerability
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Provider assigned impact of the vulnerability
+    """Note provider assigned impact of the vulnerability
 
     Values:
       UNKNOWN: Unknown Impact

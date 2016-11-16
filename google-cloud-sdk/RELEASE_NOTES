@@ -2,6 +2,41 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 135.0.0 (2016/11/16)
+
+### Google Cloud Service Management
+
+* `gcloud service-management deploy` command now supports providing multiple
+  service configuration or API specification inputs simultaneously. This change
+  allows creating .proto and YAML based configurations for gRPC services.
+
+### Google Container Engine
+
+* Change the `gcloud container list-tags` command to support user-specified
+  filters on occurrences and exposes a column summarizing vulnerability
+  information.
+
+### Google Cloud Resource Manager
+
+* `gcloud organizations update` is now deprecated.
+
+
+### Google Cloud Deployment Manager/Runtime Configuration
+
+* Runtime configuration variables can now be set and retrieved using text values.
+
+### Bigtable Emulator
+
+* Now supports macOS Sierra.
+
+### Google App Engine
+
+* The App Engine flexible environment now includes Python 3.5 support (beta).
+  To preview this runtime, specify `python_version: 3.5` in the `runtime_config`
+  stanza of your `app.yaml`.
+* Added the `gcloud beta app services describe` command, which prints information about a given service.
+
+
 ## 134.0.0 (2016/11/09)
 
 ### Cloud SDK

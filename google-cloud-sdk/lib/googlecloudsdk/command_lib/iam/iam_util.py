@@ -396,9 +396,10 @@ def ConvertToServiceAccountException(http_error, address, key_id=None):
 
 
 def AccountNameValidator():
+  # https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/create
   return arg_parsers.RegexpValidator(
-      r'[a-z][a-z0-9\-]{3,61}[a-z0-9]',
-      'Service account name must be between 5 and 63 characters (inclusive), '
+      r'[a-z][a-z0-9\-]{4,28}[a-z0-9]',
+      'Service account name must be between 6 and 30 characters (inclusive), '
       'must begin with a lowercase letter, and consist of alphanumeric '
       'characters that can be separated by hyphens.')
 

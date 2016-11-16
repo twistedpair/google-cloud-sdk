@@ -349,6 +349,59 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta
         supports_download=False,
     )
 
+    def Rollback(self, request, global_params=None):
+      """Rollback the previously Aborted or Failed NodePool upgrade.
+This will be an no-op if the last upgrade successfully completed.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.rollback',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
+        request_field=u'rollbackNodePoolUpgradeRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsRollbackRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetManagement(self, request, global_params=None):
+      """Sets the NodeManagement options for a node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsSetManagementRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetManagement')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetManagement.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.setManagement',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
+        request_field=u'setNodePoolManagementRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetManagementRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""
 

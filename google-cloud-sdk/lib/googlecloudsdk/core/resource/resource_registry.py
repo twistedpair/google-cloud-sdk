@@ -164,6 +164,8 @@ RESOURCE_REGISTRY = {
             id,
             createTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
             duration(start=startTime,end=finishTime,precision=0,calendar=false,undefined="  -").slice(2:).join(""):label=DURATION,
+            build_source(undefined="-"):label=SOURCE,
+            build_images(undefined="-"):label=IMAGES,
             status
           )
         """,
@@ -757,7 +759,11 @@ RESOURCE_REGISTRY = {
           table(
             digest.slice(7:19).join(''),
             tags.list(),
-            timestamp.date()
+            timestamp.date(),
+            BUILD_DETAILS.buildDetails.provenance.sourceProvenance.sourceContext.context.cloudRepo.revisionId.notnull().list().slice(:8).join(''):label=GIT_SHA,
+            PACKAGE_VULNERABILITY.vulnerabilityDetails.severity.notnull().count().list():label=VULNERABILITIES,
+            IMAGE_BASIS.derivedImage.sort(distance).map().extract(baseResourceUrl).slice(:1).map().list().list().split('//').slice(1:).list().split('@').slice(:1).list():label=FROM,
+            BUILD_DETAILS.buildDetails.provenance.id.notnull().list():label=BUILD
           )
         """,
     ),

@@ -20,6 +20,7 @@ from containerregistry.client.v2_2 import docker_image
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
@@ -110,7 +111,7 @@ def _ResourceUrl(repo, digest):
   return 'https://{repo}@{digest}'.format(repo=str(repo), digest=digest)
 
 
-def FetchOccurrences(repository):
+def FetchOccurrences(repository, occurrence_filter=None):
   """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
 
@@ -121,11 +122,19 @@ def FetchOccurrences(repository):
   resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
       repo=_UnqualifiedResourceUrl(repository))
 
+  if occurrence_filter:
+    resource_filter = '({occurrence_filter}) AND ({resource_filter})'.format(
+        occurrence_filter=occurrence_filter, resource_filter=resource_filter)
+
+  project_ref = resources.REGISTRY.Parse(
+      project_id, collection='cloudresourcemanager.projects')
+
   occurrences = list_pager.YieldFromList(
       client.projects_occurrences,
       request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-          projectsId=project_id, filter=resource_filter),
+          name=project_ref.RelativeName(), filter=resource_filter),
       field='occurrences',
+      batch_size=1000,
       batch_size_attribute='pageSize')
   occurrences_by_resources = {}
   for occ in occurrences:
@@ -135,13 +144,17 @@ def FetchOccurrences(repository):
   return occurrences_by_resources
 
 
-def TransformManifests(manifests, repository, show_occurrences=True):
+def TransformManifests(manifests, repository,
+                       show_occurrences=True, occurrence_filter=None):
   """Transforms the manifests returned from the server."""
   if not manifests:
     return []
 
   # Map from resource url to the occurrence.
-  occurrences = FetchOccurrences(repository) if show_occurrences else {}
+  occurrences = {}
+  if show_occurrences:
+    occurrences = FetchOccurrences(
+        repository, occurrence_filter=occurrence_filter)
 
   # Attach each occurrence to the resource to which it applies.
   results = []

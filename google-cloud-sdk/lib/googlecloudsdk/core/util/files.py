@@ -643,12 +643,12 @@ class Checksum(object):
     return Checksum.FromSingleFile(input_path).HexDigest()
 
 
-def OpenForWritingPrivate(path, access_mode='w'):
+def OpenForWritingPrivate(path, binary=False):
   """Open a file for writing, with the right permissions for user-private files.
 
   Args:
     path: str, The full path to the file.
-    access_mode: Can be 'w' or 'wb'. Default to 'w'.
+    binary: bool, If true forces binary mode, this only affects Windows.
 
   Returns:
     A file context manager.
@@ -662,9 +662,11 @@ def OpenForWritingPrivate(path, access_mode='w'):
   # Accommodate Windows; stolen from python2.6/tempfile.py.
   if hasattr(os, 'O_NOINHERIT'):
     flags |= os.O_NOINHERIT
+    if binary:
+      flags |= os.O_BINARY
 
   fd = os.open(path, flags, 0600)
-  return os.fdopen(fd, access_mode)
+  return os.fdopen(fd, 'w')
 
 
 class Context(object):

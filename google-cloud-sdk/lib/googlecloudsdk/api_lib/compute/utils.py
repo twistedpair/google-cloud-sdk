@@ -130,6 +130,7 @@ def RaiseException(problems, exception, error_message=None):
           errors))
 
 
+# TODO(b/32637269) delete and clean up uses of scope_name.
 def PromptForDeletion(refs, scope_name=None, prompt_title=None):
   """Prompts the user to confirm deletion of resources."""
   if not refs:
@@ -139,7 +140,13 @@ def PromptForDeletion(refs, scope_name=None, prompt_title=None):
   prompt_list = []
   for ref in refs:
     if scope_name:
-      item = '[{0}] in [{1}]'.format(ref.Name(), getattr(ref, scope_name))
+      ref_scope_name = scope_name
+    elif hasattr(ref, 'region'):
+      ref_scope_name = 'region'
+    else:
+      ref_scope_name = None
+    if ref_scope_name:
+      item = '[{0}] in [{1}]'.format(ref.Name(), getattr(ref, ref_scope_name))
     else:
       item = '[{0}]'.format(ref.Name())
     prompt_list.append(item)

@@ -183,16 +183,21 @@ class TextRenderer(renderer.Renderer):
 
     Args:
       level: The list nesting level, 0 if not currently in a list.
-      definition: Definition list text if not None, bullet list otherwise.
+      definition: Bullet list if None, end of list if empty, definition list
+        otherwise.
     """
     self._Flush()
     if not level:
       self._level = level
-    elif definition:
+    elif definition is not None:
+      # Definition list item or end of list if definition == ''.
       self._SetIndentation(level)
-      self._out.write(' ' * (self._indent[level] - self._INDENT + 1) +
-                      definition + '\n')
+      if definition:
+        # Definition list item.
+        self._out.write(' ' * (self._indent[level] - self._INDENT + 1) +
+                        definition + '\n')
     else:
+      # Bullet list item.
       self._SetIndentation(level, bullet=True)
       self._out.write(' ' * (self._indent[level] - self._BULLET_DEDENT) +
                       self._bullet[(level - 1) % len(self._bullet)])

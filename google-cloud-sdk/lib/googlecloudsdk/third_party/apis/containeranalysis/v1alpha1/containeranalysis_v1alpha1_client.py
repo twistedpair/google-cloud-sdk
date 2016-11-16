@@ -34,11 +34,300 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
+    self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
     self.projects = self.ProjectsService(self)
     self.providers_notes_occurrences = self.ProvidersNotesOccurrencesService(self)
     self.providers_notes = self.ProvidersNotesService(self)
     self.providers = self.ProvidersService(self)
+
+  class ProjectsNotesOccurrencesService(base_api.BaseApiService):
+    """Service class for the projects_notes_occurrences resource."""
+
+    _NAME = u'projects_notes_occurrences'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1alpha1.ProjectsNotesOccurrencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the names of Occurrences linked to a particular Note.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesOccurrencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNoteOccurrencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}/occurrences',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.notes.occurrences.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+name}/occurrences',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsNotesOccurrencesListRequest',
+        response_type_name=u'ListNoteOccurrencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsNotesService(base_api.BaseApiService):
+    """Service class for the projects_notes resource."""
+
+    _NAME = u'projects_notes'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1alpha1.ProjectsNotesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new note.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.notes.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'name', u'noteId'],
+        relative_path=u'v1alpha1/{+parent}/notes',
+        request_field=u'note',
+        request_type_name=u'ContaineranalysisProjectsNotesCreateRequest',
+        response_type_name=u'Note',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the given note from the system.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
+        http_method=u'DELETE',
+        method_id=u'containeranalysis.projects.notes.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsNotesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the requested occurrence.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.notes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsNotesGetRequest',
+        response_type_name=u'Note',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a note or occurrence resource.
+Requires "containeranalysis.notes.setIamPolicy" or
+"containeranalysis.occurrences.setIamPolicy" permission if the resource is
+a note or occurrence, respectively.
+Attempting this RPC on a resource without the needed permission will note
+in a PERMISSION_DENIED error.
+Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+error if the user has list permission on the project,
+or a PERMISSION_DENIED error otherwise.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.notes.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'ContaineranalysisProjectsNotesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all notes for a given project.  Filters can be used on this.
+field to list all notes with a specific parameter.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNotesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.notes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/notes',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsNotesListRequest',
+        response_type_name=u'ListNotesResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified note or occurrence.
+resource.
+Requires "containeranalysis.notes.setIamPolicy" or
+"containeranalysis.occurrences.setIamPolicy" permission if the resource is
+a note or occurrence, respectively.
+Attempting this RPC on a resource without the needed permission will note
+in a PERMISSION_DENIED error.
+Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+error if the user has list permission on the project, or a
+PERMISSION_DENIED error otherwise.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.notes.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'ContaineranalysisProjectsNotesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified note or occurrence.
+resource.
+Requires list permission on the project (e.g., "storage.objects.list" on
+the containing bucket for testing permission of an object).
+Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+error if the user has list permission on the project,
+or a PERMISSION_DENIED error otherwise.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.notes.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'ContaineranalysisProjectsNotesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates an existing note.
+
+      Args:
+        request: (Note) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
+        http_method=u'PUT',
+        method_id=u'containeranalysis.projects.notes.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Note',
+        response_type_name=u'Note',
+        supports_download=False,
+    )
 
   class ProjectsOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_occurrences resource."""
@@ -64,12 +353,13 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences',
         http_method=u'POST',
         method_id=u'containeranalysis.projects.occurrences.create',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'parent'],
+        relative_path=u'v1alpha1/{+name}/occurrences',
         request_field=u'occurrence',
         request_type_name=u'ContaineranalysisProjectsOccurrencesCreateRequest',
         response_type_name=u'Occurrence',
@@ -90,12 +380,13 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
         http_method=u'DELETE',
         method_id=u'containeranalysis.projects.occurrences.delete',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesDeleteRequest',
         response_type_name=u'Empty',
@@ -116,12 +407,13 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
         http_method=u'GET',
         method_id=u'containeranalysis.projects.occurrences.get',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesGetRequest',
         response_type_name=u'Occurrence',
@@ -150,12 +442,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:getIamPolicy',
         http_method=u'POST',
         method_id=u'containeranalysis.projects.occurrences.getIamPolicy',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:getIamPolicy',
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
         request_field=u'getIamPolicyRequest',
         request_type_name=u'ContaineranalysisProjectsOccurrencesGetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -176,12 +469,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     GetNotes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}/notes',
         http_method=u'GET',
         method_id=u'containeranalysis.projects.occurrences.getNotes',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}/notes',
+        relative_path=u'v1alpha1/{+name}/notes',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesGetNotesRequest',
         response_type_name=u'Note',
@@ -204,12 +498,13 @@ project.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences',
         http_method=u'GET',
         method_id=u'containeranalysis.projects.occurrences.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken', u'parent'],
+        relative_path=u'v1alpha1/{+name}/occurrences',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesListRequest',
         response_type_name=u'ListOccurrencesResponse',
@@ -239,12 +534,13 @@ PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:setIamPolicy',
         http_method=u'POST',
         method_id=u'containeranalysis.projects.occurrences.setIamPolicy',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:setIamPolicy',
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
         request_type_name=u'ContaineranalysisProjectsOccurrencesSetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -271,12 +567,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:testIamPermissions',
         http_method=u'POST',
         method_id=u'containeranalysis.projects.occurrences.testIamPermissions',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}:testIamPermissions',
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -287,7 +584,7 @@ or a PERMISSION_DENIED error otherwise.
       """Updates an existing occurrence.
 
       Args:
-        request: (ContaineranalysisProjectsOccurrencesUpdateRequest) input message
+        request: (Occurrence) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Occurrence) The response message.
@@ -297,14 +594,15 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
         http_method=u'PUT',
         method_id=u'containeranalysis.projects.occurrences.update',
-        ordered_params=[u'projectsId', u'occurrencesId'],
-        path_params=[u'occurrencesId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
-        request_field=u'occurrence',
-        request_type_name=u'ContaineranalysisProjectsOccurrencesUpdateRequest',
+        relative_path=u'v1alpha1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Occurrence',
         response_type_name=u'Occurrence',
         supports_download=False,
     )
@@ -343,12 +641,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}/occurrences',
         http_method=u'GET',
         method_id=u'containeranalysis.providers.notes.occurrences.list',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}/occurrences',
+        relative_path=u'v1alpha1/{+name}/occurrences',
         request_field='',
         request_type_name=u'ContaineranalysisProvidersNotesOccurrencesListRequest',
         response_type_name=u'ListNoteOccurrencesResponse',
@@ -379,12 +678,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes',
         http_method=u'POST',
         method_id=u'containeranalysis.providers.notes.create',
-        ordered_params=[u'providersId'],
-        path_params=[u'providersId'],
-        query_params=[u'noteId'],
-        relative_path=u'v1alpha1/providers/{providersId}/notes',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'noteId', u'parent'],
+        relative_path=u'v1alpha1/{+name}/notes',
         request_field=u'note',
         request_type_name=u'ContaineranalysisProvidersNotesCreateRequest',
         response_type_name=u'Note',
@@ -405,12 +705,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
         http_method=u'DELETE',
         method_id=u'containeranalysis.providers.notes.delete',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContaineranalysisProvidersNotesDeleteRequest',
         response_type_name=u'Empty',
@@ -431,12 +732,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
         http_method=u'GET',
         method_id=u'containeranalysis.providers.notes.get',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContaineranalysisProvidersNotesGetRequest',
         response_type_name=u'Note',
@@ -465,12 +767,13 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:getIamPolicy',
         http_method=u'POST',
         method_id=u'containeranalysis.providers.notes.getIamPolicy',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:getIamPolicy',
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
         request_field=u'getIamPolicyRequest',
         request_type_name=u'ContaineranalysisProvidersNotesGetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -492,12 +795,13 @@ field to list all notes with a specific parameter.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes',
         http_method=u'GET',
         method_id=u'containeranalysis.providers.notes.list',
-        ordered_params=[u'providersId'],
-        path_params=[u'providersId'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/providers/{providersId}/notes',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken', u'parent'],
+        relative_path=u'v1alpha1/{+name}/notes',
         request_field='',
         request_type_name=u'ContaineranalysisProvidersNotesListRequest',
         response_type_name=u'ListNotesResponse',
@@ -527,12 +831,13 @@ PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:setIamPolicy',
         http_method=u'POST',
         method_id=u'containeranalysis.providers.notes.setIamPolicy',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:setIamPolicy',
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
         request_type_name=u'ContaineranalysisProvidersNotesSetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -559,40 +864,42 @@ or a PERMISSION_DENIED error otherwise.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:testIamPermissions',
         http_method=u'POST',
         method_id=u'containeranalysis.providers.notes.testIamPermissions',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}:testIamPermissions',
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'ContaineranalysisProvidersNotesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None):
+    def UpdateNote(self, request, global_params=None):
       """Updates an existing note.
 
       Args:
-        request: (ContaineranalysisProvidersNotesUpdateRequest) input message
+        request: (Note) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Note) The response message.
       """
-      config = self.GetMethodConfig('Update')
+      config = self.GetMethodConfig('UpdateNote')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'containeranalysis.providers.notes.update',
-        ordered_params=[u'providersId', u'notesId'],
-        path_params=[u'notesId', u'providersId'],
+    UpdateNote.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
+        http_method=u'POST',
+        method_id=u'containeranalysis.providers.notes.updateNote',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
-        request_field=u'note',
-        request_type_name=u'ContaineranalysisProvidersNotesUpdateRequest',
+        relative_path=u'v1alpha1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Note',
         response_type_name=u'Note',
         supports_download=False,
     )

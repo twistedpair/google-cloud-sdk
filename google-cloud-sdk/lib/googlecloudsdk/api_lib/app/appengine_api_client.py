@@ -118,6 +118,20 @@ class AppengineApiClient(object):
 
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
+  def GetServiceResource(self, service):
+    """Describe the given service.
+
+    Args:
+      service: str, the ID of the service
+
+    Returns:
+      Service resource object from the API
+    """
+    request = self.messages.AppengineAppsServicesGetRequest(
+        name=self._FormatService(self.project, service))
+    return requests.MakeRequest(
+        self.client.apps_services.Get, request)
+
   def SetDefaultVersion(self, service_name, version_id):
     """Sets the default serving version of the given services.
 

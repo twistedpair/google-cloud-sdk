@@ -597,32 +597,41 @@ class Paths(object):
     return os.path.join(self.global_config_dir, 'configurations')
 
   @property
+  def config_sentinel_file(self):
+    """Gets the path to the config sentinel.
+
+    The sentinel is a file that we touch any time there is a change to config.
+    External tools can check this file to see if they need to re-query gcloud's
+    credential/config helper to get updated configuration information. Nothing
+    is ever written to this file, it's timestamp indicates the last time config
+    was changed.
+
+    This does not take into account config changes made through environment
+    variables as they are transient by nature. There is also the edge case of
+    when a user updated installation config. That user's sentinel will be
+    updated but other will not be.
+
+    Returns:
+      str, The path to the sentinel file.
+    """
+    return os.path.join(self.global_config_dir, 'config_sentinel')
+
+  @property
   def container_config_path(self):
     return os.path.join(self.global_config_dir, 'kubernetes')
 
   def LegacyCredentialsDir(self, account):
-    """Gets the path to store legacy multistore credentials in.
+    """Gets the path to store legacy credentials in.
 
     Args:
       account: str, Email account tied to the authorizing credentials.
 
     Returns:
-      str, The path to the multistore credentials file.
+      str, The path to the credentials file.
     """
     if not account:
       account = 'default'
     return os.path.join(self.global_config_dir, 'legacy_credentials', account)
-
-  def LegacyCredentialsMultistorePath(self, account):
-    """Gets the path to store legacy multistore credentials in.
-
-    Args:
-      account: str, Email account tied to the authorizing credentials.
-
-    Returns:
-      str, The path to the multistore credentials file.
-    """
-    return os.path.join(self.LegacyCredentialsDir(account), 'multistore.json')
 
   def LegacyCredentialsJSONPath(self, account):
     """Gets the path to store legacy JSON credentials in.
@@ -635,17 +644,6 @@ class Paths(object):
     """
     return os.path.join(self.LegacyCredentialsDir(account), 'singlestore.json')
 
-  def LegacyCredentialsGAEJavaPath(self, account):
-    """Gets the path to store legacy GAE for Java credentials in.
-
-    Args:
-      account: str, Email account tied to the authorizing credentials.
-
-    Returns:
-      str, The path to the  GAE for Java credentials file.
-    """
-    return os.path.join(self.LegacyCredentialsDir(account), 'gaejava.txt')
-
   def LegacyCredentialsGSUtilPath(self, account):
     """Gets the path to store legacy gsutil credentials in.
 
@@ -657,7 +655,7 @@ class Paths(object):
     """
     return os.path.join(self.LegacyCredentialsDir(account), '.boto')
 
-  def LegacyCredentialsKeyPath(self, account):
+  def LegacyCredentialsP12KeyPath(self, account):
     """Gets the path to store legacy key file in.
 
     Args:
@@ -668,16 +666,16 @@ class Paths(object):
     """
     return os.path.join(self.LegacyCredentialsDir(account), 'private_key.p12')
 
-  def LegacyCredentialsJSONKeyPath(self, account):
-    """Gets the path to store legacy JSON key file in.
+  def LegacyCredentialsAdcPath(self, account):
+    """Gets the file path to store application default credentials in.
 
     Args:
       account: str, Email account tied to the authorizing credentials.
 
     Returns:
-      str, The path to the key file.
+      str, The path to the file.
     """
-    return os.path.join(self.LegacyCredentialsDir(account), 'private_key.json')
+    return os.path.join(self.LegacyCredentialsDir(account), 'adc.json')
 
   def GCECachePath(self):
     """Get the path to cache whether or not we're on a GCE machine.

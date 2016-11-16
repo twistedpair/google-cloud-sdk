@@ -165,14 +165,15 @@ class UnderSpecifiedResourceError(exceptions.Error):
 class ScopeEnum(enum.Enum):
   """Enum representing GCE scope."""
 
-  ZONE = ('zone')
-  REGION = ('region')
-  GLOBAL = ('global')
+  ZONE = ('zone', 'a ')
+  REGION = ('region', 'a ')
+  GLOBAL = ('global', '')
 
-  def __init__(self, flag_name):
+  def __init__(self, flag_name, prefix):
     # Collection parameter name matches command line file in this case.
     self.param_name = flag_name
     self.flag_name = flag_name
+    self.prefix = prefix
 
   @classmethod
   def CollectionForScope(cls, scope):
@@ -580,7 +581,12 @@ class ResourceArgument(object):
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
-  def AddArgument(self, parser, operation_type='operate on', cust_metavar=None):
+  # TODO(b/32116723) remove mutex_group when argparse handles nesting groups
+  def AddArgument(self,
+                  parser,
+                  mutex_group=None,
+                  operation_type='operate on',
+                  cust_metavar=None):
     """Add this set of arguments to argparse parser."""
 
     params = dict(
@@ -605,7 +611,7 @@ class ResourceArgument(object):
       else:
         params['nargs'] = '*' if self.plural else '?'
 
-    argument = parser.add_argument(self.name_arg, **params)
+    argument = (mutex_group or parser).add_argument(self.name_arg, **params)
 
     if self._detailed_help:
       argument.detailed_help = self._detailed_help
@@ -737,10 +743,11 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
                    '(s)' if len(underspecified_names) > 1 else '',
                    '\n '.join('- [{0}]'.format(n)
                               for n in sorted(underspecified_names))))
-  flags = ' or '.join(sorted([s.flag_name for s in scope_value_choices.keys()]))
+  flags = ' or '.join(
+      sorted([s.prefix + s.flag_name for s in scope_value_choices.keys()]))
 
   idx = console_io.PromptChoice(
-      options=choice_names, message='{0}choose a {1}:'.format(title, flags))
+      options=choice_names, message='{0}choose {1}:'.format(title, flags))
   if idx is None:
     return None, None
   else:

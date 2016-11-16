@@ -98,7 +98,8 @@ def TransformEndpointAddress(r, undefined=''):
     A compact string describing the address, r.
 
   Example:
-    --format="table(name, addresses[].map().endpoint_address())"
+    `--format="table(name, addresses[].map().endpoint_address())"`:::
+    Displays each address as an endpoint address.
   """
   display_components = []
   address = None if not r else r.get('address', None)
