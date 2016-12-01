@@ -15,7 +15,7 @@
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
 
 EPHEMERAL_ADDRESS = object()
@@ -48,7 +48,7 @@ def CreateNetworkInterfaceMessage(
   network_interface = messages.NetworkInterface()
   if subnet is not None:
     subnet_ref = subnet_flags.SubnetworkResolver().ResolveResources(
-        [subnet], flags.ScopeEnum.REGION, region, resources,
+        [subnet], compute_scope.ScopeEnum.REGION, region, resources,
         scope_lister=scope_lister)[0]
     network_interface.subnetwork = subnet_ref.SelfLink()
   if network is not None:

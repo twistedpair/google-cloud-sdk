@@ -769,6 +769,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'container.projects.zones.clusters': resource_info.ResourceInfo(
+        async_collection='container.projects.zones.clusters',
         list_format="""
           table(
             name,

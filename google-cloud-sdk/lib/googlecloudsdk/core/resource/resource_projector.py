@@ -58,6 +58,7 @@ class Projector(object):
       to catch recursive objects like datetime.datetime.max.
     _by_columns: True if Projector projects to a list of columns.
     _columns: self._projection.Columns() column attributes.
+    _ignore_default_transforms: Ignore default projection transforms if True.
     _retain_none_values: Retain dict entries with None values.
     _transforms_enabled_attribute: The projection.Attributes()
       transforms_enabled setting.
@@ -65,17 +66,20 @@ class Projector(object):
       disabled if False, or set by each Evaluate().
   """
 
-  def __init__(self, projection, by_columns=False, retain_none_values=False):
+  def __init__(self, projection, by_columns=False,
+               ignore_default_transforms=False, retain_none_values=False):
     """Constructor.
 
     Args:
       projection: A ProjectionSpec (parsed resource projection expression).
       by_columns: Project to a list of columns if True.
+      ignore_default_transforms: Ignore default projection transforms if True.
       retain_none_values: project dict entries with None values.
     """
     self._projection = projection
     self._by_columns = by_columns
     self._columns = self._projection.Columns()
+    self._ignore_default_transforms = ignore_default_transforms
     self._retain_none_values = retain_none_values
     self._been_here_done_that = []
     if 'transforms' in projection.Attributes():
@@ -387,6 +391,14 @@ class Projector(object):
     """
     self._by_columns = enable
 
+  def SetIgnoreDefaultTransforms(self, enable):
+    """Sets the ignore default transforms mode.
+
+    Args:
+      enable: Disable default projection transforms if True.
+    """
+    self._ignore_default_transforms = enable
+
   def SetRetainNoneValues(self, enable):
     """Sets the projection to retain-none-values mode.
 
@@ -421,7 +433,7 @@ class Projector(object):
                         self._projection.PROJECT)
     if self._transforms_enabled_attribute is None:
       # By-column formats enable transforms by default.
-      self._transforms_enabled = True
+      self._transforms_enabled = not self._ignore_default_transforms
     columns = []
     for column in self._columns:
       val = resource_property.Get(obj, column.key) if column.key else obj

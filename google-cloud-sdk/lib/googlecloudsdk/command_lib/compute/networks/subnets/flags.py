@@ -15,6 +15,7 @@
 """Flags and helpers for the compute subnetworks commands."""
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 
 
 def SubnetworkArgument(required=True):
@@ -30,4 +31,4 @@ def SubnetworkArgument(required=True):
 
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
-      'subnetwork', {compute_flags.ScopeEnum.REGION: 'compute.subnetworks'})
+      'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})

@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 import ipaddr
 
 MIGRATION_OPTIONS = {
@@ -49,7 +50,7 @@ INSTANCES_ARG = compute_flags.ResourceArgument(
     plural=True)
 
 SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
-    'instance', {compute_flags.ScopeEnum.ZONE: 'compute.instances'})
+    'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
 
 
 def InstanceArgumentForRoute(required=True):
@@ -489,13 +490,16 @@ def ValidateDiskBootFlags(args):
 
 def ValidateCreateDiskFlags(args):
   """Validates the values of create-disk related flags."""
+  require_csek_key_create = getattr(args, 'require_csek_key_create', None)
+  csek_key_file = getattr(args, 'csek_key_file', None)
+  resource_names = getattr(args, 'names', [])
   for disk in getattr(args, 'create_disk', []) or []:
     disk_name = disk.get('name')
-    if len(args.names) > 1 and disk_name:
+    if len(resource_names) > 1 and disk_name:
       raise exceptions.ToolException(
           'Cannot create a disk with [name]={} for more than one instance.'
           .format(disk_name))
-    if not disk_name and args.require_csek_key_create and args.csek_key_file:
+    if not disk_name and require_csek_key_create and csek_key_file:
       raise exceptions.ToolException(
           'Cannot create a disk with customer supplied key when disk name '
           'is not specified.')

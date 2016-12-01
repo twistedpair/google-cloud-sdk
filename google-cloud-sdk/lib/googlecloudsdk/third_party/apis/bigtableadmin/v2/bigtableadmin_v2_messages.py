@@ -904,6 +904,8 @@ class SnapshotTableRequest(_messages.Message):
 
   Fields:
     cluster: The name of the cluster where the snapshot will be created in.
+      Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`.
     snapshotId: The ID by which the new snapshot should be referred to within
       the parent cluster, e.g., `mysnapshot` of the form: `_a-zA-Z0-9*` rather
       than `projects/<project>/instances/<instance>/clusters/<cluster>/snapsho

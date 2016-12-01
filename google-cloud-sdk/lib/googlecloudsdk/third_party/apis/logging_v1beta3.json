@@ -453,7 +453,7 @@
       "type": "object",
       "properties": {
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.",
+          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
         },
         "orderBy": {
@@ -554,7 +554,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Optional. An advanced logs filter. If present, only log entries matching\nthe filter are written.  Only project sinks use this field; log sinks and\nlog service sinks must not include a filter.",
+          "description": "Optional. An advanced logs filter. If present, only log entries matching\nthe filter are written.  Only project sinks use this field; log sinks and\nlog service sinks must not include a filter.\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
         },
         "errors": {
@@ -565,12 +565,12 @@
           }
         },
         "startTime": {
-          "description": "Optional. Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
+          "description": "Optional. Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges. The start_time must be less than the end_time.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Optional. Time at which this sink expires",
+          "description": "Optional. Time at which this sink expires.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -683,7 +683,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Required. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"log=syslog AND metadata.severity>=ERROR\"`.",
+          "description": "Required. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"log=syslog AND metadata.severity>=ERROR\"`.\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
         }
       }
@@ -807,7 +807,7 @@
           "type": "boolean"
         },
         "first": {
-          "description": "Whether this is the first RequestLog entry for this request.  If an active\nrequest has several RequestLog entries written to Cloud Logging, this field\nwill be set for one of them.",
+          "description": "Whether this is the first `RequestLog` entry for this request.  If an\nactive request has several `RequestLog` entries written to Stackdriver\nLogging, then this field will be set for one of them.",
           "type": "boolean"
         },
         "instanceId": {
@@ -826,7 +826,7 @@
           "type": "string"
         },
         "traceId": {
-          "description": "Cloud Trace identifier for this request.",
+          "description": "Stackdriver Trace identifier for this request.",
           "type": "string"
         },
         "sourceReference": {
@@ -1261,7 +1261,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.",
+                  "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.\nThe maximum length of the filter is 20000 characters.",
                   "location": "query",
                   "type": "string"
                 },

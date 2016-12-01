@@ -87,6 +87,11 @@ apis:
   cloudfunctions:
     v1beta2:
       discovery_doc: cloudfunctions_v1beta2.json
+      resources:
+        providers.event_types: "providers/{triggerProvider}/eventTypes/{triggerEvent}"
+        # For now, we only accept global buckets, but should give them to the
+        # EventTrigger API in the format that it expects (with the underscore).
+        projects.buckets: "projects/_/buckets/{bucketId}"
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json

@@ -622,7 +622,7 @@ Operation<response: ManagedService>
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a managed service. This method will change the serivce in the.
+      """Deletes a managed service. This method will change the service to the.
 `Soft-Delete` state for 30 days. Within this period, service producers may
 call UndeleteService to restore the service.
 After 30 days, the service will be permanently deleted.
@@ -748,7 +748,8 @@ service configuration.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a managed service.
+      """Gets a managed service. Authentication is required unless the service is.
+public.
 
       Args:
         request: (ServicemanagementServicesGetRequest) input message
@@ -854,7 +855,10 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists all managed services.
+      """Lists all managed services. The result is limited to services that the.
+caller has "servicemanagement.services.get" permission for. If the request
+is made without authentication, it returns only public services that are
+available to everyone.
 
       Args:
         request: (ServicemanagementServicesListRequest) input message
@@ -880,7 +884,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified subset of the configuration. If the specified service.
+      """Updates the specified one of the configurations. If the specified service.
 does not exist the patch operation fails.
 
 Operation<response: ManagedService>
@@ -904,35 +908,6 @@ Operation<response: ManagedService>
         relative_path=u'v1/services/{serviceName}',
         request_field=u'managedService',
         request_type_name=u'ServicemanagementServicesPatchRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def PatchConfig(self, request, global_params=None):
-      """Updates the specified subset of the service resource. Equivalent to.
-calling `PatchService` with only the `service_config` field updated.
-
-Operation<response: google.api.Service>
-
-      Args:
-        request: (ServicemanagementServicesPatchConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('PatchConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    PatchConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'servicemanagement.services.patchConfig',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/services/{serviceName}/config',
-        request_field=u'service',
-        request_type_name=u'ServicemanagementServicesPatchConfigRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1074,35 +1049,6 @@ error if the policy is too large (more than 50 entries across all lists).
         request_field='<request>',
         request_type_name=u'ServiceAccessPolicy',
         response_type_name=u'ServiceAccessPolicy',
-        supports_download=False,
-    )
-
-    def UpdateConfig(self, request, global_params=None):
-      """Updates the specified subset of the service resource. Equivalent to.
-calling `UpdateService` with only the `service_config` field updated.
-
-Operation<response: google.api.Service>
-
-      Args:
-        request: (ServicemanagementServicesUpdateConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'servicemanagement.services.updateConfig',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/services/{serviceName}/config',
-        request_field=u'service',
-        request_type_name=u'ServicemanagementServicesUpdateConfigRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 

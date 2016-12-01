@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Dataproc API",
-  "description": "An API for managing Hadoop-based clusters and jobs on Google Cloud Platform.",
+  "description": "Manages Hadoop-based clusters and jobs on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -155,6 +155,10 @@
         "clusterUuid": {
           "description": "[Output-only] A cluster UUID (Unique Universal Identifier). Cloud Dataproc\ngenerates this value when it creates the cluster.",
           "type": "string"
+        },
+        "metrics": {
+          "description": "Contains cluster daemon metrics such as HDFS and YARN stats.\n\n**Beta Feature**: This report is available for testing purposes only. It may\nbe changed before final release.",
+          "$ref": "ClusterMetrics"
         }
       }
     },
@@ -217,8 +221,12 @@
           "description": "[Optional] If true, all instances in the cluster will only have internal IP\naddresses. By default, clusters are not restricted to internal IP addresses,\nand will have ephemeral external IP addresses assigned to each instance.\nThis `internal_ip_only` restriction can only be enabled for subnetwork\nenabled networks, and all off-cluster dependencies must be configured to be\naccessible without external IP addresses.",
           "type": "boolean"
         },
+        "serviceAccount": {
+          "description": "[Optional] The service account of the instances. Defaults to the default\nGoogle Compute Engine service account. Custom service accounts need\npermissions equivalent to the folloing IAM roles:\n\n* roles\/logging.logWriter\n* roles\/storage.objectAdmin\n\n(see https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#custom_service_accounts\nfor more information).\nExample: `[account_id]@[project_id].iam.gserviceaccount.com`",
+          "type": "string"
+        },
         "serviceAccountScopes": {
-          "description": "[Optional] The URIs of service account scopes to be included in Google\nCompute Engine instances. The following base set of scopes is always\nincluded:\n\n* https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n* https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n* https:\/\/www.googleapis.com\/auth\/logging.write\n\nIf no scopes are specified, the following defaults are also provided:\n\n* https:\/\/www.googleapis.com\/auth\/bigquery\n* https:\/\/www.googleapis.com\/auth\/bigtable.admin.table\n* https:\/\/www.googleapis.com\/auth\/bigtable.data\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "[Optional] The URIs of service account scopes to be included in Google\nCompute Engine instances. The following base set of scopes is always\nincluded:\n\n* https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n* https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n* https:\/\/www.googleapis.com\/auth\/logging.write\n\nIf no scopes are specified, the following defaults are also provided:\n\n* https:\/\/www.googleapis.com\/auth\/bigquery\n* https:\/\/www.googleapis.com\/auth\/bigtable.admin.tables\n* https:\/\/www.googleapis.com\/auth\/bigtable.data\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"
@@ -381,6 +389,29 @@
         }
       }
     },
+    "ClusterMetrics": {
+      "id": "ClusterMetrics",
+      "description": "Contains cluster daemon metrics, such as HDFS and YARN stats.\n\n**Beta Feature**: This report is available for testing purposes only. It may\nbe changed before final release.",
+      "type": "object",
+      "properties": {
+        "hdfsMetrics": {
+          "description": "The HDFS metrics.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "yarnMetrics": {
+          "description": "The YARN metrics.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -525,6 +556,13 @@
           "type": "array",
           "items": {
             "$ref": "JobStatus"
+          }
+        },
+        "yarnApplications": {
+          "description": "[Output-only] The collection of YARN applications spun up by this job.\n\n**Beta** Feature: This report is available for testing purposes only. It may\nbe changed before final release.",
+          "type": "array",
+          "items": {
+            "$ref": "YarnApplication"
           }
         },
         "driverOutputResourceUri": {
@@ -941,6 +979,52 @@
           "description": "[Output-only] The time when this state was entered.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "YarnApplication": {
+      "id": "YarnApplication",
+      "description": "A YARN application created by a job. Application information is a subset of\n<code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto<\/code>.\n\n**Beta Feature**: This report is available for testing purposes only. It may\nbe changed before final release.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "[Required] The application name.",
+          "type": "string"
+        },
+        "state": {
+          "description": "[Required] The application state.",
+          "enumDescriptions": [
+            "Status is unspecified.",
+            "Status is NEW.",
+            "Status is NEW_SAVING.",
+            "Status is SUBMITTED.",
+            "Status is ACCEPTED.",
+            "Status is RUNNING.",
+            "Status is FINISHED.",
+            "Status is FAILED.",
+            "Status is KILLED."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NEW",
+            "NEW_SAVING",
+            "SUBMITTED",
+            "ACCEPTED",
+            "RUNNING",
+            "FINISHED",
+            "FAILED",
+            "KILLED"
+          ]
+        },
+        "progress": {
+          "description": "[Required] The numerical progress of the application, from 1 to 100.",
+          "type": "number",
+          "format": "float"
+        },
+        "trackingUrl": {
+          "description": "[Optional] The HTTP URL of the ApplicationMaster, HistoryServer, or\nTimelineServer that provides application-specific information. The URL uses\nthe internal hostname, and requires a proxy server for resolution and,\npossibly, access.",
+          "type": "string"
         }
       }
     },
@@ -1387,7 +1471,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "[Optional] A filter constraining the clusters to list. Filters are\ncase-sensitive and have the following syntax:\n\n    field:value [field:value] ...\n\nor\n\n    field = value [AND [field = value]] ...\n\nwhere **field** is one of `state`, `name`, or `labels.[KEY]`, and `[KEY]`\nis a label key. **value** is optional for labels.\n`state` can be one of the following: `ACTIVE`, `INACTIVE`, `CREATING`,\n`RUNNING`, `ERROR`, `DELETING`, or `UPDATING`. `ACTIVE` contains the\n`CREATING`, `UPDATING`, and `RUNNING` states. `INACTIVE` contains the\n`DELETING` and `ERROR` states.\n`name` is the name of the cluster provided at creation time.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample valid filters are:\n\n    state:ACTIVE name:mycluster labels.env:staging labels.starred\n\nand\n\n    state = ACTIVE AND name = mycluster AND labels.env = staging AND labels.starred",
+                      "description": "[Optional] A filter constraining the clusters to list. Filters are\ncase-sensitive and have the following syntax:\n\nfield = value [AND [field = value]] ...\n\nwhere **field** is one of `status.state`, `clusterName`, or `labels.[KEY]`,\nand `[KEY]` is a label key. **value** can be `*` to match all values.\n`status.state` can be one of the following: `ACTIVE`, `INACTIVE`,\n`CREATING`, `RUNNING`, `ERROR`, `DELETING`, or `UPDATING`. `ACTIVE`\ncontains the `CREATING`, `UPDATING`, and `RUNNING` states. `INACTIVE`\ncontains the `DELETING` and `ERROR` states.\n`clusterName` is the name of the cluster provided at creation time.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample filter:\n\nstatus.state = ACTIVE AND clusterName = mycluster \\\n  AND labels.env = staging AND labels.starred = *",
                       "location": "query",
                       "type": "string"
                     },
@@ -1577,7 +1661,7 @@
                       ]
                     },
                     "filter": {
-                      "description": "[Optional] A filter constraining the jobs to list. Filters are\ncase-sensitive and have the following syntax:\n\n    field:value] ...\n\nor\n\n    [field = value] AND [field [= value]] ...\n\nwhere **field** is `state` or `labels.[KEY]`, and `[KEY]` is a label key.\n**value** is optional for labels.\n`state` can be either `ACTIVE` or `INACTIVE`.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample valid filters are:\n\n    state:ACTIVE labels.env:staging labels.starred\n\nand\n\n    state = ACTIVE AND labels.env = staging AND labels.starred",
+                      "description": "[Optional] A filter constraining the jobs to list. Filters are\ncase-sensitive and have the following syntax:\n\n[field = value] AND [field [= value]] ...\n\nwhere **field** is `status.state` or `labels.[KEY]`, and `[KEY]` is a label\nkey. **value** can be `*` to match all values.\n`status.state` can be either `ACTIVE` or `INACTIVE`.\nOnly the logical `AND` operator is supported; space-separated items are\ntreated as having an implicit `AND` operator.\n\nExample filter:\n\nstatus.state = ACTIVE AND labels.env = staging AND labels.starred = *",
                       "location": "query",
                       "type": "string"
                     }
@@ -1676,31 +1760,6 @@
             },
             "operations": {
               "methods": {
-                "get": {
-                  "id": "dataproc.projects.regions.operations.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}",
-                  "httpMethod": "GET",
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
                 "list": {
                   "id": "dataproc.projects.regions.operations.list",
                   "path": "v1/{+name}",
@@ -1742,15 +1801,40 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
-                "cancel": {
-                  "id": "dataproc.projects.regions.operations.cancel",
-                  "path": "v1/{+name}:cancel",
-                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel",
-                  "httpMethod": "POST",
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+                "get": {
+                  "id": "dataproc.projects.regions.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
                   "parameters": {
                     "name": {
-                      "description": "The name of the operation resource to be cancelled.",
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "delete": {
+                  "id": "dataproc.projects.regions.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",
@@ -1767,15 +1851,15 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
-                "delete": {
-                  "id": "dataproc.projects.regions.operations.delete",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}",
-                  "httpMethod": "DELETE",
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+                "cancel": {
+                  "id": "dataproc.projects.regions.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
                   "parameters": {
                     "name": {
-                      "description": "The name of the operation resource to be deleted.",
+                      "description": "The name of the operation resource to be cancelled.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/operations\/[^\/]+$",

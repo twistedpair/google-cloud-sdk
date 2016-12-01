@@ -633,7 +633,8 @@ class Paths(object):
       account = 'default'
     return os.path.join(self.global_config_dir, 'legacy_credentials', account)
 
-  def LegacyCredentialsJSONPath(self, account):
+  # This is only used by bq. Do not use for any other purpose.
+  def LegacyCredentialsSingleStorePath(self, account):
     """Gets the path to store legacy JSON credentials in.
 
     Args:
@@ -642,7 +643,8 @@ class Paths(object):
     Returns:
       str, The path to the JSON credentials file.
     """
-    return os.path.join(self.LegacyCredentialsDir(account), 'singlestore.json')
+    return os.path.join(self.LegacyCredentialsDir(account),
+                        'singlestore_bq.json')
 
   def LegacyCredentialsGSUtilPath(self, account):
     """Gets the path to store legacy gsutil credentials in.

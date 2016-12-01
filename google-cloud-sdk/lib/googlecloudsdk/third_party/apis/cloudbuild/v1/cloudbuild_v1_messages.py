@@ -29,6 +29,8 @@ class Build(_messages.Message):
     StatusValueValuesEnum: Status of the build. @OutputOnly
 
   Fields:
+    buildTriggerId: The ID of the BuildTrigger that triggered this build, if
+      it was triggered automatically. @OutputOnly
     createTime: Time at which the build was created. @OutputOnly
     finishTime: Time at which execution of the build was finished. @OutputOnly
     id: Unique identifier of the build. @OutputOnly
@@ -82,22 +84,23 @@ class Build(_messages.Message):
     TIMEOUT = 7
     CANCELLED = 8
 
-  createTime = _messages.StringField(1)
-  finishTime = _messages.StringField(2)
-  id = _messages.StringField(3)
-  images = _messages.StringField(4, repeated=True)
-  logUrl = _messages.StringField(5)
-  logsBucket = _messages.StringField(6)
-  options = _messages.MessageField('BuildOptions', 7)
-  projectId = _messages.StringField(8)
-  results = _messages.MessageField('Results', 9)
-  source = _messages.MessageField('Source', 10)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 11)
-  startTime = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  statusDetail = _messages.StringField(14)
-  steps = _messages.MessageField('BuildStep', 15, repeated=True)
-  timeout = _messages.StringField(16)
+  buildTriggerId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  finishTime = _messages.StringField(3)
+  id = _messages.StringField(4)
+  images = _messages.StringField(5, repeated=True)
+  logUrl = _messages.StringField(6)
+  logsBucket = _messages.StringField(7)
+  options = _messages.MessageField('BuildOptions', 8)
+  projectId = _messages.StringField(9)
+  results = _messages.MessageField('Results', 10)
+  source = _messages.MessageField('Source', 11)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 12)
+  startTime = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  statusDetail = _messages.StringField(15)
+  steps = _messages.MessageField('BuildStep', 16, repeated=True)
+  timeout = _messages.StringField(17)
 
 
 class BuildOperationMetadata(_messages.Message):

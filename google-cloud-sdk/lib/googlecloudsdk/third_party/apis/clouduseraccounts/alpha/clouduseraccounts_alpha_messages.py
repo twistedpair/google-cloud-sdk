@@ -12,20 +12,52 @@ package = 'clouduseraccounts'
 
 
 class AuditConfig(_messages.Message):
-  """Enables "data access" audit logging for a service and specifies a list of
-  members that are log-exempted.
+  """Provides the configuration for non-admin_activity logging for a service.
+  Controls exemptions and specific log sub-types.
 
   Fields:
+    auditLogConfigs: The configuration for each type of logging
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
       same format of Binding.members.
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
+      special value that covers all services.
   """
 
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for a sub-type of logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from this type
+      of logging Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      ADMIN_READ: <no description>
+      DATA_READ: <no description>
+      DATA_WRITE: <no description>
+      LOG_TYPE_UNSPECIFIED: <no description>
+    """
+    ADMIN_READ = 0
+    DATA_READ = 1
+    DATA_WRITE = 2
+    LOG_TYPE_UNSPECIFIED = 3
+
   exemptedMembers = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class AuthorizedKeysView(_messages.Message):

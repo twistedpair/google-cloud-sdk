@@ -89,6 +89,20 @@ def BackendServiceArgumentForUrlMapPathMatcher(required=True):
           'matcher cannot match.'))
 
 
+def BackendServiceArgumentForTargetSslProxy(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='backend service',
+      name='--backend-service',
+      required=required,
+      completion_resource_id='compute.backendServices',
+      global_collection='compute.backendServices',
+      short_help=('.'),
+      detailed_help="""\
+        A backend service that will be used for connections to the target SSL
+        proxy.
+        """)
+
+
 def AddLoadBalancingScheme(parser):
   parser.add_argument(
       '--load-balancing-scheme',

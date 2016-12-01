@@ -56,8 +56,11 @@ If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
 
 If the name is not provided in the request, the server will assign a random
-name for this snapshot on the same project as the subscription. Note that
-for REST API requests, you must specify a name.
+name for this snapshot on the same project as the subscription, conforming
+to the
+[resource name format](https://cloud.google.com/pubsub/docs/overview#names).
+The generated name is populated in the returned Snapshot object.
+Note that for REST API requests, you must specify a name in the request.
 
       Args:
         request: (PubsubProjectsSnapshotsCreateRequest) input message
@@ -273,8 +276,11 @@ If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
 If the name is not provided in the request, the server will assign a random
-name for this subscription on the same project as the topic. Note that
-for REST API requests, you must specify a name.
+name for this subscription on the same project as the topic, conforming
+to the
+[resource name format](https://cloud.google.com/pubsub/docs/overview#names).
+The generated name is populated in the returned Subscription object.
+Note that for REST API requests, you must specify a name in the request.
 
       Args:
         request: (Subscription) input message

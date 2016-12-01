@@ -111,36 +111,39 @@ class ImageExpander(object):
         it is the image resource.
     """
 
-    image_ref = None
-
-    if image:
-      image_ref = self.resources.Parse(
-          image, collection='compute.images', resolve=False)
-    elif image_family is not None:
-      image_ref = self.resources.Parse(
-          image_family, collection='compute.images', resolve=False)
-      if not image_ref.image.startswith(FAMILY_PREFIX):
-        image_ref.image = FAMILY_PREFIX + image_ref.image
-    else:
-      image_ref = self.resources.Parse(
-          constants.DEFAULT_IMAGE_FAMILY,
-          collection='compute.images',
-          params={'project': 'debian-cloud'},
-          resolve=False)
-      if not image_ref.image.startswith(FAMILY_PREFIX):
-        image_ref.image = FAMILY_PREFIX + image_ref.image
-
     # If an image project was specified, then assume that image refers
     # to an image in that project.
     if image_project:
       image_project_ref = self.resources.Parse(
           image_project, collection='compute.projects')
-      image_ref.project = image_project_ref.Name()
-      image_ref.Resolve()
+      image_project = image_project_ref.Name()
+
+    image_ref = None
+
+    if image:
+      image_ref = self.resources.Parse(
+          image, params={'project': image_project}, collection='compute.images')
+    else:
+      if image_family is not None:
+        image_ref = self.resources.Parse(
+            image_family, params={'project': image_project},
+            collection='compute.images')
+      else:
+        image_ref = self.resources.Parse(
+            constants.DEFAULT_IMAGE_FAMILY,
+            collection='compute.images',
+            params={'project': 'debian-cloud'})
+      if not image_ref.image.startswith(FAMILY_PREFIX):
+        relative_name = image_ref.RelativeName()
+        relative_name = (relative_name[:-len(image_ref.image)] +
+                         FAMILY_PREFIX + image_ref.image)
+        image_ref = self.resources.ParseRelativeName(
+            relative_name, image_ref.Collection())
+
+    if image_project:
       return (image_ref.SelfLink(),
               self.GetImage(image_ref) if return_image_resource else None)
 
-    image_ref.Resolve()
     alias = constants.IMAGE_ALIASES.get(image_ref.Name())
 
     # Check for hidden aliases.

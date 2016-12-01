@@ -20,7 +20,7 @@ from googlecloudsdk.core import resources
 
 
 ORGS_COLLECTION = 'cloudresourcemanager.organizations'
-ORGS_API_VERSION = 'v1beta1'
+ORGS_API_VERSION = 'v1'
 
 
 class OrganizationCommand(base.Command):
@@ -30,11 +30,11 @@ class OrganizationCommand(base.Command):
     return ORGS_COLLECTION
 
   def OrganizationsClient(self):
-    client = apis.GetClientInstance('cloudresourcemanager', 'v1beta1')
+    client = apis.GetClientInstance('cloudresourcemanager', 'v1')
     return client.organizations
 
   def OrganizationsMessages(self):
-    return apis.GetMessagesModule('cloudresourcemanager', 'v1beta1')
+    return apis.GetMessagesModule('cloudresourcemanager', 'v1')
 
   def GetOrganizationRef(self, organization_id):
     # This is fun stuff here.

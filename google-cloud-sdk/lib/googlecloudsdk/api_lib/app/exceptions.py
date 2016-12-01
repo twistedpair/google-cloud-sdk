@@ -19,12 +19,22 @@ from googlecloudsdk.core import exceptions
 
 class NotFoundError(exceptions.Error):
   """Raised when the requested resource does not exist."""
-  pass
 
 
 class ConflictError(exceptions.Error):
   """Raised when a new resource already exists."""
-  pass
+
+
+class ConfigError(exceptions.Error):
+  """Raised when unable to parse a config file."""
+
+
+class StorageError(exceptions.Error):
+  """Raised when the syncing with storage errors."""
+
+
+class DeleteError(exceptions.Error):
+  """Raised when deletes fail."""
 
 
 STATUS_CODE_TO_ERROR = {

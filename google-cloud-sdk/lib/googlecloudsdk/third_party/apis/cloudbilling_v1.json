@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Billing API",
-  "description": "Retrieves Google Cloud Console billing accounts and associates them with projects.\n",
+  "description": "Allows developers to manage billing for their Google Cloud Platform projects\n    programmatically.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

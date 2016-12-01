@@ -5,14 +5,14 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20161011",
+ "revision": "20161115",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
-  "x16": "http://www.google.com/images/icons/product/search-16.gif",
-  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+  "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
  },
  "documentationLink": "https://cloud.google.com/deployment-manager/",
  "protocol": "rest",
@@ -88,8 +88,15 @@
   "AuditConfig": {
    "id": "AuditConfig",
    "type": "object",
-   "description": "Enables \"data access\" audit logging for a service and specifies a list of members that are log-exempted.",
+   "description": "Provides the configuration for non-admin_activity logging for a service. Controls exemptions and specific log sub-types.",
    "properties": {
+    "auditLogConfigs": {
+     "type": "array",
+     "description": "The configuration for each type of logging",
+     "items": {
+      "$ref": "AuditLogConfig"
+     }
+    },
     "exemptedMembers": {
      "type": "array",
      "description": "Specifies the identities that are exempted from \"data access\" audit logging for the `service` specified above. Follows the same format of Binding.members.",
@@ -99,7 +106,25 @@
     },
     "service": {
      "type": "string",
-     "description": "Specifies a service that will be enabled for \"data access\" audit logging. For example, `resourcemanager`, `storage`, `compute`. `allServices` is a special value that covers all services."
+     "description": "Specifies a service that will be enabled for audit logging. For example, `resourcemanager`, `storage`, `compute`. `allServices` is a special value that covers all services."
+    }
+   }
+  },
+  "AuditLogConfig": {
+   "id": "AuditLogConfig",
+   "type": "object",
+   "description": "Provides the configuration for a sub-type of logging.",
+   "properties": {
+    "exemptedMembers": {
+     "type": "array",
+     "description": "Specifies the identities that are exempted from this type of logging Follows the same format of Binding.members.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "logType": {
+     "type": "string",
+     "description": "The log type that this config enables."
     }
    }
   },

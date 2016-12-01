@@ -142,6 +142,7 @@ _FORMATTERS = {
     'diff': diff_printer.DiffPrinter,
     'disable': DisablePrinter,
     'flattened': flattened_printer.FlattenedPrinter,
+    'get': csv_printer.GetPrinter,
     'json': json_printer.JsonPrinter,
     'list': list_printer.ListPrinter,
     'multi': MultiPrinter,

@@ -476,20 +476,52 @@ class AttachedDiskInitializeParams(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Enables "data access" audit logging for a service and specifies a list of
-  members that are log-exempted.
+  """Provides the configuration for non-admin_activity logging for a service.
+  Controls exemptions and specific log sub-types.
 
   Fields:
+    auditLogConfigs: The configuration for each type of logging
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
       same format of Binding.members.
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
+      special value that covers all services.
   """
 
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for a sub-type of logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from this type
+      of logging Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      ADMIN_READ: <no description>
+      DATA_READ: <no description>
+      DATA_WRITE: <no description>
+      LOG_TYPE_UNSPECIFIED: <no description>
+    """
+    ADMIN_READ = 0
+    DATA_READ = 1
+    DATA_WRITE = 2
+    LOG_TYPE_UNSPECIFIED = 3
+
   exemptedMembers = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Autoscaler(_messages.Message):
@@ -1073,6 +1105,7 @@ class BackendService(_messages.Message):
       health check can be specified, and a health check is required.  For
       internal load balancing, a URL to a HealthCheck resource must be
       specified instead.
+    iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -1167,17 +1200,18 @@ class BackendService(_messages.Message):
   enableCDN = _messages.BooleanField(6)
   fingerprint = _messages.BytesField(7)
   healthChecks = _messages.StringField(8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(14)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 18)
-  timeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  iap = _messages.MessageField('BackendServiceIAP', 9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(15)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
+  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1239,6 +1273,22 @@ class BackendServiceGroupHealth(_messages.Message):
 
   healthStatus = _messages.MessageField('HealthStatus', 1, repeated=True)
   kind = _messages.StringField(2, default=u'compute#backendServiceGroupHealth')
+
+
+class BackendServiceIAP(_messages.Message):
+  """Identity-Aware Proxy (Cloud Gatekeeper)
+
+  Fields:
+    enabled: A boolean attribute.
+    oauth2ClientId: A string attribute.
+    oauth2ClientSecret: A string attribute.
+    oauth2ClientSecretSha256: A string attribute.
+  """
+
+  enabled = _messages.BooleanField(1)
+  oauth2ClientId = _messages.StringField(2)
+  oauth2ClientSecret = _messages.StringField(3)
+  oauth2ClientSecretSha256 = _messages.StringField(4)
 
 
 class BackendServiceList(_messages.Message):
@@ -3706,14 +3756,22 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -5402,14 +5460,22 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
+    filter: A string attribute.
     instanceGroupManager: The name of the managed instance group.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -9477,9 +9543,9 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      UDP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP.
-      Exactly one of the protocol-specific health check field must be
-      specified, which must match type field.
+      SSL, HTTP or HTTPS. If not specified, the default is TCP. Exactly one of
+      the protocol-specific health check field must be specified, which must
+      match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -9507,8 +9573,8 @@ class HealthCheck(_messages.Message):
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
-    type: Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
-      HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
+    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP or
+      HTTPS. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
     udpHealthCheck: A UDPHealthCheck attribute.
@@ -9517,10 +9583,9 @@ class HealthCheck(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
-    HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
-    protocol-specific health check field must be specified, which must match
-    type field.
+    """Specifies the type of the healthCheck, either TCP, SSL, HTTP or HTTPS.
+    If not specified, the default is TCP. Exactly one of the protocol-specific
+    health check field must be specified, which must match type field.
 
     Values:
       HTTP: <no description>
@@ -13855,8 +13920,8 @@ class SslCertificate(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    privateKey: A write-only private key in PEM format. Only insert RPCs will
-      include this field.
+    privateKey: A write-only private key in PEM format. Only insert requests
+      will include this field.
     selfLink: [Output only] Server-defined URL for the resource.
   """
 

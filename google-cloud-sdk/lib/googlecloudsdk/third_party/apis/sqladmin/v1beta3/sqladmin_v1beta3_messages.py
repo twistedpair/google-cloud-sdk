@@ -1105,8 +1105,7 @@ class Tier(_messages.Message):
     DiskQuota: The maximum disk size of this tier in bytes.
     RAM: The maximum RAM usage of this tier in bytes.
     kind: This is always sql#tier.
-    region: The applicable regions for this tier. Can be us-east1, europe-
-      west1, or asia-east1.
+    region: The applicable regions for this tier.
     tier: An identifier for the service tier, for example D1, D2 etc. For
       related information, see Pricing.
   """

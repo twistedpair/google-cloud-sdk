@@ -183,6 +183,17 @@ class StorageClient(object):
       raise UploadError('Error uploading files: {e}'.format(e=e))
     return items
 
+  def DeleteObject(self, bucket_ref, object_path):
+    """Delete the specified object.
+
+    Args:
+      bucket_ref: storage_util.BucketReference to the bucket of the object
+      object_path: path to the object within the bucket.
+    """
+    self.client.objects.Delete(self.messages.StorageObjectsDeleteRequest(
+        bucket=bucket_ref.bucket,
+        object=object_path))
+
 
 def Rsync(source_dir, dest_dir, exclude_pattern=None):
   """Copies files from the specified file system directory to a GCS bucket.

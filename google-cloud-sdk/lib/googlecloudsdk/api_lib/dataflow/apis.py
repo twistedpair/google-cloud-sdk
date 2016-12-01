@@ -151,7 +151,8 @@ class Templates(object):
 
   @staticmethod
   def Create(project_id=None, gcs_location=None, parameters=None,
-             job_name=None):
+             job_name=None, service_account_email=None, zone=None,
+             max_workers=None):
     """Calls the Dataflow Templates.CreateFromJob method.
 
     Args:
@@ -159,6 +160,9 @@ class Templates(object):
       gcs_location: The location of the template.
       parameters: Parameters to pass to the template.
       job_name: The name to assign to the job.
+      service_account_email: The service account to run the workers as.
+      zone: The zone to run the workers in.
+      max_workers: The maximum number of workers to run.
     Returns:
       (Job)
     """
@@ -170,6 +174,11 @@ class Templates(object):
     body = Templates.CREATE_REQUEST(
         gcsPath=gcs_location,
         jobName=job_name,
+        environment=GetMessagesModule().RuntimeEnvironment(
+            serviceAccountEmail=service_account_email,
+            zone=zone,
+            maxWorkers=max_workers,
+        ),
         parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
         if parameters else None)
     request = GetMessagesModule().DataflowProjectsTemplatesCreateRequest(

@@ -221,8 +221,7 @@ class RuntimeConfig(_messages.Message):
   hierarchy of variables.
 
   Fields:
-    description: An optional description of the RuntimeConfig object. The
-      length of the description must be less than 256 bytes.
+    description: An optional description of the RuntimeConfig object.
     name: The resource name of a runtime config. The name must have the
       format:      projects/[PROJECT_ID]/configs/[CONFIG_NAME]  The
       `[PROJECT_ID]` must be a valid project ID, and `[CONFIG_NAME]` is an
@@ -244,12 +243,13 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
     projectsId: Part of `parent`. The [project ID](https://support.google.com/
       cloud/answer/6158840?hl=en&ref_topic=6158848) for this request, in the
       format `projects/[PROJECT_ID]`.
-    requestId: An optional unique request_id. If server receives two Create
-      requests with the same request_id then second request will be ignored
-      and the resource stored in the backend will be returned. Empty
-      request_id fields are ignored. It is responsibility of the client to
-      ensure uniqueness of the request_id strings. The strings are limited to
-      64 characters.
+    requestId: An optional but recommended unique <code>request_id</code>. If
+      the server receives two <code>create()</code> requests  with the same
+      <code>request_id</code>, then the second request will be ignored and the
+      first resource created and stored in the backend is returned. Empty
+      <code>request_id</code> fields are ignored.  It is responsibility of the
+      client to ensure uniqueness of the <code>request_id</code> strings.
+      <code>request_id</code> strings are limited to 64 characters.
     runtimeConfig: A RuntimeConfig resource to be passed as the request body.
   """
 
@@ -341,12 +341,13 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
       this variable should belong to. The configuration must exist beforehand;
       the path must by in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
-    requestId: An optional unique request_id. If server receives two Create
-      requests with the same request_id then second request will be ignored
-      and the resource stored in the backend will be returned. Empty
-      request_id fields are ignored. It is responsibility of the client to
-      ensure uniqueness of the request_id strings. The strings are limited to
-      64 characters.
+    requestId: An optional but recommended unique <code>request_id</code>. If
+      the server receives two <code>create()</code> requests  with the same
+      <code>request_id</code>, then the second request will be ignored and the
+      first resource created and stored in the backend is returned. Empty
+      <code>request_id</code> fields are ignored.  It is responsibility of the
+      client to ensure uniqueness of the <code>request_id</code> strings.
+      <code>request_id</code> strings are limited to 64 characters.
     variable: A Variable resource to be passed as the request body.
   """
 
@@ -461,12 +462,13 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
     projectsId: Part of `parent`. The path to the configuration that will own
       the waiter. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
-    requestId: An optional unique request_id. If server receives two Create
-      requests with the same request_id then second request will be ignored
-      and information stored in the backend will be returned. Empty request_id
-      fields are ignored. It is responsibility of the client to ensure
-      uniqueness of the request_id strings. The strings are limited to 64
-      characters.
+    requestId: An optional but recommended unique <code>request_id</code>. If
+      the server receives two <code>create()</code> requests  with the same
+      <code>request_id</code>, then the second request will be ignored and the
+      first resource created and stored in the backend is returned. Empty
+      <code>request_id</code> fields are ignored.  It is responsibility of the
+      client to ensure uniqueness of the <code>request_id</code> strings.
+      <code>request_id</code> strings are limited to 64 characters.
     waiter: A Waiter resource to be passed as the request body.
   """
 
@@ -702,14 +704,13 @@ class Variable(_messages.Message):
     state: [Ouput only] The current state of the variable. The variable state
       indicates the outcome of the `variables().watch` call and is visible
       through the `get` and `list` calls.
-    text: The textual value of the variable. The length of the value must be
-      less than 4096 bytes. Empty values are also accepted. NB: Only one of
-      value and string_value can be set at the same time.
+    text: The string value of the variable. The length of the value must be
+      less than 4096 bytes. Empty values are also accepted. For example,
+      <code>text: "my text value"</code>.
     updateTime: [Output Only] The time of the last variable update.
     value: The binary value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. The value must be
-      Base64 encoded. NB: Only one of value and string_value can be set at the
-      same time.
+      base64 encoded. Only one of `value` or `text` can be set.
   """
 
   class StateValueValuesEnum(_messages.Enum):

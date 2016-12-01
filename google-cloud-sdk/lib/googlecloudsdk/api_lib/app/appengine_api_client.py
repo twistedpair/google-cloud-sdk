@@ -17,13 +17,13 @@ import json
 import operator
 
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.api_lib.app.api import requests
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -465,10 +465,10 @@ class AppengineApiClient(object):
       json_version_resource = yaml_schema_v1beta.SCHEMA.ConvertValue(
           config_dict)
     except ValueError, e:
-      raise calliope_exceptions.ToolException.FromCurrent(
-          ('[{f}] could not be converted to the App Engine configuration '
-           'format for the following reason: {msg}').format(
-               f=service_config.file, msg=e.message))
+      raise exceptions.ConfigError(
+          '[{f}] could not be converted to the App Engine configuration '
+          'format for the following reason: {msg}'.format(
+              f=service_config.file, msg=e.message))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
 

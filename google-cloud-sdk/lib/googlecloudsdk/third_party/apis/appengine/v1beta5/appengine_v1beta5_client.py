@@ -11,7 +11,7 @@ class AppengineV1beta5(base_api.BaseApiClient):
   BASE_URL = u'https://appengine.googleapis.com/'
 
   _PACKAGE = u'appengine'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/appengine.admin', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = u'v1beta5'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -646,7 +646,11 @@ details about creating a project without an application, see the
     )
 
     def Patch(self, request, global_params=None):
-      """Updates application parameters.
+      """Updates the specified Application resource.
+You can update the following fields:
+
+* [`auth_domain`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.auth_domain)
+* [`default_cookie_expiration`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.default_cookie_expiration)
 
       Args:
         request: (AppengineAppsPatchRequest) input message

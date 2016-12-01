@@ -294,7 +294,7 @@ def _SetDefaultVersion(new_version, api_client):
     else:
       # This shouldn't happen, but if we don't have the exception info for some
       # reason, just convert the MaxRetrialsException.
-      raise calliope_exceptions.ToolException.FromCurrent()
+      raise exceptions.InternalError()
   metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
 
 

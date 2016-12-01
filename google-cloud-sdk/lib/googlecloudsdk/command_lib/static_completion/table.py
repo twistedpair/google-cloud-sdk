@@ -119,7 +119,7 @@ class CompletionTableGenerator(walker.Walker):
 
     # Populate flags
     command[lookup.FLAGS_KEY] = self._VisitFlags(
-        node.ai.flag_args, parent is None)
+        node.GetSpecificFlags(include_hidden=False), parent is None)
 
     # Populate positionals
     command[lookup.POSITIONALS_KEY] = self._VisitPositionals(
@@ -151,7 +151,7 @@ def Update(cli):
   """
   # Overwrite the completion table file with updated content
   with files.Context(open(_TablePath(), 'w')) as table_file:
-    table = CompletionTableGenerator(cli).Walk(hidden=True)
+    table = CompletionTableGenerator(cli).Walk(hidden=False)
     table_file.write('table=')
     pprint(table, table_file)
   # _TableDirPath() could contain unicode chars and py_compile chokes on unicode

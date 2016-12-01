@@ -251,8 +251,8 @@ Create nodes using preemptible VM instances in the new cluster.
 """
     help_text += """
 New nodes, including ones created by resize or recreate, will use preemptible
-VM instances. See https://cloud.google.com/compute/docs/instances/preemptible
-for more information on preemptible VM instances."""
+VM instances. See https://cloud.google.com/container-engine/docs/preemptible-vm
+for more information on how to use Preemptible VMs with Container Engine."""
 
   parser.add_argument(
       '--preemptible',

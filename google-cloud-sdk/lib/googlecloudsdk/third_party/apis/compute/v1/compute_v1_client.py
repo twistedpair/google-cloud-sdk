@@ -57,6 +57,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.networks = self.NetworksService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
+    self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
@@ -418,6 +419,32 @@ class ComputeV1(base_api.BaseApiClient):
       super(ComputeV1.BackendServicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of all BackendService resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeBackendServicesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.backendServices.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/backendServices',
+        request_field='',
+        request_type_name=u'ComputeBackendServicesAggregatedListRequest',
+        response_type_name=u'BackendServiceAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes the specified BackendService resource.
@@ -2457,7 +2484,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.instanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'zone', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -4001,6 +4028,198 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+  class RegionBackendServicesService(base_api.BaseApiService):
+    """Service class for the regionBackendServices resource."""
+
+    _NAME = u'regionBackendServices'
+
+    def __init__(self, client):
+      super(ComputeV1.RegionBackendServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionBackendServices.delete',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionBackendServices.get',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesGetRequest',
+        response_type_name=u'BackendService',
+        supports_download=False,
+    )
+
+    def GetHealth(self, request, global_params=None):
+      """Gets the most recent health check results for this regional BackendService.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceGroupHealth) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHealth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionBackendServices.getHealth',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
+        request_field=u'resourceGroupReference',
+        request_type_name=u'ComputeRegionBackendServicesGetHealthRequest',
+        response_type_name=u'BackendServiceGroupHealth',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionBackendServices.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices',
+        request_field=u'backendService',
+        request_type_name=u'ComputeRegionBackendServicesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of regional BackendService resources available to the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionBackendServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionBackendServices.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/backendServices',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesListRequest',
+        response_type_name=u'BackendServiceList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionBackendServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionBackendServices.patch',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field=u'backendServiceResource',
+        request_type_name=u'ComputeRegionBackendServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'compute.regionBackendServices.update',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field=u'backendServiceResource',
+        request_type_name=u'ComputeRegionBackendServicesUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class RegionInstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the regionInstanceGroupManagers resource."""
 
@@ -4185,7 +4404,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
         ordered_params=[u'project', u'region', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
         request_field='',
         request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',

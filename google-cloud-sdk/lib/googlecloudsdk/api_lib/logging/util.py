@@ -17,6 +17,7 @@
 from apitools.base.py import extra_types
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log as sdk_log
 
 
@@ -62,6 +63,26 @@ class TypedLogSink(object):
       self.writer_identity = sink.writerIdentity
     else:
       self.writer_identity = ''
+
+
+def GetClient():
+  """Returns the client for the logging API."""
+  return core_apis.GetClientInstance('logging', 'v2')
+
+
+def GetMessages():
+  """Returns the messages for the logging API."""
+  return core_apis.GetMessagesModule('logging', 'v2')
+
+
+def GetClientV1():
+  """Returns the client for the v1 logging API."""
+  return core_apis.GetClientInstance('logging', 'v1beta3')
+
+
+def GetMessagesV1():
+  """Returns the messages for the v1 logging API."""
+  return core_apis.GetMessagesModule('logging', 'v1beta3')
 
 
 def CheckSinksCommandArguments(args):
@@ -179,8 +200,8 @@ def PrintPermissionInstructions(destination, writer_identity):
     sdk_log.status.Print('Please remember to grant {0} '
                          'full-control access to the bucket.'.format(grantee))
   elif destination.startswith('pubsub'):
-    sdk_log.status.Print('Please remember to grant {0} '
-                         'EDIT permission to the project.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} Pub/Sub '
+                         'Publisher role to the topic.'.format(grantee))
   sdk_log.status.Print('Please use --unique_writer_identity for all project '
                        'sinks. This will soon become the default.')
   sdk_log.status.Print('More information about sinks can be found at https://'

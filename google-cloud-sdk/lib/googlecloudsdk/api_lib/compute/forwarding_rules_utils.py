@@ -17,6 +17,7 @@ from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 
 
@@ -177,6 +178,6 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
             'Unable to fetch a list of zones. Specifying [{0}] may fix this '
             'issue{1}'.format(', or '.join(flag_names), punctuation))
 
-      return {compute_flags.ScopeEnum.ZONE: choices}
+      return {compute_scope.ScopeEnum.ZONE: choices}
 
     return Lister

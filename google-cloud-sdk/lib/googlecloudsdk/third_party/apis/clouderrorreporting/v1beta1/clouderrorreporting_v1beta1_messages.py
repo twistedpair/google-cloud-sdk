@@ -41,6 +41,9 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
+    serviceFilter_resourceType: [Optional] The exact value to match against
+      [`ServiceContext.resource_type`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
     serviceFilter_service: [Optional] The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
@@ -72,9 +75,10 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   projectName = _messages.StringField(4, required=True)
-  serviceFilter_service = _messages.StringField(5)
-  serviceFilter_version = _messages.StringField(6)
-  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 7)
+  serviceFilter_resourceType = _messages.StringField(5)
+  serviceFilter_service = _messages.StringField(6)
+  serviceFilter_version = _messages.StringField(7)
+  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 8)
 
 
 class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
@@ -121,6 +125,9 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       project. Written as <code>projects/</code> plus the <a
       href="https://support.google.com/cloud/answer/6158840">Google Cloud
       Platform project ID</a>.  Example: <code>projects/my-project-123</code>.
+    serviceFilter_resourceType: [Optional] The exact value to match against
+      [`ServiceContext.resource_type`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
     serviceFilter_service: [Optional] The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
@@ -187,10 +194,11 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(6)
   projectName = _messages.StringField(7, required=True)
-  serviceFilter_service = _messages.StringField(8)
-  serviceFilter_version = _messages.StringField(9)
-  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 10)
-  timedCountDuration = _messages.StringField(11)
+  serviceFilter_resourceType = _messages.StringField(8)
+  serviceFilter_service = _messages.StringField(9)
+  serviceFilter_version = _messages.StringField(10)
+  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 11)
+  timedCountDuration = _messages.StringField(12)
 
 
 class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
@@ -357,10 +365,13 @@ class ListEventsResponse(_messages.Message):
     nextPageToken: If non-empty, more results are available. Pass this token,
       along with the same query parameters as the first request, to view the
       next page of results.
+    timeRangeBegin: The timestamp specifies the start time to which the
+      request was restricted.
   """
 
   errorEvents = _messages.MessageField('ErrorEvent', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  timeRangeBegin = _messages.StringField(3)
 
 
 class ListGroupStatsResponse(_messages.Message):
@@ -371,10 +382,15 @@ class ListGroupStatsResponse(_messages.Message):
     nextPageToken: If non-empty, more results are available. Pass this token,
       along with the same query parameters as the first request, to view the
       next page of results.
+    timeRangeBegin: The timestamp specifies the start time to which the
+      request was restricted. The start time is set based on the requested
+      time range. It may be adjusted to a later time if a project has exceeded
+      the storage quota and older data has been deleted.
   """
 
   errorGroupStats = _messages.MessageField('ErrorGroupStats', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  timeRangeBegin = _messages.StringField(3)
 
 
 class ReportErrorEventResponse(_messages.Message):
@@ -412,6 +428,10 @@ class ServiceContext(_messages.Message):
   time and multiple versions can run in parallel.
 
   Fields:
+    resourceType: Type of the MonitoredResource. List of possible values:
+      https://cloud.google.com/monitoring/api/resources  Value is set
+      automatically for incoming errors and must not be set when reporting
+      errors.
     service: An identifier of the service, such as the name of the executable,
       job, or Google App Engine service name. This field is expected to have a
       low number of values that are relatively stable over time, as opposed to
@@ -422,8 +442,9 @@ class ServiceContext(_messages.Message):
       which could represent a version label or a Git SHA-1 hash, for example.
   """
 
-  service = _messages.StringField(1)
-  version = _messages.StringField(2)
+  resourceType = _messages.StringField(1)
+  service = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class SourceLocation(_messages.Message):

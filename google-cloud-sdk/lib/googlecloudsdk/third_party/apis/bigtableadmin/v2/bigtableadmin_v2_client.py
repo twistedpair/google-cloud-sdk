@@ -626,7 +626,7 @@ source table. The cluster and the table must be in the same instance.
         request: (BigtableadminProjectsInstancesTablesSnapshotRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Snapshot) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Snapshot')
       return self._RunMethod(
@@ -642,7 +642,7 @@ source table. The cluster and the table must be in the same instance.
         relative_path=u'v2/{+name}:snapshot',
         request_field=u'snapshotTableRequest',
         request_type_name=u'BigtableadminProjectsInstancesTablesSnapshotRequest',
-        response_type_name=u'Snapshot',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

@@ -2225,9 +2225,10 @@ class UpdateRepoRequest(_messages.Message):
 
   Fields:
     repoId: The ID of the repo to be updated.
-    repoName: Renames the repo. repo_name cannot already be in use by a LIVE
-      repo within the project. This field is ignored if left blank or set to
-      the empty string. If you want to rename a repo to "default," you need to
+    repoName: DEPRECATED and will be removed (see b/32283418); leave unset.
+      Renames the repo. repo_name cannot already be in use by a LIVE repo
+      within the project. This field is ignored if left blank or set to the
+      empty string. If you want to rename a repo to "default," you need to
       explicitly set that value here.
     repoSyncConfig: Sets or updates the RepoSync config. When the
       repo_sync_config field is not set it actually clears the repo sync

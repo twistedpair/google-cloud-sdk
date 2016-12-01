@@ -824,6 +824,8 @@ class CLI(object):
 
     metrics.Error(command_path_string, metrics_exc_class, flag_collection,
                   error_extra_info=error_extra_info)
+    if properties.VALUES.core.print_handled_tracebacks.GetBool():
+      raise
     self._Exit(exc)
 
   def _Exit(self, exc):

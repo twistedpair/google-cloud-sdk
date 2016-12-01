@@ -14,9 +14,8 @@
 """Code that's shared between multiple backend-services subcommands."""
 
 from googlecloudsdk.api_lib.compute import base_classes
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -46,27 +45,21 @@ def IsRegionDefaultModeWarnOtherwise(print_warning=True):
   return default_regional
 
 
-def GetDefaultScope(action, args):
+def GetDefaultScope(args):
   """Gets the default compute flags scope enum value."""
   if IsRegionDefaultModeWarnOtherwise(
       print_warning=(
-          (action.ReleaseTrack() in [
-              base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA
-          ]) and
           getattr(args, 'global', None) is None and
           getattr(args, 'region', None) is None)):
-    return compute_flags.ScopeEnum.REGION
+    return compute_scope.ScopeEnum.REGION
   else:
-    return compute_flags.ScopeEnum.GLOBAL
+    return compute_scope.ScopeEnum.GLOBAL
 
 
-def IsRegionalRequest(action, args):
+def IsRegionalRequest(args):
   """Determines whether the args specify a regional or global request."""
   if IsRegionDefaultModeWarnOtherwise(
       print_warning=(
-          (action.ReleaseTrack() in [
-              base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA
-          ]) and
           getattr(args, 'global', None) is None and
           getattr(args, 'region', None) is None)):
     # Return True (regional request) unless --global was specified.
@@ -151,7 +144,7 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
     """Override to return a list of one of more regionally-scoped request."""
 
   def CreateRequests(self, args):
-    self.global_request = not IsRegionalRequest(self, args)
+    self.global_request = not IsRegionalRequest(args)
 
     if self.global_request:
       return self.CreateGlobalRequests(args)

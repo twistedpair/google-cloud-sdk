@@ -84,10 +84,26 @@ class ScopePrompter(object):
 
     return choices
 
-  def PromptForScope(self, ambiguous_refs,
-                     attributes, services, resource_type,
-                     flag_names, prefix_filter):
-    """Prompts user to specify a scope for ambiguous resources."""
+  def _PromptForScope(self, ambiguous_names,
+                      attributes, services, resource_type,
+                      flag_names, prefix_filter):
+    """Prompts user to specify a scope for ambiguous resources.
+
+    Args:
+      ambiguous_names: list(tuple(name, params, collection)),
+        list of parameters which can be fed into resources.Parse.
+      attributes: list(str), list of scopes to prompt over.
+      services: list(apitool.base.py.base_api.BaseApiService), service for each
+        attribute/scope.
+      resource_type: str, collection name without api name.
+      flag_names: list(str), flag names which can be used to specify scopes.
+      prefix_filter: str, used to filter retrieved resources on backend.
+    Returns:
+      List of fully resolved names for provided ambiguous_names parameter.
+    Raises:
+      _InvalidPromptInvocation: if number of attributes does not match number of
+        services.
+    """
 
     def RaiseOnPromptFailure():
       """Call this to raise an exn when prompt cannot read from input stream."""
@@ -112,7 +128,7 @@ class ScopePrompter(object):
       if gce_suggested_resource:
         selected_attribute = attributes[0]
         selected_resource_name = self._PromptDidYouMeanScope(
-            ambiguous_refs, attributes[0], resource_type,
+            ambiguous_names, attributes[0], resource_type,
             gce_suggested_resource, RaiseOnPromptFailure)
 
     # If the user said "no" fall back to a generic prompt.
@@ -123,7 +139,7 @@ class ScopePrompter(object):
             self.FetchChoiceResources(
                 attribute, service, flag_names, prefix_filter))
       selected_attribute, selected_resource_name = self._PromptForScopeList(
-          ambiguous_refs, attributes, resource_type, choice_resources,
+          ambiguous_names, attributes, resource_type, choice_resources,
           RaiseOnPromptFailure)
 
     # _PromptForScopeList ensures this.
@@ -131,10 +147,18 @@ class ScopePrompter(object):
     assert selected_attribute is not None
     result = []
 
-    for _, resource_ref in ambiguous_refs:
-      if hasattr(resource_ref, selected_attribute):
-        setattr(resource_ref, selected_attribute, selected_resource_name)
-        result.append(resource_ref)
+    for ambigous_name, params, collection in ambiguous_names:
+      new_params = params.copy()
+      new_params[selected_attribute] = selected_resource_name
+      try:
+        resource_ref = self.resources.Parse(
+            ambigous_name, params=new_params, collection=collection)
+      except (resources.UnknownFieldException,
+              properties.RequiredPropertyError):
+        pass
+      else:
+        if hasattr(resource_ref, selected_attribute):
+          result.append(resource_ref)
 
     return result
 
@@ -144,7 +168,7 @@ class ScopePrompter(object):
 
     # targetInstances -> target instances
     resource_name = utils.CamelCaseToOutputFriendly(resource_type)
-    names = ['[{0}]'.format(name) for name, _ in ambiguous_refs]
+    names = ['[{0}]'.format(name) for name, _, _ in ambiguous_refs]
     message = 'Did you mean {0} [{1}] for {2}: [{3}]?'.format(
         attribute, suggested_resource, resource_name, names)
 
@@ -164,7 +188,7 @@ class ScopePrompter(object):
     # targetInstances -> target instances
     resource_name = utils.CamelCaseToOutputFriendly(resource_type)
     # Resource names should be surrounded by brackets while choices should not
-    names = ['[{0}]'.format(name) for name, _ in ambiguous_refs]
+    names = ['[{0}]'.format(name) for name, _, _ in ambiguous_refs]
     # Print deprecation state for choices.
     choice_names = []
     choice_mapping = []
@@ -204,78 +228,64 @@ class ScopePrompter(object):
       raise _InvalidPromptInvocation()
 
     resource_refs = []
-    ambiguous_refs = []
+    ambiguous_names = []
     for resource_name in resource_names:
-      for scope_name, resource_type in zip(scope_names, resource_types):
+      for resource_type in resource_types:
+        collection = utils.GetApiCollection(resource_type)
         try:
           resource_ref = self.resources.Parse(
-              resource_name,
-              collection=utils.GetApiCollection(resource_type),
-              params={},
-              resolve=False)
-          # TODO(user): resource_ref is created right above, so scope_name
-          # is None. Check with gjaskiewicz and simplify the code (add
-          # resource_ref to ambiguous_refs without checking if scope_name is
-          # None.
-          if not getattr(resource_ref, scope_name):
-            ambiguous_refs.append((resource_name, resource_ref))
-          else:
-            resource_refs.append(resource_ref)
+              resource_name, collection=collection, params={})
         except resources.WrongResourceCollectionException:
           pass
+        except (resources.UnknownFieldException,
+                properties.RequiredPropertyError):
+          ambiguous_names.append((resource_name, {}, collection))
+        else:
+          resource_refs.append(resource_ref)
 
-    if ambiguous_refs:
-      resource_refs += self.PromptForScope(
-          ambiguous_refs=ambiguous_refs,
+    if ambiguous_names:
+      resource_refs += self._PromptForScope(
+          ambiguous_names=ambiguous_names,
           attributes=scope_names,
           services=scope_services,
           resource_type=resource_types[0],
           flag_names=flag_names,
           prefix_filter=None)
 
-    resolved_refs = []
-    for resource_ref in resource_refs:
-      try:
-        resource_ref.Resolve()
-        resolved_refs.append(resource_ref)
-      except resources.UnknownFieldException:
-        # expected to happen
-        pass
-
-    return resolved_refs
+    return resource_refs
 
   def CreateScopedReferences(self, resource_names, scope_name, scope_arg,
                              scope_service, resource_type, flag_names,
                              prefix_filter=None):
     """Returns a list of resolved resource references for scoped resources."""
     resource_refs = []
-    ambiguous_refs = []
+    ambiguous_names = []
     resource_type = resource_type or self.resource_type
     collection = utils.GetApiCollection(resource_type)
     for resource_name in resource_names:
-      resource_ref = self.resources.Parse(
-          resource_name,
-          collection=collection,
-          params={scope_name: scope_arg},
-          resolve=False)
-      resource_refs.append(resource_ref)
-      if not getattr(resource_ref, scope_name):
-        ambiguous_refs.append((resource_name, resource_ref))
+      params = {scope_name: scope_arg}
+      try:
+        resource_ref = self.resources.Parse(
+            resource_name,
+            collection=collection,
+            params=params)
+      except (resources.UnknownFieldException,
+              properties.RequiredPropertyError):
+        ambiguous_names.append((resource_name, params, collection))
+      else:
+        resource_refs.append(resource_ref)
 
     has_default = utils.HasApiParamDefaultValue(
         self.resources, resource_type, scope_name)
-    if ambiguous_refs and not scope_arg and not has_default:
+    if ambiguous_names and not scope_arg and not has_default:
       # We need to prompt.
-      self.PromptForScope(
-          ambiguous_refs=ambiguous_refs,
+      resource_refs += self._PromptForScope(
+          ambiguous_names=ambiguous_names,
           attributes=[scope_name],
           services=[scope_service],
           resource_type=resource_type,
           flag_names=flag_names,
           prefix_filter=prefix_filter)
-
-    for resource_ref in resource_refs:
-      resource_ref.Resolve()
 
     return resource_refs
 

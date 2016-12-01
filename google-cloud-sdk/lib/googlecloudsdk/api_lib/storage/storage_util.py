@@ -75,6 +75,12 @@ class BucketReference(object):
                                    collection='storage.buckets')
     return cls(url, ref)
 
+  def __eq__(self, other):
+    return (self.ToBucketUrl(), self.ref) == (other.ToBucketUrl(), other.ref)
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
 
 def GetMessages():
   """Import and return the appropriate storage messages module."""

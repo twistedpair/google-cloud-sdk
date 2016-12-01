@@ -1,0 +1,117 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Manages logic for service accounts."""
+
+import json
+import os
+
+from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import service_account
+from oauth2client import client
+
+
+class Error(exceptions.Error):
+  """Errors raised by this module."""
+
+
+class UnsupportedCredentialsType(Error):
+  """Raised when given type credentials cannot be created."""
+
+
+class BadCredentialFileException(Error):
+  """Raised when file cannot be read."""
+
+
+class BadCredentialJsonFileException(Error):
+  """Raised when file cannot be read."""
+
+
+def CredentialsFromAdcFile(filename):
+  """Load credentials from given service account json file."""
+  try:
+    with open(filename) as f:
+      json_key = json.load(f)
+  except (EnvironmentError, ValueError) as e:
+    raise BadCredentialFileException('Could not read json file {0}: {1}'
+                                     .format(filename, e))
+
+  return CredentialsFromAdcDict(json_key)
+
+
+def CredentialsFromAdcDict(json_key):
+  """Creates credentials object from a dict of application default creds."""
+  if 'client_email' not in json_key:
+    raise BadCredentialJsonFileException(
+        'The .json key file is not in a valid format.')
+
+  return service_account.ServiceAccountCredentials(
+      service_account_id=json_key['client_id'],
+      service_account_email=json_key['client_email'],
+      private_key_id=json_key['private_key_id'],
+      private_key_pkcs8_text=json_key['private_key'],
+      scopes=config.CLOUDSDK_SCOPES,
+      user_agent=config.CLOUDSDK_USER_AGENT)
+
+
+def CredentialsFromP12File(filename, account, password=None):
+  """Create p12 service account credentials from given file."""
+
+  try:
+    with open(filename, 'rb') as f:
+      private_key = f.read()
+  except EnvironmentError as e:
+    raise BadCredentialFileException('Could not read file {0}'.format(e))
+
+  return CredentialsFromP12Key(private_key, account, password)
+
+
+def CredentialsFromP12Key(private_key, account, password=None):
+  """Creates creadentials object from given private key and account name."""
+  log.warning('.p12 service account keys are not recomended unless it is '
+              'necessary for backwards compatability. Please switch to '
+              'a newer .json service account key for this account.')
+
+  if not client.HAS_CRYPTO:
+    if not os.environ.get('CLOUDSDK_PYTHON_SITEPACKAGES'):
+      raise UnsupportedCredentialsType(
+          ('PyOpenSSL is not available. If you have already installed '
+           'PyOpenSSL, you will need to enable site packages by '
+           'setting the environment variable CLOUDSDK_PYTHON_SITEPACKAGES '
+           'to 1. If that does not work, see '
+           'https://developers.google.com/cloud/sdk/crypto for details '
+           'or consider using .json private key instead.'))
+    else:
+      raise UnsupportedCredentialsType(
+          ('PyOpenSSL is not available. See '
+           'https://developers.google.com/cloud/sdk/crypto for details '
+           'or consider using .json private key instead.'))
+
+  if password:
+    cred = client.SignedJwtAssertionCredentials(
+        service_account_name=account,
+        private_key=private_key,
+        scope=config.CLOUDSDK_SCOPES,
+        private_key_password=password,
+        user_agent=config.CLOUDSDK_USER_AGENT)
+  else:  # Gets default password.
+    cred = client.SignedJwtAssertionCredentials(
+        service_account_name=account,
+        private_key=private_key,
+        scope=config.CLOUDSDK_SCOPES,
+        user_agent=config.CLOUDSDK_USER_AGENT)
+
+  return cred

@@ -31,14 +31,11 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
-  OPERATIONS_OPERATIONS = (
-      'operations.operations',
-      'operations/{+name}',
-      {
-          '':
-              'operations/operations/{operationsId}',
-      },
-      [u'name']
+  PROJECTS_BUCKETS = (
+      'projects.buckets',
+      'projects/_/buckets/{bucketId}',
+      {},
+      ['bucketId']
   )
   PROJECTS_LOCATIONS_FUNCTIONS = (
       'projects.locations.functions',
@@ -49,6 +46,12 @@ class Collections(enum.Enum):
               '{functionsId}',
       },
       [u'name']
+  )
+  PROVIDERS_EVENT_TYPES = (
+      'providers.event_types',
+      'providers/{triggerProvider}/eventTypes/{triggerEvent}',
+      {},
+      ['triggerProvider', 'triggerEvent']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

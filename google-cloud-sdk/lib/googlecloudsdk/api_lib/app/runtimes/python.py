@@ -18,6 +18,7 @@ import textwrap
 
 DOCKERFILE_PREAMBLE = 'FROM gcr.io/google_appengine/python\n'
 DOCKERFILE_VIRTUALENV_TEMPLATE = textwrap.dedent("""\
+    LABEL python_version=python{python_version}
     RUN virtualenv /env -p python{python_version}
 
     # Set virtualenv environment variables. This is equivalent to running

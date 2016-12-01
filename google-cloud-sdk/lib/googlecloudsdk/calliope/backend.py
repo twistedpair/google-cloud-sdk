@@ -1082,6 +1082,10 @@ class CommandCommon(object):
         parser_group=parser_group,
         allow_positional_args=allow_positional_args)
 
+  def Notices(self):
+    """Gets the notices of this command or group."""
+    return self._common_type.Notices()
+
   def ReleaseTrack(self):
     """Gets the release track of this command or group."""
     return self._common_type.ReleaseTrack()
@@ -1120,6 +1124,20 @@ class CommandCommon(object):
     if self.short_help and not self.short_help.endswith('.'):
       self.short_help += '.'
 
+    # Append any notice messages to command description and long_help
+    if self.Notices():
+      all_notices = ('\n\n' +
+                     '\n\n'.join(sorted(self.Notices().values())) +
+                     '\n\n')
+      if 'DESCRIPTION' in self.detailed_help:
+        self.detailed_help['DESCRIPTION'] = (self.short_help +
+                                             all_notices +
+                                             self.detailed_help['DESCRIPTION'])
+      if self.short_help == self.long_help:
+        self.long_help += all_notices
+      else:
+        self.long_help = self.short_help + all_notices + self.long_help
+
     self.index_help = self.short_help
     if len(self.index_help) > 1:
       if self.index_help[0].isupper() and not self.index_help[1].isupper():
@@ -1128,10 +1146,20 @@ class CommandCommon(object):
         self.index_help = self.index_help[:-1]
 
     # Add an annotation to the help strings to mark the release stage.
+    # TODO(user):b/32361958: Clean Up ReleaseTracks to Leverage Notices().
     tag = self.ReleaseTrack().help_tag
+    if self.Notices():
+      notice_tags = ' '.join(sorted(self.Notices().keys()))
+      tag = tag +' '+ notice_tags if tag else notice_tags
+
     if tag:
       self.short_help = tag + self.short_help
       self.long_help = tag + self.long_help
+      # TODO(user): Work around related to b/32361958 to avoid overwriting
+      # all help files
+      if 'DESCRIPTION' in self.detailed_help and self.Notices():
+        self.detailed_help['DESCRIPTION'] = (tag +
+                                             self.detailed_help['DESCRIPTION'])
       # TODO(user):b/21208128: Drop these 4 lines.
       prefix = self.ReleaseTrack().prefix
       if len(self._path) < 2 or self._path[1] != prefix:
@@ -1315,8 +1343,10 @@ class CommandCommon(object):
   def GetAllAvailableFlags(self):
     return self.ai.flag_args + self.ai.ancestor_flag_args
 
-  def GetSpecificFlags(self):
-    return self.ai.flag_args
+  def GetSpecificFlags(self, include_hidden=True):
+    if include_hidden:
+      return self.ai.flag_args
+    return [f for f in self.ai.flag_args if f.help != argparse.SUPPRESS]
 
 
 class CommandGroup(CommandCommon):

@@ -21,10 +21,10 @@ import os
 import platform
 import shutil
 
+from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -189,7 +189,7 @@ def _UploadFile(file_upload_task):
 
 
 def _UploadFiles(files_to_upload, bucket_ref):
-  """Upload files to App Engine Cloud Storeage bucket.
+  """Upload files to App Engine Cloud Storage bucket.
 
   Uses the appropriate parallelism (multi-process, or no parallelism).
 
@@ -330,7 +330,7 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
               (staging_directory, dest_dir),
               should_retry_if=_ShouldRetry)
         except retry.RetryException as e:
-          raise exceptions.ToolException(
+          raise exceptions.StorageError(
               ('Could not synchronize files. The gsutil command exited with '
                'status [{s}]. Command output is available in [{l}].').format(
                    s=e.last_result, l=log.GetLogFilePath()))
@@ -426,13 +426,6 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     if size > _MAX_FILE_SIZE:
       raise LargeFileError(local_path, size, _MAX_FILE_SIZE)
     target_path = AddFileToManifest(relative_path, local_path)
-    # target_path should not be None because FileIterator should never visit the
-    # same file twice and if it did, the file would be identical and we'd get a
-    # non-None return.
-    if not target_path:
-      raise exceptions.InternalError(
-          'Attempted multiple uploads of {0} with varying contents.'.format(
-              local_path))
     if not os.path.exists(target_path):
       _CopyOrSymlink(local_path, target_path)
 

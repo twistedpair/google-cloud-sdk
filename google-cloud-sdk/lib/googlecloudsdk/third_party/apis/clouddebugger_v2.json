@@ -209,6 +209,7 @@
             "Status applies to the breakpoint and is related to its location.",
             "Status applies to the breakpoint and is related to its condition.",
             "Status applies to the breakpoint and is related to its expressions.",
+            "Status applies to the breakpoint and is related to its age.",
             "Status applies to the entire variable.",
             "Status applies to variable value (variable name is valid)."
           ],
@@ -218,6 +219,7 @@
             "BREAKPOINT_SOURCE_LOCATION",
             "BREAKPOINT_CONDITION",
             "BREAKPOINT_EXPRESSION",
+            "BREAKPOINT_AGE",
             "VARIABLE_NAME",
             "VARIABLE_VALUE"
           ]

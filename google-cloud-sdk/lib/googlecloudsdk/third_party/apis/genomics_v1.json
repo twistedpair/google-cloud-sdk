@@ -6,14 +6,14 @@
   "version": "v1",
   "revision": "0",
   "title": "Genomics API",
-  "description": "Stores, processes, explores and shares genomic data.",
+  "description": "Upload, process, query, and search Genomics data in the cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/genomics/",
+  "documentationLink": "https://cloud.google.com/genomics",
   "protocol": "rest",
   "rootUrl": "https://genomics.googleapis.com/",
   "servicePath": "",
@@ -828,6 +828,24 @@
         }
       }
     },
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -860,24 +878,6 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
-        }
-      }
-    },
-    "ListOperationsResponse": {
-      "id": "ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Operation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
         }
       }
     },
@@ -1436,59 +1436,6 @@
         "referenceSequence": {
           "description": "`referenceSequence` is only used at mismatches\n(`SEQUENCE_MISMATCH`) and deletions (`DELETE`).\nFilling this field replaces SAM's MD tag. If the relevant information is\nnot available, this field is unset.",
           "type": "string"
-        }
-      }
-    },
-    "StreamReadsRequest": {
-      "id": "StreamReadsRequest",
-      "description": "The stream reads request.",
-      "type": "object",
-      "properties": {
-        "projectId": {
-          "description": "The Google Cloud project ID which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
-          "type": "string"
-        },
-        "readGroupSetId": {
-          "description": "The ID of the read group set from which to stream reads.",
-          "type": "string"
-        },
-        "referenceName": {
-          "description": "The reference sequence name, for example `chr1`,\n`1`, or `chrX`. If set to *, only unmapped reads are\nreturned.",
-          "type": "string"
-        },
-        "start": {
-          "description": "The start position of the range on the reference, 0-based inclusive. If\nspecified, `referenceName` must also be specified.",
-          "type": "string",
-          "format": "int64"
-        },
-        "end": {
-          "description": "The end position of the range on the reference, 0-based exclusive. If\nspecified, `referenceName` must also be specified.",
-          "type": "string",
-          "format": "int64"
-        },
-        "shard": {
-          "description": "Restricts results to a shard containing approximately `1\/totalShards`\nof the normal response payload for this query. Results from a sharded\nrequest are disjoint from those returned by all queries which differ only\nin their shard parameter. A shard may yield 0 results; this is especially\nlikely for large values of `totalShards`.\n\nValid values are `[0, totalShards)`.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "totalShards": {
-          "description": "Specifying `totalShards` causes a disjoint subset of the normal response\npayload to be returned for each query with a unique `shard` parameter\nspecified. A best effort is made to yield equally sized shards. Sharding\ncan be used to distribute processing amongst workers, where each worker is\nassigned a unique `shard` number and all workers specify the same\n`totalShards` number. The union of reads returned for all sharded queries\n`[0, totalShards)` is equal to those returned by a single unsharded query.\n\nQueries for different values of `totalShards` with common divisors will\nshare shard boundaries. For example, streaming `shard` 2 of 5\n`totalShards` yields the same results as streaming `shard`s 4 and 5 of 10\n`totalShards`. This property can be leveraged for adaptive retries.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "StreamReadsResponse": {
-      "id": "StreamReadsResponse",
-
-      "type": "object",
-      "properties": {
-        "alignments": {
-
-          "type": "array",
-          "items": {
-            "$ref": "Read"
-          }
         }
       }
     },
@@ -2256,56 +2203,6 @@
         }
       }
     },
-    "StreamVariantsRequest": {
-      "id": "StreamVariantsRequest",
-      "description": "The stream variants request.",
-      "type": "object",
-      "properties": {
-        "projectId": {
-          "description": "The Google Cloud project ID which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
-          "type": "string"
-        },
-        "variantSetId": {
-          "description": "The variant set ID from which to stream variants.",
-          "type": "string"
-        },
-        "callSetIds": {
-          "description": "Only return variant calls which belong to call sets with these IDs.\nLeaving this blank returns all variant calls.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "referenceName": {
-          "description": "Required. Only return variants in this reference sequence.",
-          "type": "string"
-        },
-        "start": {
-          "description": "The beginning of the window (0-based, inclusive) for which\noverlapping variants should be returned.",
-          "type": "string",
-          "format": "int64"
-        },
-        "end": {
-          "description": "The end of the window (0-based, exclusive) for which overlapping\nvariants should be returned.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "StreamVariantsResponse": {
-      "id": "StreamVariantsResponse",
-
-      "type": "object",
-      "properties": {
-        "variants": {
-
-          "type": "array",
-          "items": {
-            "$ref": "Variant"
-          }
-        }
-      }
-    },
     "ImportReadGroupSetsResponse": {
       "id": "ImportReadGroupSetsResponse",
       "description": "The read group set import response.",
@@ -2374,7 +2271,7 @@
           }
         },
         "clientId": {
-          "description": "Optionally provided by the caller when submitting the request that creates\nthe operation.",
+          "description": "This field is deprecated. Use `labels` instead. Optionally provided by the\ncaller when submitting the request that creates the operation.",
           "type": "string"
         },
         "runtimeMetadata": {
@@ -2383,6 +2280,13 @@
           "additionalProperties": {
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "labels": {
+          "description": "Optionally provided by the caller when submitting the request that creates\nthe operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -2994,32 +2898,6 @@
     },
     "operations": {
       "methods": {
-        "get": {
-          "id": "genomics.operations.get",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations/{operationsId}",
-          "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/genomics"
-          ]
-        },
         "list": {
           "id": "genomics.operations.list",
           "path": "v1/{+name}",
@@ -3035,7 +2913,7 @@
               "type": "string"
             },
             "filter": {
-              "description": "A string for filtering Operations.\nThe following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`",
+              "description": "A string for filtering Operations.\nThe following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n* labels.key where key is a label key.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`\n* `projectId = my-project AND labels.color = *`\n* `projectId = my-project AND labels.color = red`",
               "location": "query",
               "type": "string"
             },
@@ -3056,6 +2934,32 @@
           ],
           "response": {
             "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "get": {
+          "id": "genomics.operations.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
@@ -3344,27 +3248,6 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics",
             "https://www.googleapis.com/auth/genomics.readonly"
-          ]
-        },
-        "stream": {
-          "id": "genomics.reads.stream",
-          "path": "v1/reads:stream",
-          "flatPath": "v1/reads:stream",
-          "httpMethod": "POST",
-          "description": "Returns a stream of all the reads matching the search request, ordered\nby reference name, position, and ID.",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "StreamReadsRequest"
-          },
-          "response": {
-            "$ref": "StreamReadsResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/genomics"
           ]
         }
       }
@@ -3696,27 +3579,6 @@
           },
           "response": {
             "$ref": "Empty"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/genomics"
-          ]
-        },
-        "stream": {
-          "id": "genomics.variants.stream",
-          "path": "v1/variants:stream",
-          "flatPath": "v1/variants:stream",
-          "httpMethod": "POST",
-          "description": "Returns a stream of all the variants matching the search request, ordered\nby reference name, position, and ID.",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "StreamVariantsRequest"
-          },
-          "response": {
-            "$ref": "StreamVariantsResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",

@@ -197,7 +197,7 @@ class AppengineAppsPatchRequest(_messages.Message):
   Fields:
     application: A Application resource to be passed as the request body.
     mask: Standard field mask for the set of fields to be updated.
-    name: Name of the application to update. Example: `apps/myapp`.
+    name: Name of the Application resource to update. Example: `apps/myapp`.
   """
 
   application = _messages.MessageField('Application', 1)
@@ -530,8 +530,7 @@ class ContainerInfo(_messages.Message):
   Fields:
     image: URI to the hosted container image in a Docker repository. The URI
       must be fully qualified and include a tag or digest. Examples: "gcr.io
-      /my-project/image:tag" or "gcr.io/my-project/image@digest" or "gcr-
-      staging.sandbox.google.com/my-project/image:tag"
+      /my-project/image:tag" or "gcr.io/my-project/image@digest"
   """
 
   image = _messages.StringField(1)
@@ -555,10 +554,12 @@ class DebugInstanceRequest(_messages.Message):
   """Request message for `Instances.DebugInstance`.
 
   Fields:
-    sshKey: Public SSH key to push to the instance. Example: `[USERNAME]:ssh-
-      rsa KEY_VALUE` or `[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh
-      {"userName":"[USERNAME]","expireOn":"[EXPIRE_TIME]"}` See
-      https://cloud.google.com/compute/docs/instances/adding-removing-ssh-keys
+    sshKey: Public SSH key to add to the instance. Examples:  * `[USERNAME
+      ]:ssh-rsa KEY_VALUE` * `[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh
+      {"userName":"[USERNAME]","expireOn":"[EXPIRE_TIME]"}`  For more
+      information, see [Adding and Removing SSH
+      Keys](https://cloud.google.com/compute/docs/instances/adding-removing-
+      ssh-keys).
   """
 
   sshKey = _messages.StringField(1)
@@ -736,7 +737,7 @@ class Instance(_messages.Message):
     vmId: Virtual machine ID of this instance. Only applicable for instances
       in App Engine flexible environment.  @OutputOnly
     vmIp: The IP address of this instance. Only applicable for instances in
-      App Engine Flexibile environment.  @OutputOnly
+      App Engine flexible environment.  @OutputOnly
     vmName: Name of the virtual machine where this instance lives. Only
       applicable for instances in App Engine flexible environment.
       @OutputOnly
@@ -1180,11 +1181,13 @@ class Resources(_messages.Message):
     cpu: Number of CPU cores needed.
     diskGb: Disk size (GB) needed.
     memoryGb: Memory (GB) needed.
+    volumes: Volumes mounted within the app container.
   """
 
   cpu = _messages.FloatField(1)
   diskGb = _messages.FloatField(2)
   memoryGb = _messages.FloatField(3)
+  volumes = _messages.MessageField('Volume', 4, repeated=True)
 
 
 class ScriptHandler(_messages.Message):
@@ -1728,7 +1731,7 @@ class Version(_messages.Message):
     inboundServices: Before an application can receive email or XMPP messages,
       the application must be configured to enable the service.
     instanceClass: Instance class that is used to run this version. Valid
-      values are: * AutomaticScaling: `F1`, `F2`, `F4`, `F4_1G` *
+      values are:  * AutomaticScaling: `F1`, `F2`, `F4`, `F4_1G` *
       ManualScaling or BasicScaling: `B1`, `B2`, `B4`, `B8`, `B4_1G`  Defaults
       to `F1` for AutomaticScaling and `B1` for ManualScaling or BasicScaling.
     libraries: Configuration for third-party Python runtime libraries required
@@ -1874,6 +1877,21 @@ class Version(_messages.Message):
   servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 25)
   threadsafe = _messages.BooleanField(26)
   vm = _messages.BooleanField(27)
+
+
+class Volume(_messages.Message):
+  """Volumes mounted within the app container. Only applicable for VM
+  runtimes.
+
+  Fields:
+    name: Unique name for the volume.
+    sizeGb: Volume size in gigabytes.
+    volumeType: Underlying volume type, e.g. 'tmpfs'.
+  """
+
+  name = _messages.StringField(1)
+  sizeGb = _messages.FloatField(2)
+  volumeType = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

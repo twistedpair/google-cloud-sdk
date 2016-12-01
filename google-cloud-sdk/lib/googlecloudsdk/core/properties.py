@@ -605,6 +605,21 @@ class _SectionApp(_Section):
         callbacks=[GetRuntimeRoot],
         hidden=True)
 
+    # Whether or not to use the (currently under-development) Flex Runtime
+    # Builders, as opposed to Externalized Runtimes.
+    self.use_runtime_builders = self._Add(
+        'use_runtime_builders',
+        default=False,
+        hidden=True)
+    # The Cloud Storage path prefix for the Flex Runtime Builder configuration
+    # files. The configuration files will live at
+    # "<PREFIX>/<runtime>-<version>.yaml" or "<PREFIX>/<runtime>.yaml" for the
+    # latest version.
+    self.runtime_builders_path = self._Add(
+        'runtime_builders_path',
+        default='gs://google_appengine/flex_builders/',
+        hidden=True)
+
 
 class _SectionContainer(_Section):
   """Contains the properties for the 'container' section."""
@@ -731,6 +746,9 @@ class _SectionCore(_Section):
         default=True)
     self.print_unhandled_tracebacks = self._AddBool(
         'print_unhandled_tracebacks',
+        hidden=True)
+    self.print_handled_tracebacks = self._AddBool(
+        'print_handled_tracebacks',
         hidden=True)
     self.trace_token = self._Add(
         'trace_token',

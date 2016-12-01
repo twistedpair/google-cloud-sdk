@@ -227,6 +227,7 @@ def ExternalArgNameFrom(arg_internal_name):
 # above here are only for arg-file args, which bypass the standard validations
 # performed by the argparse package (which only works with CLI args).
 
+
 def ValidateArgsForTestType(
     args, test_type, type_rules, shared_rules, all_test_args_set):
   """Raise errors if required args are missing or invalid args are present.

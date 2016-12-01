@@ -266,7 +266,7 @@ def UseSsl(handlers):
 
 
 def GetAppHostname(app=None, app_id=None, service=None, version=None,
-                   use_ssl=appinfo.SECURE_HTTP):
+                   use_ssl=appinfo.SECURE_HTTP, deploy=True):
   """Returns the hostname of the given version of the deployed app.
 
   Args:
@@ -276,6 +276,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
     service: str, the (optional) service being deployed
     version: str, the deployed version ID (omit to get the default version URL).
     use_ssl: bool, whether to construct an HTTPS URL.
+    deploy: bool, if this is called during a deployment.
 
   Returns:
     str. Constructed URL.
@@ -286,9 +287,9 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
   if not app and not app_id:
     raise TypeError('Must provide an application resource or application ID.')
   version = version or ''
-  service = service or ''
+  service_name = service or ''
   if service == DEFAULT_SERVICE:
-    service = ''
+    service_name = ''
 
   domain = DEFAULT_DOMAIN
   if not app and ':' in app_id:
@@ -296,9 +297,6 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
     app = api_client.GetApplication()
   if app:
     app_id, domain = app.defaultHostname.split('.', 1)
-
-  if service == DEFAULT_SERVICE:
-    service = ''
 
   # Normally, AppEngine URLs are of the form
   # 'http[s]://version.service.app.appspot.com'. However, the SSL certificate
@@ -313,7 +311,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
   # certificate.
   #
   # We've tried to do the best possible thing in every case here.
-  subdomain_parts = filter(bool, [version, service, app_id])
+  subdomain_parts = filter(bool, [version, service_name, app_id])
   scheme = 'http'
   if use_ssl == appinfo.SECURE_HTTP:
     subdomain = '.'.join(subdomain_parts)
@@ -323,14 +321,27 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
     if len(subdomain) <= MAX_DNS_LABEL_LENGTH:
       scheme = 'https'
     else:
+      if deploy:
+        format_parts = ['$VERSION_ID', '$SERVICE_ID', '$APP_ID']
+        subdomain_format = ALT_SEPARATOR.join(
+            [j for (i, j) in zip([version, service_name, app_id], format_parts)
+             if i])
+        msg = ('This deployment will result in an invalid SSL certificate for '
+               'service [{0}]. The total length of your subdomain in the '
+               'format {1} should not exceed {2} characters. Please verify '
+               'that the certificate corresponds to the parent domain of your '
+               'application when you connect.').format(service,
+                                                       subdomain_format,
+                                                       MAX_DNS_LABEL_LENGTH)
+        log.warn(msg)
       subdomain = '.'.join(subdomain_parts)
       if use_ssl == appinfo.SECURE_HTTP_OR_HTTPS:
         scheme = 'http'
       elif use_ssl == appinfo.SECURE_HTTPS:
-        msg = ('Most browsers will reject the SSL certificate for service {0}. '
-               'Please verify that the certificate corresponds to the parent '
-               'domain of your application when you connect.').format(service)
-        log.warn(msg)
+        if not deploy:
+          msg = ('Most browsers will reject the SSL certificate for '
+                 'service [{0}].').format(service)
+          log.warn(msg)
         scheme = 'https'
 
   return '{0}://{1}.{2}'.format(scheme, subdomain, domain)

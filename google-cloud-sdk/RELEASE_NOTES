@@ -2,6 +2,78 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 136.0.0 (2016/12/01)
+
+### Cloud SDK
+
+* `gcloud config get-value` is now GA.
+
+### Google Cloud Service Management
+
+* Add `gcloud beta service-management undelete`.
+
+### Google Container Engine
+
+* Add `gcloud beta container image describe` to list container analysis data.
+* Update Google Container Engine's kubectl from version 1.4.4 to 1.4.6.
+
+### Google Cloud Container Builder
+
+* `gcloud container builds ...` are now GA.
+
+### Google Cloud Resource Manager
+
+* `gcloud organizations ...` are now GA.
+* Removed `gcloud organizations update`.
+
+### Google Cloud ML
+
+* Add `gcloud beta ml local predict` to do local prediction.
+* Deprecate '--instances' flag in `gcloud beta ml predict`.
+
+### Google App Engine
+
+* `gcloud app instances describe` is now GA.
+* `gcloud app services describe` is now GA.
+* `gcloud app logs read` will now show request logs by default as well as
+  stdout, stderr, and crash.log.
+* Add `gcloud beta app describe`, which prints information about the current
+  App Engine application.
+* `gcloud beta app deploy` can now deploy go apps, without the use of `aedeploy`
+  or `goapp deploy`. Both App Engine Standard and Flexible environments are
+  supported. If you are using `runtime: custom` with `aedeploy`, you will need
+  to vendor your dependencies into the app directory manually.
+* Deprecated the configuration property `app/gsutil`. Affected users are warned
+  during `gcloud app deploy` with instructions on how to update their
+  configuration appropriately.
+* The App Engine flexible environment now defaults to Python 3.5 when Python 3
+  is requested. To temporarily revert to Python 3.4, specify
+  `python_version: 3.4` in the `runtime_config` stanza of your
+  [`app.yaml`](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml).
+* Updated app-engine-go component to the 1.9.48 SDK.
+
+### Google Compute Engine
+
+* Add `--service-label` flag to `gcloud alpha compute forwarding-rules create`.
+
+### Cloud Tools for Powershell
+
+* Add cmdlets to manage Cloud Storage ACLs.
+
+### Google Cloud Deployment Manager/Runtime Configuration
+
+* Fixed `gcloud deployment-manager deployments describe` when resource
+  expansion fails.
+
+### Bigtable Emulator
+
+* Bigtable emulator now supports `column_range_filter`.
+
+### Google Cloud Dataproc
+
+* Add `--service-account` flag to `gcloud dataproc clusters create`.
+
+
 ## 135.0.0 (2016/11/16)
 
 ### Google Cloud Service Management
@@ -33,7 +105,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 * The App Engine flexible environment now includes Python 3.5 support (beta).
   To preview this runtime, specify `python_version: 3.5` in the `runtime_config`
-  stanza of your `app.yaml`.
+  stanza of your [`app.yaml`](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml)
+  file.
 * Added the `gcloud beta app services describe` command, which prints information about a given service.
 
 
@@ -136,7 +209,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   the `gcloud alpha container operations cancel` command.  See
   `gcloud alpha container operations cancel --help` for more details.
 
-### Powershell
+### Cloud Tools for Powershell
 
 * Fix a bug where the module is not picking up the active user credentials correctly.
 * Make `New-GcsObject` `-ObjectName` parameter optional when uploading a file.
@@ -501,7 +574,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   * Removed `jobs list` --job-name flag.
   * Added `jobs list` --uri flag.
 
-### Powershell
+### Cloud Tools for Powershell
 
 * Add Google Cloud Sql and Google Cloud Dns powershell cmdlets.
 
@@ -809,7 +882,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 * `gcloud beta sql instances create` supports new database type MYSQL_5_7.
 
-### Windows support
+### Cloud Tools for PowerShell
 
 * Beta launch of Google Cloud PowerShell. PowerShell cmdlets for managing
   Google Cloud Storage and Google Compute Engine.

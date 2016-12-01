@@ -1294,33 +1294,6 @@ Implements
         supports_download=False,
     )
 
-    def Stream(self, request, global_params=None):
-      """Returns a stream of all the reads matching the search request, ordered.
-by reference name, position, and ID.
-
-      Args:
-        request: (StreamReadsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (StreamReadsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Stream')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Stream.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'genomics.reads.stream',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1/reads:stream',
-        request_field='<request>',
-        request_type_name=u'StreamReadsRequest',
-        response_type_name=u'StreamReadsResponse',
-        supports_download=False,
-    )
-
   class ReferencesBasesService(base_api.BaseApiService):
     """Service class for the references_bases resource."""
 
@@ -1838,33 +1811,6 @@ Implements
         request_field='<request>',
         request_type_name=u'SearchVariantsRequest',
         response_type_name=u'SearchVariantsResponse',
-        supports_download=False,
-    )
-
-    def Stream(self, request, global_params=None):
-      """Returns a stream of all the variants matching the search request, ordered.
-by reference name, position, and ID.
-
-      Args:
-        request: (StreamVariantsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (StreamVariantsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Stream')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Stream.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'genomics.variants.stream',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1/variants:stream',
-        request_field='<request>',
-        request_type_name=u'StreamVariantsRequest',
-        response_type_name=u'StreamVariantsResponse',
         supports_download=False,
     )
 

@@ -20,29 +20,29 @@ from googlecloudsdk.calliope import base
 
 CREATE_LABELS_FLAG = base.Argument(
     '--labels',
-    metavar='NAME=VALUE',
+    metavar='KEY=VALUE',
     type=arg_parsers.ArgDict(),
     action=arg_parsers.UpdateAction,
-    help='A list of label name=value pairs to add.')
+    help='A list of label KEY=VALUE pairs to add.')
 
 UPDATE_LABELS_FLAG = base.Argument(
     '--update-labels',
-    metavar='NAME=VALUE',
+    metavar='KEY=VALUE',
     type=arg_parsers.ArgDict(),
     action=arg_parsers.UpdateAction,
-    help='A list of label name=value pairs to update.',
+    help='A list of label KEY=VALUE pairs to update.',
     detailed_help="""\
-    A list of label NAME=VALUE pairs to update. If a label exists its value
+    A list of label KEY=VALUE pairs to update. If a label exists its value
     is modified, otherwise a new label is created.""")
 
 REMOVE_LABELS_FLAG = base.Argument(
     '--remove-labels',
-    metavar='NAME',
+    metavar='KEY',
     type=arg_parsers.ArgList(),
     action=arg_parsers.UpdateAction,
-    help='A list of label names to remove.',
+    help='A list of label keys to remove.',
     detailed_help="""\
-    A list of label names to remove. If a label does not exist it is
+    A list of label keys to remove. If a label does not exist it is
     silently ignored.""")
 
 

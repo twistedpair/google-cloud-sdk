@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -68,7 +69,8 @@ def DisplayProposedDeployment(app, project, app_config, version, promote):
     for service, info in app_config.Services().iteritems():
       use_ssl = deploy_command_util.UseSsl(info.parsed.handlers)
       deploy_message = DEPLOY_MESSAGE_TEMPLATE.format(
-          project=project, service=service, version=version, file=info.file)
+          project=project, service=service, version=version,
+          file=console_attr.DecodeFromInput(info.file))
 
       url = deploy_command_util.GetAppHostname(
           app=app, service=info.module, version=None if promote else version,

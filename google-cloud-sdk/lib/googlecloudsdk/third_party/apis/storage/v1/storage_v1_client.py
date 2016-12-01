@@ -680,10 +680,10 @@ class StorageV1(base_api.BaseApiClient):
     Delete.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'DELETE',
         method_id=u'storage.notifications.delete',
-        ordered_params=[u'notification'],
-        path_params=[u'notification'],
+        ordered_params=[u'bucket', u'notification'],
+        path_params=[u'bucket', u'notification'],
         query_params=[],
-        relative_path=u'notifications/{notification}',
+        relative_path=u'b/{bucket}/notificationConfigs/{notification}',
         request_field='',
         request_type_name=u'StorageNotificationsDeleteRequest',
         response_type_name=u'StorageNotificationsDeleteResponse',
@@ -706,10 +706,10 @@ class StorageV1(base_api.BaseApiClient):
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'GET',
         method_id=u'storage.notifications.get',
-        ordered_params=[u'notification'],
-        path_params=[u'notification'],
+        ordered_params=[u'bucket', u'notification'],
+        path_params=[u'bucket', u'notification'],
         query_params=[],
-        relative_path=u'notifications/{notification}',
+        relative_path=u'b/{bucket}/notificationConfigs/{notification}',
         request_field='',
         request_type_name=u'StorageNotificationsGetRequest',
         response_type_name=u'Notification',
@@ -720,7 +720,7 @@ class StorageV1(base_api.BaseApiClient):
       """Creates a notification subscription for a given bucket.
 
       Args:
-        request: (Notification) input message
+        request: (StorageNotificationsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Notification) The response message.
@@ -732,12 +732,12 @@ class StorageV1(base_api.BaseApiClient):
     Insert.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
         method_id=u'storage.notifications.insert',
-        ordered_params=[],
-        path_params=[],
+        ordered_params=[u'bucket'],
+        path_params=[u'bucket'],
         query_params=[],
-        relative_path=u'notifications',
-        request_field='<request>',
-        request_type_name=u'Notification',
+        relative_path=u'b/{bucket}/notificationConfigs',
+        request_field=u'notification',
+        request_type_name=u'StorageNotificationsInsertRequest',
         response_type_name=u'Notification',
         supports_download=False,
     )
@@ -759,9 +759,9 @@ class StorageV1(base_api.BaseApiClient):
         http_method=u'GET',
         method_id=u'storage.notifications.list',
         ordered_params=[u'bucket'],
-        path_params=[],
-        query_params=[u'bucket'],
-        relative_path=u'notifications',
+        path_params=[u'bucket'],
+        query_params=[],
+        relative_path=u'b/{bucket}/notificationConfigs',
         request_field='',
         request_type_name=u'StorageNotificationsListRequest',
         response_type_name=u'Notifications',

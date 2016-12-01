@@ -1082,7 +1082,7 @@ workspace is simultaneously modified by another client.
       """Updates an existing repo. The only things you can change about a repo are:.
   1) its repo_sync_config (and then only to add one that is not present);
   2) its last-updated time; and
-  3) its name.
+  3) its name (deprecated and going away b/32283418).
 
       Args:
         request: (SourceProjectsReposUpdateRequest) input message

@@ -29,6 +29,27 @@ class AppAlreadyExistsError(exceptions.Error):
   """The app which is getting created already exists."""
 
 
+def CheckAppNotExists(api_client, project):
+  """Raises an error if the app already exists.
+
+  Args:
+    api_client: The App Engine Admin API client
+    project: The GCP project
+
+  Raises:
+    AppAlreadyExistsError if app already exists
+  """
+  try:
+    api_client.GetApplication()  # Should raise NotFoundError
+  except api_lib_exceptions.NotFoundError:
+    pass
+  else:
+    raise AppAlreadyExistsError(
+        'The project [{project}] already contains an App Engine '
+        'application.  You can deploy your application using '
+        '`gcloud app deploy`.'.format(project=project))
+
+
 def CreateApp(api_client, project, region, suppress_warning=False):
   """Create an App Engine app in the given region.
 

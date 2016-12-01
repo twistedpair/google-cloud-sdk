@@ -15,18 +15,17 @@
 """Flags and helpers for the compute related commands."""
 
 import functools
-import operator
-import enum
 
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.compute import scope_prompter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import gce as c_gce
 
 
 ZONE_PROPERTY_EXPLANATION = """\
@@ -162,29 +161,6 @@ class UnderSpecifiedResourceError(exceptions.Error):
                 ', '.join(underspecified_names)))
 
 
-class ScopeEnum(enum.Enum):
-  """Enum representing GCE scope."""
-
-  ZONE = ('zone', 'a ')
-  REGION = ('region', 'a ')
-  GLOBAL = ('global', '')
-
-  def __init__(self, flag_name, prefix):
-    # Collection parameter name matches command line file in this case.
-    self.param_name = flag_name
-    self.flag_name = flag_name
-    self.prefix = prefix
-
-  @classmethod
-  def CollectionForScope(cls, scope):
-    if scope == cls.ZONE:
-      return 'compute.zones'
-    if scope == cls.REGION:
-      return 'compute.regions'
-    raise exceptions.Error(
-        'Expected scope to be ZONE or REGION, got {0!r}'.format(scope))
-
-
 class ResourceStub(object):
   """Interface used by scope listing to report scope names."""
 
@@ -197,11 +173,11 @@ def GetDefaultScopeLister(compute_client, project):
   """Constructs default zone/region lister."""
   # TODO(user): Zones can be extracted from regions.
   scope_func = {
-      ScopeEnum.ZONE:
+      compute_scope.ScopeEnum.ZONE:
           functools.partial(zones_service.List, compute_client, project),
-      ScopeEnum.REGION:
+      compute_scope.ScopeEnum.REGION:
           functools.partial(regions_service.List, compute_client, project),
-      ScopeEnum.GLOBAL: lambda: [ResourceStub(name='')]
+      compute_scope.ScopeEnum.GLOBAL: lambda: [ResourceStub(name='')]
   }
   def Lister(scopes, _):
     results = {}
@@ -218,7 +194,7 @@ class ResourceArgScope(object):
     self.scope_enum = scope
     if flag_prefix:
       flag_prefix = flag_prefix.replace('-', '_')
-      if scope is ScopeEnum.GLOBAL:
+      if scope is compute_scope.ScopeEnum.GLOBAL:
         self.flag_name = scope.flag_name + '_' + flag_prefix
       else:
         self.flag_name = flag_prefix + '_' + scope.flag_name
@@ -274,7 +250,7 @@ class ResourceResolver(object):
 
      resolver = ResourceResolver.FromMap(
          'instance',
-         {compute_flags.ScopeEnum.ZONE: 'compute.instances'})
+         {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
 
      where:
      - 'instance' is human readable name of the resource,
@@ -289,7 +265,8 @@ class ResourceResolver(object):
   prompt for scope if it was not specified):
 
   resolver.ResolveResources(
-        instance_name, flags.ScopeEnum.ZONE, instance_zone, self.resources,
+        instance_name, compute_scope.ScopeEnum.ZONE,
+        instance_zone, self.resources,
         scope_lister=flags.GetDefaultScopeLister(
             self.compute_client, self.project))
 
@@ -367,6 +344,8 @@ class ResourceResolver(object):
       Resource reference or list of references if plural.
     Raises:
       BadArgumentException: when names is not a list.
+      UnderSpecifiedResourceError: if it was not possible to resolve given names
+          as resources references.
     """
     if not isinstance(names, list):
       raise BadArgumentException(
@@ -382,10 +361,11 @@ class ResourceResolver(object):
       default_scope = self.scopes[default_scope]
     params = {}
     if scope_value is not None:
-      if resource_scope.scope_enum == ScopeEnum.GLOBAL:
+      if resource_scope.scope_enum == compute_scope.ScopeEnum.GLOBAL:
         stored_value = scope_value
       else:
-        collection = ScopeEnum.CollectionForScope(resource_scope.scope_enum)
+        collection = compute_scope.ScopeEnum.CollectionForScope(
+            resource_scope.scope_enum)
         stored_value = api_resource_registry.Parse(
             scope_value, collection=collection).Name()
       params[resource_scope.scope_enum.param_name] = stored_value
@@ -404,7 +384,8 @@ class ResourceResolver(object):
                                            collection=collection,
                                            enforce_collection=False)]
       except (resources.UnknownCollectionException,
-              resources.UnknownFieldException):
+              resources.UnknownFieldException,
+              properties.RequiredPropertyError):
         if scope_value:
           raise
         ref = [name]
@@ -414,8 +395,16 @@ class ResourceResolver(object):
     # If we still have some resources which need to be resolve see if we can
     # prompt the user and try to resolve these again.
     if underspecified_names:
-      resource_scope, scope_value = self._PromptForScope(
-          [n[0] for n in underspecified_names], default_scope, scope_lister)
+      names = [n[0] for n in underspecified_names]
+      if not console_io.CanPrompt():
+        raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
+      resource_scope_enum, scope_value = scope_prompter.PromptForScope(
+          self.resource_name, names, [s.scope_enum for s in self.scopes],
+          default_scope.scope_enum if default_scope is not None else None,
+          scope_lister)
+      if resource_scope_enum is None:
+        raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
+      resource_scope = self.scopes[resource_scope_enum]
       for name in underspecified_names:
         name[0] = api_resource_registry.Parse(
             name[0],
@@ -435,44 +424,6 @@ class ResourceResolver(object):
             got=ref.Collection(),
             path=ref.SelfLink())
     return refs
-
-  def _PromptForScope(self, underspecified_names, default_scope, scope_lister):
-    """Prompt user to specify a scope.
-
-    Args:
-      underspecified_names: list(str), names which lack scope context.
-      default_scope: ResourceArgScope, force this scope to be used.
-      scope_lister: func(scope, underspecified_names), callback to provide
-          possible values for given scope.
-    Returns:
-      chosen scope and scope value.
-    Raises:
-      UnderSpecifiedResourceError: if scope could not be determined.
-    """
-    if not console_io.CanPrompt():
-      raise UnderSpecifiedResourceError(underspecified_names,
-                                        [s.flag for s in self.scopes])
-    implicit_scope = self.scopes.GetImplicitScope(default_scope)
-    if implicit_scope:
-      suggested_value = _GetSuggestedScopeValue(implicit_scope.scope_enum)
-      if suggested_value is not None:
-        if _PromptDidYouMeanScope(self.resource_name, underspecified_names,
-                                  implicit_scope, suggested_value):
-          return implicit_scope, suggested_value
-
-    if not scope_lister:
-      raise UnderSpecifiedResourceError(underspecified_names,
-                                        [s.flag_name for s in self.scopes])
-    scope_value_choices = scope_lister(
-        # Sort to make it deterministic.
-        sorted([s.scope_enum for s in self.scopes],
-               key=operator.attrgetter('name')),
-        underspecified_names)
-
-    resource_scope_enum, scope_value = _PromptWithScopeChoices(
-        self.resource_name, underspecified_names, scope_value_choices)
-
-    return self.scopes[resource_scope_enum], scope_value
 
 
 class ResourceArgument(object):
@@ -570,11 +521,14 @@ class ResourceArgument(object):
       raise exceptions.Error('Must specify at least one resource type zonal, '
                              'regional or global')
     if zonal_collection:
-      self.scopes.AddScope(ScopeEnum.ZONE, collection=zonal_collection)
+      self.scopes.AddScope(compute_scope.ScopeEnum.ZONE,
+                           collection=zonal_collection)
     if regional_collection:
-      self.scopes.AddScope(ScopeEnum.REGION, collection=regional_collection)
+      self.scopes.AddScope(compute_scope.ScopeEnum.REGION,
+                           collection=regional_collection)
     if global_collection:
-      self.scopes.AddScope(ScopeEnum.GLOBAL, collection=global_collection)
+      self.scopes.AddScope(compute_scope.ScopeEnum.GLOBAL,
+                           collection=global_collection)
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
     self._resource_resolver = ResourceResolver(self.scopes, resource_name)
@@ -621,7 +575,7 @@ class ResourceArgument(object):
     else:
       scope = parser
 
-    if ScopeEnum.ZONE in self.scopes:
+    if compute_scope.ScopeEnum.ZONE in self.scopes:
       AddZoneFlag(
           scope,
           flag_prefix=self.scopes.flag_prefix,
@@ -629,7 +583,7 @@ class ResourceArgument(object):
           operation_type=operation_type,
           explanation=self._zone_explanation)
 
-    if ScopeEnum.REGION in self.scopes:
+    if compute_scope.ScopeEnum.REGION in self.scopes:
       AddRegionFlag(
           scope,
           flag_prefix=self.scopes.flag_prefix,
@@ -637,9 +591,9 @@ class ResourceArgument(object):
           operation_type=operation_type,
           explanation=self._region_explanation)
 
-    if ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
+    if compute_scope.ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
       scope.add_argument(
-          self.scopes[ScopeEnum.GLOBAL].flag,
+          self.scopes[compute_scope.ScopeEnum.GLOBAL].flag,
           action='store_true',
           default=None,
           help='If provided, it is assumed the {0} is global.'
@@ -695,83 +649,6 @@ class ResourceArgument(object):
     if name_value is not None:
       return [name_value]
     return []
-
-
-def _PromptDidYouMeanScope(resource_name, underspecified_names, scope,
-                           suggested_resource):
-  """Prompts "did you mean <scope>".  Returns str or None."""
-
-  names = ['[{0}]'.format(name) for name in underspecified_names]
-  message = 'Did you mean {0} [{1}] for {2}: [{3}]'.format(
-      scope.scope_enum.flag_name, suggested_resource,
-      resource_name, ','.join(names))
-
-  if console_io.PromptContinue(prompt_string=message, default=True,
-                               throw_if_unattended=True):
-    return suggested_resource
-  return None
-
-
-def _PromptWithScopeChoices(resource_name, underspecified_names,
-                            scope_value_choices):
-  """Queries user to choose scope and its value."""
-  # Print deprecation state for choices.
-  choice_names = []
-  choice_mapping = []
-  for scope in sorted(scope_value_choices.keys(),
-                      key=operator.attrgetter('flag_name')):
-    for choice_resource in sorted(scope_value_choices[scope],
-                                  key=operator.attrgetter('name')):
-      deprecated = getattr(choice_resource, 'deprecated', None)
-      if deprecated is not None:
-        choice_name = '{0} ({1})'.format(
-            choice_resource.name, deprecated.state)
-      else:
-        choice_name = choice_resource.name
-
-      if len(scope_value_choices) > 1:
-        if choice_name:
-          choice_name = '{0}: {1}'.format(scope.flag_name, choice_name)
-        else:
-          choice_name = scope.flag_name
-
-      choice_mapping.append((scope, choice_resource.name))
-      choice_names.append(choice_name)
-
-  title = ('For the following {0}{1}:\n {2}\n'
-           .format(resource_name,
-                   '(s)' if len(underspecified_names) > 1 else '',
-                   '\n '.join('- [{0}]'.format(n)
-                              for n in sorted(underspecified_names))))
-  flags = ' or '.join(
-      sorted([s.prefix + s.flag_name for s in scope_value_choices.keys()]))
-
-  idx = console_io.PromptChoice(
-      options=choice_names, message='{0}choose {1}:'.format(title, flags))
-  if idx is None:
-    return None, None
-  else:
-    return choice_mapping[idx]
-
-
-def _GetSuggestedScopeValue(scope):
-  if scope == ScopeEnum.ZONE:
-    return _GetGCEZone()
-  if scope == ScopeEnum.REGION:
-    return _GetGCERegion()
-  return True
-
-
-def _GetGCERegion():
-  if properties.VALUES.core.check_gce_metadata.GetBool():
-    return c_gce.Metadata().Region()
-  return None
-
-
-def _GetGCEZone():
-  if properties.VALUES.core.check_gce_metadata.GetBool():
-    return c_gce.Metadata().Zone()
-  return None
 
 
 def AddRegexArg(parser):

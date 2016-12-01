@@ -435,6 +435,11 @@
           "items": {
             "$ref": "GoogleCloudMlV1beta1__HyperparameterOutput"
           }
+        },
+        "consumedMlUnits": {
+          "description": "The amount of ML units consumed by the job.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -1329,37 +1334,6 @@
         },
         "operations": {
           "methods": {
-            "get": {
-              "id": "ml.projects.operations.get",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "httpMethod": "GET",
-              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "operationsId"
-              ],
-              "response": {
-                "$ref": "GoogleLongrunning__Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
             "list": {
               "id": "ml.projects.operations.list",
               "path": "v1beta1/projects/{projectsId}/operations",
@@ -1400,15 +1374,46 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "cancel": {
-              "id": "ml.projects.operations.cancel",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
-              "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+            "get": {
+              "id": "ml.projects.operations.get",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be cancelled.",
+                  "description": "Part of `name`. The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "operationsId": {
+                  "description": "Part of `name`. See documentation of `projectsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId",
+                "operationsId"
+              ],
+              "response": {
+                "$ref": "GoogleLongrunning__Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "ml.projects.operations.delete",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `name`. The name of the operation resource to be deleted.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1431,15 +1436,15 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "delete": {
-              "id": "ml.projects.operations.delete",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
-              "httpMethod": "DELETE",
-              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+            "cancel": {
+              "id": "ml.projects.operations.cancel",
+              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be deleted.",
+                  "description": "Part of `name`. The name of the operation resource to be cancelled.",
                   "location": "path",
                   "required": true,
                   "type": "string"

@@ -156,7 +156,7 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
 
 def AddUpdateArgs(parser, include_beta=False):
   """Adds common flags for mutating forwarding rule targets."""
-
+  del include_beta
   target = parser.add_mutually_exclusive_group(required=True)
 
   TARGET_HTTP_PROXY_ARG.AddArgument(parser, mutex_group=target)
@@ -166,20 +166,19 @@ def AddUpdateArgs(parser, include_beta=False):
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
 
-  if include_beta:
-    BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
-    NETWORK_ARG.AddArgument(parser)
-    SUBNET_ARG.AddArgument(parser)
+  BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
+  NETWORK_ARG.AddArgument(parser)
+  SUBNET_ARG.AddArgument(parser)
 
-    parser.add_argument(
-        '--load-balancing-scheme',
-        choices={
-            'EXTERNAL': 'Used for HTTP or HTTPS for External Load Balancing.',
-            'INTERNAL': 'Used for Internal Network Load Balancing.',
-        },
-        type=lambda x: x.upper(),
-        default='EXTERNAL',
-        help='This signifies what the forwarding rule will be used for.')
+  parser.add_argument(
+      '--load-balancing-scheme',
+      choices={
+          'EXTERNAL': 'Used for HTTP or HTTPS for External Load Balancing.',
+          'INTERNAL': 'Used for Internal Network Load Balancing.',
+      },
+      type=lambda x: x.upper(),
+      default='EXTERNAL',
+      help='This signifies what the forwarding rule will be used for.')
 
 
 def AddAddress(parser):

@@ -102,8 +102,9 @@ class ResourcePrinter(object):
   """
 
   def __init__(self, out=None, name=None, projector=None, by_columns=False,
-               process_record=None, non_empty_projection_required=False,
-               printer=None, console_attr=None, retain_none_values=False):
+               ignore_default_transforms=False, process_record=None,
+               non_empty_projection_required=False, printer=None,
+               console_attr=None, retain_none_values=False):
     """Constructor.
 
     Args:
@@ -113,6 +114,7 @@ class ResourcePrinter(object):
       name: The format name.
       projector: Optional resource Projector.
       by_columns: True if AddRecord() expects a list of columns.
+      ignore_default_transforms: Ignore default projection transforms if True.
       process_record: The function called to process each record passed to
         AddRecord() before calling _AddRecord(). It is called like this:
           record = process_record(record)
@@ -136,6 +138,7 @@ class ResourcePrinter(object):
       projector = resource_projector.Compile()
     self._process_record = process_record or projector.Evaluate
     projector.SetByColumns(by_columns)
+    projector.SetIgnoreDefaultTransforms(ignore_default_transforms)
     projection = projector.Projection()
     if projection:
       self.attributes = projection.Attributes() or {}

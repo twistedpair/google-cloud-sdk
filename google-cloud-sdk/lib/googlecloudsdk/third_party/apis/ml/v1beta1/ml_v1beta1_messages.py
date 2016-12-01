@@ -626,11 +626,13 @@ class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
   Fields:
     completedTrialCount: The number of hyperparameter tuning trials that
       completed successfully.
+    consumedMlUnits: The amount of ML units consumed by the job.
     trials: Results for individual Hyperparameter trials.
   """
 
   completedTrialCount = _messages.IntegerField(1)
-  trials = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutput', 2, repeated=True)
+  consumedMlUnits = _messages.FloatField(2)
+  trials = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutput', 3, repeated=True)
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):

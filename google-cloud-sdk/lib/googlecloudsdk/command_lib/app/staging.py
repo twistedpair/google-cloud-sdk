@@ -34,6 +34,7 @@ import contextlib
 import cStringIO
 import os
 
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -105,6 +106,8 @@ class _Command(object):
     update_manager.UpdateManager.EnsureInstalledAndRestart([self.component],
                                                            msg=msg)
 
+# Path to the go-app-stager binary
+_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot', 'bin')
 
 # STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
 # path relative to Cloud SDK Root; it should look something like the following:
@@ -126,7 +129,23 @@ _STAGING_REGISTRY = {}
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
 # same key is used.
-_STAGING_REGISTRY_BETA = {}
+_STAGING_REGISTRY_BETA = {
+    ('go', util.Environment.STANDARD):
+        _Command(
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            component='app-engine-go'),
+    ('go', util.Environment.MANAGED_VMS):
+        _Command(
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            component='app-engine-go'),
+    ('go', util.Environment.FLEX):
+        _Command(
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            component='app-engine-go'),
+}
 
 
 _STAGING_COMMAND_OUTPUT_TEMPLATE = """\

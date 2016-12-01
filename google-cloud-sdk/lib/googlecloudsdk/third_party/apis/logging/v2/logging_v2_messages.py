@@ -113,7 +113,7 @@ class ListLogEntriesRequest(_messages.Message):
     filter: Optional. A filter that chooses which log entries to return.  See
       [Advanced Logs Filters](/logging/docs/view/advanced_filters).  Only log
       entries that match the filter are returned.  An empty filter matches all
-      log entries.
+      log entries. The maximum length of the filter is 20000 characters.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
       The first option returns entries in order of increasing values of
@@ -129,14 +129,14 @@ class ListLogEntriesRequest(_messages.Message):
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
     projectIds: Deprecated. One or more project identifiers or project numbers
-      from which to retrieve log entries.  Examples: `"my-project-1A"`,
-      `"1234567890"`. If present, these project identifiers are converted to
-      resource format and added to the list of resources in `resourceNames`.
-      Callers should use `resourceNames` rather than this parameter.
+      from which to retrieve log entries.  Example: `"my-project-1A"`. If
+      present, these project identifiers are converted to resource format and
+      added to the list of resources in `resourceNames`. Callers should use
+      `resourceNames` rather than this parameter.
     resourceNames: Required. One or more cloud resources from which to
-      retrieve log entries. Example: `"projects/my-project-1A"`,
-      `"projects/1234567890"`.  Projects listed in `projectIds` are added to
-      this list.
+      retrieve log entries:      "projects/[PROJECT_ID]"
+      "organizations/[ORGANIZATION_ID]"  Projects listed in the `project_ids`
+      field are added to this list.
   """
 
   filter = _messages.StringField(1)
@@ -174,6 +174,21 @@ class ListLogMetricsResponse(_messages.Message):
   """
 
   metrics = _messages.MessageField('LogMetric', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListLogsResponse(_messages.Message):
+  """Result returned from ListLogs.
+
+  Fields:
+    logIds: A list of log ids matching the criteria.
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
+      `pageToken`.
+  """
+
+  logIds = _messages.StringField(1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -236,14 +251,17 @@ class LogEntry(_messages.Message):
     labels: Optional. A set of user-defined (key, value) data that provides
       additional information about the log entry.
     logName: Required. The resource name of the log to which this log entry
-      belongs. The format of the name is `"projects/<project-id>/logs/<log-
-      id>"`.  Examples: `"projects/my-projectid/logs/syslog"`, `"projects/my-
-      projectid/logs/library.googleapis.com%2Fbook_log"`.  The log ID part of
-      resource name must be less than 512 characters long and can only include
-      the following characters: upper and lower case alphanumeric characters:
-      [A-Za-z0-9]; and punctuation characters: forward-slash, underscore,
-      hyphen, and period. Forward-slash (`/`) characters in the log ID must be
-      URL-encoded.
+      belongs:      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded within `log_name`. Example: `"organizations/1234567890/logs/clou
+      dresourcemanager.googleapis.com%2Factivity"`. `[LOG_ID]` must be less
+      than 512 characters long and can only include the following characters:
+      upper and lower case alphanumeric characters, forward-slash, underscore,
+      hyphen, and period.  For backward compatibility, if `log_name` begins
+      with a forward-slash, such as `/projects/...`, then the log entry is
+      ingested as usual but the forward-slash is removed. Listing the log
+      entry will not show the leading slash and filtering for a log name with
+      a leading slash will never return any results.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -460,15 +478,19 @@ class LogMetric(_messages.Message):
       documentation.
     filter: Required. An [advanced logs
       filter](/logging/docs/view/advanced_filters). Example:
-      `"resource.type=gae_app AND severity>=ERROR"`.
-    name: Required. The client-assigned metric identifier. Example:
-      `"severe_errors"`.  Metric identifiers are limited to 100 characters and
-      can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
-      special characters `_-.,+!*',()%/`.  The forward-slash character (`/`)
-      denotes a hierarchy of name pieces, and it cannot be the first character
-      of the name.  The '%' character is used to URL encode unsafe and
-      reserved characters and must be followed by two hexadecimal digits
-      according to RFC 1738.
+      "resource.type=gae_app AND severity>=ERROR"  The maximum length of the
+      filter is 20000 characters.
+    name: Required. The client-assigned metric identifier. Examples:
+      `"error_count"`, `"nginx/requests"`.  Metric identifiers are limited to
+      100 characters and can include only the following characters: `A-Z`,
+      `a-z`, `0-9`, and the special characters `_-.,+!*',()%/`.  The forward-
+      slash character (`/`) denotes a hierarchy of name pieces, and it cannot
+      be the first character of the name.  The metric identifier in this field
+      must not be [URL-encoded](https://en.wikipedia.org/wiki/Percent-
+      encoding). However, when the metric identifier appears as the
+      `[METRIC_ID]` part of a `metric_name` API parameter, then the metric
+      identifier must be URL-encoded. Example: `"projects/my-
+      project/metrics/nginx%2Frequests"`.
     version: Output only. The API version that created or updated this metric.
       The version also dictates the syntax of the filter expression. When a
       value for this field is missing, the default value of V2 should be
@@ -508,11 +530,12 @@ class LogSink(_messages.Message):
       Stackdriver Logging. If omitted, the v2 format is used.
 
   Fields:
-    destination: Required. The export destination. See [Exporting Logs With
-      Sinks](/logging/docs/api/tasks/exporting-logs). Examples:
-      "storage.googleapis.com/my-gcs-bucket"
-      "bigquery.googleapis.com/projects/my-project-id/datasets/my-dataset"
-      "pubsub.googleapis.com/projects/my-project/topics/my-topic"
+    destination: Required. The export destination:
+      "storage.googleapis.com/[GCS_BUCKET]"
+      "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
+      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"  For
+      more information,  see [Exporting Logs With
+      Sinks](/logging/docs/api/tasks/exporting-logs).
     endTime: Optional. Time at which this sink will stop exporting log
       entries.  If this value is present, then log entries are exported only
       if `entry.timestamp` < `end_time`.
@@ -520,14 +543,15 @@ class LogSink(_messages.Message):
       filter](/logging/docs/view/advanced_filters). Only log entries matching
       the filter are exported. The filter must be consistent with the log
       entry format specified by the `outputVersionFormat` parameter,
-      regardless of the format of the log entry that was originally written to
-      Stackdriver Logging. Example filter (V2 format):      logName=projects
-      /my-projectid/logs/syslog AND severity>=ERROR
+      regardless of the format of the log entry that was originally ingested
+      by Stackdriver Logging. The following example uses field names in the v2
+      log entry format:      logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
+      severity>=ERROR
     name: Required. The client-assigned sink identifier, unique within the
       project. Example: `"my-syslog-errors-to-pubsub"`.  Sink identifiers are
-      limited to 1000 characters and can include only the following
-      characters: `A-Z`, `a-z`, `0-9`, and the special characters `_-.`.  The
-      maximum length of the name is 100 characters.
+      limited to 100 characters and can include only the following characters:
+      upper and lower-case alphanumeric characters, underscores, hyphens, and
+      periods.
     outputVersionFormat: Optional. The log entry version to use for this
       sink's exported log entries.  This version does not have to correspond
       to the version of the log entry that was written to Stackdriver Logging.
@@ -571,11 +595,36 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   """A LoggingBillingAccountsLogsDeleteRequest object.
 
   Fields:
-    logName: Required. The resource name of the log to delete.  Example:
-      `"projects/my-project/logs/syslog"`.
+    logName: Required. The resource name of the log to delete:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
+      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
+      For more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLogsListRequest(_messages.Message):
+  """A LoggingBillingAccountsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -583,9 +632,8 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    parent: Required. The resource in which to create the sink. Example:
-      `"projects/my-project-id"`. The new sink must be provided in the
-      request.
+    parent: Required. The resource in which to create the sink:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -603,9 +651,10 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
 
   Fields:
     sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier.  Example: `"projects/my-
-      project-id/sinks/my-sink-id"`.  It is an error if the sink does not
-      exist.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
+      sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -615,8 +664,9 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
   """A LoggingBillingAccountsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return. Example:
-      `"projects/my-project-id/sinks/my-sink-id"`.
+    sinkName: Required. The resource name of the sink to return:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -634,8 +684,8 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created. Example:
-      `"projects/my-logging-project"`.
+    parent: Required. The resource name where this sink was created:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -649,9 +699,134 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier.  If the sink does not exist,
-      this method creates the sink.  Example: `"projects/my-project-id/sinks
-      /my-sink-id"`.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
+    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
+      service account returned in the sink's writer_identity. Set this field
+      to be true to export logs from one project to a different project. This
+      field is ignored for non-project sinks (e.g. organization sinks) because
+      those sinks are required to have dedicated service accounts.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
+
+
+class LoggingFoldersLogsDeleteRequest(_messages.Message):
+  """A LoggingFoldersLogsDeleteRequest object.
+
+  Fields:
+    logName: Required. The resource name of the log to delete:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
+      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
+      For more information about log names, see LogEntry.
+  """
+
+  logName = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLogsListRequest(_messages.Message):
+  """A LoggingFoldersLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersSinksCreateRequest(_messages.Message):
+  """A LoggingFoldersSinksCreateRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    parent: Required. The resource in which to create the sink:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
+      service account returned in the sink's writer_identity. Set this field
+      to be true to export logs from one project to a different project. This
+      field is ignored for non-project sinks (e.g. organization sinks) because
+      those sinks are required to have dedicated service accounts.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  parent = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
+
+
+class LoggingFoldersSinksDeleteRequest(_messages.Message):
+  """A LoggingFoldersSinksDeleteRequest object.
+
+  Fields:
+    sinkName: Required. The resource name of the sink to delete, including the
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
+      sink does not exist.
+  """
+
+  sinkName = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersSinksGetRequest(_messages.Message):
+  """A LoggingFoldersSinksGetRequest object.
+
+  Fields:
+    sinkName: Required. The resource name of the sink to return:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+  """
+
+  sinkName = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersSinksListRequest(_messages.Message):
+  """A LoggingFoldersSinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The resource name where this sink was created:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersSinksUpdateRequest(_messages.Message):
+  """A LoggingFoldersSinksUpdateRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The resource name of the sink to update, including the
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -686,11 +861,36 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
   """A LoggingOrganizationsLogsDeleteRequest object.
 
   Fields:
-    logName: Required. The resource name of the log to delete.  Example:
-      `"projects/my-project/logs/syslog"`.
+    logName: Required. The resource name of the log to delete:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
+      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
+      For more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLogsListRequest(_messages.Message):
+  """A LoggingOrganizationsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
@@ -698,9 +898,8 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    parent: Required. The resource in which to create the sink. Example:
-      `"projects/my-project-id"`. The new sink must be provided in the
-      request.
+    parent: Required. The resource in which to create the sink:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -718,9 +917,10 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
 
   Fields:
     sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier.  Example: `"projects/my-
-      project-id/sinks/my-sink-id"`.  It is an error if the sink does not
-      exist.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
+      sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -730,8 +930,9 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
   """A LoggingOrganizationsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return. Example:
-      `"projects/my-project-id/sinks/my-sink-id"`.
+    sinkName: Required. The resource name of the sink to return:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -749,8 +950,8 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created. Example:
-      `"projects/my-logging-project"`.
+    parent: Required. The resource name where this sink was created:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -764,9 +965,10 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier.  If the sink does not exist,
-      this method creates the sink.  Example: `"projects/my-project-id/sinks
-      /my-sink-id"`.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -783,11 +985,36 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
   """A LoggingProjectsLogsDeleteRequest object.
 
   Fields:
-    logName: Required. The resource name of the log to delete.  Example:
-      `"projects/my-project/logs/syslog"`.
+    logName: Required. The resource name of the log to delete:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
+      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
+      For more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLogsListRequest(_messages.Message):
+  """A LoggingProjectsLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):
@@ -795,9 +1022,8 @@ class LoggingProjectsMetricsCreateRequest(_messages.Message):
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
-    parent: The resource name of the project in which to create the metric.
-      Example: `"projects/my-project-id"`.  The new metric must be provided in
-      the request.
+    parent: The resource name of the project in which to create the metric:
+      "projects/[PROJECT_ID]"  The new metric must be provided in the request.
   """
 
   logMetric = _messages.MessageField('LogMetric', 1)
@@ -808,8 +1034,8 @@ class LoggingProjectsMetricsDeleteRequest(_messages.Message):
   """A LoggingProjectsMetricsDeleteRequest object.
 
   Fields:
-    metricName: The resource name of the metric to delete. Example: `"projects
-      /my-project-id/metrics/my-metric-id"`.
+    metricName: The resource name of the metric to delete:
+      "projects/[PROJECT_ID]/metrics/[METRIC_ID]"
   """
 
   metricName = _messages.StringField(1, required=True)
@@ -819,8 +1045,8 @@ class LoggingProjectsMetricsGetRequest(_messages.Message):
   """A LoggingProjectsMetricsGetRequest object.
 
   Fields:
-    metricName: The resource name of the desired metric. Example: `"projects
-      /my-project-id/metrics/my-metric-id"`.
+    metricName: The resource name of the desired metric:
+      "projects/[PROJECT_ID]/metrics/[METRIC_ID]"
   """
 
   metricName = _messages.StringField(1, required=True)
@@ -838,8 +1064,8 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name containing the metrics. Example:
-      `"projects/my-project-id"`.
+    parent: Required. The name of the project containing the metrics:
+      "projects/[PROJECT_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -852,10 +1078,11 @@ class LoggingProjectsMetricsUpdateRequest(_messages.Message):
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
-    metricName: The resource name of the metric to update. Example: `"projects
-      /my-project-id/metrics/my-metric-id"`.  The updated metric must be
-      provided in the request and have the same identifier that is specified
-      in `metricName`. If the metric does not exist, it is created.
+    metricName: The resource name of the metric to update:
+      "projects/[PROJECT_ID]/metrics/[METRIC_ID]"  The updated metric must be
+      provided in the request and it's `name` field must be the same as
+      `[METRIC_ID]` If the metric does not exist in `[PROJECT_ID]`, then a new
+      metric is created.
   """
 
   logMetric = _messages.MessageField('LogMetric', 1)
@@ -867,9 +1094,8 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    parent: Required. The resource in which to create the sink. Example:
-      `"projects/my-project-id"`. The new sink must be provided in the
-      request.
+    parent: Required. The resource in which to create the sink:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -887,9 +1113,10 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
 
   Fields:
     sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier.  Example: `"projects/my-
-      project-id/sinks/my-sink-id"`.  It is an error if the sink does not
-      exist.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
+      sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -899,8 +1126,9 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   """A LoggingProjectsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return. Example:
-      `"projects/my-project-id/sinks/my-sink-id"`.
+    sinkName: Required. The resource name of the sink to return:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -918,8 +1146,8 @@ class LoggingProjectsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created. Example:
-      `"projects/my-logging-project"`.
+    parent: Required. The resource name where this sink was created:
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -933,9 +1161,10 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier.  If the sink does not exist,
-      this method creates the sink.  Example: `"projects/my-project-id/sinks
-      /my-sink-id"`.
+      parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
     uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
       service account returned in the sink's writer_identity. Set this field
       to be true to export logs from one project to a different project. This
@@ -1261,8 +1490,12 @@ class WriteLogEntriesRequest(_messages.Message):
       the same key as a label in this parameter, then the log entry's label is
       not changed. See LogEntry.
     logName: Optional. A default log resource name that is assigned to all log
-      entries in `entries` that do not specify a value for `log_name`.
-      Example: `"projects/my-project/logs/syslog"`.  See LogEntry.
+      entries in `entries` that do not specify a value for `log_name`:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
+      encoded. For example, `"projects/my-project-id/logs/syslog"` or `"organi
+      zations/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`
+      . For more information about log names, see LogEntry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the

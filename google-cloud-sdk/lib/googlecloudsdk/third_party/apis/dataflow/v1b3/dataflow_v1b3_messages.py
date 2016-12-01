@@ -331,6 +331,7 @@ class CreateJobFromTemplateRequest(_messages.Message):
       environment.
 
   Fields:
+    environment: Runtime environment for the job.
     gcsPath: A path to the serialized JSON representation of the job.
     jobName: The job name to use for the created job..
     parameters: Dynamic parameterization of the job's runtime environment.
@@ -360,9 +361,10 @@ class CreateJobFromTemplateRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  gcsPath = _messages.StringField(1)
-  jobName = _messages.StringField(2)
-  parameters = _messages.MessageField('ParametersValue', 3)
+  environment = _messages.MessageField('RuntimeEnvironment', 1)
+  gcsPath = _messages.StringField(2)
+  jobName = _messages.StringField(3)
+  parameters = _messages.MessageField('ParametersValue', 4)
 
 
 class CustomSourceLocation(_messages.Message):
@@ -2317,6 +2319,20 @@ class ReportedParallelism(_messages.Message):
 
   isInfinite = _messages.BooleanField(1)
   value = _messages.FloatField(2)
+
+
+class RuntimeEnvironment(_messages.Message):
+  """Environment values to set at runtime.
+
+  Fields:
+    maxWorkers: The maximum number of workers to start for the job.
+    serviceAccountEmail: The service account to run the job as.
+    zone: The zone to start the workers in.
+  """
+
+  maxWorkers = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class SendDebugCaptureRequest(_messages.Message):

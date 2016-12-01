@@ -376,6 +376,14 @@ def RunDeploy(args, enable_endpoints=False, app_create=False,
 
   app = _PossiblyCreateApp(api_client, project, deploy_options.app_create)
 
+  if properties.VALUES.app.use_gsutil.GetBool():
+    log.warning('Your gcloud installation has a deprecated config property '
+                'enabled: [app/use_gsutil], which will be removed in a '
+                'future version.  Run `gcloud config unset app/use_gsutil` to '
+                'switch to the recommended approach.  If you encounter any '
+                'issues, please report using `gcloud feedback`.  To revert '
+                'temporarily, run `gcloud config set app/use_gsutil True`.\n')
+
   # Tell the user what is going to happen, and ask them to confirm.
   deployed_urls = output_helpers.DisplayProposedDeployment(
       app, project, app_config, version_id, deploy_options.promote)

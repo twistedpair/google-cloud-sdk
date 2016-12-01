@@ -34,50 +34,10 @@ class CloudfunctionsV1beta2(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
-    self.operations_operations = self.OperationsOperationsService(self)
     self.operations = self.OperationsService(self)
     self.projects_locations_functions = self.ProjectsLocationsFunctionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class OperationsOperationsService(base_api.BaseApiService):
-    """Service class for the operations_operations resource."""
-
-    _NAME = u'operations_operations'
-
-    def __init__(self, client):
-      super(CloudfunctionsV1beta2.OperationsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
-
-      Args:
-        request: (CloudfunctionsOperationsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/operations/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.operations.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1beta2/operations/{+name}',
-        request_field='',
-        request_type_name=u'CloudfunctionsOperationsOperationsGetRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""

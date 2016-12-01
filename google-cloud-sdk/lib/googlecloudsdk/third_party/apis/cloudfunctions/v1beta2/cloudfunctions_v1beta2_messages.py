@@ -49,7 +49,7 @@ class CloudFunction(_messages.Message):
 
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
-      Defaults to 128MB.
+      Defaults to 256MB.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -64,7 +64,8 @@ class CloudFunction(_messages.Message):
       removed by Beta. Replacement:   condition_trigger: {     action:
       "sources/cloud.pubsub/actions/publish"     resource:
       "projects/[PROJECT_NAME]/buckets/[BUCKET_NAME]"   }
-    gcsUrl: GCS URL pointing to the zip archive which contains the function.
+    gcsUrl: Google Cloud Storage URL pointing to the zip archive which
+      contains the function.
     httpsTrigger: A https endpoint type of source that can be trigger via URL.
     latestOperation: [Output only] Name of the most recent operation modifying
       the function. If the function status is DEPLOYING or DELETING, then it
@@ -75,7 +76,7 @@ class CloudFunction(_messages.Message):
       Beta. Replacement:   condition_trigger: {     action:
       "sources/cloud.pubsub/actions/publish"     resource:
       "projects/[PROJECT_ID]/topics/[TOPIC_NAME]"   }
-    serviceAccount: [Output only] Name of the service account function run as.
+    serviceAccount: [Output only] The service account of the function.
     sourceRepository: The hosted repository where the function is defined.
     status: [Output only] Status of the function deployment.
     timeout: The cloud function execution timeout. Execution is considered
@@ -117,16 +118,6 @@ class CloudFunction(_messages.Message):
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
   """A CloudfunctionsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudfunctionsOperationsOperationsGetRequest(_messages.Message):
-  """A CloudfunctionsOperationsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -464,66 +455,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class OperationMetadata(_messages.Message):
-  """Metadata describing an Operation
-
-  Enums:
-    TypeValueValuesEnum: Type of operation.
-
-  Messages:
-    RequestValue: The original request that started the operation.
-
-  Fields:
-    request: The original request that started the operation.
-    target: Target of the operation - for example
-      projects/project-1/regions/region-1/functions/function-1
-    type: Type of operation.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    """Type of operation.
-
-    Values:
-      OPERATION_UNSPECIFIED: Unknown operation type.
-      CREATE_FUNCTION: Triggered by CreateFunction call
-      UPDATE_FUNCTION: Triggered by UpdateFunction call
-      DELETE_FUNCTION: Triggered by DeleteFunction call.
-    """
-    OPERATION_UNSPECIFIED = 0
-    CREATE_FUNCTION = 1
-    UPDATE_FUNCTION = 2
-    DELETE_FUNCTION = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RequestValue(_messages.Message):
-    """The original request that started the operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a RequestValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a RequestValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  request = _messages.MessageField('RequestValue', 1)
-  target = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class OperationMetadataV1Beta2(_messages.Message):

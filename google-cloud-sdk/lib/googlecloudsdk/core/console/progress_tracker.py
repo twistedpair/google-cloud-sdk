@@ -39,7 +39,6 @@ class ProgressTracker(object):
     self._message = message
     self._prefix = message + '...'
     self._ticks = 0
-    self._autotick = autotick
     self._done = False
     self._lock = threading.Lock()
     self._detail_message_callback = detail_message_callback
@@ -47,6 +46,11 @@ class ProgressTracker(object):
     self._last_display_message = ''
     self._tick_delay = tick_delay
     self._is_tty = console_io.IsInteractive(error=True)
+    self.__autotick = autotick
+
+  @property
+  def _autotick(self):
+    return self.__autotick
 
   def _GetPrefix(self):
     if self._detail_message_callback:
@@ -103,7 +107,7 @@ class ProgressTracker(object):
     # it should print the prefix, the last time it should print just the 'done'
     # message since we are not using any escape characters at all.
     if not self._is_tty:
-      sys.stderr.write(message or display_message)
+      sys.stderr.write(message or display_message + '\n')
       return
 
     console_width = console_attr.ConsoleAttr().GetTermSize()[0]

@@ -46,6 +46,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'backendService']
   )
+  COMMITMENTS = (
+      'commitments',
+      'projects/{project}/zones/{zone}/commitments/{commitment}',
+      {},
+      [u'project', u'zone', u'commitment']
+  )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',

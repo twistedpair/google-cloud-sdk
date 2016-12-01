@@ -59,7 +59,8 @@ class CreateSnapshotRequest(_messages.Message):
       unacknowledged upon the successful completion of the
       `CreateSnapshot` request; as well as:  (b) Any messages published to the
       subscription's topic following the      successful completion of the
-      CreateSnapshot request.
+      CreateSnapshot request. Format is
+      `projects/{project}/subscriptions/{sub}`.
   """
 
   subscription = _messages.StringField(1)
@@ -228,8 +229,7 @@ class PubsubMessage(_messages.Message):
 
   Fields:
     attributes: Optional attributes for this message.
-    data: The message payload. For JSON requests, the value of this field must
-      be [base64-encoded](https://tools.ietf.org/html/rfc4648).
+    data: The message payload.
     messageId: ID of this message, assigned by the server when the message is
       published. Guaranteed to be unique within the topic. This value may be
       read by a subscriber that receives a `PubsubMessage` via a `Pull` call
@@ -279,7 +279,8 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
     name: Optional user-provided name for this snapshot. If the name is not
       provided in the request, the server will assign a random name for this
       snapshot on the same project as the subscription. Note that for REST API
-      requests, you must specify a name.
+      requests, you must specify a name. Format is
+      `projects/{project}/snapshots/{snap}`.
   """
 
   createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)
@@ -290,7 +291,8 @@ class PubsubProjectsSnapshotsDeleteRequest(_messages.Message):
   """A PubsubProjectsSnapshotsDeleteRequest object.
 
   Fields:
-    snapshot: The name of the snapshot to delete.
+    snapshot: The name of the snapshot to delete. Format is
+      `projects/{project}/snapshots/{snap}`.
   """
 
   snapshot = _messages.StringField(1, required=True)
@@ -316,7 +318,8 @@ class PubsubProjectsSnapshotsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListSnapshotsResponse`;
       indicates that this is a continuation of a prior `ListSnapshots` call,
       and that the system should return the next page of data.
-    project: The name of the cloud project that snapshots belong to.
+    project: The name of the cloud project that snapshots belong to. Format is
+      `projects/{project}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -360,7 +363,8 @@ class PubsubProjectsSubscriptionsAcknowledgeRequest(_messages.Message):
   Fields:
     acknowledgeRequest: A AcknowledgeRequest resource to be passed as the
       request body.
-    subscription: The subscription whose message is being acknowledged.
+    subscription: The subscription whose message is being acknowledged. Format
+      is `projects/{project}/subscriptions/{sub}`.
   """
 
   acknowledgeRequest = _messages.MessageField('AcknowledgeRequest', 1)
@@ -371,7 +375,8 @@ class PubsubProjectsSubscriptionsDeleteRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsDeleteRequest object.
 
   Fields:
-    subscription: The subscription to delete.
+    subscription: The subscription to delete. Format is
+      `projects/{project}/subscriptions/{sub}`.
   """
 
   subscription = _messages.StringField(1, required=True)
@@ -393,7 +398,8 @@ class PubsubProjectsSubscriptionsGetRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsGetRequest object.
 
   Fields:
-    subscription: The name of the subscription to get.
+    subscription: The name of the subscription to get. Format is
+      `projects/{project}/subscriptions/{sub}`.
   """
 
   subscription = _messages.StringField(1, required=True)
@@ -408,6 +414,7 @@ class PubsubProjectsSubscriptionsListRequest(_messages.Message):
       indicates that this is a continuation of a prior `ListSubscriptions`
       call, and that the system should return the next page of data.
     project: The name of the cloud project that subscriptions belong to.
+      Format is `projects/{project}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -421,7 +428,8 @@ class PubsubProjectsSubscriptionsModifyAckDeadlineRequest(_messages.Message):
   Fields:
     modifyAckDeadlineRequest: A ModifyAckDeadlineRequest resource to be passed
       as the request body.
-    subscription: The name of the subscription.
+    subscription: The name of the subscription. Format is
+      `projects/{project}/subscriptions/{sub}`.
   """
 
   modifyAckDeadlineRequest = _messages.MessageField('ModifyAckDeadlineRequest', 1)
@@ -434,7 +442,8 @@ class PubsubProjectsSubscriptionsModifyPushConfigRequest(_messages.Message):
   Fields:
     modifyPushConfigRequest: A ModifyPushConfigRequest resource to be passed
       as the request body.
-    subscription: The name of the subscription.
+    subscription: The name of the subscription. Format is
+      `projects/{project}/subscriptions/{sub}`.
   """
 
   modifyPushConfigRequest = _messages.MessageField('ModifyPushConfigRequest', 1)
@@ -465,6 +474,7 @@ class PubsubProjectsSubscriptionsPullRequest(_messages.Message):
   Fields:
     pullRequest: A PullRequest resource to be passed as the request body.
     subscription: The subscription from which messages should be pulled.
+      Format is `projects/{project}/subscriptions/{sub}`.
   """
 
   pullRequest = _messages.MessageField('PullRequest', 1)
@@ -517,7 +527,8 @@ class PubsubProjectsTopicsDeleteRequest(_messages.Message):
   """A PubsubProjectsTopicsDeleteRequest object.
 
   Fields:
-    topic: Name of the topic to delete.
+    topic: Name of the topic to delete. Format is
+      `projects/{project}/topics/{topic}`.
   """
 
   topic = _messages.StringField(1, required=True)
@@ -539,7 +550,8 @@ class PubsubProjectsTopicsGetRequest(_messages.Message):
   """A PubsubProjectsTopicsGetRequest object.
 
   Fields:
-    topic: The name of the topic to get.
+    topic: The name of the topic to get. Format is
+      `projects/{project}/topics/{topic}`.
   """
 
   topic = _messages.StringField(1, required=True)
@@ -553,7 +565,8 @@ class PubsubProjectsTopicsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListTopicsResponse`; indicates
       that this is a continuation of a prior `ListTopics` call, and that the
       system should return the next page of data.
-    project: The name of the cloud project that topics belong to.
+    project: The name of the cloud project that topics belong to. Format is
+      `projects/{project}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -567,7 +580,8 @@ class PubsubProjectsTopicsPublishRequest(_messages.Message):
   Fields:
     publishRequest: A PublishRequest resource to be passed as the request
       body.
-    topic: The messages in the request will be published on this topic.
+    topic: The messages in the request will be published on this topic. Format
+      is `projects/{project}/topics/{topic}`.
   """
 
   publishRequest = _messages.MessageField('PublishRequest', 1)
@@ -598,7 +612,8 @@ class PubsubProjectsTopicsSubscriptionsListRequest(_messages.Message):
       `ListTopicSubscriptionsResponse`; indicates that this is a continuation
       of a prior `ListTopicSubscriptions` call, and that the system should
       return the next page of data.
-    topic: The name of the topic that subscriptions are attached to.
+    topic: The name of the topic that subscriptions are attached to. Format is
+      `projects/{project}/topics/{topic}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -751,7 +766,8 @@ class SeekRequest(_messages.Message):
 
   Fields:
     snapshot: The snapshot to seek to. The snapshot's topic must be the same
-      as that of the provided subscription.
+      as that of the provided subscription. Format is
+      `projects/{project}/snapshots/{snap}`.
     time: The time to seek to. Messages retained in the subscription that were
       published before this time are marked as acknowledged, and messages
       retained in the subscription that were published after this time are
@@ -887,11 +903,12 @@ class Subscription(_messages.Message):
       subscriptions, this value is used as the initial value for the ack
       deadline. To override this value for a given message, call
       `ModifyAckDeadline` with the corresponding `ack_id` if using pull. The
-      maximum custom deadline you can specify is 600 seconds (10 minutes).
-      For push delivery, this value is also used to set the request timeout
-      for the call to the push endpoint.  If the subscriber never acknowledges
-      the message, the Pub/Sub system will eventually redeliver the message.
-      If this parameter is 0, a default value of 10 seconds is used.
+      minimum custom deadline you can specify is 10 seconds. The maximum
+      custom deadline you can specify is 600 seconds (10 minutes). If this
+      parameter is 0, a default value of 10 seconds is used.  For push
+      delivery, this value is also used to set the request timeout for the
+      call to the push endpoint.  If the subscriber never acknowledges the
+      message, the Pub/Sub system will eventually redeliver the message.
     messageRetentionDuration: How long to retain unacknowledged messages in
       the subscription's backlog, from the moment a message is published. If
       `retain_acked_messages` is true, then this also configures the retention
@@ -912,8 +929,8 @@ class Subscription(_messages.Message):
       even if they are acknowledged, until they fall out of the
       `message_retention_duration` window.
     topic: The name of the topic from which this subscription is receiving
-      messages. The value of this field will be `_deleted-topic_` if the topic
-      has been deleted.
+      messages. Format is `projects/{project}/topics/{topic}`. The value of
+      this field will be `_deleted-topic_` if the topic has been deleted.
   """
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)

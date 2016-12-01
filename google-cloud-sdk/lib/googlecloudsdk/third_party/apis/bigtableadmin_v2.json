@@ -582,7 +582,7 @@
       "type": "object",
       "properties": {
         "cluster": {
-          "description": "The name of the cluster where the snapshot will be created in.",
+          "description": "The name of the cluster where the snapshot will be created in.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
           "type": "string"
         },
         "snapshotId": {
@@ -1331,7 +1331,7 @@
                     "$ref": "SnapshotTableRequest"
                   },
                   "response": {
-                    "$ref": "Snapshot"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1345,32 +1345,6 @@
     },
     "operations": {
       "methods": {
-        "get": {
-          "id": "bigtableadmin.operations.get",
-          "path": "v2/{+name}",
-          "flatPath": "v2/operations/{operationsId}",
-          "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ]
-        },
         "list": {
           "id": "bigtableadmin.operations.list",
           "path": "v2/{+name}",
@@ -1413,15 +1387,41 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ]
         },
-        "cancel": {
-          "id": "bigtableadmin.operations.cancel",
-          "path": "v2/{+name}:cancel",
-          "flatPath": "v2/operations/{operationsId}:cancel",
-          "httpMethod": "POST",
-          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+        "get": {
+          "id": "bigtableadmin.operations.get",
+          "path": "v2/{+name}",
+          "flatPath": "v2/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
-              "description": "The name of the operation resource to be cancelled.",
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        },
+        "delete": {
+          "id": "bigtableadmin.operations.delete",
+          "path": "v2/{+name}",
+          "flatPath": "v2/operations/{operationsId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource to be deleted.",
               "location": "path",
               "required": true,
               "pattern": "^operations\/.+$",
@@ -1438,15 +1438,15 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ]
         },
-        "delete": {
-          "id": "bigtableadmin.operations.delete",
-          "path": "v2/{+name}",
-          "flatPath": "v2/operations/{operationsId}",
-          "httpMethod": "DELETE",
-          "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+        "cancel": {
+          "id": "bigtableadmin.operations.cancel",
+          "path": "v2/{+name}:cancel",
+          "flatPath": "v2/operations/{operationsId}:cancel",
+          "httpMethod": "POST",
+          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
           "parameters": {
             "name": {
-              "description": "The name of the operation resource to be deleted.",
+              "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
               "pattern": "^operations\/.+$",

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags and helpers for the compute routes commands."""
+"""Flags and helpers for the compute ssl-certificates commands."""
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -26,7 +26,7 @@ def SslCertificateArgument(required=True):
       short_help='The name of the SSL certificate.')
 
 
-def SslCertificateArgumentForTargetHttpsProxies(required=True):
+def SslCertificateArgumentForOtherResource(resource, required=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificate',
       resource_name='ssl certificate',
@@ -39,5 +39,5 @@ def SslCertificateArgumentForTargetHttpsProxies(required=True):
       detailed_help="""\
         A reference to an SSL certificate resource that is used for
         server-side authentication. The SSL certificate must exist and cannot
-        be deleted while referenced by a target HTTPS proxy.
-        """)
+        be deleted while referenced by a {0}.
+        """.format(resource))

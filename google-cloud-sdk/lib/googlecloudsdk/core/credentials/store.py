@@ -238,7 +238,7 @@ def LoadIfValid(account=None, scopes=None):
     return None
 
 
-def Load(account=None, scopes=None):
+def Load(account=None, scopes=None, prevent_refresh=False):
   """Get the credentials associated with the provided account.
 
   Args:
@@ -246,6 +246,9 @@ def Load(account=None, scopes=None):
         None, the account stored in the core.account property is used.
     scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
         are requested.
+    prevent_refresh: bool, If True, do not refresh the access token even if it
+        is out of date. (For use with operations that do not require a current
+        access token, such as credential revocation.)
 
   Returns:
     oauth2client.client.Credentials, The specified credentials.
@@ -267,6 +270,11 @@ def Load(account=None, scopes=None):
              cred_file_override)
     try:
       cred = client.GoogleCredentials.from_stream(cred_file_override)
+      cred_type = cred.serialization_data['type']
+      token_uri_override = properties.VALUES.auth.token_host.Get()
+      if cred_type == client.SERVICE_ACCOUNT and token_uri_override:
+        # pylint: disable=protected-access
+        cred.token_uri = cred._token_uri = token_uri_override
       if cred.create_scoped_required():
         if scopes is None:
           scopes = config.CLOUDSDK_SCOPES
@@ -297,7 +305,9 @@ def Load(account=None, scopes=None):
     raise NoCredentialsForAccountException(account)
 
   # cred.token_expiry is in UTC time.
-  if not cred.token_expiry or cred.token_expiry < cred.token_expiry.utcnow():
+  if (not prevent_refresh and
+      (not cred.token_expiry or
+       cred.token_expiry < cred.token_expiry.utcnow())):
     Refresh(cred)
 
   return cred
@@ -351,6 +361,14 @@ def Store(creds, account=None, scopes=None):
   _LegacyGenerator(account, creds, scopes).WriteTemplate()
 
 
+def ActivateCredentials(account, creds):
+  """Validates, stores and activates credentials with given account."""
+  Refresh(creds)
+  Store(creds, account)
+
+  properties.PersistProperty(properties.VALUES.core.account, account)
+
+
 def RevokeCredentials(creds):
   # TODO(user): Remove this condition when oauth2client does not crash while
   # revoking SignedJwtAssertionCredentials.
@@ -365,6 +383,10 @@ def Revoke(account=None):
   Args:
     account: str, The account address for the credentials to be revoked. If
         None, the currently active account is used.
+
+  Returns:
+    'True' if this call revoked the account; 'False' if the account was already
+    revoked.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -381,7 +403,7 @@ def Revoke(account=None):
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
-  creds = Load(account)
+  creds = Load(account, prevent_refresh=True)
   if not creds:
     raise NoCredentialsForAccountException(account)
 
@@ -391,7 +413,14 @@ def Revoke(account=None):
         'This comes from your browser session and will not persist outside'
         'of your connected Cloud Shell session.')
 
-  RevokeCredentials(creds)
+  rv = True
+  try:
+    RevokeCredentials(creds)
+  except client.TokenRevokeError as e:
+    if e.args[0] == 'invalid_token':
+      rv = False
+    else:
+      raise
 
   store = _StorageForAccount(account)
   if store:
@@ -399,6 +428,7 @@ def Revoke(account=None):
 
   _LegacyGenerator(account, creds).Clean()
   files.RmTree(config.Paths().LegacyCredentialsDir(account))
+  return rv
 
 
 def AcquireFromWebFlow(launch_browser=True,
@@ -571,7 +601,9 @@ class _LegacyGenerator(object):
       self.scopes = scopes
 
     paths = config.Paths()
-    self._json_path = paths.LegacyCredentialsJSONPath(account)
+    # Single store file while not generated here can be created for caching
+    # credentials by legacy tools, register so it is cleaned up.
+    self._single_store = paths.LegacyCredentialsSingleStorePath(account)
     self._gsutil_path = paths.LegacyCredentialsGSUtilPath(account)
     self._p12_key_path = paths.LegacyCredentialsP12KeyPath(account)
     self._adc_path = paths.LegacyCredentialsAdcPath(account)
@@ -580,7 +612,7 @@ class _LegacyGenerator(object):
     """Remove the credential file."""
 
     paths = [
-        self._json_path,
+        self._single_store,
         self._gsutil_path,
         self._p12_key_path,
         self._adc_path,
@@ -598,10 +630,6 @@ class _LegacyGenerator(object):
     # General credentials used by bq and gsutil.
     if not isinstance(self.credentials, client.SignedJwtAssertionCredentials):
       SaveCredentialsAsADC(self.credentials, self._adc_path)
-
-    # TODO(b/31852668): remove, only use ADC file above for bq.
-    self._WriteFileContents(self._json_path,
-                            self.credentials.to_json())
 
     if self.credentials.refresh_token:
       # we create a small .boto file for gsutil, to be put in BOTO_PATH
@@ -636,7 +664,7 @@ class _LegacyGenerator(object):
           """).format(key_file=self._adc_path))
     else:
       raise CredentialFileSaveError(
-          'Unsupported credentials type {0}'.format(type.self.credentials))
+          'Unsupported credentials type {0}'.format(type(self.credentials)))
 
   def _WriteFileContents(self, filepath, contents):
     """Writes contents to a path, ensuring mkdirs.

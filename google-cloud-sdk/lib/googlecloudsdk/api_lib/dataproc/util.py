@@ -22,8 +22,8 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.dataproc import constants
+from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 
@@ -63,7 +63,7 @@ def WaitForOperation(
     request.
 
   Raises:
-    ToolException: if the operation times out or finishes with an error.
+    OperationError: if the operation times out or finishes with an error.
   """
   client = context['dataproc_client']
   messages = context['dataproc_messages']
@@ -78,18 +78,17 @@ def WaitForOperation(
         operation = client.projects_regions_operations.Get(request)
         if operation.done:
           break
-      except apitools_exceptions.HttpError as error:
-        exc = exceptions.HttpException(error)
-        log.debug('GetOperation failed:\n' + exc.payload.status_message)
+      except apitools_exceptions.HttpError:
         # Keep trying until we timeout in case error is transient.
+        pass
       time.sleep(poll_period_s)
   # TODO(user): Parse operation metadata.
   log.debug('Operation:\n' + encoding.MessageToJson(operation))
   if not operation.done:
-    raise exceptions.ToolException(
+    raise exceptions.OperationTimeoutError(
         'Operation [{0}] timed out.'.format(operation.name))
   elif operation.error:
-    raise exceptions.ToolException(
+    raise exceptions.OperationError(
         'Operation [{0}] failed: {1}.'.format(
             operation.name, FormatRpcError(operation.error)))
 
@@ -117,7 +116,7 @@ def WaitForResourceDeletion(
         log.debug('Get request for [{0}] failed:\n{1}', resource_ref, error)
         # Keep trying until we timeout in case error is transient.
       time.sleep(poll_period_s)
-  raise exceptions.ToolException(
+  raise exceptions.OperationTimeoutError(
       'Deleting resource [{0}] timed out.'.format(resource_ref))
 
 
@@ -158,7 +157,7 @@ def WaitForJobTermination(
     request.
 
   Raises:
-    ToolException: if the operation times out or finishes with an error.
+    OperationError: if the operation times out or finishes with an error.
   """
   client = context['dataproc_client']
   job_ref = ParseJob(job.reference.jobId, context)
@@ -232,10 +231,10 @@ def WaitForJobTermination(
         log.warn('Job terminated, but output did not finish streaming.')
     if state is goal_state:
       return job
-    raise exceptions.ToolException(
+    raise exceptions.JobError(
         'Job [{0}] entered state [{1}] while waiting for [{2}].'.format(
             job_ref.jobId, state, goal_state))
-  raise exceptions.ToolException(
+  raise exceptions.JobTimeoutError(
       'Job [{0}] timed out while in state [{1}].'.format(
           job_ref.jobId, state))
 

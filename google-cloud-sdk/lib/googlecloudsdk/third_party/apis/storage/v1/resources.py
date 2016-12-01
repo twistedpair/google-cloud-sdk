@@ -42,9 +42,9 @@ class Collections(enum.Enum):
   )
   NOTIFICATIONS = (
       'notifications',
-      'notifications/{notification}',
+      'b/{bucket}/notificationConfigs/{notification}',
       {},
-      [u'notification']
+      [u'bucket', u'notification']
   )
   OBJECTACCESSCONTROLS = (
       'objectAccessControls',

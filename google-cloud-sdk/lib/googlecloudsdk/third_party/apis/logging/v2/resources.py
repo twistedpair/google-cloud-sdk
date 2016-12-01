@@ -31,6 +31,15 @@ class Collections(enum.Enum):
       },
       [u'sinkName']
   )
+  FOLDERS_SINKS = (
+      'folders.sinks',
+      '{+sinkName}',
+      {
+          '':
+              'folders/{foldersId}/sinks/{sinksId}',
+      },
+      [u'sinkName']
+  )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
       '{+sinkName}',

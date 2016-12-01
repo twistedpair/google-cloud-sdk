@@ -82,7 +82,8 @@ class ListLogEntriesRequest(_messages.Message):
   Fields:
     filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
       The response includes only entries that match the filter. If `filter` is
-      empty, then all entries in all logs are retrieved.
+      empty, then all entries in all logs are retrieved. The maximum length of
+      the filter is 20000 characters.
     orderBy: Sort order of the results, consisting of a `LogEntry` field
       optionally followed by a space and `desc`.  Examples:
       `"metadata.timestamp"`, `"metadata.timestamp desc"`.  The only
@@ -567,7 +568,8 @@ class LogMetric(_messages.Message):
     description: Optional. A description of this metric.
     filter: Required. An [advanced logs
       filter](/logging/docs/view/advanced_filters). Example: `"log=syslog AND
-      metadata.severity>=ERROR"`.
+      metadata.severity>=ERROR"`. The maximum length of the filter is 20000
+      characters.
     name: Required. The client-assigned name for this metric, such as
       `"severe_errors"`.  Metric names are limited to 1000 characters and can
       include only the following characters: `A-Z`, `a-z`, `0-9`, and the
@@ -609,19 +611,20 @@ class LogSink(_messages.Message):
     destination: Required. The resource name of the destination. Stackdriver
       Logging writes designated log entries to this destination. For example,
       `"storage.googleapis.com/my-output-bucket"`.
-    endTime: Optional. Time at which this sink expires
+    endTime: Optional. Time at which this sink expires.
     errors: _Output only._ If any errors occur when invoking a sink method,
       then this field contains descriptions of the errors.
     filter: Optional. An advanced logs filter. If present, only log entries
       matching the filter are written.  Only project sinks use this field; log
-      sinks and log service sinks must not include a filter.
+      sinks and log service sinks must not include a filter. The maximum
+      length of the filter is 20000 characters.
     name: Required. The client-assigned name of this sink. For example, `"my-
       syslog-sink"`.  The name must be unique among the sinks of a similar
       kind in the project.
     startTime: Optional. Time range for which this sink is active. Logs are
       exported only if start_time <= entry.timestamp < end_time Both
       start_time and end_time may be omitted to specify (half) infinite
-      ranges.
+      ranges. The start_time must be less than the end_time.
   """
 
   destination = _messages.StringField(1)
@@ -654,7 +657,8 @@ class LoggingProjectsLogEntriesListRequest(_messages.Message):
   Fields:
     filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
       The response includes only entries that match the filter. If `filter` is
-      empty, then all entries in all logs are retrieved.
+      empty, then all entries in all logs are retrieved. The maximum length of
+      the filter is 20000 characters.
     orderBy: Sort order of the results, consisting of a `LogEntry` field
       optionally followed by a space and `desc`.  Examples:
       `"metadata.timestamp"`, `"metadata.timestamp desc"`.  The only
@@ -1103,9 +1107,9 @@ class RequestLog(_messages.Message):
     cost: An indication of the relative cost of serving this request.
     endTime: Time when the request finished.
     finished: Whether this request is finished or active.
-    first: Whether this is the first RequestLog entry for this request.  If an
-      active request has several RequestLog entries written to Cloud Logging,
-      this field will be set for one of them.
+    first: Whether this is the first `RequestLog` entry for this request.  If
+      an active request has several `RequestLog` entries written to
+      Stackdriver Logging, then this field will be set for one of them.
     host: Internet host and port number of the resource being requested.
     httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
     instanceId: An identifier for the instance that handled the request.
@@ -1146,7 +1150,7 @@ class RequestLog(_messages.Message):
     taskName: Task name of the request, in the case of an offline request.
     taskQueueName: Queue name of the request, in the case of an offline
       request.
-    traceId: Cloud Trace identifier for this request.
+    traceId: Stackdriver Trace identifier for this request.
     urlMapEntry: File or class that handled the request.
     userAgent: User agent that made the request.
     versionId: Version of the application that handled this request.

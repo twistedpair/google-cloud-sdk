@@ -167,6 +167,11 @@
         "nextPageToken": {
           "description": "If non-empty, more results are available.\nPass this token, along with the same query parameters as the first\nrequest, to view the next page of results.",
           "type": "string"
+        },
+        "timeRangeBegin": {
+          "description": "The timestamp specifies the start time to which the request was restricted.\nThe start time is set based on the requested time range. It may be adjusted\nto a later time if a project has exceeded the storage quota and older data\nhas been deleted.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -257,6 +262,10 @@
         },
         "version": {
           "description": "Represents the source code version that the developer provided,\nwhich could represent a version label or a Git SHA-1 hash, for example.",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "Type of the MonitoredResource. List of possible values:\nhttps:\/\/cloud.google.com\/monitoring\/api\/resources\n\nValue is set automatically for incoming errors and must not be set when\nreporting errors.",
           "type": "string"
         }
       }
@@ -371,6 +380,11 @@
         "nextPageToken": {
           "description": "If non-empty, more results are available.\nPass this token, along with the same query parameters as the first\nrequest, to view the next page of results.",
           "type": "string"
+        },
+        "timeRangeBegin": {
+          "description": "The timestamp specifies the start time to which the request was restricted.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -533,6 +547,11 @@
                   "location": "query",
                   "type": "string"
                 },
+                "serviceFilter.resourceType": {
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
+                  "location": "query",
+                  "type": "string"
+                },
                 "timeRange.period": {
                   "description": "Restricts the query to the specified time range.",
                   "location": "query",
@@ -632,6 +651,11 @@
                 },
                 "serviceFilter.version": {
                   "description": "[Optional] The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "serviceFilter.resourceType": {
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
                   "location": "query",
                   "type": "string"
                 },

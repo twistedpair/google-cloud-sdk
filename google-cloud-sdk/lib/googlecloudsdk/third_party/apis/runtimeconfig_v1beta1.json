@@ -150,7 +150,7 @@
           "type": "string"
         },
         "description": {
-          "description": "An optional description of the RuntimeConfig object.\nThe length of the description must be less than 256 bytes.",
+          "description": "An optional description of the RuntimeConfig object.",
           "type": "string"
         }
       }
@@ -190,12 +190,12 @@
           "type": "string"
         },
         "value": {
-          "description": "The binary value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted. The value must be\nBase64 encoded.\nNB: Only one of value and string_value can be set at the same time.",
+          "description": "The binary value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted. The value must be\nbase64 encoded. Only one of `value` or `text` can be set.",
           "type": "string",
           "format": "byte"
         },
         "text": {
-          "description": "The textual value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted.\nNB: Only one of value and string_value can be set at the same time.",
+          "description": "The string value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted. For example,\n<code>text: \"my text value\"<\/code>.",
           "type": "string"
         },
         "updateTime": {
@@ -463,7 +463,7 @@
                   "type": "string"
                 },
                 "requestId": {
-                  "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and the resource\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                  "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
                   "location": "query",
                   "type": "string"
                 }
@@ -703,7 +703,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and the resource\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                      "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -915,7 +915,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional unique request_id. If server receives two Create requests with\nthe same request_id then second request will be ignored and information\nstored in the backend will be returned. Empty request_id fields are\nignored.\nIt is responsibility of the client to ensure uniqueness of the request_id\nstrings.\nThe strings are limited to 64 characters.",
+                      "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
                       "location": "query",
                       "type": "string"
                     }

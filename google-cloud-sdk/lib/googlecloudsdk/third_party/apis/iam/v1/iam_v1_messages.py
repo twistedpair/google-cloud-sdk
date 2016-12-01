@@ -485,11 +485,13 @@ class Role(_messages.Message):
       id}/roles/logging.viewer for custom roles.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
+    trashed: A boolean attribute.
   """
 
   description = _messages.StringField(1)
   name = _messages.StringField(2)
   title = _messages.StringField(3)
+  trashed = _messages.BooleanField(4)
 
 
 class ServiceAccount(_messages.Message):

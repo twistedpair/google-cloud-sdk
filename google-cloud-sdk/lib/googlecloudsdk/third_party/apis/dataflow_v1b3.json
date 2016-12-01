@@ -956,6 +956,30 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "environment": {
+          "description": "Runtime environment for the job.",
+          "$ref": "RuntimeEnvironment"
+        }
+      }
+    },
+    "RuntimeEnvironment": {
+      "id": "RuntimeEnvironment",
+      "description": "Environment values to set at runtime.\n",
+      "type": "object",
+      "properties": {
+        "maxWorkers": {
+          "description": "The maximum number of workers to start for the job.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "zone": {
+          "description": "The zone to start the workers in.",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "The service account to run the job as.",
+          "type": "string"
         }
       }
     },

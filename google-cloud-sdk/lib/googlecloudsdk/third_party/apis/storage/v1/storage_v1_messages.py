@@ -52,10 +52,13 @@ class Bucket(_messages.Message):
       group.
     projectNumber: The project number of the project the bucket belongs to.
     selfLink: The URI of this bucket.
-    storageClass: The bucket's storage class. This defines how objects in the
-      bucket are stored and determines the SLA and the cost of storage. Values
-      include STANDARD, NEARLINE and DURABLE_REDUCED_AVAILABILITY. Defaults to
-      STANDARD. For more information, see storage classes.
+    storageClass: The bucket's default storage class, used whenever no
+      storageClass is specified for a newly-created object. This defines how
+      objects in the bucket are stored and determines the SLA and the cost of
+      storage. Values include MULTI_REGIONAL, REGIONAL, STANDARD, NEARLINE,
+      COLDLINE, and DURABLE_REDUCED_AVAILABILITY. If this value is not
+      specified when the bucket is created, it will default to STANDARD. For
+      more information, see storage classes.
     timeCreated: The creation time of the bucket in RFC 3339 format.
     updated: The modification time of the bucket in RFC 3339 format.
     versioning: The bucket's versioning configuration.
@@ -112,10 +115,14 @@ class Bucket(_messages.Message):
         """The action to take.
 
         Fields:
-          type: Type of the action. Currently, only Delete is supported.
+          storageClass: Target storage class. Required iff the type of the
+            action is SetStorageClass.
+          type: Type of the action. Currently, only Delete and SetStorageClass
+            are supported.
         """
 
-        type = _messages.StringField(1)
+        storageClass = _messages.StringField(1)
+        type = _messages.StringField(2)
 
       class ConditionValue(_messages.Message):
         """The condition(s) under which the action will be taken.
@@ -129,6 +136,10 @@ class Bucket(_messages.Message):
           isLive: Relevant only for versioned objects. If the value is true,
             this condition matches live objects; if the value is false, it
             matches archived objects.
+          matchesStorageClass: Objects having any of the storage classes
+            specified by this condition will be matched. Values include
+            MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, STANDARD, and
+            DURABLE_REDUCED_AVAILABILITY.
           numNewerVersions: Relevant only for versioned objects. If the value
             is N, this condition is satisfied when there are at least N
             versions (including the live version) newer than this version of
@@ -138,7 +149,8 @@ class Bucket(_messages.Message):
         age = _messages.IntegerField(1, variant=_messages.Variant.INT32)
         createdBefore = extra_types.DateField(2)
         isLive = _messages.BooleanField(3)
-        numNewerVersions = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+        matchesStorageClass = _messages.StringField(4, repeated=True)
+        numNewerVersions = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
       action = _messages.MessageField('ActionValue', 1)
       condition = _messages.MessageField('ConditionValue', 2)
@@ -418,7 +430,6 @@ class Notification(_messages.Message):
       subscription.
 
   Fields:
-    bucket: The name of the bucket this subscription is particular to.
     custom_attributes: An optional list of additional attributes to attach to
       each Cloud PubSub message published for this notification subscription.
     etag: HTTP 1.1 Entity tag for this subscription notification.
@@ -427,12 +438,9 @@ class Notification(_messages.Message):
     id: The ID of the notification.
     kind: The kind of item this is. For notifications, this is always
       storage#notification.
-    object_metadata_format: If payload_content is OBJECT_METADATA, controls
-      the format of that metadata. Otherwise, must not be set.
     object_name_prefix: If present, only apply this notification configuration
       to object names that begin with this prefix.
-    payload_content: The desired content of the Payload. Defaults to
-      OBJECT_METADATA.
+    payload_format: The desired content of the Payload.
     selfLink: The canonical URL of this notification.
     topic: The Cloud PubSub topic to which this subscription publishes.
       Formatted as: '//pubsub.googleapis.com/projects/{project-
@@ -466,17 +474,15 @@ class Notification(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bucket = _messages.StringField(1)
-  custom_attributes = _messages.MessageField('CustomAttributesValue', 2)
-  etag = _messages.StringField(3)
-  event_types = _messages.StringField(4, repeated=True)
-  id = _messages.StringField(5)
-  kind = _messages.StringField(6, default=u'storage#notification')
-  object_metadata_format = _messages.StringField(7, default=u'JSON_API_V1')
-  object_name_prefix = _messages.StringField(8)
-  payload_content = _messages.StringField(9, default=u'OBJECT_METADATA')
-  selfLink = _messages.StringField(10)
-  topic = _messages.StringField(11)
+  custom_attributes = _messages.MessageField('CustomAttributesValue', 1)
+  etag = _messages.StringField(2)
+  event_types = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+  kind = _messages.StringField(5, default=u'storage#notification')
+  object_name_prefix = _messages.StringField(6)
+  payload_format = _messages.StringField(7, default=u'JSON_API_V1')
+  selfLink = _messages.StringField(8)
+  topic = _messages.StringField(9)
 
 
 class Notifications(_messages.Message):
@@ -543,6 +549,9 @@ class Object(_messages.Message):
     timeCreated: The creation time of the object in RFC 3339 format.
     timeDeleted: The deletion time of the object in RFC 3339 format. Will be
       returned if and only if this version of the object has been deleted.
+    timeStorageClassUpdated: The time at which the object's storage class was
+      last changed. When the object is initially created, it will be set to
+      timeCreated.
     updated: The modification time of the object metadata in RFC 3339 format.
   """
 
@@ -619,7 +628,8 @@ class Object(_messages.Message):
   storageClass = _messages.StringField(23)
   timeCreated = _message_types.DateTimeField(24)
   timeDeleted = _message_types.DateTimeField(25)
-  updated = _message_types.DateTimeField(26)
+  timeStorageClassUpdated = _message_types.DateTimeField(26)
+  updated = _message_types.DateTimeField(27)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1330,10 +1340,12 @@ class StorageNotificationsDeleteRequest(_messages.Message):
   """A StorageNotificationsDeleteRequest object.
 
   Fields:
+    bucket: The parent bucket of the notification.
     notification: ID of the notification to delete.
   """
 
-  notification = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(1, required=True)
+  notification = _messages.StringField(2, required=True)
 
 
 class StorageNotificationsDeleteResponse(_messages.Message):
@@ -1344,10 +1356,24 @@ class StorageNotificationsGetRequest(_messages.Message):
   """A StorageNotificationsGetRequest object.
 
   Fields:
+    bucket: The parent bucket of the notification.
     notification: Notification ID
   """
 
-  notification = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(1, required=True)
+  notification = _messages.StringField(2, required=True)
+
+
+class StorageNotificationsInsertRequest(_messages.Message):
+  """A StorageNotificationsInsertRequest object.
+
+  Fields:
+    bucket: The parent bucket of the notification.
+    notification: A Notification resource to be passed as the request body.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  notification = _messages.MessageField('Notification', 2)
 
 
 class StorageNotificationsListRequest(_messages.Message):

@@ -38,8 +38,8 @@ import uritemplate
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
 
 _COLLECTIONPATH_RE = re.compile(
-    r'(?:(?P<collection>{collection})::)?(?P<path>.+)'.format(
-        collection=_COLLECTION_SUB_RE))
+    r'^(?:(?P<collection>{collection})::)?(?P<path>.+)'.format(
+        collection=_COLLECTION_SUB_RE), flags=re.MULTILINE|re.DOTALL)
 # The first two wildcards in this are the API and the API's version. The rest
 # are parameters into a specific collection in that API/version.
 _URL_RE = re.compile(r'(https?://[^/]+/[^/]+/[^/]+/)(.+)')
@@ -166,7 +166,7 @@ class _ResourceParser(object):
     self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
 
-  def ParseCollectionPath(self, collection_path, kwargs, resolve,
+  def ParseCollectionPath(self, collection_path, kwargs,
                           base_url=None, subcollection=''):
     """Given a command line and some keyword args, get the resource.
 
@@ -177,10 +177,6 @@ class _ResourceParser(object):
           resolvers that can help parse this resource. If the fields in
           collection-path do not provide all the necessary information,
           kwargs will be searched for what remains.
-      resolve: bool, If True, call the resource's .Resolve() method before
-          returning, ensuring that all of the resource parameters are defined.
-          If False, don't call them, under the assumption that it will be called
-          later.
       base_url: use this base url (endpoint) for the resource, if not provided
           default corresponding api version base url will be used.
       subcollection: str, name of subcollection to use when parsing this path.
@@ -213,11 +209,27 @@ class _ResourceParser(object):
     else:
       fields = [None] * len(params)
 
-    ref = Resource(self.collection_info, subcollection, fields, kwargs,
-                   collection_path, base_url, self.params_defaults_func)
+    param_values = dict(zip(params, fields))
 
-    if resolve:
-      ref.Resolve(suppress_param_default_err=True)
+    for param, value in param_values.items():
+      if value is not None:
+        continue
+
+      # First try the resolvers given to this resource explicitly.
+      resolver = kwargs.get(param)
+      if resolver:
+        param_values[param] = resolver() if callable(resolver) else resolver
+      else:
+        # Then try the registered defaults, can raise errors like
+        # properties.RequiredPropertyError if property was tied to parameter.
+        param_values[param] = self.params_defaults_func(param)
+
+    missing_params = [p for p, f in param_values.iteritems() if f is None]
+    if missing_params:
+      raise UnknownFieldException(collection_path, ','.join(missing_params))
+
+    ref = Resource(self.collection_info, subcollection, param_values,
+                   collection_path, base_url)
 
      # Multiple parameters are specified, a full or partial collection path.
     if (collection_path is not None and '/' in collection_path and not
@@ -241,7 +253,7 @@ class Resource(object):
   """Information about a Cloud resource."""
 
   def __init__(self, collection_info, subcollection, param_values,
-               resolvers, collection_path, endpoint_url, param_defaults):
+               collection_path, endpoint_url):
     """Create a Resource object that may be partially resolved.
 
     To allow resolving of unknown params to happen after parse-time, the
@@ -252,29 +264,33 @@ class Resource(object):
       collection_info: resource_util.CollectionInfo, The collection description
           for this resource.
       subcollection: str, id for subcollection of this collection.
-      param_values: list, A list of values for parameters, which can be None in
-        which case resolvers and param_defaults will be used.
-      resolvers: {str:(str or func()->str)}, The resolution functions that can
-          be used to fill in values that were not specified in the command line.
+      param_values: {param->value}, A list of values for parameters.
       collection_path: str, The original command-line argument used to create
           this Resource.
       endpoint_url: str, override service endpoint url for this resource. If
            None default base url of collection api will be used.
-      param_defaults: func(param) -> default value for given parameter
-          in collection_info.params.
     """
     self._collection_info = collection_info
-    self.__name = None
-    self.__self_link = None
-    self.__resolvers = resolvers
     self.__collection_path = collection_path
     self._endpoint_url = endpoint_url or collection_info.base_url
-    self._param_defaults = param_defaults
     self._subcollection = subcollection
     self._path = collection_info.GetPath(subcollection)
     self._params = collection_info.GetParams(subcollection)
-    for param, value in zip(self._params, param_values):
+    for param, value in param_values.iteritems():
       setattr(self, param, value)
+    self._initialized = True
+
+  def __setattr__(self, key, value):
+    if getattr(self, '_initialized', None) is not None:
+      raise NotImplementedError(
+          'Cannot set attribute {0}. '
+          'Resource references are immutable.'.format(key))
+    super(Resource, self).__setattr__(key, value)
+
+  def __delattr__(self, key):
+    raise NotImplementedError(
+        'Cannot delete attribute {0}. '
+        'Resource references are immutable.'.format(key))
 
   def Collection(self):
     collection = self._collection_info.full_name
@@ -286,10 +302,12 @@ class Resource(object):
     return self._collection_info
 
   def Name(self):
-    self.Resolve()
-    return self.__name
+    if self._params:
+      # The last param is defined to be the resource's "name".
+      return getattr(self, self._params[-1])
+    return None
 
-  def RelativeName(self):
+  def RelativeName(self, url_escape=False):
     """Relative resource name.
 
     A URI path ([path-noscheme](http://tools.ietf.org/html/rfc3986#appendix-A))
@@ -297,80 +315,39 @@ class Resource(object):
     For example:
       "shelves/shelf1/books/book2"
 
+    Args:
+      url_escape: bool, if true would url escape each parameter.
     Returns:
        Unescaped part of SelfLink which is essentially base_url + relative_name.
+       For example if SelfLink is
+         https://pubsub.googleapis.com/v1/projects/myprj/topics/mytopic
+       then relative name is
+         projects/myprj/topics/mytopic.
     """
-    self.Resolve()
+    escape_func = urllib.quote if url_escape else lambda x, safe: x
+
     effective_params = dict(
-        [(k, getattr(self, k) or '*') for k in self._params])
+        [(k, escape_func(getattr(self, k), safe='') or '*')
+         for k in self._params])
+
     return urllib.unquote(
         uritemplate.expand(self._path, effective_params))
 
   def SelfLink(self):
-    self.Resolve()
-    return self.__self_link
-
-  def Resolve(self, suppress_param_default_err=False):
-    """Resolve unknown parameters for this resource.
-
-    Args:
-      suppress_param_default_err: bool, False by default, True if
-      RequiredPropertyError should be suppressed.
-
-    Raises:
-      UnknownFieldException: If, after resolving, one of the fields is still
-          unknown.
-      properties.RequiredPropertyError, if a required field is not known.
-    """
-    for param in self._params:
-      if getattr(self, param, None):
-        continue
-
-      # First try the resolvers given to this resource explicitly.
-      resolver = self.__resolvers.get(param)
-      if resolver:
-        if callable(resolver):
-          setattr(self, param, resolver())
-        else:
-          setattr(self, param, resolver)
-        continue
-      # Then try the registered defaults.
-      try:
-        setattr(self, param, self._param_defaults(param))
-      except properties.RequiredPropertyError:
-        if not suppress_param_default_err:
-          raise
-
+    """Returns URI for this resource."""
     effective_params = dict(
         [(k, getattr(self, k) or '*') for k in self._params])
-
-    self.__self_link = '%s%s' % (
-        self._endpoint_url,
-        uritemplate.expand(self._path, effective_params))
-
-    if (self.Collection().startswith('compute.') or
-        self.Collection().startswith('clouduseraccounts.') or
-        self.Collection().startswith('storage.')):
-      # TODO(user): Unquote URLs for compute, clouduseraccounts, and
-      # storage pending b/15425944.
-      self.__self_link = urllib.unquote(self.__self_link)
-
-    if self._params:
-      # The last param is defined to be the resource's "name", and is the only
-      # part of the resource that cannot be inferred by a resolver or other
-      # context, and MUST be provided in the argument.
-      self.__name = getattr(self, self._params[-1])
-
-    for param in self._params:
-      if not getattr(self, param, None):
-        raise UnknownFieldException(self.__collection_path, param)
+    self_link = '{0}{1}'.format(self._endpoint_url,
+                                uritemplate.expand(self._path,
+                                                   effective_params))
+    if (self._collection_info.api_name
+        in ('compute', 'clouduseraccounts', 'storage')):
+      # TODO(b/15425944): Unquote URLs for now for these apis.
+      return urllib.unquote(self_link)
+    return self_link
 
   def __str__(self):
     return self.SelfLink()
-    # TODO(user): Possibly change what is returned, here.
-    # path = '/'.join([getattr(self, param) for param in self.__ordered_params])
-    # return '{collection}::{path}'.format(
-    #     collection=self.__collection, path=path)
 
   def __eq__(self, other):
     if isinstance(other, Resource):
@@ -602,8 +579,7 @@ class Registry(object):
       return None
     return resolver() if callable(resolver) else resolver
 
-  def ParseCollectionPath(self, collection, collection_path, kwargs,
-                          resolve=True):
+  def ParseCollectionPath(self, collection, collection_path, kwargs):
     """Parse a collection path into a Resource.
 
     Args:
@@ -614,10 +590,6 @@ class Registry(object):
           resolvers that can help parse this resource. If the fields in
           collection-path do not provide all the necessary information,
           kwargs will be searched for what remains.
-      resolve: bool, If True, call the resource's .Resolve() method before
-          returning, ensuring that all of the resource parameters are defined.
-          If False, don't call them, under the assumption that it will be called
-          later.
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
 
@@ -654,7 +626,7 @@ class Registry(object):
     if len(parser_collection) != len(collection):
       subcollection = collection[len(parser_collection)+1:]
     return parser.ParseCollectionPath(
-        collection_path, kwargs, resolve, base_url, subcollection)
+        collection_path, kwargs, base_url, subcollection)
 
   def GetCollectionInfo(self, collection_name):
     api_name = _APINameFromCollection(collection_name)
@@ -762,10 +734,10 @@ class Registry(object):
     subcollection, parser = cur_level[None]
     params = dict(zip(parser.collection_info.GetParams(subcollection), params))
     return parser.ParseCollectionPath(
-        None, params, resolve=True, base_url=endpoint,
+        None, params, base_url=endpoint,
         subcollection=subcollection)
 
-  def ParseRelativeName(self, relative_name, collection):
+  def ParseRelativeName(self, relative_name, collection, url_unescape=False):
     """Parser relative names. See Resource.RelativeName() method."""
     collection_info = self.GetCollectionInfo(collection)
     subcollection = collection_info.GetSubcollection(collection)
@@ -776,7 +748,11 @@ class Registry(object):
           '{0} is not in {1} collection as it does not match path template {2}'
           .format(relative_name, collection, path_template))
     params = collection_info.GetParams(subcollection)
-    return self.Create(collection, **dict(zip(params, match.groups())))
+    fields = match.groups()
+    if url_unescape:
+      fields = map(urllib.unquote, fields)
+
+    return self.Create(collection, **dict(zip(params, fields)))
 
   def ParseStorageURL(self, url):
     """Parse gs://bucket/object_path into storage.v1 api resource."""
@@ -794,8 +770,7 @@ class Registry(object):
         collection_path=None,
         kwargs={'bucket': match.group(1)})
 
-  def Parse(self, line, params=None, collection=None,
-            enforce_collection=True, resolve=True):
+  def Parse(self, line, params=None, collection=None, enforce_collection=True):
     """Parse a Cloud resource from a command line.
 
     Args:
@@ -808,10 +783,6 @@ class Registry(object):
         inferred from the line.
       enforce_collection: bool, fail unless parsed resource is of this
         specified collection, this is applicable only if line is URL.
-      resolve: bool, If True, call the resource's .Resolve() method before
-          returning, ensuring that all of the resource parameters are defined.
-          If False, don't call them, under the assumption that it will be called
-          later.
 
     Returns:
       A resource object.
@@ -886,7 +857,7 @@ class Registry(object):
           collection_path=None,
           kwargs=p)
 
-    return self.ParseCollectionPath(collection, line, params or {}, resolve)
+    return self.ParseCollectionPath(collection, line, params or {})
 
   def Create(self, collection, **params):
     """Create a Resource from known collection and params.

@@ -18,7 +18,6 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 
 
@@ -71,11 +70,10 @@ def FetchLogs(log_filter=None,
   else:
     order_by = 'timestamp asc'
 
-  client = apis.GetClientInstance('logging', 'v2')
-  messages = apis.GetMessagesModule('logging', 'v2')
-  request = messages.ListLogEntriesRequest(resourceNames=[parent],
-                                           filter=combined_filter,
-                                           orderBy=order_by)
+  client = util.GetClient()
+  request = client.MESSAGES_MODULE.ListLogEntriesRequest(resourceNames=[parent],
+                                                         filter=combined_filter,
+                                                         orderBy=order_by)
   return list_pager.YieldFromList(
       client.entries, request, field='entries', limit=limit,
       batch_size=page_size, batch_size_attribute='pageSize')

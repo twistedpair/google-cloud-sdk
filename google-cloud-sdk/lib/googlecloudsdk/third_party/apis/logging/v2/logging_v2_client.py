@@ -38,6 +38,9 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.entries = self.EntriesService(self)
+    self.folders_logs = self.FoldersLogsService(self)
+    self.folders_sinks = self.FoldersSinksService(self)
+    self.folders = self.FoldersService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_logs = self.OrganizationsLogsService(self)
     self.organizations_sinks = self.OrganizationsSinksService(self)
@@ -58,8 +61,8 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a log and all its log entries.
-The log will reappear if it receives new entries.
+      """Deletes all the log entries in a log.
+The log reappears if it receives new entries.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -82,6 +85,34 @@ The log will reappear if it receives new entries.
         request_field='',
         request_type_name=u'LoggingBillingAccountsLogsDeleteRequest',
         response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingBillingAccountsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/logs',
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.logs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/logs',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
         supports_download=False,
     )
 
@@ -305,6 +336,227 @@ written by this method.
         supports_download=False,
     )
 
+  class FoldersLogsService(base_api.BaseApiService):
+    """Service class for the folders_logs resource."""
+
+    _NAME = u'folders_logs'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes all the log entries in a log.
+The log reappears if it receives new entries.
+
+      Args:
+        request: (LoggingFoldersLogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/logs/{logsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.folders.logs.delete',
+        ordered_params=[u'logName'],
+        path_params=[u'logName'],
+        query_params=[],
+        relative_path=u'v2/{+logName}',
+        request_field='',
+        request_type_name=u'LoggingFoldersLogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingFoldersLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/logs',
+        http_method=u'GET',
+        method_id=u'logging.folders.logs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/logs',
+        request_field='',
+        request_type_name=u'LoggingFoldersLogsListRequest',
+        response_type_name=u'ListLogsResponse',
+        supports_download=False,
+    )
+
+  class FoldersSinksService(base_api.BaseApiService):
+    """Service class for the folders_sinks resource."""
+
+    _NAME = u'folders_sinks'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersSinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a sink.
+
+      Args:
+        request: (LoggingFoldersSinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks',
+        http_method=u'POST',
+        method_id=u'logging.folders.sinks.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+parent}/sinks',
+        request_field=u'logSink',
+        request_type_name=u'LoggingFoldersSinksCreateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a sink.
+
+      Args:
+        request: (LoggingFoldersSinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method=u'DELETE',
+        method_id=u'logging.folders.sinks.delete',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[],
+        relative_path=u'v2/{+sinkName}',
+        request_field='',
+        request_type_name=u'LoggingFoldersSinksDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a sink.
+
+      Args:
+        request: (LoggingFoldersSinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method=u'GET',
+        method_id=u'logging.folders.sinks.get',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[],
+        relative_path=u'v2/{+sinkName}',
+        request_field='',
+        request_type_name=u'LoggingFoldersSinksGetRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists sinks.
+
+      Args:
+        request: (LoggingFoldersSinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks',
+        http_method=u'GET',
+        method_id=u'logging.folders.sinks.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/sinks',
+        request_field='',
+        request_type_name=u'LoggingFoldersSinksListRequest',
+        response_type_name=u'ListSinksResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates or creates a sink.
+
+      Args:
+        request: (LoggingFoldersSinksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method=u'PUT',
+        method_id=u'logging.folders.sinks.update',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingFoldersSinksUpdateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = u'folders'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class MonitoredResourceDescriptorsService(base_api.BaseApiService):
     """Service class for the monitoredResourceDescriptors resource."""
 
@@ -352,8 +604,8 @@ written by this method.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a log and all its log entries.
-The log will reappear if it receives new entries.
+      """Deletes all the log entries in a log.
+The log reappears if it receives new entries.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -376,6 +628,34 @@ The log will reappear if it receives new entries.
         request_field='',
         request_type_name=u'LoggingOrganizationsLogsDeleteRequest',
         response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingOrganizationsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/logs',
+        http_method=u'GET',
+        method_id=u'logging.organizations.logs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/logs',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
         supports_download=False,
     )
 
@@ -545,8 +825,8 @@ The log will reappear if it receives new entries.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a log and all its log entries.
-The log will reappear if it receives new entries.
+      """Deletes all the log entries in a log.
+The log reappears if it receives new entries.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message
@@ -569,6 +849,34 @@ The log will reappear if it receives new entries.
         request_field='',
         request_type_name=u'LoggingProjectsLogsDeleteRequest',
         response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingProjectsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/logs',
+        http_method=u'GET',
+        method_id=u'logging.projects.logs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/logs',
+        request_field='',
+        request_type_name=u'LoggingProjectsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
         supports_download=False,
     )
 

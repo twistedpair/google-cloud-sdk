@@ -212,6 +212,10 @@
           "description": "A permanent fixed identifier for source.\n@OutputOnly",
           "$ref": "SourceProvenance"
         },
+        "buildTriggerId": {
+          "description": "The ID of the BuildTrigger that triggered this build, if it was\ntriggered automatically.\n@OutputOnly",
+          "type": "string"
+        },
         "options": {
           "description": "Special options for this build.",
           "$ref": "BuildOptions"
@@ -922,31 +926,6 @@
     },
     "operations": {
       "methods": {
-        "get": {
-          "id": "cloudbuild.operations.get",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations/{operationsId}",
-          "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/.+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ]
-        },
         "list": {
           "id": "cloudbuild.operations.list",
           "path": "v1/{+name}",
@@ -983,6 +962,31 @@
           ],
           "response": {
             "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "get": {
+          "id": "cloudbuild.operations.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"

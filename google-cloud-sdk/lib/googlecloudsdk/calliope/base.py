@@ -16,6 +16,7 @@
 """
 
 import abc
+from functools import wraps
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
@@ -38,6 +39,10 @@ COMMONLY_USED_FLAGS = 'COMMONLY USED'
 
 class LayoutException(Exception):
   """An exception for when a command or group .py file has the wrong types."""
+
+
+class DeprecationException(Exception):
+  """An exception for when a command or group has been deprecated."""
 
 
 class ReleaseTrackNotImplementedException(Exception):
@@ -268,6 +273,7 @@ class _Common(object):
   _is_unicode_supported = False
   _release_track = None
   _valid_release_tracks = None
+  _notices = None
 
   def __init__(self):
     self.exit_code = 0
@@ -406,6 +412,16 @@ class _Common(object):
   @classmethod
   def ValidReleaseTracks(cls):
     return cls._valid_release_tracks
+
+  @classmethod
+  def Notices(cls):
+    return cls._notices
+
+  @classmethod
+  def AddNotice(cls, tag, msg):
+    if not cls._notices:
+      cls._notices = {}
+    cls._notices[tag] = msg
 
   @classmethod
   def GetExecutionFunction(cls, *args):
@@ -749,3 +765,68 @@ def ReleaseTracks(*tracks):
     cmd_class._valid_release_tracks = set(tracks)
     return cmd_class
   return ApplyReleaseTracks
+
+
+def Deprecate(is_removed=True,
+              warning='This command is deprecated.',
+              error='This command has been removed.'):
+  """Decorator that marks a Calliope command as deprecated.
+
+  Decorate a subclass of base.Command with this function and the
+  decorated command will be modified as follows:
+
+  - If is_removed is false, a warning will be logged when *command* is run,
+  otherwise an *exception* will be thrown containing error message
+
+  -Command help output will be modified to include warning/error message
+  depending on value of is_removed
+
+  - Command help text will automatically hidden from the reference documentation
+  (e.g. @base.Hidden) if is_removed is True
+
+
+  Args:
+      is_removed: boolean, True if the command should raise an error
+      when executed. If false, a warning is printed
+      warning: string, warning message
+      error: string, error message
+
+  Returns:
+    A modified version of the provided class.
+  """
+
+  def DeprecateCommand(cmd_class):
+    """Wrapper Function that creates actual decorated class.
+
+    Args:
+      cmd_class: base.Command subclass to be decorated
+
+    Returns:
+      The decorated class.
+    """
+    if is_removed:
+      msg = error
+      deprecation_tag = '{0}(REMOVED){0} '.format(MARKDOWN_BOLD)
+    else:
+      msg = warning
+      deprecation_tag = '{0}(DEPRECATED){0} '.format(MARKDOWN_BOLD)
+
+    cmd_class.AddNotice(deprecation_tag, msg)
+
+    def RunDecorator(run_func):
+      @wraps(run_func)
+      def WrappedRun(*args, **kw):
+        if is_removed:
+          raise DeprecationException(error)
+        log.warn(warning)
+        run_func(*args, **kw)
+      return WrappedRun
+
+    cmd_class.Run = RunDecorator(cmd_class.Run)
+
+    if is_removed:
+      return Hidden(cmd_class)
+
+    return cmd_class
+
+  return DeprecateCommand

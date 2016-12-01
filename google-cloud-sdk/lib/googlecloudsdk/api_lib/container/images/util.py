@@ -17,6 +17,7 @@ from apitools.base.py import list_pager
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_image
+from googlecloudsdk.api_lib.container.images import container_analysis_data_util
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -62,7 +63,10 @@ def ValidateRepositoryPath(repository_path):
         'Image name cannot end with \'/\'. '
         'Remove the trailing \'/\' and try again.')
   try:
-    repository = docker_name.Repository(repository_path)
+    if repository_path in constants.MIRROR_REGISTRIES:
+      repository = docker_name.Registry(repository_path)
+    else:
+      repository = docker_name.Repository(repository_path)
     if repository.registry not in constants.ALL_SUPPORTED_REGISTRIES:
       raise docker.UnsupportedRegistryError(repository_path)
     return repository
@@ -94,6 +98,8 @@ def _TimeCreatedToDateTime(time_created):
 
 def RecoverProjectId(repository):
   """Recovers the project-id from a GCR repository."""
+  if repository.registry in constants.MIRROR_REGISTRIES:
+    return constants.MIRROR_PROJECT
   parts = repository.repository.split('/')
   if '.' not in parts[0]:
     return parts[0]
@@ -111,24 +117,19 @@ def _ResourceUrl(repo, digest):
   return 'https://{repo}@{digest}'.format(repo=str(repo), digest=digest)
 
 
-def FetchOccurrences(repository, occurrence_filter=None):
-  """Fetches the occurrences attached to the list of manifests."""
-  project_id = RecoverProjectId(repository)
+def _FullyqualifiedDigest(digest):
+  return 'https://{digest}'.format(digest=digest)
 
+
+def _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter=None):
+  """Helper function to make Fetch Occurrence Request."""
   client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
   messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
-
-  # Retrieve all resource urls prefixed with the image path
-  resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
-      repo=_UnqualifiedResourceUrl(repository))
-
   if occurrence_filter:
     resource_filter = '({occurrence_filter}) AND ({resource_filter})'.format(
         occurrence_filter=occurrence_filter, resource_filter=resource_filter)
-
   project_ref = resources.REGISTRY.Parse(
       project_id, collection='cloudresourcemanager.projects')
-
   occurrences = list_pager.YieldFromList(
       client.projects_occurrences,
       request=messages.ContaineranalysisProjectsOccurrencesListRequest(
@@ -136,6 +137,36 @@ def FetchOccurrences(repository, occurrence_filter=None):
       field='occurrences',
       batch_size=1000,
       batch_size_attribute='pageSize')
+  return occurrences
+
+
+def FetchOccurrencesForResource(digest, occurrence_filter=None):
+  """Fetches the occurrences attached to this image."""
+  project_id = RecoverProjectId(digest)
+  resource_filter = 'resource_url="{resource_url}"'.format(
+      resource_url=_FullyqualifiedDigest(digest))
+  return _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter)
+
+
+def TransformContainerAnalysisData(image_name, occurrence_filter=None):
+  """Transforms the occurrence data from Container Analysis API."""
+  occurrences = FetchOccurrencesForResource(image_name, occurrence_filter)
+  analysis_obj = container_analysis_data_util.ContainerAnalysisData()
+  for occurrence in occurrences:
+    analysis_obj.add_record(occurrence)
+  return analysis_obj
+
+
+def FetchOccurrences(repository, occurrence_filter=None):
+  """Fetches the occurrences attached to the list of manifests."""
+  project_id = RecoverProjectId(repository)
+
+  # Retrieve all resource urls prefixed with the image path
+  resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
+      repo=_UnqualifiedResourceUrl(repository))
+
+  occurrences = _MakeOccurrenceRequest(project_id, resource_filter,
+                                       occurrence_filter)
   occurrences_by_resources = {}
   for occ in occurrences:
     if occ.resourceUrl not in occurrences_by_resources:

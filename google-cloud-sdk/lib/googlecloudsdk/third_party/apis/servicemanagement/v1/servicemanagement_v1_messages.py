@@ -78,20 +78,52 @@ class Api(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Enables "data access" audit logging for a service and specifies a list of
-  members that are log-exempted.
+  """Provides the configuration for non-admin_activity logging for a service.
+  Controls exemptions and specific log sub-types.
 
   Fields:
+    auditLogConfigs: The configuration for each type of logging Next ID: 4
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
       same format of Binding.members.
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
+      special value that covers all services.
   """
 
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for a sub-type of logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from this type
+      of logging Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Log admin reads
+      DATA_WRITE: Log data writes
+      DATA_READ: Log data reads
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
   exemptedMembers = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class AuthProvider(_messages.Message):
@@ -100,6 +132,16 @@ class AuthProvider(_messages.Message):
   token-32).
 
   Fields:
+    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
+      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
+      A JWT containing any of these audiences will be accepted. When this
+      setting is absent, only JWTs with audience
+      "https://Service_name/API_name" will be accepted. For example, if no
+      audiences are in the setting, LibraryService API will only accept JWTs
+      with the following audience "https://library-
+      example.googleapis.com/google.example.library.v1.LibraryService".
+      Example:      audiences: bookstore_android.apps.googleusercontent.com,
+      bookstore_web.apps.googleusercontent.com
     id: The unique identifier of the auth provider. It will be referred to by
       `AuthRequirement.provider_id`.  Example: "bookstore_auth".
     issuer: Identifies the principal that issued the JWT. See
@@ -116,9 +158,10 @@ class AuthProvider(_messages.Message):
       Example: https://www.googleapis.com/oauth2/v1/certs
   """
 
-  id = _messages.StringField(1)
-  issuer = _messages.StringField(2)
-  jwksUri = _messages.StringField(3)
+  audiences = _messages.StringField(1)
+  id = _messages.StringField(2)
+  issuer = _messages.StringField(3)
+  jwksUri = _messages.StringField(4)
 
 
 class AuthRequirement(_messages.Message):
@@ -127,13 +170,15 @@ class AuthRequirement(_messages.Message):
   token-32).
 
   Fields:
-    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
-      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
-      A JWT containing any of these audiences will be accepted. When this
-      setting is absent, only JWTs with audience
-      "https://Service_name/API_name" will be accepted. For example, if no
-      audiences are in the setting, LibraryService API will only accept JWTs
-      with the following audience "https://library-
+    audiences: NOTE: This will be deprecated soon, once AuthProvider.audiences
+      is implemented and accepted in all the runtime components.  The list of
+      JWT [audiences](https://tools.ietf.org/html/draft-ietf-oauth-json-web-
+      token-32#section-4.1.3). that are allowed to access. A JWT containing
+      any of these audiences will be accepted. When this setting is absent,
+      only JWTs with audience "https://Service_name/API_name" will be
+      accepted. For example, if no audiences are in the setting,
+      LibraryService API will only accept JWTs with the following audience
+      "https://library-
       example.googleapis.com/google.example.library.v1.LibraryService".
       Example:      audiences: bookstore_android.apps.googleusercontent.com,
       bookstore_web.apps.googleusercontent.com
@@ -775,9 +820,8 @@ class DisableServiceRequest(_messages.Message):
   Fields:
     consumerId: The identity of consumer resource which service disablement
       will be applied to.  The Google Service Management implementation
-      accepts the following forms: "project:<project_id>",
-      "project_number:<project_number>".  Note: this is made compatible with
-      google.api.servicecontrol.v1.Operation.consumer_id.
+      accepts the following forms: - "project:<project_id>"  Note: this is
+      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
   """
 
   consumerId = _messages.StringField(1)
@@ -995,9 +1039,8 @@ class EnableServiceRequest(_messages.Message):
   Fields:
     consumerId: The identity of consumer resource which service enablement
       will be applied to.  The Google Service Management implementation
-      accepts the following forms: "project:<project_id>",
-      "project_number:<project_number>".  Note: this is made compatible with
-      google.api.servicecontrol.v1.Operation.consumer_id.
+      accepts the following forms: - "project:<project_id>"  Note: this is
+      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
   """
 
   consumerId = _messages.StringField(1)
@@ -1403,12 +1446,13 @@ class HttpRule(_messages.Message):
   6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple String
   Expansion.  The syntax `**` matches zero or more path segments. It follows
   the semantics of [RFC 6570](https://tools.ietf.org/html/rfc6570) Section
-  3.2.3 Reserved Expansion.  The syntax `LITERAL` matches literal text in the
-  URL path.  The syntax `Variable` matches the entire path as specified by its
-  template; this nested template must not contain further variables. If a
-  variable matches a single path segment, its template may be omitted, e.g.
-  `{var}` is equivalent to `{var=*}`.  NOTE: the field paths in variables and
-  in the `body` must not refer to repeated fields or map fields.  Use
+  3.2.3 Reserved Expansion. NOTE: it must be the last segment in the path
+  except the Verb.  The syntax `LITERAL` matches literal text in the URL path.
+  The syntax `Variable` matches the entire path as specified by its template;
+  this nested template must not contain further variables. If a variable
+  matches a single path segment, its template may be omitted, e.g. `{var}` is
+  equivalent to `{var=*}`.  NOTE: the field paths in variables and in the
+  `body` must not refer to repeated fields or map fields.  Use
   CustomHttpPattern to specify any HTTP method that is not included in the
   `pattern` field, such as HEAD, or "*" to leave the HTTP method unspecified
   for a given URL path rule. The wild-card rule is useful for services that
@@ -1530,7 +1574,7 @@ class ListServicesResponse(_messages.Message):
   Fields:
     nextPageToken: Token that can be passed to `ListServices` to resume a
       paginated query.
-    services: The results of the query.
+    services: The returned services will only have the name field set.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1723,7 +1767,9 @@ class Method(_messages.Message):
 
 
 class MetricDescriptor(_messages.Message):
-  """Defines a metric type and its schema.
+  """Defines a metric type and its schema. Once a metric descriptor is
+  created, deleting or altering it stops data collection and makes the metric
+  type's existing data unusable.
 
   Enums:
     MetricKindValueValuesEnum: Whether the metric records instantaneous
@@ -1741,26 +1787,24 @@ class MetricDescriptor(_messages.Message):
       "Request count".
     labels: The set of labels that can be used to describe a specific instance
       of this metric type. For example, the
-      `compute.googleapis.com/instance/network/received_bytes_count` metric
-      type has a label, `loadbalanced`, that specifies whether the traffic was
-      received through a load balanced IP address.
+      `appengine.googleapis.com/http/server/response_latencies` metric type
+      has a label for the HTTP response code, `response_code`, so you can look
+      at latencies for successful responses or just for responses that failed.
     metricKind: Whether the metric records instantaneous values, changes to a
       value, etc. Some combinations of `metric_kind` and `value_type` might
       not be supported.
-    name: Resource name. The format of the name may vary between different
-      implementations. For examples:
-      projects/{project_id}/metricDescriptors/{type=**}
-      metricDescriptors/{type=**}
-    type: The metric type including a DNS name prefix, for example
-      `"compute.googleapis.com/instance/cpu/utilization"`. Metric types should
-      use a natural hierarchical grouping such as the following:
-      compute.googleapis.com/instance/cpu/utilization
-      compute.googleapis.com/instance/disk/read_ops_count
-      compute.googleapis.com/instance/network/received_bytes_count  Note that
-      if the metric type changes, the monitoring data will be discontinued,
-      and anything depends on it will break, such as monitoring dashboards,
-      alerting rules and quota limits. Therefore, once a metric has been
-      published, its type should be immutable.
+    name: The resource name of the metric descriptor. Depending on the
+      implementation, the name typically includes: (1) the parent resource
+      name that defines the scope of the metric type or of its data; and (2)
+      the metric's URL-encoded type, which also appears in the `type` field of
+      this descriptor. For example, following is the resource name of a custom
+      metric within the GCP project 123456789:      "projects/123456789/metric
+      Descriptors/custom.googleapis.com%2Finvoice%2Fpaid%2Famount"
+    type: The metric type, including its DNS name prefix. The type is not URL-
+      encoded.  All user-defined metric types have the DNS name
+      `custom.googleapis.com`.  Metric types should use a natural hierarchical
+      grouping. For example:      "custom.googleapis.com/invoice/paid/amount"
+      "appengine.googleapis.com/http/server/response_latencies"
     unit: The unit in which the metric value is reported. It is only
       applicable if the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`.
       The supported units are a subset of [The Unified Code for Units of
@@ -3072,7 +3116,7 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
   """A ServicemanagementServicesConfigsGetRequest object.
 
   Fields:
-    configId: A string attribute.
+    configId: The id of the service configuration resource.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
@@ -3119,9 +3163,9 @@ class ServicemanagementServicesConsumersListRequest(_messages.Message):
   Fields:
     consumerId: Include services consumed by the specified consumer.  The
       Google Service Management implementation accepts the following forms: -
-      project:<project_id> - project_number:<project_number> -
-      organization:<organization number> - folder:<folder number>  In this
-      version of the API, the only supported consumer type is "organization".
+      project:<project_id> - organization:<organization number> -
+      folder:<folder number>  In this version of the API, the only supported
+      consumer type is "organization".
     pageSize: Requested size of the next page of data.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
@@ -3253,7 +3297,7 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
   """A ServicemanagementServicesGetConfigRequest object.
 
   Fields:
-    configId: A string attribute.
+    configId: The id of the service configuration resource.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
@@ -3288,7 +3332,11 @@ class ServicemanagementServicesGetRequest(_messages.Message):
   Fields:
     consumerProjectId: If project_settings is expanded, return settings for
       the specified consumer project.
-    expand: A string attribute.
+    expand: Fields to expand in any results.  By default, the following fields
+      are not present in the result: - `operations` - `project_settings` -
+      `project_settings.operations` - `quota_usage` (It requires
+      `project_settings`) - `historical_quota_usage` (It requires
+      `project_settings`)
     serviceName: The name of the service.  See the `ServiceManager` overview
       for naming requirements.  For example: `example.googleapis.com`.
     view: If project_settings is expanded, request only fields for the
@@ -3325,13 +3373,7 @@ class ServicemanagementServicesListRequest(_messages.Message):
       services or servicemanagement.googleapis.com/categories/play-games.
     consumerId: Include services consumed by the specified consumer.  The
       Google Service Management implementation accepts the following forms: -
-      project:<project_id> - project_number:<project_number> -
-      organization:<organization number> - folder:<folder number>  Note: If
-      consumer_id specifies a folder or an organization, then the expand
-      option is ignored. To retrieve consumer settings at folder or
-      organization level, "ListServiceConsumers" should be used.  If
-      consumer_id specifies a project, then the semantics of the API are
-      identical to specifying consumer_project_id.
+      project:<project_id>
     consumerProjectId: Include services consumed by the specified project.  If
       project_settings is expanded, then this field controls which project
       project_settings is populated for.
@@ -3354,22 +3396,6 @@ class ServicemanagementServicesListRequest(_messages.Message):
   producerProjectId = _messages.StringField(7)
 
 
-class ServicemanagementServicesPatchConfigRequest(_messages.Message):
-  """A ServicemanagementServicesPatchConfigRequest object.
-
-  Fields:
-    service: A Service resource to be passed as the request body.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
-    updateMask: A mask specifying which fields to update.
-  """
-
-  service = _messages.MessageField('Service', 1)
-  serviceName = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class ServicemanagementServicesPatchRequest(_messages.Message):
   """A ServicemanagementServicesPatchRequest object.
 
@@ -3379,7 +3405,8 @@ class ServicemanagementServicesPatchRequest(_messages.Message):
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
-    updateMask: A mask specifying which fields to update.
+    updateMask: A mask specifying which field to update - only one should be
+      set.
   """
 
   managedService = _messages.MessageField('ManagedService', 1)
@@ -3513,24 +3540,6 @@ class ServicemanagementServicesUndeleteRequest(_messages.Message):
   """
 
   serviceName = _messages.StringField(1, required=True)
-
-
-class ServicemanagementServicesUpdateConfigRequest(_messages.Message):
-  """A ServicemanagementServicesUpdateConfigRequest object.
-
-  Fields:
-    service: A Service resource to be passed as the request body.
-    serviceName: The name of the service.  See the [overview](/service-
-      management/overview) for naming requirements.  For example:
-      `example.googleapis.com`.
-    updateMask: A mask specifying which fields to update. Update mask has been
-      deprecated on UpdateServiceConfig service method. Please use
-      PatchServiceConfig method instead to do partial updates.
-  """
-
-  service = _messages.MessageField('Service', 1)
-  serviceName = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class ServicemanagementServicesUpdateRequest(_messages.Message):

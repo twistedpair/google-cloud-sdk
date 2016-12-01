@@ -145,11 +145,6 @@ def AddCommonArgs(parser, for_update=False):
         $ {command} MY-RULE --target-tags
       """
 
-  parser.add_argument(
-      'name',
-      help='The name of the firewall rule to {0}'.format(
-          'update.' if for_update else 'create.'))
-
 
 def ParseAllowed(allowed, message_classes):
   """Parses protocol:port mappings from --allow command line."""

@@ -139,3 +139,15 @@ class ValuePrinter(CsvPrinter):
     self._quote = '"' if self.attributes.get('quote', 0) else None
     self._separator = self.attributes.get('separator', '\t')
     self._terminator = self.attributes.get('terminator', '\n')
+
+
+class GetPrinter(ValuePrinter):
+  r"""A printer for printing value data with transforms disabled.
+
+  Equivalent to the *value[no-transforms]* format. Default transforms are
+  not applied to the displayed values.
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(GetPrinter, self).__init__(*args, ignore_default_transforms=True,
+                                     **kwargs)

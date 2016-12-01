@@ -1127,6 +1127,9 @@ class JobConfigurationLoad(_messages.Message):
       can ignore when running the job. If the number of bad records exceeds
       this value, an invalid error is returned in the job result. The default
       value is 0, which requires that all records are valid.
+    nullMarker: [Optional] This string will be interpreted as a null value
+      when it appears in a CSV file. The default value is the empty string.
+      Please refer to the documentation for further information.
     projectionFields: [Experimental] If sourceFormat is set to
       "DATASTORE_BACKUP", indicates which entity properties to load into
       BigQuery from a Cloud Datastore backup. Property names are case
@@ -1189,16 +1192,17 @@ class JobConfigurationLoad(_messages.Message):
   fieldDelimiter = _messages.StringField(7)
   ignoreUnknownValues = _messages.BooleanField(8)
   maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  projectionFields = _messages.StringField(10, repeated=True)
-  quote = _messages.StringField(11, default=u'"')
-  schema = _messages.MessageField('TableSchema', 12)
-  schemaInline = _messages.StringField(13)
-  schemaInlineFormat = _messages.StringField(14)
-  schemaUpdateOptions = _messages.StringField(15, repeated=True)
-  skipLeadingRows = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(17)
-  sourceUris = _messages.StringField(18, repeated=True)
-  writeDisposition = _messages.StringField(19)
+  nullMarker = _messages.StringField(10)
+  projectionFields = _messages.StringField(11, repeated=True)
+  quote = _messages.StringField(12, default=u'"')
+  schema = _messages.MessageField('TableSchema', 13)
+  schemaInline = _messages.StringField(14)
+  schemaInlineFormat = _messages.StringField(15)
+  schemaUpdateOptions = _messages.StringField(16, repeated=True)
+  skipLeadingRows = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(18)
+  sourceUris = _messages.StringField(19, repeated=True)
+  writeDisposition = _messages.StringField(20)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1258,13 +1262,12 @@ class JobConfigurationQuery(_messages.Message):
       of BigQuery, describes the data format, location and other properties of
       the data source. By defining these properties, the data source can then
       be queried as if it were a standard BigQuery table.
-    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
-      SQL dialect for this query. The default value is true. If set to false,
-      the query will use BigQuery's standard SQL:
-      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
-      set to false, the values of allowLargeResults and flattenResults are
-      ignored; query will be run as if allowLargeResults is true and
-      flattenResults is false.
+    useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
+      this query. The default value is true. If set to false, the query will
+      use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
+      reference/ When useLegacySql is set to false, the values of
+      allowLargeResults and flattenResults are ignored; query will be run as
+      if allowLargeResults is true and flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
@@ -1470,6 +1473,8 @@ class JobStatistics2(_messages.Message):
       list.
     schema: [Output-only, Experimental] The schema of the results. Present
       only for successful dry run of non-legacy SQL queries.
+    statementType: [Output-only, Experimental] The type of query statement, if
+      valid.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
     undeclaredQueryParameters: [Output-only, Experimental] Standard SQL only:
@@ -1483,9 +1488,10 @@ class JobStatistics2(_messages.Message):
   queryPlan = _messages.MessageField('ExplainQueryStage', 4, repeated=True)
   referencedTables = _messages.MessageField('TableReference', 5, repeated=True)
   schema = _messages.MessageField('TableSchema', 6)
-  totalBytesBilled = _messages.IntegerField(7)
-  totalBytesProcessed = _messages.IntegerField(8)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 9, repeated=True)
+  statementType = _messages.StringField(7)
+  totalBytesBilled = _messages.IntegerField(8)
+  totalBytesProcessed = _messages.IntegerField(9)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 10, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -1739,13 +1745,12 @@ class QueryRequest(_messages.Message):
       results and with the 'jobComplete' flag set to false. You can call
       GetQueryResults() to wait for the query to complete and read the
       results. The default value is 10000 milliseconds (10 seconds).
-    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
-      SQL dialect for this query. The default value is true. If set to false,
-      the query will use BigQuery's standard SQL:
-      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
-      set to false, the values of allowLargeResults and flattenResults are
-      ignored; query will be run as if allowLargeResults is true and
-      flattenResults is false.
+    useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
+      this query. The default value is true. If set to false, the query will
+      use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
+      reference/ When useLegacySql is set to false, the values of
+      allowLargeResults and flattenResults are ignored; query will be run as
+      if allowLargeResults is true and flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.
@@ -1874,6 +1879,15 @@ class Streamingbuffer(_messages.Message):
 class Table(_messages.Message):
   """A Table object.
 
+  Messages:
+    LabelsValue: [Experimental] The labels associated with this table. You can
+      use these to organize and group your tables. Label keys and values can
+      be no longer than 63 characters, can only contain letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and must be unique within a dataset. Both keys and values are
+      additionally constrained to be <= 128 bytes in size.
+
   Fields:
     creationTime: [Output-only] The time when this table was created, in
       milliseconds since the epoch.
@@ -1890,6 +1904,13 @@ class Table(_messages.Message):
     friendlyName: [Optional] A descriptive name for this table.
     id: [Output-only] An opaque ID uniquely identifying the table.
     kind: [Output-only] The type of the resource.
+    labels: [Experimental] The labels associated with this table. You can use
+      these to organize and group your tables. Label keys and values can be no
+      longer than 63 characters, can only contain letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter and must be
+      unique within a dataset. Both keys and values are additionally
+      constrained to be <= 128 bytes in size.
     lastModifiedTime: [Output-only] The time when this table was last
       modified, in milliseconds since the epoch.
     location: [Output-only] The geographic location where the table resides.
@@ -1918,6 +1939,36 @@ class Table(_messages.Message):
     view: [Optional] The view definition.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Experimental] The labels associated with this table. You can use these
+    to organize and group your tables. Label keys and values can be no longer
+    than 63 characters, can only contain letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and must be unique
+    within a dataset. Both keys and values are additionally constrained to be
+    <= 128 bytes in size.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTime = _messages.IntegerField(1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
@@ -1926,18 +1977,19 @@ class Table(_messages.Message):
   friendlyName = _messages.StringField(6)
   id = _messages.StringField(7)
   kind = _messages.StringField(8, default=u'bigquery#table')
-  lastModifiedTime = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(10)
-  numBytes = _messages.IntegerField(11)
-  numLongTermBytes = _messages.IntegerField(12)
-  numRows = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  schema = _messages.MessageField('TableSchema', 14)
-  selfLink = _messages.StringField(15)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 16)
-  tableReference = _messages.MessageField('TableReference', 17)
-  timePartitioning = _messages.MessageField('TimePartitioning', 18)
-  type = _messages.StringField(19)
-  view = _messages.MessageField('ViewDefinition', 20)
+  labels = _messages.MessageField('LabelsValue', 9)
+  lastModifiedTime = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(11)
+  numBytes = _messages.IntegerField(12)
+  numLongTermBytes = _messages.IntegerField(13)
+  numRows = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  schema = _messages.MessageField('TableSchema', 15)
+  selfLink = _messages.StringField(16)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 17)
+  tableReference = _messages.MessageField('TableReference', 18)
+  timePartitioning = _messages.MessageField('TimePartitioning', 19)
+  type = _messages.StringField(20)
+  view = _messages.MessageField('ViewDefinition', 21)
 
 
 class TableCell(_messages.Message):
@@ -2054,8 +2106,10 @@ class TableFieldSchema(_messages.Message):
       A-Z), numbers (0-9), or underscores (_), and must start with a letter or
       underscore. The maximum length is 128 characters.
     type: [Required] The field data type. Possible values include STRING,
-      BYTES, INTEGER, FLOAT, BOOLEAN, TIMESTAMP, DATE, TIME, DATETIME, or
-      RECORD (where RECORD indicates that the field contains a nested schema).
+      BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
+      BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, RECORD
+      (where RECORD indicates that the field contains a nested schema) or
+      STRUCT (same as RECORD).
   """
 
   description = _messages.StringField(1)
@@ -2082,19 +2136,51 @@ class TableList(_messages.Message):
   class TablesValueListEntry(_messages.Message):
     """A TablesValueListEntry object.
 
+    Messages:
+      LabelsValue: [Experimental] The labels associated with this table. You
+        can use these to organize and group your tables.
+
     Fields:
       friendlyName: The user-friendly name for this table.
       id: An opaque ID of the table
       kind: The resource type.
+      labels: [Experimental] The labels associated with this table. You can
+        use these to organize and group your tables.
       tableReference: A reference uniquely identifying the table.
       type: The type of table. Possible values are: TABLE, VIEW.
     """
 
+    @encoding.MapUnrecognizedFields('additionalProperties')
+    class LabelsValue(_messages.Message):
+      """[Experimental] The labels associated with this table. You can use
+      these to organize and group your tables.
+
+      Messages:
+        AdditionalProperty: An additional property for a LabelsValue object.
+
+      Fields:
+        additionalProperties: Additional properties of type LabelsValue
+      """
+
+      class AdditionalProperty(_messages.Message):
+        """An additional property for a LabelsValue object.
+
+        Fields:
+          key: Name of the additional property.
+          value: A string attribute.
+        """
+
+        key = _messages.StringField(1)
+        value = _messages.StringField(2)
+
+      additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
     friendlyName = _messages.StringField(1)
     id = _messages.StringField(2)
     kind = _messages.StringField(3, default=u'bigquery#table')
-    tableReference = _messages.MessageField('TableReference', 4)
-    type = _messages.StringField(5)
+    labels = _messages.MessageField('LabelsValue', 4)
+    tableReference = _messages.MessageField('TableReference', 5)
+    type = _messages.StringField(6)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'bigquery#tableList')
@@ -2175,9 +2261,9 @@ class ViewDefinition(_messages.Message):
   Fields:
     query: [Required] A query that BigQuery executes when the view is
       referenced.
-    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
-      SQL for this view. The default value is true. If set to false, the view
-      will use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
+    useLegacySql: Specifies whether to use BigQuery's legacy SQL for this
+      view. The default value is true. If set to false, the view will use
+      BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
       reference/ Queries and views that reference this view must use the same
       flag value.
     userDefinedFunctionResources: [Experimental] Describes user-defined

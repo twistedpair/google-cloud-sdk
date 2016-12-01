@@ -815,6 +815,8 @@ class StatusMessage(_messages.Message):
         its condition.
       BREAKPOINT_EXPRESSION: Status applies to the breakpoint and is related
         to its expressions.
+      BREAKPOINT_AGE: Status applies to the breakpoint and is related to its
+        age.
       VARIABLE_NAME: Status applies to the entire variable.
       VARIABLE_VALUE: Status applies to variable value (variable name is
         valid).
@@ -823,8 +825,9 @@ class StatusMessage(_messages.Message):
     BREAKPOINT_SOURCE_LOCATION = 1
     BREAKPOINT_CONDITION = 2
     BREAKPOINT_EXPRESSION = 3
-    VARIABLE_NAME = 4
-    VARIABLE_VALUE = 5
+    BREAKPOINT_AGE = 4
+    VARIABLE_NAME = 5
+    VARIABLE_VALUE = 6
 
   description = _messages.MessageField('FormatMessage', 1)
   isError = _messages.BooleanField(2)
