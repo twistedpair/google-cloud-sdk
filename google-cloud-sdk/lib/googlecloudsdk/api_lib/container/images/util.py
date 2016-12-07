@@ -16,7 +16,14 @@
 from apitools.base.py import list_pager
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
-from containerregistry.client.v2_2 import docker_image
+# We use distinct versions of the library for v2 and v2.2 because
+# the schema of the JSON data returned is fairly different, and
+# images addressed by digest must be accessed via the API version
+# corresponding to how they are stored.
+from containerregistry.client.v2 import docker_image as v2_image
+from containerregistry.client.v2 import util as v2_util
+from containerregistry.client.v2_2 import docker_image as v2_2_image
+from containerregistry.client.v2_2 import util as v2_2_util
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
@@ -151,7 +158,7 @@ def FetchOccurrencesForResource(digest, occurrence_filter=None):
 def TransformContainerAnalysisData(image_name, occurrence_filter=None):
   """Transforms the occurrence data from Container Analysis API."""
   occurrences = FetchOccurrencesForResource(image_name, occurrence_filter)
-  analysis_obj = container_analysis_data_util.ContainerAnalysisData()
+  analysis_obj = container_analysis_data_util.ContainerAnalysisData(image_name)
   for occurrence in occurrences:
     analysis_obj.add_record(occurrence)
   return analysis_obj
@@ -217,9 +224,9 @@ def GetTagNamesForDigest(digest, http_obj):
   """
   repository_path = digest.registry + '/' + digest.repository
   repository = ValidateRepositoryPath(repository_path)
-  with docker_image.FromRegistry(basic_creds=CredentialProvider(),
-                                 name=repository,
-                                 transport=http_obj) as image:
+  with v2_2_image.FromRegistry(basic_creds=CredentialProvider(),
+                               name=repository,
+                               transport=http_obj) as image:
     if digest.digest not in image.manifests():
       return []
     manifest_value = image.manifests().get(digest.digest, {})
@@ -271,6 +278,50 @@ def GetDockerImageFromTagOrDigest(image_name):
   return docker_name.Digest(image_name)
 
 
+def GetDigestFromName(image_name):
+  """Gets a digest object given a repository, tag or digest.
+
+  Args:
+    image_name: A docker image reference, possibly underqualified.
+
+  Returns:
+    a docker_name.Digest object.
+
+  Raises:
+    InvalidImageNameError: If no digest can be resolved.
+  """
+  tag_or_digest = GetDockerImageFromTagOrDigest(image_name)
+  # If we got a digest, then just return it.
+  if isinstance(tag_or_digest, docker_name.Digest):
+    return tag_or_digest
+
+  # If we got a tag, resolve it to a digest.
+  def ResolveV2Tag(tag):
+    with v2_image.FromRegistry(
+        basic_creds=CredentialProvider(), name=tag,
+        transport=http.Http()) as v2_img:
+      if v2_img.exists():
+        return v2_util.Digest(v2_img.manifest())
+      return None
+
+  def ResolveV22Tag(tag):
+    with v2_2_image.FromRegistry(
+        basic_creds=CredentialProvider(), name=tag,
+        transport=http.Http()) as v2_2_img:
+      if v2_2_img.exists():
+        return v2_2_util.Digest(v2_2_img.manifest())
+      return None
+
+  sha256 = ResolveV2Tag(tag_or_digest) or ResolveV22Tag(tag_or_digest)
+  if not sha256:
+    raise InvalidImageNameError('[{0}] is not a valid name.'.format(image_name))
+
+  return docker_name.Digest('{registry}/{repository}@{sha256}'.format(
+      registry=tag_or_digest.registry,
+      repository=tag_or_digest.repository,
+      sha256=sha256))
+
+
 def GetDockerDigestFromPrefix(digest):
   """Gets a full digest string given a potential prefix.
 
@@ -285,9 +336,9 @@ def GetDockerDigestFromPrefix(digest):
   """
   repository_path, prefix = digest.split('@', 1)
   repository = ValidateRepositoryPath(repository_path)
-  with docker_image.FromRegistry(basic_creds=CredentialProvider(),
-                                 name=repository,
-                                 transport=http.Http()) as image:
+  with v2_2_image.FromRegistry(basic_creds=CredentialProvider(),
+                               name=repository,
+                               transport=http.Http()) as image:
     matches = [d for d in image.manifests() if d.startswith(prefix)]
 
     if len(matches) == 1:

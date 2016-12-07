@@ -13,11 +13,11 @@
 # limitations under the License.
 """Utilities for the API to configure cross-project networking (XPN)."""
 from googlecloudsdk.api_lib.compute import client_adapter
-from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.compute import xpn_util
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.credentials import http as core_http
+
+
+_API_VERSION = 'alpha'
 
 
 class XpnApiError(exceptions.Error):
@@ -30,30 +30,17 @@ class XpnClient(object):
   The XPN API is a subset of the Google Compute Engine API.
   """
 
-  def __init__(self, client, messages, http=None):
-    self.client = client
-    self.messages = messages
-    self._http = http
-
-  @property
-  def http(self):
-    if not self._http:
-      self._http = core_http.Http()
-    return self._http
-
-  @property
-  def batch_url(self):
-    return client_adapter.GetBatchUrl(self.client.url)
+  def __init__(self, compute_client):
+    self.compute_client = compute_client
+    self.client = compute_client.apitools_client
+    self.messages = compute_client.messages
 
   # TODO(b/30465957): Refactor to use apitools clients directly and not the
   # compute utilities
   def _MakeRequest(self, request, errors):
-    return request_helper.MakeRequests(
+    return self.compute_client.MakeRequests(
         requests=[request],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors_to_collect=errors)
 
   def _MakeRequestSync(self, request_tuple, operation_msg=None):
     errors = []
@@ -201,4 +188,4 @@ class XpnClient(object):
 
 
 def GetXpnClient():
-  return XpnClient(xpn_util.GetClientInstance(), xpn_util.GetMessagesModule())
+  return XpnClient(client_adapter.ClientAdapter(_API_VERSION))

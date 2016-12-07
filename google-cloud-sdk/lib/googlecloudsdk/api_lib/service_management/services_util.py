@@ -38,6 +38,8 @@ FINGERPRINT_REGEX = re.compile(
 OP_BASE_CMD = 'gcloud beta service-management operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
+SERVICES_COLLECTION = 'servicemanagement-v1.services'
+CONFIG_COLLECTION = 'servicemanagement-v1.serviceConfigs'
 
 
 class OperationErrorException(core_exceptions.Error):
@@ -135,24 +137,6 @@ def GetProducedListRequest(project_id):
   )
 
 
-def GetError(error, verbose=False):
-  """Returns a ready-to-print string representation from the http response.
-
-  Args:
-    error: A string representing the raw json of the Http error response.
-    verbose: Whether or not to print verbose messages [default false]
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  data = json.loads(error.content)
-  if verbose:
-    PrettyPrint(data)
-  code = data['error']['code']
-  message = data['error']['message']
-  return 'ResponseError: code={0}, message={1}'.format(code, message)
-
-
 def PrettyPrint(resource, print_format='json'):
   """Prints the given resource."""
   resource_printer.Print(
@@ -214,7 +198,6 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async):
   api_response = client.services_configs.Submit(submit_request)
   operation = ProcessOperationResult(api_response, async)
 
-  diagnostics = svc_config = None
   response = operation.get('response', {})
   diagnostics = response.get('diagnostics', [])
   svc_config = response.get('serviceConfig', {})
@@ -350,7 +333,6 @@ def ProcessOperationResult(result, async=False):
     The processed Operation message in Python dict form
   """
   op = GetProcessedOperationResult(result, async)
-  cmd = OP_DESCRIBE_CMD.format(op.get('name'))
   if async:
     cmd = OP_WAIT_CMD.format(op.get('name'))
     log.status.Print('Asynchronous operation is in progress... '
@@ -446,10 +428,7 @@ def WaitForOperation(op_name, client):
         operationsId=op_name,
     )
 
-    try:
-      result = client.operations.Get(request)
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(GetError(error))
+    result = client.operations.Get(request)
 
     if result.done:
       WaitForOperation.operation_response = result

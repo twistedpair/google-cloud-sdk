@@ -239,7 +239,7 @@ def FormatRegistryDescriptions():
     descriptions.append('\n{description}:\n+\n'.format(
         description=description[:-1]))
     for attribute, description in attributes:
-      descriptions.append('*{attribute}*:::\n{description}\n'.format(
+      descriptions.append('*{attribute}*::\n{description}\n'.format(
           attribute=attribute, description=description))
   if example:
     _AppendParagraph(descriptions)

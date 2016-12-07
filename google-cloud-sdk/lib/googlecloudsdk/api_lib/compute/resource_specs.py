@@ -945,6 +945,16 @@ _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
         'description',
         'enableCdn',
     ])
+
+_SPECS_ALPHA['hosts'] = _InternalSpec(
+    message_class_name='Host',
+    table_cols=[
+        ('NAME', 'name'),
+        ('REQUEST_PATH', 'requestPath'),
+    ],
+    transformations=[],
+    editables=None)
+
 _SPECS_ALPHA['instanceGroups'] = _InternalSpec(
     message_class_name='InstanceGroup',
     table_cols=[

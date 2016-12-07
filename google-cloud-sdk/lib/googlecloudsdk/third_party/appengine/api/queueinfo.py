@@ -31,12 +31,24 @@ __author__ = 'arb@google.com (Anthony Baxter)'
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
-from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.api import validation
-from googlecloudsdk.third_party.appengine.api import yaml_builder
-from googlecloudsdk.third_party.appengine.api import yaml_listener
-from googlecloudsdk.third_party.appengine.api import yaml_object
-from googlecloudsdk.third_party.appengine.api.taskqueue import taskqueue_service_pb
+import os
+
+# pylint: disable=g-import-not-at-top
+if os.environ.get('APPENGINE_RUNTIME') == 'python27':
+  from google.appengine.api import appinfo
+  from google.appengine.api import validation
+  from google.appengine.api import yaml_builder
+  from google.appengine.api import yaml_listener
+  from google.appengine.api import yaml_object
+  from google.appengine.api.taskqueue import taskqueue_service_pb
+else:
+  from googlecloudsdk.third_party.appengine.api import appinfo
+  from googlecloudsdk.third_party.appengine.api import validation
+  from googlecloudsdk.third_party.appengine.api import yaml_builder
+  from googlecloudsdk.third_party.appengine.api import yaml_listener
+  from googlecloudsdk.third_party.appengine.api import yaml_object
+  from googlecloudsdk.third_party.appengine.api.taskqueue import taskqueue_service_pb
+# pylint: enable=g-import-not-at-top
 
 # This is exactly the same regex as is in `api/taskqueue/taskqueue_service.cc`
 _NAME_REGEX = r'^[A-Za-z0-9-]{0,499}$'

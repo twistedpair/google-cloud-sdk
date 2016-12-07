@@ -22,6 +22,7 @@ import datetime
 import json
 import os
 import textwrap
+import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -107,6 +108,11 @@ class InvalidCredentialFileException(Error):
 
 class CredentialFileSaveError(Error):
   """An error for when we fail to save a credential file."""
+  pass
+
+
+class UnknownCredentialsType(Error):
+  """An error for when we fail to determine the type of the credentials."""
   pass
 
 
@@ -270,18 +276,24 @@ def Load(account=None, scopes=None, prevent_refresh=False):
              cred_file_override)
     try:
       cred = client.GoogleCredentials.from_stream(cred_file_override)
-      cred_type = cred.serialization_data['type']
-      token_uri_override = properties.VALUES.auth.token_host.Get()
-      if cred_type == client.SERVICE_ACCOUNT and token_uri_override:
-        # pylint: disable=protected-access
-        cred.token_uri = cred._token_uri = token_uri_override
-      if cred.create_scoped_required():
-        if scopes is None:
-          scopes = config.CLOUDSDK_SCOPES
-        cred = cred.create_scoped(scopes)
-      return cred
     except client.Error as e:
       raise InvalidCredentialFileException(cred_file_override, e)
+
+    if cred.create_scoped_required():
+      if scopes is None:
+        scopes = config.CLOUDSDK_SCOPES
+      cred = cred.create_scoped(scopes)
+
+    # Set token_uri after scopes since token_uri needs to be explicitly
+    # preserved when scopes are applied.
+    token_uri_override = properties.VALUES.auth.token_host.Get()
+    if token_uri_override:
+      cred_type = CredentialType.FromCredentials(cred)
+      if cred_type in (CredentialType.SERVICE_ACCOUNT,
+                       CredentialType.P12_SERVICE_ACCOUNT):
+        # pylint: disable=protected-access
+        cred.token_uri = cred._token_uri = token_uri_override
+    return cred
 
   if not account:
     account = properties.VALUES.core.account.Get()
@@ -569,13 +581,13 @@ def SaveCredentialsAsADC(creds, file_path):
   Raises:
     CredentialFileSaveError: on file io errors.
   """
-  if isinstance(creds, client.SignedJwtAssertionCredentials):
+  creds_type = CredentialType.FromCredentials(creds)
+  if creds_type == CredentialType.P12_SERVICE_ACCOUNT:
     raise CredentialFileSaveError(
         'Error saving Application Default Credentials: p12 keys are not'
         'supported in this format')
 
-  # pylint: disable=protected-access
-  if not isinstance(creds, service_account._ServiceAccountCredentials):
+  if creds_type == CredentialType.USER_ACCOUNT:
     creds = client.GoogleCredentials(
         creds.access_token, creds.client_id, creds.client_secret,
         creds.refresh_token, creds.token_expiry, creds.token_uri,
@@ -590,11 +602,34 @@ def SaveCredentialsAsADC(creds, file_path):
         'Error saving Application Default Credentials: ' + str(e))
 
 
+class CredentialType(enum.Enum):
+  UNKNOWN = 0
+  USER_ACCOUNT = 1
+  SERVICE_ACCOUNT = 2
+  P12_SERVICE_ACCOUNT = 3
+
+  @staticmethod
+  def FromCredentials(creds):
+    # Remove linter directive when
+    # https://github.com/google/oauth2client/issues/165 is addressed.
+    # pylint: disable=protected-access
+    if isinstance(creds, service_account._ServiceAccountCredentials):
+      return CredentialType.SERVICE_ACCOUNT
+    if isinstance(creds, client.SignedJwtAssertionCredentials):
+      return CredentialType.P12_SERVICE_ACCOUNT
+    if getattr(creds, 'refresh_token', None) is not None:
+      return CredentialType.USER_ACCOUNT
+    return CredentialType.UNKNOWN
+
+
 class _LegacyGenerator(object):
   """A class to generate the credential file for legacy tools."""
 
   def __init__(self, account, credentials, scopes=None):
     self.credentials = credentials
+    self.credentials_type = CredentialType.FromCredentials(credentials)
+    if self.credentials_type == CredentialType.UNKNOWN:
+      raise UnknownCredentialsType('Unknown credentials type.')
     if scopes is None:
       self.scopes = config.CLOUDSDK_SCOPES
     else:
@@ -628,19 +663,30 @@ class _LegacyGenerator(object):
     """Write the credential file."""
 
     # General credentials used by bq and gsutil.
-    if not isinstance(self.credentials, client.SignedJwtAssertionCredentials):
+    if self.credentials_type != CredentialType.P12_SERVICE_ACCOUNT:
       SaveCredentialsAsADC(self.credentials, self._adc_path)
 
-    if self.credentials.refresh_token:
-      # we create a small .boto file for gsutil, to be put in BOTO_PATH
-      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
-          [Credentials]
-          gs_oauth2_refresh_token = {token}
-          """).format(token=self.credentials.refresh_token))
-    elif (client.HAS_CRYPTO and
-          isinstance(self.credentials, client.SignedJwtAssertionCredentials)):
+      if self.credentials_type == CredentialType.USER_ACCOUNT:
+        # we create a small .boto file for gsutil, to be put in BOTO_PATH
+        self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
+            [Credentials]
+            gs_oauth2_refresh_token = {token}
+            """).format(token=self.credentials.refresh_token))
+      elif self.credentials_type == CredentialType.SERVICE_ACCOUNT:
+        self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
+            [Credentials]
+            gs_service_key_file = {key_file}
+            """).format(key_file=self._adc_path))
+      else:
+        raise CredentialFileSaveError(
+            'Unsupported credentials type {0}'.format(type(self.credentials)))
+    else:  # P12 service account
+      key = base64.b64decode(self.credentials.private_key)
+      password = self.credentials.private_key_password
+
       with files.OpenForWritingPrivate(self._p12_key_path, binary=True) as pk:
-        pk.write(base64.b64decode(self.credentials.private_key))
+        pk.write(key)
+
       # the .boto file gets some different fields
       self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
           [Credentials]
@@ -649,22 +695,7 @@ class _LegacyGenerator(object):
           gs_service_key_file_password = {key_password}
           """).format(account=self.credentials.service_account_name,
                       key_file=self._p12_key_path,
-                      key_password=self.credentials.private_key_password))
-    # Remove linter directive when
-    # https://github.com/google/oauth2client/issues/165 is addressed.
-    elif isinstance(
-        self.credentials,
-        # pylint: disable=protected-access
-        service_account._ServiceAccountCredentials
-        # pylint: enable=protected-access
-        ):
-      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
-          [Credentials]
-          gs_service_key_file = {key_file}
-          """).format(key_file=self._adc_path))
-    else:
-      raise CredentialFileSaveError(
-          'Unsupported credentials type {0}'.format(type(self.credentials)))
+                      key_password=password))
 
   def _WriteFileContents(self, filepath, contents):
     """Writes contents to a path, ensuring mkdirs.

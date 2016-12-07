@@ -12,22 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for job submission preparation."""
-
 import cStringIO
 import os
 import shutil
 import sys
-import time
 
-from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.command_lib.ml import flags
+from googlecloudsdk.command_lib.ml import uploads
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 
-DIST_PREFIX = 'cloudmldist'
 DEFAULT_SETUP_FILE = """\
 from setuptools import setup
 
@@ -37,7 +34,6 @@ if __name__ == '__main__':
 _NO_PACKAGES_ERROR_MSG = (
     'If --package-path is not specified, at least'
     'one tar.gz archive must be specified with --packages')
-_UTCNOW = time.time
 _SETUP_FAILURE_ERROR_MSG_GENERATED = """
     Packaging of user python code failed with message:
       {message}
@@ -80,7 +76,12 @@ def RunSetupAndUpload(packages, staging_bucket, package_path):
   Raises:
     ValueError: If packages is empty, and building package_path produces no
     tar archives.
+    ArgumentError: if no packages were found in the given path.
   """
+  def _MakePairs(paths):
+    """Return tuples corresponding to the files and their upload paths."""
+    return [(path, os.path.basename(path)) for path in paths]
+
   if package_path:
     with files.TemporaryDirectory() as temp_dir:
       setup_dir, package_name = os.path.split(os.path.abspath(package_path))
@@ -95,11 +96,11 @@ def RunSetupAndUpload(packages, staging_bucket, package_path):
       if not package_paths:
         raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
 
-      return _UploadFiles(package_paths, staging_bucket)
+      return uploads.UploadFiles(_MakePairs(package_paths), staging_bucket)
   else:
     if not packages:
       raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
-    return _UploadFiles(packages, staging_bucket)
+    return uploads.UploadFiles(_MakePairs(packages), staging_bucket)
 
 
 def _RunSetup(setup_dir, package_name):
@@ -153,26 +154,3 @@ def _RunSetup(setup_dir, package_name):
                  for rel_file in os.listdir(dist_dir)]
   log.debug('Python packaging resulted in [{0}]'.format(str(local_paths)))
   return local_paths
-
-
-def _UploadFiles(local_paths, bucket_ref):
-  """Uploads files at the local path to a specifically prefixed location.
-
-  Args:
-    local_paths:  [str]. Absolute paths to local files to upload.
-    bucket_ref: storage_util.BucketReference.
-      Files will be uploaded to this bucket.
-  Returns:
-    [str]. A list of fully qualified gcs paths for the uploaded files.
-  """
-  gs_prefix = '/'.join([DIST_PREFIX, str(int(_UTCNOW()))])
-  storage_client = storage_api.StorageClient()
-  dests = []
-  for local_path in local_paths:
-    obj = storage_client.CopyFileToGCS(
-        bucket_ref,
-        local_path,
-        '/'.join([gs_prefix, os.path.basename(local_path)]))
-    dests.append('/'.join(['gs:/', obj.bucket, obj.name]))
-  return dests
-

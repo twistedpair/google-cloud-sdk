@@ -15,8 +15,8 @@
 
 
 _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
-                         'deleting', 'rebooting', 'restarting', 'recreating',
-                         'refreshing']
+                         'deleting', 'recreating', 'refreshing', 'restarting',
+                         'verifying']
 
 
 _PENDING_ACTION_TYPES = ['creating', 'deleting', 'restarting', 'recreating']

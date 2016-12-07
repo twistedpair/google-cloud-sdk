@@ -284,10 +284,6 @@ class ServiceYamlInfo(_YamlInfo):
   def _UpdateVMSettings(self):
     """Overwrites vm_settings for App Engine services with VMs.
 
-    Sets has_docker_image to be always True. Required for transition period
-    until all images in production are pushed via gcloud (and therefore all
-    builds happen locally in the SDK).
-
     Also sets module_yaml_path which is needed for some runtimes.
 
     Raises:
@@ -299,7 +295,7 @@ class ServiceYamlInfo(_YamlInfo):
           'field to `flex`.')
     if not self.parsed.vm_settings:
       self.parsed.vm_settings = appinfo.VmSettings()
-    self.parsed.vm_settings['has_docker_image'] = True
+
     self.parsed.vm_settings['module_yaml_path'] = os.path.basename(self.file)
 
 

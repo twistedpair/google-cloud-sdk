@@ -22,6 +22,7 @@ import sys
 
 from apitools.base.py import exceptions as apitools_exceptions
 
+import enum
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
@@ -54,6 +55,130 @@ _BUCKET_URI_ERROR = (
     'characters . _ -. It must start and end with a letter or digit '
     'and be from 3 to 232 characters long. You may optionally prepend the '
     'bucket name with gs:// and append / at the end.')
+
+
+@enum.unique
+class Resources(enum.Enum):
+
+  class Resource(object):
+
+    def __init__(self, name, collection_id):
+      self.name = name
+      self.collection_id = collection_id
+  TOPIC = Resource('topic', 'pubsub.projects.topics')
+  BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
+  PROJECT = Resource('project', 'cloudresourcemanager.projects')
+
+
+@enum.unique
+class Obligatoriness(enum.Enum):
+  REQUIRED = 'required'
+  OPTIONAL = 'optional'
+  FORBIDDEN = 'forbidden'
+
+
+class TriggerProvider(object):
+  """Represents --trigger-provider flag value options."""
+
+  def __init__(self, label, events):
+    self.label = label
+    self.events = events
+    for event in self.events:
+      event.provider = self
+
+  @property
+  def default_event(self):
+    return self.events[0]
+
+
+class TriggerEvent(object):
+  """Represents --trigger-event flag value options."""
+
+  # Currently any and only project resource is optional
+  optional_resource_types = [Resources.PROJECT]
+
+  def __init__(self, label, resource_type, args_spec):
+    self.label = label
+    self.resource_type = resource_type
+    self.args_spec = args_spec
+
+  @property
+  def event_is_optional(self):
+    return self.provider.default_event == self
+
+  # TODO(b/33097692) Let TriggerEvent know how to handle optional resources.
+  @property
+  def resource_is_optional(self):
+    return self.resource_type in TriggerEvent.optional_resource_types
+
+  # Makes output formatting easier.
+  @property
+  def args_spec_view(self):
+    return {k: v.value for k, v in self.args_spec.iteritems()}
+
+
+# Don't use this structure directly. Use registry object instead.
+_ALL_PROVIDERS = [
+    TriggerProvider('cloud.pubsub', [
+        TriggerEvent('topic.publish', Resources.TOPIC,
+                     {'path': Obligatoriness.FORBIDDEN})
+    ]),
+    TriggerProvider('cloud.storage', [
+        TriggerEvent('object.change', Resources.BUCKET,
+                     {'path': Obligatoriness.FORBIDDEN})
+    ]),
+    TriggerProvider('firebase.auth', [
+        TriggerEvent('user.create', Resources.PROJECT,
+                     {'path': Obligatoriness.FORBIDDEN}),
+        TriggerEvent('user.delete', Resources.PROJECT,
+                     {'path': Obligatoriness.FORBIDDEN})
+    ]),
+    TriggerProvider('firebase.database', [
+        TriggerEvent('data.write', Resources.PROJECT,
+                     {'path': Obligatoriness.REQUIRED})
+    ])
+]  # by convention, first event type is default
+
+
+# A namespace in fact...
+class _TriggerProviderRegistry(object):
+  """This class encapsulates all Event Trigger related functionality."""
+
+  def __init__(self, all_providers):
+    self.providers = all_providers
+
+  def ProvidersLabels(self):
+    return (p.label for p in self.providers)
+
+  def Provider(self, provider):
+    return next((p for p in self.providers if p.label == provider))
+
+  def EventsLabels(self, provider):
+    return (e.label for e in self.Provider(provider).events)
+
+  def Event(self, provider, event):
+    return next((e for e in self.Provider(provider).events if e.label == event))
+
+
+trigger_provider_registry = _TriggerProviderRegistry(_ALL_PROVIDERS)
+
+
+_ID_CHAR = '[a-zA-Z0-9_]'
+_P_CHAR = "[][~@#$%&.,?:;+*='()-]"
+# capture: '{' ID_CHAR+ ('=' '*''*'?)? '}'
+# Named wildcards may be written in curly brackets (e.g. {variable}). The
+# value that matched this parameter will be included  in the event
+# parameters.
+_CAPTURE = r'(\{' + _ID_CHAR + r'(=\*\*?)?})'
+# segment: (ID_CHAR | P_CHAR)+
+_SEGMENT = '((' + _ID_CHAR + '|' + _P_CHAR + ')+)'
+# part: '/' segment | capture
+_PART = '(/(' + _SEGMENT + '|' + _CAPTURE + '))'
+# path: part+ (but first / is optional)
+_PATH = '(/?(' + _SEGMENT + '|' + _CAPTURE + ')' + _PART + '*)'
+
+_PATH_RE_ERROR = ('Path must be a slash-separated list of segments and '
+                  'captures. For example, [users/{userId}/profilePic].')
 
 
 def GetHttpErrorMessage(error):
@@ -97,7 +222,10 @@ def GetOperationError(error):
 
 
 def _ValidateArgumentByRegexOrRaise(argument, regex, error_message):
-  match = regex.match(argument)
+  if isinstance(regex, str):
+    match = re.match(regex, argument)
+  else:
+    match = regex.match(argument)
   if not match:
     raise arg_parsers.ArgumentTypeError(
         "Invalid value '{0}': {1}".format(argument, error_message))
@@ -191,6 +319,20 @@ def ValidateDirectoryExistsOrRaiseFunctionError(directory):
   return directory
 
 
+def ValidatePathOrRaise(path):
+  """Check if path provided by user is valid.
+
+  Args:
+    path: A string: resource path
+  Returns:
+    The argument provided, if found valid.
+  Raises:
+    ArgumentTypeError: If the user provided a path which is not valid
+  """
+  path = _ValidateArgumentByRegexOrRaise(path, _PATH, _PATH_RE_ERROR)
+  return path
+
+
 def _GetViolationsFromError(error_info):
   """Looks for violations descriptions in error message.
 
@@ -216,10 +358,10 @@ def _GetViolationsFromError(error_info):
 
 
 def CatchHTTPErrorRaiseHTTPException(func):
-# TODO(user): merge this function with HandleHttpError defined elsewhere:
-# * shared/projects/util.py
-# * shared/dns/util.py
-# (obstacle: GetHttpErrorMessage function may be project-specific)
+  # TODO(user): merge this function with HandleHttpError defined elsewhere:
+  # * shared/projects/util.py
+  # * shared/dns/util.py
+  # (obstacle: GetHttpErrorMessage function may be project-specific)
   """Decorator that catches HttpError and raises corresponding exception."""
 
   @functools.wraps(func)

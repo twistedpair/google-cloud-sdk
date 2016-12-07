@@ -2,6 +2,41 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 137.0.0 (2016/12/07)
+
+### Google Cloud Functions
+
+* Add `gcloud alpha functions deploy` `--trigger-provider`, `--trigger-event`,
+  `--trigger-resource` and `--trigger-params` flags.
+* Add `gcloud alpha functions event-types list` command.
+
+### Google Cloud ML
+
+* The `gcloud beta ml models versions` command group has been moved to
+  `gcloud beta ml versions`. The old commands still work, but are deprecated.
+* The `--origin` flag for the `gcloud beta ml versions create` command now
+  accepts local file paths in addition to Google Cloud Storage (`gs://`) paths.
+* `gcloud beta ml jobs training`: `--packages` now takes a comma-separated list
+  instead of a space-separated list.
+
+### Google Compute Engine
+
+* Internal Load Balancing is now available in GA.
+* It is no longer allowed to pass an empty scope in
+  `gcloud compute instances create --scopes` flag.
+
+### Google Container Engine
+
+* `gcloud container images describe` has some breaking changes to its
+  --format=JSON output.
+
+### Google Service Management
+
+* The gcloud service-management surface is now available in the GA and beta
+  release tracks. Please use `gcloud service-management` instead of
+  `gcloud beta service-management`.
+
+
 ## 136.0.0 (2016/12/01)
 
 ### Cloud SDK

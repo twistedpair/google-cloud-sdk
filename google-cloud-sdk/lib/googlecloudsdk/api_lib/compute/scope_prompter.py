@@ -168,9 +168,9 @@ class ScopePrompter(object):
 
     # targetInstances -> target instances
     resource_name = utils.CamelCaseToOutputFriendly(resource_type)
-    names = ['[{0}]'.format(name) for name, _, _ in ambiguous_refs]
+    names = [name for name, _, _ in ambiguous_refs]
     message = 'Did you mean {0} [{1}] for {2}: [{3}]?'.format(
-        attribute, suggested_resource, resource_name, names)
+        attribute, suggested_resource, resource_name, ', '.join(names))
 
     try:
       if console_io.PromptContinue(message=message, default=True,

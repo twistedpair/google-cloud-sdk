@@ -15,9 +15,12 @@
 """Utilities for loading and parsing kubeconfig."""
 import os
 
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import platforms
 
 import yaml
 
@@ -172,7 +175,7 @@ def User(name, token=None, username=None, password=None, auth_provider=None,
                 ' provided')
   user = {}
   if auth_provider:
-    user['auth-provider'] = {'name': auth_provider}
+    user['auth-provider'] = _AuthProvider(name=auth_provider)
   elif token:
     user['token'] = token
   else:
@@ -197,6 +200,43 @@ def User(name, token=None, username=None, password=None, auth_provider=None,
       'name': name,
       'user': user
   }
+
+
+def _AuthProvider(name='gcp'):
+  """Generate and return an auth provider config.
+
+  Constructs an auth provider config entry readable by kubectl. This tells
+  kubectl to call out to a specific gcloud command and parse the output to
+  retrieve access tokens to authenticate to the kubernetes master.
+  Kubernetes gcp auth provider plugin at
+  https://github.com/kubernetes/kubernetes/blob/master/plugin/pkg/client/auth/gcp/gcp.go
+
+  Args:
+    name: auth provider name
+  Returns:
+    dict, valid auth provider config entry.
+  """
+  provider = {'name': name}
+  if (name == 'gcp' and not
+      properties.VALUES.container.use_app_default_credentials.GetBool()):
+    bin_name = 'gcloud'
+    if platforms.OperatingSystem.IsWindows():
+      bin_name = 'gcloud.cmd'
+    path = os.path.join(config.Paths().sdk_bin_path, bin_name)
+    cfg = {
+        # Command + args for gcloud credential helper
+        'cmd-path': '{0} config config-helper --format=json'.format(path),
+        # JSONpath to the field that is the raw access token
+        'token-key': '{.credential.access_token}',
+        # JSONpath to the field that is the expiration timestamp
+        'expiry-key': '{.credential.token_expiry}',
+        # Note: we're omitting 'time-fmt' field, which if provided, is a
+        # format string of the golang reference time. It can be safely omitted
+        # because config-helper's default time format is RFC3339, which is the
+        # same default kubectl assumes.
+    }
+    provider['config'] = cfg
+  return provider
 
 
 def Context(name, cluster, user):

@@ -61,12 +61,27 @@ class BucketReference(object):
     return self._bucket_url
 
   @classmethod
-  def Argument(cls, string):
+  def Argument(cls, string, strict_check=True):
     """Validates that the argument is a reference to a Cloud Storage bucket."""
-    if not re.match(GSUTIL_BUCKET_REGEX, string):
-      raise argparse.ArgumentTypeError(('Must be a valid Google Cloud Cloud '
-                                        'Storage bucket of the form '
-                                        '[gs://somebucket]'))
+    if strict_check:
+      if not re.match(GSUTIL_BUCKET_REGEX, string):
+        raise argparse.ArgumentTypeError(('Must be a valid Google Cloud Cloud '
+                                          'Storage bucket of the form '
+                                          '[gs://somebucket]'))
+    else:
+      i = string.find(':')
+      if i != -1:  # else no scheme part in string
+        if string[:3] != 'gs:':
+          raise argparse.ArgumentTypeError(
+              ('Must be a valid Google Cloud Cloud Storage bucket of the form '
+               '[[gs://]somebucket]'))
+        else:
+          string = string[3:]
+          for x in range(2):
+            _ = x
+            if string[0] == '/':
+              string = string[1:]
+
     return cls.FromBucketUrl(string)
 
   @classmethod

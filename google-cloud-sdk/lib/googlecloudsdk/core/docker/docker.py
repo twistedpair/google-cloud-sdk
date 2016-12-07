@@ -211,7 +211,7 @@ def WriteDockerConfig(structure):
     os.rename(tf.name, cfg)
 
 
-def UpdateDockerCredentials(server):
+def UpdateDockerCredentials(server, refresh=True):
   """Updates the docker config to have fresh credentials.
 
   This reads the current contents of Docker's keyring, and extends it with
@@ -221,6 +221,7 @@ def UpdateDockerCredentials(server):
   Args:
     server: The hostname of the registry for which we're freshening
        the credential.
+    refresh: Whether to force a token refresh on the active credential.
 
   Raises:
     store.Error: There was an error loading the credentials.
@@ -228,11 +229,14 @@ def UpdateDockerCredentials(server):
 
   # Loading credentials will ensure that we're logged in.
   # And prompt/abort to 'run gcloud auth login' otherwise.
-  cred = store.Load()
+  # Disable refreshing, since we'll do this ourself.
+  cred = store.Load(prevent_refresh=True)
 
-  # Ensure our credential has a valid access token,
-  # which has the full duration available.
-  store.Refresh(cred)
+  if refresh:
+    # Ensure our credential has a valid access token,
+    # which has the full duration available.
+    store.Refresh(cred)
+
   if not cred.access_token:
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')

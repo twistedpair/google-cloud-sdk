@@ -627,14 +627,19 @@ class _SectionContainer(_Section):
   def __init__(self):
     super(_SectionContainer, self).__init__('container')
     self.cluster = self._Add(
-        'cluster',
-        help_text='The name of the cluster to use by default when working with '
-        'Container Engine.')
+        'cluster', help_text='The name of the cluster to use by default when '
+        'working with Container Engine.')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
         default=False,
         help_text='Use the cluster\'s client certificate to authenticate to '
         'the cluster API server.')
+    self.use_app_default_credentials = self._AddBool(
+        'use_application_default_credentials',
+        default=True,
+        help_text='Use application default credentials to authenticate to '
+        'the cluster API server.')
+
     def BuildTimeoutValidator(build_timeout):
       if build_timeout is None:
         return

@@ -200,12 +200,12 @@ def AddAddress(parser):
       """
 
 
-def AddIPProtocols(parser, include_alpha=False):
+def AddIPProtocols(parser, include_beta=False):
   """Adds IP protocols flag, with values available in the given version."""
 
   protocols = ['AH', 'ESP']
-  if include_alpha:
-    # ICMP is only supported in Alpha.
+  if include_beta:
+    # ICMP is only supported in Alpha and Beta.
     protocols.append('ICMP')
   protocols.extend(['SCTP', 'TCP', 'UDP'])
 

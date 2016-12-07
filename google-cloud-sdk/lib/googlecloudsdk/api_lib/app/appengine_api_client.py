@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1beta
 
 import yaml
@@ -53,7 +54,7 @@ class AppengineApiClient(object):
       googlecloudsdk.api_lib.app.exceptions.NotFoundError if app doens't exist
     """
     request = self.messages.AppengineAppsGetRequest(
-        name=self._FormatApp(app_id=self.project),
+        name=self._FormatApp(),
         ensureResourcesExist=True)
     return requests.MakeRequest(self.client.apps.Get, request)
 
@@ -106,8 +107,7 @@ class AppengineApiClient(object):
     version_resource = self._CreateVersionResource(
         service_config, manifest, version_id, image, endpoints_info)
     create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
-        name=self._FormatService(app_id=self.project,
-                                 service_name=service_name),
+        name=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
 
     operation = requests.MakeRequest(
@@ -128,7 +128,7 @@ class AppengineApiClient(object):
       Service resource object from the API
     """
     request = self.messages.AppengineAppsServicesGetRequest(
-        name=self._FormatService(self.project, service))
+        name=self._GetServiceRelativeName(service))
     return requests.MakeRequest(
         self.client.apps_services.Get, request)
 
@@ -164,8 +164,7 @@ class AppengineApiClient(object):
                                               {'allocations': allocations,
                                                'shardBy': shard_by})
     update_service_request = self.messages.AppengineAppsServicesPatchRequest(
-        name=self._FormatService(app_id=self.project,
-                                 service_name=service_name),
+        name=self._GetServiceRelativeName(service_name=service_name),
         service=self.messages.Service(split=traffic_split),
         migrateTraffic=migrate,
         mask='split')
@@ -186,8 +185,7 @@ class AppengineApiClient(object):
       The completed Operation.
     """
     delete_request = self.messages.AppengineAppsServicesVersionsDeleteRequest(
-        name=self._FormatVersion(app_id=self.project,
-                                 service_name=service_name,
+        name=self._FormatVersion(service_name=service_name,
                                  version_id=version_id))
     operation = requests.MakeRequest(
         self.client.apps_services_versions.Delete,
@@ -209,8 +207,7 @@ class AppengineApiClient(object):
       otherwise.
     """
     patch_request = self.messages.AppengineAppsServicesVersionsPatchRequest(
-        name=self._FormatVersion(app_id=self.project,
-                                 service_name=service_name,
+        name=self._FormatVersion(service_name=service_name,
                                  version_id=version_id),
         version=self.messages.Version(servingStatus=serving_status),
         mask='servingStatus')
@@ -235,7 +232,7 @@ class AppengineApiClient(object):
     for version in versions:
       list_req = (
           self.messages.AppengineAppsServicesVersionsInstancesListRequest(
-              name=self._FormatVersion(self.project, version.service,
+              name=self._FormatVersion(version.service,
                                        version.id)))
       instances += map(instances_util.Instance.FromInstanceResource,
                        requests.MakeRequest(
@@ -265,59 +262,47 @@ class AppengineApiClient(object):
 
     return self.ListInstances(versions)
 
-  def DebugInstance(self, service, version, instance):
+  def DebugInstance(self, res):
     """Enable debugging of a Flexible instance.
 
     Args:
-      service: str, The service id
-      version: str, The version id
-      instance: str, The instance id
+      res: A googleclousdk.core.Resource object.
 
     Returns:
       The completed Operation.
     """
     request = self.messages.AppengineAppsServicesVersionsInstancesDebugRequest(
-        name=self._FormatInstance(app_id=self.project,
-                                  service_name=service,
-                                  version_id=version,
-                                  instance_id=instance))
+        name=res.RelativeName())
     operation = requests.MakeRequest(
         self.client.apps_services_versions_instances.Debug, request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def DeleteInstance(self, service, version, instance):
+  def DeleteInstance(self, res):
     """Delete a Flexible instance.
 
     Args:
-      service: str, The service id
-      version: str, The version id
-      instance: str, The instance id
+      res: A googleclousdk.core.Resource object.
 
     Returns:
       The completed Operation.
     """
     request = self.messages.AppengineAppsServicesVersionsInstancesDeleteRequest(
-        name=self._FormatInstance(app_id=self.project,
-                                  service_name=service,
-                                  version_id=version,
-                                  instance_id=instance))
+        name=res.RelativeName())
     operation = requests.MakeRequest(
         self.client.apps_services_versions_instances.Delete, request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def GetInstanceResource(self, service, version, instance):
+  def GetInstanceResource(self, res):
     """Describe the given instance of the given version of the given service.
 
     Args:
-      service: str, the ID of the service
-      version: str, the ID of the version
-      instance: str, the ID of the instance
+      res: A googleclousdk.core.Resource object.
 
     Returns:
       Version resource object from the API
     """
     request = self.messages.AppengineAppsServicesVersionsInstancesGetRequest(
-        name=self._FormatInstance(self.project, service, version, instance))
+        name=res.RelativeName())
     return requests.MakeRequest(
         self.client.apps_services_versions_instances.Get, request)
 
@@ -365,7 +350,7 @@ class AppengineApiClient(object):
       A list of service_util.Service objects.
     """
     request = self.messages.AppengineAppsServicesListRequest(
-        name=self._FormatApp(self.project))
+        name=self._FormatApp())
     response = requests.MakeRequest(self.client.apps_services.List, request)
 
     services = []
@@ -390,7 +375,7 @@ class AppengineApiClient(object):
       Version resource object from the API
     """
     request = self.messages.AppengineAppsServicesVersionsGetRequest(
-        name=self._FormatVersion(self.project, service, version),
+        name=self._FormatVersion(service, version),
         view=(self.messages.
               AppengineAppsServicesVersionsGetRequest.ViewValueValuesEnum.FULL))
     return requests.MakeRequest(self.client.apps_services_versions.Get, request)
@@ -407,7 +392,7 @@ class AppengineApiClient(object):
     for service in services:
       # Get the versions.
       request = self.messages.AppengineAppsServicesVersionsListRequest(
-          name=self._FormatService(self.project, service.id))
+          name=self._GetServiceRelativeName(service.id))
       response = requests.MakeRequest(
           self.client.apps_services_versions.List, request)
 
@@ -442,8 +427,7 @@ class AppengineApiClient(object):
       The completed Operation.
     """
     delete_request = self.messages.AppengineAppsServicesDeleteRequest(
-        name=self._FormatService(app_id=self.project,
-                                 service_name=service_name))
+        name=self._GetServiceRelativeName(service_name=service_name))
     operation = requests.MakeRequest(
         self.client.apps_services.Delete,
         delete_request)
@@ -511,25 +495,24 @@ class AppengineApiClient(object):
     version_resource.id = version_id
     return version_resource
 
-  # TODO(b/24562881): Once the API is updated, convert to use resource parser.
-  def _FormatApp(self, app_id):
-    return 'apps/{app_id}'.format(app_id=app_id)
+  def _FormatApp(self):
+    res = resources.REGISTRY.Parse(self.project,
+                                   params={},
+                                   collection='appengine.apps')
+    return res.RelativeName()
 
-  def _FormatService(self, app_id, service_name):
-    return 'apps/{app_id}/services/{service_name}'.format(
-        app_id=app_id, service_name=service_name)
+  def _GetServiceRelativeName(self, service_name):
+    res = resources.REGISTRY.Parse(service_name,
+                                   params={'appsId': self.project},
+                                   collection='appengine.apps.services')
+    return res.RelativeName()
 
-  def _FormatVersion(self, app_id, service_name, version_id):
-    return 'apps/{app_id}/services/{service_name}/versions/{version_id}'.format(
-        app_id=app_id, service_name=service_name, version_id=version_id)
-
-  def _FormatInstance(self, app_id, service_name, version_id, instance_id):
-    return ('apps/{app_id}/services/{service_name}/versions/{version_id}/'
-            'instances/{instance_id}'.format(
-                app_id=app_id,
-                service_name=service_name,
-                version_id=version_id,
-                instance_id=instance_id))
+  def _FormatVersion(self, service_name, version_id):
+    res = resources.REGISTRY.Parse(version_id,
+                                   params={'servicesId': service_name},
+                                   collection='appengine.apps.services.versions'
+                                  )
+    return res.RelativeName()
 
 
 def GetApiClient():

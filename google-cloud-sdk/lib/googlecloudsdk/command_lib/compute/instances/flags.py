@@ -798,6 +798,8 @@ def ValidateServiceAccountAndScopeArgs(args):
     raise exceptions.InvalidArgumentException(
         '--no-scopes', 'argument --no-scopes: required with argument '
         '--no-service-account')
+  # TODO(b/30802231) Inline this call when AddScopeArgs is removed
+  ValidateScopeFlags(args)
 
 
 def AddScopeArgs(parser):
@@ -848,6 +850,14 @@ def AddScopeArgs(parser):
       action='store_true',
       help=('If provided, the default scopes ({scopes}) are not added to the '
             'instances.'.format(scopes=', '.join(constants.DEFAULT_SCOPES))))
+
+
+def ValidateScopeFlags(args):
+  # Reject empty scopes
+  for scope in (args.scopes or []):
+    if not scope:
+      raise exceptions.InvalidArgumentException(
+          '--scopes', 'Scope cannot be an empty string.')
 
 
 def AddTagsArgs(parser):

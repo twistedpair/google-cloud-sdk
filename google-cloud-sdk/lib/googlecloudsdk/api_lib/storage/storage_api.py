@@ -90,6 +90,33 @@ class StorageClient(object):
             destinationObject=dst.object,
         ))
 
+  def Rewrite(self, src, dst):
+    """Rewrite one GCS object to another.
+
+    This method has the same result as the Copy method, but can handle moving
+    large objects that may potentially timeout a Copy request.
+
+    Args:
+      src: Resource, the storage object resource to be copied from.
+      dst: Resource, the storage object resource to be copied to.
+
+    Returns:
+      Object, the storage object that was copied to.
+    """
+    rewrite_token = None
+    while True:
+      resp = self.client.objects.Rewrite(
+          self.messages.StorageObjectsRewriteRequest(
+              sourceBucket=src.bucket,
+              sourceObject=src.object,
+              destinationBucket=dst.bucket,
+              destinationObject=dst.object,
+              rewriteToken=rewrite_token,
+          ))
+      if resp.done:
+        return resp.resource
+      rewrite_token = resp.rewriteToken
+
   def CopyFileToGCS(self, bucket_ref, local_path, target_path):
     """Upload a file to the GCS results bucket using the storage API.
 

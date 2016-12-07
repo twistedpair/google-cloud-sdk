@@ -325,24 +325,25 @@ class HTMLRenderer(renderer.Renderer):
     target = target.replace('/', '_') + '.html'
     return '<a href="{target}">{text}</a>'.format(target=target, text=text)
 
-  def List(self, level, definition=None):
+  def List(self, level, definition=None, end=False):
     """Renders a bullet or definition list item.
 
     Args:
       level: The list nesting level.
-      definition: Bullet list if None, end of list if empty, definition list
-        otherwise.
+      definition: Bullet list if None, definition list otherwise.
+      end: End of list if True.
     """
     self._Flush()
     while self._level and self._level > level:
       self._out.write(self._pop[self._level])
       self._level -= 1
     # pylint: disable=g-explicit-bool-comparison, '' is different from None here
-    if definition == '' or not level:
+    if end or not level:
       # End of list.
       return
-    if definition:
+    if definition is not None:
       # Definition list item.
+      # Blank definition can be used for nested paragraphs.
       if self._level < level:
         self._level += 1
         if self._level >= len(self._pop):
@@ -353,12 +354,21 @@ class HTMLRenderer(renderer.Renderer):
           self._out.write('<dl class="notopmargin">\n')
         else:
           self._out.write('<dl>\n')
+      elif 'dt' in self._pop[self._level]:
+        self._out.write('</dt>\n')
+        self._pop[self._level] = '</dd>\n</dl>\n'
       else:
         self._out.write('</dd>\n')
-      self._out.write('<dt id="{document_id}"><span class="normalfont">'
-                      '{definition}</span></dt>\n<dd>\n'.format(
-                          document_id=self.GetDocumentID(definition),
-                          definition=definition))
+      if definition:
+        self._out.write('<dt id="{document_id}"><span class="normalfont">'
+                        '{definition}</span></dt>\n<dd>\n'.format(
+                            document_id=self.GetDocumentID(definition),
+                            definition=definition))
+      elif self._level > 1 and 'dt' in self._pop[self._level - 1]:
+        self._out.write('<dd>\n')
+      else:
+        self._out.write('<dt><span class="normalfont">\n')
+        self._pop[self._level] = '</dt>\n</dl>\n'
     else:  # definition is None
       # Bullet list item.
       if self._level < level:

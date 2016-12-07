@@ -19,7 +19,15 @@ from googlecloudsdk.core import log
 
 
 def EnableServiceApiCall(project_id, service_name):
-  """Make API call to enable a specific API."""
+  """Make API call to enable a specific API.
+
+  Args:
+    project_id: The ID of the project for which to enable the service.
+    service_name: The name of the service to enable on the project.
+
+  Returns:
+    The result of the Enable operation
+  """
 
   client = services_util.GetClientInstance()
   messages = services_util.GetMessagesModule()
@@ -34,7 +42,14 @@ def EnableServiceApiCall(project_id, service_name):
 
 
 def EnableServiceIfDisabled(project_id, service_name, async=False):
-  """Check to see if the service is enabled, and if it is not, do so."""
+  """Check to see if the service is enabled, and if it is not, do so.
+
+  Args:
+    project_id: The ID of the project for which to enable the service.
+    service_name: The name of the service to enable on the project.
+    async: bool, if True, return the operation ID immediately, without waiting
+           for the op to complete.
+  """
 
   client = services_util.GetClientInstance()
   messages = services_util.GetMessagesModule()

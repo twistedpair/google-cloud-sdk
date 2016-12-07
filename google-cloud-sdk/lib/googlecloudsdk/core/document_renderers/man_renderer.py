@@ -155,13 +155,14 @@ class ManRenderer(renderer.Renderer):
     self._Flush()
     self._out.write('\n')
 
-  def List(self, level, definition=None):
-    """Renders a bullet or definition list item.
+  def List(self, level, definition=None, end=False):
+    """Renders a bullet or definition markdown list item.
 
     Args:
-      level: The list nesting level.
-      definition: Bullet list if None, end of list if empty, definition list
+      level: The markdown list nesting level.
+      definition: Bullet markdown list if None, definition markdown list
         otherwise.
+      end: End of markdown list if True.
     """
     self._Flush()
     need_sp = False
@@ -172,13 +173,13 @@ class ManRenderer(renderer.Renderer):
     if need_sp:
       self._out.write('.sp\n')
     # pylint: disable=g-explicit-bool-comparison, '' is different from None here
-    if definition == '' or not level:
+    if end or not level:
       # End of list.
       return
     if self._level < level:
       self._level += 1
       self._out.write('.RS 2m\n')
-    if definition:
+    if definition is not None:
       # Definition list item.
       self._out.write('.TP 2m\n' + definition + '\n')
     else:

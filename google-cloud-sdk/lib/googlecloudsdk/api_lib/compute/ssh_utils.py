@@ -27,8 +27,8 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import time_utils
-from googlecloudsdk.api_lib.compute import user_utils
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute.users import client as user_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -481,8 +481,7 @@ def _MetadataHasBlockProjectSshKeys(metadata):
   return matching_values[0].lower() == 'true'
 
 
-class BaseSSHCommand(base_classes.BaseCommand,
-                     user_utils.UserResourceFetcher):
+class BaseSSHCommand(base_classes.BaseCommand):
   """Base class for subcommands that need to connect to instances using SSH.
 
   Subclasses can call EnsureSSHKeyIsInProject() to make sure that the
@@ -644,30 +643,30 @@ class BaseSSHCommand(base_classes.BaseCommand,
     else:
       return False
 
-  def EnsureSSHKeyExistsForUser(self, user):
+  def _EnsureSSHKeyExistsForUser(self, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
     public_key = self.GetPublicKey()
     should_upload = True
     try:
-      user_info = self.LookupUser(user)
-    except user_utils.UserException:
+      user_info = fetcher.LookupUser(user)
+    except user_client.UserException:
       owner_email = gaia_utils.GetAuthenticatedGaiaEmail(self.http)
-      self.CreateUser(user, owner_email)
-      user_info = self.LookupUser(user)
+      fetcher.CreateUser(user, owner_email)
+      user_info = fetcher.LookupUser(user)
     for remote_public_key in user_info.publicKeys:
       if remote_public_key.key.rstrip() == public_key:
         expiration_time = remote_public_key.expirationTimestamp
 
         if expiration_time and time_utils.IsExpired(expiration_time):
           # If a key is expired we remove and reupload
-          self.RemovePublicKey(
+          fetcher.RemovePublicKey(
               user_info.name, remote_public_key.fingerprint)
         else:
           should_upload = False
         break
 
     if should_upload:
-      self.UploadPublicKey(user, public_key)
+      fetcher.UploadPublicKey(user, public_key)
     return True
 
   def GetPublicKey(self):
@@ -978,7 +977,9 @@ class BaseSSHCLICommand(BaseSSHCommand):
     if args.plain:
       keys_newly_added = []
     elif use_account_service:
-      keys_newly_added = self.EnsureSSHKeyExistsForUser(user)
+      fetcher = user_client.UserResourceFetcher(
+          self.clouduseraccounts, self.project, self.http, self.batch_url)
+      keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
     else:
       # There are two kinds of metadata: project-wide metadata and per-instance
       # metadata. There are four SSH-key related metadata keys:

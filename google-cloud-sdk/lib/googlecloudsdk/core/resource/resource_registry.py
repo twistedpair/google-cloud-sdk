@@ -375,6 +375,18 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.hosts': resource_info.ResourceInfo(
+        cache_command='compute hosts list',
+        list_format="""
+          table(
+            name,
+            zone.basename(),
+            instances.len():label=INSTANCES,
+            status
+          )
+        """,
+    ),
+
     'compute.httpHealthChecks': resource_info.ResourceInfo(
         cache_command='compute http-health-checks list',
         list_format="""
@@ -1697,20 +1709,6 @@ RESOURCE_REGISTRY = {
         list_format="""
           value(format(
             'Final test results will be available at [{0}].', [])
-          )
-        """,
-    ),
-
-    'test.web.browsers': resource_info.ResourceInfo(
-        list_format="""
-          table[box](
-            id:label=BROWSER_ID,
-            name,
-            release,
-            versionString:label=VERSION,
-            androidCatalog.yesno("*", "-"),
-            linuxCatalog.yesno("*", "-"),
-            windowsCatalog.yesno("*", "-")
           )
         """,
     ),

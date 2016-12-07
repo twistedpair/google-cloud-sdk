@@ -8681,10 +8681,11 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
   database_id_ = ""
   has_mode_ = 0
   mode_ = 0
-  has_previous_handle_ = 0
-  previous_handle_ = 0
+  has_previous_transaction_ = 0
+  previous_transaction_ = None
 
   def __init__(self, contents=None):
+    self.lazy_init_lock_ = thread.allocate_lock()
     if contents is not None: self.MergeFromString(contents)
 
   def app(self): return self.app_
@@ -8739,18 +8740,24 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
 
   def has_mode(self): return self.has_mode_
 
-  def previous_handle(self): return self.previous_handle_
+  def previous_transaction(self):
+    if self.previous_transaction_ is None:
+      self.lazy_init_lock_.acquire()
+      try:
+        if self.previous_transaction_ is None: self.previous_transaction_ = Transaction()
+      finally:
+        self.lazy_init_lock_.release()
+    return self.previous_transaction_
 
-  def set_previous_handle(self, x):
-    self.has_previous_handle_ = 1
-    self.previous_handle_ = x
+  def mutable_previous_transaction(self): self.has_previous_transaction_ = 1; return self.previous_transaction()
 
-  def clear_previous_handle(self):
-    if self.has_previous_handle_:
-      self.has_previous_handle_ = 0
-      self.previous_handle_ = 0
+  def clear_previous_transaction(self):
+    # Warning: this method does not acquire the lock.
+    if self.has_previous_transaction_:
+      self.has_previous_transaction_ = 0;
+      if self.previous_transaction_ is not None: self.previous_transaction_.Clear()
 
-  def has_previous_handle(self): return self.has_previous_handle_
+  def has_previous_transaction(self): return self.has_previous_transaction_
 
 
   def MergeFrom(self, x):
@@ -8759,7 +8766,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (x.has_allow_multiple_eg()): self.set_allow_multiple_eg(x.allow_multiple_eg())
     if (x.has_database_id()): self.set_database_id(x.database_id())
     if (x.has_mode()): self.set_mode(x.mode())
-    if (x.has_previous_handle()): self.set_previous_handle(x.previous_handle())
+    if (x.has_previous_transaction()): self.mutable_previous_transaction().MergeFrom(x.previous_transaction())
 
   def Equals(self, x):
     if x is self: return 1
@@ -8771,8 +8778,8 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if self.has_database_id_ and self.database_id_ != x.database_id_: return 0
     if self.has_mode_ != x.has_mode_: return 0
     if self.has_mode_ and self.mode_ != x.mode_: return 0
-    if self.has_previous_handle_ != x.has_previous_handle_: return 0
-    if self.has_previous_handle_ and self.previous_handle_ != x.previous_handle_: return 0
+    if self.has_previous_transaction_ != x.has_previous_transaction_: return 0
+    if self.has_previous_transaction_ and self.previous_transaction_ != x.previous_transaction_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -8781,6 +8788,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       initialized = 0
       if debug_strs is not None:
         debug_strs.append('Required field: app not set.')
+    if (self.has_previous_transaction_ and not self.previous_transaction_.IsInitialized(debug_strs)): initialized = 0
     return initialized
 
   def ByteSize(self):
@@ -8789,7 +8797,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_allow_multiple_eg_): n += 2
     if (self.has_database_id_): n += 1 + self.lengthString(len(self.database_id_))
     if (self.has_mode_): n += 1 + self.lengthVarInt64(self.mode_)
-    if (self.has_previous_handle_): n += 9
+    if (self.has_previous_transaction_): n += 1 + self.lengthString(self.previous_transaction_.ByteSize())
     return n + 1
 
   def ByteSizePartial(self):
@@ -8800,7 +8808,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_allow_multiple_eg_): n += 2
     if (self.has_database_id_): n += 1 + self.lengthString(len(self.database_id_))
     if (self.has_mode_): n += 1 + self.lengthVarInt64(self.mode_)
-    if (self.has_previous_handle_): n += 9
+    if (self.has_previous_transaction_): n += 1 + self.lengthString(self.previous_transaction_.ByteSizePartial())
     return n
 
   def Clear(self):
@@ -8808,7 +8816,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     self.clear_allow_multiple_eg()
     self.clear_database_id()
     self.clear_mode()
-    self.clear_previous_handle()
+    self.clear_previous_transaction()
 
   def OutputUnchecked(self, out):
     out.putVarInt32(10)
@@ -8822,9 +8830,10 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_mode_):
       out.putVarInt32(40)
       out.putVarInt32(self.mode_)
-    if (self.has_previous_handle_):
-      out.putVarInt32(49)
-      out.put64(self.previous_handle_)
+    if (self.has_previous_transaction_):
+      out.putVarInt32(58)
+      out.putVarInt32(self.previous_transaction_.ByteSize())
+      self.previous_transaction_.OutputUnchecked(out)
 
   def OutputPartial(self, out):
     if (self.has_app_):
@@ -8839,9 +8848,10 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_mode_):
       out.putVarInt32(40)
       out.putVarInt32(self.mode_)
-    if (self.has_previous_handle_):
-      out.putVarInt32(49)
-      out.put64(self.previous_handle_)
+    if (self.has_previous_transaction_):
+      out.putVarInt32(58)
+      out.putVarInt32(self.previous_transaction_.ByteSizePartial())
+      self.previous_transaction_.OutputPartial(out)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -8858,8 +8868,11 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       if tt == 40:
         self.set_mode(d.getVarInt32())
         continue
-      if tt == 49:
-        self.set_previous_handle(d.get64())
+      if tt == 58:
+        length = d.getVarInt32()
+        tmp = ProtocolBuffer.Decoder(d.buffer(), d.pos(), d.pos() + length)
+        d.skip(length)
+        self.mutable_previous_transaction().TryMerge(tmp)
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -8873,7 +8886,10 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if self.has_allow_multiple_eg_: res+=prefix+("allow_multiple_eg: %s\n" % self.DebugFormatBool(self.allow_multiple_eg_))
     if self.has_database_id_: res+=prefix+("database_id: %s\n" % self.DebugFormatString(self.database_id_))
     if self.has_mode_: res+=prefix+("mode: %s\n" % self.DebugFormatInt32(self.mode_))
-    if self.has_previous_handle_: res+=prefix+("previous_handle: %s\n" % self.DebugFormatFixed64(self.previous_handle_))
+    if self.has_previous_transaction_:
+      res+=prefix+"previous_transaction <\n"
+      res+=self.previous_transaction_.__str__(prefix + "  ", printElemNumber)
+      res+=prefix+">\n"
     return res
 
 
@@ -8884,7 +8900,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
   kallow_multiple_eg = 2
   kdatabase_id = 4
   kmode = 5
-  kprevious_handle = 6
+  kprevious_transaction = 7
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -8892,8 +8908,8 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     2: "allow_multiple_eg",
     4: "database_id",
     5: "mode",
-    6: "previous_handle",
-  }, 6)
+    7: "previous_transaction",
+  }, 7)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -8901,8 +8917,8 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     2: ProtocolBuffer.Encoder.NUMERIC,
     4: ProtocolBuffer.Encoder.STRING,
     5: ProtocolBuffer.Encoder.NUMERIC,
-    6: ProtocolBuffer.Encoder.DOUBLE,
-  }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
+    7: ProtocolBuffer.Encoder.STRING,
+  }, 7, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \

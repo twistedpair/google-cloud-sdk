@@ -127,7 +127,7 @@ class ClusterConfig(object):
 
   @property
   def has_cert_data(self):
-    return self.client_key_data and self.client_cert_data
+    return bool(self.client_key_data and self.client_cert_data)
 
   @property
   def has_certs(self):

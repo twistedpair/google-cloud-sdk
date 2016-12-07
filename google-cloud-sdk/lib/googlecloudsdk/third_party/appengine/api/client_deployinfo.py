@@ -21,11 +21,22 @@ Library for parsing client_deploy.yaml files and working with these in memory.
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
-from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.api import validation
-from googlecloudsdk.third_party.appengine.api import yaml_builder
-from googlecloudsdk.third_party.appengine.api import yaml_listener
-from googlecloudsdk.third_party.appengine.api import yaml_object
+import os
+
+# pylint: disable=g-import-not-at-top
+if os.environ.get('APPENGINE_RUNTIME') == 'python27':
+  from google.appengine.api import appinfo
+  from google.appengine.api import validation
+  from google.appengine.api import yaml_builder
+  from google.appengine.api import yaml_listener
+  from google.appengine.api import yaml_object
+else:
+  from googlecloudsdk.third_party.appengine.api import appinfo
+  from googlecloudsdk.third_party.appengine.api import validation
+  from googlecloudsdk.third_party.appengine.api import yaml_builder
+  from googlecloudsdk.third_party.appengine.api import yaml_listener
+  from googlecloudsdk.third_party.appengine.api import yaml_object
+# pylint: enable=g-import-not-at-top
 
 RUNTIME = 'runtime'
 START_TIME_USEC = 'start_time_usec'

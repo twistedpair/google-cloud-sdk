@@ -71,6 +71,8 @@ _DELTA_REGEX = r'([0-9]+)([DdHhMm]|[sS]?)'
 _EXPIRATION_REGEX = r'\s*(%s)(\s+%s)*\s*' % (_DELTA_REGEX, _DELTA_REGEX)
 _START_PATH = '/_ah/start'
 
+_NON_WHITE_SPACE_REGEX = r'^\S+$'
+
 # Regular expression for matching service names.
 # TODO(arb): this may need altering so as to not leak unreleased service names
 # TODO(user): Re-add sms to list of services.
@@ -243,6 +245,7 @@ MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
 RUNTIME = 'runtime'
 API_VERSION = 'api_version'
+ENDPOINTS_API_SERVICE = 'endpoints_api_service'
 ENV = 'env'
 ENTRYPOINT = 'entrypoint'
 RUNTIME_CONFIG = 'runtime_config'
@@ -319,6 +322,10 @@ IDLE_TIMEOUT = 'idle_timeout'
 PAGES = 'pages'
 NAME = 'name'
 
+# Attributes for EndpointsApiService
+ENDPOINTS_NAME = 'name'
+CONFIG_ID = 'config_id'
+
 # Attributes for ErrorHandlers
 ERROR_CODE = 'error_code'
 FILE = 'file'
@@ -355,6 +362,7 @@ SIZE_GB = 'size_gb'
 FORWARDED_PORTS = 'forwarded_ports'
 INSTANCE_TAG = 'instance_tag'
 NETWORK_NAME = 'name'
+SUBNETWORK_NAME = 'subnetwork_name'
 
 
 class _VersionedLibrary(object):
@@ -442,6 +450,14 @@ _SUPPORTED_LIBRARIES = [
         latest_version='1.0',
         ),
     _VersionedLibrary(
+        'grpcio',
+        'http://http://www.grpc.io/',
+        'A high performance general RPC framework',
+        ['1.0.0'],
+        latest_version='1.0.0',
+        default_version='1.0.0',
+        ),
+    _VersionedLibrary(
         'jinja2',
         'http://jinja.pocoo.org/docs/',
         'A modern and designer friendly templating language for Python.',
@@ -516,7 +532,6 @@ _SUPPORTED_LIBRARIES = [
         ['1.7'],
         latest_version='1.7',
         ),
-
     _VersionedLibrary(
         'PyAMF',
         'http://pyamf.appspot.com/index.html',
@@ -1474,6 +1489,14 @@ class CpuUtilization(validation.Validated):
   }
 
 
+class EndpointsApiService(validation.Validated):
+  """Class representing EndpointsApiService in AppInfoExternal."""
+  ATTRIBUTES = {
+      ENDPOINTS_NAME: validation.Regex(_NON_WHITE_SPACE_REGEX),
+      CONFIG_ID: validation.Regex(_NON_WHITE_SPACE_REGEX),
+  }
+
+
 class AutomaticScaling(validation.Validated):
   """Class representing automatic scaling settings in AppInfoExternal."""
   ATTRIBUTES = {
@@ -1725,6 +1748,9 @@ class Network(validation.Validated):
           GCE_RESOURCE_NAME_REGEX)),
 
       NETWORK_NAME: validation.Optional(validation.Regex(
+          GCE_RESOURCE_NAME_REGEX)),
+
+      SUBNETWORK_NAME: validation.Optional(validation.Regex(
           GCE_RESOURCE_NAME_REGEX)),
   }
 
@@ -1978,6 +2004,7 @@ class AppInfoExternal(validation.Validated):
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
       # The App Engine environment to run this version in. (VM vs. non-VM, etc.)
       ENV: validation.Optional(ENV_RE_STRING),
+      ENDPOINTS_API_SERVICE: validation.Optional(EndpointsApiService),
       # The SDK will use this for generated Dockerfiles
       ENTRYPOINT: validation.Optional(validation.Type(str)),
       RUNTIME_CONFIG: validation.Optional(RuntimeConfig),

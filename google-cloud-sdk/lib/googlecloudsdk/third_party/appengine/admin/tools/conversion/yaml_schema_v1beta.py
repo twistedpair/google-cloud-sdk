@@ -67,6 +67,10 @@ SCHEMA = s.Message(
         max_instances=s.Value(converter=c.StringToInt())),
     beta_settings=s.Map(),
     default_expiration=s.Value(converter=c.ExpirationToDuration),
+    endpoints_api_service=s.Message(
+        name=s.Value(),
+        config_id=s.Value(),
+    ),
     env=s.Value(),
     env_variables=s.Map(),
     error_handlers=s.RepeatedField(element=s.Message(
@@ -114,6 +118,7 @@ SCHEMA = s.Message(
     network=s.Message(
         instance_tag=s.Value(converter=c.ToJsonString),
         name=s.Value(converter=c.ToJsonString),
+        subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
                                                         c.ToJsonString))),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),

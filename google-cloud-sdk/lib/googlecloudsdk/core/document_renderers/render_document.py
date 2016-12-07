@@ -528,8 +528,10 @@ class _MarkdownConverter(object):
   def _ConvertDefinitionList(self, i):
     """Detects and converts a definition list item markdown line.
 
-         level-1::
-         level-2:::
+         [item-level-1]:: [definition-line]
+         [definition-lines]
+         [item-level-2]::: [definition-line]
+         [definition-lines]
 
     Args:
       i: The current character index in self._line.
@@ -547,8 +549,11 @@ class _MarkdownConverter(object):
     while i < len(self._line) and self._line[i] == ':':
       i += 1
       level += 1
-    if not index_at_definition_markdown:
-      # Bare :::* pops to previous list level.
+    while i < len(self._line) and self._line[i].isspace():
+      i += 1
+    end = i >= len(self._line) and not index_at_definition_markdown
+    if end:
+      # Bare ^:::$ is end of list which pops to previous list level.
       level -= 1
     if (self._lists[self._depth].bullet or
         self._lists[self._depth].level < level):
@@ -559,18 +564,16 @@ class _MarkdownConverter(object):
       while self._lists[self._depth].level > level:
         self._depth -= 1
     self._Fill()
-    if not index_at_definition_markdown:
+    if end:
       i = len(self._line)
-      definition = ''
+      definition = None
     else:
       self._lists[self._depth].bullet = False
       self._lists[self._depth].ignore_line = 2
       self._lists[self._depth].level = level
-      while i < len(self._line) and self._line[i] == ' ':
-        i += 1
       self._buf = self._line[:index_at_definition_markdown]
       definition = self._Attributes()
-    self._renderer.List(self._depth, definition)
+    self._renderer.List(level, definition=definition, end=end)
     if i < len(self._line):
       self._buf += self._line[i:]
     return -1

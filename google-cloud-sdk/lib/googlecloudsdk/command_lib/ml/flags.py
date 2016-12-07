@@ -13,12 +13,14 @@
 # limitations under the License.
 """Provides common arguments for the ML command surface."""
 import argparse
+import itertools
 import sys
 
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 
 
 class ArgumentError(exceptions.Error):
@@ -62,14 +64,11 @@ PACKAGE_PATH = base.Argument(
     help='Path to a Python package to build')
 PACKAGES = base.Argument(
     '--packages',
+    # TODO(b/33234717) remove nargs=+ after deprecation period
     nargs='+',
-    default=[],
+    type=arg_parsers.ArgList(),
+    metavar='PACKAGE',
     help='Path to Python archives used for training')
-STAGING_BUCKET = base.Argument(
-    '--staging-bucket',
-    help='Bucket in which to stage training archives',
-    type=storage_util.BucketReference.Argument,
-    required=True)
 USER_ARGS = base.Argument(
     'user_args',
     nargs=argparse.REMAINDER,
@@ -78,7 +77,16 @@ VERSION_NAME = base.Argument('version', help='Name of the model version.')
 VERSION_DATA = base.Argument(
     '--origin',
     required=True,
-    help='Google Cloud Storage location containing the model graph.')
+    help='Location containing the model graph.',
+    detailed_help="""\
+Location of ```model/``` "directory" (as output by
+https://www.tensorflow.org/versions/r0.12/api_docs/python/state_ops.html#Saver).
+
+Can be a Google Cloud Storage (`gs://`) path or local file path (no prefix). In
+the latter case the files will be uploaded to Google Cloud Storage and a
+`--staging-bucket` argument is required.
+""")
+
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
@@ -103,3 +111,23 @@ def GetModelName(positional=True, required=False):
     return base.Argument('model', help=help_text)
   else:
     return base.Argument('--model', help=help_text, required=required)
+
+
+# TODO(b/33234717): remove after PACKAGES nargs=+ deprecation period.
+def ProcessPackages(args):
+  """Flatten PACKAGES flag and warn if multiple arguments were used."""
+  if args.packages is not None:
+    if len(args.packages) > 1:
+      log.warn('Use of --packages with space separated values is '
+               'deprecated and will not work in the future. Use comma '
+               'instead.')
+    # flatten packages into a single list
+    args.packages = list(itertools.chain.from_iterable(args.packages))
+
+
+def GetStagingBucket(required):
+  return base.Argument(
+      '--staging-bucket',
+      help='Bucket in which to stage training archives',
+      type=storage_util.BucketReference.Argument,
+      required=required)

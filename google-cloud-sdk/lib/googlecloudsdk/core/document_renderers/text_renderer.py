@@ -66,21 +66,23 @@ class TextRenderer(renderer.Renderer):
       self._blank = False
       self._fill = 0
 
-  def _SetIndentation(self, level, bullet=False):
-    """Sets the indentation level and character offset.
+  def _SetIndentation(self, level, bullet=False, indent=None):
+    """Sets the markdown list level, type and character indent.
 
     Args:
-      level: The desired indentaton level.
-      bullet: True if indentation is for a bullet list.
+      level: int, The desired markdown list level.
+      bullet: bool, True if indentation is for a bullet list.
+      indent: int, The new indentation.
     """
     if self._level < level:
       # Level increases are strictly 1 at a time.
       if level >= len(self._indent):
         self._indent.append(0)
-      indent = self._INDENT
-      if bullet and level > 1:
-        # Nested bullet indentation is less than normal indent for aesthetics.
-        indent -= self._BULLET_DEDENT
+      if indent is None:
+        indent = self._INDENT
+        if bullet and level > 1:
+          # Nested bullet indentation is less than normal indent for aesthetics.
+          indent -= self._BULLET_DEDENT
       self._indent[level] = self._indent[level - 1] + indent
     self._level = level
 
@@ -160,6 +162,7 @@ class TextRenderer(renderer.Renderer):
       # Ignore man page TH.
       return
     self._Flush()
+    self.Line()
     self.Font(out=self._out)
     if level > 2:
       self._out.write('  ' * (level - 2))
@@ -178,24 +181,29 @@ class TextRenderer(renderer.Renderer):
       self._blank = True
       self._out.write('\n')
 
-  def List(self, level, definition=None):
+  def List(self, level, definition=None, end=False):
     """Renders a bullet or definition list item.
 
     Args:
       level: The list nesting level, 0 if not currently in a list.
-      definition: Bullet list if None, end of list if empty, definition list
-        otherwise.
+      definition: Bullet list if None, definition list otherwise.
+      end: End of list if True.
     """
     self._Flush()
     if not level:
       self._level = level
-    elif definition is not None:
-      # Definition list item or end of list if definition == ''.
+    elif end:
+      # End of list.
       self._SetIndentation(level)
+    elif definition is not None:
+      # Definition list item.
       if definition:
-        # Definition list item.
+        self._SetIndentation(level, indent=self._INDENT)
         self._out.write(' ' * (self._indent[level] - self._INDENT + 1) +
                         definition + '\n')
+      else:
+        self._SetIndentation(level, indent=0)
+        self.Line()
     else:
       # Bullet list item.
       self._SetIndentation(level, bullet=True)

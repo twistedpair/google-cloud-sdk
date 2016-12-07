@@ -27,6 +27,7 @@ __author__ = 'arb@google.com (Anthony Baxter)'
 # this source file, please place them in comments only.
 
 import logging
+import os
 import sys
 import traceback
 
@@ -37,11 +38,21 @@ except ImportError:
 
 from googlecloudsdk.third_party.appengine.googlecron import groc
 from googlecloudsdk.third_party.appengine.googlecron import groctimespecification
-from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.api import validation
-from googlecloudsdk.third_party.appengine.api import yaml_builder
-from googlecloudsdk.third_party.appengine.api import yaml_listener
-from googlecloudsdk.third_party.appengine.api import yaml_object
+
+# pylint: disable=g-import-not-at-top
+if os.environ.get('APPENGINE_RUNTIME') == 'python27':
+  from google.appengine.api import appinfo
+  from google.appengine.api import validation
+  from google.appengine.api import yaml_builder
+  from google.appengine.api import yaml_listener
+  from google.appengine.api import yaml_object
+else:
+  from googlecloudsdk.third_party.appengine.api import appinfo
+  from googlecloudsdk.third_party.appengine.api import validation
+  from googlecloudsdk.third_party.appengine.api import yaml_builder
+  from googlecloudsdk.third_party.appengine.api import yaml_listener
+  from googlecloudsdk.third_party.appengine.api import yaml_object
+# pylint: enable=g-import-not-at-top
 
 _URL_REGEX = r'^/.*$'
 _TIMEZONE_REGEX = r'^.{0,100}$'

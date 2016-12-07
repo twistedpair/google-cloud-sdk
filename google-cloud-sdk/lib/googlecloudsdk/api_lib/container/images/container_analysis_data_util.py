@@ -13,13 +13,55 @@
 # limitations under the License.
 """Utilities for the container analysis data model."""
 
+import abc
 import collections
 
 from googlecloudsdk.core import apis
 
+_INDENT = '  '
 
-class VulzAnalysis(object):
+
+class BaseCollection(collections.deque):
+  """Base collection for different types of analysis results."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def add(self, element):
+    self.append(element)
+
+  @abc.abstractmethod
+  def __str__(self):
+    pass
+
+
+class PackageVulnerability(object):
   """Class defining vulnerability."""
+
+  class Collection(BaseCollection):
+
+    def __init__(self, *args, **kwargs):
+      super(PackageVulnerability.Collection, self).__init__(*args, **kwargs)
+
+    def __str__(self):
+      if not self:
+        return 'No known vulnerabilities at this time.'
+
+      severities = collections.defaultdict(list)
+      for x in list(self):
+        severities[str(x.severity)].append(x)
+
+      output = ['Vulnerabilities:']
+      for sev in ['Critical', 'High', 'Medium', 'Low']:
+        vulnz = severities[sev.upper()]
+        if not vulnz:
+          continue
+        output.append('{0} ({1}):'.format(sev, len(vulnz)))
+        for v in vulnz:
+          output.append(str(v))
+        # Line breaks between sections.
+        output.append('')
+
+      return ('\n' + _INDENT).join(output)
 
   class PackageVersion(object):
     """Helper class for Package name version."""
@@ -44,53 +86,71 @@ class VulzAnalysis(object):
             version=package.version.name,
             rev=package.version.revision)
 
-    def __str__(self):
-      return ('Affected Package: {affected}'
-              '\nFixed Package: {fixed}').format(affected=self.affected_package,
-                                                 fixed=self.fixed_package)
-
-  def __init__(self, note, vul_details):
-    self.vulnerability = note
-    self.severity = vul_details.severity
+  def __init__(self, occurrence):
+    self.vulnerability = occurrence.noteName
+    self.severity = occurrence.vulnerabilityDetails.severity
     self.pkg_vulnerabilities = []
     self.patch_not_available = False
     messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
-    for package_issue in vul_details.packageIssue:
+    for package_issue in occurrence.vulnerabilityDetails.packageIssue:
       current_issue_not_fixed = (package_issue.fixedLocation.version.kind ==
                                  messages.Version.KindValueValuesEnum.MAXIMUM)
 
-      self.pkg_vulnerabilities.append(VulzAnalysis.PackageVersion(
+      self.pkg_vulnerabilities.append(PackageVulnerability.PackageVersion(
           package_issue.affectedLocation, package_issue.fixedLocation,
           not_fixed=current_issue_not_fixed))
       self.patch_not_available = (current_issue_not_fixed or
                                   self.patch_not_available)
 
   def __str__(self):
-    repr_str = ['\nVulnerability: {0}'.format(self.vulnerability)]
-    for vulnerability in self.pkg_vulnerabilities:
-      repr_str.append(str(vulnerability))
-    repr_str.append('Severity: {0}'.format(self.severity))
+    repr_str = ['', 'Vulnerability: {0}'.format(self.vulnerability)]
+    for pkg_vuln in self.pkg_vulnerabilities:
+      repr_str.append('Affected Package: {affected}'.format(
+          affected=pkg_vuln.affected_package))
+      repr_str.append('Fixed Package: {fixed}'.format(
+          fixed=pkg_vuln.fixed_package))
     # TODO(user) Display related url after b/32774264 is fixed.
-    return '\n'.join(repr_str)
+    return ('\n' + _INDENT + _INDENT).join(repr_str)
 
 
-class BaseImageAnalysis(object):
+class BaseImage(object):
   """Class defining Base image Analysis Data."""
 
-  def __init__(self, derived_image):
-    self.base_image_url = derived_image.baseResourceUrl
-    self.distance = derived_image.distance
+  class Collection(BaseCollection):
 
-  def __str__(self):
-    return self.base_image_url
+    def __str__(self):
+      if not self:
+        return 'No base image information is available for this image.'
+
+      base_images = list(sorted(self, key=lambda x: x.distance, reverse=True))
+      last_basis = base_images[-1]
+      dockerfile = [
+          'FROM {0}\t# +{1} layers'.format(x.base_image_url[8:], x.distance)
+          for x in base_images
+      ]
+      for layer in reversed(last_basis.layer_info):
+        dockerfile.append('{0} {1}'.format(layer.directive, layer.arguments))
+      return ('\n' + _INDENT).join(['Image Basis:'] + dockerfile)
+
+  def __init__(self, occurrence):
+    self.base_image_url = occurrence.derivedImage.baseResourceUrl
+    self.distance = occurrence.derivedImage.distance
+    self.layer_info = occurrence.derivedImage.layerInfo
 
 
 class BuildDetails(object):
   """Class Defining Build Details."""
 
-  def __init__(self, build_details):
-    self.create_time = build_details.provenance.createTime
-    provenance = build_details.provenance
+  class Collection(BaseCollection):
+
+    def __str__(self):
+      if not self:
+        return 'No build details are available for this image.'
+      return '\n'.join(['Build Details:'] + map(str, self))
+
+  def __init__(self, occurrence):
+    self.create_time = occurrence.buildDetails.provenance.createTime
+    provenance = occurrence.buildDetails.provenance
     self.creator = provenance.creator
     self.logs_bucket = provenance.logsBucket
     self.git_sha = None
@@ -102,26 +162,27 @@ class BuildDetails(object):
       self.repo_name = context.cloudRepo.repoId.projectRepoId.repoName
 
   def __str__(self):
-    git_info = ''
+    output = [
+        'Create Time: {create_time}'.format(create_time=self.create_time),
+        'Creator: {creator}'.format(creator=self.creator),
+        'Logs Bucket: {bucket}'.format(bucket=self.logs_bucket),
+    ]
     if self.git_sha and self.repo_name:
-      git_info = '\nRepository: {repo_name}@{git_sha}'.format(
-          repo_name=self.repo_name, git_sha=self.git_sha)
-    return ('\nCreate Time: {create_time}'
-            '\nCreator: {creator}'
-            '\nLogsBucket: {l_bucket}'
-            '{git_info}\n').format(create_time=self.create_time,
-                                   creator=self.creator,
-                                   l_bucket=self.logs_bucket,
-                                   git_info=git_info)
+      output.append('Repository: {repo_name}@{git_sha}'.format(
+          repo_name=self.repo_name, git_sha=self.git_sha))
+
+    return ('\n' + _INDENT).join(output)
 
 
 class ContainerAnalysisData(object):
   """Class defining all container analysis data."""
 
-  def __init__(self):
-    self.vulz_analysis = collections.defaultdict(list)
-    self.image_analysis = collections.defaultdict(list)
-    self.build_details = []
+  def __init__(self, digest):
+    self.digest = str(digest)
+    self.vulz_analysis = PackageVulnerability.Collection()
+    self.image_analysis = BaseImage.Collection()
+    self.build_details = BuildDetails.Collection()
+    # These should be a part of PackageVulnerability.Collection
     self.total_vulnerability_found = 0
     self.not_fixed_vulnerability_count = 0
 
@@ -129,34 +190,26 @@ class ContainerAnalysisData(object):
     messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
     if (occurrence.kind ==
         messages.Occurrence.KindValueValuesEnum.PACKAGE_VULNERABILITY):
-      vulz = VulzAnalysis(occurrence.noteName, occurrence.vulnerabilityDetails)
+      vulz = PackageVulnerability(occurrence)
+      self.vulz_analysis.add(vulz)
       self.total_vulnerability_found += len(vulz.pkg_vulnerabilities)
-      if not vulz.patch_not_available:
-        self.vulz_analysis['FixesAvailable'].append(vulz)
-      else:
+      if vulz.patch_not_available:
         self.not_fixed_vulnerability_count += len(vulz.pkg_vulnerabilities)
-        self.vulz_analysis['NoFixesAvailable'].append(vulz)
     elif occurrence.kind == messages.Occurrence.KindValueValuesEnum.IMAGE_BASIS:
-      base_image = BaseImageAnalysis(occurrence.derivedImage)
-      self.image_analysis[base_image.distance].append(base_image)
+      self.image_analysis.add(BaseImage(occurrence))
     elif (occurrence.kind ==
           messages.Occurrence.KindValueValuesEnum.BUILD_DETAILS):
-      self.build_details.append(BuildDetails(occurrence.buildDetails))
+      self.build_details.add(BuildDetails(occurrence))
 
   def __str__(self):
-    obj_str = []
-    if self.build_details:
-      obj_str.append('\nBuild Details')
-      obj_str.extend([str(obj) for obj in self.build_details])
-    if self.image_analysis:
-      obj_str.append('Base Resource Urls\n')
-      for key in sorted(self.image_analysis.keys(), reverse=True):
-        obj_str.append('Distance: {key}\nBase Image(s): {obj_str}'.format(
-            key=key,
-            obj_str=', '.join(str(item) for item in self.image_analysis[key])
-        ))
-    if self.vulz_analysis:
-      obj_str.append('\nVulnerability Analysis Data')
-      for key in sorted(self.vulz_analysis.keys(), reverse=True):
-        obj_str.extend([str(item) for item in self.vulz_analysis[key]])
-    return '{obj_str}\n'.format(obj_str='\n'.join(obj_str))
+    obj_str = [
+        'Image: {0}'.format(self.digest),
+        '',
+        str(self.build_details),
+        '',
+        str(self.image_analysis),
+        '',
+        str(self.vulz_analysis),
+        ''  # Trailing newline.
+    ]
+    return '\n'.join(obj_str)
