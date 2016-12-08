@@ -2,6 +2,15 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+
+## 137.0.1 (2016/12/08)
+
+### Google Cloud ML
+
+* `gcloud beta ml jobs submit training`: Fix crash when `--packages` was not
+  specified.
+
+
 ## 137.0.0 (2016/12/07)
 
 ### Google Cloud Functions

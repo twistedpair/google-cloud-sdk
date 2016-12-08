@@ -66,6 +66,7 @@ PACKAGES = base.Argument(
     '--packages',
     # TODO(b/33234717) remove nargs=+ after deprecation period
     nargs='+',
+    default=[],
     type=arg_parsers.ArgList(),
     metavar='PACKAGE',
     help='Path to Python archives used for training')
