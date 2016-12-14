@@ -13,6 +13,80 @@ from apitools.base.py import extra_types
 package = 'runtimeconfig'
 
 
+class AuditConfig(_messages.Message):
+  """Provides the configuration for non-admin_activity logging for a service.
+  Controls exemptions and specific log sub-types.
+
+  Fields:
+    auditLogConfigs: The configuration for each type of logging Next ID: 4
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
+      special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for a sub-type of logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from this type
+      of logging Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Log admin reads
+      DATA_WRITE: Log data writes
+      DATA_READ: Log data reads
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example, `alice@gmail.com`
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`. Required
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class Cardinality(_messages.Message):
   """A Cardinality condition for the Waiter resource. A cardinality condition
   is met when the number of variables under a specified path prefix reaches a
@@ -33,6 +107,110 @@ class Cardinality(_messages.Message):
 
   number = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   path = _messages.StringField(2)
+
+
+class CloudAuditOptions(_messages.Message):
+  """Write a Cloud Audit log"""
+
+
+class Condition(_messages.Message):
+  """A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext (go
+        /security-realms). When used with IN, the condition indicates "any of
+        the request's realms match one of the given values; with NOT_IN, "none
+        of the realms match any of the given values". It is not permitted to
+        grant access based on the *absence* of a realm, so realm conditions
+        can only be used in a "positive" context (e.g., ALLOW/IN or
+        DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+
+  class OpValueValuesEnum(_messages.Enum):
+    """An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: Set-inclusion check.
+      NOT_IN: Set-exclusion check.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by any service that owns resources and uses
+    the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
+
+
+class CounterOptions(_messages.Message):
+  """Options for counters
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  """Write a Data Access (Gin) log"""
 
 
 class Empty(_messages.Message):
@@ -106,6 +284,33 @@ class ListWaitersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   waiters = _messages.MessageField('Waiter', 2, repeated=True)
+
+
+class LogConfig(_messages.Message):
+  """Specifies what kind of log the caller must write Increment a streamz
+  counter with the specified metric and field names.  Metric names should
+  start with a '/', generally be lowercase-only, and end in "_count". Field
+  names should not contain an initial slash. The actual exported metric names
+  will have "/iam/policy" prepended.  Field names correspond to IAM request
+  parameters and field values are their respective values.  At present the
+  only supported field names are    - "iam_principal", corresponding to
+  IAMContext.principal;    - "" (empty string), resulting in one aggretated
+  counter with no field.  Examples:   counter { metric: "/debug_access_count"
+  field: "iam_principal" }   ==> increment counter
+  /iam/policy/backend_debug_access_count
+  {iam_principal=[value of IAMContext.principal]}  At this time we do not
+  support: * multiple field names (though this may be supported in the future)
+  * decrementing the counter * incrementing it by anything other than 1
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class Operation(_messages.Message):
@@ -215,6 +420,110 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com",           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  For a description of IAM and its features, see the [IAM
+  developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
+    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
+      must not be specified for the same `role`. `bindings` with no members
+      will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
+      Logging will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class Rule(_messages.Message):
+  """A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries is the same as for members in a Binding (see
+      google/iam/v1/policy.proto).
+    permissions: A permission is a string of form '<service>.<resource
+      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
+      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
+      all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
 class RuntimeConfig(_messages.Message):
   """A RuntimeConfig resource is the primary resource in the Cloud
   RuntimeConfig service. A RuntimeConfig resource consists of metadata and a
@@ -271,6 +580,20 @@ class RuntimeconfigProjectsConfigsDeleteRequest(_messages.Message):
   projectsId = _messages.StringField(2, required=True)
 
 
+class RuntimeconfigProjectsConfigsGetIamPolicyRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsGetIamPolicyRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being requested. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  projectsId = _messages.StringField(2, required=True)
+
+
 class RuntimeconfigProjectsConfigsGetRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsGetRequest object.
 
@@ -315,6 +638,63 @@ class RuntimeconfigProjectsConfigsOperationsGetRequest(_messages.Message):
   configsId = _messages.StringField(1, required=True)
   operationsId = _messages.StringField(2, required=True)
   projectsId = _messages.StringField(3, required=True)
+
+
+class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    operationsId: Part of `resource`. See documentation of `projectsId`.
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  operationsId = _messages.StringField(2, required=True)
+  permissions = _messages.StringField(3, repeated=True)
+  projectsId = _messages.StringField(4, required=True)
+
+
+class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsSetIamPolicyRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being specified. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  projectsId = _messages.StringField(2, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 3)
+
+
+class RuntimeconfigProjectsConfigsTestIamPermissionsRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsTestIamPermissionsRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  projectsId = _messages.StringField(2, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 3)
 
 
 class RuntimeconfigProjectsConfigsUpdateRequest(_messages.Message):
@@ -416,6 +796,28 @@ class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   projectsId = _messages.StringField(5, required=True)
+
+
+class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
+    variablesId: Part of `resource`. See documentation of `projectsId`.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  permissions = _messages.StringField(2, repeated=True)
+  projectsId = _messages.StringField(3, required=True)
+  variablesId = _messages.StringField(4, required=True)
 
 
 class RuntimeconfigProjectsConfigsVariablesUpdateRequest(_messages.Message):
@@ -529,6 +931,41 @@ class RuntimeconfigProjectsConfigsWaitersListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   projectsId = _messages.StringField(4, required=True)
+
+
+class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Message):
+  """A RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest object.
+
+  Fields:
+    configsId: Part of `resource`. See documentation of `projectsId`.
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    projectsId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
+    waitersId: Part of `resource`. See documentation of `projectsId`.
+  """
+
+  configsId = _messages.StringField(1, required=True)
+  permissions = _messages.StringField(2, repeated=True)
+  projectsId = _messages.StringField(3, required=True)
+  waitersId = _messages.StringField(4, required=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  """Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -676,6 +1113,30 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  """Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class Variable(_messages.Message):
   """Describes a single variable within a RuntimeConfig resource. The name
   denotes the hierarchical variable name. For example, `ports/serving_port` is
@@ -803,6 +1264,9 @@ class WatchVariableRequest(_messages.Message):
   newerThan = _messages.StringField(1)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in',
+    package=u'runtimeconfig')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv',
     package=u'runtimeconfig')

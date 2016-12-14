@@ -69,22 +69,19 @@ class DeployOptions(object):
     promote: True if the deployed version should recieve all traffic.
     stop_previous_version: Stop previous version
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
-    app_create: Offer to create an app if current GCP project is appless.
   """
 
-  def __init__(self, promote, stop_previous_version, enable_endpoints,
-               app_create):
+  def __init__(self, promote, stop_previous_version, enable_endpoints):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
-    self.app_create = app_create
 
   @classmethod
-  def FromProperties(cls, enable_endpoints, app_create):
+  def FromProperties(cls, enable_endpoints):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    return cls(promote, stop_previous_version, enable_endpoints, app_create)
+    return cls(promote, stop_previous_version, enable_endpoints)
 
 
 def _UploadFiles(service, source_dir, code_bucket_ref):
@@ -185,6 +182,10 @@ class ServiceDeployer(object):
         image = deploy_command_util.BuildAndPushDockerImage(
             new_version.project, service, source_dir, new_version.id,
             code_bucket_ref)
+      elif service.parsed.skip_files.regex:
+        log.warning('Deployment of service [{0}] will ignore the skip_files '
+                    'field in the configuration file, because the image has '
+                    'already been built.'.format(new_version.service))
     else:
       image = None
     return image
@@ -269,13 +270,13 @@ def ArgsDeploy(parser):
   flags.IGNORE_CERTS_FLAG.AddToParser(parser)
   flags.DOCKER_BUILD_FLAG.AddToParser(parser)
   parser.add_argument(
-      '--version', '-v',
+      '--version', '-v', type=flags.VERSION_TYPE,
       help='The version of the app that will be created or replaced by this '
       'deployment.  If you do not specify a version, one will be generated for '
       'you.')
   parser.add_argument(
       '--bucket',
-      type=storage_util.BucketReference.Argument,
+      type=storage_util.BucketReference.FromArgument,
       help=("The Google Cloud Storage bucket used to stage files associated "
             "with the deployment. If this argument is not specified, the "
             "application's default code bucket is used."))
@@ -321,15 +322,13 @@ def ArgsDeploy(parser):
       help=argparse.SUPPRESS)
 
 
-def RunDeploy(args, enable_endpoints=False, app_create=False,
-              use_beta_stager=False):
+def RunDeploy(args, enable_endpoints=False, use_beta_stager=False):
   """Perform a deployment based on the given args.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
         arguments specified in the ArgsDeploy() function.
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
-    app_create: Offer to create an app if current GCP project is appless.
     use_beta_stager: Use the stager registry defined for the beta track rather
         than the default stager registry.
 
@@ -338,10 +337,8 @@ def RunDeploy(args, enable_endpoints=False, app_create=False,
     where new_versions is a list of version_util.Version, and updated_configs
     is a list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
-  version_id = args.version or util.GenerateVersionId()
-  flags.ValidateVersion(version_id)
   project = properties.VALUES.core.project.Get(required=True)
-  deploy_options = DeployOptions.FromProperties(enable_endpoints, app_create)
+  deploy_options = DeployOptions.FromProperties(enable_endpoints)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.
@@ -374,7 +371,7 @@ def RunDeploy(args, enable_endpoints=False, app_create=False,
   ac_client = appengine_client.AppengineClient(
       args.server, args.ignore_bad_certs)
 
-  app = _PossiblyCreateApp(api_client, project, deploy_options.app_create)
+  app = _PossiblyCreateApp(api_client, project)
 
   if properties.VALUES.app.use_gsutil.GetBool():
     log.warning('Your gcloud installation has a deprecated config property '
@@ -385,6 +382,7 @@ def RunDeploy(args, enable_endpoints=False, app_create=False,
                 'temporarily, run `gcloud config set app/use_gsutil True`.\n')
 
   # Tell the user what is going to happen, and ask them to confirm.
+  version_id = args.version or util.GenerateVersionId()
   deployed_urls = output_helpers.DisplayProposedDeployment(
       app, project, app_config, version_id, deploy_options.promote)
   console_io.PromptContinue(cancel_on_no=True)
@@ -478,17 +476,15 @@ def PrintPostDeployHints(new_versions, updated_configs):
       '  $ gcloud app browse' + service_hint)
 
 
-def _PossiblyCreateApp(api_client, project, app_create):
+def _PossiblyCreateApp(api_client, project):
   """Returns an app resource, and creates it if the stars are aligned.
 
-  App creation happens only if the current project is app-less,
-  app_create is True, we are running in interactive mode and the user
-  explicitly wants to.
+  App creation happens only if the current project is app-less, we are running
+  in interactive mode and the user explicitly wants to.
 
   Args:
     api_client: Admin API client.
     project: The GCP project/app id.
-    app_create: True if interactive app creation should be allowed.
 
   Returns:
     An app object (never returns None).
@@ -500,12 +496,13 @@ def _PossiblyCreateApp(api_client, project, app_create):
     return api_client.GetApplication()
   except api_lib_exceptions.NotFoundError:
     # Invariant: GCP Project does exist but (singleton) GAE app is not yet
-    # created. Offer to create one if the following conditions are true:
-    # 1. `app_create` is True (currently `beta` only)
-    # 2. We are currently running in interactive mode
-    msg = output_helpers.CREATE_APP_PROMPT.format(project=project)
-    if (app_create and console_io.CanPrompt() and
-        console_io.PromptContinue(message=msg)):
+    # created.
+    #
+    # Check for interactive mode, since this action is irreversible and somewhat
+    # surprising. CreateAppInteractively will provide a cancel option for
+    # interactive users, and MissingApplicationException includes instructions
+    # for non-interactive users to fix this.
+    if console_io.CanPrompt():
       # Equivalent to running `gcloud beta app create`
       create_util.CreateAppInteractively(api_client, project)
       # App resource must be fetched again

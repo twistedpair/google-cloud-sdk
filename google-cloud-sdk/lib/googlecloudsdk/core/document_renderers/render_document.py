@@ -297,7 +297,8 @@ class _MarkdownConverter(object):
             # Doubled markers are literal.
             c += c
             i += 1
-          elif c == '*' and l in ' /' and r in ' ./' or l in ' /' and r in ' .':
+          elif (c == '*' and l in ' /' and r in ' ./' or
+                c != '`' and l in ' /' and r in ' .'):
             # Path-like glob patterns are literal.
             pass
           elif l.isalnum() and r.isalnum():

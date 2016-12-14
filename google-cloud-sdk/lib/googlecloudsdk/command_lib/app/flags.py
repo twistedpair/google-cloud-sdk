@@ -16,13 +16,13 @@
 import argparse
 
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.api import validation
 
 SERVER_FLAG = base.Argument(
     '--server',
@@ -92,24 +92,13 @@ def GetCodeBucket(app, project):
   log.debug('No bucket specified, retrieving default bucket.')
   if not app.codeBucket:
     raise exceptions.DefaultBucketAccessError(project)
-  bucket_with_gs = 'gs://{0}/'.format(app.codeBucket)
-  return storage_util.BucketReference.FromBucketUrl(bucket_with_gs)
+  return storage_util.BucketReference.FromBucketUrl(app.codeBucket)
 
 
-def ValidateVersion(version):
-  """Check that version is in the correct format. If not, raise an error.
-
-  Args:
-    version: The version id to validate (must not be None).
-
-  Raises:
-    InvalidVersionIdError: If the version id is invalid.
-  """
-  validator = validation.Regex(appinfo.MODULE_VERSION_ID_RE_STRING)
-  try:
-    validator.Validate(version, 'version')
-  except validation.ValidationError:
-    raise exceptions.InvalidVersionIdError(version)
+VERSION_TYPE = arg_parsers.RegexpValidator(
+    appinfo.MODULE_VERSION_ID_RE_STRING,
+    'May only contain lowercase letters, digits, and hyphens. '
+    'Must begin and end with a letter or digit. Must not exceed 63 characters.')
 
 
 def ValidateImageUrl(image_url, services):

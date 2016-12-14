@@ -576,7 +576,8 @@
             "Cluster repair.",
             "Cluster update.",
             "Node pool create.",
-            "Node pool delete."
+            "Node pool delete.",
+            "Set node pool management."
           ],
           "type": "string",
           "enum": [
@@ -588,7 +589,8 @@
             "REPAIR_CLUSTER",
             "UPDATE_CLUSTER",
             "CREATE_NODE_POOL",
-            "DELETE_NODE_POOL"
+            "DELETE_NODE_POOL",
+            "SET_NODE_POOL_MANAGEMENT"
           ]
         },
         "status": {

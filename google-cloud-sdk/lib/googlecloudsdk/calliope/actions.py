@@ -21,7 +21,7 @@ import StringIO
 import sys
 
 from googlecloudsdk.calliope import markdown
-from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -330,7 +330,7 @@ def ShortHelpAction(command):
   """
   def Func():
     metrics.Help(command.dotted_name, '-h')
-    print usage_text.ShortHelpText(command, command.ai)
+    log.out.write(command.GetUsage())
   return FunctionExitAction(Func)
 
 

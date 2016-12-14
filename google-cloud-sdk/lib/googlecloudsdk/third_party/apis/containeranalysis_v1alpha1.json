@@ -1300,15 +1300,52 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Enables \"data access\" audit logging for a service and specifies a list\nof members that are log-exempted.",
+      "description": "Provides the configuration for non-admin_activity logging for a service.\nControls exemptions and specific log sub-types.",
       "type": "object",
       "properties": {
         "service": {
-          "description": "Specifies a service that will be enabled for \"data access\" audit\nlogging.\nFor example, `resourcemanager`, `storage`, `compute`.\n`allServices` is a special value that covers all services.",
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `resourcemanager`, `storage`, `compute`.\n`allServices` is a special value that covers all services.",
           "type": "string"
         },
         "exemptedMembers": {
           "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for each type of logging\nNext ID: 4",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for a sub-type of logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Log admin reads",
+            "Log data writes",
+            "Log data reads"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that are exempted from this type of logging\nFollows the same format of Binding.members.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1616,52 +1653,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "list": {
-              "id": "containeranalysis.projects.occurrences.list",
-              "path": "v1alpha1/{+name}/occurrences",
-              "flatPath": "v1alpha1/projects/{projectsId}/occurrences",
-              "httpMethod": "GET",
-              "description": "Lists all occurrences for a given project\/Digest.  Filters can be used on\nthis field to list all digests containing a specific occurrence in a\nproject.",
-              "parameters": {
-                "name": {
-                  "description": "The name field will contain the projectId for example:\n\"projects\/{project_id}\n@deprecated",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+$",
-                  "type": "string"
-                },
-                "parent": {
-                  "description": "The parent field will contain the projectId for example:\n\"project\/{project_id}",
-                  "location": "query",
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "The filter expression.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Number of notes to return in the list.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Token to provide to skip to a particular spot in the list.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "ListOccurrencesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
             "delete": {
               "id": "containeranalysis.projects.occurrences.delete",
               "path": "v1alpha1/{+name}",
@@ -1709,39 +1700,6 @@
               },
               "parameterOrder": [
                 "parent"
-              ],
-              "request": {
-                "$ref": "Occurrence"
-              },
-              "response": {
-                "$ref": "Occurrence"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "create": {
-              "id": "containeranalysis.projects.occurrences.create",
-              "path": "v1alpha1/{+name}/occurrences",
-              "flatPath": "v1alpha1/projects/{projectsId}/occurrences",
-              "httpMethod": "POST",
-              "description": "Creates a new occurrence.",
-              "parameters": {
-                "name": {
-                  "description": "The name of the project.  Should be of the form \"projects\/{project_id}\".\n@deprecated",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+$",
-                  "type": "string"
-                },
-                "parent": {
-                  "description": "The parent field will contain the projectId for example:\n\"project\/{project_id}",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
               ],
               "request": {
                 "$ref": "Occurrence"
@@ -2028,11 +1986,11 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "update": {
-              "id": "containeranalysis.projects.notes.update",
+            "updateNote": {
+              "id": "containeranalysis.projects.notes.updateNote",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/notes/{notesId}",
-              "httpMethod": "PUT",
+              "httpMethod": "POST",
               "description": "Updates an existing note.",
               "parameters": {
                 "name": {

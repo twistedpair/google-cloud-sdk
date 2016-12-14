@@ -120,183 +120,6 @@
     }
   },
   "schemas": {
-    "Device": {
-      "id": "Device",
-      "description": "A GCE virtual Android device instance.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "description": "Unique id set by the backend.\nNOT user-specified",
-          "type": "string"
-        },
-        "projectId": {
-          "description": "Project id set by the backend.\nNOT user-specified",
-          "type": "string"
-        },
-        "state": {
-          "description": "State of the device.\nNOT user-specified",
-          "enumDescriptions": [
-            "Do not use.  For proto versioning only.",
-            "The device is in the process of spinning up.",
-            "The device is created and ready to use.",
-            "The device has been closed.",
-            "There has been an error."
-          ],
-          "type": "string",
-          "enum": [
-            "DEVICE_UNSPECIFIED",
-            "PREPARING",
-            "READY",
-            "CLOSED",
-            "DEVICE_ERROR"
-          ]
-        },
-        "stateDetails": {
-          "description": "Details about the state of the device.\nNOT user-specified",
-          "$ref": "DeviceStateDetails"
-        },
-        "deviceDetails": {
-          "description": "Information about the backing GCE instance and connection.\nNOT user-specified",
-          "$ref": "DeviceDetails"
-        },
-        "creationTime": {
-          "description": "The time the request to create this device was received.\nNOT user-specified",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "androidDevice": {
-          "description": "The Android device configuration.\nUser-specified\nRequired",
-          "$ref": "AndroidDevice"
-        }
-      }
-    },
-    "DeviceStateDetails": {
-      "id": "DeviceStateDetails",
-      "description": "Additional details about the status of the device.",
-      "type": "object",
-      "properties": {
-        "progressDetails": {
-          "description": "A human-readable, detailed description of the device's status.\nFor example: \"Starting Device\\n Device Ready\".\n\nDuring the device's lifespan data may be appended to the progress.",
-          "type": "string"
-        },
-        "errorDetails": {
-          "description": "If the DeviceState is ERROR, then this string may contain human-readable\ndetails about the error.",
-          "type": "string"
-        }
-      }
-    },
-    "DeviceDetails": {
-      "id": "DeviceDetails",
-      "description": "Details about the GCE instance and connection.",
-      "type": "object",
-      "properties": {
-        "gceInstanceDetails": {
-          "description": "Details about the GCE instance backing the device.",
-          "$ref": "GceInstanceDetails"
-        },
-        "connectionInfo": {
-          "description": "Details about the connection to the device.",
-          "$ref": "ConnectionInfo"
-        }
-      }
-    },
-    "GceInstanceDetails": {
-      "id": "GceInstanceDetails",
-      "description": "This information is provided for the user to look up additional details of\nthe backing GCE instance. It is assumed the user does not modify this\ninstance. If so, then the device service makes no guarantees about\ndevice functionality.",
-      "type": "object",
-      "properties": {
-        "projectId": {
-          "description": "The GCE project that contains the instance backing this device. If\nuser-specified, must be the same as the project_id in the\nCreateDeviceRequest.",
-          "type": "string"
-        },
-        "zone": {
-          "description": "Desired GCE zone for the device\nuser-specified",
-          "type": "string"
-        },
-        "name": {
-          "description": "Desired instance name of the device.\nMay be user-specified. If not, the backend will choose a name.",
-          "type": "string"
-        }
-      }
-    },
-    "ConnectionInfo": {
-      "id": "ConnectionInfo",
-      "description": "Information needed to connect to services running on the virtual device. The\nssh_port is used to connect to the device, and then the adb_port and vnc_port\non the device can be forwarded to two local ports, to which adb and vnc can\nconnect, respectively.\n\nAll of the fields in this message are provided by the backend.",
-      "type": "object",
-      "properties": {
-        "ipAddress": {
-          "description": "IP address of the device.\nNOT user-specified\nRequired",
-          "type": "string"
-        },
-        "adbPort": {
-          "description": "Port for ADB (e.g. 5555)\nNOT user-specified\nRequired",
-          "type": "integer",
-          "format": "int32"
-        },
-        "sshPort": {
-          "description": "Port for SSH (e.g. 22)\nNOT user-specified\nRequired",
-          "type": "integer",
-          "format": "int32"
-        },
-        "vncPort": {
-          "description": "Port for VNC (e.g. 6444)\nNOT user-specified\nRequired",
-          "type": "integer",
-          "format": "int32"
-        },
-        "vncPassword": {
-          "description": "Password for VNC\nNOT user-specified\nRequired",
-          "type": "string"
-        }
-      }
-    },
-    "AndroidDevice": {
-      "id": "AndroidDevice",
-      "description": "A single Android device.",
-      "type": "object",
-      "properties": {
-        "androidModelId": {
-          "description": "The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "androidVersionId": {
-          "description": "The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "locale": {
-          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "orientation": {
-          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        }
-      }
-    },
-    "ListDevicesResponse": {
-      "id": "ListDevicesResponse",
-      "description": "Response containing a list of devices. Supports pagination.",
-      "type": "object",
-      "properties": {
-        "devices": {
-          "description": "The GCE virtual Android devices to be returned.",
-          "type": "array",
-          "items": {
-            "$ref": "Device"
-          }
-        },
-        "nextPageToken": {
-          "description": "The pagination token to retrieve the next page of device results.",
-          "type": "string"
-        }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ListTestMatricesResponse": {
       "id": "ListTestMatricesResponse",
       "description": "Response contain a list of Test Matrices.",
@@ -767,6 +590,29 @@
         }
       }
     },
+    "AndroidDevice": {
+      "id": "AndroidDevice",
+      "description": "A single Android device.",
+      "type": "object",
+      "properties": {
+        "androidModelId": {
+          "description": "The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "androidVersionId": {
+          "description": "The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "locale": {
+          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "orientation": {
+          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        }
+      }
+    },
     "ToolResultsStep": {
       "id": "ToolResultsStep",
       "description": "Represents a tool results step resource.\n\nThis has the results of a TestExecution.",
@@ -872,6 +718,13 @@
         }
       }
     },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "CancelTestMatrixResponse": {
       "id": "CancelTestMatrixResponse",
       "description": "Response containing the current state of the specified test matrix.",
@@ -906,6 +759,153 @@
             "CANCELLED",
             "INVALID"
           ]
+        }
+      }
+    },
+    "Device": {
+      "id": "Device",
+      "description": "A GCE virtual Android device instance.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Unique id set by the backend.\nNOT user-specified",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project id set by the backend.\nNOT user-specified",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the device.\nNOT user-specified",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The device is in the process of spinning up.",
+            "The device is created and ready to use.",
+            "The device has been closed.",
+            "There has been an error."
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_UNSPECIFIED",
+            "PREPARING",
+            "READY",
+            "CLOSED",
+            "DEVICE_ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Details about the state of the device.\nNOT user-specified",
+          "$ref": "DeviceStateDetails"
+        },
+        "deviceDetails": {
+          "description": "Information about the backing GCE instance and connection.\nNOT user-specified",
+          "$ref": "DeviceDetails"
+        },
+        "creationTime": {
+          "description": "The time the request to create this device was received.\nNOT user-specified",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "androidDevice": {
+          "description": "The Android device configuration.\nUser-specified\nRequired",
+          "$ref": "AndroidDevice"
+        }
+      }
+    },
+    "DeviceStateDetails": {
+      "id": "DeviceStateDetails",
+      "description": "Additional details about the status of the device.",
+      "type": "object",
+      "properties": {
+        "progressDetails": {
+          "description": "A human-readable, detailed description of the device's status.\nFor example: \"Starting Device\\n Device Ready\".\n\nDuring the device's lifespan data may be appended to the progress.",
+          "type": "string"
+        },
+        "errorDetails": {
+          "description": "If the DeviceState is ERROR, then this string may contain human-readable\ndetails about the error.",
+          "type": "string"
+        }
+      }
+    },
+    "DeviceDetails": {
+      "id": "DeviceDetails",
+      "description": "Details about the GCE instance and connection.",
+      "type": "object",
+      "properties": {
+        "gceInstanceDetails": {
+          "description": "Details about the GCE instance backing the device.",
+          "$ref": "GceInstanceDetails"
+        },
+        "connectionInfo": {
+          "description": "Details about the connection to the device.",
+          "$ref": "ConnectionInfo"
+        }
+      }
+    },
+    "GceInstanceDetails": {
+      "id": "GceInstanceDetails",
+      "description": "This information is provided for the user to look up additional details of\nthe backing GCE instance. It is assumed the user does not modify this\ninstance. If so, then the device service makes no guarantees about\ndevice functionality.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The GCE project that contains the instance backing this device. If\nuser-specified, must be the same as the project_id in the\nCreateDeviceRequest.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Desired GCE zone for the device\nuser-specified",
+          "type": "string"
+        },
+        "name": {
+          "description": "Desired instance name of the device.\nMay be user-specified. If not, the backend will choose a name.",
+          "type": "string"
+        }
+      }
+    },
+    "ConnectionInfo": {
+      "id": "ConnectionInfo",
+      "description": "Information needed to connect to services running on the virtual device. The\nssh_port is used to connect to the device, and then the adb_port and vnc_port\non the device can be forwarded to two local ports, to which adb and vnc can\nconnect, respectively.\n\nAll of the fields in this message are provided by the backend.",
+      "type": "object",
+      "properties": {
+        "ipAddress": {
+          "description": "IP address of the device.\nNOT user-specified\nRequired",
+          "type": "string"
+        },
+        "adbPort": {
+          "description": "Port for ADB (e.g. 5555)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sshPort": {
+          "description": "Port for SSH (e.g. 22)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vncPort": {
+          "description": "Port for VNC (e.g. 6444)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vncPassword": {
+          "description": "Password for VNC\nNOT user-specified\nRequired",
+          "type": "string"
+        }
+      }
+    },
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
+      "description": "Response containing a list of devices. Supports pagination.",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "The GCE virtual Android devices to be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "Device"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of device results.",
+          "type": "string"
         }
       }
     },
@@ -1173,6 +1173,161 @@
   "resources": {
     "projects": {
       "resources": {
+        "testMatrices": {
+          "methods": {
+            "list": {
+              "id": "testing.projects.testMatrices.list",
+              "path": "v1/projects/{projectId}/testMatrices",
+              "flatPath": "v1/projects/{projectId}/testMatrices",
+              "httpMethod": "GET",
+              "description": "List test matrices.\nThe matrices are returned in the order of newest first by submit time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the tests.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListTestMatricesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "create": {
+              "id": "testing.projects.testMatrices.create",
+              "path": "v1/projects/{projectId}/testMatrices",
+              "flatPath": "v1/projects/{projectId}/testMatrices",
+              "httpMethod": "POST",
+              "description": "Request to run a matrix of tests according to the given specifications.\nUnsupported environments will be returned in the state UNSUPPORTED.\nMatrices are limited to at most 200 supported executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed or if the matrix expands\n                     to more than 200 supported executions",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project under which this job will run.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "requestId": {
+                  "description": "A string id used to detect duplicated requests.\nIds are automatically scoped to a project, so\nusers should ensure the ID is unique per-project.\nA UUID is recommended.\n\nOptional, but strongly recommended.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "TestMatrix"
+              },
+              "response": {
+                "$ref": "TestMatrix"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "testing.projects.testMatrices.get",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "httpMethod": "GET",
+              "description": "Check the status of a test matrix.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test matrix.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Unique test matrix id which was assigned by the service.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "TestMatrix"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "delete": {
+              "id": "testing.projects.testMatrices.delete",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "httpMethod": "DELETE",
+              "description": "Delete all record of a test matrix plus any associated test executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Test matrix that will be canceled.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "cancel": {
+              "id": "testing.projects.testMatrices.cancel",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
+              "httpMethod": "POST",
+              "description": "Cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asychronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Test matrix that will be canceled.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "CancelTestMatrixResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
         "devices": {
           "methods": {
             "create": {
@@ -1332,161 +1487,6 @@
               ],
               "response": {
                 "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            }
-          }
-        },
-        "testMatrices": {
-          "methods": {
-            "list": {
-              "id": "testing.projects.testMatrices.list",
-              "path": "v1/projects/{projectId}/testMatrices",
-              "flatPath": "v1/projects/{projectId}/testMatrices",
-              "httpMethod": "GET",
-              "description": "List test matrices.\nThe matrices are returned in the order of newest first by submit time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the tests.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId"
-              ],
-              "response": {
-                "$ref": "ListTestMatricesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only"
-              ]
-            },
-            "create": {
-              "id": "testing.projects.testMatrices.create",
-              "path": "v1/projects/{projectId}/testMatrices",
-              "flatPath": "v1/projects/{projectId}/testMatrices",
-              "httpMethod": "POST",
-              "description": "Request to run a matrix of tests according to the given specifications.\nUnsupported environments will be returned in the state UNSUPPORTED.\nMatrices are limited to at most 200 supported executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed or if the matrix expands\n                     to more than 200 supported executions",
-              "parameters": {
-                "projectId": {
-                  "description": "The GCE project under which this job will run.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "requestId": {
-                  "description": "A string id used to detect duplicated requests.\nIds are automatically scoped to a project, so\nusers should ensure the ID is unique per-project.\nA UUID is recommended.\n\nOptional, but strongly recommended.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId"
-              ],
-              "request": {
-                "$ref": "TestMatrix"
-              },
-              "response": {
-                "$ref": "TestMatrix"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "get": {
-              "id": "testing.projects.testMatrices.get",
-              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "httpMethod": "GET",
-              "description": "Check the status of a test matrix.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the test matrix.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "testMatrixId": {
-                  "description": "Unique test matrix id which was assigned by the service.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId",
-                "testMatrixId"
-              ],
-              "response": {
-                "$ref": "TestMatrix"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only"
-              ]
-            },
-            "delete": {
-              "id": "testing.projects.testMatrices.delete",
-              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "httpMethod": "DELETE",
-              "description": "Delete all record of a test matrix plus any associated test executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the test.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "testMatrixId": {
-                  "description": "Test matrix that will be canceled.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId",
-                "testMatrixId"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
-            "cancel": {
-              "id": "testing.projects.testMatrices.cancel",
-              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
-              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
-              "httpMethod": "POST",
-              "description": "Cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asychronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the test.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "testMatrixId": {
-                  "description": "Test matrix that will be canceled.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId",
-                "testMatrixId"
-              ],
-              "response": {
-                "$ref": "CancelTestMatrixResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

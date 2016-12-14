@@ -300,7 +300,7 @@ class LogData(object):
   TRACEBACK_MARKER = 'BEGIN CRASH STACKTRACE\n'
 
   # This shows the command run in the log file
-  COMMAND_REGEXP = r'Running (gcloud\.[a-z.]+)'
+  COMMAND_REGEXP = r'Running (gcloud(?:\.[a-z-]+)*)'
 
   def __init__(self, filename, command, contents, traceback):
     self.filename = filename
@@ -315,10 +315,23 @@ class LogData(object):
 
   @property
   def relative_path(self):
+    """Returns path of log file relative to log directory, or the full path.
+
+    Returns the full path when the log file is not *in* the log directory.
+
+    Returns:
+      str, the relative or full path of log file.
+    """
     logs_dir = config.Paths().logs_dir
-    if not self.filename.startswith(logs_dir):
+    if logs_dir is None:
       return self.filename
-    return self.filename[len(logs_dir + os.path.sep):]
+
+    rel_path = os.path.relpath(self.filename, config.Paths().logs_dir)
+    if rel_path.startswith(os.path.pardir + os.path.sep):
+      # That is, filename is NOT in logs_dir
+      return self.filename
+
+    return rel_path
 
   @property
   def date(self):

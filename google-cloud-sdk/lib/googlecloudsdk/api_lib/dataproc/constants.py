@@ -46,3 +46,6 @@ ADDITIONAL_DEFAULT_SCOPE_URIS = [
     'https://www.googleapis.com/auth/bigtable.data',
     'https://www.googleapis.com/auth/devstorage.full_control',
 ]
+
+# The default page size for list pagination.
+DEFAULT_PAGE_SIZE = 100

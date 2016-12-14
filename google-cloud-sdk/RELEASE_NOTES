@@ -3,6 +3,79 @@
 Copyright 2014-2016 Google Inc. All rights reserved.
 
 
+## 138.0.0 (2016/12/14)
+
+### Cloud SDK
+
+* Introduce --(no-)force-key-file-overwrite flags to all gcloud commands using
+  SSH key files. These new flags control overwrite behavior when SSH key files
+  are broken. Without these flags, interactive sessions will ask for
+  confirmation before regenerating key files. Old non-interactive behavior
+  (permissive) is deprecated and will be removed in 6 months. To preserve old
+  behavior in your scripts, use new flag --force-key-file-overwrite
+  (though this is discouraged).
+
+* Credential store format for service accounts has changed. Your credentials
+  will get auto-upgraded to new format upon usage; however, if gcloud is
+  downgraded to previous version those credentials will not be usable and users
+  will have to reactivate their service account.
+
+### Google Cloud ML
+
+* `gcloud beta ml jobs submit training` is now blocking by default. Use the
+  `--async` flag to finish immediately after job submission.
+
+### Google Compute Engine
+
+* `gcloud compute instances create` creates instance with no scopes by default
+  if project has no default service account.
+* `compute target-ssl-proxies list` deprecated `--regex` and names argument.
+  Please use `--filter` flag instead.
+* `gcloud compute connect-to-serial-port` allows for interactive connections to
+  the serial port for instances.
+* Promote `compute instances set-scopes` command from alpha to beta.
+
+### Google App Engine
+
+* Java SDK updated to 1.9.48. For more details, please see
+  https://cloud.google.com/appengine/docs/java/release-notes
+* Python SDK updated to 1.9.49. For more details, please see
+  https://cloud.google.com/appengine/docs/python/release-notes
+* `gcloud app describe` is now GA.
+* Added `gcloud beta app instances delete`, which deletes a specific App Engine
+  instance.
+* Added `gcloud beta app versions migrate`.
+* Added support for `env: flex` (Flexible Environment) instances to
+`gcloud app instances enable-debug` and `gcloud app instances disable-debug`.
+* Added support for skip_files in Flexible Environment deployments.
+
+### Google Container Engine
+
+* Users can create clusters/nodepools with node autoupgrade enabled in Beta by
+  adding `--enable-auto-upgrade`. Please refer to
+  `gcloud beta container clusters create --help` and
+  `gcloud beta container node-pools create --help` for more details.
+* node-pool upgrades can now be rolled back using the
+  `gcloud alpha container node-pools rollback <pool-name>` command.
+  See `gcloud alpha container node-pools rollback --help` for more details.
+
+### Google Cloud Container Builder
+
+* Container Builder timeouts are now unlimited (with a default of ten minutes),
+  and can be specified with the --timeout flag.
+
+### Google Cloud Dataflow
+
+* The `gcloud dataflow jobs` command group now has the following commands in GA:
+  cancel, describe, drain, list, show
+
+### Google Cloud Functions
+
+* Remove `gcloud alpha functions get-logs` command.
+* Remove deprecated flags --trigger-topic --trigger-bucket --source --bucket
+  --trigger-gs-uri from `gcloud alpha functions deploy` command.
+
+
 ## 137.0.1 (2016/12/08)
 
 ### Google Cloud ML

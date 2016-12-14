@@ -302,7 +302,7 @@ or a PERMISSION_DENIED error otherwise.
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None):
+    def UpdateNote(self, request, global_params=None):
       """Updates an existing note.
 
       Args:
@@ -311,14 +311,14 @@ or a PERMISSION_DENIED error otherwise.
       Returns:
         (Note) The response message.
       """
-      config = self.GetMethodConfig('Update')
+      config = self.GetMethodConfig('UpdateNote')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Update.method_config = lambda: base_api.ApiMethodInfo(
+    UpdateNote.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'PUT',
-        method_id=u'containeranalysis.projects.notes.update',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.notes.updateNote',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
@@ -356,10 +356,10 @@ or a PERMISSION_DENIED error otherwise.
         flat_path=u'v1alpha1/projects/{projectsId}/occurrences',
         http_method=u'POST',
         method_id=u'containeranalysis.projects.occurrences.create',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'parent'],
-        relative_path=u'v1alpha1/{+name}/occurrences',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'name'],
+        relative_path=u'v1alpha1/{+parent}/occurrences',
         request_field=u'occurrence',
         request_type_name=u'ContaineranalysisProjectsOccurrencesCreateRequest',
         response_type_name=u'Occurrence',
@@ -501,10 +501,10 @@ project.
         flat_path=u'v1alpha1/projects/{projectsId}/occurrences',
         http_method=u'GET',
         method_id=u'containeranalysis.projects.occurrences.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'parent'],
-        relative_path=u'v1alpha1/{+name}/occurrences',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/occurrences',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesListRequest',
         response_type_name=u'ListOccurrencesResponse',

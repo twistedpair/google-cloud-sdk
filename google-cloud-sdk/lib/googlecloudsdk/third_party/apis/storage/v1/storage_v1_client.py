@@ -41,6 +41,8 @@ class StorageV1(base_api.BaseApiClient):
     self.notifications = self.NotificationsService(self)
     self.objectAccessControls = self.ObjectAccessControlsService(self)
     self.objects = self.ObjectsService(self)
+    self.projects_serviceAccount = self.ProjectsServiceAccountService(self)
+    self.projects = self.ProjectsService(self)
 
   class BucketAccessControlsService(base_api.BaseApiService):
     """Service class for the bucketAccessControls resource."""
@@ -1308,3 +1310,49 @@ class StorageV1(base_api.BaseApiClient):
         response_type_name=u'Channel',
         supports_download=False,
     )
+
+  class ProjectsServiceAccountService(base_api.BaseApiService):
+    """Service class for the projects_serviceAccount resource."""
+
+    _NAME = u'projects_serviceAccount'
+
+    def __init__(self, client):
+      super(StorageV1.ProjectsServiceAccountService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Get the email address of this project's GCS service account.
+
+      Args:
+        request: (StorageProjectsServiceAccountGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'storage.projects.serviceAccount.get',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/serviceAccount',
+        request_field='',
+        request_type_name=u'StorageProjectsServiceAccountGetRequest',
+        response_type_name=u'ServiceAccount',
+        supports_download=False,
+    )
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = u'projects'
+
+    def __init__(self, client):
+      super(StorageV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

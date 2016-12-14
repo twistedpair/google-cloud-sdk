@@ -339,29 +339,23 @@ def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
   response.detailed_help = response_detailed_help
 
 
-def AddProxyHeaderRelatedCreateArgs(parser):
+def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):
   """Adds parser arguments for creation related to ProxyHeader."""
 
   parser.add_argument(
       '--proxy-header',
       choices={
           'NONE': 'No proxy header is added.',
-          'PROXY_V1': 'Adds the header "PROXY UNKNOWN\\r\\n".',
+          'PROXY_V1': r'Adds the header "PROXY UNKNOWN\r\n".',
       },
-      default='NONE',
+      default=default,
       help='The type of proxy protocol header to be sent to the backend.')
 
 
 def AddProxyHeaderRelatedUpdateArgs(parser):
   """Adds parser arguments for update related to ProxyHeader."""
 
-  parser.add_argument(
-      '--proxy-header',
-      choices={
-          'NONE': 'No proxy header is added.',
-          'PROXY_V1': 'Adds the header "PROXY UNKNOWN\\r\\n".',
-      },
-      help='The type of proxy protocol header to be sent to the backend.')
+  AddProxyHeaderRelatedCreateArgs(parser, default=None)
 
 
 def CheckProtocolAgnosticArgs(args):

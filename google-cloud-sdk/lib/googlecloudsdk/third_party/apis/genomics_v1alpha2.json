@@ -397,10 +397,6 @@
           "description": "Deprecated. Disks created by the Pipelines API will be deleted at the end\nof the pipeline run, regardless of what this field is set to.",
           "type": "boolean"
         },
-        "readOnly": {
-          "description": "Specifies how a sourced-base persistent disk will be mounted. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#use_multi_instances\nfor more details.\nCan only be set at create time.",
-          "type": "boolean"
-        },
         "mountPoint": {
           "description": "Required at create time and cannot be overridden at run time.\nSpecifies the path in the docker container where files on\nthis disk should be located. For example, if `mountPoint`\nis `\/mnt\/disk`, and the parameter has `localPath`\n`inputs\/file.txt`, the docker container can access the data at\n`\/mnt\/disk\/inputs\/file.txt`.",
           "type": "string"

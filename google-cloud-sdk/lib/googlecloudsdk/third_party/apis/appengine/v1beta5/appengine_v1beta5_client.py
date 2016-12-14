@@ -116,9 +116,7 @@ class AppengineV1beta5(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (AppengineAppsOperationsGetRequest) input message
@@ -145,11 +143,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding below allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`.
+      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding below allows API services to override the binding to use different resource name schemes, such as users/*/operations.
 
       Args:
         request: (AppengineAppsOperationsListRequest) input message
@@ -186,14 +180,7 @@ to use different resource name schemes, such as `users/*/operations`.
           }
 
     def Debug(self, request, global_params=None):
-      """Enables debugging on a VM instance. This allows you to use the SSH.
-command to connect to the virtual machine where the instance lives.
-While in "debug mode", the instance continues to serve live traffic.
-You should delete the instance when you are done debugging and then
-allow the system to take over and determine if another instance
-should be started.
-
-Only applicable for instances in App Engine flexible environment.
+      """Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesDebugRequest) input message
@@ -365,9 +352,7 @@ Only applicable for instances in App Engine flexible environment.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified Version resource.
-By default, only a `BASIC_VIEW` will be returned.
-Specify the `FULL_VIEW` parameter to get the full resource.
+      """Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
 
       Args:
         request: (AppengineAppsServicesVersionsGetRequest) input message
@@ -421,21 +406,11 @@ Specify the `FULL_VIEW` parameter to get the full resource.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Version resource.
-You can specify the following fields depending on the App Engine
-environment and type of scaling that the version resource uses:
-
-* [`serving_status`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.serving_status):
-  For Version resources that use basic scaling, manual scaling, or run in
-  the App Engine flexible environment.
-* [`instance_class`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.instance_class):
-  For Version resources that run in the App Engine standard environment.
-* [`automatic_scaling.min_idle_instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.automatic_scaling):
-  For Version resources that use automatic scaling and run in the App
-  Engine standard environment.
-* [`automatic_scaling.max_idle_instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.automatic_scaling):
-  For Version resources that use automatic scaling and run in the App
-  Engine standard environment.
+      """Updates the specified Version resource. You can specify the following fields depending on the App Engine environment and type of scaling that the version resource uses:.
+serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.serving_status):  For Version resources that use basic scaling, manual scaling, or run in  the App Engine flexible environment.
+instance_class (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.instance_class):  For Version resources that run in the App Engine standard environment.
+automatic_scaling.min_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
+automatic_scaling.max_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
 
       Args:
         request: (AppengineAppsServicesVersionsPatchRequest) input message
@@ -590,10 +565,7 @@ environment and type of scaling that the version resource uses:
           }
 
     def Create(self, request, global_params=None):
-      """Creates an App Engine application for a Google Cloud Platform project.
-This requires a project that excludes an App Engine application. For
-details about creating a project without an application, see the
-[Google Cloud Resource Manager create project topic](https://cloud.google.com/resource-manager/docs/creating-project).
+      """Creates an App Engine application for a Google Cloud Platform project. This requires a project that excludes an App Engine application. For details about creating a project without an application, see the Google Cloud Resource Manager create project topic (https://cloud.google.com/resource-manager/docs/creating-project).
 
       Args:
         request: (AppengineAppsCreateRequest) input message
@@ -646,11 +618,9 @@ details about creating a project without an application, see the
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Application resource.
-You can update the following fields:
-
-* [`auth_domain`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.auth_domain)
-* [`default_cookie_expiration`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.default_cookie_expiration)
+      """Updates the specified Application resource. You can update the following fields:.
+auth_domain (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.auth_domain)
+default_cookie_expiration (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1beta5/apps#Application.FIELDS.default_cookie_expiration)
 
       Args:
         request: (AppengineAppsPatchRequest) input message

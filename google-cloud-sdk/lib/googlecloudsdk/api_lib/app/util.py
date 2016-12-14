@@ -279,6 +279,10 @@ class Environment(enum.Enum):
   MANAGED_VMS = 2
   FLEX = 3
 
+  @classmethod
+  def IsFlexible(cls, env):
+    return env in [cls.FLEX, cls.MANAGED_VMS]
+
 
 def IsFlex(env):
   return env in ['2', 'flex', 'flexible']

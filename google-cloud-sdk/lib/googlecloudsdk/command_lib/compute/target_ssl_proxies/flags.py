@@ -16,11 +16,13 @@
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def TargetSslProxyArgument(required=True):
+def TargetSslProxyArgument(required=True, plural=False):
+  resource_name = 'target SSL prox{0}'.format('ies' if plural else 'y')
   return compute_flags.ResourceArgument(
-      resource_name='target ssl proxy',
+      resource_name=resource_name,
       completion_resource_id='compute.targetSslProxies',
-      plural=False,
+      plural=plural,
       required=required,
       global_collection='compute.targetSslProxies',
-      short_help='The name of the target SSL proxy.')
+      short_help=('The name{0} of the {1}.'
+                  .format('s' if plural else '', resource_name)))

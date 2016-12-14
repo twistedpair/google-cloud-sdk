@@ -26,6 +26,7 @@ from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import http_proxy_types
+from googlecloudsdk.core.util import times
 
 
 # Try to parse the command line flags at import time to see if someone provided
@@ -542,17 +543,15 @@ class _SectionApp(_Section):
         'previously deployed version is stopped. If False, older versions must '
         'be stopped manually.',
         default=True)
-    def CloudBuildTimeoutValidator(cloud_build_timeout):
-      if cloud_build_timeout is None:
+    def CloudBuildTimeoutValidator(build_timeout):
+      if build_timeout is None:
         return
-      max_timeout = 5 * 60 * 60
       try:
-        if int(cloud_build_timeout) > max_timeout:
-          raise InvalidValueError(
-              'cloud_build_timeout may not exceed {0}'.format(max_timeout))
+        seconds = int(build_timeout)  # bare int means seconds
       except ValueError:
-        raise InvalidValueError(
-            'cloud_build_timeout must be an integer')
+        seconds = times.ParseDuration(build_timeout).total_seconds
+      if seconds <= 0:
+        raise InvalidValueError('Timeout must be a positive time duration.')
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
         validator=CloudBuildTimeoutValidator,
@@ -643,14 +642,12 @@ class _SectionContainer(_Section):
     def BuildTimeoutValidator(build_timeout):
       if build_timeout is None:
         return
-      max_timeout = 5 * 60 * 60
       try:
-        if int(build_timeout) > max_timeout:
-          raise InvalidValueError(
-              'build_timeout may not exceed %d', max_timeout)
+        seconds = int(build_timeout)  # bare int means seconds
       except ValueError:
-        raise InvalidValueError(
-            'build_timeout must be an integer')
+        seconds = times.ParseDuration(build_timeout).total_seconds
+      if seconds <= 0:
+        raise InvalidValueError('Timeout must be a positive time duration.')
     self.build_timeout = self._Add(
         'build_timeout',
         validator=BuildTimeoutValidator,

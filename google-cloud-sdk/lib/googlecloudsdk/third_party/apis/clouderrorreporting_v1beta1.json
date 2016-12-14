@@ -438,7 +438,7 @@
           "description": "Deletes all error events of a given project.",
           "parameters": {
             "projectName": {
-              "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+              "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]+$",
@@ -633,7 +633,7 @@
               "description": "Lists the specified events.",
               "parameters": {
                 "projectName": {
-                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",

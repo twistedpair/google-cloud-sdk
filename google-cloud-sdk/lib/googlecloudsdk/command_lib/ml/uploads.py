@@ -13,15 +13,13 @@
 # limitations under the License.
 """Common ML file upload logic."""
 import os
-import time
 
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files as file_utils
 
 
-DIST_PREFIX = 'cloudmldist'
 # For ease of mocking in tests without messing up core Python functionality
-_UTCNOW = time.time
 _PATH_SEP = os.path.sep
 
 
@@ -37,7 +35,7 @@ class BadDirectoryError(exceptions.Error):
   """Indicates that a provided directory for upload was empty."""
 
 
-def UploadFiles(upload_pairs, bucket_ref):
+def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
   """Uploads files at the local path to a specifically prefixed location.
 
   The prefix is 'cloudmldist/<current timestamp>'.
@@ -49,11 +47,23 @@ def UploadFiles(upload_pairs, bucket_ref):
       Cloud Storage.
     bucket_ref: storage_util.BucketReference.
       Files will be uploaded to this bucket.
+    gs_prefix: str. Prefix to the GCS Path where files will be uploaded.
   Returns:
     [str]. A list of fully qualified gcs paths for the uploaded files, in the
       same order they were provided.
   """
-  gs_prefix = '/'.join([DIST_PREFIX, str(int(_UTCNOW()))])
+
+  storage_client = storage_api.StorageClient()
+  dests = []
+  checksum = file_utils.Checksum()
+  for local_path, _ in upload_pairs:
+    checksum.AddFileContents(local_path)
+
+  if gs_prefix is not None:
+    gs_prefix = '/'.join([gs_prefix, checksum.HexDigest()])
+  else:
+    gs_prefix = checksum.HexDigest()
+
   storage_client = storage_api.StorageClient()
   dests = []
   for local_path, uploaded_path in upload_pairs:
@@ -90,7 +100,7 @@ def _GetFilesRelative(root):
   return paths
 
 
-def UploadDirectoryIfNecessary(path, staging_bucket=None):
+def UploadDirectoryIfNecessary(path, staging_bucket=None, gs_prefix=None):
   """Uploads path to Cloud Storage if it isn't already there.
 
   Translates local file system paths to Cloud Storage-style paths (i.e. using
@@ -101,6 +111,7 @@ def UploadDirectoryIfNecessary(path, staging_bucket=None):
       or a local filesystem path (no protocol).
     staging_bucket: storage_util.BucketReference or None. If the path is local,
       the bucket to which it should be uploaded.
+    gs_prefix: str, prefix for the directory within the staging bucket.
 
   Returns:
     str, a Cloud Storage path where the directory has been uploaded (possibly
@@ -131,7 +142,9 @@ def UploadDirectoryIfNecessary(path, staging_bucket=None):
   # We put `path` back in, so that UploadFiles can actually find them.
   full_files = [_PATH_SEP.join([path, f]) for f in files]
 
-  uploaded_paths = UploadFiles(zip(full_files, dests), staging_bucket)
+  uploaded_paths = UploadFiles(zip(full_files, dests),
+                               staging_bucket,
+                               gs_prefix=gs_prefix)
 
   if not uploaded_paths:
     raise BadDirectoryError(

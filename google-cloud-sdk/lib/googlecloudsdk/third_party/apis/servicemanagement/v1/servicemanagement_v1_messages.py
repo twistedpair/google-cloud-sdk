@@ -193,11 +193,11 @@ class AuthRequirement(_messages.Message):
 class Authentication(_messages.Message):
   """`Authentication` defines the authentication configuration for an API.
   Example for an API targeted for external use:      name:
-  calendar.googleapis.com     authentication:       rules:       - selector:
-  "*"         oauth:           canonical_scopes:
-  https://www.googleapis.com/auth/calendar        - selector:
-  google.calendar.Delegate         oauth:           canonical_scopes:
-  https://www.googleapis.com/auth/calendar.read
+  calendar.googleapis.com     authentication:       providers:       - id:
+  google_calendar_auth         jwks_uri:
+  https://www.googleapis.com/oauth2/v1/certs         issuer:
+  https://securetoken.google.com       rules:       - selector: "*"
+  requirements:           provider_id: google_calendar_auth
 
   Fields:
     providers: Defines a set of authentication providers that a service
@@ -1056,18 +1056,7 @@ class Endpoint(_messages.Message):
   address library-example.googleapis.com.       # It also allows HTTP OPTIONS
   calls to be passed to the backend, for       # it to decide whether the
   subsequent cross-origin request is       # allowed to proceed.     - name:
-  library-example.googleapis.com       apis: google.example.library.v1.Library
-  allow_cors: true       # Below entry makes
-  'google.example.library.v1.Library'       # API be served from endpoint
-  address       # google.example.library-example.v1.LibraryManager.     -
-  name: library-manager.googleapis.com       apis:
-  google.example.library.v1.LibraryManager       # BNS address for a borg job.
-  Can specify a task by appending       # "/taskId" (e.g. "/0") to the job
-  spec.  Example OpenAPI extension for endpoint with allow_cors set to true:
-  {       "swagger": "2.0",       "info": {         "description": "A
-  simple..."       },       "host": "MY_PROJECT_ID.appspot.com",       "x
-  -google-endpoints": [{         "name": "MY_PROJECT_ID.appspot.com",
-  "allow_cors": "true"       }]     }
+  library-example.googleapis.com       allow_cors: true
 
   Fields:
     aliases: DEPRECATED: This field is no longer supported. Instead of using
@@ -1370,80 +1359,85 @@ class HttpRule(_messages.Message):
   "google/api/annotations.proto" for details.  The mapping consists of a field
   specifying the path template and method kind.  The path template can refer
   to fields in the request message, as in the example below which describes a
-  REST GET operation on a resource collection of messages:  ```proto service
-  Messaging {   rpc GetMessage(GetMessageRequest) returns (Message) {
+  REST GET operation on a resource collection of messages:       service
+  Messaging {       rpc GetMessage(GetMessageRequest) returns (Message) {
   option (google.api.http).get = "/v1/messages/{message_id}/{sub.subfield}";
-  } } message GetMessageRequest {   message SubMessage {     string subfield =
-  1;   }   string message_id = 1; // mapped to the URL   SubMessage sub = 2;
-  // `sub.subfield` is url-mapped } message Message {   string text = 1; //
-  content of the resource } ```  This definition enables an automatic,
-  bidrectional mapping of HTTP JSON to RPC. Example:  HTTP | RPC -----|-----
-  `GET /v1/messages/123456/foo`  | `GetMessage(message_id: "123456" sub:
-  SubMessage(subfield: "foo"))`  In general, not only fields but also field
-  paths can be referenced from a path pattern. Fields mapped to the path
-  pattern cannot be repeated and must have a primitive (non-message) type.
-  Any fields in the request message which are not bound by the path pattern
-  automatically become (optional) HTTP query parameters. Assume the following
-  definition of the request message:  ```proto message GetMessageRequest {
-  message SubMessage {     string subfield = 1;   }   string message_id = 1;
-  // mapped to the URL   int64 revision = 2;    // becomes a parameter
-  SubMessage sub = 3;    // `sub.subfield` becomes a parameter } ```  This
-  enables a HTTP JSON to RPC mapping as below:  HTTP | RPC -----|----- `GET
-  /v1/messages/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id:
-  "123456" revision: 2 sub: SubMessage(subfield: "foo"))`  Note that fields
-  which are mapped to HTTP parameters must have a primitive type or a repeated
-  primitive type. Message types are not allowed. In the case of a repeated
-  type, the parameter can be repeated in the URL, as in `...?param=A&param=B`.
-  For HTTP method kinds which allow a request body, the `body` field specifies
-  the mapping. Consider a REST update method on the message resource
-  collection:  ```proto service Messaging {   rpc
-  UpdateMessage(UpdateMessageRequest) returns (Message) {     option
-  (google.api.http) = {       put: "/v1/messages/{message_id}"       body:
-  "message"     };   } } message UpdateMessageRequest {   string message_id =
-  1; // mapped to the URL   Message message = 2;   // mapped to the body } ```
-  The following HTTP JSON to RPC mapping is enabled, where the representation
-  of the JSON in the request body is determined by protos JSON encoding:  HTTP
-  | RPC -----|----- `PUT /v1/messages/123456 { "text": "Hi!" }` |
-  `UpdateMessage(message_id: "123456" message { text: "Hi!" })`  The special
-  name `*` can be used in the body mapping to define that every field not
-  bound by the path template should be mapped to the request body.  This
-  enables the following alternative definition of the update method:  ```proto
-  service Messaging {   rpc UpdateMessage(Message) returns (Message) {
-  option (google.api.http) = {       put: "/v1/messages/{message_id}"
-  body: "*"     };   } } message Message {   string message_id = 1;   string
-  text = 2; } ```  The following HTTP JSON to RPC mapping is enabled:  HTTP |
-  RPC -----|----- `PUT /v1/messages/123456 { "text": "Hi!" }` |
+  }     }     message GetMessageRequest {       message SubMessage {
+  string subfield = 1;       }       string message_id = 1; // mapped to the
+  URL       SubMessage sub = 2;    // `sub.subfield` is url-mapped     }
+  message Message {       string text = 1; // content of the resource     }
+  The same http annotation can alternatively be expressed inside the `GRPC API
+  Configuration` YAML file.      http:       rules:         - selector:
+  <proto_package_name>.Messaging.GetMessage           get:
+  /v1/messages/{message_id}/{sub.subfield}  This definition enables an
+  automatic, bidrectional mapping of HTTP JSON to RPC. Example:  HTTP | RPC
+  -----|----- `GET /v1/messages/123456/foo`  | `GetMessage(message_id:
+  "123456" sub: SubMessage(subfield: "foo"))`  In general, not only fields but
+  also field paths can be referenced from a path pattern. Fields mapped to the
+  path pattern cannot be repeated and must have a primitive (non-message)
+  type.  Any fields in the request message which are not bound by the path
+  pattern automatically become (optional) HTTP query parameters. Assume the
+  following definition of the request message:       message GetMessageRequest
+  {       message SubMessage {         string subfield = 1;       }
+  string message_id = 1; // mapped to the URL       int64 revision = 2;    //
+  becomes a parameter       SubMessage sub = 3;    // `sub.subfield` becomes a
+  parameter     }   This enables a HTTP JSON to RPC mapping as below:  HTTP |
+  RPC -----|----- `GET /v1/messages/123456?revision=2&sub.subfield=foo` |
+  `GetMessage(message_id: "123456" revision: 2 sub: SubMessage(subfield:
+  "foo"))`  Note that fields which are mapped to HTTP parameters must have a
+  primitive type or a repeated primitive type. Message types are not allowed.
+  In the case of a repeated type, the parameter can be repeated in the URL, as
+  in `...?param=A&param=B`.  For HTTP method kinds which allow a request body,
+  the `body` field specifies the mapping. Consider a REST update method on the
+  message resource collection:       service Messaging {       rpc
+  UpdateMessage(UpdateMessageRequest) returns (Message) {         option
+  (google.api.http) = {           put: "/v1/messages/{message_id}"
+  body: "message"         };       }     }     message UpdateMessageRequest {
+  string message_id = 1; // mapped to the URL       Message message = 2;   //
+  mapped to the body     }   The following HTTP JSON to RPC mapping is
+  enabled, where the representation of the JSON in the request body is
+  determined by protos JSON encoding:  HTTP | RPC -----|----- `PUT
+  /v1/messages/123456 { "text": "Hi!" }` | `UpdateMessage(message_id: "123456"
+  message { text: "Hi!" })`  The special name `*` can be used in the body
+  mapping to define that every field not bound by the path template should be
+  mapped to the request body.  This enables the following alternative
+  definition of the update method:      service Messaging {       rpc
+  UpdateMessage(Message) returns (Message) {         option (google.api.http)
+  = {           put: "/v1/messages/{message_id}"           body: "*"
+  };       }     }     message Message {       string message_id = 1;
+  string text = 2;     }   The following HTTP JSON to RPC mapping is enabled:
+  HTTP | RPC -----|----- `PUT /v1/messages/123456 { "text": "Hi!" }` |
   `UpdateMessage(message_id: "123456" text: "Hi!")`  Note that when using `*`
   in the body mapping, it is not possible to have HTTP parameters, as all
   fields not bound by the path end in the body. This makes this option more
   rarely used in practice of defining REST APIs. The common usage of `*` is in
   custom methods which don't use the URL at all for transferring data.  It is
   possible to define multiple HTTP methods for one RPC by using the
-  `additional_bindings` option. Example:  ```proto service Messaging {   rpc
-  GetMessage(GetMessageRequest) returns (Message) {     option
-  (google.api.http) = {       get: "/v1/messages/{message_id}"
-  additional_bindings {         get:
-  "/v1/users/{user_id}/messages/{message_id}"       }     };   } } message
-  GetMessageRequest {   string message_id = 1;   string user_id = 2; } ```
-  This enables the following two alternative HTTP JSON to RPC mappings:  HTTP
-  | RPC -----|----- `GET /v1/messages/123456` | `GetMessage(message_id:
-  "123456")` `GET /v1/users/me/messages/123456` | `GetMessage(user_id: "me"
-  message_id: "123456")`  # Rules for HTTP mapping  The rules for mapping HTTP
-  path, query parameters, and body fields to the request message are as
-  follows:  1. The `body` field specifies either `*` or a field path, or is
-  omitted. If omitted, it assumes there is no HTTP body. 2. Leaf fields
-  (recursive expansion of nested messages in the    request) can be classified
-  into three types:     (a) Matched in the URL template.     (b) Covered by
-  body (if body is `*`, everything except (a) fields;         else everything
-  under the body field)     (c) All other fields. 3. URL query parameters
-  found in the HTTP request are mapped to (c) fields. 4. Any body sent with an
-  HTTP request can contain only (b) fields.  The syntax of the path template
-  is as follows:      Template = "/" Segments [ Verb ] ;     Segments =
-  Segment { "/" Segment } ;     Segment  = "*" | "**" | LITERAL | Variable ;
-  Variable = "{" FieldPath [ "=" Segments ] "}" ;     FieldPath = IDENT { "."
-  IDENT } ;     Verb     = ":" LITERAL ;  The syntax `*` matches a single path
-  segment. It follows the semantics of [RFC
-  6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple String
+  `additional_bindings` option. Example:      service Messaging {       rpc
+  GetMessage(GetMessageRequest) returns (Message) {         option
+  (google.api.http) = {           get: "/v1/messages/{message_id}"
+  additional_bindings {             get:
+  "/v1/users/{user_id}/messages/{message_id}"           }         };       }
+  }     message GetMessageRequest {       string message_id = 1;       string
+  user_id = 2;     }   This enables the following two alternative HTTP JSON to
+  RPC mappings:  HTTP | RPC -----|----- `GET /v1/messages/123456` |
+  `GetMessage(message_id: "123456")` `GET /v1/users/me/messages/123456` |
+  `GetMessage(user_id: "me" message_id: "123456")`  # Rules for HTTP mapping
+  The rules for mapping HTTP path, query parameters, and body fields to the
+  request message are as follows:  1. The `body` field specifies either `*` or
+  a field path, or is    omitted. If omitted, it assumes there is no HTTP
+  body. 2. Leaf fields (recursive expansion of nested messages in the
+  request) can be classified into three types:     (a) Matched in the URL
+  template.     (b) Covered by body (if body is `*`, everything except (a)
+  fields;         else everything under the body field)     (c) All other
+  fields. 3. URL query parameters found in the HTTP request are mapped to (c)
+  fields. 4. Any body sent with an HTTP request can contain only (b) fields.
+  The syntax of the path template is as follows:      Template = "/" Segments
+  [ Verb ] ;     Segments = Segment { "/" Segment } ;     Segment  = "*" |
+  "**" | LITERAL | Variable ;     Variable = "{" FieldPath [ "=" Segments ]
+  "}" ;     FieldPath = IDENT { "." IDENT } ;     Verb     = ":" LITERAL ;
+  The syntax `*` matches a single path segment. It follows the semantics of
+  [RFC 6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple String
   Expansion.  The syntax `**` matches zero or more path segments. It follows
   the semantics of [RFC 6570](https://tools.ietf.org/html/rfc6570) Section
   3.2.3 Reserved Expansion. NOTE: it must be the last segment in the path
@@ -1465,7 +1459,7 @@ class HttpRule(_messages.Message):
     body: The name of the request field whose value is mapped to the HTTP
       body, or `*` for mapping all fields not captured by the path pattern to
       the HTTP body. NOTE: the referred field must not be a repeated field and
-      must be present at the top-level of response message type.
+      must be present at the top-level of request message type.
     custom: Custom pattern is used for defining custom verbs.
     delete: Used for deleting a resource.
     get: Used for listing and getting information about resources.
@@ -2191,16 +2185,31 @@ class Option(_messages.Message):
   enumeration, etc.
 
   Messages:
-    ValueValue: The option's value. For example, `"com.google.protobuf"`.
+    ValueValue: The option's value packed in an Any message. If the value is a
+      primitive, the corresponding wrapper type defined in
+      google/protobuf/wrappers.proto should be used. If the value is an enum,
+      it should be stored as an int32 value using the
+      google.protobuf.Int32Value type.
 
   Fields:
-    name: The option's name. For example, `"java_package"`.
-    value: The option's value. For example, `"com.google.protobuf"`.
+    name: The option's name. For protobuf built-in options (options defined in
+      descriptor.proto), this is the short name. For example, `"map_entry"`.
+      For custom options, it should be the fully-qualified name. For example,
+      `"google.api.http"`.
+    value: The option's value packed in an Any message. If the value is a
+      primitive, the corresponding wrapper type defined in
+      google/protobuf/wrappers.proto should be used. If the value is an enum,
+      it should be stored as an int32 value using the
+      google.protobuf.Int32Value type.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValueValue(_messages.Message):
-    """The option's value. For example, `"com.google.protobuf"`.
+    """The option's value packed in an Any message. If the value is a
+    primitive, the corresponding wrapper type defined in
+    google/protobuf/wrappers.proto should be used. If the value is an enum, it
+    should be stored as an int32 value using the google.protobuf.Int32Value
+    type.
 
     Messages:
       AdditionalProperty: An additional property for a ValueValue object.
@@ -2920,8 +2929,11 @@ class Service(_messages.Message):
   such as auth. See each proto message definition for details.  Example:
   type: google.api.Service     config_version: 3     name:
   calendar.googleapis.com     title: Google Calendar API     apis:     - name:
-  google.calendar.v3.Calendar     backend:       rules:       - selector:
-  "google.calendar.v3.*"         address: calendar.example.com
+  google.calendar.v3.Calendar     authentication:       providers:       - id:
+  google_calendar_auth         jwks_uri:
+  https://www.googleapis.com/oauth2/v1/certs         issuer:
+  https://securetoken.google.com       rules:       - selector: "*"
+  requirements:           provider_id: google_calendar_auth
 
   Fields:
     apis: A list of API interfaces exported by this service. Only the `name`
@@ -3809,8 +3821,8 @@ class SystemParameter(_messages.Message):
   Fields:
     httpHeader: Define the HTTP header name to use for the parameter. It is
       case insensitive.
-    name: Define the name of the parameter, such as "api_key", "alt",
-      "callback", and etc. It is case sensitive.
+    name: Define the name of the parameter, such as "api_key" . It is case
+      sensitive.
     urlQueryParameter: Define the URL query parameter name to use for the
       parameter. It is case sensitive.
   """
@@ -3850,14 +3862,14 @@ class SystemParameters(_messages.Message):
       override the default parameters implemented by the system. If this field
       is missing from the service config, default system parameters will be
       used. Default system parameters and names is implementation-dependent.
-      Example: define api key and alt name for all methods  system_parameters
-      rules:     - selector: "*"       parameters:         - name: api_key
-      url_query_parameter: api_key         - name: alt           http_header:
-      Response-Content-Type  Example: define 2 api key names for a specific
-      method.  system_parameters   rules:     - selector: "/ListShelves"
-      parameters:         - name: api_key           http_header: Api-Key1
-      - name: api_key           http_header: Api-Key2  **NOTE:** All service
-      configuration rules follow "last one wins" order.
+      Example: define api key for all methods      system_parameters
+      rules:         - selector: "*"           parameters:             - name:
+      api_key               url_query_parameter: api_key   Example: define 2
+      api key names for a specific method.      system_parameters       rules:
+      - selector: "/ListShelves"           parameters:             - name:
+      api_key               http_header: Api-Key1             - name: api_key
+      http_header: Api-Key2  **NOTE:** All service configuration rules follow
+      "last one wins" order.
   """
 
   rules = _messages.MessageField('SystemParameterRule', 1, repeated=True)
@@ -3989,6 +4001,13 @@ class Usage(_messages.Message):
   """Configuration controlling usage of a service.
 
   Fields:
+    producerNotificationChannel: The full resource name of a channel used for
+      sending notifications to the service producer.  Google Service
+      Management currently only supports [Google Cloud
+      Pub/Sub](https://cloud.google.com/pubsub) as a notification channel. To
+      use Google Cloud Pub/Sub as the channel, this must be the name of a
+      Cloud Pub/Sub topic that uses the Cloud Pub/Sub topic name format
+      documented in https://cloud.google.com/pubsub/docs/overview.
     requirements: Requirements that must be satisfied before a consumer
       project can use the service. Each requirement is of the form
       <service.name>/<requirement-id>; for example
@@ -3997,8 +4016,9 @@ class Usage(_messages.Message):
       **NOTE:** All service configuration rules follow "last one wins" order.
   """
 
-  requirements = _messages.StringField(1, repeated=True)
-  rules = _messages.MessageField('UsageRule', 2, repeated=True)
+  producerNotificationChannel = _messages.StringField(1)
+  requirements = _messages.StringField(2, repeated=True)
+  rules = _messages.MessageField('UsageRule', 3, repeated=True)
 
 
 class UsageRule(_messages.Message):

@@ -123,7 +123,7 @@ def GetProjectSettings(service, consumer_project_id, view):
 
 def GetEnabledListRequest(project_id):
   return GetMessagesModule().ServicemanagementServicesListRequest(
-      consumerProjectId=project_id
+      consumerId='project:' + project_id
   )
 
 

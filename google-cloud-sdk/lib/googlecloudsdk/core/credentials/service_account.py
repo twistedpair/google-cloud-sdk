@@ -20,28 +20,31 @@ A detailed description of auth.
 import json
 
 from googlecloudsdk.core import config
-from oauth2client import client
 from oauth2client import service_account
 
 
-# pylint: disable=protected-access, until oauth2client properly exposes class
-class ServiceAccountCredentials(service_account._ServiceAccountCredentials):
-
-  def to_json(self):
-    self.service_account_name = self._service_account_email
-    strip = ['_private_key'] + client.Credentials.NON_SERIALIZED_MEMBERS
-    return super(ServiceAccountCredentials, self)._to_json(strip)
+# TODO(b/33333969): Remove this after majority of users are past version.
+# This class is not used anywhere. It is defined here as a fall back for
+# legacy ServiceAccount credentials which when serialized would store its class
+# path. If such credentials are loaded they will get deserilized via this class
+# into oauth2client ServiceAccount, and on subsequent serialization will not use
+# this class. In a way this will auto-upgrade credential format.
+class ServiceAccountCredentials(service_account.ServiceAccountCredentials):
 
   @classmethod
   def from_json(cls, s):
     data = json.loads(s)
-    retval = ServiceAccountCredentials(
-        service_account_id=data['_service_account_id'],
-        service_account_email=data['_service_account_email'],
-        private_key_id=data['_private_key_id'],
-        private_key_pkcs8_text=data['_private_key_pkcs8_text'],
-        scopes=config.CLOUDSDK_SCOPES,
-        user_agent=config.CLOUDSDK_USER_AGENT)
-    retval.invalid = data['invalid']
-    retval.access_token = data['access_token']
-    return retval
+    return service_account.ServiceAccountCredentials.from_json({
+        'client_id': data['_service_account_id'],
+        '_service_account_email': data['_service_account_email'],
+        '_private_key_id': data['_private_key_id'],
+        '_private_key_pkcs8_pem': data['_private_key_pkcs8_text'],
+        '_scopes': config.CLOUDSDK_SCOPES,
+        '_user_agent': config.CLOUDSDK_USER_AGENT,
+        'invalid': data['invalid'],
+        'access_token': data['access_token'],
+        'token_uri': data['token_uri'],
+        'revoke_uri': data['revoke_uri'],
+        'token_expiry': data['token_expiry'],
+        '_kwargs': data['_kwargs'],
+    })

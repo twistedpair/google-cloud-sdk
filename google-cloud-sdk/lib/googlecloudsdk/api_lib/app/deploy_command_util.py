@@ -207,7 +207,8 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
       tag=config.DOCKER_IMAGE_TAG)
   try:
     cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                             image.tagged_repo, gen_files=gen_files)
+                             image.tagged_repo, gen_files=gen_files,
+                             skip_files=service.parsed.skip_files.regex)
   except (OSError, IOError) as err:
     if platforms.OperatingSystem.IsWindows():
       if err.filename and len(err.filename) > _WINDOWS_MAX_PATH:

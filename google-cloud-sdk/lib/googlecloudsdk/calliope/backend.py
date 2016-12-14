@@ -27,6 +27,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display
+from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parse_errors
 from googlecloudsdk.calliope import usage_text
@@ -169,12 +170,12 @@ class ArgumentParser(argparse.ArgumentParser):
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
     namespace, unknown_args = self.parse_known_args(args, namespace)
+    if not unknown_args:
+      return namespace
 
     # Content of these lines differs from argparser's parse_args().
     deepest_parser = getattr(namespace, self.CIDP, self)
 
-    if not unknown_args:
-      return namespace
     # pylint:disable=protected-access
     if deepest_parser._remainder_action:
       # Assume the user wanted to pass all arguments after last recognized
@@ -311,7 +312,8 @@ class ArgumentParser(argparse.ArgumentParser):
       suggestion = suggester.GetSuggestion(value)
       if suggestion:
         message += " Did you mean '{0}'?".format(suggestion)
-      else:
+      elif not isinstance(action, CloudSDKSubParsersAction):
+        # Command group choices will be displayed in the usage message.
         message += '\n\nValid choices are [{0}].'.format(', '.join(choices))
 
       # Log to analytics the attempt to execute a command.
@@ -431,7 +433,6 @@ class ArgumentParser(argparse.ArgumentParser):
     Args:
       message: str, The error message to print.
     """
-
     self.ReportErrorMetrics(message)
 
     # No need to output help/usage text if we are in completion mode. However,
@@ -441,19 +442,13 @@ class ArgumentParser(argparse.ArgumentParser):
       # pylint:disable=protected-access
       if self._calliope_command._sub_parser:
         self._calliope_command.LoadAllSubElements()
-    elif self._is_group:
-      shorthelp = usage_text.ShortHelpText(
-          self._calliope_command, self._calliope_command.ai)
-      # pylint:disable=protected-access
-      argparse._sys.stderr.write(shorthelp + '\n')
     else:
-      self.usage = usage_text.GenerateUsage(
-          self._calliope_command, self._calliope_command.ai)
+      message = console_attr.EncodeForOutput(message)
+      log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
+      # multi-line message means hints already added, no need for usage.
       # pylint:disable=protected-access
-      self.print_usage(argparse._sys.stderr)
-
-    message = console_attr.EncodeForOutput(message)
-    log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
+      if '\n' not in message:
+        argparse._sys.stderr.write(self._calliope_command.GetUsage())
 
     self.exit(2)
 
@@ -633,6 +628,7 @@ class ArgumentInterceptor(object):
       self.flag_args = []
       self.ancestor_flag_args = []
       self.groups = {}
+      self.display_info = display_info.DisplayInfo()
 
   def __init__(self, parser, is_root, cli_generator, allow_positional,
                data=None, mutex_group_id=None, argument_group_id=None):
@@ -654,6 +650,10 @@ class ArgumentInterceptor(object):
   @property
   def defaults(self):
     return self.data.defaults
+
+  @property
+  def display_info(self):
+    return self.data.display_info
 
   @property
   def required(self):
@@ -1267,8 +1267,8 @@ class CommandCommon(object):
   def GetPath(self):
     return self._path
 
-  def GetShortHelp(self):
-    return usage_text.ShortHelpText(self, self.ai)
+  def GetUsage(self):
+    return usage_text.GetUsage(self, self.ai)
 
   def GetSubCommandHelps(self):
     return {}
@@ -1313,7 +1313,10 @@ class CommandCommon(object):
   def _AcquireArgs(self):
     """Calls the functions to register the arguments for this module."""
     # A Command subclass can define a _Flags() method.
+    # Calliope sets up _Flags() and should not affect the legacy setting.
+    legacy = self.ai.display_info.legacy
     self._common_type._Flags(self.ai)
+    self.ai.display_info.legacy = legacy
     # A command implementation can optionally define an Args() method.
     self._common_type.Args(self.ai)
 
@@ -1339,6 +1342,9 @@ class CommandCommon(object):
               'repeated flag in {command}: {flag}'.format(
                   command=self.dotted_name,
                   flag=flag.option_strings))
+      # Update parent display_info in children, children take precedence.
+      self.ai.display_info.AddLowerDisplayInfo(
+          self._parent_group.ai.display_info)
 
   def GetAllAvailableFlags(self):
     return self.ai.flag_args + self.ai.ancestor_flag_args
@@ -1676,7 +1682,8 @@ class Command(CommandCommon):
 
     log.debug('Running %s with %s.', self.dotted_name, args)
     resources = command_instance.Run(args)
-    resources = display.Displayer(command_instance, args, resources).Display()
+    resources = display.Displayer(command_instance, args, resources,
+                                  display_info=self.ai.display_info).Display()
     metrics.Ran()
 
     if command_instance.exit_code != 0:

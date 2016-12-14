@@ -271,6 +271,14 @@
         "operation": {
           "description": "Optional. Information about an operation associated with the log entry, if\napplicable.",
           "$ref": "LogEntryOperation"
+        },
+        "trace": {
+          "description": "Optional. Resource name of the trace associated with the log entry, if any.\nIf it contains a relative resource name, the name is assumed to be relative\nto `\/\/tracing.googleapis.com`. Example:\n`projects\/my-projectid\/traces\/06796866738c859f2f19b7cfb3214824`",
+          "type": "string"
+        },
+        "sourceLocation": {
+          "description": "Optional. Source code location information associated with the log entry,\nif any.",
+          "$ref": "LogEntrySourceLocation"
         }
       }
     },
@@ -365,6 +373,26 @@
         }
       }
     },
+    "LogEntrySourceLocation": {
+      "id": "LogEntrySourceLocation",
+      "description": "Additional information about the source code location that produced the log\nentry.",
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "Optional. Source file name. Depending on the runtime environment, this\nmight be a simple name or a fully-qualified name.",
+          "type": "string"
+        },
+        "line": {
+          "description": "Optional. Line within the source file. 1-based; 0 indicates no line number\navailable.",
+          "type": "string",
+          "format": "int64"
+        },
+        "function": {
+          "description": "Optional. Human-readable name of the function or method being invoked, with\noptional context such as the class or package name. This information may be\nused in contexts such as the logs viewer, where a file and line number are\nless meaningful. The format can vary by language. For example:\n`qual.if.ied.Class.method` (Java), `dir\/package.func` (Go), `function`\n(Python).",
+          "type": "string"
+        }
+      }
+    },
     "WriteLogEntriesResponse": {
       "id": "WriteLogEntriesResponse",
       "description": "Result returned from WriteLogEntries.\nempty",
@@ -378,21 +406,21 @@
       "type": "object",
       "properties": {
         "projectIds": {
-          "description": "Deprecated. One or more project identifiers or project numbers from which\nto retrieve log entries.  Example: `\"my-project-1A\"`. If\npresent, these project identifiers are converted to resource format and\nadded to the list of resources in `resourceNames`. Callers should use\n`resourceNames` rather than this parameter.",
+          "description": "Deprecated. Use `resource_names` instead.  One or more project identifiers\nor project numbers from which to retrieve log entries.  Example:\n`\"my-project-1A\"`. If present, these project identifiers are converted to\nresource name format and added to the list of resources in\n`resource_names`.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "resourceNames": {
-          "description": "Required. One or more cloud resources from which to retrieve log\nentries:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nProjects listed in the `project_ids` field are added to this list.",
+          "description": "Required. Names of one or more resources from which to retrieve log\nentries:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nProjects listed in the `project_ids` field are added to this list.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "filter": {
-          "description": "Optional. A filter that chooses which log entries to return.  See [Advanced\nLogs Filters](\/logging\/docs\/view\/advanced_filters).  Only log entries that\nmatch the filter are returned.  An empty filter matches all log entries.\nThe maximum length of the filter is 20000 characters.",
+          "description": "Optional. A filter that chooses which log entries to return.  See [Advanced\nLogs Filters](\/logging\/docs\/view\/advanced_filters).  Only log entries that\nmatch the filter are returned.  An empty filter matches all log entries in\nthe resources listed in `resource_names`. Referencing a parent resource\nthat is not listed in `resource_names` will cause the filter to return no\nresults.\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
         },
         "orderBy": {
@@ -423,7 +451,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than those appearing in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.\n\nIf a value for `next_page_token` appears and the `entries` field is empty,\nit means that the search found no log entries so far but it did not have\ntime to search all the possible log entries.  Retry the method with this\nvalue for `page_token` to continue the search.  Alternatively, consider\nspeeding up the search by changing your filter to specify a single log name\nor resource type, or to narrow the time range of the search.",
           "type": "string"
         }
       }
@@ -441,7 +469,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than those appearing in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -511,14 +539,14 @@
       "type": "object",
       "properties": {
         "logIds": {
-          "description": "A list of log ids matching the criteria.",
+          "description": "A list of log identifiers. For example,\n`\"syslog\"` or `\"cloudresourcemanager.googleapis.com\/activity\"`.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than those appearing in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -543,7 +571,7 @@
     },
     "LogSink": {
       "id": "LogSink",
-      "description": "Describes a sink used to export log entries outside of Stackdriver Logging.\nA logs filter controls which log entries are exported.  Sinks can have a\nstart time and an end time; these can be used to place log entries from an\nexact time range into a particular destination.  If both `start_time` and\n`end_time` are present, then `start_time` must be less than `end_time`.",
+      "description": "Describes a sink used to export log entries to one of the following\ndestinations in any project: a Cloud Storage bucket, a BigQuery dataset, or a\nCloud Pub\/Sub topic.  A logs filter controls which log entries are\nexported. The sink must be created within a project or organization.",
       "type": "object",
       "properties": {
         "name": {
@@ -551,17 +579,17 @@
           "type": "string"
         },
         "destination": {
-          "description": "Required. The export destination:\n\n    \"storage.googleapis.com\/[GCS_BUCKET]\"\n    \"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"\n    \"pubsub.googleapis.com\/projects\/[PROJECT_ID]\/topics\/[TOPIC_ID]\"\n\nFor more information,  see\n[Exporting Logs With Sinks](\/logging\/docs\/api\/tasks\/exporting-logs).",
+          "description": "Required. The export destination:\n\n    \"storage.googleapis.com\/[GCS_BUCKET]\"\n    \"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"\n    \"pubsub.googleapis.com\/projects\/[PROJECT_ID]\/topics\/[TOPIC_ID]\"\n\nThe sink's `writer_identity`, set when the sink is created, must\nhave permission to write to the destination or else the log\nentries are not exported.  For more information, see\n[Exporting Logs With Sinks](\/logging\/docs\/api\/tasks\/exporting-logs).",
           "type": "string"
         },
         "filter": {
-          "description": "Optional. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nOnly log entries matching the filter are exported. The filter\nmust be consistent with the log entry format specified by the\n`outputVersionFormat` parameter, regardless of the format of the\nlog entry that was originally ingested by Stackdriver Logging.\nThe following example uses field names in the v2 log entry format:\n\n    logName=\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" AND severity>=ERROR",
+          "description": "Optional.\nAn [advanced logs filter](\/logging\/docs\/view\/advanced_filters).  The only\nexported log entries are those that are in the resource owning the sink and\nthat match the filter. The filter must use the log entry format specified\nby the `output_version_format` parameter.  For example, in the v2 format:\n\n    logName=\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" AND severity>=ERROR",
           "type": "string"
         },
         "outputVersionFormat": {
-          "description": "Optional. The log entry version to use for this sink's exported log\nentries.  This version does not have to correspond to the version of the\nlog entry that was written to Stackdriver Logging. If omitted, the\nv2 format is used.",
+          "description": "Optional. The log entry format to use for this sink's exported log\nentries.  The v2 format is used by default.\n**The v1 format is deprecated** and should be used only as part of a\nmigration effort to v2.\nSee [Migration to the v2 API](\/logging\/docs\/api\/v2\/migration-to-v2).",
           "enumDescriptions": [
-            "An unspecified version format will default to V2.",
+            "An unspecified format version that will default to V2.",
             "`LogEntry` version 2 format.",
             "`LogEntry` version 1 format."
           ],
@@ -573,16 +601,16 @@
           ]
         },
         "writerIdentity": {
-          "description": "Output only. An IAM identity&mdash;a service account or group&mdash;that\nwill write exported log entries to the destination on behalf of Stackdriver\nLogging. You must grant this identity write-access to the destination.\nConsult the destination service's documentation to determine the exact role\nthat must be granted.",
+          "description": "Output only. An IAM identity&mdash;a service account or group&mdash;under\nwhich Stackdriver Logging writes the exported log entries to the sink's\ndestination.  This field is set by\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create)\nand\n[sinks.update](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/update),\nbased on the setting of `unique_writer_identity` in those methods.\n\nUntil you grant this identity write-access to the destination, log entry\nexports from this sink will fail. For more information,\nsee [Granting access for a\nresource](\/iam\/docs\/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource).\nConsult the destination service's documentation to determine the\nappropriate IAM roles to assign to the identity.",
           "type": "string"
         },
         "startTime": {
-          "description": "Optional. The time at which this sink will begin exporting log entries.  If\nthis value is present, then log entries are exported only if `start_time`\n<=`entry.timestamp`.",
+          "description": "Optional. The time at which this sink will begin exporting log entries.\nLog entries are exported only if their timestamp is not earlier than the\nstart time.  The default value of this field is the time the sink is\ncreated or updated.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Optional. Time at which this sink will stop exporting log entries.  If this\nvalue is present, then log entries are exported only if `entry.timestamp` <\n`end_time`.",
+          "description": "Optional. The time at which this sink will stop exporting log entries.  Log\nentries are exported only if their timestamp is earlier than the end time.\nIf this field is not supplied, there is no end time.  If both a start time\nand an end time are provided, then the end time must be later than the\nstart time.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -905,7 +933,7 @@
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/projects/{projectsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "description": "Lists the logs in projects or organizations.\nOnly logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
@@ -951,7 +979,7 @@
               "description": "Lists sinks.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name where this sink was created:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The parent resource whose sinks are to be listed.\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -990,7 +1018,7 @@
               "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to return:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"",
+                  "description": "Required. The parent resource name of the sink:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
@@ -1015,17 +1043,17 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/projects/{projectsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink.",
+              "description": "Creates a sink that exports specified log entries to a destination.  The\nexport of newly-ingested log entries begins immediately, unless the current\ntime is outside the sink's start and end times or the sink's\n`writer_identity` is not permitted to write to the destination.  A sink can\nexport log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. Determines the kind of IAM identity returned as `writer_identity`\nin the new sink.  If this value is omitted or set to false, and if the\nsink's parent is a project, then the value returned as `writer_identity` is\n`cloud-logs@google.com`, the same identity used before the addition of\nwriter identities to this API. The sink's destination must be in the same\nproject as the sink itself.\n\nIf this field is set to true, or if the sink is owned by a non-project\nresource such as an organization, then the value of `writer_identity` will\nbe a unique service account used only for exports from the new sink.  For\nmore information, see `writer_identity` in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1049,17 +1077,17 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates or creates a sink.",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is\nidentical to\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create).\nIf the named sink does exist, then this method replaces the following\nfields in the existing sink with values from the new sink: `destination`,\n`filter`, `output_version_format`, `start_time`, and `end_time`.\nThe updated filter might also have a new `writer_identity`; see the\n`unique_writer_identity` field.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to update, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Required. The full resource name of the sink to update, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. See\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create)\nfor a description of this field.  When updating a sink, the effect of this\nfield on the value of `writer_identity` in the updated sink depends on both\nthe old and new values of this field:\n\n+   If the old and new values of this field are both false or both true,\n    then there is no change to the sink's `writer_identity`.\n+   If the old value was false and the new value is true, then\n    `writer_identity` is changed to a unique service account.\n+   It is an error if the old value was true and the new value is false.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1083,10 +1111,10 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink.",
+              "description": "Deletes a sink. If the sink has a unique `writer_identity`, then that\nservice account is also deleted.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to delete, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.",
+                  "description": "Required. The full resource name of the sink to delete, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.  Example:\n`\"projects\/my-project-id\/sinks\/my-sink-id\"`.  It is an error if\nthe sink does not exist.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
@@ -1301,7 +1329,7 @@
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/organizations/{organizationsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "description": "Lists the logs in projects or organizations.\nOnly logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
@@ -1347,7 +1375,7 @@
               "description": "Lists sinks.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name where this sink was created:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The parent resource whose sinks are to be listed.\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -1386,7 +1414,7 @@
               "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to return:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"",
+                  "description": "Required. The parent resource name of the sink:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
@@ -1411,17 +1439,17 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/organizations/{organizationsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink.",
+              "description": "Creates a sink that exports specified log entries to a destination.  The\nexport of newly-ingested log entries begins immediately, unless the current\ntime is outside the sink's start and end times or the sink's\n`writer_identity` is not permitted to write to the destination.  A sink can\nexport log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. Determines the kind of IAM identity returned as `writer_identity`\nin the new sink.  If this value is omitted or set to false, and if the\nsink's parent is a project, then the value returned as `writer_identity` is\n`cloud-logs@google.com`, the same identity used before the addition of\nwriter identities to this API. The sink's destination must be in the same\nproject as the sink itself.\n\nIf this field is set to true, or if the sink is owned by a non-project\nresource such as an organization, then the value of `writer_identity` will\nbe a unique service account used only for exports from the new sink.  For\nmore information, see `writer_identity` in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1445,17 +1473,17 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates or creates a sink.",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is\nidentical to\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create).\nIf the named sink does exist, then this method replaces the following\nfields in the existing sink with values from the new sink: `destination`,\n`filter`, `output_version_format`, `start_time`, and `end_time`.\nThe updated filter might also have a new `writer_identity`; see the\n`unique_writer_identity` field.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to update, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Required. The full resource name of the sink to update, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. See\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create)\nfor a description of this field.  When updating a sink, the effect of this\nfield on the value of `writer_identity` in the updated sink depends on both\nthe old and new values of this field:\n\n+   If the old and new values of this field are both false or both true,\n    then there is no change to the sink's `writer_identity`.\n+   If the old value was false and the new value is true, then\n    `writer_identity` is changed to a unique service account.\n+   It is an error if the old value was true and the new value is false.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1479,10 +1507,10 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink.",
+              "description": "Deletes a sink. If the sink has a unique `writer_identity`, then that\nservice account is also deleted.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to delete, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.",
+                  "description": "Required. The full resource name of the sink to delete, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.  Example:\n`\"projects\/my-project-id\/sinks\/my-sink-id\"`.  It is an error if\nthe sink does not exist.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
@@ -1539,7 +1567,7 @@
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/folders/{foldersId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "description": "Lists the logs in projects or organizations.\nOnly logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
@@ -1585,7 +1613,7 @@
               "description": "Lists sinks.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name where this sink was created:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The parent resource whose sinks are to be listed.\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+$",
@@ -1624,7 +1652,7 @@
               "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to return:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"",
+                  "description": "Required. The parent resource name of the sink:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
@@ -1649,17 +1677,17 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/folders/{foldersId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink.",
+              "description": "Creates a sink that exports specified log entries to a destination.  The\nexport of newly-ingested log entries begins immediately, unless the current\ntime is outside the sink's start and end times or the sink's\n`writer_identity` is not permitted to write to the destination.  A sink can\nexport log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. Determines the kind of IAM identity returned as `writer_identity`\nin the new sink.  If this value is omitted or set to false, and if the\nsink's parent is a project, then the value returned as `writer_identity` is\n`cloud-logs@google.com`, the same identity used before the addition of\nwriter identities to this API. The sink's destination must be in the same\nproject as the sink itself.\n\nIf this field is set to true, or if the sink is owned by a non-project\nresource such as an organization, then the value of `writer_identity` will\nbe a unique service account used only for exports from the new sink.  For\nmore information, see `writer_identity` in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1683,17 +1711,17 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates or creates a sink.",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is\nidentical to\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create).\nIf the named sink does exist, then this method replaces the following\nfields in the existing sink with values from the new sink: `destination`,\n`filter`, `output_version_format`, `start_time`, and `end_time`.\nThe updated filter might also have a new `writer_identity`; see the\n`unique_writer_identity` field.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to update, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Required. The full resource name of the sink to update, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. See\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create)\nfor a description of this field.  When updating a sink, the effect of this\nfield on the value of `writer_identity` in the updated sink depends on both\nthe old and new values of this field:\n\n+   If the old and new values of this field are both false or both true,\n    then there is no change to the sink's `writer_identity`.\n+   If the old value was false and the new value is true, then\n    `writer_identity` is changed to a unique service account.\n+   It is an error if the old value was true and the new value is false.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1717,10 +1745,10 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink.",
+              "description": "Deletes a sink. If the sink has a unique `writer_identity`, then that\nservice account is also deleted.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to delete, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.",
+                  "description": "Required. The full resource name of the sink to delete, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.  Example:\n`\"projects\/my-project-id\/sinks\/my-sink-id\"`.  It is an error if\nthe sink does not exist.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
@@ -1777,7 +1805,7 @@
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "description": "Lists the logs in projects or organizations.\nOnly logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
@@ -1823,7 +1851,7 @@
               "description": "Lists sinks.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name where this sink was created:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The parent resource whose sinks are to be listed.\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1862,7 +1890,7 @@
               "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to return:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"",
+                  "description": "Required. The parent resource name of the sink:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
@@ -1887,17 +1915,17 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink.",
+              "description": "Creates a sink that exports specified log entries to a destination.  The\nexport of newly-ingested log entries begins immediately, unless the current\ntime is outside the sink's start and end times or the sink's\n`writer_identity` is not permitted to write to the destination.  A sink can\nexport log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"",
+                  "description": "Required. The resource in which to create the sink:\n\n    \"projects\/[PROJECT_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\"\n\nExamples: `\"projects\/my-logging-project\"`, `\"organizations\/123456789\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. Determines the kind of IAM identity returned as `writer_identity`\nin the new sink.  If this value is omitted or set to false, and if the\nsink's parent is a project, then the value returned as `writer_identity` is\n`cloud-logs@google.com`, the same identity used before the addition of\nwriter identities to this API. The sink's destination must be in the same\nproject as the sink itself.\n\nIf this field is set to true, or if the sink is owned by a non-project\nresource such as an organization, then the value of `writer_identity` will\nbe a unique service account used only for exports from the new sink.  For\nmore information, see `writer_identity` in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1921,17 +1949,17 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates or creates a sink.",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is\nidentical to\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create).\nIf the named sink does exist, then this method replaces the following\nfields in the existing sink with values from the new sink: `destination`,\n`filter`, `output_version_format`, `start_time`, and `end_time`.\nThe updated filter might also have a new `writer_identity`; see the\n`unique_writer_identity` field.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to update, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Required. The full resource name of the sink to update, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Whether the sink will have a dedicated service account returned\nin the sink's writer_identity. Set this field to be true to export\nlogs from one project to a different project. This field is ignored for\nnon-project sinks (e.g. organization sinks) because those sinks are\nrequired to have dedicated service accounts.",
+                  "description": "Optional. See\n[sinks.create](\/logging\/docs\/api\/reference\/rest\/v2\/projects.sinks\/create)\nfor a description of this field.  When updating a sink, the effect of this\nfield on the value of `writer_identity` in the updated sink depends on both\nthe old and new values of this field:\n\n+   If the old and new values of this field are both false or both true,\n    then there is no change to the sink's `writer_identity`.\n+   If the old value was false and the new value is true, then\n    `writer_identity` is changed to a unique service account.\n+   It is an error if the old value was true and the new value is false.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1955,10 +1983,10 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink.",
+              "description": "Deletes a sink. If the sink has a unique `writer_identity`, then that\nservice account is also deleted.",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink to delete, including the parent\nresource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.",
+                  "description": "Required. The full resource name of the sink to delete, including the\nparent resource and the sink identifier:\n\n    \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n    \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\nIt is an error if the sink does not exist.  Example:\n`\"projects\/my-project-id\/sinks\/my-sink-id\"`.  It is an error if\nthe sink does not exist.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
@@ -2009,7 +2037,7 @@
           "path": "v2/entries:list",
           "flatPath": "v2/entries:list",
           "httpMethod": "POST",
-          "description": "Lists log entries.  Use this method to retrieve log entries from Cloud\nLogging.  For ways to export log entries, see\n[Exporting Logs](\/logging\/docs\/export).",
+          "description": "Lists log entries.  Use this method to retrieve log entries from\nStackdriver Logging.  For ways to export log entries, see\n[Exporting Logs](\/logging\/docs\/export).",
           "parameters": {
           },
           "parameterOrder": [
@@ -2036,7 +2064,7 @@
           "path": "v2/monitoredResourceDescriptors",
           "flatPath": "v2/monitoredResourceDescriptors",
           "httpMethod": "GET",
-          "description": "Lists the monitored resource descriptors used by Stackdriver Logging.",
+          "description": "Lists the descriptors for monitored resource types used by Stackdriver\nLogging.",
           "parameters": {
             "pageSize": {
               "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",

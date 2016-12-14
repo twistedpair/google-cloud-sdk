@@ -754,17 +754,22 @@ class Registry(object):
 
     return self.Create(collection, **dict(zip(params, fields)))
 
-  def ParseStorageURL(self, url):
+  def ParseStorageURL(self, url, collection=None):
     """Parse gs://bucket/object_path into storage.v1 api resource."""
     match = _GCS_URL_RE.match(url)
     if not match:
       raise InvalidResourceException('Invalid storage url: [{0}]'.format(url))
     if match.group(2):
+      if collection and collection != 'storage.objects':
+        raise WrongResourceCollectionException('storage.objects', collection,
+                                               url)
       return self.ParseCollectionPath(
           collection='storage.objects',
           collection_path=None,
           kwargs={'bucket': match.group(1), 'object': match.group(2)})
 
+    if collection and collection != 'storage.buckets':
+      raise WrongResourceCollectionException('storage.buckets', collection, url)
     return self.ParseCollectionPath(
         collection='storage.buckets',
         collection_path=None,
@@ -789,6 +794,7 @@ class Registry(object):
 
     Raises:
       InvalidResourceException: If the line is invalid.
+      UnknownFieldException: If resource is underspecified.
       UnknownCollectionException: If no collection is provided or can be
           inferred.
       WrongResourceCollectionException: If the provided URL points into a
@@ -834,7 +840,7 @@ class Registry(object):
               path=ref.SelfLink())
         return ref
       elif line.startswith('gs://'):
-        return self.ParseStorageURL(line)
+        return self.ParseStorageURL(line, collection=collection)
 
     if not collection:
       match = _COLLECTIONPATH_RE.match(line)
@@ -848,8 +854,7 @@ class Registry(object):
       p = dict(params or {})
       if 'bucket' not in p or 'object' not in p:
         if '/' not in line:
-          raise InvalidResourceException(
-              'Expected bucket/object in "{0}"'.format(line))
+          raise UnknownFieldException(line, 'bucket')
         p['bucket'], p['object'] = line.split('/', 1)
 
       return self.ParseCollectionPath(

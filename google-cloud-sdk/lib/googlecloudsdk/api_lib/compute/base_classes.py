@@ -1016,26 +1016,19 @@ class BaseAsyncMutator(BaseCommand):
     _ = args
     return items
 
-  def Run(self, args, request_protobufs=None, service=None):
-    if request_protobufs is None:
-      request_protobufs = self.CreateRequests(args)
-    if service is None:
-      service = self.service
-    requests = []
-    # If a method is not passed as part of a tuple then use the self.method
-    # default
-    for request in request_protobufs:
-      if isinstance(request, tuple):
-        if len(request) == 2:
-          method, proto = request
-        elif len(request) == 3:
-          service, method, proto = request
-      else:
-        method = self.method
-        proto = request
-      requests.append((service, method, proto))
+  def MakeRequests(self, requests_protobufs, errors):
+    """Send requests to the API.
 
-    errors = []
+    Args:
+      requests_protobufs: a list of requests as from CreateRequests.
+      errors: output variable. Errors from underlying
+          request_helper.MakeRequests
+
+    Returns:
+      Resource list
+    """
+
+    requests = TranslateRequestsProtobufs(requests_protobufs, self)
     # We want to run through the generator that MakeRequests returns in order to
     # actually make the requests, since these requests mutate resources.
     resource_list = list(request_helper.MakeRequests(
@@ -1044,6 +1037,12 @@ class BaseAsyncMutator(BaseCommand):
         batch_url=self.batch_url,
         errors=errors,
         custom_get_requests=self.custom_get_requests))
+
+    return resource_list
+
+  def Run(self, args):
+    errors = []
+    resource_list = self.MakeRequests(self.CreateRequests(args), errors)
 
     resource_list = lister.ProcessResults(
         resources=resource_list,
@@ -1057,6 +1056,22 @@ class BaseAsyncMutator(BaseCommand):
       utils.RaiseToolException(errors)
 
     return resource_list
+
+
+def TranslateRequestsProtobufs(requests_protobufs, command):
+  """Translates requests protobufs into requests."""
+  requests = []
+  for request in requests_protobufs:
+    if not isinstance(request, tuple):
+      requests.append((command.service, command.method, request))
+    elif len(request) == 2:
+      method, proto = request
+      requests.append((command.service, method, proto))
+    elif len(request) == 3:
+      requests.append(request)
+    else:
+      raise ValueError('Got request tuple of wrong size')
+  return requests
 
 
 class NoOutputMutator(base.SilentCommand, BaseCommand):

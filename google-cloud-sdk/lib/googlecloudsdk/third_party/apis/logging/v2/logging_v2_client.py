@@ -89,7 +89,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in the project.
+      """Lists the logs in projects or organizations.
 Only logs that have entries are listed.
 
       Args:
@@ -127,7 +127,11 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink.
+      """Creates a sink that exports specified log entries to a destination.  The.
+export of newly-ingested log entries begins immediately, unless the current
+time is outside the sink's start and end times or the sink's
+`writer_identity` is not permitted to write to the destination.  A sink can
+export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingBillingAccountsSinksCreateRequest) input message
@@ -154,7 +158,8 @@ Only logs that have entries are listed.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink.
+      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
+service account is also deleted.
 
       Args:
         request: (LoggingBillingAccountsSinksDeleteRequest) input message
@@ -235,7 +240,14 @@ Only logs that have entries are listed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates or creates a sink.
+      """Updates a sink. If the named sink doesn't exist, then this method is.
+identical to
+[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
+If the named sink does exist, then this method replaces the following
+fields in the existing sink with values from the new sink: `destination`,
+`filter`, `output_version_format`, `start_time`, and `end_time`.
+The updated filter might also have a new `writer_identity`; see the
+`unique_writer_identity` field.
 
       Args:
         request: (LoggingBillingAccountsSinksUpdateRequest) input message
@@ -282,8 +294,8 @@ Only logs that have entries are listed.
           }
 
     def List(self, request, global_params=None):
-      """Lists log entries.  Use this method to retrieve log entries from Cloud.
-Logging.  For ways to export log entries, see
+      """Lists log entries.  Use this method to retrieve log entries from.
+Stackdriver Logging.  For ways to export log entries, see
 [Exporting Logs](/logging/docs/export).
 
       Args:
@@ -375,7 +387,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in the project.
+      """Lists the logs in projects or organizations.
 Only logs that have entries are listed.
 
       Args:
@@ -413,7 +425,11 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink.
+      """Creates a sink that exports specified log entries to a destination.  The.
+export of newly-ingested log entries begins immediately, unless the current
+time is outside the sink's start and end times or the sink's
+`writer_identity` is not permitted to write to the destination.  A sink can
+export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingFoldersSinksCreateRequest) input message
@@ -440,7 +456,8 @@ Only logs that have entries are listed.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink.
+      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
+service account is also deleted.
 
       Args:
         request: (LoggingFoldersSinksDeleteRequest) input message
@@ -521,7 +538,14 @@ Only logs that have entries are listed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates or creates a sink.
+      """Updates a sink. If the named sink doesn't exist, then this method is.
+identical to
+[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
+If the named sink does exist, then this method replaces the following
+fields in the existing sink with values from the new sink: `destination`,
+`filter`, `output_version_format`, `start_time`, and `end_time`.
+The updated filter might also have a new `writer_identity`; see the
+`unique_writer_identity` field.
 
       Args:
         request: (LoggingFoldersSinksUpdateRequest) input message
@@ -568,7 +592,8 @@ Only logs that have entries are listed.
           }
 
     def List(self, request, global_params=None):
-      """Lists the monitored resource descriptors used by Stackdriver Logging.
+      """Lists the descriptors for monitored resource types used by Stackdriver.
+Logging.
 
       Args:
         request: (LoggingMonitoredResourceDescriptorsListRequest) input message
@@ -632,7 +657,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in the project.
+      """Lists the logs in projects or organizations.
 Only logs that have entries are listed.
 
       Args:
@@ -670,7 +695,11 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink.
+      """Creates a sink that exports specified log entries to a destination.  The.
+export of newly-ingested log entries begins immediately, unless the current
+time is outside the sink's start and end times or the sink's
+`writer_identity` is not permitted to write to the destination.  A sink can
+export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingOrganizationsSinksCreateRequest) input message
@@ -697,7 +726,8 @@ Only logs that have entries are listed.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink.
+      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
+service account is also deleted.
 
       Args:
         request: (LoggingOrganizationsSinksDeleteRequest) input message
@@ -778,7 +808,14 @@ Only logs that have entries are listed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates or creates a sink.
+      """Updates a sink. If the named sink doesn't exist, then this method is.
+identical to
+[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
+If the named sink does exist, then this method replaces the following
+fields in the existing sink with values from the new sink: `destination`,
+`filter`, `output_version_format`, `start_time`, and `end_time`.
+The updated filter might also have a new `writer_identity`; see the
+`unique_writer_identity` field.
 
       Args:
         request: (LoggingOrganizationsSinksUpdateRequest) input message
@@ -853,7 +890,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in the project.
+      """Lists the logs in projects or organizations.
 Only logs that have entries are listed.
 
       Args:
@@ -1036,7 +1073,11 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink.
+      """Creates a sink that exports specified log entries to a destination.  The.
+export of newly-ingested log entries begins immediately, unless the current
+time is outside the sink's start and end times or the sink's
+`writer_identity` is not permitted to write to the destination.  A sink can
+export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingProjectsSinksCreateRequest) input message
@@ -1063,7 +1104,8 @@ Only logs that have entries are listed.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink.
+      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
+service account is also deleted.
 
       Args:
         request: (LoggingProjectsSinksDeleteRequest) input message
@@ -1144,7 +1186,14 @@ Only logs that have entries are listed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates or creates a sink.
+      """Updates a sink. If the named sink doesn't exist, then this method is.
+identical to
+[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
+If the named sink does exist, then this method replaces the following
+fields in the existing sink with values from the new sink: `destination`,
+`filter`, `output_version_format`, `start_time`, and `end_time`.
+The updated filter might also have a new `writer_identity`; see the
+`unique_writer_identity` field.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message

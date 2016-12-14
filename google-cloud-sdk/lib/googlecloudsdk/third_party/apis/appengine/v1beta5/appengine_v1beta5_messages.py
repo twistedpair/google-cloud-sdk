@@ -13,22 +13,22 @@ package = 'appengine'
 
 
 class ApiConfigHandler(_messages.Message):
-  """[Google Cloud
-  Endpoints](https://cloud.google.com/appengine/docs/python/endpoints/)
-  configuration for API handlers.
+  """Google Cloud Endpoints
+  (https://cloud.google.com/appengine/docs/python/endpoints/) configuration
+  for API handlers.
 
   Enums:
     AuthFailActionValueValuesEnum: Action to take when users access resources
-      that require authentication. Defaults to `redirect`.
+      that require authentication. Defaults to redirect.
     LoginValueValuesEnum: Level of login required to access this resource.
-      Defaults to `optional`.
+      Defaults to optional.
     SecurityLevelValueValuesEnum: Security (HTTPS) enforcement for this URL.
 
   Fields:
     authFailAction: Action to take when users access resources that require
-      authentication. Defaults to `redirect`.
+      authentication. Defaults to redirect.
     login: Level of login required to access this resource. Defaults to
-      `optional`.
+      optional.
     script: Path to the script from the application root directory.
     securityLevel: Security (HTTPS) enforcement for this URL.
     url: URL to serve the endpoint at.
@@ -36,15 +36,15 @@ class ApiConfigHandler(_messages.Message):
 
   class AuthFailActionValueValuesEnum(_messages.Enum):
     """Action to take when users access resources that require authentication.
-    Defaults to `redirect`.
+    Defaults to redirect.
 
     Values:
-      AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. `AUTH_FAIL_ACTION_REDIRECT`
+      AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. AUTH_FAIL_ACTION_REDIRECT
         is assumed.
       AUTH_FAIL_ACTION_REDIRECT: Redirects user to "accounts.google.com". The
         user is redirected back to the application URL after signing in or
         creating an account.
-      AUTH_FAIL_ACTION_UNAUTHORIZED: Rejects request with an`401` HTTP status
+      AUTH_FAIL_ACTION_UNAUTHORIZED: Rejects request with an401 HTTP status
         code and an error message.
     """
     AUTH_FAIL_ACTION_UNSPECIFIED = 0
@@ -52,19 +52,18 @@ class ApiConfigHandler(_messages.Message):
     AUTH_FAIL_ACTION_UNAUTHORIZED = 2
 
   class LoginValueValuesEnum(_messages.Enum):
-    """Level of login required to access this resource. Defaults to
-    `optional`.
+    """Level of login required to access this resource. Defaults to optional.
 
     Values:
-      LOGIN_UNSPECIFIED: Not specified. `LOGIN_OPTIONAL` is assumed.
+      LOGIN_UNSPECIFIED: Not specified. LOGIN_OPTIONAL is assumed.
       LOGIN_OPTIONAL: Does not require that the user is signed in.
-      LOGIN_ADMIN: If the user is not signed in, the `auth_fail_action` is
+      LOGIN_ADMIN: If the user is not signed in, the auth_fail_action is
         taken. In addition, if the user is not an administrator for the
         application, they are given an error message regardless of
-        `auth_fail_action`. If the user is an administrator, the handler
+        auth_fail_action. If the user is an administrator, the handler
         proceeds.
       LOGIN_REQUIRED: If the user has signed in, the handler proceeds
-        normally. Otherwise, the action given in `auth_fail_action` is taken.
+        normally. Otherwise, the action given in auth_fail_action is taken.
     """
     LOGIN_UNSPECIFIED = 0
     LOGIN_OPTIONAL = 1
@@ -127,12 +126,11 @@ class AppengineAppsGetRequest(_messages.Message):
   Fields:
     ensureResourcesExist: Certain resources associated with an application are
       created on-demand. Controls whether these resources should be created
-      when performing the `GET` operation. If specified and any resources
-      could not be created, the request will fail with an error code.
-      Additionally, this parameter can cause the request to take longer to
-      complete. Note: This parameter will be deprecated in a future version of
-      the API.
-    name: Name of the application to get. Example: `apps/myapp`.
+      when performing the GET operation. If specified and any resources could
+      not be created, the request will fail with an error code. Additionally,
+      this parameter can cause the request to take longer to complete. Note:
+      This parameter will be deprecated in a future version of the API.
+    name: Name of the application to get. Example: apps/myapp.
   """
 
   ensureResourcesExist = _messages.BooleanField(1)
@@ -197,7 +195,7 @@ class AppengineAppsPatchRequest(_messages.Message):
   Fields:
     application: A Application resource to be passed as the request body.
     mask: Standard field mask for the set of fields to be updated.
-    name: Name of the Application resource to update. Example: `apps/myapp`.
+    name: Name of the Application resource to update. Example: apps/myapp.
   """
 
   application = _messages.MessageField('Application', 1)
@@ -210,7 +208,7 @@ class AppengineAppsServicesDeleteRequest(_messages.Message):
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default`.
+      apps/myapp/services/default.
   """
 
   name = _messages.StringField(1, required=True)
@@ -221,7 +219,7 @@ class AppengineAppsServicesGetRequest(_messages.Message):
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default`.
+      apps/myapp/services/default.
   """
 
   name = _messages.StringField(1, required=True)
@@ -231,7 +229,7 @@ class AppengineAppsServicesListRequest(_messages.Message):
   """A AppengineAppsServicesListRequest object.
 
   Fields:
-    name: Name of the resource requested. Example: `apps/myapp`.
+    name: Name of the resource requested. Example: apps/myapp.
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
   """
@@ -246,22 +244,22 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
 
   Fields:
     mask: Standard field mask for the set of fields to be updated.
-    migrateTraffic: Set to `true` to gradually shift traffic from one version
-      to another single version. By default, traffic is shifted immediately.
-      For gradual traffic migration, the target version must be located within
-      instances that are configured for both [warmup
-      requests](https://cloud.google.com/appengine/docs/admin-
+    migrateTraffic: Set to true to gradually shift traffic from one version to
+      another single version. By default, traffic is shifted immediately. For
+      gradual traffic migration, the target version must be located within
+      instances that are configured for both warmup requests
+      (https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1beta5/apps.services.versions#inboundservicetype)
-      and [automatic scaling](https://cloud.google.com/appengine/docs/admin-
+      and automatic scaling (https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1beta5/apps.services.versions#automaticscaling). You
-      must specify the [`shardBy`](https://cloud.google.com/appengine/docs
-      /admin-api/reference/rest/v1beta5/apps.services#shardby) field in the
-      Service resource. Gradual traffic migration is not supported in the App
-      Engine flexible environment. For examples, see [Migrating and Splitting
-      Traffic](https://cloud.google.com/appengine/docs/admin-api/migrating-
-      splitting-traffic).
+      must specify the shardBy (https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1beta5/apps.services#shardby) field in the Service
+      resource. Gradual traffic migration is not supported in the App Engine
+      flexible environment. For examples, see Migrating and Splitting Traffic
+      (https://cloud.google.com/appengine/docs/admin-api/migrating-splitting-
+      traffic).
     name: Name of the resource to update. Example:
-      `apps/myapp/services/default`.
+      apps/myapp/services/default.
     service: A Service resource to be passed as the request body.
   """
 
@@ -289,7 +287,7 @@ class AppengineAppsServicesVersionsDeleteRequest(_messages.Message):
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default/versions/v1`.
+      apps/myapp/services/default/versions/v1.
   """
 
   name = _messages.StringField(1, required=True)
@@ -299,17 +297,17 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
   """A AppengineAppsServicesVersionsGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Controls the set of fields returned in the `Get`
+    ViewValueValuesEnum: Controls the set of fields returned in the Get
       response.
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default/versions/v1`.
-    view: Controls the set of fields returned in the `Get` response.
+      apps/myapp/services/default/versions/v1.
+    view: Controls the set of fields returned in the Get response.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the `Get` response.
+    """Controls the set of fields returned in the Get response.
 
     Values:
       BASIC: <no description>
@@ -329,7 +327,7 @@ class AppengineAppsServicesVersionsInstancesDebugRequest(_messages.Message):
     debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
       request body.
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default/versions/v1/instances/instance-1`.
+      apps/myapp/services/default/versions/v1/instances/instance-1.
   """
 
   debugInstanceRequest = _messages.MessageField('DebugInstanceRequest', 1)
@@ -352,7 +350,7 @@ class AppengineAppsServicesVersionsInstancesGetRequest(_messages.Message):
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default/versions/v1/instances/instance-1`.
+      apps/myapp/services/default/versions/v1/instances/instance-1.
   """
 
   name = _messages.StringField(1, required=True)
@@ -363,7 +361,7 @@ class AppengineAppsServicesVersionsInstancesListRequest(_messages.Message):
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default/versions/v1`.
+      apps/myapp/services/default/versions/v1.
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
   """
@@ -377,19 +375,19 @@ class AppengineAppsServicesVersionsListRequest(_messages.Message):
   """A AppengineAppsServicesVersionsListRequest object.
 
   Enums:
-    ViewValueValuesEnum: Controls the set of fields returned in the `List`
+    ViewValueValuesEnum: Controls the set of fields returned in the List
       response.
 
   Fields:
     name: Name of the resource requested. Example:
-      `apps/myapp/services/default`.
+      apps/myapp/services/default.
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
-    view: Controls the set of fields returned in the `List` response.
+    view: Controls the set of fields returned in the List response.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the `List` response.
+    """Controls the set of fields returned in the List response.
 
     Values:
       BASIC: <no description>
@@ -410,7 +408,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   Fields:
     mask: Standard field mask for the set of fields to be updated.
     name: Name of the resource to update. Example:
-      `apps/myapp/services/default/versions/1`.
+      apps/myapp/services/default/versions/1.
     version: A Version resource to be passed as the request body.
   """
 
@@ -425,30 +423,30 @@ class Application(_messages.Message):
 
   Fields:
     authDomain: Google Apps authentication domain that controls which users
-      can access this application.  Defaults to open access for any Google
+      can access this application.Defaults to open access for any Google
       Account.
     codeBucket: A Google Cloud Storage bucket that can be used for storing
       files associated with this application. This bucket is associated with
-      the application and can be used by the gcloud deployment commands.
-      @OutputOnly
+      the application and can be used by the gcloud deployment
+      commands.@OutputOnly
     defaultBucket: A Google Cloud Storage bucket that can be used by the
-      application to store content.  @OutputOnly
+      application to store content.@OutputOnly
     defaultCookieExpiration: Cookie expiration policy for this application.
     defaultHostname: Hostname used to reach the application, as resolved by
-      App Engine.  @OutputOnly
+      App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
-      dependent.  @OutputOnly
+      dependent.@OutputOnly
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
-      deploy your application. Example: `myapp`.
+      deploy your application. Example: myapp.
     location: Location from which this application will be run. Application
       instances will run out of data centers in the chosen location, which is
-      also where all of the application's end user content is stored.
-      Defaults to `us-central`.  Options are:  `us-central` - Central US
-      `europe-west` - Western Europe  `us-east1` - Eastern US
+      also where all of the application's end user content is stored.Defaults
+      to us-central.Options are:us-central - Central USeurope-west - Western
+      Europeus-east1 - Eastern US
     name: Full path to the Application resource in the API. Example:
-      `apps/myapp`.  @OutputOnly
+      apps/myapp.@OutputOnly
   """
 
   authDomain = _messages.StringField(1)
@@ -467,15 +465,15 @@ class AutomaticScaling(_messages.Message):
   application metrics.
 
   Fields:
-    coolDownPeriod: Amount of time that the
-      [Autoscaler](https://cloud.google.com/compute/docs/autoscaler/) should
-      wait between changes to the number of virtual machines. Only applicable
-      for VM runtimes.
+    coolDownPeriod: Amount of time that the Autoscaler
+      (https://cloud.google.com/compute/docs/autoscaler/) should wait between
+      changes to the number of virtual machines. Only applicable for VM
+      runtimes.
     cpuUtilization: Target scaling by CPU usage.
     diskUtilization: Target scaling by disk usage.
     maxConcurrentRequests: Number of concurrent requests an automatic scaling
-      instance can accept before the scheduler spawns a new instance.
-      Defaults to a runtime-specific value.
+      instance can accept before the scheduler spawns a new instance.Defaults
+      to a runtime-specific value.
     maxIdleInstances: Maximum number of idle instances that should be
       maintained for this version.
     maxPendingLatency: Maximum amount of time that a request should wait in
@@ -551,15 +549,15 @@ class CpuUtilization(_messages.Message):
 
 
 class DebugInstanceRequest(_messages.Message):
-  """Request message for `Instances.DebugInstance`.
+  """Request message for Instances.DebugInstance.
 
   Fields:
-    sshKey: Public SSH key to add to the instance. Examples:  * `[USERNAME
-      ]:ssh-rsa KEY_VALUE` * `[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh
-      {"userName":"[USERNAME]","expireOn":"[EXPIRE_TIME]"}`  For more
-      information, see [Adding and Removing SSH
-      Keys](https://cloud.google.com/compute/docs/instances/adding-removing-
-      ssh-keys).
+    sshKey: Public SSH key to add to the instance. Examples: [USERNAME]:ssh-
+      rsa [KEY_VALUE] [USERNAME] [USERNAME]:ssh-rsa [KEY_VALUE] google-ssh
+      {"userName":"[USERNAME]","expireOn":"[EXPIRE_TIME]"}For more
+      information, see Adding and Removing SSH Keys
+      (https://cloud.google.com/compute/docs/instances/adding-removing-ssh-
+      keys).
   """
 
   sshKey = _messages.StringField(1)
@@ -631,6 +629,25 @@ class DiskUtilization(_messages.Message):
   targetWriteOpsPerSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class EndpointsApiService(_messages.Message):
+  """Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
+  Endpoints API Service provides tooling for serving Open API and gRPC
+  endpoints via an NGINX proxy.The fields here refer to the name and
+  configuration id of a "service" resource in the Service Management API
+  (https://cloud.google.com/service-management/overview).
+
+  Fields:
+    configId: Endpoints service configuration id as specified by the Service
+      Management API. For example "2016-09-19r1"
+    name: Endpoints service name which is the name of the "service" resource
+      in the Service Management API. For example
+      "myapi.endpoints.myproject.cloud.goog"
+  """
+
+  configId = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class ErrorHandler(_messages.Message):
   """Custom static error page to be served when an error occurs.
 
@@ -639,7 +656,7 @@ class ErrorHandler(_messages.Message):
 
   Fields:
     errorCode: Error condition this handler applies to.
-    mimeType: MIME type of file. Defaults to `text/html`.
+    mimeType: MIME type of file. Defaults to text/html.
     staticFile: Static file content to be served for this error.
   """
 
@@ -670,12 +687,12 @@ class FileInfo(_messages.Message):
   source file that is deployed must be specified separately.
 
   Fields:
-    mimeType: The MIME type of the file.  Defaults to the value from Google
+    mimeType: The MIME type of the file.Defaults to the value from Google
       Cloud Storage.
     sha1Sum: The SHA1 hash of the file, in hex.
     sourceUrl: URL source to use to fetch this file. Must be a URL to a
       resource in Google Cloud Storage in the form
-      'http(s)://storage.googleapis.com/\<bucket\>/\<object\>'.
+      'http(s)://storage.googleapis.com/<bucket>/<object>'.
   """
 
   mimeType = _messages.StringField(1)
@@ -717,41 +734,38 @@ class Instance(_messages.Message):
   automatically scale an application.
 
   Enums:
-    AvailabilityValueValuesEnum: Availability of the instance.  @OutputOnly
+    AvailabilityValueValuesEnum: Availability of the instance.@OutputOnly
 
   Fields:
-    appEngineRelease: App Engine release this instance is running on.
-      @OutputOnly
-    availability: Availability of the instance.  @OutputOnly
-    averageLatency: Average latency (ms) over the last minute.  @OutputOnly
-    errors: Number of errors since this instance was started.  @OutputOnly
+    appEngineRelease: App Engine release this instance is running
+      on.@OutputOnly
+    availability: Availability of the instance.@OutputOnly
+    averageLatency: Average latency (ms) over the last minute.@OutputOnly
+    errors: Number of errors since this instance was started.@OutputOnly
     id: Relative name of the instance within the version. Example:
-      `instance-1`.  @OutputOnly
-    memoryUsage: Total memory in use (bytes).  @OutputOnly
+      instance-1.@OutputOnly
+    memoryUsage: Total memory in use (bytes).@OutputOnly
     name: Full path to the Instance resource in the API. Example:
-      `apps/myapp/services/default/versions/v1/instances/instance-1`.
-      @OutputOnly
-    qps: Average queries per second (QPS) over the last minute.  @OutputOnly
-    requests: Number of requests since this instance was started.  @OutputOnly
-    startTimestamp: Time that this instance was started.  @OutputOnly
+      apps/myapp/services/default/versions/v1/instances/instance-1.@OutputOnly
+    qps: Average queries per second (QPS) over the last minute.@OutputOnly
+    requests: Number of requests since this instance was started.@OutputOnly
+    startTimestamp: Time that this instance was started.@OutputOnly
     vmId: Virtual machine ID of this instance. Only applicable for instances
-      in App Engine flexible environment.  @OutputOnly
+      in App Engine flexible environment.@OutputOnly
     vmIp: The IP address of this instance. Only applicable for instances in
-      App Engine flexible environment.  @OutputOnly
+      App Engine flexible environment.@OutputOnly
     vmName: Name of the virtual machine where this instance lives. Only
-      applicable for instances in App Engine flexible environment.
-      @OutputOnly
+      applicable for instances in App Engine flexible environment.@OutputOnly
     vmStatus: Status of the virtual machine where this instance lives. Only
-      applicable for instances in App Engine flexible environment.
-      @OutputOnly
+      applicable for instances in App Engine flexible environment.@OutputOnly
     vmUnlocked: Whether this instance is in debug mode. Only applicable for
-      instances in App Engine flexible environment.  @OutputOnly
+      instances in App Engine flexible environment.@OutputOnly
     vmZoneName: Zone where the virtual machine is located. Only applicable for
-      instances in App Engine flexible environment.  @OutputOnly
+      instances in App Engine flexible environment.@OutputOnly
   """
 
   class AvailabilityValueValuesEnum(_messages.Enum):
-    """Availability of the instance.  @OutputOnly
+    """Availability of the instance.@OutputOnly
 
     Values:
       UNSPECIFIED: <no description>
@@ -793,7 +807,7 @@ class Library(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  """Response message for `Instances.ListInstances`.
+  """Response message for Instances.ListInstances.
 
   Fields:
     instances: The instances belonging to the requested version.
@@ -831,7 +845,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListServicesResponse(_messages.Message):
-  """Response message for `Services.ListServices`.
+  """Response message for Services.ListServices.
 
   Fields:
     nextPageToken: Continuation token for fetching the next page of results.
@@ -843,7 +857,7 @@ class ListServicesResponse(_messages.Message):
 
 
 class ListVersionsResponse(_messages.Message):
-  """Response message for `Versions.ListVersions`.
+  """Response message for Versions.ListVersions.
 
   Fields:
     nextPageToken: Continuation token for fetching the next page of results.
@@ -866,12 +880,12 @@ class Location(_messages.Message):
   Fields:
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The canonical id for this location. For example: `"us-east1"`.
+    locationId: The canonical id for this location. For example: "us-east1".
     metadata: Service-specific metadata. For example the available capacity at
       the given location.
     name: Resource name for the location, which may vary between
-      implementations. For example: `"projects/example-project/locations/us-
-      east1"`
+      implementations. For example: "projects/example-project/locations/us-
+      east1"
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -936,9 +950,9 @@ class LocationMetadata(_messages.Message):
 
   Fields:
     flexibleEnvironmentAvailable: App Engine Flexible Environment is available
-      in the given location.  @OutputOnly
+      in the given location.@OutputOnly
     standardEnvironmentAvailable: App Engine Standard Environment is available
-      in the given location.  @OutputOnly
+      in the given location.@OutputOnly
   """
 
   flexibleEnvironmentAvailable = _messages.BooleanField(1)
@@ -951,9 +965,9 @@ class ManualScaling(_messages.Message):
 
   Fields:
     instances: Number of instances to assign to the service at the start. This
-      number can later be altered by using the [Modules
-      API](https://cloud.google.com/appengine/docs/python/modules/functions)
-      `set_num_instances()` function.
+      number can later be altered by using the Modules API
+      (https://cloud.google.com/appengine/docs/python/modules/functions)
+      set_num_instances() function.
   """
 
   instances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -967,13 +981,27 @@ class Network(_messages.Message):
       machine to the application container.
     instanceTag: Tag to apply to the VM instance during creation.
     name: Google Cloud Platform network where the virtual machines are
-      created. Specify the short name, not the resource path.  Defaults to
-      `default`.
+      created. Specify the short name, not the resource path.Defaults to
+      default.
+    subnetworkName: Google Cloud Platform sub-network where the virtual
+      machines are created. Specify the short name, not the resource path.If a
+      subnetwork name is specified, a network name will also be required
+      unless it is for the default network. If the network the VM instance is
+      being created in is a Legacy network, then the IP address is allocated
+      from the IPv4Range. If the network the VM instance is being created in
+      is an auto Subnet Mode Network, then only network name should be
+      specified (not the subnetwork_name) and the IP address is created from
+      the IPCidrRange of the subnetwork that exists in that zone for that
+      network. If the network the VM instance is being created in is a custom
+      Subnet Mode Network, then the subnetwork_name must be specified and the
+      IP address is created from the IPCidrRange of the subnetwork.If
+      specified, the subnetwork must exist in the same region as the Flex app.
   """
 
   forwardedPorts = _messages.StringField(1, repeated=True)
   instanceTag = _messages.StringField(2)
   name = _messages.StringField(3)
+  subnetworkName = _messages.StringField(4)
 
 
 class NetworkUtilization(_messages.Message):
@@ -997,47 +1025,47 @@ class Operation(_messages.Message):
   network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as Delete, the
+      response is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type XxxResponse, where Xxx is the
+      original method name. For example, if the original method name is
+      TakeSnapshot(), the inferred response type is TakeSnapshotResponse.
 
   Fields:
-    done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
-      `response` is available.
+    done: If the value is false, it means the operation is still in progress.
+      If true, the operation is completed, and either error or response is
+      available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
-    response: The normal response of the operation in case of success.  If the
-      original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+      the name should have the format of operations/some/unique/name.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type XxxResponse, where Xxx is the
+      original method name. For example, if the original method name is
+      TakeSnapshot(), the inferred response type is TakeSnapshotResponse.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    """Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1063,13 +1091,13 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
-    methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
-    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+    """The normal response of the operation in case of success. If the
+    original method returns no data on success, such as Delete, the response
+    is google.protobuf.Empty. If the original method is standard
+    Get/Create/Update, the response should be the resource. For other methods,
+    the response should have the type XxxResponse, where Xxx is the original
+    method name. For example, if the original method name is TakeSnapshot(),
+    the inferred response type is TakeSnapshotResponse.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.
@@ -1103,15 +1131,15 @@ class OperationMetadata(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
-    endTime: Timestamp that this operation completed.  @OutputOnly
-    insertTime: Timestamp that this operation was created.  @OutputOnly
+    endTime: Timestamp that this operation completed.@OutputOnly
+    insertTime: Timestamp that this operation was created.@OutputOnly
     method: API method that initiated this operation. Example:
-      `google.appengine.v1beta4.Version.CreateVersion`.  @OutputOnly
+      google.appengine.v1beta4.Version.CreateVersion.@OutputOnly
     operationType: Type of this operation. Deprecated, use method field
-      instead. Example: "create_version".  @OutputOnly
+      instead. Example: "create_version".@OutputOnly
     target: Name of the resource that this operation is acting on. Example:
-      `apps/myapp/modules/default`.  @OutputOnly
-    user: User who requested this operation.  @OutputOnly
+      apps/myapp/modules/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
   """
 
   endTime = _messages.StringField(1)
@@ -1126,33 +1154,39 @@ class OperationMetadataV1(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
-    endTime: Time that this operation completed.  @OutputOnly
-    insertTime: Time that this operation was created.  @OutputOnly
+    endTime: Time that this operation completed.@OutputOnly
+    ephemeralMessage: Ephemeral message that may change every time the
+      operation is polled. @OutputOnly
+    insertTime: Time that this operation was created.@OutputOnly
     method: API method that initiated this operation. Example:
-      `google.appengine.v1.Versions.CreateVersion`.  @OutputOnly
+      google.appengine.v1.Versions.CreateVersion.@OutputOnly
     target: Name of the resource that this operation is acting on. Example:
-      `apps/myapp/services/default`.  @OutputOnly
-    user: User who requested this operation.  @OutputOnly
+      apps/myapp/services/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
+    warning: Durable messages that persist on every operation poll.
+      @OutputOnly
   """
 
   endTime = _messages.StringField(1)
-  insertTime = _messages.StringField(2)
-  method = _messages.StringField(3)
-  target = _messages.StringField(4)
-  user = _messages.StringField(5)
+  ephemeralMessage = _messages.StringField(2)
+  insertTime = _messages.StringField(3)
+  method = _messages.StringField(4)
+  target = _messages.StringField(5)
+  user = _messages.StringField(6)
+  warning = _messages.StringField(7, repeated=True)
 
 
 class OperationMetadataV1Beta5(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
-    endTime: Timestamp that this operation completed.  @OutputOnly
-    insertTime: Timestamp that this operation was created.  @OutputOnly
+    endTime: Timestamp that this operation completed.@OutputOnly
+    insertTime: Timestamp that this operation was created.@OutputOnly
     method: API method name that initiated this operation. Example:
-      `google.appengine.v1beta5.Version.CreateVersion`.  @OutputOnly
+      google.appengine.v1beta5.Version.CreateVersion.@OutputOnly
     target: Name of the resource that this operation is acting on. Example:
-      `apps/myapp/services/default`.  @OutputOnly
-    user: User who requested this operation.  @OutputOnly
+      apps/myapp/services/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
   """
 
   endTime = _messages.StringField(1)
@@ -1211,9 +1245,9 @@ class Service(_messages.Message):
 
   Fields:
     id: Relative name of the service within the application. Example:
-      `default`.  @OutputOnly
+      default.@OutputOnly
     name: Full path to the Service resource in the API. Example:
-      `apps/myapp/services/default`.  @OutputOnly
+      apps/myapp/services/default.@OutputOnly
     split: Mapping that defines fractional HTTP traffic diversion to different
       versions within the service.
   """
@@ -1370,38 +1404,37 @@ class StaticFilesHandler(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  """The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
+  used by gRPC (https://github.com/grpc). The error model is designed to be:
+  Simple to use and understand for most users Flexible enough to meet
+  unexpected needsOverviewThe Status message contains three pieces of data:
+  error code, error message, and error details. The error code should be an
+  enum value of google.rpc.Code, but it may accept additional error codes if
+  needed. The error message should be a developer-facing English message that
+  helps developers understand and resolve the error. If a localized user-
+  facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
+  detail types in the package google.rpc which can be used for common error
+  conditions.Language mappingThe Status message is the logical representation
+  of the error model, but it is not necessarily the actual wire format. When
+  the Status message is exposed in different client libraries and different
+  wire protocols, it can be mapped differently. For example, it will likely be
+  mapped to some exceptions in Java, but more likely mapped to some error
+  codes in C.Other usesThe error model and the Status message can be used in a
+  variety of environments, either with or without APIs, to provide a
+  consistent developer experience across different environments.Example uses
+  of this error model include: Partial errors. If a service needs to return
+  partial errors to the client, it may embed the Status in the normal response
+  to indicate the partial errors. Workflow errors. A typical workflow has
+  multiple steps. Each step may have a Status message for error reporting
+  purpose. Batch operations. If a client uses batch request and batch
+  response, the Status message should be used directly inside batch response,
+  one for each error sub-response. Asynchronous operations. If an API call
+  embeds asynchronous operation results in its response, the status of those
+  operations should be represented directly using the Status message. Logging.
+  If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.
 
   Messages:
@@ -1409,7 +1442,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details. There will be a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1538,14 +1571,13 @@ class UrlDispatchRule(_messages.Message):
   """Rules to match an HTTP request and dispatch that request to a service.
 
   Fields:
-    domain: Domain name to match against. The wildcard "`*`" is supported if
-      specified before a period: "`*.`".  Defaults to matching all domains:
-      "`*`".
-    path: Pathname within the host. Must start with a "`/`". A single "`*`"
-      can be included at the end of the path. The sum of the lengths of the
-      domain and path may not exceed 100 characters.
+    domain: Domain name to match against. The wildcard "*" is supported if
+      specified before a period: "*.".Defaults to matching all domains: "*".
+    path: Pathname within the host. Must start with a "/". A single "*" can be
+      included at the end of the path. The sum of the lengths of the domain
+      and path may not exceed 100 characters.
     service: Resource id of a service in this application that should serve
-      the matched request. The service must already exist. Example: `default`.
+      the matched request. The service must already exist. Example: default.
   """
 
   domain = _messages.StringField(1)
@@ -1560,19 +1592,19 @@ class UrlMap(_messages.Message):
 
   Enums:
     AuthFailActionValueValuesEnum: Action to take when users access resources
-      that require authentication. Defaults to `redirect`.
+      that require authentication. Defaults to redirect.
     LoginValueValuesEnum: Level of login required to access this resource.
-    RedirectHttpResponseCodeValueValuesEnum: `30x` code to use when performing
-      redirects for the `secure` field. Defaults to `302`.
+    RedirectHttpResponseCodeValueValuesEnum: 30x code to use when performing
+      redirects for the secure field. Defaults to 302.
     SecurityLevelValueValuesEnum: Security (HTTPS) enforcement for this URL.
 
   Fields:
     apiEndpoint: Uses API Endpoints to handle requests.
     authFailAction: Action to take when users access resources that require
-      authentication. Defaults to `redirect`.
+      authentication. Defaults to redirect.
     login: Level of login required to access this resource.
-    redirectHttpResponseCode: `30x` code to use when performing redirects for
-      the `secure` field. Defaults to `302`.
+    redirectHttpResponseCode: 30x code to use when performing redirects for
+      the secure field. Defaults to 302.
     script: Executes a script to handle the request that matches this URL
       pattern.
     securityLevel: Security (HTTPS) enforcement for this URL.
@@ -1586,15 +1618,15 @@ class UrlMap(_messages.Message):
 
   class AuthFailActionValueValuesEnum(_messages.Enum):
     """Action to take when users access resources that require authentication.
-    Defaults to `redirect`.
+    Defaults to redirect.
 
     Values:
-      AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. `AUTH_FAIL_ACTION_REDIRECT`
+      AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. AUTH_FAIL_ACTION_REDIRECT
         is assumed.
       AUTH_FAIL_ACTION_REDIRECT: Redirects user to "accounts.google.com". The
         user is redirected back to the application URL after signing in or
         creating an account.
-      AUTH_FAIL_ACTION_UNAUTHORIZED: Rejects request with an`401` HTTP status
+      AUTH_FAIL_ACTION_UNAUTHORIZED: Rejects request with an401 HTTP status
         code and an error message.
     """
     AUTH_FAIL_ACTION_UNSPECIFIED = 0
@@ -1605,15 +1637,15 @@ class UrlMap(_messages.Message):
     """Level of login required to access this resource.
 
     Values:
-      LOGIN_UNSPECIFIED: Not specified. `LOGIN_OPTIONAL` is assumed.
+      LOGIN_UNSPECIFIED: Not specified. LOGIN_OPTIONAL is assumed.
       LOGIN_OPTIONAL: Does not require that the user is signed in.
-      LOGIN_ADMIN: If the user is not signed in, the `auth_fail_action` is
+      LOGIN_ADMIN: If the user is not signed in, the auth_fail_action is
         taken. In addition, if the user is not an administrator for the
         application, they are given an error message regardless of
-        `auth_fail_action`. If the user is an administrator, the handler
+        auth_fail_action. If the user is an administrator, the handler
         proceeds.
       LOGIN_REQUIRED: If the user has signed in, the handler proceeds
-        normally. Otherwise, the action given in `auth_fail_action` is taken.
+        normally. Otherwise, the action given in auth_fail_action is taken.
     """
     LOGIN_UNSPECIFIED = 0
     LOGIN_OPTIONAL = 1
@@ -1621,16 +1653,15 @@ class UrlMap(_messages.Message):
     LOGIN_REQUIRED = 3
 
   class RedirectHttpResponseCodeValueValuesEnum(_messages.Enum):
-    """`30x` code to use when performing redirects for the `secure` field.
-    Defaults to `302`.
+    """30x code to use when performing redirects for the secure field.
+    Defaults to 302.
 
     Values:
-      REDIRECT_HTTP_RESPONSE_CODE_UNSPECIFIED: Not specified. `302` is
-        assumed.
-      REDIRECT_HTTP_RESPONSE_CODE_301: `301 Moved Permanently` code.
-      REDIRECT_HTTP_RESPONSE_CODE_302: `302 Moved Temporarily` code.
-      REDIRECT_HTTP_RESPONSE_CODE_303: `303 See Other` code.
-      REDIRECT_HTTP_RESPONSE_CODE_307: `307 Temporary Redirect` code.
+      REDIRECT_HTTP_RESPONSE_CODE_UNSPECIFIED: Not specified. 302 is assumed.
+      REDIRECT_HTTP_RESPONSE_CODE_301: 301 Moved Permanently code.
+      REDIRECT_HTTP_RESPONSE_CODE_302: 302 Moved Temporarily code.
+      REDIRECT_HTTP_RESPONSE_CODE_303: 303 See Other code.
+      REDIRECT_HTTP_RESPONSE_CODE_307: 307 Temporary Redirect code.
     """
     REDIRECT_HTTP_RESPONSE_CODE_UNSPECIFIED = 0
     REDIRECT_HTTP_RESPONSE_CODE_301 = 1
@@ -1678,19 +1709,20 @@ class Version(_messages.Message):
   Enums:
     InboundServicesValueListEntryValuesEnum:
     ServingStatusValueValuesEnum: Current serving status of this version. Only
-      the versions with a `SERVING` status create instances and can be billed.
-      `SERVING_STATUS_UNSPECIFIED` is an invalid value. Defaults to `SERVING`.
+      the versions with a SERVING status create instances and can be
+      billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
+      SERVING.
 
   Messages:
     BetaSettingsValue: Metadata settings that are supplied to this version to
       enable beta runtime features.
     EnvVariablesValue: Environment variables made available to the
-      application.  Only returned in `GET` requests if `view=FULL` is set.
+      application.Only returned in GET requests if view=FULL is set.
 
   Fields:
-    apiConfig: Serving configuration for [Google Cloud
-      Endpoints](https://cloud.google.com/appengine/docs/python/endpoints/).
-      Only returned in `GET` requests if `view=FULL` is set.
+    apiConfig: Serving configuration for Google Cloud Endpoints
+      (https://cloud.google.com/appengine/docs/python/endpoints/).Only
+      returned in GET requests if view=FULL is set.
     automaticScaling: Automatic scaling is based on request rate, response
       latencies, and other application metrics.
     basicScaling: A service with basic scaling will create an instance when
@@ -1699,59 +1731,62 @@ class Version(_messages.Message):
       intermittent or driven by user activity.
     betaSettings: Metadata settings that are supplied to this version to
       enable beta runtime features.
-    creationTime: Time that this version was created.  @OutputOnly
+    creationTime: Time that this version was created.@OutputOnly
     defaultExpiration: Duration that static files should be cached by web
       proxies and browsers. Only applicable if the corresponding
-      [StaticFilesHandler](https://cloud.google.com/appengine/docs/admin-
+      StaticFilesHandler (https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1/apps.services.versions#staticfileshandler) does
-      not specify its own expiration time.  Only returned in `GET` requests if
-      `view=FULL` is set.
-    deployer: Email address of the user who created this version.  @OutputOnly
-    deployment: Code and application artifacts that make up this version.
-      Only returned in `GET` requests if `view=FULL` is set.
+      not specify its own expiration time.Only returned in GET requests if
+      view=FULL is set.
+    deployer: Email address of the user who created this version.@OutputOnly
+    deployment: Code and application artifacts that make up this version.Only
+      returned in GET requests if view=FULL is set.
     diskUsageBytes: Total size of version files hosted on App Engine disk in
-      bytes.  @OutputOnly
-    env: App Engine execution environment to use for this version.  Defaults
-      to `1`.
-    envVariables: Environment variables made available to the application.
-      Only returned in `GET` requests if `view=FULL` is set.
-    errorHandlers: Custom static error pages. Limited to 10KB per page.  Only
-      returned in `GET` requests if `view=FULL` is set.
+      bytes.@OutputOnly
+    endpointsApiService: Cloud Endpoints configuration.If
+      endpoints_api_service is set, the Cloud Endpoints Extensible Service
+      Proxy will be provided to serve the API implemented by the app.
+    env: App Engine execution environment to use for this version.Defaults to
+      1.
+    envVariables: Environment variables made available to the application.Only
+      returned in GET requests if view=FULL is set.
+    errorHandlers: Custom static error pages. Limited to 10KB per page.Only
+      returned in GET requests if view=FULL is set.
     handlers: An ordered list of URL-matching patterns that should be applied
       to incoming requests. The first matching URL handles the request and
-      other request handlers are not attempted.  Only returned in `GET`
-      requests if `view=FULL` is set.
+      other request handlers are not attempted.Only returned in GET requests
+      if view=FULL is set.
     healthCheck: Configures health checking for VM instances. Unhealthy
       instances are be stopped and replaced with new instances. Only
-      applicable for VM runtimes.  Only returned in `GET` requests if
-      `view=FULL` is set.
-    id: Relative name of the version within the module. Example: `v1`. Version
+      applicable for VM runtimes.Only returned in GET requests if view=FULL is
+      set.
+    id: Relative name of the version within the module. Example: v1. Version
       names can contain only lowercase letters, numbers, or hyphens. Reserved
       names: "default", "latest", and any name with the prefix "ah-".
     inboundServices: Before an application can receive email or XMPP messages,
       the application must be configured to enable the service.
     instanceClass: Instance class that is used to run this version. Valid
-      values are:  * AutomaticScaling: `F1`, `F2`, `F4`, `F4_1G` *
-      ManualScaling or BasicScaling: `B1`, `B2`, `B4`, `B8`, `B4_1G`  Defaults
-      to `F1` for AutomaticScaling and `B1` for ManualScaling or BasicScaling.
+      values are: AutomaticScaling: F1, F2, F4, F4_1G ManualScaling or
+      BasicScaling: B1, B2, B4, B8, B4_1GDefaults to F1 for AutomaticScaling
+      and B1 for ManualScaling or BasicScaling.
     libraries: Configuration for third-party Python runtime libraries required
-      by the application.  Only returned in `GET` requests if `view=FULL` is
-      set.
+      by the application.Only returned in GET requests if view=FULL is set.
     manualScaling: A service with manual scaling runs continuously, allowing
       you to perform complex initialization and rely on the state of its
       memory over time.
-    name: Full path to the Version resource in the API.  Example:
-      `apps/myapp/services/default/versions/v1`.  @OutputOnly
+    name: Full path to the Version resource in the API. Example:
+      apps/myapp/services/default/versions/v1.@OutputOnly
     network: Extra network settings. Only applicable for VM runtimes.
     nobuildFilesRegex: Files that match this pattern will not be built into
-      this version. Only applicable for Go runtimes.  Only returned in `GET`
-      requests if `view=FULL` is set.
+      this version. Only applicable for Go runtimes.Only returned in GET
+      requests if view=FULL is set.
     resources: Machine resources for this version. Only applicable for VM
       runtimes.
-    runtime: Desired runtime. Example: `python27`.
+    runtime: Desired runtime. Example: python27.
     servingStatus: Current serving status of this version. Only the versions
-      with a `SERVING` status create instances and can be billed.
-      `SERVING_STATUS_UNSPECIFIED` is an invalid value. Defaults to `SERVING`.
+      with a SERVING status create instances and can be
+      billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
+      SERVING.
     threadsafe: Whether multiple requests can be dispatched to this version at
       once.
     vm: Whether to deploy this version in a container on a virtual machine.
@@ -1783,8 +1818,9 @@ class Version(_messages.Message):
 
   class ServingStatusValueValuesEnum(_messages.Enum):
     """Current serving status of this version. Only the versions with a
-    `SERVING` status create instances and can be billed.
-    `SERVING_STATUS_UNSPECIFIED` is an invalid value. Defaults to `SERVING`.
+    SERVING status create instances and can be
+    billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
+    SERVING.
 
     Values:
       SERVING_STATUS_UNSPECIFIED: Not specified.
@@ -1792,7 +1828,7 @@ class Version(_messages.Message):
         scaling settings of the version.
       STOPPED: Disabled from serving. No instances will be created and the
         scaling settings are ignored until the state of the version changes to
-        `SERVING`.
+        SERVING.
     """
     SERVING_STATUS_UNSPECIFIED = 0
     SERVING = 1
@@ -1826,8 +1862,8 @@ class Version(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvVariablesValue(_messages.Message):
-    """Environment variables made available to the application.  Only returned
-    in `GET` requests if `view=FULL` is set.
+    """Environment variables made available to the application.Only returned
+    in GET requests if view=FULL is set.
 
     Messages:
       AdditionalProperty: An additional property for a EnvVariablesValue
@@ -1859,24 +1895,25 @@ class Version(_messages.Message):
   deployer = _messages.StringField(7)
   deployment = _messages.MessageField('Deployment', 8)
   diskUsageBytes = _messages.IntegerField(9)
-  env = _messages.StringField(10)
-  envVariables = _messages.MessageField('EnvVariablesValue', 11)
-  errorHandlers = _messages.MessageField('ErrorHandler', 12, repeated=True)
-  handlers = _messages.MessageField('UrlMap', 13, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 14)
-  id = _messages.StringField(15)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 16, repeated=True)
-  instanceClass = _messages.StringField(17)
-  libraries = _messages.MessageField('Library', 18, repeated=True)
-  manualScaling = _messages.MessageField('ManualScaling', 19)
-  name = _messages.StringField(20)
-  network = _messages.MessageField('Network', 21)
-  nobuildFilesRegex = _messages.StringField(22)
-  resources = _messages.MessageField('Resources', 23)
-  runtime = _messages.StringField(24)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 25)
-  threadsafe = _messages.BooleanField(26)
-  vm = _messages.BooleanField(27)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 10)
+  env = _messages.StringField(11)
+  envVariables = _messages.MessageField('EnvVariablesValue', 12)
+  errorHandlers = _messages.MessageField('ErrorHandler', 13, repeated=True)
+  handlers = _messages.MessageField('UrlMap', 14, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 15)
+  id = _messages.StringField(16)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 17, repeated=True)
+  instanceClass = _messages.StringField(18)
+  libraries = _messages.MessageField('Library', 19, repeated=True)
+  manualScaling = _messages.MessageField('ManualScaling', 20)
+  name = _messages.StringField(21)
+  network = _messages.MessageField('Network', 22)
+  nobuildFilesRegex = _messages.StringField(23)
+  resources = _messages.MessageField('Resources', 24)
+  runtime = _messages.StringField(25)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 26)
+  threadsafe = _messages.BooleanField(27)
+  vm = _messages.BooleanField(28)
 
 
 class Volume(_messages.Message):

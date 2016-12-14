@@ -823,6 +823,19 @@ class RewriteResponse(_messages.Message):
   totalBytesRewritten = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
 
 
+class ServiceAccount(_messages.Message):
+  """A subscription to receive Google PubSub notifications.
+
+  Fields:
+    email_address: The ID of the notification.
+    kind: The kind of item this is. For notifications, this is always
+      storage#notification.
+  """
+
+  email_address = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'storage#serviceAccount')
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -2216,6 +2229,16 @@ class StorageObjectsWatchAllRequest(_messages.Message):
   prefix = _messages.StringField(6)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
   versions = _messages.BooleanField(8)
+
+
+class StorageProjectsServiceAccountGetRequest(_messages.Message):
+  """A StorageProjectsServiceAccountGetRequest object.
+
+  Fields:
+    projectId: Project ID
+  """
+
+  projectId = _messages.StringField(1, required=True)
 
 
 class TestIamPermissionsResponse(_messages.Message):

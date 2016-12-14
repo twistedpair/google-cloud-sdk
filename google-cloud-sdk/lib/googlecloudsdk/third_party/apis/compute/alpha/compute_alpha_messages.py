@@ -18,13 +18,12 @@ class AccessConfig(_messages.Message):
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this access configuration and can only take the following
-      values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is
+      values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is
       not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
   Fields:
-    dnsName: [Output Only] The public DNS domain name for the instance.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: Name of this access configuration.
@@ -35,14 +34,16 @@ class AccessConfig(_messages.Message):
       region as the zone of the instance.
     networkTier: This signifies the networking tier used for configuring this
       access configuration and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
       specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
-    ptrDomainName: The DNS domain name for the public PTR record. This field
-      can only be set when the set_ptr field is enabled.
-    setPtr: Specifies whether a public DNS ?PTR? record should be created to
-      map the external IP address of the instance to a DNS domain name.
+    publicDnsName: [Output Only] The public DNS domain name for the instance.
+    publicPtrDomainName: The DNS domain name for the public PTR record. This
+      field can only be set when the set_public_ptr field is enabled.
     setPublicDns: Specifies whether a public DNS ?A? record should be created
       for the external IP address of this access configuration.
+    setPublicPtr: Specifies whether a public DNS ?PTR? record should be
+      created to map the external IP address of the instance to a DNS domain
+      name.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -50,15 +51,15 @@ class AccessConfig(_messages.Message):
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this access
     configuration and can only take the following values:
-    CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+    CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
     specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_STANDARD: <no description>
+      CLOUD_NETWORK_SELECT: <no description>
     """
     CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_STANDARD = 1
+    CLOUD_NETWORK_SELECT = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -69,14 +70,14 @@ class AccessConfig(_messages.Message):
     """
     ONE_TO_ONE_NAT = 0
 
-  dnsName = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'compute#accessConfig')
-  name = _messages.StringField(3)
-  natIP = _messages.StringField(4)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 5)
-  ptrDomainName = _messages.StringField(6)
-  setPtr = _messages.BooleanField(7)
-  setPublicDns = _messages.BooleanField(8)
+  kind = _messages.StringField(1, default=u'compute#accessConfig')
+  name = _messages.StringField(2)
+  natIP = _messages.StringField(3)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
+  publicDnsName = _messages.StringField(5)
+  publicPtrDomainName = _messages.StringField(6)
+  setPublicDns = _messages.BooleanField(7)
+  setPublicPtr = _messages.BooleanField(8)
   type = _messages.EnumField('TypeValueValuesEnum', 9, default=u'ONE_TO_ONE_NAT')
 
 
@@ -86,7 +87,7 @@ class Address(_messages.Message):
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this Address and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
       specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
@@ -99,7 +100,8 @@ class Address(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
-    address: The static external IP address represented by this resource.
+    address: The static external IP address represented by this resource. Only
+      IPv4 is supported.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -127,7 +129,7 @@ class Address(_messages.Message):
       cannot be a dash.
     networkTier: This signifies the networking tier used for configuring this
       Address and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-      CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
+      CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to
       be CLOUD_NETWORK_PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
@@ -143,15 +145,15 @@ class Address(_messages.Message):
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this Address
     and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-    CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
-    be CLOUD_NETWORK_PREMIUM.
+    CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be
+    CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_STANDARD: <no description>
+      CLOUD_NETWORK_SELECT: <no description>
     """
     CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_STANDARD = 1
+    CLOUD_NETWORK_SELECT = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
@@ -5705,7 +5707,7 @@ class ComputeInstancesStopRequest(_messages.Message):
 
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false.
+      partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
     zone: The name of the zone for this request.
@@ -5722,7 +5724,7 @@ class ComputeInstancesSuspendRequest(_messages.Message):
 
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false.
+      partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
     zone: The name of the zone for this request.
@@ -6108,10 +6110,18 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
   """A ComputeProjectsGetXpnResourcesRequest object.
 
   Fields:
+    filter: A string attribute.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
     project: Project ID for this request.
   """
 
-  project = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeProjectsListXpnHostsRequest(_messages.Message):
@@ -10465,7 +10475,7 @@ class Firewall(_messages.Message):
       property when you create the resource.
     destinationRanges: If destination ranges are specified, the firewall will
       apply only to traffic that has destination IP address in these ranges.
-      These ranges must be expressed in CIDR format.
+      These ranges must be expressed in CIDR format. Only IPv4 is supported.
     direction: Direction of traffic to which this firewall applies; default is
       INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
       destinationRanges; For EGRESS traffic, it is NOT supported to specify
@@ -10502,7 +10512,8 @@ class Firewall(_messages.Message):
       may be set. If both properties are set, the firewall will apply to
       traffic that has source IP address within sourceRanges OR the source IP
       that belongs to a tag listed in the sourceTags property. The connection
-      does not need to match both properties for the firewall to apply.
+      does not need to match both properties for the firewall to apply. Only
+      IPv4 is supported.
     sourceTags: If source tags are specified, the firewall will apply only to
       traffic with source IP that belongs to a tag listed in source tags.
       Source tags cannot be used to control traffic to an instance's external
@@ -10512,6 +10523,12 @@ class Firewall(_messages.Message):
       IP address within sourceRanges OR the source IP that belongs to a tag
       listed in the sourceTags property. The connection does not need to match
       both properties for the firewall to apply.
+    targetServiceAccounts: A list of service accounts indicating sets of
+      instances located in the network that may make network connections as
+      specified in allowed[]. targetServiceAccounts cannot be used at the same
+      time as targetTags or sourceTags. If neither targetServiceAccounts nor
+      targetTags are specified, the firewall rule applies to all instances on
+      the specified network.
     targetTags: A list of instance tags indicating sets of instances located
       in the network that may make network connections as specified in
       allowed[]. If no targetTags are specified, the firewall rule applies to
@@ -10581,7 +10598,8 @@ class Firewall(_messages.Message):
   selfLink = _messages.StringField(12)
   sourceRanges = _messages.StringField(13, repeated=True)
   sourceTags = _messages.StringField(14, repeated=True)
-  targetTags = _messages.StringField(15, repeated=True)
+  targetServiceAccounts = _messages.StringField(15, repeated=True)
+  targetTags = _messages.StringField(16, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -10641,7 +10659,7 @@ class ForwardingRule(_messages.Message):
       LB, SSL Proxy)
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
       specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
 
   Messages:
@@ -10660,7 +10678,7 @@ class ForwardingRule(_messages.Message):
       forwarding rule. A reserved address cannot be used. If the field is
       empty, the IP address will be automatically allocated from the internal
       IP range of the subnetwork or network configured for this forwarding
-      rule.
+      rule. Only IPv4 is supported.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL</code, only TCP and UDP are valid.
@@ -10703,7 +10721,7 @@ class ForwardingRule(_messages.Message):
       specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_STANDARD. If this field is not
+      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
       specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
@@ -10784,15 +10802,15 @@ class ForwardingRule(_messages.Message):
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this load
     balancer and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-    CLOUD_NETWORK_STANDARD. If this field is not specified, it is assumed to
-    be CLOUD_NETWORK_PREMIUM.
+    CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be
+    CLOUD_NETWORK_PREMIUM.
 
     Values:
       CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_STANDARD: <no description>
+      CLOUD_NETWORK_SELECT: <no description>
     """
     CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_STANDARD = 1
+    CLOUD_NETWORK_SELECT = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -12543,7 +12561,9 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       group that are scheduled to be restarted or are currently being
       restarted.
     verifying: [Output Only] The number of instances in the managed instance
-      group that are being verified.
+      group that are being verified. More details regarding verification
+      process are covered in the documentation of
+      ManagedInstance.InstanceAction.VERIFYING enum field.
   """
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -12615,8 +12635,7 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
   Fields:
-    healthCheck: The URL for the HttpHealthCheck or HttpsHealthCheck that
-      signals autohealing.
+    healthCheck: The URL for the health check that signals autohealing.
     initialDelaySec: The number of seconds that the managed instance group
       waits before it applies autohealing policies to new instances or
       recently recreated instances. This initial delay allows instances to
@@ -12625,10 +12644,10 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
       group from recreating its instances prematurely. This value must be from
       range [0, 3600].
     maxUnavailable: Maximum number of instances that can be unavailable when
-      auto-healing. The instance is considered available if all of the
-      following conditions are satisfied: 1. instance's status is RUNNING 2.
-      instance's liveness health check result was observed to be HEALTHY at
-      least once By default, a percent value of 100% is used.
+      autohealing. The instance is considered available if all of the
+      following conditions are satisfied: 1. Instance's status is RUNNING. 2.
+      Instance's liveness health check result was observed to be HEALTHY at
+      least once. By default, a percent value of 100% is used.
   """
 
   healthCheck = _messages.StringField(1)
@@ -12696,9 +12715,9 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       maxUnavailable } must be greater than 0.
     maxUnavailable: Maximum number of instances that can be unavailable during
       the update process. The instance is considered available if all of the
-      following conditions are satisfied: 1. instance's status is RUNNING 2.
-      instance's liveness health check result was observed to be HEALTHY at
-      least once By default, a fixed value of 1 is used. At least one of {
+      following conditions are satisfied: 1. Instance's status is RUNNING. 2.
+      Instance's liveness health check result was observed to be HEALTHY at
+      least once. By default, a fixed value of 1 is used. At least one of {
       maxSurge, maxUnavailable } must be greater than 0.
     minReadySec: Minimum number of seconds to wait for after a newly created
       instance becomes available. This value must be from range [0, 3600].
@@ -14910,11 +14929,17 @@ class ProjectsGetXpnResources(_messages.Message):
   Fields:
     kind: [Output Only] Type of resource. Always
       compute#projectsGetXpnResources for lists of XPN resources.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     resources: XPN resources attached to this project as their XPN host.
   """
 
   kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
-  resources = _messages.MessageField('XpnResourceId', 2, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  resources = _messages.MessageField('XpnResourceId', 3, repeated=True)
 
 
 class ProjectsListXpnHostsRequest(_messages.Message):
@@ -15467,7 +15492,7 @@ class Route(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     destRange: The destination range of outgoing packets that this route
-      applies to.
+      applies to. Only IPv4 is supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of this resource. Always compute#routes for Route
@@ -15488,7 +15513,7 @@ class Route(_messages.Message):
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
       /
     nextHopIp: The network IP address of an instance that should handle
-      matching packets.
+      matching packets. Only IPv4 is supported.
     nextHopNetwork: The URL of the local network if it should handle matching
       packets.
     nextHopPeering: [Output Only] The network peering name that should handle
@@ -15745,12 +15770,14 @@ class RouterBgpPeer(_messages.Message):
       peer. In the case where there is more than one matching route of maximum
       length, the routes with lowest priority value win.
     interfaceName: Name of the interface the BGP peer is associated with.
-    ipAddress: IP address of the interface inside Google Cloud Platform.
+    ipAddress: IP address of the interface inside Google Cloud Platform. Only
+      IPv4 is supported.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
       value can be different for every tunnel.
-    peerIpAddress: IP address of the BGP interface outside Google cloud.
+    peerIpAddress: IP address of the BGP interface outside Google cloud. Only
+      IPv4 is supported.
   """
 
   advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -16442,7 +16469,7 @@ class Subnetwork(_messages.Message):
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network.
+      overlapping within a network. Only IPv4 is supported.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     name: The name of the resource, provided by the client when initially
@@ -16562,7 +16589,7 @@ class SubnetworkSecondaryRange(_messages.Message):
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
       Ranges must be unique and non-overlapping with all primary and secondary
-      IP ranges within a network.
+      IP ranges within a network. Only IPv4 is supported.
     rangeName: The name associated with this subnetwork secondary range, used
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within
@@ -18210,7 +18237,8 @@ class VpnTunnel(_messages.Message):
       RFC1035. Label values may be empty.
     localTrafficSelector: Local traffic selector to use when establishing the
       VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
-      string, for example: 192.168.0.0/16. The ranges should be disjoint.
+      string, for example: 192.168.0.0/16. The ranges should be disjoint. Only
+      IPv4 is supported.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -18218,12 +18246,12 @@ class VpnTunnel(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    peerIp: IP address of the peer VPN gateway.
+    peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
     region: [Output Only] URL of the region where the VPN tunnel resides.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
-      disjoint.
+      disjoint. Only IPv4 is supported.
     router: URL of router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the

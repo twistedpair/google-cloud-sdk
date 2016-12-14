@@ -57,7 +57,8 @@ class Address(_messages.Message):
       by another resource and is not available.
 
   Fields:
-    address: The static external IP address represented by this resource.
+    address: The static external IP address represented by this resource. Only
+      IPv4 is supported.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -3825,6 +3826,24 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersPatchRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone where you want to create the managed instance
+      group.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A ComputeInstanceGroupManagersRecreateInstancesRequest object.
 
@@ -3948,6 +3967,24 @@ class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersUpdateRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone where you want to create the managed instance
+      group.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
 
 
@@ -8969,7 +9006,8 @@ class Firewall(_messages.Message):
       may be set. If both properties are set, the firewall will apply to
       traffic that has source IP address within sourceRanges OR the source IP
       that belongs to a tag listed in the sourceTags property. The connection
-      does not need to match both properties for the firewall to apply.
+      does not need to match both properties for the firewall to apply. Only
+      IPv4 is supported.
     sourceTags: If source tags are specified, the firewall will apply only to
       traffic with source IP that belongs to a tag listed in source tags.
       Source tags cannot be used to control traffic to an instance's external
@@ -9067,7 +9105,7 @@ class ForwardingRule(_messages.Message):
       forwarding rule. A reserved address cannot be used. If the field is
       empty, the IP address will be automatically allocated from the internal
       IP range of the subnetwork or network configured for this forwarding
-      rule.
+      rule. Only IPv4 is supported.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL</code, only TCP and UDP are valid.
@@ -10460,6 +10498,11 @@ class InstanceGroupManager(_messages.Message):
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
+    serviceAccount: Service account will be used as credentials for all
+      operations performed by managed instance group on instances. The service
+      accounts needs all permissions required to create and delete instances.
+      When not specified, the service account
+      {projectNumber}@cloudservices.gserviceaccount.com will be used.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -10496,9 +10539,10 @@ class InstanceGroupManager(_messages.Message):
   namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
   region = _messages.StringField(14)
   selfLink = _messages.StringField(15)
-  targetPools = _messages.StringField(16, repeated=True)
-  targetSize = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(18)
+  serviceAccount = _messages.StringField(16)
+  targetPools = _messages.StringField(17, repeated=True)
+  targetSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(19)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -10604,8 +10648,7 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
   Fields:
-    healthCheck: The URL for the HttpHealthCheck or HttpsHealthCheck that
-      signals autohealing.
+    healthCheck: The URL for the health check that signals autohealing.
     initialDelaySec: The number of seconds that the managed instance group
       waits before it applies autohealing policies to new instances or
       recently recreated instances. This initial delay allows instances to
@@ -12678,6 +12721,7 @@ class Quota(_messages.Message):
       TARGET_POOLS: <no description>
       TARGET_SSL_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
+      TOTAL_CPUS: <no description>
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
@@ -12713,8 +12757,9 @@ class Quota(_messages.Message):
     TARGET_POOLS = 29
     TARGET_SSL_PROXIES = 30
     TARGET_VPN_GATEWAYS = 31
-    URL_MAPS = 32
-    VPN_TUNNELS = 33
+    TOTAL_CPUS = 32
+    URL_MAPS = 33
+    VPN_TUNNELS = 34
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -13042,7 +13087,7 @@ class Route(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     destRange: The destination range of outgoing packets that this route
-      applies to.
+      applies to. Only IPv4 is supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of this resource. Always compute#routes for Route
@@ -13063,7 +13108,7 @@ class Route(_messages.Message):
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
       /
     nextHopIp: The network IP address of an instance that should handle
-      matching packets.
+      matching packets. Only IPv4 is supported.
     nextHopNetwork: The URL of the local network if it should handle matching
       packets.
     nextHopVpnTunnel: The URL to a VpnTunnel that should handle matching
@@ -13317,12 +13362,14 @@ class RouterBgpPeer(_messages.Message):
       peer. In the case where there is more than one matching route of maximum
       length, the routes with lowest priority value win.
     interfaceName: Name of the interface the BGP peer is associated with.
-    ipAddress: IP address of the interface inside Google Cloud Platform.
+    ipAddress: IP address of the interface inside Google Cloud Platform. Only
+      IPv4 is supported.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
       value can be different for every tunnel.
-    peerIpAddress: IP address of the BGP interface outside Google cloud.
+    peerIpAddress: IP address of the BGP interface outside Google cloud. Only
+      IPv4 is supported.
   """
 
   advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -14014,7 +14061,7 @@ class Subnetwork(_messages.Message):
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network.
+      overlapping within a network. Only IPv4 is supported.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     name: The name of the resource, provided by the client when initially
@@ -15614,7 +15661,8 @@ class VpnTunnel(_messages.Message):
       tunnels.
     localTrafficSelector: Local traffic selector to use when establishing the
       VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
-      string, for example: 192.168.0.0/16. The ranges should be disjoint.
+      string, for example: 192.168.0.0/16. The ranges should be disjoint. Only
+      IPv4 is supported.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -15622,12 +15670,12 @@ class VpnTunnel(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    peerIp: IP address of the peer VPN gateway.
+    peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
     region: [Output Only] URL of the region where the VPN tunnel resides.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
-      disjoint.
+      disjoint. Only IPv4 is supported.
     router: URL of router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the

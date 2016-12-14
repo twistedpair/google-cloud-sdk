@@ -14,14 +14,14 @@
 
 """Manages logic for service accounts."""
 
+import io
 import json
 import os
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.credentials import service_account
-from oauth2client import client
+from oauth2client import service_account
 
 
 class Error(exceptions.Error):
@@ -58,13 +58,13 @@ def CredentialsFromAdcDict(json_key):
     raise BadCredentialJsonFileException(
         'The .json key file is not in a valid format.')
 
-  return service_account.ServiceAccountCredentials(
-      service_account_id=json_key['client_id'],
-      service_account_email=json_key['client_email'],
-      private_key_id=json_key['private_key_id'],
-      private_key_pkcs8_text=json_key['private_key'],
-      scopes=config.CLOUDSDK_SCOPES,
-      user_agent=config.CLOUDSDK_USER_AGENT)
+  creds = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
+      json_key, scopes=config.CLOUDSDK_SCOPES)
+  # User agent needs to be set separately, see
+  # https://github.com/google/oauth2client/issues/445
+  # pylint: disable=protected-access
+  creds.user_agent = creds._user_agent = config.CLOUDSDK_USER_AGENT
+  return creds
 
 
 def CredentialsFromP12File(filename, account, password=None):
@@ -85,7 +85,13 @@ def CredentialsFromP12Key(private_key, account, password=None):
               'necessary for backwards compatability. Please switch to '
               'a newer .json service account key for this account.')
 
-  if not client.HAS_CRYPTO:
+  try:
+    cred = service_account.ServiceAccountCredentials.from_p12_keyfile_buffer(
+        service_account_email=account,
+        file_buffer=io.BytesIO(private_key),
+        private_key_password=password,
+        scopes=config.CLOUDSDK_SCOPES)
+  except NotImplementedError:
     if not os.environ.get('CLOUDSDK_PYTHON_SITEPACKAGES'):
       raise UnsupportedCredentialsType(
           ('PyOpenSSL is not available. If you have already installed '
@@ -100,18 +106,7 @@ def CredentialsFromP12Key(private_key, account, password=None):
            'https://developers.google.com/cloud/sdk/crypto for details '
            'or consider using .json private key instead.'))
 
-  if password:
-    cred = client.SignedJwtAssertionCredentials(
-        service_account_name=account,
-        private_key=private_key,
-        scope=config.CLOUDSDK_SCOPES,
-        private_key_password=password,
-        user_agent=config.CLOUDSDK_USER_AGENT)
-  else:  # Gets default password.
-    cred = client.SignedJwtAssertionCredentials(
-        service_account_name=account,
-        private_key=private_key,
-        scope=config.CLOUDSDK_SCOPES,
-        user_agent=config.CLOUDSDK_USER_AGENT)
+  # pylint: disable=protected-access
+  cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
 
   return cred

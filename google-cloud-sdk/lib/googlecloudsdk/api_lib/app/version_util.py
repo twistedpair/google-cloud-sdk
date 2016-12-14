@@ -17,6 +17,7 @@
 import re
 
 from googlecloudsdk.api_lib.app import metric_names
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
@@ -57,13 +58,15 @@ class Version(object):
                            'versions/(?P<version>.*)')
 
   def __init__(self, project, service, version_id, traffic_split=None,
-               last_deployed_time=None, version_resource=None):
+               last_deployed_time=None, environment=None,
+               version_resource=None):
     self.project = project
     self.service = service
     self.id = version_id
     self.version = version_resource
     self.traffic_split = traffic_split
     self.last_deployed_time = last_deployed_time
+    self.environment = environment
 
   @classmethod
   def FromResourcePath(cls, path):
@@ -89,8 +92,15 @@ class Version(object):
         last_deployed = times.LocalizeDateTime(last_deployed_dt)
     except ValueError:
       pass
+    if version.env == 'flexible':
+      env = util.Environment.FLEX
+    elif version.vm:
+      env = util.Environment.MANAGED_VMS
+    else:
+      env = util.Environment.STANDARD
     return cls(project, service_id, version.id, traffic_split=traffic_split,
-               last_deployed_time=last_deployed, version_resource=version)
+               last_deployed_time=last_deployed, environment=env,
+               version_resource=version)
 
   def IsReceivingAllTraffic(self):
     return abs(self.traffic_split - 1.0) < self._ALL_TRAFFIC_EPSILON

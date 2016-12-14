@@ -546,10 +546,14 @@ class IpMapping(_messages.Message):
     timeToRetire: The due time for this IP to be retired in RFC 3339 format,
       for example 2012-11-15T16:19:00.094Z. This field is only available when
       the IP is scheduled to be retired.
+    type: The type of this IP address. A PRIMARY address is an address that
+      can accept incoming connections. An OUTGOING address is the source
+      address of connections originating from the instance, if supported.
   """
 
   ipAddress = _messages.StringField(1)
   timeToRetire = _message_types.DateTimeField(2)
+  type = _messages.StringField(3)
 
 
 class LocationPreference(_messages.Message):

@@ -61,20 +61,52 @@ class Artifact(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Enables "data access" audit logging for a service and specifies a list of
-  members that are log-exempted.
+  """Provides the configuration for non-admin_activity logging for a service.
+  Controls exemptions and specific log sub-types.
 
   Fields:
+    auditLogConfigs: The configuration for each type of logging Next ID: 4
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
       same format of Binding.members.
-    service: Specifies a service that will be enabled for "data access" audit
-      logging. For example, `resourcemanager`, `storage`, `compute`.
-      `allServices` is a special value that covers all services.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
+      special value that covers all services.
   """
 
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for a sub-type of logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from this type
+      of logging Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Log admin reads
+      DATA_WRITE: Log data writes
+      DATA_READ: Log data reads
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
   exemptedMembers = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Basis(_messages.Message):
@@ -525,9 +557,9 @@ class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
       "project/{project_id}
   """
 
-  name = _messages.StringField(1, required=True)
+  name = _messages.StringField(1)
   occurrence = _messages.MessageField('Occurrence', 2)
-  parent = _messages.StringField(3)
+  parent = _messages.StringField(3, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesDeleteRequest(_messages.Message):
@@ -592,10 +624,10 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5)
+  parent = _messages.StringField(5, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message):

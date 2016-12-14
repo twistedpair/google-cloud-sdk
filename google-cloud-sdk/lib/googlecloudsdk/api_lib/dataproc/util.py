@@ -281,3 +281,15 @@ class Bunch(object):
       if isinstance(value, dict):
         value = Bunch(value)
       self.__dict__[key] = value
+
+
+def AddJvmDriverFlags(parser):
+  parser.add_argument(
+      '--jar',
+      dest='main_jar',
+      help='The HCFS URI of jar file containing the driver jar.')
+  parser.add_argument(
+      '--class',
+      dest='main_class',
+      help=('The class containing the main method of the driver. Must be in a'
+            ' provided jar or jar that is already on the classpath'))

@@ -62,7 +62,7 @@ class Displayer(object):
   # A command with these flags might return incomplete resource lists.
   _CORRUPT_FLAGS = ('async', 'filter', 'limit')
 
-  def __init__(self, command, args, resources=None):
+  def __init__(self, command, args, resources=None, display_info=None):
     """Constructor.
 
     Args:
@@ -70,6 +70,8 @@ class Displayer(object):
       args: The argparse.Namespace given to the command.Run().
       resources: The resources to display, returned by command.Run(). May be
         omitted if only GetFormat() will be called.
+      display_info: The DisplayInfo object reaped from parser.AddDisplayInfo()
+        in the command path.
     """
     self._args = args
     self._command = command
@@ -86,6 +88,13 @@ class Displayer(object):
     if self._info:
       self._defaults.symbols['collection'] = (
           lambda r, undefined='': self._info.collection or undefined)
+    if display_info:
+      self._format = display_info.format
+      if display_info.transforms or display_info.aliases:
+        self._defaults = resource_projection_spec.ProjectionSpec(
+            defaults=self._defaults,
+            symbols=display_info.transforms,
+            aliases=display_info.aliases)
     geturi = command.GetUriFunc()
     if geturi:
       self._transform_uri = lambda r, undefined='': geturi(r) or undefined

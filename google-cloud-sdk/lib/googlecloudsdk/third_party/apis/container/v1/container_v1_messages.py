@@ -1330,6 +1330,7 @@ class Operation(_messages.Message):
       UPDATE_CLUSTER: Cluster update.
       CREATE_NODE_POOL: Node pool create.
       DELETE_NODE_POOL: Node pool delete.
+      SET_NODE_POOL_MANAGEMENT: Set node pool management.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -1340,6 +1341,7 @@ class Operation(_messages.Message):
     UPDATE_CLUSTER = 6
     CREATE_NODE_POOL = 7
     DELETE_NODE_POOL = 8
+    SET_NODE_POOL_MANAGEMENT = 9
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.

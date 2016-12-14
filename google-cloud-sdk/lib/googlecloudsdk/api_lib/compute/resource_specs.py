@@ -270,6 +270,8 @@ def _RoutesNextHopToCell(route):
     return route.get('nextHopIp')
   elif route.get('nextHopVpnTunnel'):
     return path_simplifier.ScopedSuffix(route.get('nextHopVpnTunnel'))
+  elif route.get('nextHopPeering'):
+    return route.get('nextHopPeering')
   else:
     return ''
 
@@ -1032,6 +1034,17 @@ _SPECS_ALPHA['urlMaps'] = _InternalSpec(
         'pathMatchers',
         'tests',
     ])
+_SPECS_ALPHA['peerings'] = _InternalSpec(
+    message_class_name='NetworkPeering',
+    table_cols=[
+        ('NAME', 'name'),
+        ('network', 'network'),
+        ('autoCreateRoutes', 'autoCreateRoutes'),
+        ('state', 'state'),
+        ],
+    transformations=None,
+    editables=None,
+    )
 
 
 def _GetSpecsForVersion(api_version):

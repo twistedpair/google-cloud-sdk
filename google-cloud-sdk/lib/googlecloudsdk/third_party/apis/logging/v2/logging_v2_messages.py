@@ -113,7 +113,10 @@ class ListLogEntriesRequest(_messages.Message):
     filter: Optional. A filter that chooses which log entries to return.  See
       [Advanced Logs Filters](/logging/docs/view/advanced_filters).  Only log
       entries that match the filter are returned.  An empty filter matches all
-      log entries. The maximum length of the filter is 20000 characters.
+      log entries in the resources listed in `resource_names`. Referencing a
+      parent resource that is not listed in `resource_names` will cause the
+      filter to return no results. The maximum length of the filter is 20000
+      characters.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
       The first option returns entries in order of increasing values of
@@ -128,12 +131,12 @@ class ListLogEntriesRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    projectIds: Deprecated. One or more project identifiers or project numbers
-      from which to retrieve log entries.  Example: `"my-project-1A"`. If
-      present, these project identifiers are converted to resource format and
-      added to the list of resources in `resourceNames`. Callers should use
-      `resourceNames` rather than this parameter.
-    resourceNames: Required. One or more cloud resources from which to
+    projectIds: Deprecated. Use `resource_names` instead.  One or more project
+      identifiers or project numbers from which to retrieve log entries.
+      Example: `"my-project-1A"`. If present, these project identifiers are
+      converted to resource name format and added to the list of resources in
+      `resource_names`.
+    resourceNames: Required. Names of one or more resources from which to
       retrieve log entries:      "projects/[PROJECT_ID]"
       "organizations/[ORGANIZATION_ID]"  Projects listed in the `project_ids`
       field are added to this list.
@@ -152,10 +155,16 @@ class ListLogEntriesResponse(_messages.Message):
 
   Fields:
     entries: A list of log entries.
-    nextPageToken: If there might be more results than appear in this
+    nextPageToken: If there might be more results than those appearing in this
       response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
-      `pageToken`.
+      `pageToken`.  If a value for `next_page_token` appears and the `entries`
+      field is empty, it means that the search found no log entries so far but
+      it did not have time to search all the possible log entries.  Retry the
+      method with this value for `page_token` to continue the search.
+      Alternatively, consider speeding up the search by changing your filter
+      to specify a single log name or resource type, or to narrow the time
+      range of the search.
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
@@ -181,8 +190,9 @@ class ListLogsResponse(_messages.Message):
   """Result returned from ListLogs.
 
   Fields:
-    logIds: A list of log ids matching the criteria.
-    nextPageToken: If there might be more results than appear in this
+    logIds: A list of log identifiers. For example, `"syslog"` or
+      `"cloudresourcemanager.googleapis.com/activity"`.
+    nextPageToken: If there might be more results than those appearing in this
       response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
@@ -196,7 +206,7 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
   """Result returned from ListMonitoredResourceDescriptors.
 
   Fields:
-    nextPageToken: If there might be more results than appear in this
+    nextPageToken: If there might be more results than those appearing in this
       response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
@@ -273,11 +283,17 @@ class LogEntry(_messages.Message):
       reported the error.
     severity: Optional. The severity of the log entry. The default value is
       `LogSeverity.DEFAULT`.
+    sourceLocation: Optional. Source code location information associated with
+      the log entry, if any.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
     timestamp: Optional. The time the event described by the log entry
       occurred.  If omitted, Stackdriver Logging will use the time the log
       entry is received.
+    trace: Optional. Resource name of the trace associated with the log entry,
+      if any. If it contains a relative resource name, the name is assumed to
+      be relative to `//tracing.googleapis.com`. Example: `projects/my-
+      projectid/traces/06796866738c859f2f19b7cfb3214824`
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -393,8 +409,10 @@ class LogEntry(_messages.Message):
   protoPayload = _messages.MessageField('ProtoPayloadValue', 7)
   resource = _messages.MessageField('MonitoredResource', 8)
   severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  textPayload = _messages.StringField(10)
-  timestamp = _messages.StringField(11)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 10)
+  textPayload = _messages.StringField(11)
+  timestamp = _messages.StringField(12)
+  trace = _messages.StringField(13)
 
 
 class LogEntryOperation(_messages.Message):
@@ -417,6 +435,28 @@ class LogEntryOperation(_messages.Message):
   id = _messages.StringField(2)
   last = _messages.BooleanField(3)
   producer = _messages.StringField(4)
+
+
+class LogEntrySourceLocation(_messages.Message):
+  """Additional information about the source code location that produced the
+  log entry.
+
+  Fields:
+    file: Optional. Source file name. Depending on the runtime environment,
+      this might be a simple name or a fully-qualified name.
+    function: Optional. Human-readable name of the function or method being
+      invoked, with optional context such as the class or package name. This
+      information may be used in contexts such as the logs viewer, where a
+      file and line number are less meaningful. The format can vary by
+      language. For example: `qual.if.ied.Class.method` (Java),
+      `dir/package.func` (Go), `function` (Python).
+    line: Optional. Line within the source file. 1-based; 0 indicates no line
+      number available.
+  """
+
+  file = _messages.StringField(1)
+  function = _messages.StringField(2)
+  line = _messages.IntegerField(3)
 
 
 class LogLine(_messages.Message):
@@ -516,65 +556,74 @@ class LogMetric(_messages.Message):
 
 
 class LogSink(_messages.Message):
-  """Describes a sink used to export log entries outside of Stackdriver
-  Logging. A logs filter controls which log entries are exported.  Sinks can
-  have a start time and an end time; these can be used to place log entries
-  from an exact time range into a particular destination.  If both
-  `start_time` and `end_time` are present, then `start_time` must be less than
-  `end_time`.
+  """Describes a sink used to export log entries to one of the following
+  destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or
+  a Cloud Pub/Sub topic.  A logs filter controls which log entries are
+  exported. The sink must be created within a project or organization.
 
   Enums:
-    OutputVersionFormatValueValuesEnum: Optional. The log entry version to use
-      for this sink's exported log entries.  This version does not have to
-      correspond to the version of the log entry that was written to
-      Stackdriver Logging. If omitted, the v2 format is used.
+    OutputVersionFormatValueValuesEnum: Optional. The log entry format to use
+      for this sink's exported log entries.  The v2 format is used by default.
+      **The v1 format is deprecated** and should be used only as part of a
+      migration effort to v2. See [Migration to the v2
+      API](/logging/docs/api/v2/migration-to-v2).
 
   Fields:
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
-      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"  For
-      more information,  see [Exporting Logs With
+      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"  The
+      sink's `writer_identity`, set when the sink is created, must have
+      permission to write to the destination or else the log entries are not
+      exported.  For more information, see [Exporting Logs With
       Sinks](/logging/docs/api/tasks/exporting-logs).
-    endTime: Optional. Time at which this sink will stop exporting log
-      entries.  If this value is present, then log entries are exported only
-      if `entry.timestamp` < `end_time`.
+    endTime: Optional. The time at which this sink will stop exporting log
+      entries.  Log entries are exported only if their timestamp is earlier
+      than the end time. If this field is not supplied, there is no end time.
+      If both a start time and an end time are provided, then the end time
+      must be later than the start time.
     filter: Optional. An [advanced logs
-      filter](/logging/docs/view/advanced_filters). Only log entries matching
-      the filter are exported. The filter must be consistent with the log
-      entry format specified by the `outputVersionFormat` parameter,
-      regardless of the format of the log entry that was originally ingested
-      by Stackdriver Logging. The following example uses field names in the v2
-      log entry format:      logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
-      severity>=ERROR
+      filter](/logging/docs/view/advanced_filters).  The only exported log
+      entries are those that are in the resource owning the sink and that
+      match the filter. The filter must use the log entry format specified by
+      the `output_version_format` parameter.  For example, in the v2 format:
+      logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
     name: Required. The client-assigned sink identifier, unique within the
       project. Example: `"my-syslog-errors-to-pubsub"`.  Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
       periods.
-    outputVersionFormat: Optional. The log entry version to use for this
-      sink's exported log entries.  This version does not have to correspond
-      to the version of the log entry that was written to Stackdriver Logging.
-      If omitted, the v2 format is used.
+    outputVersionFormat: Optional. The log entry format to use for this sink's
+      exported log entries.  The v2 format is used by default. **The v1 format
+      is deprecated** and should be used only as part of a migration effort to
+      v2. See [Migration to the v2 API](/logging/docs/api/v2/migration-to-v2).
     startTime: Optional. The time at which this sink will begin exporting log
-      entries.  If this value is present, then log entries are exported only
-      if `start_time` <=`entry.timestamp`.
+      entries. Log entries are exported only if their timestamp is not earlier
+      than the start time.  The default value of this field is the time the
+      sink is created or updated.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
-      group&mdash;that will write exported log entries to the destination on
-      behalf of Stackdriver Logging. You must grant this identity write-access
-      to the destination. Consult the destination service's documentation to
-      determine the exact role that must be granted.
+      group&mdash;under which Stackdriver Logging writes the exported log
+      entries to the sink's destination.  This field is set by [sinks.create](
+      /logging/docs/api/reference/rest/v2/projects.sinks/create) and [sinks.up
+      date](/logging/docs/api/reference/rest/v2/projects.sinks/update), based
+      on the setting of `unique_writer_identity` in those methods.  Until you
+      grant this identity write-access to the destination, log entry exports
+      from this sink will fail. For more information, see [Granting access for
+      a resource](/iam/docs/granting-roles-to-service-
+      accounts#granting_access_to_a_service_account_for_a_resource). Consult
+      the destination service's documentation to determine the appropriate IAM
+      roles to assign to the identity.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    """Optional. The log entry version to use for this sink's exported log
-    entries.  This version does not have to correspond to the version of the
-    log entry that was written to Stackdriver Logging. If omitted, the v2
-    format is used.
+    """Optional. The log entry format to use for this sink's exported log
+    entries.  The v2 format is used by default. **The v1 format is
+    deprecated** and should be used only as part of a migration effort to v2.
+    See [Migration to the v2 API](/logging/docs/api/v2/migration-to-v2).
 
     Values:
-      VERSION_FORMAT_UNSPECIFIED: An unspecified version format will default
-        to V2.
+      VERSION_FORMAT_UNSPECIFIED: An unspecified format version that will
+        default to V2.
       V2: `LogEntry` version 2 format.
       V1: `LogEntry` version 1 format.
     """
@@ -633,12 +682,18 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
+      `"projects/my-logging-project"`, `"organizations/123456789"`.
+    uniqueWriterIdentity: Optional. Determines the kind of IAM identity
+      returned as `writer_identity` in the new sink.  If this value is omitted
+      or set to false, and if the sink's parent is a project, then the value
+      returned as `writer_identity` is `cloud-logs@google.com`, the same
+      identity used before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.  If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of `writer_identity`
+      will be a unique service account used only for exports from the new
+      sink.  For more information, see `writer_identity` in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -650,11 +705,12 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
   """A LoggingBillingAccountsSinksDeleteRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to delete,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.
+      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
+      id"`.  It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -664,9 +720,10 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
   """A LoggingBillingAccountsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return:
+    sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -684,8 +741,8 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+    parent: Required. The parent resource whose sinks are to be listed.
+      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -698,16 +755,21 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
       /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+    uniqueWriterIdentity: Optional. See
+      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
+      ) for a description of this field.  When updating a sink, the effect of
+      this field on the value of `writer_identity` in the updated sink depends
+      on both the old and new values of this field:  +   If the old and new
+      values of this field are both false or both true,     then there is no
+      change to the sink's `writer_identity`. +   If the old value was false
+      and the new value is true, then     `writer_identity` is changed to a
+      unique service account. +   It is an error if the old value was true and
+      the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -757,12 +819,18 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
+      `"projects/my-logging-project"`, `"organizations/123456789"`.
+    uniqueWriterIdentity: Optional. Determines the kind of IAM identity
+      returned as `writer_identity` in the new sink.  If this value is omitted
+      or set to false, and if the sink's parent is a project, then the value
+      returned as `writer_identity` is `cloud-logs@google.com`, the same
+      identity used before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.  If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of `writer_identity`
+      will be a unique service account used only for exports from the new
+      sink.  For more information, see `writer_identity` in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -774,11 +842,12 @@ class LoggingFoldersSinksDeleteRequest(_messages.Message):
   """A LoggingFoldersSinksDeleteRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to delete,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.
+      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
+      id"`.  It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -788,9 +857,10 @@ class LoggingFoldersSinksGetRequest(_messages.Message):
   """A LoggingFoldersSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return:
+    sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -808,8 +878,8 @@ class LoggingFoldersSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+    parent: Required. The parent resource whose sinks are to be listed.
+      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -822,16 +892,21 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
       /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+    uniqueWriterIdentity: Optional. See
+      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
+      ) for a description of this field.  When updating a sink, the effect of
+      this field on the value of `writer_identity` in the updated sink depends
+      on both the old and new values of this field:  +   If the old and new
+      values of this field are both false or both true,     then there is no
+      change to the sink's `writer_identity`. +   If the old value was false
+      and the new value is true, then     `writer_identity` is changed to a
+      unique service account. +   It is an error if the old value was true and
+      the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -899,12 +974,18 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
+      `"projects/my-logging-project"`, `"organizations/123456789"`.
+    uniqueWriterIdentity: Optional. Determines the kind of IAM identity
+      returned as `writer_identity` in the new sink.  If this value is omitted
+      or set to false, and if the sink's parent is a project, then the value
+      returned as `writer_identity` is `cloud-logs@google.com`, the same
+      identity used before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.  If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of `writer_identity`
+      will be a unique service account used only for exports from the new
+      sink.  For more information, see `writer_identity` in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -916,11 +997,12 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
   """A LoggingOrganizationsSinksDeleteRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to delete,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.
+      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
+      id"`.  It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -930,9 +1012,10 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
   """A LoggingOrganizationsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return:
+    sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -950,8 +1033,8 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+    parent: Required. The parent resource whose sinks are to be listed.
+      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -964,16 +1047,21 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
       /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+    uniqueWriterIdentity: Optional. See
+      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
+      ) for a description of this field.  When updating a sink, the effect of
+      this field on the value of `writer_identity` in the updated sink depends
+      on both the old and new values of this field:  +   If the old and new
+      values of this field are both false or both true,     then there is no
+      change to the sink's `writer_identity`. +   If the old value was false
+      and the new value is true, then     `writer_identity` is changed to a
+      unique service account. +   It is an error if the old value was true and
+      the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1095,12 +1183,18 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
+      `"projects/my-logging-project"`, `"organizations/123456789"`.
+    uniqueWriterIdentity: Optional. Determines the kind of IAM identity
+      returned as `writer_identity` in the new sink.  If this value is omitted
+      or set to false, and if the sink's parent is a project, then the value
+      returned as `writer_identity` is `cloud-logs@google.com`, the same
+      identity used before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.  If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of `writer_identity`
+      will be a unique service account used only for exports from the new
+      sink.  For more information, see `writer_identity` in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1112,11 +1206,12 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
   """A LoggingProjectsSinksDeleteRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to delete, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to delete,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.
+      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
+      id"`.  It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1126,9 +1221,10 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   """A LoggingProjectsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The resource name of the sink to return:
+    sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1146,8 +1242,8 @@ class LoggingProjectsSinksListRequest(_messages.Message):
       from the preceding call to this method.  `pageToken` must be the value
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
-    parent: Required. The resource name where this sink was created:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+    parent: Required. The parent resource whose sinks are to be listed.
+      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1160,16 +1256,21 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    sinkName: Required. The resource name of the sink to update, including the
-      parent resource and the sink identifier:
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
       /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. Whether the sink will have a dedicated
-      service account returned in the sink's writer_identity. Set this field
-      to be true to export logs from one project to a different project. This
-      field is ignored for non-project sinks (e.g. organization sinks) because
-      those sinks are required to have dedicated service accounts.
+    uniqueWriterIdentity: Optional. See
+      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
+      ) for a description of this field.  When updating a sink, the effect of
+      this field on the value of `writer_identity` in the updated sink depends
+      on both the old and new values of this field:  +   If the old and new
+      values of this field are both false or both true,     then there is no
+      change to the sink's `writer_identity`. +   If the old value was false
+      and the new value is true, then     `writer_identity` is changed to a
+      unique service account. +   It is an error if the old value was true and
+      the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)

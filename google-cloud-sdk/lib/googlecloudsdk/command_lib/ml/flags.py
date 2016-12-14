@@ -48,12 +48,25 @@ START_PORT = base.Argument(
     '--start-port',
     type=int,
     default=27182,
-    help=('Start of the range of ports reserved by the local cluster. '
-          'Ignored if --distributed is not specified'))
+    help='Start of the range of ports reserved by the local cluster.',
+    detailed_help="""\
+Start of the range of ports reserved by the local cluster. This command will use
+a contiguous block of ports equal to parameter-server-count + worker-count + 1.
+
+If --distributed is not specified, this flag is ignored.
+""")
 
 
 # TODO(user): move these into a class
-CONFIG = base.Argument('--config', help='Path to yaml configuration file.')
+CONFIG = base.Argument(
+    '--config',
+    help='Path to yaml configuration file.',
+    # TODO(b/33456372): add prediction and training config file examples.
+    detailed_help="""\
+Path to the job configuration file. The file should be a yaml document
+containing a Job resource as defined in the API:
+https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
+""")
 JOB_NAME = base.Argument('job', help='Name of the job.')
 MODULE_NAME = base.Argument(
     '--module-name',
@@ -130,5 +143,5 @@ def GetStagingBucket(required):
   return base.Argument(
       '--staging-bucket',
       help='Bucket in which to stage training archives',
-      type=storage_util.BucketReference.Argument,
+      type=storage_util.BucketReference.FromArgument,
       required=required)

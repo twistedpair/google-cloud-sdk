@@ -202,6 +202,8 @@ existing policy.
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
 
       Args:
         request: (PubsubProjectsSnapshotsTestIamPermissionsRequest) input message
@@ -599,6 +601,8 @@ existing policy.
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
 
       Args:
         request: (PubsubProjectsSubscriptionsTestIamPermissionsRequest) input message
@@ -871,6 +875,8 @@ existing policy.
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
 
       Args:
         request: (PubsubProjectsTopicsTestIamPermissionsRequest) input message

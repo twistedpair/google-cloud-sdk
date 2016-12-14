@@ -38,6 +38,8 @@ def IsRegionDefaultModeWarnOtherwise(print_warning=True):
     # Print a warning and use False if it isn't set.
     if print_warning:
       log.warn(
+          'This backend service is assumed to be global. To delete a regional '
+          'backend service, provide the --region flag.\n'
           'In the future, backend services will be regional by default unless '
           'the --global flag is specified.')
     return False

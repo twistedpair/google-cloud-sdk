@@ -137,10 +137,12 @@ class ModifyAckDeadlineRequest(_messages.Message):
 
   Fields:
     ackDeadlineSeconds: The new ack deadline with respect to the time this
-      request was sent to the Pub/Sub system. Must be >= 0. For example, if
-      the value is 10, the new ack deadline will expire 10 seconds after the
+      request was sent to the Pub/Sub system. For example, if the value is 10,
+      the new ack deadline will expire 10 seconds after the
       `ModifyAckDeadline` call was made. Specifying zero may immediately make
-      the message available for another pull request.
+      the message available for another pull request. The minimum deadline you
+      can specify is 0 seconds. The maximum deadline you can specify is 600
+      seconds (10 minutes).
     ackIds: List of acknowledgment IDs.
   """
 
@@ -642,12 +644,12 @@ class PullRequest(_messages.Message):
   Fields:
     maxMessages: The maximum number of messages returned for this request. The
       Pub/Sub system may return fewer than the number specified.
-    returnImmediately: If this is specified as true the system will respond
-      immediately even if it is not able to return a message in the `Pull`
-      response. Otherwise the system is allowed to wait until at least one
-      message is available rather than returning no messages. The client may
-      cancel the request if it does not wish to wait any longer for the
-      response.
+    returnImmediately: If this field set to true, the system will respond
+      immediately even if it there are no messages available to return in the
+      `Pull` response. Otherwise, the system may wait (for a bounded amount of
+      time) until at least one message is available, rather than returning no
+      messages. The client may cancel the request if it does not wish to wait
+      any longer for the response.
   """
 
   maxMessages = _messages.IntegerField(1, variant=_messages.Variant.INT32)

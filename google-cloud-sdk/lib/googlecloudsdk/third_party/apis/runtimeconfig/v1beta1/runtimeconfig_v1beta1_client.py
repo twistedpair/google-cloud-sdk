@@ -78,6 +78,34 @@ service.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.operations.testIamPermissions',
+        ordered_params=[u'projectsId', u'configsId', u'operationsId'],
+        path_params=[u'configsId', u'operationsId', u'projectsId'],
+        query_params=[u'permissions'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsConfigsVariablesService(base_api.BaseApiService):
     """Service class for the projects_configs_variables resource."""
 
@@ -201,6 +229,34 @@ This only lists variable names, not the values.
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',
         response_type_name=u'ListVariablesResponse',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.variables.testIamPermissions',
+        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
+        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        query_params=[u'permissions'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -386,6 +442,34 @@ still exist and must be deleted prior to subsequent creation attempts.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.waiters.testIamPermissions',
+        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
+        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        query_params=[u'permissions'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsConfigsService(base_api.BaseApiService):
     """Service class for the projects_configs resource."""
 
@@ -475,6 +559,34 @@ unique within project.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.getIamPolicy',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all the RuntimeConfig resources within project.
 
@@ -498,6 +610,61 @@ unique within project.
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsListRequest',
         response_type_name=u'ListConfigsResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.setIamPolicy',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'RuntimeconfigProjectsConfigsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+      Args:
+        request: (RuntimeconfigProjectsConfigsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.testIamPermissions',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'RuntimeconfigProjectsConfigsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

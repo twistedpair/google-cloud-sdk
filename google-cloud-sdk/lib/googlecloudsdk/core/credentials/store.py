@@ -17,7 +17,6 @@
 A detailed description of auth.
 """
 
-import base64
 import datetime
 import json
 import os
@@ -34,9 +33,9 @@ from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
 import httplib2
 from oauth2client import client
-from oauth2client import multistore_file
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
+from oauth2client.contrib import multistore_file
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -131,54 +130,6 @@ def _GetStorageKeyForAccount(account):
   }
 
 
-# TODO(user): use _GetStorageKeyForAccount instead, but in meantime since the
-# key format has changed this will not invalidate existing auth credentials and
-# will move over existing credentials under new key format.
-def _FindStorageKeyForAccount(account):
-  """Scans credential file for keys matching given account.
-
-  If such key(s) is found it checks that current set of scopes is a subset of
-  scopes associated with the key.
-
-  Args:
-    account: str, The account tied to the storage key being fetched.
-
-  Returns:
-    dict, key to be used in the credentials store.
-  """
-  storage_path = config.Paths().credentials_path
-  current_scopes = set(config.CLOUDSDK_SCOPES)
-  equivalent_keys = [key for key in
-                     multistore_file.get_all_credential_keys(
-                         filename=storage_path)
-                     if (key.get('type') == 'google-cloud-sdk' and
-                         key.get('account') == account and (
-                             'scope' not in key or
-                             set(key.get('scope').split()) >= current_scopes))]
-
-  preferred_key = _GetStorageKeyForAccount(account)
-  if preferred_key in equivalent_keys:
-    equivalent_keys.remove(preferred_key)
-  elif equivalent_keys:  # Migrate credentials over to new key format.
-    storage = multistore_file.get_credential_storage_custom_key(
-        filename=storage_path,
-        key_dict=equivalent_keys[0])
-    creds = storage.get()
-    storage = multistore_file.get_credential_storage_custom_key(
-        filename=storage_path,
-        key_dict=preferred_key)
-    storage.put(creds)
-
-  # Remove all other entries.
-  for key in equivalent_keys:
-    storage = multistore_file.get_credential_storage_custom_key(
-        filename=storage_path,
-        key_dict=key)
-    storage.delete()
-
-  return preferred_key
-
-
 def _StorageForAccount(account):
   """Get the oauth2client.multistore_file storage.
 
@@ -194,7 +145,7 @@ def _StorageForAccount(account):
 
   storage = multistore_file.get_credential_storage_custom_key(
       filename=storage_path,
-      key_dict=_FindStorageKeyForAccount(account))
+      key_dict=_GetStorageKeyForAccount(account))
   return storage
 
 
@@ -291,8 +242,7 @@ def Load(account=None, scopes=None, prevent_refresh=False):
       cred_type = CredentialType.FromCredentials(cred)
       if cred_type in (CredentialType.SERVICE_ACCOUNT,
                        CredentialType.P12_SERVICE_ACCOUNT):
-        # pylint: disable=protected-access
-        cred.token_uri = cred._token_uri = token_uri_override
+        cred.token_uri = token_uri_override
     return cred
 
   if not account:
@@ -358,8 +308,9 @@ def Store(creds, account=None, scopes=None):
         active account.
   """
 
-  # We never serialize devshell credentials.
-  if isinstance(creds, c_devshell.DevshellCredentials):
+  cred_type = CredentialType.FromCredentials(creds)
+  if cred_type in (CredentialType.DEVSHELL, CredentialType.GCE):
+    # We never serialize devshell or GCE credentials.
     return
 
   if not account:
@@ -382,11 +333,7 @@ def ActivateCredentials(account, creds):
 
 
 def RevokeCredentials(creds):
-  # TODO(user): Remove this condition when oauth2client does not crash while
-  # revoking SignedJwtAssertionCredentials.
-  if creds and (not client.HAS_CRYPTO or
-                not isinstance(creds, client.SignedJwtAssertionCredentials)):
-    creds.revoke(http.Http())
+  creds.revoke(http.Http())
 
 
 def Revoke(account=None):
@@ -607,16 +554,19 @@ class CredentialType(enum.Enum):
   USER_ACCOUNT = 1
   SERVICE_ACCOUNT = 2
   P12_SERVICE_ACCOUNT = 3
+  DEVSHELL = 4
+  GCE = 5
 
   @staticmethod
   def FromCredentials(creds):
-    # Remove linter directive when
-    # https://github.com/google/oauth2client/issues/165 is addressed.
-    # pylint: disable=protected-access
-    if isinstance(creds, service_account._ServiceAccountCredentials):
+    if isinstance(creds, c_devshell.DevshellCredentials):
+      return CredentialType.DEVSHELL
+    if isinstance(creds, oauth2client_gce.AppAssertionCredentials):
+      return CredentialType.GCE
+    if isinstance(creds, service_account.ServiceAccountCredentials):
+      if getattr(creds, '_private_key_pkcs12', None) is not None:
+        return CredentialType.P12_SERVICE_ACCOUNT
       return CredentialType.SERVICE_ACCOUNT
-    if isinstance(creds, client.SignedJwtAssertionCredentials):
-      return CredentialType.P12_SERVICE_ACCOUNT
     if getattr(creds, 'refresh_token', None) is not None:
       return CredentialType.USER_ACCOUNT
     return CredentialType.UNKNOWN
@@ -681,8 +631,9 @@ class _LegacyGenerator(object):
         raise CredentialFileSaveError(
             'Unsupported credentials type {0}'.format(type(self.credentials)))
     else:  # P12 service account
-      key = base64.b64decode(self.credentials.private_key)
-      password = self.credentials.private_key_password
+      cred = self.credentials
+      key = cred._private_key_pkcs12  # pylint: disable=protected-access
+      password = cred._private_key_password  # pylint: disable=protected-access
 
       with files.OpenForWritingPrivate(self._p12_key_path, binary=True) as pk:
         pk.write(key)
@@ -693,7 +644,7 @@ class _LegacyGenerator(object):
           gs_service_client_id = {account}
           gs_service_key_file = {key_file}
           gs_service_key_file_password = {key_password}
-          """).format(account=self.credentials.service_account_name,
+          """).format(account=self.credentials.service_account_email,
                       key_file=self._p12_key_path,
                       key_password=password))
 

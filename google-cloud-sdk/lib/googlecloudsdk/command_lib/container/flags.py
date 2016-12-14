@@ -131,6 +131,8 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information."""
 
 
 def AddZoneFlag(parser):
+  # TODO(b/33343238): Remove the short form of the zone flag.
+  # TODO(b/18105938): Add zone prompting
   """Adds the --zone flag to the parser."""
   parser.add_argument(
       '--zone', '-z',
@@ -259,4 +261,87 @@ for more information on how to use Preemptible VMs with Container Engine."""
       action='store_true',
       help=help_text)
 
+
+def AddNodePoolNameArg(parser, help_text):
+  """Adds a name flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    help_text: The help text describing the operation being performed.
+  """
+  parser.add_argument(
+      'name',
+      metavar='NAME',
+      help=help_text)
+
+
+def AddNodePoolClusterFlag(parser, help_text):
+  """Adds a --cluster flag to the parser.
+
+  Args:
+    parser: A given parser.
+    help_text: The help text describing usage of the --cluster flag being set.
+  """
+  parser.add_argument(
+      '--cluster',
+      help=help_text,
+      action=actions.StoreProperty(properties.VALUES.container.cluster))
+
+
+# TODO(b/33344111): Add test coverage. This flag was added preemptively, but it
+# currently has inadequate testing.
+def AddEnableAutoRepairFlag(parser, for_node_pool=False, suppressed=False):
+  """Adds a --enable-autorepair flag to parser."""
+  if suppressed:
+    help_text = argparse.SUPPRESS
+  else:
+    if for_node_pool:
+      help_text = """\
+Sets autorepair feature for a node-pool.
+
+  $ {command} node-pool-1 --cluster=example-cluster --enable-autorepair
+"""
+    else:
+      help_text = """\
+Sets autorepair feature for a cluster's default node-pool(s).
+
+  $ {command} example-cluster --enable-autorepair
+"""
+    help_text += """
+See https://cloud.google.com/container-engine/docs/node-managament for \
+more info."""
+
+  parser.add_argument(
+      '--enable-autorepair',
+      action='store_true',
+      default=None,
+      help=help_text)
+
+
+def AddEnableAutoUpgradeFlag(parser, for_node_pool=False, suppressed=False):
+  """Adds a --enable-autoupgrade flag to parser."""
+  if suppressed:
+    help_text = argparse.SUPPRESS
+  else:
+    if for_node_pool:
+      help_text = """\
+Sets autoupgrade feature for a node-pool.
+
+  $ {command} node-pool-1 --cluster=example-cluster --enable-autoupgrade
+"""
+    else:
+      help_text = """\
+Sets autoupgrade feature for a cluster's default node-pool(s).
+
+  $ {command} example-cluster --enable-autoupgrade
+"""
+    help_text += """
+See https://cloud.google.com/container-engine/docs/node-managament for more \
+info."""
+
+  parser.add_argument(
+      '--enable-autoupgrade',
+      action='store_true',
+      default=None,
+      help=help_text)
 

@@ -19,13 +19,12 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
 def GetLocalPath(args):
-  return args.local_path or args.source or '.'
+  return args.local_path or '.'
 
 
 def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
@@ -75,10 +74,9 @@ def DeduceAndCheckArgs(args):
   1. Check if --source-bucket is present when --source-url is present.
   2. Validate if local-path is a directory.
   3. Check if --source-path is present when --source-url is present.
-  4. Warn about use of deprecated flags (if deprecated flags were used)
-  5. Check if --trigger-event, --trigger-resource or --trigger-params are
+  4. Check if --trigger-event, --trigger-resource or --trigger-params are
      present when --trigger-provider is not present. (and fail if it is so)
-  6. Check --trigger-* family of flags deducing default values if possible and
+  5. Check --trigger-* family of flags deducing default values if possible and
      necessary.
 
   Args:
@@ -106,7 +104,7 @@ def DeduceAndCheckArgs(args):
       raise exceptions.FunctionsError(
           'argument --source-tag: can be given only if argument '
           '--source-url is provided')
-    stage_bucket = args.bucket or args.stage_bucket
+    stage_bucket = args.stage_bucket
     if stage_bucket is None:
       raise exceptions.FunctionsError(
           'argument --stage-bucket: required when the function is deployed '
@@ -114,20 +112,10 @@ def DeduceAndCheckArgs(args):
           'provided)')
     util.ValidateDirectoryExistsOrRaiseFunctionError(GetLocalPath(args))
   else:
-    if args.source is None and args.source_path is None:
+    if args.source_path is None:
       raise exceptions.FunctionsError(
           'argument --source-path: required when argument --source-url is '
           'provided')
-
-  if args.bucket is not None:
-    log.warn('--bucket flag is deprecated. Use --stage-bucket instead.')
-  if args.source is not None:
-    log.warn('--source flag is deprecated. Use --local-path (for sources on '
-             'local file system) or --source-path (for sources in Cloud '
-             'Source Repositories) instead.')
-  if args.trigger_gs_uri is not None:
-    log.warn('--trigger-gs-uri flag is deprecated. Use --trigger-bucket '
-             'instead.')
 
   if args.trigger_provider is None and ((args.trigger_event is not None) or
                                         (args.trigger_resource is not None) or
@@ -204,8 +192,8 @@ def _CheckTriggerProviderArgs(args):
     result.trigger_resource = util.ValidatePubsubTopicNameOrRaise(
         result.trigger_resource)
   elif resource_type == util.Resources.BUCKET:
-    result.trigger_resource = storage_util.BucketReference.Argument(
-        result.trigger_resource, strict_check=False).bucket
+    result.trigger_resource = storage_util.BucketReference.FromBucketUrl(
+        result.trigger_resource).bucket
   elif resource_type == util.Resources.PROJECT:
     if result.trigger_resource:
       properties.VALUES.core.project.Validate(result.trigger_resource)

@@ -211,8 +211,8 @@ def SelectInstanceInteractive(all_instances, service=None, version=None):
       Please enter your numeric choice:  1
 
       Which instance?
-       [1] aaaa
-       [2] bbbb
+       [1] i1
+       [2] i2
       Please enter your numeric choice:  1
 
   Skips any prompts with only one option.

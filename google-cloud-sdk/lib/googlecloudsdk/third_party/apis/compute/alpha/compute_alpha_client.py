@@ -5411,7 +5411,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.projects.getXpnResources',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/getXpnResources',
         request_field='',
         request_type_name=u'ComputeProjectsGetXpnResourcesRequest',

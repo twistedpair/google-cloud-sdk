@@ -271,7 +271,8 @@ def WrapWithPrefix(prefix, message, indent, length, spacing,
   # left-over from length when you subtract indent. The first line also needs
   # to begin with the indent, but that will be taken care of conditionally.
   message = ('\n%%%ds' % indent % ' ').join(
-      textwrap.wrap(message, length - indent))
+      textwrap.TextWrapper(break_on_hyphens=False, width=length - indent).wrap(
+          message.replace(' | ', '&| '))).replace('&|', ' |')
   if len(prefix) > indent - len(spacing) - 2:
     # If the prefix is too long to fit in the indent width, start the message
     # on a new line after writing the prefix by itself.
@@ -287,96 +288,6 @@ def WrapWithPrefix(prefix, message, indent, length, spacing,
     Wln('%%%ds %%s'
         % (indent - len(prefix) - len(spacing) - 1)
         % (' ', message))
-
-
-def GenerateUsage(command, argument_interceptor, topic=False):
-  """Generate a usage string for a calliope command, group or help topic.
-
-  Args:
-    command: calliope._CommandCommon, The command, group or help topic object
-      that we're generating usage for.
-    argument_interceptor: calliope._ArgumentInterceptor, the object that tracks
-        all of the flags for this command or group.
-    topic: True if this is a supplementary help topic command.
-
-  Returns:
-    str, The usage string.
-  """
-  command.LoadAllSubElements()
-
-  buf = StringIO.StringIO()
-
-  command_path = ' '.join(command.GetPath())
-  command_id = 'topic' if topic else 'command'
-  usage_parts = []
-
-  optional_messages = False
-
-  flag_messages = []
-
-  if not topic:
-    # Do positional args first, since flag args taking lists can mess them
-    # up otherwise.
-    # Explicitly not sorting here - order matters.
-    # Make a copy, and we'll pop items off. Once we get to a REMAINDER, that
-    # goes after the flags so we'll stop and finish later.
-    positional_args = FilterOutSuppressed(
-        argument_interceptor.positional_args[:])
-    while positional_args:
-      arg = positional_args[0]
-      if arg.nargs == argparse.REMAINDER:
-        break
-      positional_args.pop(0)
-      usage_parts.append(PositionalDisplayString(arg))
-
-    for arg in argument_interceptor.flag_args:
-      if IsSuppressed(arg):
-        continue
-      if not arg.required:
-        optional_messages = True
-        continue
-      # and add it to the usage
-      msg = FlagDisplayString(arg, brief=True)
-      flag_messages.append(msg)
-    usage_parts.extend(sorted(flag_messages))
-
-    if optional_messages:
-      # If there are any optional flags, add a simple message to the usage.
-      usage_parts.append('[optional flags]')
-
-    # positional_args will only be non-empty if we had some REMAINDER left.
-    for arg in positional_args:
-      usage_parts.append(PositionalDisplayString(arg))
-
-  group_helps = command.GetSubGroupHelps()
-  command_helps = command.GetSubCommandHelps()
-
-  groups = sorted([name for (name, help_info) in group_helps.iteritems()
-                   if command.IsHidden() or not help_info.is_hidden])
-  commands = sorted([name for (name, help_info) in command_helps.iteritems()
-                     if command.IsHidden() or not help_info.is_hidden])
-
-  all_subtypes = []
-  if groups:
-    all_subtypes.append('group')
-  if commands:
-    all_subtypes.append(command_id)
-  if groups or commands:
-    usage_parts.append('<%s>' % ' | '.join(all_subtypes))
-
-  usage_msg = ' '.join(usage_parts)
-
-  non_option = '{command} '.format(command=command_path)
-
-  buf.write(non_option + usage_msg + '\n')
-
-  if groups:
-    WrapWithPrefix('group may be', ' | '.join(
-        groups), HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
-  if commands:
-    WrapWithPrefix('%s may be' % command_id, ' | '.join(
-        commands), HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
-  return buf.getvalue()
 
 
 def ExpandHelpText(command, text, sections=True):
@@ -554,8 +465,8 @@ def TextIfExists(title, messages):
   return textbuf.getvalue()
 
 
-def ShortHelpText(command, argument_interceptor):
-  """Get a command's short help text.
+def GetUsage(command, argument_interceptor):
+  """Return the command Usage string.
 
   Args:
     command: calliope._CommandCommon, The command object that we're helping.
@@ -563,90 +474,92 @@ def ShortHelpText(command, argument_interceptor):
         all of the flags for this command or group.
 
   Returns:
-    str, The short help text.
+    str, The command usage string.
   """
   command.LoadAllSubElements()
-
   topic = len(command.GetPath()) >= 2 and command.GetPath()[1] == 'topic'
 
   buf = StringIO.StringIO()
 
-  positional_messages = []
+  buf.write('Usage: ')
 
-  # Explicitly not sorting here - order matters.
-  display_positionals = FilterOutSuppressed(
-      argument_interceptor.positional_args)
-  for arg in display_positionals:
-    positional_messages.append(
-        (PositionalDisplayString(arg), arg.help or ''))
+  command_path = ' '.join(command.GetPath())
+  command_id = 'topic' if topic else 'command'
+  usage_parts = []
+  optional_flags = []
+
+  if not topic:
+    # Do positional args first, since flag args taking lists can mess them
+    # up otherwise.
+    # Explicitly not sorting here - order matters.
+    # Make a copy, and we'll pop items off. Once we get to a REMAINDER, that
+    # goes after the flags so we'll stop and finish later.
+    positional_args = FilterOutSuppressed(
+        argument_interceptor.positional_args[:])
+    while positional_args:
+      arg = positional_args[0]
+      if arg.nargs == argparse.REMAINDER:
+        break
+      positional_args.pop(0)
+      usage_parts.append(PositionalDisplayString(arg))
+
+    flag_messages = []
+    for arg in argument_interceptor.flag_args:
+      if IsSuppressed(arg):
+        continue
+      if not arg.required:
+        optional_flags.append(sorted(arg.option_strings)[0])
+        continue
+      # and add it to the usage
+      msg = FlagDisplayString(arg, brief=True)
+      flag_messages.append(msg)
+    usage_parts.extend(sorted(flag_messages))
+
+    if optional_flags:
+      # If there are any optional flags, add a simple message to the usage.
+      usage_parts.append('[optional flags]')
+
+    # positional_args will only be non-empty if we had some REMAINDER left.
+    for arg in positional_args:
+      usage_parts.append(PositionalDisplayString(arg))
 
   group_helps = command.GetSubGroupHelps()
   command_helps = command.GetSubCommandHelps()
 
-  group_messages = [(name, help_info.help_text) for (name, help_info)
-                    in group_helps.iteritems()
-                    if command.IsHidden() or not help_info.is_hidden]
-  command_messages = [(name, help_info.help_text) for (name, help_info)
-                      in command_helps.iteritems()
-                      if command.IsHidden() or not help_info.is_hidden]
+  groups = sorted([name for (name, help_info) in group_helps.iteritems()
+                   if command.IsHidden() or not help_info.is_hidden])
+  commands = sorted([name for (name, help_info) in command_helps.iteritems()
+                     if command.IsHidden() or not help_info.is_hidden])
 
-  buf.write('Usage: ' + GenerateUsage(command, argument_interceptor, topic) +
-            '\n')
+  all_subtypes = []
+  if groups:
+    all_subtypes.append('group')
+  if commands:
+    all_subtypes.append(command_id)
+  if groups or commands:
+    usage_parts.append('<%s>' % ' | '.join(all_subtypes))
+    optional_flags = None
 
-  # Second, print out the long help.
+  usage_msg = ' '.join(usage_parts)
 
-  buf.write('\n'.join(textwrap.wrap(
-      ExpandHelpText(command, command.long_help, sections=False), LINE_WIDTH)))
-  buf.write('\n\n')
+  non_option = '{command} '.format(command=command_path)
 
-  # Third, print out the short help for everything that can come on
-  # the command line, grouped into flag sections, sub groups, sub commands,
-  # and positional arguments.
+  buf.write(non_option + usage_msg + '\n')
 
-  command_path = ' '.join(command.GetPath())
+  if groups:
+    WrapWithPrefix('group may be', ' | '.join(groups),
+                   HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
+  if commands:
+    WrapWithPrefix('%s may be' % command_id, ' | '.join(commands),
+                   HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
+  if optional_flags:
+    WrapWithPrefix('optional flags may be', ' | '.join(sorted(optional_flags)),
+                   HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
 
-  if topic:
-    all_messages = [
-        TextIfExists('topics:', sorted(command_messages)),
-    ]
-  else:
-    all_messages = [
-        TextIfExists('positional arguments:', positional_messages),
-    ]
-
-    sections, has_global_flags = GetFlagSections(command, argument_interceptor)
-
-    # Add the top 2 is_priority sections.
-    for index, (heading, is_priority, groups, _) in enumerate(sections):
-      if not is_priority or index >= 2:
-        # More sections remain. Long help will list those.
-        all_messages.append(TextIfExists(
-            'flags:' if len(all_messages) == 1 else 'other flags:',
-            'Run `{0} --help`\n  for the full list of available flags for '
-            'this command.'.format(command_path)))
-        break
-      messages = []
-      for group in sorted(groups.values(), key=FlagGroupSortKey):
-        for flag in group:
-          messages.append((FlagDisplayString(flag), flag.help or ''))
-      all_messages.append(TextIfExists(heading.lower() + ':', sorted(messages)))
-
-    if has_global_flags:
-      root_command_name = command.GetPath()[0]
-      all_messages.append(
-          TextIfExists(
-              'global flags:',
-              'Run `{0} -h` for a description of flags available to all '
-              'commands.'.format(root_command_name)))
-
-    all_messages.extend([
-        TextIfExists('command groups:', sorted(group_messages)),
-        TextIfExists('commands:', sorted(command_messages)),
-    ])
-  buf.write('\n'.join([msg for msg in all_messages if msg]))
-  buf.write(
-      '\n\nFor more detailed information on this command and its flags, run:\n'
-      '  {0} --help\n'.format(command_path))
+  buf.write("""
+For detailed information on this command and its flags, run:
+  {command_path} --help
+""".format(command_path=' '.join(command.GetPath())))
 
   return buf.getvalue()
 

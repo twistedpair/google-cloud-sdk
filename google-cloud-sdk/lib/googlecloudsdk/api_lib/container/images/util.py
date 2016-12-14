@@ -140,7 +140,7 @@ def _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter=None):
   occurrences = list_pager.YieldFromList(
       client.projects_occurrences,
       request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-          name=project_ref.RelativeName(), filter=resource_filter),
+          parent=project_ref.RelativeName(), filter=resource_filter),
       field='occurrences',
       batch_size=1000,
       batch_size_attribute='pageSize')
@@ -312,7 +312,8 @@ def GetDigestFromName(image_name):
         return v2_2_util.Digest(v2_2_img.manifest())
       return None
 
-  sha256 = ResolveV2Tag(tag_or_digest) or ResolveV22Tag(tag_or_digest)
+  # Resolve v2.2 first because we will exist via a compatibility layer.
+  sha256 = ResolveV22Tag(tag_or_digest) or ResolveV2Tag(tag_or_digest)
   if not sha256:
     raise InvalidImageNameError('[{0}] is not a valid name.'.format(image_name))
 

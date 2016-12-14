@@ -66,8 +66,9 @@ def CreateApp(api_client, project, region, suppress_warning=False):
     AppAlreadyExistsError if app already exists
   """
   if not suppress_warning:
-    log.warn('You are creating an app for project [{project}]. Creating '
-             'an app for a project is irreversible.\n'.format(project=project))
+    log.status.Print('You are creating an app for project [{project}].'.format(
+        project=project))
+    log.warn('Creating an app for a project is irreversible.\n')
   message = ('Creating App Engine application in project [{project}] and '
              'region [{region}].'.format(project=project, region=region))
   with progress_tracker.ProgressTracker(message):
@@ -102,8 +103,9 @@ def CreateAppInteractively(api_client, project):
   Raises:
     AppAlreadyExistsError if app already exists
   """
-  log.warn('You are creating an app for project [{project}]. Creating '
-           'an app for a project is irreversible.\n'.format(project=project))
+  log.status.Print('You are creating an app for project [{}].'.format(project))
+  log.warn('Creating an app for a project is irreversible.\n')
+
   all_regions = sorted(set(api_client.ListRegions()))
   idx = console_io.PromptChoice(all_regions,
                                 message=('Please choose a region for your '

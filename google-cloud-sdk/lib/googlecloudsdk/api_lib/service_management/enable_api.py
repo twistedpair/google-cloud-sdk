@@ -14,6 +14,8 @@
 
 """service-management enable helper functions."""
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.core import log
 
@@ -52,25 +54,29 @@ def EnableServiceIfDisabled(project_id, service_name, async=False):
   """
 
   client = services_util.GetClientInstance()
-  messages = services_util.GetMessagesModule()
 
-  # Check to see if the service is already enabled
-  request = messages.ServicemanagementServicesProjectSettingsGetRequest(
-      serviceName=service_name,
-      consumerProjectId=project_id,
-      view=services_util.GetCallerViews().get('CONSUMER'))
+  # Get the list of enabled services.
+  request = services_util.GetEnabledListRequest(project_id)
+  services = list_pager.YieldFromList(
+      client.services,
+      request,
+      batch_size_attribute='pageSize',
+      field='services')
 
-  project_settings_result = client.services_projectSettings.Get(request)
-  enabled = messages.UsageSettings.ConsumerEnableStatusValueValuesEnum.ENABLED
+  # If the service is already present in the list of enabled services, return
+  # early, otherwise, enable the service.
+  for service in services:
+    if service.serviceName.lower() == service_name.lower():
+      log.debug('Service [{0}] is already enabled for project [{1}]'.format(
+          service_name, project_id))
+      return
 
   # If the service is not yet enabled, enable it
-  if (not project_settings_result.usageSettings or
-      project_settings_result.usageSettings.consumerEnableStatus != enabled):
-    log.status.Print('Enabling service {0} on project {1}...'.format(
-        service_name, project_id))
+  log.status.Print('Enabling service {0} on project {1}...'.format(
+      service_name, project_id))
 
-    # Enable the service
-    operation = EnableServiceApiCall(project_id, service_name)
+  # Enable the service
+  operation = EnableServiceApiCall(project_id, service_name)
 
-    # Process the enable operation
-    services_util.ProcessOperationResult(operation, async)
+  # Process the enable operation
+  services_util.ProcessOperationResult(operation, async)

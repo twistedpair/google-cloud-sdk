@@ -240,12 +240,13 @@ class AppengineApiClient(object):
                            list_req).instances)
     return instances
 
-  def GetAllInstances(self, service=None, version=None):
+  def GetAllInstances(self, service=None, version=None, version_filter=None):
     """List all instances, optionally filtering by service or version.
 
     Args:
       service: str, the ID of the service to filter by.
-      version: str, the ID of the service to filter by.
+      version: str, the ID of the version to filter by.
+      version_filter: filter function accepting version_util.Version
 
     Returns:
       list of instance_util.Instance
@@ -259,6 +260,7 @@ class AppengineApiClient(object):
     log.debug('Versions: {0}'.format(map(str, versions)))
     versions = version_util.GetMatchingVersions(
         versions, [version] if version else None, service)
+    versions = filter(version_filter, versions)
 
     return self.ListInstances(versions)
 

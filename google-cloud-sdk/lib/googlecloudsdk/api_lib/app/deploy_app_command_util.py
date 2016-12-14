@@ -391,7 +391,7 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     A dictionary which represents the file manifest.
   """
   manifest = {}
-  bucket_url = bucket_ref.ToAppEngineApiReference()
+  bucket_url = bucket_ref.GetPublicUrl()
 
   def AddFileToManifest(manifest_path, input_path):
     """Adds the given file to the current manifest.

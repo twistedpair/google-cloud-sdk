@@ -40,14 +40,13 @@ def _ReadInstancesInternal(input_file=None, data_format=None, line_limit=100):
         or contains more than 100 instances.
   """
   instances = []
-  line_num = 0
 
   for line_num, line in enumerate(input_file):
     line_content = line.rstrip('\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '
                                       'instances file.')
-    if line_limit and line_num > line_limit:
+    if line_limit and line_num >= line_limit:
       raise InvalidInstancesFileError(
           'Online prediction can process no more than ' + str(line_limit) +
           ' instances per file. Please use batch prediction instead.')

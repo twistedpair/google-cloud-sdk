@@ -247,18 +247,18 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The view to be applied to the returned table's
-      fields. Defaults to SCHEMA_ONLY if unspecified.
+      fields. Defaults to `SCHEMA_ONLY` if unspecified.
 
   Fields:
     name: The unique name of the requested table. Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
     view: The view to be applied to the returned table's fields. Defaults to
-      SCHEMA_ONLY if unspecified.
+      `SCHEMA_ONLY` if unspecified.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     """The view to be applied to the returned table's fields. Defaults to
-    SCHEMA_ONLY if unspecified.
+    `SCHEMA_ONLY` if unspecified.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -280,20 +280,20 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The view to be applied to the returned tables'
-      fields. Defaults to NAME_ONLY if unspecified (no others are currently
-      supported).
+      fields. Defaults to `NAME_ONLY` if unspecified; no others are currently
+      supported.
 
   Fields:
     pageToken: The value of `next_page_token` returned by a previous call.
     parent: The unique name of the instance for which tables should be listed.
       Values are of the form `projects/<project>/instances/<instance>`.
     view: The view to be applied to the returned tables' fields. Defaults to
-      NAME_ONLY if unspecified (no others are currently supported).
+      `NAME_ONLY` if unspecified; no others are currently supported.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     """The view to be applied to the returned tables' fields. Defaults to
-    NAME_ONLY if unspecified (no others are currently supported).
+    `NAME_ONLY` if unspecified; no others are currently supported.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -498,7 +498,8 @@ class CreateInstanceRequest(_messages.Message):
 
 
 class CreateTableFromSnapshotRequest(_messages.Message):
-  """A CreateTableFromSnapshotRequest object.
+  """Request message for
+  google.bigtable.admin.v2.BigtableTableAdmin.CreateTableFromSnapshot
 
   Fields:
     sourceSnapshot: The unique name of the snapshot from which to restore the
@@ -706,7 +707,8 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListSnapshotsResponse(_messages.Message):
-  """A ListSnapshotsResponse object.
+  """Response message for
+  google.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots
 
   Fields:
     nextPageToken: Set if not all snapshots could be returned in a single
@@ -900,7 +902,8 @@ class Snapshot(_messages.Message):
 
 
 class SnapshotTableRequest(_messages.Message):
-  """A SnapshotTableRequest object.
+  """Request message for
+  google.bigtable.admin.v2.BigtableTableAdmin.SnapshotTable
 
   Fields:
     cluster: The name of the cluster where the snapshot will be created in.

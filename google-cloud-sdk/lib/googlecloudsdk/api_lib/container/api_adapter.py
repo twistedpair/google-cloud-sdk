@@ -141,6 +141,7 @@ class APIAdapter(object):
     self.compute_messages = compute_messages
 
   def ParseCluster(self, name):
+    # TODO(b/33342507): Remove setting these values as required.
     properties.VALUES.compute.zone.Get(required=True)
     properties.VALUES.core.project.Get(required=True)
     return self.registry.Parse(
@@ -162,6 +163,7 @@ class APIAdapter(object):
     raise NotImplementedError('PrintNodePools is not overriden')
 
   def ParseOperation(self, operation_id):
+    # TODO(b/33342507): Remove setting these values as required.
     properties.VALUES.compute.zone.Get(required=True)
     properties.VALUES.core.project.Get(required=True)
     return self.registry.Parse(
@@ -186,6 +188,9 @@ class APIAdapter(object):
 
   def CreateNodePool(self, node_pool_ref, **options):
     raise NotImplementedError('CreateNodePool is not overriden')
+
+  def RollbackUpgrade(self, node_pool_ref):
+    raise NotImplementedError('RollbackUpgrade is not overriden')
 
   def DeleteCluster(self, cluster_ref):
     raise NotImplementedError('DeleteCluster is not overriden')
@@ -432,7 +437,9 @@ class CreateClusterOptions(object):
                image_type=None,
                max_nodes_per_pool=None,
                enable_kubernetes_alpha=None,
-               preemptible=None):
+               preemptible=None,
+               enable_autorepair=None,
+               enable_autoupgrade=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -459,6 +466,8 @@ class CreateClusterOptions(object):
     self.max_nodes_per_pool = max_nodes_per_pool
     self.enable_kubernetes_alpha = enable_kubernetes_alpha
     self.preemptible = preemptible
+    self.enable_autorepair = enable_autorepair
+    self.enable_autoupgrade = enable_autoupgrade
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -507,7 +516,9 @@ class CreateNodePoolOptions(object):
                max_nodes=None,
                min_nodes=None,
                image_type=None,
-               preemptible=None):
+               preemptible=None,
+               enable_autorepair=None,
+               enable_autoupgrade=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -521,6 +532,17 @@ class CreateNodePoolOptions(object):
     self.min_nodes = min_nodes
     self.image_type = image_type
     self.preemptible = preemptible
+    self.enable_autorepair = enable_autorepair
+    self.enable_autoupgrade = enable_autoupgrade
+
+
+class UpdateNodePoolOptions(object):
+
+  def __init__(self,
+               enable_autorepair=None,
+               enable_autoupgrade=None):
+    self.enable_autorepair = enable_autorepair
+    self.enable_autoupgrade = enable_autoupgrade
 
 
 class V1Adapter(APIAdapter):
@@ -584,7 +606,8 @@ class V1Adapter(APIAdapter):
           name=name,
           initialNodeCount=nodes,
           config=node_config,
-          autoscaling=autoscaling))
+          autoscaling=autoscaling,
+          management=self._GetNodeManagement(options)))
       to_add -= nodes
 
     cluster = self.messages.Cluster(
@@ -717,7 +740,8 @@ class V1Adapter(APIAdapter):
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
         initialNodeCount=options.num_nodes,
-        config=node_config)
+        config=node_config,
+        management=self._GetNodeManagement(options))
 
     if options.enable_autoscaling:
       pool.autoscaling = self.messages.NodePoolAutoscaling(
@@ -747,9 +771,47 @@ class V1Adapter(APIAdapter):
         nodePoolId=node_pool_ref.nodePoolId)
     return self.client.projects_zones_clusters_nodePools.Get(req)
 
+  def UpdateNodePool(self, node_pool_ref, options):
+    """Update a node pool.
+
+    Args:
+      node_pool_ref: node pool Resource to update.
+      options: node pool update options
+    Returns:
+      Operation ref for node pool update operation.
+    """
+    pool = self.GetNodePool(node_pool_ref)
+    node_management = pool.management
+    if node_management is None:
+      node_management = self.messages.NodeManagement()
+    if options.enable_autorepair is not None:
+      node_management.autoRepair = options.enable_autorepair
+    if options.enable_autoupgrade is not None:
+      node_management.autoUpgrade = options.enable_autoupgrade
+    req = (self.messages.
+           ContainerProjectsZonesClustersNodePoolsSetManagementRequest(
+               projectId=node_pool_ref.projectId,
+               zone=node_pool_ref.zone,
+               clusterId=node_pool_ref.clusterId,
+               nodePoolId=node_pool_ref.nodePoolId,
+               setNodePoolManagementRequest=
+               self.messages.SetNodePoolManagementRequest(
+                   management=node_management)))
+    operation = self.client.projects_zones_clusters_nodePools.SetManagement(req)
+    return self.ParseOperation(operation.name)
+
   def DeleteNodePool(self, node_pool_ref):
     operation = self.client.projects_zones_clusters_nodePools.Delete(
         self.messages.ContainerProjectsZonesClustersNodePoolsDeleteRequest(
+            clusterId=node_pool_ref.clusterId,
+            zone=node_pool_ref.zone,
+            projectId=node_pool_ref.projectId,
+            nodePoolId=node_pool_ref.nodePoolId))
+    return self.ParseOperation(operation.name)
+
+  def RollbackUpgrade(self, node_pool_ref):
+    operation = self.client.projects_zones_clusters_nodePools.Rollback(
+        self.messages.ContainerProjectsZonesClustersNodePoolsRollbackRequest(
             clusterId=node_pool_ref.clusterId,
             zone=node_pool_ref.zone,
             projectId=node_pool_ref.projectId,
@@ -793,6 +855,25 @@ class V1Adapter(APIAdapter):
         size=size,
         zone=zone)
     return self.compute_client.instanceGroupManagers.Resize(req)
+
+  def _GetNodeManagement(self, options):
+    """Gets a wrapper containing the options for how nodes are managed.
+
+    Args:
+      options: node management options
+
+    Returns:
+      A NodeManagement object that contains the options indicating how nodes
+      are managed. This is currently quite simple, containing only two options.
+      However, there are more options planned for node management.
+    """
+    if options.enable_autorepair is None and options.enable_autoupgrade is None:
+      return None
+
+    node_management = self.messages.NodeManagement()
+    node_management.autoRepair = options.enable_autorepair
+    node_management.autoUpgrade = options.enable_autoupgrade
+    return node_management
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

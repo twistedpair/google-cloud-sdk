@@ -15,7 +15,6 @@
 
 """
 
-import json
 import os.path
 
 from apitools.base.protorpclite import messages as proto_messages
@@ -24,16 +23,6 @@ from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.core import exceptions
 import yaml
 import yaml.parser
-
-
-class UnsupportedEncodingException(exceptions.Error):
-
-  def __init__(self, path, encoding):
-    msg = ('{path} has unsupported encoding type "{encoding}". Must be ".json" '
-           'or ".yaml".').format(
-               path=path,
-               encoding=encoding)
-    super(UnsupportedEncodingException, self).__init__(msg)
 
 
 class NotFoundException(exceptions.Error):
@@ -132,8 +121,6 @@ def LoadCloudbuildConfig(path, messages):
     messages: module, The messages module that has a Build type.
 
   Raises:
-    UnsupportedEncodingException: If the file type is not one of the supported
-        encodings.
     NotFoundException: If the file does not exist.
     ParserError: If there was a problem parsing the file.
     BadConfigException: If the config file has illegal values.
@@ -148,26 +135,16 @@ def LoadCloudbuildConfig(path, messages):
   ext = ext.lower()
 
   # First, turn the file into a dict.
-  if ext == '.json':
-    try:
-      structured_data = json.load(open(path))
-    except ValueError as ve:
-      raise ParserError(path, ve)
-    except EnvironmentError:
-      # EnvironmentError is parent of IOError, OSError and WindowsError.
-      # Raised when file does not exist or can't be opened/read.
-      raise FileReadException(path)
-  elif ext == '.yaml':
-    try:
-      structured_data = yaml.load(open(path))
-    except yaml.parser.ParserError as pe:
-      raise ParserError(path, pe)
-    except EnvironmentError:
-      # EnvironmentError is parent of IOError, OSError and WindowsError.
-      # Raised when file does not exist or can't be opened/read.
-      raise FileReadException(path)
-  else:
-    raise UnsupportedEncodingException(path, ext)
+  try:
+    structured_data = yaml.load(open(path))
+    if not isinstance(structured_data, dict):
+      raise ParserError(path, 'Could not parse into a message.')
+  except yaml.parser.ParserError as pe:
+    raise ParserError(path, pe)
+  except EnvironmentError:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise FileReadException(path)
 
   # Then, turn the dict into a proto message.
   try:

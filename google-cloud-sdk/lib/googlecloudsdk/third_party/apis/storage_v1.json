@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20161114",
+ "revision": "20161202",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -993,6 +993,22 @@
      "type": "string",
      "description": "The total bytes written so far, which can be used to provide a waiting user with a progress indicator. This property is always present in the response.",
      "format": "uint64"
+    }
+   }
+  },
+  "ServiceAccount": {
+   "id": "ServiceAccount",
+   "type": "object",
+   "description": "A subscription to receive Google PubSub notifications.",
+   "properties": {
+    "email_address": {
+     "type": "string",
+     "description": "The ID of the notification."
+    },
+    "kind": {
+     "type": "string",
+     "description": "The kind of item this is. For notifications, this is always storage#notification.",
+     "default": "storage#serviceAccount"
     }
    }
   },
@@ -3370,6 +3386,41 @@
       "https://www.googleapis.com/auth/devstorage.read_write"
      ],
      "supportsSubscription": true
+    }
+   }
+  },
+  "projects": {
+   "resources": {
+    "serviceAccount": {
+     "methods": {
+      "get": {
+       "id": "storage.projects.serviceAccount.get",
+       "path": "projects/{projectId}/serviceAccount",
+       "httpMethod": "GET",
+       "description": "Get the email address of this project's GCS service account.",
+       "parameters": {
+        "projectId": {
+         "type": "string",
+         "description": "Project ID",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "projectId"
+       ],
+       "response": {
+        "$ref": "ServiceAccount"
+       },
+       "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/devstorage.full_control",
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/devstorage.read_write"
+       ]
+      }
+     }
     }
    }
   }

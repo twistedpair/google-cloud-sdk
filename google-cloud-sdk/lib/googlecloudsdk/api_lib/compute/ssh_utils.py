@@ -19,6 +19,7 @@ import logging
 import os
 import re
 import subprocess
+import enum
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
@@ -63,7 +64,7 @@ class SshLikeCmdFailed(core_exceptions.Error):
 
   def __init__(self, cmd, message=None, return_code=None):
     if not (message or return_code):
-      raise ValueError('One of message and return_code is required.')
+      raise ValueError('One of message or return_code is required.')
 
     self.cmd = cmd
 
@@ -84,39 +85,6 @@ def _IsValidSshUsername(user):
   # This may grant false positives, but will prevent backwards-incompatible
   # behavior.
   return all(ord(c) < 128 and c != ' ' for c in user)
-
-
-def _WarnOrReadFirstKeyLine(path, kind):
-  """Returns the first line from the key file path.
-
-  A None return indicates an error and is always accompanied by a log.warn
-  message.
-
-  Args:
-    path: The path of the file to read from.
-    kind: The kind of key file, 'private' or 'public'.
-
-  Returns:
-    None (and prints a log.warn message) if the file does not exist, is not
-    readable, or is empty. Otherwise returns the first line utf8 decoded.
-  """
-  try:
-    with open(path) as f:
-      # Decode to utf8 to handle any unicode characters. Key data is base64
-      # encoded so it cannot contain any unicode. Comments may contain unicode,
-      # but they are ignored in the key file analysis here, so replacing invalid
-      # chars with ? is OK.
-      line = f.readline().strip().decode('utf8', 'replace')
-      if line:
-        return line
-      msg = 'is empty'
-  except IOError as e:
-    if e.errno == errno.ENOENT:
-      msg = 'does not exist'
-    else:
-      msg = 'is not readable'
-  log.warn('The %s SSH key file for Google Compute Engine %s.', kind, msg)
-  return None
 
 
 # TODO(user): This function can be dropped 1Q2017.
@@ -162,40 +130,186 @@ def _IsPublicKeyCorrupt95Through97(key):
   return True
 
 
-def _KeyFilesAreValid(private=None, public=None):
-  """Returns True if private and public pass minimum key file requirements.
+class KeyFileStatus(enum.Enum):
+  PRESENT = 'OK'
+  ABSENT = 'NOT FOUND'
+  BROKEN = 'BROKEN'
 
-  Args:
-    private: The private key file path.
-    public: The public key file path.
 
-  Returns:
-    True if private and public meet minumum key file requirements.
+class KeyFileKind(enum.Enum):
+  """List of supported (by gcloud) key file kinds."""
+  PRIVATE = 'private'
+  PUBLIC = 'public'
+  PPK = 'PuTTY PPK'
+
+
+class KeyFilesVerifier(object):
+  """Checks if SSH key files are correct.
+
+   - Populates list of SSH key files (key pair, ppk key on Windows).
+   - Checks if files are present and (to basic extent) correct.
+   - Can remove broken key (if permitted by user).
+   - Provides status information.
   """
-  # The private key file must be readable and non-empty.
-  if not _WarnOrReadFirstKeyLine(private, 'private'):
-    return False
 
-  # The PuTTY PPK key file must be readable and non-empty.
-  if (platforms.OperatingSystem.IsWindows() and
-      not _WarnOrReadFirstKeyLine(private + '.ppk', 'PuTTY PPK')):
-    return False
+  class KeyFileData(object):
 
-  # The public key file must be readable and non-empty.
-  public_line = _WarnOrReadFirstKeyLine(public, 'public')
-  if not public_line:
-    return False
+    def __init__(self, filename):
+      # We keep filename as file handle. Filesystem race is impossible to avoid
+      # in this design as we spawn a subprocess and pass in filename.
+      # TODO(b/33288605) fix it.
+      self.filename = filename
+      self.status = None
 
-  # The remaining checks are for the public key file.
+  def __init__(self, private_key_file, public_key_file):
+    self.keys = {
+        KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
+        KeyFileKind.PUBLIC: self.KeyFileData(public_key_file)
+    }
+    if platforms.OperatingSystem.IsWindows():
+      self.keys[KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
 
-  # Must have at least 2 space separated fields.
-  fields = public_line.split(' ')
-  if len(fields) < 2 or _IsPublicKeyCorrupt95Through97(fields[1]):
-    log.warn('The public SSH key file for Google Compute Engine is corrupt.')
-    return False
+  def _StatusMessage(self):
+    """Prepares human readable SSH key status information."""
+    messages = []
+    key_padding = 0
+    status_padding = 0
+    for kind in self.keys:
+      data = self.keys[kind]
+      key_padding = max(key_padding, len(kind.value))
+      status_padding = max(status_padding, len(data.status.value))
+    for kind in self.keys:
+      data = self.keys[kind]
+      messages.append('{} {} [{}]\n'.format(
+          (kind.value + ' key').ljust(key_padding + 4),
+          ('(' + data.status.value + ')') .ljust(status_padding + 2),
+          data.filename))
+    messages.sort()
+    return ''.join(messages)
 
-  # Looks OK.
-  return True
+  def Validate(self):
+    """Performs minimum key files validation.
+
+    Returns:
+      PRESENT if private and public meet minimum key file requirements.
+      ABSENT if there is no sign of public nor private key file.
+      BROKEN if there is some key, but it is broken or incomplete.
+    """
+    def ValidateFile(kind):
+      status_or_line = self._WarnOrReadFirstKeyLine(self.keys[kind].filename,
+                                                    kind.value)
+      if isinstance(status_or_line, KeyFileStatus):
+        return status_or_line
+      else:  # returned line - present
+        self.keys[kind].first_line = status_or_line
+        return KeyFileStatus.PRESENT
+
+    for file_kind in self.keys:
+      self.keys[file_kind].status = ValidateFile(file_kind)
+
+    # The remaining checks are for the public key file.
+
+    # Must have at least 2 space separated fields.
+    if self.keys[KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
+      fields = self.keys[KeyFileKind.PUBLIC].first_line.split(' ')
+      if len(fields) < 2 or _IsPublicKeyCorrupt95Through97(fields[1]):
+        log.warn(
+            'The public SSH key file for Google Compute Engine is corrupt.')
+        self.keys[KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
+
+    # Summary
+    collected_values = [x.status for x in self.keys.itervalues()]
+    if all(x == KeyFileStatus.ABSENT for x in collected_values):
+      return KeyFileStatus.ABSENT
+    elif all(x == KeyFileStatus.PRESENT for x in collected_values):
+      return KeyFileStatus.PRESENT
+    else:
+      return KeyFileStatus.BROKEN
+
+  # TODO(b/33193000) Change non-interactive behavior for 2.06.2017 Release cut
+  def RemoveKeyFilesIfPermittedOrFail(self, force_key_file_overwrite):
+    """Removes all SSH key files if user permitted this behavior.
+
+    User can express intent through --(no)--force-key-file-overwrite flag or
+    prompt (only in interactive mode). Default behavior is to be
+    non-destructive.
+
+    Args:
+      force_key_file_overwrite: bool, value of the flag specified or not by user
+    """
+    permissive = True  # TODO(b/33193000) Flip this bool value
+    message = 'Your SSH key files are broken.\n' + self._StatusMessage()
+    if force_key_file_overwrite is False:
+      raise console_io.OperationCancelledError(message + 'Operation aborted.')
+    message += 'We are going to overwrite all above files.'
+    if force_key_file_overwrite:
+      # self.force_key_file_overwrite is True
+      log.warn(message)
+    else:
+      # self.force_key_file_overwrite is None
+      # Deprecated code path is triggered only when flags are not provided.
+      # Show deprecation warning only in that case.
+      # Show deprecation warning before prompt to increase chance user read
+      # this.
+      # TODO(b/33193000) Remove this deprecation warning
+      log.warn('Permissive behavior in non-interactive mode is DEPRECATED '
+               'and will be removed 1st Jun 2017.\n'
+               'Use --no-force-key-file-overwrite flag to opt-in for new '
+               'behavior now.\n'
+               'If You want to preserve old behavior, You can opt-out from '
+               'new behavior using --force-key-file-overwrite flag.')
+      try:
+        console_io.PromptContinue(message, default=False,
+                                  throw_if_unattended=permissive,
+                                  cancel_on_no=True)
+      except console_io.UnattendedPromptError:
+        # Used to workaround default in non-interactive prompt for old behavior
+        pass  # TODO(b/33193000) Remove this - exception will not be raised
+
+    # Remove existing broken key files and prepare to regenerate them.
+    # User agreed.
+    for key_file in self.keys.viewvalues():
+      try:
+        os.remove(key_file.filename)
+      except OSError as e:
+        # May be due to the fact that key_file.filename points to a directory
+        if e.errno == errno.EISDIR:
+          raise
+
+  def _WarnOrReadFirstKeyLine(self, path, kind):
+    """Returns the first line from the key file path.
+
+    A None return indicates an error and is always accompanied by a log.warn
+    message.
+
+    Args:
+      path: The path of the file to read from.
+      kind: The kind of key file, 'private' or 'public'.
+
+    Returns:
+      None (and prints a log.warn message) if the file does not exist, is not
+      readable, or is empty. Otherwise returns the first line utf8 decoded.
+    """
+    try:
+      with open(path) as f:
+        # Decode to utf8 to handle any unicode characters. Key data is base64
+        # encoded so it cannot contain any unicode. Comments may contain
+        # unicode, but they are ignored in the key file analysis here, so
+        # replacing invalid chars with ? is OK.
+        line = f.readline().strip().decode('utf8', 'replace')
+        if line:
+          return line
+        msg = 'is empty'
+        status = KeyFileStatus.BROKEN
+    except IOError as e:
+      if e.errno == errno.ENOENT:
+        msg = 'does not exist'
+        status = KeyFileStatus.ABSENT
+      else:
+        msg = 'is not readable'
+        status = KeyFileStatus.BROKEN
+    log.warn('The %s SSH key file for Google Compute Engine %s.', kind, msg)
+    return status
 
 
 def GetDefaultSshUsername(warn_on_account_user=False):
@@ -273,13 +387,16 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
               path_simplifier.Name(instance_resource.zone)))
 
 
-def _RunExecutable(cmd_args, strict_error_checking=True):
+def _RunExecutable(cmd_args, strict_error_checking=True,
+                   ignore_ssh_errors=False):
   """Run the given command, handling errors appropriately.
 
   Args:
     cmd_args: list of str, the arguments (including executable path) to run
     strict_error_checking: bool, whether a non-zero, non-255 exit code should be
       considered a failure.
+    ignore_ssh_errors: bool, when true ignore all errors, including the 255
+      exit code.
 
   Returns:
     int, the return code of the command
@@ -314,9 +431,10 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
       returncode = proc.wait()
     except OSError as e:
       raise SshLikeCmdFailed(cmd_args[0], message=e.strerror)
-    if ((returncode and strict_error_checking) or
-        returncode == _SSH_ERROR_EXIT_CODE):
-      raise SshLikeCmdFailed(cmd_args[0], return_code=returncode)
+    if not ignore_ssh_errors:
+      if ((returncode and strict_error_checking) or
+          returncode == _SSH_ERROR_EXIT_CODE):
+        raise SshLikeCmdFailed(cmd_args[0], return_code=returncode)
     return returncode
 
 
@@ -497,6 +615,25 @@ class BaseSSHCommand(base_classes.BaseCommand):
     ssh_key_file.detailed_help = """\
         The path to the SSH key file. By default, this is ``{0}''.
         """.format(constants.DEFAULT_SSH_KEY_FILE)
+    force_key_file_overwrite = parser.add_argument(
+        '--force-key-file-overwrite',
+        action='store_true',
+        default=None,
+        help=('Enable/Disable force overwrite of the files associated with a '
+              'broken SSH key.')
+    )
+    force_key_file_overwrite.detailed_help = """\
+        If enabled gcloud will regenerate and overwrite the files associated
+        with a broken SSH key without asking for confirmation in both
+        interactive and non-interactive environment.
+
+        If disabled gcloud will not attempt to regenerate the files associated
+        with a broken SSH key and fail in both interactive and non-interactive
+        environment.
+
+    """
+    # Last line empty to preserve spacing between last paragraph and calliope
+    # attachment "Use --no-force-key-file-overwrite to disable."
 
   def GetProject(self, project):
     """Returns the project object.
@@ -672,11 +809,21 @@ class BaseSSHCommand(base_classes.BaseCommand):
   def GetPublicKey(self):
     """Generates an SSH key using ssh-keygen (if necessary) and returns it."""
     public_ssh_key_file = self.ssh_key_file + '.pub'
-    if not _KeyFilesAreValid(private=self.ssh_key_file,
-                             public=public_ssh_key_file):
-      log.warn('You do not have an SSH key for Google Compute Engine.')
-      log.warn('[%s] will be executed to generate a key.',
-               self.ssh_keygen_executable)
+
+    key_files_summary = KeyFilesVerifier(self.ssh_key_file, public_ssh_key_file)
+
+    key_files_validity = key_files_summary.Validate()
+
+    if key_files_validity is KeyFileStatus.BROKEN:
+      key_files_summary.RemoveKeyFilesIfPermittedOrFail(
+          self.force_key_file_overwrite)
+      # Fallthrough
+    if key_files_validity is not KeyFileStatus.PRESENT:
+      if key_files_validity is KeyFileStatus.ABSENT:
+        # If key is broken, message is already displayed
+        log.warn('You do not have an SSH key for Google Compute Engine.')
+        log.warn('[%s] will be executed to generate a key.',
+                 self.ssh_keygen_executable)
 
       ssh_directory = os.path.dirname(public_ssh_key_file)
       if not os.path.exists(ssh_directory):
@@ -686,12 +833,6 @@ class BaseSSHCommand(base_classes.BaseCommand):
           files.MakeDir(ssh_directory, 0700)
         else:
           raise exceptions.ToolException('SSH key generation aborted by user.')
-
-      # Remove the private key file to avoid interactive prompts.
-      try:
-        os.remove(self.ssh_key_file)
-      except OSError:
-        pass
 
       keygen_args = [self.ssh_keygen_executable]
       if platforms.OperatingSystem.IsWindows():
@@ -720,6 +861,10 @@ class BaseSSHCommand(base_classes.BaseCommand):
 
   def Run(self, args):
     """Subclasses must call this in their Run() before continuing."""
+
+    # Used in GetPublicKey
+    self.force_key_file_overwrite = args.force_key_file_overwrite
+
     if platforms.OperatingSystem.IsWindows():
       scp_command = 'pscp'
       ssh_command = 'plink'
@@ -949,7 +1094,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
 
   def ActuallyRun(self, args, cmd_args, user, instance, project,
                   strict_error_checking=True, use_account_service=False,
-                  wait_for_sshable=True):
+                  wait_for_sshable=True, ignore_ssh_errors=False):
     """Runs the scp/ssh command specified in cmd_args.
 
     If the scp/ssh command exits non-zero, this command will exit with the same
@@ -965,6 +1110,8 @@ class BaseSSHCLICommand(BaseSSHCommand):
         code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
       wait_for_sshable: bool, when false skip the sshability check.
+      ignore_ssh_errors: bool, when true ignore all errors, including the 255
+        exit code.
 
     Returns:
       int, the exit code of the command that was run
@@ -1041,7 +1188,8 @@ class BaseSSHCLICommand(BaseSSHCommand):
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 
-    return _RunExecutable(cmd_args, strict_error_checking=strict_error_checking)
+    return _RunExecutable(cmd_args, strict_error_checking=strict_error_checking,
+                          ignore_ssh_errors=ignore_ssh_errors)
 
 
 # A remote path has three parts host[@user]:[path], where @user and path are

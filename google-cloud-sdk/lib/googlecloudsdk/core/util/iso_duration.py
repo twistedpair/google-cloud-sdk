@@ -240,6 +240,8 @@ class Duration(object):
   def Parse(self, string):
     """Parses an ISO 8601 duration from string and returns a Duration object.
 
+    If P is omitted then T is implied (M == minutes).
+
     Args:
       string: The ISO 8601 duration string to parse.
 
@@ -255,6 +257,8 @@ class Duration(object):
     # allow negative durations or make them an error. This supports interval
     # notations like "modify-time / -P7D" for "changes older than 1 week" or
     # "-P7D" for "1 week ago". These cannot be specified in ISO notation.
+    t_separator = False  # 'T' separator was seen.
+    t_implied = False  # Already saw months or smaller part.
     if s.startswith('-'):
       s = s[1:]
       sign = '-'
@@ -262,11 +266,10 @@ class Duration(object):
       if s.startswith('+'):
         s = s[1:]
       sign = ''
-    if not s.startswith('P'):
-      raise ValueError("A duration must start with 'P'.")
-    s = s[1:]
-    t_separator = False  # 'T' separator was seen.
-    t_implied = False  # Already saw months or smaller part.
+    if s.startswith('P'):
+      s = s[1:]
+    else:
+      t_implied = True
     amount = [sign]
     for c in s:
       if c.isdigit():

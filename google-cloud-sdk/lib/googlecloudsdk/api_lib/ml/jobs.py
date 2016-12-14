@@ -120,6 +120,14 @@ class LogFetcher(object):
   """A class which fetches job logs."""
 
   LOG_BATCH_SIZE = 5000
+  LOG_FORMAT = """\
+      value(
+          severity,
+          timestamp.date("%Y-%m-%d %H:%M:%S %z",tz="LOCAL"),
+          task_name,
+          trial_id,
+          message
+      )"""
 
   def __init__(self, job_id, polling_interval, allow_multiline_logs,
                task_name=None):

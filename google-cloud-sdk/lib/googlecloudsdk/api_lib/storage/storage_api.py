@@ -121,7 +121,8 @@ class StorageClient(object):
     """Upload a file to the GCS results bucket using the storage API.
 
     Args:
-      bucket_ref: The user-specified bucket to upload to.
+      bucket_ref: storage_util.BucketReference, The user-specified bucket to
+        download from.
       local_path: str, the path of the file to upload. File must be on the local
         filesystem.
       target_path: str, the path of the file on GCS.
@@ -142,13 +143,14 @@ class StorageClient(object):
         name=target_path,
         object=src_obj)
 
-    log.info('Uploading [{f}] to [{gcs}]'.format(f=local_path, gcs=target_path))
+    log.info('Uploading [{local_file}] to [{gcs}]'.format(local_file=local_path,
+                                                          gcs=target_path))
     try:
       response = self.client.objects.Insert(insert_req, upload=upload)
     except api_exceptions.HttpError as err:
       raise exceptions.BadFileException(
-          'Could not copy [{f}] to [{gcs}] {e}. Please retry.'
-          .format(f=local_path, gcs=target_path, e=err))
+          'Could not copy [{local_file}] to [{gcs}]: {err}. Please retry.'
+          .format(local_file=local_path, gcs=target_path, err=err))
 
     if response.size != file_size:
       log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(
@@ -157,6 +159,46 @@ class StorageClient(object):
           'Cloud storage upload failure. Uploaded file does not match local '
           'file: {0}. Please retry.'.format(local_path))
     return response
+
+  def CopyFileFromGCS(self, bucket_ref, object_path, local_path):
+    """Download a file from the given Cloud Storage bucket.
+
+    Args:
+      bucket_ref: storage_util.BucketReference, The user-specified bucket to
+        download from.
+      object_path: str, the path of the file on GCS.
+      local_path: str, the path of the file to download. Path must be on the
+        local filesystem.
+
+    Raises:
+      BadFileException if the file download is not successful.
+    """
+    download = transfer.Download.FromFile(local_path)
+    get_req = self.messages.StorageObjectsGetRequest(
+        bucket=bucket_ref.bucket,
+        object=object_path)
+
+    log.info('Downloading [{gcs}] to [{local_file}]'.format(
+        local_file=local_path, gcs=object_path))
+    try:
+      self.client.objects.Get(get_req, download=download)
+      # Close the stream to release the file handle so we can check its contents
+      download.stream.close()
+      # When there's a download, Get() returns None so we Get() again to check
+      # the file size.
+      response = self.client.objects.Get(get_req)
+    except api_exceptions.HttpError as err:
+      raise exceptions.BadFileException(
+          'Could not copy [{gcs}] to [{local_file}]: {err}. Please retry.'
+          .format(local_file=local_path, gcs=object_path, err=err))
+
+    file_size = _GetFileSize(local_path)
+    if response.size != file_size:
+      log.debug('Download size: {0} bytes, but expected size is {1} '
+                'bytes.'.format(file_size, response.size))
+      raise exceptions.BadFileException(
+          'Cloud Storage download failure. Downloaded file [{0}] does not '
+          'match Cloud Storage object. Please retry.'.format(local_path))
 
   def CreateBucketIfNotExists(self, bucket, project=None):
     """Create a bucket if it does not already exist.

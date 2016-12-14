@@ -27,10 +27,10 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import http
-from googlecloudsdk.core.credentials import service_account as c_service_account
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
+from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import yaml
 
@@ -68,6 +68,8 @@ class AppengineClient(object):
       server.
   """
 
+  _PREPARE_TIMEOUT_RETIRES = 15
+
   def __init__(self, server=None, ignore_bad_certs=False):
     self.server = server or 'appengine.google.com'
     self.project = properties.VALUES.core.project.Get(required=True)
@@ -84,7 +86,7 @@ class AppengineClient(object):
     # This statement will raise a c_store.Error if there is a problem
     # fetching credentials.
     credentials = c_store.Load(account=account)
-    if isinstance(credentials, c_service_account.ServiceAccountCredentials):
+    if isinstance(credentials, service_account.ServiceAccountCredentials):
       self.oauth2_access_token = credentials.access_token
       self.client_id = credentials.client_id
       self.client_secret = credentials.client_secret
@@ -203,7 +205,8 @@ class AppengineClient(object):
 
   def PrepareVmRuntime(self):
     """Prepare the application for vm runtimes and return state."""
-    rpcserver = self._GetRpcServer(timeout_max_errors=5)
+    rpcserver = self._GetRpcServer(
+        timeout_max_errors=self._PREPARE_TIMEOUT_RETIRES)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
 
   # Note: vm_name and instance id are different, this API client

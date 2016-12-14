@@ -31,8 +31,11 @@ class Build(_messages.Message):
   Fields:
     buildTriggerId: The ID of the BuildTrigger that triggered this build, if
       it was triggered automatically. @OutputOnly
-    createTime: Time at which the build was created. @OutputOnly
-    finishTime: Time at which execution of the build was finished. @OutputOnly
+    createTime: Time at which the request to create the build was received.
+      @OutputOnly
+    finishTime: Time at which execution of the build was finished.  The
+      difference between finish_time and start_time is the duration of the
+      build's execution. @OutputOnly
     id: Unique identifier of the build. @OutputOnly
     images: A list of images to be pushed upon the successful completion of
       all build steps.  The images will be pushed using the builder service
@@ -49,7 +52,7 @@ class Build(_messages.Message):
     results: Results of the build. @OutputOnly
     source: Describes where to find the source files to build.
     sourceProvenance: A permanent fixed identifier for source. @OutputOnly
-    startTime: Time at which execution of the build was started. @OutputOnly
+    startTime: Time at which execution of the build was started.
     status: Status of the build. @OutputOnly
     statusDetail: Customer-readable message about the current status.
       @OutputOnly
@@ -234,6 +237,23 @@ class BuiltImage(_messages.Message):
 
 class CancelBuildRequest(_messages.Message):
   """Request to cancel an ongoing build."""
+
+
+class CancelOperationRequest(_messages.Message):
+  """The request message for Operations.CancelOperation."""
+
+
+class CloudbuildOperationsCancelRequest(_messages.Message):
+  """A CloudbuildOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudbuildOperationsGetRequest(_messages.Message):

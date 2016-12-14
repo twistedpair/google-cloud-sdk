@@ -532,6 +532,21 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.peerings': resource_info.ResourceInfo(
+        cache_command='alpha compute networks peerings list',
+        list_format="""
+          table(
+            name,
+            source_network.basename():label=NETWORK,
+            network.map().scope(projects).segment(0):label=PEER_PROJECT,
+            network.basename():label=PEER_NETWORK,
+            autoCreateRoutes,
+            state,
+            stateDetails
+          )
+        """,
+    ),
+
     'compute.projects': resource_info.ResourceInfo(
         list_format="""
           value(
@@ -595,7 +610,8 @@ RESOURCE_REGISTRY = {
                 nextHopInstance,
                 nextHopGateway,
                 nextHopIp,
-                nextHopVpnTunnel).scope()
+                nextHopVpnTunnel,
+                nextHopPeering).scope()
               :label=NEXT_HOP,
             priority
           )
@@ -690,14 +706,6 @@ RESOURCE_REGISTRY = {
 
     'compute.targetSslProxies': resource_info.ResourceInfo(
         cache_command='compute target-ssl-proxies list',
-        list_format="""
-          table(
-            name,
-            proxyHeader,
-            service.basename(),
-            sslCertificates.map().basename().list():label=SSL_CERTIFICATES
-          )
-        """,
     ),
 
     'compute.targetVpnGateways': resource_info.ResourceInfo(
@@ -1472,8 +1480,8 @@ RESOURCE_REGISTRY = {
     'servicemanagement-v1.serviceConfigs': resource_info.ResourceInfo(
         list_format="""
           table(
-            id,
-            name
+            id:label=CONFIG_ID,
+            name:label=SERVICE_NAME
           )
         """,
     ),
@@ -1760,3 +1768,4 @@ def Get(collection, must_be_registered=True):
         'Collection [{0}] is not registered.'.format(collection))
   info.collection = collection
   return info
+
