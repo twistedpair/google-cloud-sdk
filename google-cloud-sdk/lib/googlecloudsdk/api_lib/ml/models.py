@@ -19,57 +19,46 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def Create(model):
-  """Create a new model."""
-  client = apis.GetClientInstance('ml', 'v1beta1')
-  msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  # TODO(b/31062835): remove CloneAndSwitchAPI here and below
-  registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('ml', 'v1beta1')
-  res = registry.Parse(model, collection='ml.projects.models')
-  req = msgs.MlProjectsModelsCreateRequest(
-      projectsId=res.projectsId,
-      googleCloudMlV1beta1Model=msgs.GoogleCloudMlV1beta1Model(
-          name=res.Name()))
-  op = client.projects_models.Create(req)
-  return op
+def _ParseModel(model_id):
+  return resources.REGISTRY.Parse(model_id, collection='ml.projects.models')
 
 
-def Delete(model):
-  """Delete an existing model."""
-  client = apis.GetClientInstance('ml', 'v1beta1')
-  msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('ml', 'v1beta1')
+class ModelsClient(object):
+  """High-level client for the ML models surface."""
 
-  res = registry.Parse(model, collection='ml.projects.models')
-  req = msgs.MlProjectsModelsDeleteRequest(
-      projectsId=res.projectsId, modelsId=res.Name())
-  op = client.projects_models.Delete(req)
-  return op
+  def __init__(self, client=None, messages=None):
+    self.client = client or apis.GetClientInstance('ml', 'v1beta1')
+    self.messages = messages or apis.GetMessagesModule('ml', 'v1beta1')
 
+  def Create(self, model):
+    """Create a new model."""
+    model_ref = _ParseModel(model)
+    req = self.messages.MlProjectsModelsCreateRequest(
+        projectsId=model_ref.projectsId,
+        googleCloudMlV1beta1Model=self.messages.GoogleCloudMlV1beta1Model(
+            name=model_ref.Name()))
+    return self.client.projects_models.Create(req)
 
-def Get(model):
-  """Get details about a model."""
-  client = apis.GetClientInstance('ml', 'v1beta1')
-  registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('ml', 'v1beta1')
+  def Delete(self, model):
+    """Delete an existing model."""
+    model_ref = _ParseModel(model)
+    req = self.messages.MlProjectsModelsDeleteRequest(
+        projectsId=model_ref.projectsId, modelsId=model_ref.Name())
+    return self.client.projects_models.Delete(req)
 
-  res = registry.Parse(model, collection='ml.projects.models')
-  req = client.MESSAGES_MODULE.MlProjectsModelsGetRequest(
-      projectsId=res.projectsId, modelsId=res.modelsId)
-  resp = client.projects_models.Get(req)
-  return resp
+  def Get(self, model):
+    """Get details about a model."""
+    model_ref = _ParseModel(model)
+    req = self.messages.MlProjectsModelsGetRequest(
+        projectsId=model_ref.projectsId, modelsId=model_ref.Name())
+    return self.client.projects_models.Get(req)
 
-
-def List():
-  """List models in the project."""
-  client = apis.GetClientInstance('ml', 'v1beta1')
-  msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  req = msgs.MlProjectsModelsListRequest(
-      projectsId=properties.VALUES.core.project.Get())
-  return list_pager.YieldFromList(
-      client.projects_models,
-      req,
-      field='models',
-      batch_size_attribute='pageSize')
+  def List(self):
+    """List models in the project."""
+    req = self.messages.MlProjectsModelsListRequest(
+        projectsId=properties.VALUES.core.project.Get())
+    return list_pager.YieldFromList(
+        self.client.projects_models,
+        req,
+        field='models',
+        batch_size_attribute='pageSize')

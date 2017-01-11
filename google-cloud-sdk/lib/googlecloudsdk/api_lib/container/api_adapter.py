@@ -89,15 +89,12 @@ def NewAPIAdapter():
                  compute_messages)
 
 
-_REQUIRED_SCOPES = [
-    constants.SCOPES['compute-rw'],
-    constants.SCOPES['storage-ro'],
-]
+_REQUIRED_SCOPES = (
+    constants.SCOPES['compute-rw'] + constants.SCOPES['storage-ro'])
 
-_ENDPOINTS_SCOPES = [
-    constants.SCOPES['service-control'],
-    constants.SCOPES['service-management'],
-]
+_ENDPOINTS_SCOPES = (
+    constants.SCOPES['service-control'] +
+    constants.SCOPES['service-management'])
 
 
 def ExpandScopeURIs(scopes):
@@ -119,13 +116,8 @@ def ExpandScopeURIs(scopes):
   for scope in scopes:
     # Expand any scope aliases (like 'storage-rw') that the user provided
     # to their official URL representation.
-    expanded = constants.SCOPES.get(scope, None)
-    if not expanded:
-      # Assume the scope exists but is not public. Backend does the actual
-      # lookup to see what scopes the project can use and will kick back
-      # an error if a requested scope not allowed
-      expanded = scope
-    scope_uris.append(expanded)
+    expanded = constants.SCOPES.get(scope, [scope])
+    scope_uris.extend(expanded)
   return scope_uris
 
 

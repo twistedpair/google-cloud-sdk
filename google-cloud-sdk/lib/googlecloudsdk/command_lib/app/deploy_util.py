@@ -69,50 +69,28 @@ class DeployOptions(object):
     promote: True if the deployed version should recieve all traffic.
     stop_previous_version: Stop previous version
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
+    upload_strategy: deploy_app_command_util.UploadStrategy, the file upload
+       strategy to be used for this deployment.
   """
 
-  def __init__(self, promote, stop_previous_version, enable_endpoints):
+  def __init__(self, promote, stop_previous_version, enable_endpoints,
+               upload_strategy):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
+    self.upload_strategy = upload_strategy
 
   @classmethod
-  def FromProperties(cls, enable_endpoints):
+  def FromProperties(cls, enable_endpoints, upload_strategy):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    return cls(promote, stop_previous_version, enable_endpoints)
-
-
-def _UploadFiles(service, source_dir, code_bucket_ref):
-  """Upload files in the service being deployed, if necessary.
-
-  "Necessary" here means that the service is not "hermetic." A hermetic service
-  is an image-based (i.e. Flexible) deployment that does not also serve static
-  files.
-
-  The upload method used depends on the app.use_gsutil property.
-
-  Args:
-    service: configuration for service to upload files for
-    source_dir: str, path to the service's source directory
-    code_bucket_ref: cloud_storage.BucketReference, the code bucket to upload to
-
-  Returns:
-    A manifest of files uploaded in the format expected by the Admin API.
-  """
-  manifest = None
-  # "Non-hermetic" services require file upload outside the Docker image.
-  if not service.is_hermetic:
+    if upload_strategy is None:
+      upload_strategy = deploy_app_command_util.UploadStrategy.PROCESSES
     if properties.VALUES.app.use_gsutil.GetBool():
-      manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-          service, source_dir, code_bucket_ref)
-      metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
-    else:
-      manifest = deploy_app_command_util.CopyFilesToCodeBucketNoGsUtil(
-          service, source_dir, code_bucket_ref)
-      metrics.CustomTimedEvent(metric_names.COPY_APP_FILES_NO_GSUTIL)
-  return manifest
+      upload_strategy = deploy_app_command_util.UploadStrategy.GSUTIL
+    return cls(promote, stop_previous_version, enable_endpoints,
+               upload_strategy)
 
 
 class ServiceDeployer(object):
@@ -247,7 +225,12 @@ class ServiceDeployer(object):
           service, source_dir, new_version)
       image = self._PossiblyBuildAndPush(
           new_version, service, source_dir, image, code_bucket_ref)
-      manifest = _UploadFiles(service, source_dir, code_bucket_ref)
+      manifest = None
+      # "Non-hermetic" services require file upload outside the Docker image.
+      if not service.is_hermetic:
+        manifest = deploy_app_command_util.CopyFilesToCodeBucket(
+            service, source_dir, code_bucket_ref,
+            self.deploy_options.upload_strategy)
 
       # Actually create the new version of the service.
       message = 'Updating service [{service}]'.format(
@@ -322,7 +305,8 @@ def ArgsDeploy(parser):
       help=argparse.SUPPRESS)
 
 
-def RunDeploy(args, enable_endpoints=False, use_beta_stager=False):
+def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
+              upload_strategy=None):
   """Perform a deployment based on the given args.
 
   Args:
@@ -331,6 +315,8 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False):
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     use_beta_stager: Use the stager registry defined for the beta track rather
         than the default stager registry.
+    upload_strategy: deploy_app_command_util.UploadStrategy, the parallelism
+      straetgy to use for uploading files, or None to use the default.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -338,7 +324,8 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False):
     is a list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
   project = properties.VALUES.core.project.Get(required=True)
-  deploy_options = DeployOptions.FromProperties(enable_endpoints)
+  deploy_options = DeployOptions.FromProperties(enable_endpoints,
+                                                upload_strategy=upload_strategy)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.
@@ -372,6 +359,7 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False):
       args.server, args.ignore_bad_certs)
 
   app = _PossiblyCreateApp(api_client, project)
+  app = _PossiblyRepairApp(api_client, app)
 
   if properties.VALUES.app.use_gsutil.GetBool():
     log.warning('Your gcloud installation has a deprecated config property '
@@ -502,9 +490,32 @@ def _PossiblyCreateApp(api_client, project):
     # surprising. CreateAppInteractively will provide a cancel option for
     # interactive users, and MissingApplicationException includes instructions
     # for non-interactive users to fix this.
+    log.debug('No app found:', exc_info=True)
     if console_io.CanPrompt():
-      # Equivalent to running `gcloud beta app create`
+
+      # Equivalent to running `gcloud app create`
       create_util.CreateAppInteractively(api_client, project)
       # App resource must be fetched again
       return api_client.GetApplication()
     raise exceptions.MissingApplicationError(project)
+
+
+def _PossiblyRepairApp(api_client, app):
+  """Repairs the app if necessary and returns a healthy app object.
+
+  An app is considered unhealthy if the codeBucket field is missing.
+  This may include more conditions in the future.
+
+  Args:
+    api_client: Admin API client.
+    app: App object (with potentially missing resources).
+
+  Returns:
+    An app object (either the same or a new one), which contains the right
+    resources, including code bucket.
+  """
+  if not app.codeBucket:
+    with progress_tracker.ProgressTracker('Initializing App Engine resources'):
+      api_client.RepairApplication()
+      app = api_client.GetApplication()
+  return app

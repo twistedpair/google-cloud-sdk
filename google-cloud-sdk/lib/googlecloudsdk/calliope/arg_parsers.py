@@ -180,7 +180,8 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
 
   def UnitsByMagnitude(suggested_binary_size_scales=None):
     """Returns a list of the units in scales sorted by magnitude."""
-    scale_items = sorted(scales.iteritems(), key=lambda value: value[1])
+    scale_items = sorted(scales.iteritems(),
+                         key=lambda value: (value[1], value[0]))
     if suggested_binary_size_scales is None:
       return [key for key, _ in scale_items]
     return [key for key, _ in scale_items
@@ -693,7 +694,7 @@ class ArgDict(ArgList):
   """
 
   def __init__(self, value_type=None, spec=None, min_length=0, max_length=None,
-               allow_key_only=False):
+               allow_key_only=False, operators=None):
     """Initialize an ArgDict.
 
     Args:
@@ -706,6 +707,9 @@ class ArgDict(ArgList):
       min_length: int, The minimum number of keys in the dict.
       max_length: int, The maximum number of keys in the dict.
       allow_key_only: bool, Allow empty values.
+      operators: operator_char -> value_type, Define multiple single character
+        operators, each with its own value_type converter. Use value_type==None
+        for no conversion. The default value is {'=': value_type}
 
     Returns:
       (str)->{str:str}, A function to parse the dict in the argument.
@@ -717,9 +721,19 @@ class ArgDict(ArgList):
     super(ArgDict, self).__init__(min_length=min_length, max_length=max_length)
     if spec and value_type:
       raise ValueError('cannot have both spec and sub_type')
-    self.value_type = value_type
     self.spec = spec
     self.allow_key_only = allow_key_only
+    if not operators:
+      operators = {'=': value_type}
+    for op in operators.keys():
+      if len(op) != 1:
+        raise ArgumentTypeError(
+            'Operator [{}] must be one character.'.format(op))
+    ops = ''.join(operators.keys())
+    key_op_value_pattern = '([^{ops}]+)([{ops}]?)(.*)'.format(
+        ops=re.escape(ops))
+    self.key_op_value = re.compile(key_op_value_pattern, re.DOTALL)
+    self.operators = operators
 
   def _ApplySpec(self, key, value):
     if key in self.spec:
@@ -740,17 +754,19 @@ class ArgDict(ArgList):
 
     arg_dict = {}
     for arg in arg_list:
-      key, sep, value = arg.partition('=')
+      match = self.key_op_value.match(arg)
       # TODO(user): These exceptions won't present well to the user.
-      if not key:
+      if not match:
         raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
-      if not sep and not self.allow_key_only:
+      key, op, value = match.group(1), match.group(2), match.group(3)
+      if not op and not self.allow_key_only:
         raise ArgumentTypeError(
             ('Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
              'escaping` if you would like information on escaping list or '
              'dictionary flag values.').format(arg))
-      if self.value_type:
-        value = self.value_type(value)
+      convert_value = self.operators.get(op, None)
+      if convert_value:
+        value = convert_value(value)
       if self.spec:
         value = self._ApplySpec(key, value)
       arg_dict[key] = value
@@ -1183,3 +1199,45 @@ class StoreOnceAction(argparse.Action):
       self.OnSecondArgumentRaiseError()
     self.dest_is_populated = True
     setattr(namespace, self.dest, values)
+
+
+class _HandleNoArgAction(argparse.Action):
+  """This class should not be used directly, use HandleNoArgAction instead."""
+
+  def __init__(self, none_arg, deprecation_message, **kwargs):
+    super(_HandleNoArgAction, self).__init__(**kwargs)
+    self.none_arg = none_arg
+    self.deprecation_message = deprecation_message
+
+  def __call__(self, parser, namespace, value, option_string=None):
+    if value is None:
+      log.warn(self.deprecation_message)
+      if self.none_arg:
+        setattr(namespace, self.none_arg, True)
+
+    setattr(namespace, self.dest, value)
+
+
+def HandleNoArgAction(none_arg, deprecation_message):
+  """Creates an argparse.Action that warns when called with no arguments.
+
+  This function creates an argparse action which can be used to gracefully
+  deprecate a flag using nargs=?. When a flag is created with this action, it
+  simply log.warn()s the given deprecation_message and then sets the value of
+  the none_arg to True.
+
+  This means if you use the none_arg no_foo and attach this action to foo,
+  `--foo` (no argument), it will have the same effect as `--no-foo`.
+
+  Args:
+    none_arg: a boolean argument to write to. For --no-foo use "no_foo"
+    deprecation_message: msg to tell user to stop using with no arguments.
+
+  Returns:
+    An argparse action.
+
+  """
+  def HandleNoArgActionInit(**kwargs):
+    return _HandleNoArgAction(none_arg, deprecation_message, **kwargs)
+
+  return HandleNoArgActionInit

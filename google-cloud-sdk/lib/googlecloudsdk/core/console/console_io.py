@@ -14,6 +14,7 @@
 
 """General console printing utilities used by the Cloud SDK."""
 
+import contextlib
 import os
 import re
 import subprocess
@@ -58,6 +59,8 @@ class OperationCancelledError(Error):
 TEXTWRAP = textwrap.TextWrapper(replace_whitespace=False,
                                 drop_whitespace=False,
                                 break_on_hyphens=False)
+  # All wrapping is done by this single global wrapper. If you have different
+  # wrapping needs, consider the _NarrowWrap context manager, below.
 
 
 def _DoWrap(message):
@@ -71,6 +74,14 @@ def _DoWrap(message):
     str, The wrapped message.
   """
   return '\n'.join([TEXTWRAP.fill(line) for line in message.splitlines()])
+
+
+@contextlib.contextmanager
+def _NarrowWrap(narrow_by):
+  """Temporarily narrows the global wrapper."""
+  TEXTWRAP.width -= narrow_by
+  yield TEXTWRAP
+  TEXTWRAP.width += narrow_by
 
 
 def _RawInput(prompt=None):
@@ -491,6 +502,27 @@ def LazyFormat(s, **kwargs):
         start += len(value)
   # {{unknown}} => {unknown}
   return re.sub(r'{({\w+})}', r'\1', s)
+
+
+def FormatRequiredUserAction(s):
+  """Formats an action a user must initiate to complete a command.
+
+  Some actions can't be prompted or initiated by gcloud itself, but they must
+  be completed to accomplish the task requested of gcloud; the canonical example
+  is that after installation or update, the user must restart their shell for
+  all aspects of the update to take effect. Unlike most console output, such
+  instructions need to be highlighted in some way. Using this function ensures
+  that all such instances are highlighted the *same* way.
+
+  Args:
+    s: str, The message to format. It shouldn't begin or end with newlines.
+
+  Returns:
+    str, The formatted message. This should be printed starting on its own
+      line, and followed by a newline.
+  """
+  with _NarrowWrap(4) as wrapper:
+    return '\n==> ' + '\n==> '.join(wrapper.wrap(s)) + '\n'
 
 
 class ProgressBar(object):

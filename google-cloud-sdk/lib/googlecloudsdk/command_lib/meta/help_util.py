@@ -199,8 +199,9 @@ class HelpTextAccumulator(DiffAccumulator):
 
   def Validate(self, relative_file, contents):
     if self._invalid_abbreviations.search(contents):
-      log.error('[{0}] contains an invalid brand abbreviation from [{1}].'
-                .format(relative_file, ','.join(INVALID_BRAND_ABBREVIATIONS)))
+      log.error('[{0}] Help text cannot contain any of these abbreviations: '
+                '[{1}].'.format(relative_file,
+                                ','.join(INVALID_BRAND_ABBREVIATIONS)))
       self._invalid_file_count += 1
 
   def AddChange(self, op, relative_file):

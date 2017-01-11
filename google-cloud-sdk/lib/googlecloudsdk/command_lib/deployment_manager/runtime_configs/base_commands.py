@@ -61,14 +61,9 @@ class VariableRetrieverCommand(base.DescribeCommand):
     messages = util.Messages()
 
     var_resource = util.ParseVariableName(args.name, args)
-    project = var_resource.projectsId
-    config = var_resource.configsId
-    name = var_resource.Name()
 
     return variable_client.Get(
         messages.RuntimeconfigProjectsConfigsVariablesGetRequest(
-            projectsId=project,
-            configsId=config,
-            variablesId=name
+            name=var_resource.RelativeName(),
         )
     )

@@ -208,10 +208,13 @@ class ArgumentParser(argparse.ArgumentParser):
     suggestions = {}
     for arg in unknown_args:
       # Only do this for flag names.
-      suggestion = suggester.GetSuggestion(arg) if arg.startswith('-') else None
-      if suggestion is not None:
-        suggestions[arg] = suggestion
+      if arg.startswith('--'):
+        flag = arg.split('=')[0]
+        suggestion = suggester.GetSuggestion(flag)
+      else:
+        suggestion = None
       if suggestion:
+        suggestions[arg] = suggestion
         messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
       else:
         messages.append(arg)
@@ -354,7 +357,8 @@ class ArgumentParser(argparse.ArgumentParser):
       # Sort by the release track prefix.
       for _, command_path in sorted(alternates.iteritems(),
                                     key=lambda x: x[0].prefix):
-        if top_element.IsValidSubPath(command_path[1:]):
+        alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
+        if alternative_cmd and not alternative_cmd.IsHidden():
           existing_alternatives.append(' '.join(command_path))
     return existing_alternatives
 
@@ -1074,6 +1078,10 @@ class CommandCommon(object):
       # Propagate down the unicode supported attribute.
       if parent_group.IsUnicodeSupported():
         self._common_type._is_unicode_supported = True
+      # Propagate down notices from the deprecation decorator.
+      if parent_group.Notices():
+        for tag, msg in parent_group.Notices().iteritems():
+          self._common_type.AddNotice(tag, msg)
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
     self._ExtractHelpStrings(self._common_type.__doc__)
@@ -1263,6 +1271,24 @@ class CommandCommon(object):
       _CommandCommon, The loaded sub element, or None if it did not exist.
     """
     pass
+
+  def LoadSubElementByPath(self, path):
+    """Load a specific sub group or command by path.
+
+    If path is empty, returns the current element.
+
+    Args:
+      path: list of str, The names of the elements to load down the hierarchy.
+
+    Returns:
+      _CommandCommon, The loaded sub element, or None if it did not exist.
+    """
+    curr = self
+    for part in path:
+      curr = curr.LoadSubElement(part)
+      if curr is None:
+        return None
+    return curr
 
   def GetPath(self):
     return self._path

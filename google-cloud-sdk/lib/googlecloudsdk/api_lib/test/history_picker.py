@@ -85,21 +85,24 @@ class ToolResultsHistoryPicker(object):
              .format(util.GetError(error)))
       raise exceptions.HttpException(msg)
 
-  def _GetToolResultsHistoryId(self, history_name):
+  def GetToolResultsHistoryId(self, history_name):
     """Gets the history id associated with a given history name.
 
     All the test executions for the same app should be in the same history. This
     method will try to find an existing history for the application or create
-    one if necessary.
+    one if this is the first time a particular history_name has been seen.
 
     Args:
-       history_name: string containing the history's name.
+       history_name: string containing the history's name (if the user supplied
+         one), else None.
 
     Returns:
       The id of the history to publish results to.
     """
-    histories = self._ListHistoriesByName(history_name).histories
+    if not history_name:
+      return None
 
+    histories = self._ListHistoriesByName(history_name).histories
     if histories:
       # There might be several histories with the same name. We always pick the
       # first history which is the history with the most recent results.
@@ -108,28 +111,3 @@ class ToolResultsHistoryPicker(object):
       new_history = self._CreateHistory(history_name)
       return new_history.historyId
 
-  def FindToolResultsHistoryId(self, args):
-    """Returns the Tool Results history ID to publish results to.
-
-    The history ID corresponds to a history name. If the user provides their
-    own history name, we use that to look up a history ID; If not, but the user
-    provides an app-package name, we use the app-package name with ' (gcloud)'
-    appended as the history name. Otherwise, we punt and let the Testing service
-    determine the appropriate history ID to publish to.
-
-    Args:
-      args: an argparse namespace. All the arguments that were provided to the
-        command invocation (i.e. group and command arguments combined).
-
-    Returns:
-      Either a string containing a history ID to publish to, or None if we lack
-      the required information to find the ID and therefore need the Testing
-      service to provide the ID for us.
-    """
-    if args.results_history_name:
-      history_name = args.results_history_name
-    elif args.app_package:
-      history_name = args.app_package + ' (gcloud)'
-    else:
-      return None
-    return self._GetToolResultsHistoryId(history_name)

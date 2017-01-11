@@ -12,23 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Base classes for DM commands."""
+"""Base functions for DM commands targeting the v2 API."""
 
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 
 
-class DeploymentManagerCommand(object):
-  """Provides basic properties and organization for DM commands."""
+def GetMessages():
+  return apis.GetMessagesModule('deploymentmanager', 'v2')
 
-  @property
-  def client(self):
-    return apis.GetClientInstance('deploymentmanager', 'v2')
 
-  @property
-  def messages(self):
-    return apis.GetMessagesModule('deploymentmanager', 'v2')
+def GetClient():
+  return apis.GetClientInstance('deploymentmanager', 'v2')
 
-  @property
-  def project(self):
-    return properties.VALUES.core.project.Get(required=True)
+
+def GetProject():
+  return properties.VALUES.core.project.Get(required=True)

@@ -14,6 +14,7 @@
 
 """Some general file utilities used that can be used by the Cloud SDK."""
 
+import contextlib
 import errno
 import hashlib
 import logging
@@ -73,6 +74,14 @@ def MakeDir(path, mode=0777):
            u'directory.'))
     else:
       raise
+
+
+def Open(path, *args, **kwargs):
+  """Opens a file (wrapper for open()), or '-' for stdin."""
+  if path == '-':
+    return contextlib.closing(sys.stdin)
+  else:
+    return open(path, *args, **kwargs)
 
 
 def _WaitForRetry(retries_left):
@@ -667,23 +676,6 @@ def OpenForWritingPrivate(path, binary=False):
 
   fd = os.open(path, flags, 0600)
   return os.fdopen(fd, 'w')
-
-
-class Context(object):
-  """Wrap a file in a context.
-
-  Some libraries return file contexts in 2.7, but not in 2.6. Wrapping the
-  returned file in this class makes it so our code works for either version.
-  """
-
-  def __init__(self, f):
-    self.__f = f
-
-  def __enter__(self):
-    return self.__f
-
-  def __exit__(self, typ, value, tb):
-    self.__f.close()
 
 
 class ChDir(object):

@@ -2,6 +2,136 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 139.0.0 (2017/01/11)
+
+### Breaking Changes
+
+* (Google Cloud Logging) The default value of the `--unique-writer-identity`
+  flag to `gcloud beta logging sinks create` and
+  `gcloud beta logging sinks update` is now true. Please consult the
+  documentation before using these commands.
+* (Google Cloud Logging) Remove 'struct' option from `gcloud logging write`.
+  Use 'json' instead
+* (Google Cloud Logging) `logging beta metrics create` and
+  `logging beta metrics update` commands have changed their flags and
+   importantly now use Logging V2 filter syntax. See the help for more
+  information.
+* (Google App Engine) Flexible deployments now skip files matching `node_modules` and
+  `.git` by default, but no longer skip other hidden files by default. Standard
+  deployments are not changing.
+* (Google Compute Engine)
+  `gcloud compute target-pools set-backup --backup-pool` and
+  `gcloud compute project-info set-usage-bucket --bucket` flags now warn if you
+  provide an empty argument; use `--no-backup-pool` and `--no-bucket instead`.
+* (Google Cloud Bigtable) Removed `gcloud alpha bigtable` command group; please
+  use `gcloud beta bigtable` for all Cloud Bigtable operations.
+* (Stackdriver Debugger) Added a `--location` option to several
+  `gcloud beta debug` commands, to separate out the processing of resource IDs
+  from filename patterns. These commands now take only resource IDs as
+  positional parameters.
+
+### Google Cloud Datalab
+
+* Added the command-line tool for Google Cloud Datalab in the Cloud SDK; call
+  it via the `datalab` script.
+
+### Google Cloud Key Management Service
+
+* Added the `gcloud beta kms` commands for key management.
+
+### Google Cloud Logging
+
+* Add `--billing-account` flag to `gcloud logging read`
+* gcloud beta logging metrics list/describe now output the version of the filter associated with the metric
+
+### Google Cloud ML
+
+* The `gcloud beta ml jobs submit training` now takes a `--scale-tier` flag.
+* Support gzipped TFRecord file type for
+  `gcloud beta ml jobs submit prediction`.
+
+
+### Google App Engine
+
+* (Google App Engine) Fixed bug with `gcloud app instances describe`.  --service and --version flags are now required.
+* `gcloud beta app deploy` now uses multi-threading rather than
+  multi-processing for file uploads; if you've been seeing issues on Windows,
+  please try the `beta` command out.
+* `gcloud app versions migrate` is now GA.
+* `gcloud app instances delete` is now GA.
+* Added `gcloud beta app operations` commands.
+* Added `gcloud beta app instances delete` command.
+
+### Google Compute Engine
+
+* `gcloud beta compute images create` now has a `--guest-os-features` flag for
+  enabling specific OS supported features.
+* Use the new scopes format (see `--help` for deetails) for
+  - `gcloud alpha compute instances create`
+  - `gcloud alpha compute instances create-from-container`
+  - `gcloud alpha compute instance-templates create`
+  - `gcloud alpha compute instance-templates create-from-container`
+  - `gcloud beta compute instances create`
+  - `gcloud beta compute instance-templates create`
+* Add `--custom-extensions` flag to:
+  `gcloud alpha compute instances create`,
+  `gcloud alpha compute instances set-machine-type`, and
+  `gcloud alpha compute instance-templates create`
+
+### Google Compute Engine (Networking)
+
+* The `--host` flag for `gcloud alpha compute url-maps invalidate-cdn-cache` is
+  now available in the GA version of the command.
+
+### Stackdriver Debugger
+
+* Fixed log view URLs in the debug logpoints commands to use the V2 query syntax.
+
+### Google Service Management
+
+* `--validate-only` flag added to `gcloud service-management deploy` command
+
+### Google Cloud Functions
+
+* The `--trigger-params` flag has been renamed to `--trigger-path`
+  (the `path=` specifier is no longer necessary). The old flag has been
+  deprecated and will be removed or `gcloud alpha functions deploy`.
+* Restore `gcloud alpha functions get-logs` command.
+* Restore deprecated flags `--trigger-topic`, `--trigger-bucket`, `--source`,
+  `--bucket`, and `--trigger-gs-uri` to `gcloud alpha functions deploy`
+  command.
+
+### Google Container Engine
+
+* Update Google Container Engine's kubectl from version 1.4.6 to 1.5.1.
+
+### Google Cloud Bigtable
+* The `cbt` command line tool component is now available. See:
+  https://cloud.google.com/bigtable/docs/go/cbt-reference
+
+### Google Cloud Datastore
+
+* `gcloud datastore create-indexes` and `cleanup-indexes` are now GA
+
+### Google Container Registry
+
+* `docker-credential-gcr` has been upgraded to v1.3 and now supports Docker
+  client v1.14 credential helpers. `docker-credential-gcr` will now
+  preferentially act as a credential helper (as opposed to credential store) on
+  Docker client versions 1.14+. Update (or install) the `docker-credential-gcr`
+  component and run `docker-credential-gcr configure-docker` to configure your
+  Docker client to use `docker-credential-gcr` to authenticate operations on
+  your GCR repositories.
+
+### Google Cloud Deployment Manager
+
+* Added labels support to the
+  `gcloud alpha deployment-manager deployments create` and `update` commands
+  (via the `--labels` and `--{update,remove}-labels` flags respectively).
+* Introduce new syntax `key:val,foo:bar` for `--properties` flag in all
+  `gcloud deployment-manager` commands. The old `key=val,foo=bar` syntax is
+  deprecated.
+
 
 ## 138.0.0 (2016/12/14)
 

@@ -35,7 +35,7 @@ import yaml
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
 FINGERPRINT_REGEX = re.compile(
     r'^([a-f0-9][a-f0-9]:){19}[a-f0-9][a-f0-9]$', re.IGNORECASE)
-OP_BASE_CMD = 'gcloud beta service-management operations '
+OP_BASE_CMD = 'gcloud service-management operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
 SERVICES_COLLECTION = 'servicemanagement-v1.services'
@@ -87,7 +87,15 @@ def ParseOperationName(op_name):
 
 
 def GetValidatedProject(project_id):
-  # If supplied a project explicitly, validate it, then return it.
+  """Validate the project ID, if supplied, otherwise return the default project.
+
+  Args:
+    project_id: The ID of the project to validate. If None, gcloud's default
+                project's ID will be returned.
+
+  Returns:
+    The validated project ID.
+  """
   if project_id:
     properties.VALUES.core.project.Validate(project_id)
   else:
@@ -138,11 +146,47 @@ def GetProducedListRequest(project_id):
 
 
 def PrettyPrint(resource, print_format='json'):
-  """Prints the given resource."""
+  """Prints the given resource.
+
+  Args:
+    resource: The resource to print out.
+    print_format: The print_format value to pass along to the resource_printer.
+  """
   resource_printer.Print(
       resources=[resource],
       print_format=print_format,
       out=log.out)
+
+
+def FilenameMatchesExtension(filename, extensions):
+  """Checks to see if a file name matches one of the given extensions.
+
+  Args:
+    filename: The full path to the file to check
+    extensions: A list of candidate extensions.
+
+  Returns:
+    True if the filename matches one of the extensions, otherwise False.
+  """
+  f = filename.lower()
+  for ext in extensions:
+    if f.endswith(ext.lower()):
+      return True
+  return False
+
+
+def IsProtoDescriptor(filename):
+  return FilenameMatchesExtension(filename, ['.pb', '.descriptor'])
+
+
+def ReadServiceConfigFile(file_path):
+  try:
+    mode = 'rb' if IsProtoDescriptor(file_path) else 'r'
+    with open(file_path, mode) as f:
+      return f.read()
+  except IOError as ex:
+    raise exceptions.BadFileException(
+        'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 
 
 def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
@@ -170,16 +214,23 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
   return service_resource.id
 
 
-def PushMultipleServiceConfigFiles(service_name, config_files, async):
+def GetServiceConfigIdFromSubmitConfigSourceResponse(response):
+  return response.get('serviceConfig', {}).get('id')
+
+
+def PushMultipleServiceConfigFiles(service_name, config_files, async,
+                                   validate_only=False):
   """Pushes a given set of service configuration files.
 
   Args:
     service_name: name of the service.
     config_files: a list of ConfigFile message objects.
     async: whether to wait for aync operations or not.
+    validate_only: whether to perform a validate-only run of the operation
+                     or not.
 
   Returns:
-    Config Id assigned by the server which is the service configuration Id
+    Full response from the SubmitConfigSource request.
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -189,6 +240,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async):
 
   config_source_request = messages.SubmitConfigSourceRequest(
       configSource=config_source,
+      validateOnly=validate_only,
   )
   submit_request = (
       messages.ServicemanagementServicesConfigsSubmitRequest(
@@ -200,7 +252,6 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async):
 
   response = operation.get('response', {})
   diagnostics = response.get('diagnostics', [])
-  svc_config = response.get('serviceConfig', {})
 
   for diagnostic in diagnostics:
     kind = diagnostic.get('kind', '').upper()
@@ -208,11 +259,12 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async):
     logger('{l}: {m}'.format(
         l=diagnostic.get('location'), m=diagnostic.get('message')))
 
-  return svc_config.get('id')
+  return response
 
 
 def PushOpenApiServiceConfig(
-    service_name, spec_file_contents, spec_file_path, async):
+    service_name, spec_file_contents, spec_file_path, async,
+    validate_only=False):
   """Pushes a given Open API service configuration.
 
   Args:
@@ -220,9 +272,11 @@ def PushOpenApiServiceConfig(
     spec_file_contents: the contents of the Open API spec file.
     spec_file_path: the path of the Open API spec file.
     async: whether to wait for aync operations or not.
+    validate_only: whether to perform a validate-only run of the operation
+                   or not.
 
   Returns:
-    Config Id assigned by the server which is the service configuration Id
+    Full response from the SubmitConfigSource request.
   """
   messages = GetMessagesModule()
 
@@ -233,7 +287,8 @@ def PushOpenApiServiceConfig(
       fileType=(messages.ConfigFile.
                 FileTypeValueValuesEnum.OPEN_API_YAML),
   )
-  return PushMultipleServiceConfigFiles(service_name, [config_file], async)
+  return PushMultipleServiceConfigFiles(service_name, [config_file], async,
+                                        validate_only=validate_only)
 
 
 def CreateServiceIfNew(service_name, project):

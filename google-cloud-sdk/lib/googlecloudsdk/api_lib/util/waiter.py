@@ -25,6 +25,12 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 
 
+_TIMEOUT_MESSAGE = (
+    'The operations may still be underway remotely and may still succeed; '
+    'use gcloud list and describe commands or '
+    'https://console.developers.google.com/ to check resource state.')
+
+
 class TimeoutError(exceptions.Error):
   pass
 
@@ -144,7 +150,7 @@ class CloudOperationPoller(OperationPoller):
 def WaitFor(poller, operation_ref, message,
             pre_start_sleep_ms=1000,
             max_retrials=None,
-            max_wait_ms=300000,
+            max_wait_ms=1800000,
             exponential_sleep_multiplier=1.4,
             jitter_ms=1000,
             wait_ceiling_ms=180000,
@@ -203,14 +209,16 @@ def WaitFor(poller, operation_ref, message,
               sleep_ms=sleep_ms)
       except retry.WaitException:
         raise TimeoutError(
-            'Operation {0} has not finished in {1} seconds'
-            .format(operation_ref, int(max_wait_ms / 1000)))
+            'Operation {0} has not finished in {1} seconds. {2}'
+            .format(operation_ref, int(max_wait_ms / 1000), _TIMEOUT_MESSAGE))
       except retry.MaxRetrialsException as e:
         raise TimeoutError(
             'Operation {0} has not finished in {1} seconds '
-            'after max {2} retrials'
+            'after max {2} retrials. {3}'
             .format(operation_ref,
-                    int(e.state.time_passed_ms / 1000), e.state.retrial))
+                    int(e.state.time_passed_ms / 1000),
+                    e.state.retrial,
+                    _TIMEOUT_MESSAGE))
 
   except AbortWaitError:
     # Write this out now that progress tracker is done.
@@ -222,3 +230,4 @@ def WaitFor(poller, operation_ref, message,
 
 def _SleepMs(miliseconds):
   time.sleep(miliseconds / 1000)
+

@@ -49,7 +49,7 @@ def WaitForOperation(operation_service, operation, registry=None):
   if not registry:
     registry = resources.REGISTRY
   ref = registry.Parse(
-      operation.name.split('/')[-1],
+      operation.name,
       collection='ml.projects.operations')
   request = (operation_service.client
              .MESSAGES_MODULE.MlProjectsOperationsGetRequest(

@@ -13,7 +13,7 @@
 # limitations under the License.
 """Common utility functions for Updater."""
 
-from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
@@ -56,7 +56,7 @@ def WaitForOperation(client, operation_ref, message):
       if operation.status == 'DONE':
         return True
       pt.Tick()
-      time_utils.Sleep(2)
+      time_util.Sleep(2)
 
 
 def PrettyPrint(resource, print_format='json'):

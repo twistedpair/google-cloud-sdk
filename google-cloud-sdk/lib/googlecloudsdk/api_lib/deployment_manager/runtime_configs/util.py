@@ -57,6 +57,7 @@ def WaiterPath(project, config, waiter):
   return '/'.join([ConfigPath(project, config), 'waiters', waiter])
 
 
+# TODO(user): these parse functions should live in command_lib.
 def ParseConfigName(config_name):
   """Parse a config name or URL, and return a resource.
 
@@ -74,41 +75,6 @@ def ParseConfigName(config_name):
                                   params=params)
 
 
-def _ParseMultipartName(name, args, collection, resource_field):
-  """Parse a multi-part name or URL, and return a resource.
-
-  Args:
-    name: The resource name or URL.
-    args: CLI arguments, possibly containing a config name.
-    collection: The resource collection name.
-    resource_field: The field within the resulting resource that contains the
-        resource name. E.g., "variablesId".
-
-  Returns:
-    The parsed resource.
-  """
-  params = {
-      'projectsId': lambda: ParseConfigName(ConfigName(args)).projectsId,
-      'configsId': lambda: ParseConfigName(ConfigName(args)).configsId
-  }
-
-  # Workaround for resources.REGISTRY.Parse's inability to parse names with '/'
-  # characters. If the given resource name is not a full http URL,
-  # set the resource_field parameter to the name and pass None as the
-  # string to parse. This causes Parse to construct a resource using
-  # only the provided separate parameters.
-
-  if IsHttpResourceName(name):
-    resource_name = name
-  else:
-    resource_name = None
-    params[resource_field] = name
-
-  return resources.REGISTRY.Parse(resource_name,
-                                  collection=collection,
-                                  params=params)
-
-
 def ParseVariableName(variable_name, args):
   """Parse a variable name or URL, and return a resource.
 
@@ -119,9 +85,20 @@ def ParseVariableName(variable_name, args):
   Returns:
     The parsed resource.
   """
-  return _ParseMultipartName(variable_name, args,
-                             'runtimeconfig.projects.configs.variables',
-                             'variablesId')
+  # Parameter values are lazily-evaluated only if they're actually necessary.
+  # If the user passes a full URL for the variable name, a separate
+  # --config-name parameter is not necessary. Without lazy evaluation,
+  # ConfigName function will raise an error if --config-name is unspecified,
+  # even if the variable name is a URL.
+  params = {
+      'projectsId': lambda: ParseConfigName(ConfigName(args)).projectsId,
+      'configsId': lambda: ParseConfigName(ConfigName(args)).configsId
+  }
+
+  return resources.REGISTRY.Parse(
+      variable_name,
+      collection='runtimeconfig.projects.configs.variables',
+      params=params)
 
 
 def ParseWaiterName(waiter_name, args):
@@ -200,11 +177,6 @@ def IsDeadlineExceededError(error):
   return getattr(error, 'status_code', None) == 504
 
 
-def IsHttpResourceName(name):
-  name = name.lower()
-  return name.startswith('http://') or name.startswith('https://')
-
-
 def IsSocketTimeout(error):
   # For SSL timeouts, the error does not extend socket.timeout.
   # There doesn't appear to be any way to differentiate an SSL
@@ -235,9 +207,7 @@ def WaitForWaiter(waiter_resource, sleep=None, max_wait=None):
 
   request = (waiter_client.client.MESSAGES_MODULE
              .RuntimeconfigProjectsConfigsWaitersGetRequest(
-                 projectsId=waiter_resource.projectsId,
-                 configsId=waiter_resource.configsId,
-                 waitersId=waiter_resource.waitersId))
+                 name=waiter_resource.RelativeName()))
 
   with progress_tracker.ProgressTracker(
       'Waiting for waiter [{0}] to finish'.format(waiter_resource.Name())):

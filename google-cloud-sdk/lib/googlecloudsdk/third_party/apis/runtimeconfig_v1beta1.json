@@ -383,6 +383,11 @@
         "policy": {
           "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
           "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, a default\nmask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -727,15 +732,16 @@
           "methods": {
             "list": {
               "id": "runtimeconfig.projects.configs.list",
-              "path": "v1beta1/projects/{projectsId}/configs",
+              "path": "v1beta1/{+parent}/configs",
               "flatPath": "v1beta1/projects/{projectsId}/configs",
               "httpMethod": "GET",
               "description": "Lists all the RuntimeConfig resources within project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
+                "parent": {
+                  "description": "The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -751,7 +757,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "response": {
                 "$ref": "ListConfigsResponse"
@@ -763,27 +769,21 @@
             },
             "get": {
               "id": "runtimeconfig.projects.configs.get",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "GET",
               "description": "Gets information about a RuntimeConfig resource.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the RuntimeConfig resource to retrieve, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                "name": {
+                  "description": "The name of the RuntimeConfig resource to retrieve, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "name"
               ],
               "response": {
                 "$ref": "RuntimeConfig"
@@ -795,15 +795,16 @@
             },
             "create": {
               "id": "runtimeconfig.projects.configs.create",
-              "path": "v1beta1/projects/{projectsId}/configs",
+              "path": "v1beta1/{+parent}/configs",
               "flatPath": "v1beta1/projects/{projectsId}/configs",
               "httpMethod": "POST",
               "description": "Creates a new RuntimeConfig resource. The configuration name must be\nunique within project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
+                "parent": {
+                  "description": "The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "requestId": {
@@ -813,7 +814,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "request": {
                 "$ref": "RuntimeConfig"
@@ -828,27 +829,21 @@
             },
             "update": {
               "id": "runtimeconfig.projects.configs.update",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "PUT",
               "description": "Updates a RuntimeConfig resource. The configuration must exist beforehand.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the RuntimeConfig resource to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                "name": {
+                  "description": "The name of the RuntimeConfig resource to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "name"
               ],
               "request": {
                 "$ref": "RuntimeConfig"
@@ -863,27 +858,21 @@
             },
             "delete": {
               "id": "runtimeconfig.projects.configs.delete",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "DELETE",
               "description": "Deletes a RuntimeConfig resource.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The RuntimeConfig resource to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                "name": {
+                  "description": "The RuntimeConfig resource to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "name"
               ],
               "response": {
                 "$ref": "Empty"
@@ -895,27 +884,21 @@
             },
             "setIamPolicy": {
               "id": "runtimeconfig.projects.configs.setIamPolicy",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy",
+              "path": "v1beta1/{+resource}:setIamPolicy",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy",
               "httpMethod": "POST",
               "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `resource`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "resource"
               ],
               "request": {
                 "$ref": "SetIamPolicyRequest"
@@ -930,27 +913,21 @@
             },
             "getIamPolicy": {
               "id": "runtimeconfig.projects.configs.getIamPolicy",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy",
+              "path": "v1beta1/{+resource}:getIamPolicy",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy",
               "httpMethod": "GET",
               "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `resource`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "resource"
               ],
               "response": {
                 "$ref": "Policy"
@@ -962,27 +939,21 @@
             },
             "testIamPermissions": {
               "id": "runtimeconfig.projects.configs.testIamPermissions",
-              "path": "v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions",
+              "path": "v1beta1/{+resource}:testIamPermissions",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions",
               "httpMethod": "POST",
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "configsId": {
-                  "description": "Part of `resource`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "configsId"
+                "resource"
               ],
               "request": {
                 "$ref": "TestIamPermissionsRequest"
@@ -1002,34 +973,21 @@
               "methods": {
                 "get": {
                   "id": "runtimeconfig.projects.configs.operations.get",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}",
                   "httpMethod": "GET",
                   "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the operation resource.",
+                    "name": {
+                      "description": "The name of the operation resource.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "operationsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "operationsId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Operation"
@@ -1041,27 +999,16 @@
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.operations.testIamPermissions",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions",
                   "httpMethod": "GET",
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "operationsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.+$",
                       "type": "string"
                     },
                     "permissions": {
@@ -1072,9 +1019,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "operationsId"
+                    "resource"
                   ],
                   "response": {
                     "$ref": "TestIamPermissionsResponse"
@@ -1090,21 +1035,16 @@
               "methods": {
                 "list": {
                   "id": "runtimeconfig.projects.configs.variables.list",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
+                  "path": "v1beta1/{+parent}/variables",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "httpMethod": "GET",
                   "description": "Lists variables within given a configuration, matching any provided filters.\nThis only lists variable names, not the values.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The path to the RuntimeConfig resource for which you want to list variables.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                    "parent": {
+                      "description": "The path to the RuntimeConfig resource for which you want to list variables.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1125,8 +1065,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "ListVariablesResponse"
@@ -1138,34 +1077,21 @@
                 },
                 "get": {
                   "id": "runtimeconfig.projects.configs.variables.get",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "GET",
                   "description": "Gets information about a single variable.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the variable to return, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIBLE_NAME]`",
+                    "name": {
+                      "description": "The name of the variable to return, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIBLE_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "variablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "variablesId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Variable"
@@ -1177,34 +1103,21 @@
                 },
                 "watch": {
                   "id": "runtimeconfig.projects.configs.variables.watch",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch",
+                  "path": "v1beta1/{+name}:watch",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch",
                   "httpMethod": "POST",
                   "description": "Watches a specific variable and waits for a change in the variable's value.\nWhen there is a change, this method returns the new value or times out.\n\nIf a variable is deleted while being watched, the `variableState` state is\nset to `DELETED` and the method returns the last known variable `value`.\n\nIf you set the deadline for watching to a larger value than internal timeout\n(60 seconds), the current variable value is returned and the `variableState`\nwill be `VARIABLE_STATE_UNSPECIFIED`.\n\nTo learn more about creating a watcher, read the\n[Watching a Variable for Changes](\/deployment-manager\/runtime-configurator\/watching-a-variable)\ndocumentation.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the variable to watch, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                    "name": {
+                      "description": "The name of the variable to watch, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "variablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "variablesId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "WatchVariableRequest"
@@ -1219,21 +1132,16 @@
                 },
                 "create": {
                   "id": "runtimeconfig.projects.configs.variables.create",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
+                  "path": "v1beta1/{+parent}/variables",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "httpMethod": "POST",
                   "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting Data](\/deployment-manager\/runtime-configurator\/set-and-get-variables)\ndocumentation.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                    "parent": {
+                      "description": "The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1243,8 +1151,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "Variable"
@@ -1259,34 +1166,21 @@
                 },
                 "update": {
                   "id": "runtimeconfig.projects.configs.variables.update",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "PUT",
                   "description": "Updates an existing variable with a new value.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the variable to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
+                    "name": {
+                      "description": "The name of the variable to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "variablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "variablesId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "Variable"
@@ -1301,27 +1195,16 @@
                 },
                 "delete": {
                   "id": "runtimeconfig.projects.configs.variables.delete",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes a variable or multiple variables.\n\nIf you specify a variable name, then that variable is deleted. If you\nspecify a prefix and `recursive` is true, then all variables with that\nprefix are deleted. You must set a `recursive` to true if you delete\nvariables by prefix.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the variable to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
+                    "name": {
+                      "description": "The name of the variable to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "variablesId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
                       "type": "string"
                     },
                     "recursive": {
@@ -1331,9 +1214,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "variablesId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Empty"
@@ -1345,27 +1226,16 @@
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.variables.testIamPermissions",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions",
                   "httpMethod": "GET",
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "variablesId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
                       "type": "string"
                     },
                     "permissions": {
@@ -1376,9 +1246,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "variablesId"
+                    "resource"
                   ],
                   "response": {
                     "$ref": "TestIamPermissionsResponse"
@@ -1394,21 +1262,16 @@
               "methods": {
                 "list": {
                   "id": "runtimeconfig.projects.configs.waiters.list",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
+                  "path": "v1beta1/{+parent}/waiters",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
                   "httpMethod": "GET",
                   "description": "List waiters within the given configuration.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The path to the configuration for which you want to get a list of waiters.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                    "parent": {
+                      "description": "The path to the configuration for which you want to get a list of waiters.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1424,8 +1287,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "ListWaitersResponse"
@@ -1437,34 +1299,21 @@
                 },
                 "get": {
                   "id": "runtimeconfig.projects.configs.waiters.get",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
                   "httpMethod": "GET",
                   "description": "Gets information about a single waiter.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The fully-qualified name of the Waiter resource object to retrieve, in the\nformat:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
+                    "name": {
+                      "description": "The fully-qualified name of the Waiter resource object to retrieve, in the\nformat:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "waitersId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "waitersId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Waiter"
@@ -1476,21 +1325,16 @@
                 },
                 "create": {
                   "id": "runtimeconfig.projects.configs.waiters.create",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
+                  "path": "v1beta1/{+parent}/waiters",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
                   "httpMethod": "POST",
                   "description": "Creates a Waiter resource. This operation returns a long-running Operation\nresource which can be polled for completion. However, a waiter with the\ngiven name will exist (and can be retrieved) prior to the operation\ncompleting. If the operation fails, the failed Waiter resource will\nstill exist and must be deleted prior to subsequent creation attempts.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. The path to the configuration that will own the waiter.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
+                    "parent": {
+                      "description": "The path to the configuration that will own the waiter.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1500,8 +1344,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "Waiter"
@@ -1516,34 +1359,21 @@
                 },
                 "delete": {
                   "id": "runtimeconfig.projects.configs.waiters.delete",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes the waiter with the specified name.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The Waiter resource to delete, in the format:\n\n `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
+                    "name": {
+                      "description": "The Waiter resource to delete, in the format:\n\n `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "waitersId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "waitersId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "Empty"
@@ -1555,27 +1385,16 @@
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.waiters.testIamPermissions",
-                  "path": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions",
                   "httpMethod": "GET",
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "configsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "waitersId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     },
                     "permissions": {
@@ -1586,9 +1405,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "configsId",
-                    "waitersId"
+                    "resource"
                   ],
                   "response": {
                     "$ref": "TestIamPermissionsResponse"

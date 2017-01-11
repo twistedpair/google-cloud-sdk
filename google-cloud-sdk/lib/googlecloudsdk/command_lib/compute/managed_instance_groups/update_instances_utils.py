@@ -52,6 +52,8 @@ def ParseFixedOrPercent(flag_name, flag_param_name,
   Returns:
     FixedOrPercent message object.
   """
+  if fixed_or_percent_str is None:
+    return None
   fixed = _ParseFixed(fixed_or_percent_str)
   if fixed is not None:
     return messages.FixedOrPercent(fixed=fixed)

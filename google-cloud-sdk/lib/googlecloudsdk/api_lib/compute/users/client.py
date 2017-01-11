@@ -14,9 +14,9 @@
 """Common functions for users."""
 from socket import gethostname
 from googlecloudsdk.api_lib.compute import request_helper
-from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
@@ -135,7 +135,7 @@ class UserResourceFetcher(object):
     description = 'Added by gcloud compute from {0}'.format(self.GetHostName())
     default_expiration = '1d'
     parser = arg_parsers.Duration()
-    expiration_rfc3339_str = time_utils.CalculateExpiration(
+    expiration_rfc3339_str = time_util.CalculateExpiration(
         parser(default_expiration))
 
     request = self.PublicKeyGenerateUploadRequest(

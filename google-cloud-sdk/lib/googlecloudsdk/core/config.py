@@ -175,6 +175,8 @@ CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
 
+REAUTH_SCOPE = 'https://www.googleapis.com/auth/accounts.reauth'
+
 
 def EnsureSDKWriteAccess(sdk_root_override=None):
   """Error if the current user does not have write access to the sdk root.

@@ -171,6 +171,45 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # cloud key management system
+
+    'cloudkms.projects.locations': resource_info.ResourceInfo(
+        list_format="""
+          table(
+            locationId
+          )
+        """,
+    ),
+
+    'cloudkms.projects.locations.keyRings': resource_info.ResourceInfo(
+        list_format="""
+          table(
+            name
+          )
+        """,
+    ),
+
+    'cloudkms.projects.locations.keyRings.cryptoKeys':
+        resource_info.ResourceInfo(
+            list_format="""
+              table(
+                name,
+                purpose,
+                primary.state:label=PRIMARY_STATE
+              )
+            """,
+        ),
+
+    'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions':
+        resource_info.ResourceInfo(
+            list_format="""
+              table(
+                name,
+                state
+              )
+            """,
+        ),
+
     # cloud resource manager
 
     'cloudresourcemanager.folders': resource_info.ResourceInfo(
@@ -339,6 +378,24 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.firewalls.alpha': resource_info.ResourceInfo(
+        cache_command='compute firewall-rules list',
+        list_format="""
+          table(
+            name,
+            network.basename(),
+            direction,
+            priority,
+            sourceRanges.list():label=SRC_RANGES,
+            destinationRanges.list():label=DEST_RANGES,
+            allowed[].map().firewall_rule().list():label=ALLOW,
+            denied[].map().firewall_rule().list():label=DENY,
+            sourceTags.list():label=SRC_TAGS,
+            targetTags.list():label=TARGET_TAGS
+          )
+        """,
+    ),
+
     'compute.forwardingRules': resource_info.ResourceInfo(
         cache_command='compute forwarding-rules list',
         list_format="""
@@ -376,7 +433,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.hosts': resource_info.ResourceInfo(
-        cache_command='compute hosts list',
+        cache_command='compute sole-tenancy hosts list',
         list_format="""
           table(
             name,
@@ -1012,10 +1069,11 @@ RESOURCE_REGISTRY = {
         resource_info.ResourceInfo(
             list_format="""
               table(
-                deployment:format='default(name, id, fingerprint, insertTime,
-                manifest.basename(), operation.operationType, operation.name,
-                operation.progress, operation.status, operation.user,
-                operation.endTime, operation.startTime,operation.error)',
+                deployment:format='default(name, id, description, fingerprint,
+                insertTime, manifest.basename(), labels, operation.operationType,
+                operation.name, operation.progress, operation.status,
+                operation.user, operation.endTime, operation.startTime,
+                operation.error, update)',
                 resources:format='table(
                   name:label=NAME,
                   type:label=TYPE,
@@ -1214,7 +1272,8 @@ RESOURCE_REGISTRY = {
           table(
             name,
             description,
-            filter
+            filter,
+            version
           )
         """,
     ),
@@ -1469,6 +1528,7 @@ RESOURCE_REGISTRY = {
     # service management (inception)
 
     'servicemanagement-v1.services': resource_info.ResourceInfo(
+        bypass_cache=True,
         list_format="""
           table(
             serviceName:label=NAME,
@@ -1768,4 +1828,3 @@ def Get(collection, must_be_registered=True):
         'Collection [{0}] is not registered.'.format(collection))
   info.collection = collection
   return info
-

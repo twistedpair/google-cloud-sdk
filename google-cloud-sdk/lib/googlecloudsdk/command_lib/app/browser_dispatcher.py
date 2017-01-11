@@ -14,8 +14,9 @@
 
 """Tools for opening URL:s related to the app in the browser."""
 
-
 from googlecloudsdk.api_lib.app import deploy_command_util
+from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
+from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
 
@@ -41,9 +42,15 @@ def BrowseApp(project, service=None, version=None):
     project: str, project ID.
     service: str, (optional) specific service, defaults to 'default'
     version: str, (optional) specific version, defaults to latest
-  """
-  url = deploy_command_util.GetAppHostname(
-      app_id=project, service=service, version=version,
-      use_ssl=appinfo.SECURE_HTTPS, deploy=False)
-  OpenURL(url)
 
+  Raises:
+    MissingApplicationError: If an app does not exist.
+  """
+  try:
+    url = deploy_command_util.GetAppHostname(
+        app_id=project, service=service, version=version,
+        use_ssl=appinfo.SECURE_HTTPS, deploy=False)
+  except api_lib_exceptions.NotFoundError:
+    log.debug('No app found:', exc_info=True)
+    raise exceptions.MissingApplicationError(project)
+  OpenURL(url)

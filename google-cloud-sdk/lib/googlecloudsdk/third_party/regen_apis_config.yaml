@@ -37,14 +37,8 @@ apis:
     v1:
       discovery_doc: apikeys_v1.json
   appengine:
-    v1beta5:
-      discovery_doc: appengine_v1beta5.json
-      unelidable_request_methods:
-        - appengine.apps.create
-        - appengine.apps.patch
-        - appengine.apps.emailSenders.create
-        - appengine.apps.services.patch
-        - appengine.apps.services.versions.create
+    v1:
+      discovery_doc: appengine_v1.json
       default: true
   bigquery:
     v2:
@@ -66,6 +60,7 @@ apis:
   bio:
     v1:
       discovery_doc: bio_v1.json
+      default: true
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -92,6 +87,9 @@ apis:
         # For now, we only accept global buckets, but should give them to the
         # EventTrigger API in the format that it expects (with the underscore).
         projects.buckets: "projects/_/buckets/{bucketId}"
+  cloudkms:
+    v1beta1:
+      discovery_doc: cloudkms_v1beta1.json
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
@@ -184,6 +182,11 @@ apis:
   source:
     v1:
       discovery_doc: source_v1.json
+  sourcerepo:
+    v1:
+      discovery_doc: sourcerepo_v1.json
+      resources:
+        projects: "projects/{projectsId}"
   sqladmin:
     v1beta3:
       discovery_doc: sqladmin_v1beta3.json

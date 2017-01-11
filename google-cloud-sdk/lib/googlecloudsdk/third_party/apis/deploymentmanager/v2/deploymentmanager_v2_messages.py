@@ -214,13 +214,29 @@ class DeploymentmanagerDeploymentsCancelPreviewRequest(_messages.Message):
 class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsDeleteRequest object.
 
+  Enums:
+    DeletePolicyValueValuesEnum: Sets the policy to use for deleting
+      resources.
+
   Fields:
+    deletePolicy: Sets the policy to use for deleting resources.
     deployment: The name of the deployment for this request.
     project: The project ID for this request.
   """
 
-  deployment = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  class DeletePolicyValueValuesEnum(_messages.Enum):
+    """Sets the policy to use for deleting resources.
+
+    Values:
+      ABANDON: <no description>
+      DELETE: <no description>
+    """
+    ABANDON = 0
+    DELETE = 1
+
+  deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 1, default=u'DELETE')
+  deployment = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):

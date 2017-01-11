@@ -123,13 +123,6 @@ class RevokeError(Error):
   """Exception for when there was a problem revoking."""
 
 
-def _GetStorageKeyForAccount(account):
-  return {
-      'type': 'google-cloud-sdk',
-      'account': account,
-  }
-
-
 def _StorageForAccount(account):
   """Get the oauth2client.multistore_file storage.
 
@@ -143,10 +136,38 @@ def _StorageForAccount(account):
   parent_dir, unused_name = os.path.split(storage_path)
   files.MakeDir(parent_dir)
 
-  storage = multistore_file.get_credential_storage_custom_key(
-      filename=storage_path,
-      key_dict=_GetStorageKeyForAccount(account))
-  return storage
+  # We only care about account value of the key, yet store 'type' for backwards
+  # compatibility. There should be no more than one key in this list.
+  keys = [k for k in
+          multistore_file.get_all_credential_keys(filename=storage_path)
+          if k['account'] == account]
+  if not keys:  # New key.
+    return multistore_file.get_credential_storage_custom_key(
+        filename=storage_path,
+        key_dict={'type': 'google-cloud-sdk', 'account': account})
+
+  # We do not expect any other type keys in the credential store. Just in case
+  # somehow they occur:
+  #  1. prefer key with no type
+  #  2. use google-cloud-sdk type
+  #  3. use any other
+  # Also log all cases where type was present but was not google-cloud-sdk.
+  right_key = keys[0]
+  for key in keys:
+    if 'type' in key:
+      if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
+        right_key = key
+      else:
+        log.file_only_logger.warn(
+            'Credential store has unknown type [{0}] key for account [{1}]'
+            .format(key['type'], key['account']))
+    else:
+      right_key = key
+  if 'type' in right_key:
+    right_key['type'] = 'google-cloud-sdk'
+
+  return multistore_file.get_credential_storage_custom_key(
+      filename=storage_path, key_dict=right_key)
 
 
 def AvailableAccounts():
@@ -162,8 +183,7 @@ def AvailableAccounts():
   all_keys = multistore_file.get_all_credential_keys(
       filename=config.Paths().credentials_path)
 
-  accounts = [key['account'] for key in all_keys
-              if key.get('type') == 'google-cloud-sdk']
+  accounts = sorted(set([key['account'] for key in all_keys]))
 
   accounts.extend(c_gce.Metadata().Accounts())
 

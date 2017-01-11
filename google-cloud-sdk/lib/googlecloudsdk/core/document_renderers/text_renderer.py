@@ -22,8 +22,6 @@ class TextRenderer(renderer.Renderer):
   """Renders markdown to text.
 
   Attributes:
-    _BULLET_DEDENT: Nested bullet indentation adjustment in characters.
-    _INDENT: Indentation increment in characters for each level.
     _attr: console_attr.ConsoleAttr object.
     _bullet: List of bullet characters indexed by list level modulo #bullets.
     _blank: True if the output already contains a blank line. Used to avoid
@@ -36,9 +34,15 @@ class TextRenderer(renderer.Renderer):
     _level: The section or list level counting from 0.
     _table: True if currently rendering a table.
   """
-  _BULLET_DEDENT = 2
-  _INDENT = 4
-  _SPLIT_INDENT = 2
+  INDENT = 4
+  SPLIT_INDENT = 2
+
+  class Indent(object):
+    """Hanging indent stack."""
+
+    def __init__(self):
+      self.indent = TextRenderer.INDENT
+      self.hanging_indent = self.indent
 
   def __init__(self, *args, **kwargs):
     super(TextRenderer, self).__init__(*args, **kwargs)
@@ -54,7 +58,7 @@ class TextRenderer(renderer.Renderer):
       self._csi_char = self._csi_char[0]
     self._fill = 0
     self._ignore_width = False
-    self._indent = [self._INDENT]
+    self._indent = [self.Indent()]
     self._level = 0
     self._table = False
 
@@ -66,25 +70,47 @@ class TextRenderer(renderer.Renderer):
       self._blank = False
       self._fill = 0
 
-  def _SetIndentation(self, level, bullet=False, indent=None):
-    """Sets the markdown list level, type and character indent.
+  def _SetIndent(self, level, indent=None, hanging_indent=None):
+    """Sets the markdown list level and indentations.
 
     Args:
       level: int, The desired markdown list level.
-      bullet: bool, True if indentation is for a bullet list.
       indent: int, The new indentation.
+      hanging_indent: int, The hanging indentation. This is subtracted from the
+        prevailing indent to decrease the indentation of the next input line
+        for this effect:
+            HANGING INDENT ON THE NEXT LINE
+               PREVAILING INDENT
+               ON SUBSEQUENT LINES
     """
     if self._level < level:
-      # Level increases are strictly 1 at a time.
-      if level >= len(self._indent):
-        self._indent.append(0)
-      if indent is None:
-        indent = self._INDENT
-        if bullet and level > 1:
-          # Nested bullet indentation is less than normal indent for aesthetics.
-          indent -= self._BULLET_DEDENT
-      self._indent[level] = self._indent[level - 1] + indent
-    self._level = level
+      # The level can increase by 1 or more. Loop through each so that
+      # intervening levels are handled the same.
+      while self._level < level:
+        prev_level = self._level
+        self._level += 1
+        if self._level >= len(self._indent):
+          self._indent.append(self.Indent())
+        self._indent[self._level].indent = (
+            self._indent[prev_level].indent + indent)
+        if (self._level > 1 and
+            self._indent[prev_level].hanging_indent ==
+            self._indent[prev_level].indent):
+          # Bump the indent by 1 char for nested indentation. Top level looks
+          # fine (aesthetically) without it.
+          self._indent[self._level].indent += 1
+        self._indent[self._level].hanging_indent = (
+            self._indent[self._level].indent)
+        if hanging_indent is not None:
+          # Adjust the hanging indent if specified.
+          self._indent[self._level].hanging_indent -= hanging_indent
+    else:
+      # Decreasing level just sets the indent stack level, no state to clean up.
+      self._level = level
+      if hanging_indent is not None:
+        # Change hanging indent on existing level.
+        self._indent[self._level].indent = (
+            self._indent[self._level].hanging_indent + hanging_indent)
 
   def Example(self, line):
     """Displays line as an indented example.
@@ -92,7 +118,7 @@ class TextRenderer(renderer.Renderer):
     Args:
       line: The example line text.
     """
-    self._fill = self._indent[self._level] + self._INDENT
+    self._fill = self._indent[self._level].indent + self.INDENT
     self._out.write(' ' * self._fill + line + '\n')
     self._blank = False
     self._fill = 0
@@ -109,12 +135,12 @@ class TextRenderer(renderer.Renderer):
     self._blank = True
     for word in line.split():
       if not self._fill:
-        self._fill = self._indent[self._level] - 1
+        self._fill = self._indent[self._level].indent - 1
         self._out.write(' ' * self._fill)
       width = self._attr.DisplayWidth(word)
       if self._fill + width + 1 >= self._width and not self._ignore_width:
         self._out.write('\n')
-        self._fill = self._indent[self._level]
+        self._fill = self._indent[self._level].indent
         self._out.write(' ' * self._fill)
       else:
         self._ignore_width = False
@@ -186,7 +212,7 @@ class TextRenderer(renderer.Renderer):
 
     Args:
       level: The list nesting level, 0 if not currently in a list.
-      definition: Bullet list if None, definition list otherwise.
+      definition: Bullet list if None, definition list item otherwise.
       end: End of list if True.
     """
     self._Flush()
@@ -194,23 +220,121 @@ class TextRenderer(renderer.Renderer):
       self._level = level
     elif end:
       # End of list.
-      self._SetIndentation(level)
+      self._SetIndent(level)
     elif definition is not None:
       # Definition list item.
       if definition:
-        self._SetIndentation(level, indent=self._INDENT)
-        self._out.write(' ' * (self._indent[level] - self._INDENT + 1) +
-                        definition + '\n')
+        self._SetIndent(level, indent=4, hanging_indent=3)
+        self._out.write(
+            ' ' * self._indent[level].hanging_indent + definition + '\n')
       else:
-        self._SetIndentation(level, indent=0)
+        self._SetIndent(level, indent=1, hanging_indent=0)
         self.Line()
     else:
       # Bullet list item.
-      self._SetIndentation(level, bullet=True)
-      self._out.write(' ' * (self._indent[level] - self._BULLET_DEDENT) +
+      indent = 2 if level > 1 else 4
+      self._SetIndent(level, indent=indent, hanging_indent=2)
+      self._out.write(' ' * self._indent[level].hanging_indent +
                       self._bullet[(level - 1) % len(self._bullet)])
-      self._fill = self._indent[level] + 1
+      self._fill = self._indent[level].indent + 1
       self._ignore_width = True
+
+  def _SkipSpace(self, line, index):
+    """Skip space characters starting at line[index].
+
+    Args:
+      line: The string.
+      index: The starting index in string.
+
+    Returns:
+      The index in line after spaces or len(line) at end of string.
+    """
+    while index < len(line):
+      c = line[index]
+      if c != ' ':
+        break
+      index += 1
+    return index
+
+  def _SkipControlSequence(self, line, index):
+    """Skip the control sequence at line[index].
+
+    Args:
+      line: The string.
+      index: The starting index in string.
+
+    Returns:
+      The index in line after the control sequence or len(line) at end of
+      string.
+    """
+    n = self._attr.GetControlSequenceLen(line[index:])
+    if not n:
+      n = 1
+    return index + n
+
+  def _SkipNest(self, line, index, open_chars='[(', close_chars=')]'):
+    """Skip a [...] nested bracket group starting at line[index].
+
+    Args:
+      line: The string.
+      index: The starting index in string.
+      open_chars: The open nesting characters.
+      close_chars: The close nesting characters.
+
+    Returns:
+      The index in line after the nesting group or len(line) at end of string.
+    """
+    nest = 0
+    while index < len(line):
+      c = line[index]
+      index += 1
+      if c in open_chars:
+        nest += 1
+      elif c in close_chars:
+        nest -= 1
+        if nest <= 0:
+          break
+      elif c == self._csi_char:
+        index = self._SkipControlSequence(line, index)
+    return index
+
+  def _SplitWideSynopsisGroup(self, group, indent, running_width):
+    """Splits a wide SYNOPSIS section group string to self._out.
+
+    Args:
+      group: The wide group string to split.
+      indent: The prevailing left indent.
+      running_width: The width of the self._out line in progress.
+
+    Returns:
+      The running_width after the group has been split and written to self._out.
+    """
+    prev_delimiter = ' '
+    while group:
+      # Check split delimiters in order for visual emphasis.
+      for delimiter in (' | ', ' : ', ' ', ','):
+        part, _, remainder = group.partition(delimiter)
+        w = self._attr.DisplayWidth(part)
+        if ((running_width + len(prev_delimiter) + w) >= self._width or
+            prev_delimiter != ',' and delimiter == ','):
+          if delimiter != ',' and (indent +
+                                   self.SPLIT_INDENT +
+                                   len(prev_delimiter) +
+                                   w) >= self._width:
+            # The next delimiter may produce a smaller first part.
+            continue
+          if prev_delimiter == ',':
+            self._out.write(prev_delimiter)
+            prev_delimiter = ' '
+          if running_width != indent:
+            running_width = indent + self.SPLIT_INDENT
+            self._out.write('\n' + ' ' * running_width)
+        self._out.write(prev_delimiter + part)
+        running_width += len(prev_delimiter) + w
+        prev_delimiter = delimiter
+        group = remainder
+        break
+    return running_width
 
   def Synopsis(self, line):
     """Renders NAME and SYNOPSIS lines as a hanging indent.
@@ -222,109 +346,43 @@ class TextRenderer(renderer.Renderer):
     Args:
       line: The NAME or SYNOPSIS text.
     """
-    def SkipSpace(line, index):
-      """Skip space characters starting at line[index].
-
-      Args:
-        line: The string.
-        index: The starting index in string.
-
-      Returns:
-        The index in line after spaces or len(line) at end of string.
-      """
-      while index < len(line):
-        c = line[index]
-        if c != ' ':
-          break
-        index += 1
-      return index
-
-    def SkipControlSequence(line, index):
-      """Skip the control sequence at line[index].
-
-      Args:
-        line: The string.
-        index: The starting index in string.
-
-      Returns:
-        The index in line after the control sequence or len(line) at end of
-        string.
-      """
-      n = self._attr.GetControlSequenceLen(line[index:])
-      if not n:
-        n = 1
-      return index + n
-
-    def SkipNest(line, index, open_chars='[(', close_chars=')]'):
-      """Skip a [...] nested bracket group starting at line[index].
-
-      Args:
-        line: The string.
-        index: The starting index in string.
-        open_chars: The open nesting characters.
-        close_chars: The close nesting characters.
-
-      Returns:
-        The index in line after the nesting group or len(line) at end of string.
-      """
-      nest = 0
-      while index < len(line):
-        c = line[index]
-        index += 1
-        if c in open_chars:
-          nest += 1
-        elif c in close_chars:
-          nest -= 1
-          if nest <= 0:
-            break
-        elif c == self._csi_char:
-          index = SkipControlSequence(line, index)
-      return index
-
     # Split the line into token, token | token, and [...] groups.
     groups = []
-    i = SkipSpace(line, 0)
+    i = self._SkipSpace(line, 0)
     beg = i
     while i < len(line):
       c = line[i]
       if c == ' ':
         end = i
-        i = SkipSpace(line, i)
+        i = self._SkipSpace(line, i)
         if i <= (len(line) - 1) and line[i] == '|' and line[i + 1] == ' ':
-          i = SkipSpace(line, i + 1)
+          i = self._SkipSpace(line, i + 1)
         else:
           groups.append(line[beg:end])
           beg = i
       elif c in '[(':
-        i = SkipNest(line, i)
+        i = self._SkipNest(line, i)
       elif c == self._csi_char:
-        i = SkipControlSequence(line, i)
+        i = self._SkipControlSequence(line, i)
       else:
         i += 1
     if beg < len(line):
       groups.append(line[beg:])
 
     # Output the groups.
-    indent = self._indent[0] - 1
+    indent = self._indent[0].indent - 1
     running_width = indent
     self._out.write(' ' * running_width)
-    indent += self._INDENT
+    indent += self.INDENT
     for group in groups:
       w = self._attr.DisplayWidth(group) + 1
       if (running_width + w) >= self._width:
         running_width = indent
         self._out.write('\n' + ' ' * running_width)
         if (running_width + w) >= self._width:
-          # This group is wider than the max width and must be split into parts.
-          sep = ' '
-          for part in group.split(' | '):
-            w = self._attr.DisplayWidth(part)
-            if sep != ' ' and (running_width + len(sep) + w) >= self._width:
-              running_width = indent + self._SPLIT_INDENT
-              self._out.write('\n' + ' ' * running_width)
-            self._out.write(sep + part)
-            running_width += len(sep) + w
-            sep = ' | '
+          # The group is wider than the available width and must be split.
+          running_width = self._SplitWideSynopsisGroup(
+              group, indent, running_width)
           continue
       self._out.write(' ' + group)
       running_width += w
@@ -352,7 +410,7 @@ class TextRenderer(renderer.Renderer):
             if width[i] <= w:
               width[i] = w + 1
         for row in self._rows:
-          self._out.write(' ' * (self._indent[self._level] + 2))
+          self._out.write(' ' * (self._indent[self._level].indent + 2))
           for i in range(cols - 1):
             self._out.write(row[i].ljust(width[i]))
           self._out.write(row[-1] + '\n')

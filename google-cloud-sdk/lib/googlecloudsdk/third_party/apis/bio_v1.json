@@ -206,6 +206,80 @@
       "properties": {
       }
     },
+    "RunDeepVariantV1alphaRequest": {
+      "id": "RunDeepVariantV1alphaRequest",
+
+      "type": "object",
+      "properties": {
+        "sampleName": {
+          "description": "Required. Sample name.",
+          "type": "string"
+        },
+        "sampleId": {
+          "description": "The sample ID. Unset by default. This is used as the 'LB' field in the @RG\nheaders for any output BAM files.",
+          "type": "string"
+        },
+        "readGroupId": {
+          "description": "The read group ID (the 'ID' in a BAM @RG header). Defaults to 'none'.",
+          "type": "string"
+        },
+        "platform": {
+          "description": "The platform used to generate the data (the 'PL' in a BAM @RG header), for\nexample 'Illumina'. Unset by default.",
+          "type": "string"
+        },
+        "sequencingCenter": {
+          "description": "The sequencing center producing the reads (the 'CN' in a BAM @RG header).\nUnset by default.",
+          "type": "string"
+        },
+        "outputPath": {
+          "description": "Required. The Google Cloud Storage path for copying the final output files.\nFor example, 'gs:\/\/<user_bucket>\/<sample_name>\/'.",
+          "type": "string"
+        },
+        "inputFastq1": {
+          "description": "List of Google Cloud Storage paths of forward strand FASTQ.\nThe pairs of FASTQ files must occur at the same position in both lists.\ne.g.:\n\n  input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq', 'lane3_1.fastq']\n  input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq', 'lane3_2.fastq']",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inputFastq2": {
+          "description": "List of Google Cloud Storage paths of reverse strand FASTQ.\nThe pairs of FASTQ files must occur at the same position in both lists.\ne.g.:\n\n  input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq', 'lane3_1.fastq']\n  input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq', 'lane3_2.fastq']",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "options": {
+          "description": "Common pipeline options.",
+          "$ref": "PipelineOptions"
+        }
+      }
+    },
+    "PipelineOptions": {
+      "id": "PipelineOptions",
+      "description": "Common pipeline options.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "User-settable labels. Applied to the Operation and any associated pipeline\nresources, e.g. GCE VMs (if any).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "computeZones": {
+          "description": "Google Compute Engine availability zones in which the workflow should start\nworker virtual machines, if any are needed for this particular workflow.\nMust be valid Google Compute Engine zone names, for example \"us-east1-d\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestId": {
+          "description": "Optional. If non-empty then requests are idempotent in that\nsending a second RunWorkflowRequest with the same project_id and request_id\nwill return the name of the same already-running operation, instead of\nstarting another.\nDo not reuse request_ids. Reusing a (project_id, request_id) for a\ndifferent request will result in an error.\nA common way of filling this value is with a random 64-bit number.",
+          "type": "string"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata describing an Operation.",
@@ -382,6 +456,37 @@
               ],
               "response": {
                 "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
+        "pipelines": {
+          "methods": {
+            "runDeepVariantV1alpha": {
+              "id": "bio.projects.pipelines.runDeepVariantV1alpha",
+              "path": "v1/projects/{projectId}/pipelines:runDeepVariantV1alpha",
+              "flatPath": "v1/projects/{projectId}/pipelines:runDeepVariantV1alpha",
+              "httpMethod": "POST",
+              "description": "Run a DeepVariant pipeline.",
+              "parameters": {
+                "projectId": {
+                  "description": "Required. The project associated with this DeepVariant pipeline run.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "RunDeepVariantV1alphaRequest"
+              },
+              "response": {
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

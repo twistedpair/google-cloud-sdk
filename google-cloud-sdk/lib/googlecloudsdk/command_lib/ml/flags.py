@@ -100,6 +100,37 @@ Can be a Google Cloud Storage (`gs://`) path or local file path (no prefix). In
 the latter case the files will be uploaded to Google Cloud Storage and a
 `--staging-bucket` argument is required.
 """)
+_SCALE_TIER_CHOICES = {
+    'BASIC': ('A single worker instance. This tier is suitable for learning '
+              'how to use Cloud ML, and for experimenting with new models '
+              'using small datasets.'),
+    'STANDARD_1': 'Many workers and a few parameter servers.',
+    'PREMIUM_1': 'A large number of workers with many parameter servers.',
+    'CUSTOM': """\
+The CUSTOM tier is not a set tier, but rather enables you to use your own
+cluster specification. When you use this tier, set values to configure your
+processing cluster according to these guidelines (using the --config flag):
+
+* You _must_ set `TrainingInput.masterType` to specify the type of machine to
+  use for your master node. This is the only required setting.
+* You _may_ set `TrainingInput.workerCount` to specify the number of workers to
+  use. If you specify one or more workers, you _must_ also set
+  `TrainingInput.workerType` to specify the type of machine to use for your
+  worker nodes.
+* You _may_ set `TrainingInput.parameterServerCount` to specify the number of
+  parameter servers to use. If you specify one or more parameter servers, you
+  _must_ also set `TrainingInput.parameterServerType` to specify the type of
+  machine to use for your parameter servers.  Note that all of your workers must
+  use the same machine type, which can be different from your parameter server
+  type and master type. Your parameter servers must likewise use the same
+  machine type, which can be different from your worker type and master type.\
+"""}
+SCALE_TIER = base.Argument(
+    '--scale-tier',
+    help=('Specifies the machine types, the number of replicas for workers and '
+          'parameter servers.'),
+    choices=_SCALE_TIER_CHOICES,
+    default=None)
 
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',

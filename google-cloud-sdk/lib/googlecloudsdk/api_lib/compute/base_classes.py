@@ -42,6 +42,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
@@ -1340,6 +1341,9 @@ class ReadWriteCommand(BaseCommand):
           field_selector=property_selector.PropertySelector(
               properties=None,
               transformations=self.transformations)):
+        log.status.Print(
+            'No change requested; skipping update for [{0}].'.format(
+                resource[u'name']))
         yield resource
       return
 

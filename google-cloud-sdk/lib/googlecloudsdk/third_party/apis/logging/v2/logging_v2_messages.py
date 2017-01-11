@@ -15,9 +15,9 @@ package = 'logging'
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo {   rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for Empty is empty JSON object {}.
   """
 
 
@@ -35,29 +35,28 @@ class HttpRequest(_messages.Message):
     cacheLookup: Whether or not a cache lookup was attempted.
     cacheValidatedWithOriginServer: Whether or not the response was validated
       with the origin server before being served from cache. This field is
-      only meaningful if `cache_hit` is True.
+      only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
       request was received until the response was sent.
-    referer: The referer URL of the request, as defined in [HTTP/1.1 Header
-      Field
-      Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+    referer: The referer URL of the request, as defined in HTTP/1.1 Header
+      Field Definitions
+      (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
-      request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
-    requestMethod: The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`,
-      `"POST"`.
+      request. Examples: "192.168.1.1", "FE80::0202:B3FF:FE1E:8329".
+    requestMethod: The request method. Examples: "GET", "HEAD", "PUT", "POST".
     requestSize: The size of the HTTP request message in bytes, including the
       request headers and the request body.
     requestUrl: The scheme (http, https), the host name, the path and the
       query portion of the URL that was requested. Example:
-      `"http://example.com/some/info?color=red"`.
+      "http://example.com/some/info?color=red".
     responseSize: The size of the HTTP response message sent back to the
       client, in bytes, including the response headers and the response body.
     serverIp: The IP address (IPv4 or IPv6) of the origin server that the
       request was sent to.
     status: The response code indicating the status of response. Examples:
       200, 404.
-    userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
-      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
+    userAgent: The user agent sent by the client. Example: "Mozilla/4.0
+      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)".
   """
 
   cacheFillBytes = _messages.IntegerField(1)
@@ -107,38 +106,36 @@ class LabelDescriptor(_messages.Message):
 
 
 class ListLogEntriesRequest(_messages.Message):
-  """The parameters to `ListLogEntries`.
+  """The parameters to ListLogEntries.
 
   Fields:
-    filter: Optional. A filter that chooses which log entries to return.  See
-      [Advanced Logs Filters](/logging/docs/view/advanced_filters).  Only log
-      entries that match the filter are returned.  An empty filter matches all
-      log entries in the resources listed in `resource_names`. Referencing a
-      parent resource that is not listed in `resource_names` will cause the
-      filter to return no results. The maximum length of the filter is 20000
-      characters.
-    orderBy: Optional. How the results should be sorted.  Presently, the only
-      permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
-      The first option returns entries in order of increasing values of
-      `LogEntry.timestamp` (oldest first), and the second option returns
-      entries in order of decreasing timestamps (newest first).  Entries with
-      equal timestamps are returned in order of `LogEntry.insertId`.
+    filter: Optional. A filter that chooses which log entries to return. See
+      Advanced Logs Filters. Only log entries that match the filter are
+      returned. An empty filter matches all log entries in the resources
+      listed in resource_names. Referencing a parent resource that is not
+      listed in resource_names will cause the filter to return no results. The
+      maximum length of the filter is 20000 characters.
+    orderBy: Optional. How the results should be sorted. Presently, the only
+      permitted values are "timestamp asc" (default) and "timestamp desc". The
+      first option returns entries in order of increasing values of
+      LogEntry.timestamp (oldest first), and the second option returns entries
+      in order of decreasing timestamps (newest first). Entries with equal
+      timestamps are returned in order of LogEntry.insertId.
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
-    projectIds: Deprecated. Use `resource_names` instead.  One or more project
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    projectIds: Deprecated. Use resource_names instead. One or more project
       identifiers or project numbers from which to retrieve log entries.
-      Example: `"my-project-1A"`. If present, these project identifiers are
+      Example: "my-project-1A". If present, these project identifiers are
       converted to resource name format and added to the list of resources in
-      `resource_names`.
+      resource_names.
     resourceNames: Required. Names of one or more resources from which to
-      retrieve log entries:      "projects/[PROJECT_ID]"
-      "organizations/[ORGANIZATION_ID]"  Projects listed in the `project_ids`
+      retrieve log entries: "projects/[PROJECT_ID]"
+      "organizations/[ORGANIZATION_ID]" Projects listed in the project_ids
       field are added to this list.
   """
 
@@ -151,17 +148,17 @@ class ListLogEntriesRequest(_messages.Message):
 
 
 class ListLogEntriesResponse(_messages.Message):
-  """Result returned from `ListLogEntries`.
+  """Result returned from ListLogEntries.
 
   Fields:
     entries: A list of log entries.
     nextPageToken: If there might be more results than those appearing in this
-      response, then `nextPageToken` is included.  To get the next set of
-      results, call this method again using the value of `nextPageToken` as
-      `pageToken`.  If a value for `next_page_token` appears and the `entries`
-      field is empty, it means that the search found no log entries so far but
-      it did not have time to search all the possible log entries.  Retry the
-      method with this value for `page_token` to continue the search.
+      response, then nextPageToken is included. To get the next set of
+      results, call this method again using the value of nextPageToken as
+      pageToken.If a value for next_page_token appears and the entries field
+      is empty, it means that the search found no log entries so far but it
+      did not have time to search all the possible log entries. Retry the
+      method with this value for page_token to continue the search.
       Alternatively, consider speeding up the search by changing your filter
       to specify a single log name or resource type, or to narrow the time
       range of the search.
@@ -177,9 +174,9 @@ class ListLogMetricsResponse(_messages.Message):
   Fields:
     metrics: A list of logs-based metrics.
     nextPageToken: If there might be more results than appear in this
-      response, then `nextPageToken` is included.  To get the next set of
-      results, call this method again using the value of `nextPageToken` as
-      `pageToken`.
+      response, then nextPageToken is included. To get the next set of
+      results, call this method again using the value of nextPageToken as
+      pageToken.
   """
 
   metrics = _messages.MessageField('LogMetric', 1, repeated=True)
@@ -190,15 +187,15 @@ class ListLogsResponse(_messages.Message):
   """Result returned from ListLogs.
 
   Fields:
-    logIds: A list of log identifiers. For example, `"syslog"` or
-      `"cloudresourcemanager.googleapis.com/activity"`.
+    logNames: A list of log names. For example, "projects/my-project/syslog"
+      or "organizations/123/cloudresourcemanager.googleapis.com%2Factivity".
     nextPageToken: If there might be more results than those appearing in this
-      response, then `nextPageToken` is included.  To get the next set of
-      results, call this method again using the value of `nextPageToken` as
-      `pageToken`.
+      response, then nextPageToken is included. To get the next set of
+      results, call this method again using the value of nextPageToken as
+      pageToken.
   """
 
-  logIds = _messages.StringField(1, repeated=True)
+  logNames = _messages.StringField(1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -207,9 +204,9 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
   Fields:
     nextPageToken: If there might be more results than those appearing in this
-      response, then `nextPageToken` is included.  To get the next set of
-      results, call this method again using the value of `nextPageToken` as
-      `pageToken`.
+      response, then nextPageToken is included. To get the next set of
+      results, call this method again using the value of nextPageToken as
+      pageToken.
     resourceDescriptors: A list of resource descriptors.
   """
 
@@ -218,13 +215,13 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
 
 class ListSinksResponse(_messages.Message):
-  """Result returned from `ListSinks`.
+  """Result returned from ListSinks.
 
   Fields:
     nextPageToken: If there might be more results than appear in this
-      response, then `nextPageToken` is included.  To get the next set of
-      results, call the same method again using the value of `nextPageToken`
-      as `pageToken`.
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
     sinks: A list of sinks.
   """
 
@@ -237,7 +234,7 @@ class LogEntry(_messages.Message):
 
   Enums:
     SeverityValueValuesEnum: Optional. The severity of the log entry. The
-      default value is `LogSeverity.DEFAULT`.
+      default value is LogSeverity.DEFAULT.
 
   Messages:
     JsonPayloadValue: The log entry payload, represented as a structure that
@@ -245,33 +242,32 @@ class LogEntry(_messages.Message):
     LabelsValue: Optional. A set of user-defined (key, value) data that
       provides additional information about the log entry.
     ProtoPayloadValue: The log entry payload, represented as a protocol
-      buffer.  Some Google Cloud Platform services use this field for their
-      log entry payloads.
+      buffer. Some Google Cloud Platform services use this field for their log
+      entry payloads.
 
   Fields:
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
     insertId: Optional. A unique ID for the log entry. If you provide this
       field, the logging service considers other log entries in the same
-      project with the same ID as duplicates which can be removed.  If
-      omitted, Stackdriver Logging will generate a unique ID for this log
-      entry.
+      project with the same ID as duplicates which can be removed. If omitted,
+      Stackdriver Logging will generate a unique ID for this log entry.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
       additional information about the log entry.
     logName: Required. The resource name of the log to which this log entry
-      belongs:      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded within `log_name`. Example: `"organizations/1234567890/logs/clou
-      dresourcemanager.googleapis.com%2Factivity"`. `[LOG_ID]` must be less
-      than 512 characters long and can only include the following characters:
-      upper and lower case alphanumeric characters, forward-slash, underscore,
-      hyphen, and period.  For backward compatibility, if `log_name` begins
-      with a forward-slash, such as `/projects/...`, then the log entry is
-      ingested as usual but the forward-slash is removed. Listing the log
-      entry will not show the leading slash and filtering for a log name with
-      a leading slash will never return any results.
+      belongs: "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded within log_name. Example: "organizations/1234567890/logs/cloudre
+      sourcemanager.googleapis.com%2Factivity". [LOG_ID] must be less than 512
+      characters long and can only include the following characters: upper and
+      lower case alphanumeric characters, forward-slash, underscore, hyphen,
+      and period.For backward compatibility, if log_name begins with a
+      forward-slash, such as /projects/..., then the log entry is ingested as
+      usual but the forward-slash is removed. Listing the log entry will not
+      show the leading slash and filtering for a log name with a leading slash
+      will never return any results.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -282,23 +278,23 @@ class LogEntry(_messages.Message):
       with the monitored resource designating the particular database that
       reported the error.
     severity: Optional. The severity of the log entry. The default value is
-      `LogSeverity.DEFAULT`.
+      LogSeverity.DEFAULT.
     sourceLocation: Optional. Source code location information associated with
       the log entry, if any.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
     timestamp: Optional. The time the event described by the log entry
-      occurred.  If omitted, Stackdriver Logging will use the time the log
+      occurred. If omitted, Stackdriver Logging will use the time the log
       entry is received.
     trace: Optional. Resource name of the trace associated with the log entry,
       if any. If it contains a relative resource name, the name is assumed to
-      be relative to `//tracing.googleapis.com`. Example: `projects/my-
-      projectid/traces/06796866738c859f2f19b7cfb3214824`
+      be relative to //tracing.googleapis.com. Example: projects/my-
+      projectid/traces/06796866738c859f2f19b7cfb3214824
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
     """Optional. The severity of the log entry. The default value is
-    `LogSeverity.DEFAULT`.
+    LogSeverity.DEFAULT.
 
     Values:
       DEFAULT: (0) The log entry has no assigned severity level.
@@ -375,7 +371,7 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProtoPayloadValue(_messages.Message):
-    """The log entry payload, represented as a protocol buffer.  Some Google
+    """The log entry payload, represented as a protocol buffer. Some Google
     Cloud Platform services use this field for their log entry payloads.
 
     Messages:
@@ -427,8 +423,8 @@ class LogEntryOperation(_messages.Message):
     last: Optional. Set this to True if this is the last log entry in the
       operation.
     producer: Optional. An arbitrary producer identifier. The combination of
-      `id` and `producer` must be globally unique.  Examples for `producer`:
-      `"MyDivision.MyBigCompany.com"`, `"github.com/MyProject/MyApplication"`.
+      id and producer must be globally unique. Examples for producer:
+      "MyDivision.MyBigCompany.com", "github.com/MyProject/MyApplication".
   """
 
   first = _messages.BooleanField(1)
@@ -448,8 +444,8 @@ class LogEntrySourceLocation(_messages.Message):
       invoked, with optional context such as the class or package name. This
       information may be used in contexts such as the logs viewer, where a
       file and line number are less meaningful. The format can vary by
-      language. For example: `qual.if.ied.Class.method` (Java),
-      `dir/package.func` (Go), `function` (Python).
+      language. For example: qual.if.ied.Class.method (Java), dir/package.func
+      (Go), function (Python).
     line: Optional. Line within the source file. 1-based; 0 indicates no line
       number available.
   """
@@ -504,8 +500,8 @@ class LogLine(_messages.Message):
 
 
 class LogMetric(_messages.Message):
-  """Describes a logs-based metric.  The value of the metric is the number of
-  log entries that match a logs filter.
+  """Describes a logs-based metric. The value of the metric is the number of
+  log entries that match a logs filter in a given time interval.
 
   Enums:
     VersionValueValuesEnum: Output only. The API version that created or
@@ -516,21 +512,19 @@ class LogMetric(_messages.Message):
   Fields:
     description: Optional. A description of this metric, which is used in
       documentation.
-    filter: Required. An [advanced logs
-      filter](/logging/docs/view/advanced_filters). Example:
-      "resource.type=gae_app AND severity>=ERROR"  The maximum length of the
-      filter is 20000 characters.
+    filter: Required. An advanced logs filter which is used to match log
+      entries. Example: "resource.type=gae_app AND severity>=ERROR" The
+      maximum length of the filter is 20000 characters.
     name: Required. The client-assigned metric identifier. Examples:
-      `"error_count"`, `"nginx/requests"`.  Metric identifiers are limited to
-      100 characters and can include only the following characters: `A-Z`,
-      `a-z`, `0-9`, and the special characters `_-.,+!*',()%/`.  The forward-
-      slash character (`/`) denotes a hierarchy of name pieces, and it cannot
-      be the first character of the name.  The metric identifier in this field
-      must not be [URL-encoded](https://en.wikipedia.org/wiki/Percent-
-      encoding). However, when the metric identifier appears as the
-      `[METRIC_ID]` part of a `metric_name` API parameter, then the metric
-      identifier must be URL-encoded. Example: `"projects/my-
-      project/metrics/nginx%2Frequests"`.
+      "error_count", "nginx/requests".Metric identifiers are limited to 100
+      characters and can include only the following characters: A-Z, a-z, 0-9,
+      and the special characters _-.,+!*',()%/. The forward-slash character
+      (/) denotes a hierarchy of name pieces, and it cannot be the first
+      character of the name.The metric identifier in this field must not be
+      URL-encoded (https://en.wikipedia.org/wiki/Percent-encoding). However,
+      when the metric identifier appears as the [METRIC_ID] part of a
+      metric_name API parameter, then the metric identifier must be URL-
+      encoded. Example: "projects/my-project/metrics/nginx%2Frequests".
     version: Output only. The API version that created or updated this metric.
       The version also dictates the syntax of the filter expression. When a
       value for this field is missing, the default value of V2 should be
@@ -558,74 +552,68 @@ class LogMetric(_messages.Message):
 class LogSink(_messages.Message):
   """Describes a sink used to export log entries to one of the following
   destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or
-  a Cloud Pub/Sub topic.  A logs filter controls which log entries are
+  a Cloud Pub/Sub topic. A logs filter controls which log entries are
   exported. The sink must be created within a project or organization.
 
   Enums:
     OutputVersionFormatValueValuesEnum: Optional. The log entry format to use
-      for this sink's exported log entries.  The v2 format is used by default.
-      **The v1 format is deprecated** and should be used only as part of a
-      migration effort to v2. See [Migration to the v2
-      API](/logging/docs/api/v2/migration-to-v2).
+      for this sink's exported log entries. The v2 format is used by default.
+      The v1 format is deprecated and should be used only as part of a
+      migration effort to v2. See Migration to the v2 API.
 
   Fields:
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
-      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"  The
-      sink's `writer_identity`, set when the sink is created, must have
+      "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]" The
+      sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
-      exported.  For more information, see [Exporting Logs With
-      Sinks](/logging/docs/api/tasks/exporting-logs).
+      exported. For more information, see Exporting Logs With Sinks.
     endTime: Optional. The time at which this sink will stop exporting log
-      entries.  Log entries are exported only if their timestamp is earlier
+      entries. Log entries are exported only if their timestamp is earlier
       than the end time. If this field is not supplied, there is no end time.
       If both a start time and an end time are provided, then the end time
       must be later than the start time.
-    filter: Optional. An [advanced logs
-      filter](/logging/docs/view/advanced_filters).  The only exported log
-      entries are those that are in the resource owning the sink and that
-      match the filter. The filter must use the log entry format specified by
-      the `output_version_format` parameter.  For example, in the v2 format:
+    filter: Optional. An advanced logs filter. The only exported log entries
+      are those that are in the resource owning the sink and that match the
+      filter. The filter must use the log entry format specified by the
+      output_version_format parameter. For example, in the v2 format:
       logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
     name: Required. The client-assigned sink identifier, unique within the
-      project. Example: `"my-syslog-errors-to-pubsub"`.  Sink identifiers are
+      project. Example: "my-syslog-errors-to-pubsub". Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
       periods.
     outputVersionFormat: Optional. The log entry format to use for this sink's
-      exported log entries.  The v2 format is used by default. **The v1 format
-      is deprecated** and should be used only as part of a migration effort to
-      v2. See [Migration to the v2 API](/logging/docs/api/v2/migration-to-v2).
+      exported log entries. The v2 format is used by default. The v1 format is
+      deprecated and should be used only as part of a migration effort to v2.
+      See Migration to the v2 API.
     startTime: Optional. The time at which this sink will begin exporting log
       entries. Log entries are exported only if their timestamp is not earlier
-      than the start time.  The default value of this field is the time the
+      than the start time. The default value of this field is the time the
       sink is created or updated.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
       group&mdash;under which Stackdriver Logging writes the exported log
-      entries to the sink's destination.  This field is set by [sinks.create](
-      /logging/docs/api/reference/rest/v2/projects.sinks/create) and [sinks.up
-      date](/logging/docs/api/reference/rest/v2/projects.sinks/update), based
-      on the setting of `unique_writer_identity` in those methods.  Until you
-      grant this identity write-access to the destination, log entry exports
-      from this sink will fail. For more information, see [Granting access for
-      a resource](/iam/docs/granting-roles-to-service-
-      accounts#granting_access_to_a_service_account_for_a_resource). Consult
-      the destination service's documentation to determine the appropriate IAM
-      roles to assign to the identity.
+      entries to the sink's destination. This field is set by sinks.create and
+      sinks.update, based on the setting of unique_writer_identity in those
+      methods.Until you grant this identity write-access to the destination,
+      log entry exports from this sink will fail. For more information, see
+      Granting access for a resource. Consult the destination service's
+      documentation to determine the appropriate IAM roles to assign to the
+      identity.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
     """Optional. The log entry format to use for this sink's exported log
-    entries.  The v2 format is used by default. **The v1 format is
-    deprecated** and should be used only as part of a migration effort to v2.
-    See [Migration to the v2 API](/logging/docs/api/v2/migration-to-v2).
+    entries. The v2 format is used by default. The v1 format is deprecated and
+    should be used only as part of a migration effort to v2. See Migration to
+    the v2 API.
 
     Values:
       VERSION_FORMAT_UNSPECIFIED: An unspecified format version that will
         default to V2.
-      V2: `LogEntry` version 2 format.
-      V1: `LogEntry` version 1 format.
+      V2: LogEntry version 2 format.
+      V1: LogEntry version 1 format.
     """
     VERSION_FORMAT_UNSPECIFIED = 0
     V2 = 1
@@ -646,10 +634,10 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
-      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
-      For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
+      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
+      more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -660,15 +648,14 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -682,18 +669,18 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
-      `"projects/my-logging-project"`, `"organizations/123456789"`.
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
-      returned as `writer_identity` in the new sink.  If this value is omitted
-      or set to false, and if the sink's parent is a project, then the value
-      returned as `writer_identity` is `cloud-logs@google.com`, the same
-      identity used before the addition of writer identities to this API. The
-      sink's destination must be in the same project as the sink itself.  If
-      this field is set to true, or if the sink is owned by a non-project
-      resource such as an organization, then the value of `writer_identity`
-      will be a unique service account used only for exports from the new
-      sink.  For more information, see `writer_identity` in LogSink.
+      returned as writer_identity in the new sink. If this value is omitted or
+      set to false, and if the sink's parent is a project, then the value
+      returned as writer_identity is cloud-logs@google.com, the same identity
+      used before the addition of writer identities to this API. The sink's
+      destination must be in the same project as the sink itself.If this field
+      is set to true, or if the sink is owned by a non-project resource such
+      as an organization, then the value of writer_identity will be a unique
+      service account used only for exports from the new sink. For more
+      information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -708,9 +695,9 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
-      id"`.  It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
+      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
+      It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -722,8 +709,8 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
   Fields:
     sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -734,15 +721,14 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose sinks are to be listed.
-      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
+      Examples: "projects/my-logging-project", "organizations/123456789".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -758,18 +744,16 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. See
-      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
-      ) for a description of this field.  When updating a sink, the effect of
-      this field on the value of `writer_identity` in the updated sink depends
-      on both the old and new values of this field:  +   If the old and new
-      values of this field are both false or both true,     then there is no
-      change to the sink's `writer_identity`. +   If the old value was false
-      and the new value is true, then     `writer_identity` is changed to a
-      unique service account. +   It is an error if the old value was true and
-      the new value is false.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value was false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value was true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -783,10 +767,10 @@ class LoggingFoldersLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
-      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
-      For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
+      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
+      more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -797,15 +781,14 @@ class LoggingFoldersLogsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -819,18 +802,18 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
-      `"projects/my-logging-project"`, `"organizations/123456789"`.
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
-      returned as `writer_identity` in the new sink.  If this value is omitted
-      or set to false, and if the sink's parent is a project, then the value
-      returned as `writer_identity` is `cloud-logs@google.com`, the same
-      identity used before the addition of writer identities to this API. The
-      sink's destination must be in the same project as the sink itself.  If
-      this field is set to true, or if the sink is owned by a non-project
-      resource such as an organization, then the value of `writer_identity`
-      will be a unique service account used only for exports from the new
-      sink.  For more information, see `writer_identity` in LogSink.
+      returned as writer_identity in the new sink. If this value is omitted or
+      set to false, and if the sink's parent is a project, then the value
+      returned as writer_identity is cloud-logs@google.com, the same identity
+      used before the addition of writer identities to this API. The sink's
+      destination must be in the same project as the sink itself.If this field
+      is set to true, or if the sink is owned by a non-project resource such
+      as an organization, then the value of writer_identity will be a unique
+      service account used only for exports from the new sink. For more
+      information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -845,9 +828,9 @@ class LoggingFoldersSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
-      id"`.  It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
+      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
+      It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -859,8 +842,8 @@ class LoggingFoldersSinksGetRequest(_messages.Message):
   Fields:
     sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -871,15 +854,14 @@ class LoggingFoldersSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose sinks are to be listed.
-      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
+      Examples: "projects/my-logging-project", "organizations/123456789".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -895,18 +877,16 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. See
-      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
-      ) for a description of this field.  When updating a sink, the effect of
-      this field on the value of `writer_identity` in the updated sink depends
-      on both the old and new values of this field:  +   If the old and new
-      values of this field are both false or both true,     then there is no
-      change to the sink's `writer_identity`. +   If the old value was false
-      and the new value is true, then     `writer_identity` is changed to a
-      unique service account. +   It is an error if the old value was true and
-      the new value is false.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value was false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value was true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -919,13 +899,12 @@ class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -938,10 +917,10 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
-      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
-      For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
+      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
+      more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -952,15 +931,14 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -974,18 +952,18 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
-      `"projects/my-logging-project"`, `"organizations/123456789"`.
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
-      returned as `writer_identity` in the new sink.  If this value is omitted
-      or set to false, and if the sink's parent is a project, then the value
-      returned as `writer_identity` is `cloud-logs@google.com`, the same
-      identity used before the addition of writer identities to this API. The
-      sink's destination must be in the same project as the sink itself.  If
-      this field is set to true, or if the sink is owned by a non-project
-      resource such as an organization, then the value of `writer_identity`
-      will be a unique service account used only for exports from the new
-      sink.  For more information, see `writer_identity` in LogSink.
+      returned as writer_identity in the new sink. If this value is omitted or
+      set to false, and if the sink's parent is a project, then the value
+      returned as writer_identity is cloud-logs@google.com, the same identity
+      used before the addition of writer identities to this API. The sink's
+      destination must be in the same project as the sink itself.If this field
+      is set to true, or if the sink is owned by a non-project resource such
+      as an organization, then the value of writer_identity will be a unique
+      service account used only for exports from the new sink. For more
+      information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1000,9 +978,9 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
-      id"`.  It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
+      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
+      It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1014,8 +992,8 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
   Fields:
     sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1026,15 +1004,14 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose sinks are to be listed.
-      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
+      Examples: "projects/my-logging-project", "organizations/123456789".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1050,18 +1027,16 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. See
-      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
-      ) for a description of this field.  When updating a sink, the effect of
-      this field on the value of `writer_identity` in the updated sink depends
-      on both the old and new values of this field:  +   If the old and new
-      values of this field are both false or both true,     then there is no
-      change to the sink's `writer_identity`. +   If the old value was false
-      and the new value is true, then     `writer_identity` is changed to a
-      unique service account. +   It is an error if the old value was true and
-      the new value is false.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value was false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value was true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1075,10 +1050,10 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded. For example, `"projects/my-project-id/logs/syslog"`, `"organiza
-      tions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`.
-      For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
+      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
+      more information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -1089,15 +1064,14 @@ class LoggingProjectsLogsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1111,7 +1085,7 @@ class LoggingProjectsMetricsCreateRequest(_messages.Message):
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
     parent: The resource name of the project in which to create the metric:
-      "projects/[PROJECT_ID]"  The new metric must be provided in the request.
+      "projects/[PROJECT_ID]" The new metric must be provided in the request.
   """
 
   logMetric = _messages.MessageField('LogMetric', 1)
@@ -1145,13 +1119,12 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The name of the project containing the metrics:
       "projects/[PROJECT_ID]"
   """
@@ -1167,9 +1140,9 @@ class LoggingProjectsMetricsUpdateRequest(_messages.Message):
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
     metricName: The resource name of the metric to update:
-      "projects/[PROJECT_ID]/metrics/[METRIC_ID]"  The updated metric must be
-      provided in the request and it's `name` field must be the same as
-      `[METRIC_ID]` If the metric does not exist in `[PROJECT_ID]`, then a new
+      "projects/[PROJECT_ID]/metrics/[METRIC_ID]" The updated metric must be
+      provided in the request and it's name field must be the same as
+      [METRIC_ID] If the metric does not exist in [PROJECT_ID], then a new
       metric is created.
   """
 
@@ -1183,18 +1156,18 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]"     "organizations/[ORGANIZATION_ID]"  Examples:
-      `"projects/my-logging-project"`, `"organizations/123456789"`.
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
-      returned as `writer_identity` in the new sink.  If this value is omitted
-      or set to false, and if the sink's parent is a project, then the value
-      returned as `writer_identity` is `cloud-logs@google.com`, the same
-      identity used before the addition of writer identities to this API. The
-      sink's destination must be in the same project as the sink itself.  If
-      this field is set to true, or if the sink is owned by a non-project
-      resource such as an organization, then the value of `writer_identity`
-      will be a unique service account used only for exports from the new
-      sink.  For more information, see `writer_identity` in LogSink.
+      returned as writer_identity in the new sink. If this value is omitted or
+      set to false, and if the sink's parent is a project, then the value
+      returned as writer_identity is cloud-logs@google.com, the same identity
+      used before the addition of writer identities to this API. The sink's
+      destination must be in the same project as the sink itself.If this field
+      is set to true, or if the sink is owned by a non-project resource such
+      as an organization, then the value of writer_identity will be a unique
+      service account used only for exports from the new sink. For more
+      information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1209,9 +1182,9 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  It is an error if the
-      sink does not exist.  Example: `"projects/my-project-id/sinks/my-sink-
-      id"`.  It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
+      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
+      It is an error if the sink does not exist.
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1223,8 +1196,8 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   Fields:
     sinkName: Required. The parent resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1235,15 +1208,14 @@ class LoggingProjectsSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose sinks are to be listed.
-      Examples: `"projects/my-logging-project"`, `"organizations/123456789"`.
+      Examples: "projects/my-logging-project", "organizations/123456789".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1259,18 +1231,16 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"  Example: `"projects
-      /my-project-id/sinks/my-sink-id"`.
-    uniqueWriterIdentity: Optional. See
-      [sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create
-      ) for a description of this field.  When updating a sink, the effect of
-      this field on the value of `writer_identity` in the updated sink depends
-      on both the old and new values of this field:  +   If the old and new
-      values of this field are both false or both true,     then there is no
-      change to the sink's `writer_identity`. +   If the old value was false
-      and the new value is true, then     `writer_identity` is changed to a
-      unique service account. +   It is an error if the old value was true and
-      the new value is false.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
+      project-id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value was false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value was true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1281,35 +1251,34 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 class MonitoredResource(_messages.Message):
   """An object representing a resource that can be used for monitoring,
   logging, billing, or other purposes. Examples include virtual machine
-  instances, databases, and storage devices such as disks. The `type` field
+  instances, databases, and storage devices such as disks. The type field
   identifies a MonitoredResourceDescriptor object that describes the
-  resource's schema. Information in the `labels` field identifies the actual
+  resource's schema. Information in the labels field identifies the actual
   resource and its attributes according to the schema. For example, a
   particular Compute Engine VM instance could be represented by the following
-  object, because the MonitoredResourceDescriptor for `"gce_instance"` has
-  labels `"instance_id"` and `"zone"`:      { "type": "gce_instance",
-  "labels": { "instance_id": "12345678901234",                   "zone": "us-
-  central1-a" }}
+  object, because the MonitoredResourceDescriptor for "gce_instance" has
+  labels "instance_id" and "zone": { "type": "gce_instance",   "labels": {
+  "instance_id": "12345678901234",               "zone": "us-central1-a" }}
 
   Messages:
     LabelsValue: Required. Values for all of the labels listed in the
       associated monitored resource descriptor. For example, Cloud SQL
-      databases use the labels `"database_id"` and `"zone"`.
+      databases use the labels "database_id" and "zone".
 
   Fields:
     labels: Required. Values for all of the labels listed in the associated
       monitored resource descriptor. For example, Cloud SQL databases use the
-      labels `"database_id"` and `"zone"`.
+      labels "database_id" and "zone".
     type: Required. The monitored resource type. This field must match the
-      `type` field of a MonitoredResourceDescriptor object. For example, the
-      type of a Cloud SQL database is `"cloudsql_database"`.
+      type field of a MonitoredResourceDescriptor object. For example, the
+      type of a Cloud SQL database is "cloudsql_database".
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Required. Values for all of the labels listed in the associated
     monitored resource descriptor. For example, Cloud SQL databases use the
-    labels `"database_id"` and `"zone"`.
+    labels "database_id" and "zone".
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1337,32 +1306,32 @@ class MonitoredResource(_messages.Message):
 
 class MonitoredResourceDescriptor(_messages.Message):
   """An object that describes the schema of a MonitoredResource object using a
-  type name and a set of labels.  For example, the monitored resource
+  type name and a set of labels. For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
-  `"gce_instance"` and specifies the use of the labels `"instance_id"` and
-  `"zone"` to identify particular VM instances.  Different APIs can support
-  different monitored resource types. APIs generally provide a `list` method
-  that returns the monitored resource descriptors used by the API.
+  "gce_instance" and specifies the use of the labels "instance_id" and "zone"
+  to identify particular VM instances.Different APIs can support different
+  monitored resource types. APIs generally provide a list method that returns
+  the monitored resource descriptors used by the API.
 
   Fields:
     description: Optional. A detailed description of the monitored resource
       type that might be used in documentation.
     displayName: Optional. A concise name for the monitored resource type that
       might be displayed in user interfaces. It should be a Title Cased Noun
-      Phrase, without any article or other determiners. For example, `"Google
-      Cloud SQL Database"`.
+      Phrase, without any article or other determiners. For example, "Google
+      Cloud SQL Database".
     labels: Required. A set of labels used to describe instances of this
       monitored resource type. For example, an individual Google Cloud SQL
-      database is identified by values for the labels `"database_id"` and
-      `"zone"`.
+      database is identified by values for the labels "database_id" and
+      "zone".
     name: Optional. The resource name of the monitored resource descriptor:
-      `"projects/{project_id}/monitoredResourceDescriptors/{type}"` where
-      {type} is the value of the `type` field in this object and {project_id}
-      is a project ID that provides API-specific context for accessing the
-      type.  APIs that do not use project information can use the resource
-      name format `"monitoredResourceDescriptors/{type}"`.
+      "projects/{project_id}/monitoredResourceDescriptors/{type}" where {type}
+      is the value of the type field in this object and {project_id} is a
+      project ID that provides API-specific context for accessing the type.
+      APIs that do not use project information can use the resource name
+      format "monitoredResourceDescriptors/{type}".
     type: Required. The monitored resource type. For example, the type
-      `"cloudsql_database"` represents databases in Google Cloud SQL. The
+      "cloudsql_database" represents databases in Google Cloud SQL. The
       maximum length of this value is 256 characters.
   """
 
@@ -1383,11 +1352,11 @@ class RequestLog(_messages.Message):
     cost: An indication of the relative cost of serving this request.
     endTime: Time when the request finished.
     finished: Whether this request is finished or active.
-    first: Whether this is the first `RequestLog` entry for this request.  If
-      an active request has several `RequestLog` entries written to
-      Stackdriver Logging, then this field will be set for one of them.
+    first: Whether this is the first RequestLog entry for this request. If an
+      active request has several RequestLog entries written to Stackdriver
+      Logging, then this field will be set for one of them.
     host: Internet host and port number of the resource being requested.
-    httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
+    httpVersion: HTTP version of request. Example: "HTTP/1.1".
     instanceId: An identifier for the instance that handled the request.
     instanceIndex: If the instance processing this request belongs to a
       manually scaled module, then this is the 0-based index of the instance.
@@ -1397,26 +1366,25 @@ class RequestLog(_messages.Message):
     line: A list of log lines emitted by the application while serving this
       request.
     megaCycles: Number of CPU megacycles used to process request.
-    method: Request method. Example: `"GET"`, `"HEAD"`, `"PUT"`, `"POST"`,
-      `"DELETE"`.
+    method: Request method. Example: "GET", "HEAD", "PUT", "POST", "DELETE".
     moduleId: Module of the application that handled this request.
-    nickname: The logged-in user who made the request.  Most likely, this is
-      the part of the user's email before the `@` sign.  The field value is
-      the same for different requests from the same user, but different users
-      can have similar names.  This information is also available to the
-      application via the App Engine Users API.  This field will be populated
-      starting with App Engine 1.9.21.
+    nickname: The logged-in user who made the request.Most likely, this is the
+      part of the user's email before the @ sign. The field value is the same
+      for different requests from the same user, but different users can have
+      similar names. This information is also available to the application via
+      the App Engine Users API.This field will be populated starting with App
+      Engine 1.9.21.
     pendingTime: Time this request spent in the pending request queue.
     referrer: Referrer URL of request.
     requestId: Globally unique identifier for a request, which is based on the
-      request start time.  Request IDs for requests which started later will
+      request start time. Request IDs for requests which started later will
       compare greater as strings than those for requests which started
       earlier.
     resource: Contains the path and query portion of the URL that was
       requested. For example, if the URL was
       "http://example.com/app?name=val", the resource would be
-      "/app?name=val".  The fragment identifier, which is identified by the
-      `#` character, is not included.
+      "/app?name=val". The fragment identifier, which is identified by the #
+      character, is not included.
     responseSize: Size in bytes sent back to client by request.
     sourceReference: Source code for the application that handled this
       request. There can be more than one source reference per deployed
@@ -1477,8 +1445,8 @@ class SourceLocation(_messages.Message):
       with optional context such as the class or package name. This
       information is used in contexts such as the logs viewer, where a file
       and line number are less meaningful. The format can vary by language.
-      For example: `qual.if.ied.Class.method` (Java), `dir/package.func` (Go),
-      `function` (Python).
+      For example: qual.if.ied.Class.method (Java), dir/package.func (Go),
+      function (Python).
     line: Line within the source file.
   """
 
@@ -1573,48 +1541,46 @@ class WriteLogEntriesRequest(_messages.Message):
   """The parameters to WriteLogEntries.
 
   Messages:
-    LabelsValue: Optional. Default labels that are added to the `labels` field
-      of all log entries in `entries`. If a log entry already has a label with
+    LabelsValue: Optional. Default labels that are added to the labels field
+      of all log entries in entries. If a log entry already has a label with
       the same key as a label in this parameter, then the log entry's label is
       not changed. See LogEntry.
 
   Fields:
     entries: Required. The log entries to write. Values supplied for the
-      fields `log_name`, `resource`, and `labels` in this `entries.write`
-      request are added to those log entries that do not provide their own
-      values for the fields.  To improve throughput and to avoid exceeding the
-      [quota limit](/logging/quota-policy) for calls to `entries.write`, you
-      should write multiple log entries at once rather than calling this
-      method for each individual log entry.
-    labels: Optional. Default labels that are added to the `labels` field of
-      all log entries in `entries`. If a log entry already has a label with
-      the same key as a label in this parameter, then the log entry's label is
-      not changed. See LogEntry.
+      fields log_name, resource, and labels in this entries.write request are
+      added to those log entries that do not provide their own values for the
+      fields.To improve throughput and to avoid exceeding the quota limit for
+      calls to entries.write, you should write multiple log entries at once
+      rather than calling this method for each individual log entry.
+    labels: Optional. Default labels that are added to the labels field of all
+      log entries in entries. If a log entry already has a label with the same
+      key as a label in this parameter, then the log entry's label is not
+      changed. See LogEntry.
     logName: Optional. A default log resource name that is assigned to all log
-      entries in `entries` that do not specify a value for `log_name`:
+      entries in entries that do not specify a value for log_name:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"  `[LOG_ID]` must be URL-
-      encoded. For example, `"projects/my-project-id/logs/syslog"` or `"organi
-      zations/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity"`
-      . For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
+      encoded. For example, "projects/my-project-id/logs/syslog" or "organizat
+      ions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity".
+      For more information about log names, see LogEntry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the
       error associated with one of the failed entries and include error
       details in the form of WriteLogEntriesPartialErrors.
     resource: Optional. A default monitored resource object that is assigned
-      to all log entries in `entries` that do not specify a value for
-      `resource`. Example:      { "type": "gce_instance",       "labels": {
-      "zone": "us-central1-a", "instance_id": "00000000000000000000" }}  See
-      LogEntry.
+      to all log entries in entries that do not specify a value for resource.
+      Example: { "type": "gce_instance",   "labels": {     "zone": "us-
+      central1-a", "instance_id": "00000000000000000000" }} See LogEntry.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. Default labels that are added to the `labels` field of all
-    log entries in `entries`. If a log entry already has a label with the same
-    key as a label in this parameter, then the log entry's label is not
-    changed. See LogEntry.
+    """Optional. Default labels that are added to the labels field of all log
+    entries in entries. If a log entry already has a label with the same key
+    as a label in this parameter, then the log entry's label is not changed.
+    See LogEntry.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1644,8 +1610,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
 
 class WriteLogEntriesResponse(_messages.Message):
-  """Result returned from WriteLogEntries.
-empty"""
+  """Result returned from WriteLogEntries. empty"""
 
 
 encoding.AddCustomJsonFieldMapping(

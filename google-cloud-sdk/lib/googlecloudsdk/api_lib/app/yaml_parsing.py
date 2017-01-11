@@ -40,6 +40,21 @@ HINT_VERSION = ('Versions are generated automatically by default but can also '
                 'be manually specified by setting the `--version` flag on '
                 'individual command executions.')
 
+# This is the equivalent of the following in app.yaml:
+# skip_files:
+# - ^(.*/)?#.*#$
+# - ^(.*/)?.*~$
+# - ^(.*/)?.*\.py[co]$
+# - ^(.*/)?.*/RCS/.*$
+# - ^(.*/)?.git(ignore|/.*)$
+# - ^(.*/)?node_modules/.*
+DEFAULT_SKIP_FILES_FLEX = (r'^(.*/)?#.*#$|'
+                           r'^(.*/)?.*~$|'
+                           r'^(.*/)?.*\.py[co]$|'
+                           r'^(.*/)?.*/RCS/.*$|'
+                           r'^(.*/)?.git(ignore|/.*)$|'
+                           r'^(.*/)?node_modules/.*$')
+
 
 class Error(exceptions.Error):
   """A base error for this module."""
@@ -207,6 +222,8 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.is_hermetic = False
 
+    self._UpdateSkipFiles(file_path, parsed)
+
     if self.env is util.Environment.STANDARD and self.is_hermetic:
       self.runtime = parsed.runtime
     elif (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
@@ -297,6 +314,24 @@ class ServiceYamlInfo(_YamlInfo):
       self.parsed.vm_settings = appinfo.VmSettings()
 
     self.parsed.vm_settings['module_yaml_path'] = os.path.basename(self.file)
+
+  def _UpdateSkipFiles(self, file_path, parsed):
+    """Resets skip_files field to Flex default if applicable."""
+    if self.RequiresImage():
+      if parsed.skip_files == appinfo.DEFAULT_SKIP_FILES:
+        # Make sure that this was actually a default, not from the file.
+        try:
+          with open(file_path, 'r') as readfile:
+            contents = readfile.read()
+        except IOError:  # If the class was initiated with a non-existent file
+          contents = ''
+        if 'skip_files' not in contents:
+          # pylint:disable=protected-access
+          parsed.skip_files = validation._RegexStrValue(
+              validation.Regex(DEFAULT_SKIP_FILES_FLEX),
+              DEFAULT_SKIP_FILES_FLEX,
+              'skip_files')
+          # pylint:enable=protected-access
 
 
 def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):

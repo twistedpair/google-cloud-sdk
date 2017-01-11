@@ -164,9 +164,10 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
     policy_file = parser.add_argument(
         'policy_file',
         metavar='POLICY_FILE',
-        help='Path to a local JSON formatted file contining a valid policy.')
+        help='Path to a local JSON or YAML formatted file containing a valid'
+        ' policy.')
     policy_file.detailed_help = """\
-        Path to a local JSON formatted file containing a valid policy.
+        Path to a local JSON or YAML formatted file containing a valid policy.
         """
     # TODO(user): fill in detailed help.
 
@@ -187,9 +188,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
     pass
 
   def Run(self, args):
-
-    policy = iam_util.ParseJsonPolicyFile(
-        args.policy_file, self.messages.Policy)
+    policy = iam_util.ParsePolicyFile(args.policy_file, self.messages.Policy)
 
     ref = self.CreateReference(args)
     request_class = self.service.GetRequestType(self.method)

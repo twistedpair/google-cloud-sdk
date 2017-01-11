@@ -111,22 +111,28 @@ def _GetIncludedPaths(source_dir, exclude, skip_files=None):
   """
   # See docker.utils.tar
   root = os.path.abspath(source_dir)
+  # Get set of all paths other than exclusions from dockerignore.
   paths = docker.utils.exclude_paths(root, exclude)
-  # Filter on the ignore regex
+  # Also filter on the ignore regex from the app.yaml.
   if skip_files:
-    paths &= set(util.FileIterator(source_dir, skip_files))
+    included_paths = set(util.FileIterator(source_dir, skip_files))
+    # FileIterator replaces all path separators with '/', so reformat
+    # the results to compare with the first set.
+    included_paths = {
+        p.replace('/', os.path.sep) for p in included_paths}
+    paths.intersection_update(included_paths)
   return paths
 
 
-def UploadSource(source_dir, bucket, obj, gen_files=None, skip_files=None):
+def UploadSource(source_dir, object_ref, gen_files=None, skip_files=None):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
 
   Args:
     source_dir: the directory to be archived.
-    bucket: the GCS bucket where the tarball will be stored.
-    obj: the GCS object where the tarball will be stored, in the above bucket.
+    object_ref: storage_util.ObjectReference, the Cloud Storage location to
+      upload the source tarball to.
     gen_files: dict of filename to (str) contents of generated config and
       source context files.
     skip_files: optional, a parsed regex for paths and files to skip, from
@@ -152,7 +158,7 @@ def UploadSource(source_dir, bucket, obj, gen_files=None, skip_files=None):
       _CreateTar(source_dir, gen_files, included_paths, gz)
     f.close()
     storage_client = storage_api.StorageClient()
-    storage_client.CopyFileToGCS(bucket, f.name, obj)
+    storage_client.CopyFileToGCS(object_ref.bucket_ref, f.name, object_ref.name)
 
 
 def GetServiceTimeoutString(timeout_property_str):
@@ -167,14 +173,13 @@ def GetServiceTimeoutString(timeout_property_str):
   return None
 
 
-def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
+def ExecuteCloudBuild(project, object_ref, output_image):
   """Execute a CloudBuild to build an app and wait for it to finish.
 
   Args:
     project: the cloud project ID.
-    bucket_ref: Reference to GCS bucket containing source to build. The same
-      bucket will be used for streaming logs.
-    object_name: GCS object name containing source to build.
+    object_ref: storage_util.ObjectReference, the Cloud Storage location of the
+      source tarball.
     output_image: GCR location for the output docker image;
                   eg, gcr.io/test-gae/hardcoded-output-tag.
 
@@ -183,7 +188,8 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   """
   builder = properties.VALUES.app.container_builder_image.Get()
   log.debug('Using builder image: [{0}]'.format(builder))
-  logs_bucket = bucket_ref.bucket
+  # Use the same bucket for logs, since we know we can write to it.
+  logs_bucket = object_ref.bucket
 
   build_timeout = properties.VALUES.app.cloud_build_timeout.Get()
   timeout_str = GetServiceTimeoutString(build_timeout)
@@ -193,8 +199,8 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
       timeout=timeout_str,
       source=cloudbuild_client.messages.Source(
           storageSource=cloudbuild_client.messages.StorageSource(
-              bucket=bucket_ref.bucket,
-              object=object_name,
+              bucket=object_ref.bucket,
+              object=object_ref.name,
           ),
       ),
       steps=[cloudbuild_client.messages.BuildStep(
@@ -204,4 +210,3 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
       images=[output_image],
       logsBucket=logs_bucket)
   cloudbuild_client.ExecuteCloudBuild(build, project=project)
-

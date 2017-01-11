@@ -97,10 +97,10 @@ class TriggerEvent(object):
   # Currently any and only project resource is optional
   optional_resource_types = [Resources.PROJECT]
 
-  def __init__(self, label, resource_type, args_spec):
+  def __init__(self, label, resource_type, path_obligatoriness):
     self.label = label
     self.resource_type = resource_type
-    self.args_spec = args_spec
+    self.path_obligatoriness = path_obligatoriness
 
   @property
   def event_is_optional(self):
@@ -111,36 +111,27 @@ class TriggerEvent(object):
   def resource_is_optional(self):
     return self.resource_type in TriggerEvent.optional_resource_types
 
-  # Makes output formatting easier.
-  @property
-  def args_spec_view(self):
-    return {k: v.value for k, v in self.args_spec.iteritems()}
-
 
 # Don't use this structure directly. Use registry object instead.
 _ALL_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
-        TriggerEvent('topic.publish', Resources.TOPIC,
-                     {'path': Obligatoriness.FORBIDDEN})
+        TriggerEvent('topic.publish', Resources.TOPIC, Obligatoriness.FORBIDDEN)
     ]),
     TriggerProvider('cloud.storage', [
         TriggerEvent('object.change', Resources.BUCKET,
-                     {'path': Obligatoriness.FORBIDDEN})
+                     Obligatoriness.FORBIDDEN)
     ]),
     TriggerProvider('firebase.auth', [
         TriggerEvent('user.create', Resources.PROJECT,
-                     {'path': Obligatoriness.FORBIDDEN}),
-        TriggerEvent('user.delete', Resources.PROJECT,
-                     {'path': Obligatoriness.FORBIDDEN})
+                     Obligatoriness.FORBIDDEN),
+        TriggerEvent('user.delete', Resources.PROJECT, Obligatoriness.FORBIDDEN)
     ]),
     TriggerProvider('firebase.database', [
-        TriggerEvent('data.write', Resources.PROJECT,
-                     {'path': Obligatoriness.REQUIRED})
+        TriggerEvent('data.write', Resources.PROJECT, Obligatoriness.REQUIRED)
     ])
 ]  # by convention, first event type is default
 
 
-# A namespace in fact...
 class _TriggerProviderRegistry(object):
   """This class encapsulates all Event Trigger related functionality."""
 

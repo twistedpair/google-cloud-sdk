@@ -48,6 +48,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalOperations = self.GlobalOperationsService(self)
     self.healthChecks = self.HealthChecksService(self)
+    self.hostTypes = self.HostTypesService(self)
     self.hosts = self.HostsService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
@@ -2510,6 +2511,94 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field=u'healthCheckResource',
         request_type_name=u'ComputeHealthChecksUpdateRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class HostTypesService(base_api.BaseApiService):
+    """Service class for the hostTypes resource."""
+
+    _NAME = u'hostTypes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.HostTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of host types.
+
+      Args:
+        request: (ComputeHostTypesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostTypeAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hostTypes.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/hostTypes',
+        request_field='',
+        request_type_name=u'ComputeHostTypesAggregatedListRequest',
+        response_type_name=u'HostTypeAggregatedList',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified host type. Get a list of available host types by making a list() request.
+
+      Args:
+        request: (ComputeHostTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hostTypes.get',
+        ordered_params=[u'project', u'zone', u'hostType'],
+        path_params=[u'hostType', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/hostTypes/{hostType}',
+        request_field='',
+        request_type_name=u'ComputeHostTypesGetRequest',
+        response_type_name=u'HostType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of host types available to the specified project.
+
+      Args:
+        request: (ComputeHostTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostTypeList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.hostTypes.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/hostTypes',
+        request_field='',
+        request_type_name=u'ComputeHostTypesListRequest',
+        response_type_name=u'HostTypeList',
         supports_download=False,
     )
 
@@ -5437,7 +5526,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.projects.listXpnHosts',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/listXpnHosts',
         request_field=u'projectsListXpnHostsRequest',
         request_type_name=u'ComputeProjectsListXpnHostsRequest',

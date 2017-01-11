@@ -129,6 +129,74 @@ class Displayer(object):
     tap = display_taps.UriCacher(cache_update_op, self._transform_uri)
     self._resources = peek_iterable.Tapper(self._resources, tap)
 
+  def _GetSortKeys(self):
+    """Returns the list of --sort-by [(key, reverse)] tuples.
+
+    Returns:
+      The list of --sort-by [(key, reverse)] tuples, None if --sort-by was not
+      specified. The keys are ordered from highest to lowest precedence.
+    """
+    if not self._GetFlag('sort_by'):
+      return None
+    keys = []
+    for name in self._args.sort_by:
+      # ~name reverses the sort for name.
+      if name.startswith('~'):
+        name = name.lstrip('~')
+        reverse = True
+      else:
+        reverse = False
+      # Slices default to the first list element for consistency.
+      name = name.replace('[]', '[0]')
+      keys.append((resource_lex.Lexer(name).Key(), reverse))
+    return keys
+
+  def _SortResources(self, keys, reverse):
+    """_AddSortByTap helper that sorts the resources by keys.
+
+    Args:
+      keys: The ordered list of parsed resource keys from highest to lowest
+        precedence.
+      reverse: Sort by the keys in descending order if True, otherwise
+        ascending.
+    """
+    self._resources = sorted(
+        self._resources,
+        key=lambda r: [resource_property.Get(r, k) for k in keys],
+        reverse=reverse)
+
+  def _AddSortByTap(self):
+    """Sorts the resources using the --sort-by keys."""
+    if not resource_property.IsListLike(self._resources):
+      return
+    sort_keys = self._GetSortKeys()
+    if not sort_keys:
+      return
+    self._args.sort_by = None
+    # This loop partitions the keys into groups having the same reverse value.
+    # The groups are then applied in reverse order to maintain the original
+    # precedence.
+    #
+    # This is not a pure tap since, by necessity, it consumes self._resources
+    # to sort and converts it to a list.
+    groups = []  # [(group_keys, group_reverse)] LIFO to preserve precedence
+    group_keys = []  # keys for current group
+    group_reverse = False
+    for key, reverse in sort_keys:
+      if not group_keys:
+        group_reverse = reverse
+      elif group_reverse != reverse:
+        groups.insert(0, (group_keys, group_reverse))
+        group_keys = []
+        group_reverse = reverse
+      group_keys.append(key)
+    if group_keys:
+      groups.insert(0, (group_keys, group_reverse))
+
+    # Finally sort the resources by groups having the same reverse value.
+    for keys, reverse in groups:
+      self._SortResources(keys, reverse)
+
   def _AddFilterTap(self):
     """Taps a resource filter into self.resources if needed."""
     expression = self._GetFlag('filter')
@@ -245,22 +313,19 @@ class Displayer(object):
       #
       fmt = default_fmt + ' ' + fmt
 
-    if fmt and self._GetFlag('sort_by'):
-      # :(...) adds key only attributes that don't affect the projection.
-      orders = []
-      for order, name in enumerate(self._args.sort_by):
-        # ~name reverses the sort for name.
-        if name.startswith('~'):
-          name = name.lstrip('~')
-          reverse = ':reverse'
-        else:
-          reverse = ''
-        # Slices default to the first list element for consistency.
-        name = name.replace('[]', '[0]')
-        orders.append('{name}:sort={order}{reverse}'.format(
-            name=name, order=order + 1, reverse=reverse))
-      fmt += ':({orders})'.format(orders=','.join(orders))
+    if not fmt:
+      return fmt
+    sort_keys = self._GetSortKeys()
+    if not sort_keys:
+      return fmt
 
+    # :(...) adds key only attributes that don't affect the projection.
+    orders = []
+    for order, (key, reverse) in enumerate(sort_keys, start=1):
+      attr = ':reverse' if reverse else ''
+      orders.append('{name}:sort={order}{attr}'.format(
+          name=resource_lex.GetKeyName(key), order=order, attr=attr))
+    fmt += ':({orders})'.format(orders=','.join(orders))
     return fmt
 
   def _InitPrinter(self):
@@ -329,6 +394,9 @@ class Displayer(object):
 
     # Add a resource flatten tap if needed.
     self._AddFlattenTap()
+
+    # Add a sort tap if needed.
+    self._AddSortByTap()
 
     # Add a resource filter tap if needed.
     self._AddFilterTap()

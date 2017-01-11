@@ -26,7 +26,7 @@ This module is internal and should not be used by client applications.
 # this source file, please place them in comments only.
 
 # NOTE: This module is heavily based on the Java classes in
-# c.g.apphosting.datastore.shared. Changes made here are likely to be needed
+# c.g.apphosting.datastore.service. Changes made here are likely to be needed
 # there as well.
 
 
@@ -87,7 +87,7 @@ MEANING_EMPTY_LIST = 24
 URI_MEANING_ZLIB = 'ZLIB'
 
 # Limits. Must be kept in sync with
-# java/com/google/apphosting/datastore/shared/DatastoreHelper.java.
+# java/com/google/apphosting/datastore/service/common/DatastoreHelper.java.
 MAX_URL_CHARS = 2083
 MAX_INDEXED_STRING_CHARS = 500
 MAX_INDEXED_BLOB_BYTES = 500
@@ -116,7 +116,7 @@ PROPERTY_NAME_KEY = '__key__'
 
 DEFAULT_GAIA_ID = 0
 
-# See com.google.apphosting.datastore.shared.ValidationUtils.
+# See com.google.apphosting.datastore.service.common.ValidationUtils.
 RFC_3339_MIN_MICROSECONDS_INCLUSIVE = -62135596800 * 1000 * 1000
 RFC_3339_MAX_MICROSECONDS_INCLUSIVE = 253402300799 * 1000 * 1000 + 999999
 

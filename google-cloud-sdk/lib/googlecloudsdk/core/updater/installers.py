@@ -233,7 +233,7 @@ class ComponentInstaller(object):
     except (urllib2.HTTPError, urllib2.URLError, ssl.SSLError) as e:
       raise URLFetchError(e)
 
-    with file_utils.Context(tarfile.open(name=download_file_path)) as tar:
+    with tarfile.open(name=download_file_path) as tar:
       members = tar.getmembers()
       total_files = float(len(members))
 

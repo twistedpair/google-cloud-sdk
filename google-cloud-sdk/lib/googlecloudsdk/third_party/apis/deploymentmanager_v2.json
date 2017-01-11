@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20161202",
+ "revision": "20161212",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1043,6 +1043,20 @@
      "httpMethod": "DELETE",
      "description": "Deletes a deployment and all of the resources in the deployment.",
      "parameters": {
+      "deletePolicy": {
+       "type": "string",
+       "description": "Sets the policy to use for deleting resources.",
+       "default": "DELETE",
+       "enum": [
+        "ABANDON",
+        "DELETE"
+       ],
+       "enumDescriptions": [
+        "",
+        ""
+       ],
+       "location": "query"
+      },
       "deployment": {
        "type": "string",
        "description": "The name of the deployment for this request.",

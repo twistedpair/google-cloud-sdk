@@ -154,6 +154,28 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
+ADDRESS_ARG = compute_flags.ResourceArgument(
+    name='--address',
+    required=False,
+    resource_name='address',
+    completion_resource_id='compute.addresses',
+    regional_collection='compute.addresses',
+    global_collection='compute.globalAddresses',
+    region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+    short_help='The external IP address that the forwarding rule will serve.',
+    detailed_help="""\
+      The external IP address that the forwarding rule will
+      serve. All traffic sent to this IP address is directed to the
+      target pointed to by the forwarding rule. If the address is
+      reserved, it must either (1) reside in the global scope if the
+      forwarding rule is being configured to point to a target HTTP
+      proxy or (2) reside in the same region as the forwarding rule
+      if the forwarding rule is being configured to point to a
+      target pool or target instance. If this flag is omitted, an
+      ephemeral IP address is assigned.
+      """)
+
+
 def AddUpdateArgs(parser, include_beta=False):
   """Adds common flags for mutating forwarding rule targets."""
   del include_beta
@@ -179,25 +201,6 @@ def AddUpdateArgs(parser, include_beta=False):
       type=lambda x: x.upper(),
       default='EXTERNAL',
       help='This signifies what the forwarding rule will be used for.')
-
-
-def AddAddress(parser):
-  """Adds IP address flag."""
-
-  address = parser.add_argument(
-      '--address',
-      help='The external IP address that the forwarding rule will serve.')
-  address.detailed_help = """\
-      The external IP address that the forwarding rule will
-      serve. All traffic sent to this IP address is directed to the
-      target pointed to by the forwarding rule. If the address is
-      reserved, it must either (1) reside in the global scope if the
-      forwarding rule is being configured to point to a target HTTP
-      proxy or (2) reside in the same region as the forwarding rule
-      if the forwarding rule is being configured to point to a
-      target pool or target instance. If this flag is omitted, an
-      ephemeral IP address is assigned.
-      """
 
 
 def AddIPProtocols(parser, include_beta=False):

@@ -15,8 +15,8 @@
 """Common flags for the consumers subcommand group."""
 
 from googlecloudsdk.api_lib.service_management import services_util
-
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.service_management import completion_callbacks
 
 
 def operation_flag(suffix='to act on'):
@@ -25,10 +25,29 @@ def operation_flag(suffix='to act on'):
       help='The name of the operation {0}.'.format(suffix))
 
 
-def service_flag(suffix='to act on'):
+def producer_service_flag(suffix='to act on'):
   return base.Argument(
       'service',
       completion_resource=services_util.SERVICES_COLLECTION,
+      list_command_callback_fn=(completion_callbacks.
+                                ProducerServiceFlagCompletionCallback),
+      help='The name of the service {0}.'.format(suffix))
+
+
+def consumer_service_flag(suffix='to act on'):
+  return base.Argument(
+      'service',
+      completion_resource=services_util.SERVICES_COLLECTION,
+      list_command_callback_fn=(completion_callbacks.
+                                ConsumerServiceFlagCompletionCallback),
+      help='The name of the service {0}.'.format(suffix))
+
+
+def available_service_flag(suffix='to act on'):
+  # NOTE: Because listing available services often forces the tab completion
+  #       code to timeout, this flag will not enable tab completion.
+  return base.Argument(
+      'service',
       help='The name of the service {0}.'.format(suffix))
 
 

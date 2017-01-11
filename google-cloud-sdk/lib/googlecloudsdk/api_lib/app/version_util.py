@@ -17,8 +17,8 @@
 import re
 
 from googlecloudsdk.api_lib.app import metric_names
+from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -86,8 +86,8 @@ class Version(object):
     traffic_split = service and service.split.get(version.id, 0.0)
     last_deployed = None
     try:
-      if version.creationTime:
-        last_deployed_dt = times.ParseDateTime(version.creationTime).replace(
+      if version.createTime:
+        last_deployed_dt = times.ParseDateTime(version.createTime).replace(
             microsecond=0)
         last_deployed = times.LocalizeDateTime(last_deployed_dt)
     except ValueError:
@@ -209,8 +209,8 @@ def DeleteVersions(api_client, versions):
       with progress_tracker.ProgressTracker(
           'Deleting [{0}]'.format(version_path)):
         api_client.DeleteVersion(version.service, version.id)
-    except (calliope_exceptions.HttpException, operations.OperationError,
-            operations.OperationTimeoutError) as err:
+    except (calliope_exceptions.HttpException, operations_util.OperationError,
+            operations_util.OperationTimeoutError) as err:
       errors[version_path] = str(err)
 
   if errors:
@@ -348,8 +348,9 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
         service_name=old_default_version.service,
         version_id=old_default_version.id,
         block=False)
-  except (calliope_exceptions.HttpException, operations.OperationError,
-          operations.OperationTimeoutError) as err:
+  except (calliope_exceptions.HttpException,
+          operations_util.OperationError,
+          operations_util.OperationTimeoutError) as err:
     log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
                                                         str(err)))
     log.warn('Version [{0}] is still running and you must stop or delete it '

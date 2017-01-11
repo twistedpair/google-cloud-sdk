@@ -14,7 +14,7 @@
 
 """Utilities for dealing with service resources."""
 
-from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import progress_tracker
@@ -170,8 +170,8 @@ def DeleteServices(api_client, services):
       with progress_tracker.ProgressTracker(
           'Deleting [{0}]'.format(service.id)):
         api_client.DeleteService(service.id)
-    except (calliope_exceptions.HttpException, operations.OperationError,
-            operations.OperationTimeoutError) as err:
+    except (calliope_exceptions.HttpException, operations_util.OperationError,
+            operations_util.OperationTimeoutError) as err:
       errors[service.id] = str(err)
 
   if errors:

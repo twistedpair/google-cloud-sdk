@@ -13,7 +13,6 @@
 # limitations under the License.
 """Defines tool-wide constants."""
 import collections
-import os
 
 
 BYTES_IN_ONE_MB = 2 ** 20
@@ -121,14 +120,10 @@ PUBLIC_IMAGE_PROJECTS = [
 PREVIEW_IMAGE_PROJECTS = []
 
 # SSH-related constants.
-DEFAULT_SSH_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
 SSH_KEYS_METADATA_KEY = 'sshKeys'
 SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'ssh-keys'
 SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
-PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
-GOOGLE_SSH_KNOWN_HOSTS_FILE = os.path.join('~', '.ssh',
-                                           'google_compute_known_hosts')
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
@@ -145,26 +140,42 @@ DEFAULT_SCOPES = sorted([
 ])
 
 SCOPES = {
-    'bigquery': 'https://www.googleapis.com/auth/bigquery',
-    'cloud-platform': 'https://www.googleapis.com/auth/cloud-platform',
-    'cloud-source-repos': _SOURCE_REPOS,
-    'cloud-source-repos-ro': _SOURCE_REPOS_RO,
-    'compute-ro': 'https://www.googleapis.com/auth/compute.readonly',
-    'compute-rw': 'https://www.googleapis.com/auth/compute',
-    'useraccounts-ro': _USERACCOUNTS_RO,
-    'useraccounts-rw': 'https://www.googleapis.com/auth/cloud.useraccounts',
-    'datastore': 'https://www.googleapis.com/auth/datastore',
-    'logging-write': _LOGGING_WRITE,
-    'monitoring': 'https://www.googleapis.com/auth/monitoring',
-    'monitoring-write': _MONITORING_WRITE,
-    'service-control': _SERVICE_CONTROL_SCOPE,
-    'service-management': _SERVICE_MANAGEMENT_SCOPE,
-    'sql': 'https://www.googleapis.com/auth/sqlservice',
-    'sql-admin': 'https://www.googleapis.com/auth/sqlservice.admin',
-    'storage-full': 'https://www.googleapis.com/auth/devstorage.full_control',
-    'storage-ro': _STORAGE_RO,
-    'storage-rw': 'https://www.googleapis.com/auth/devstorage.read_write',
-    'taskqueue': 'https://www.googleapis.com/auth/taskqueue',
-    'userinfo-email': 'https://www.googleapis.com/auth/userinfo.email',
+    'bigquery': ['https://www.googleapis.com/auth/bigquery'],
+    'cloud-platform': ['https://www.googleapis.com/auth/cloud-platform'],
+    'cloud-source-repos': [_SOURCE_REPOS],
+    'cloud-source-repos-ro': [_SOURCE_REPOS_RO],
+    'compute-ro': ['https://www.googleapis.com/auth/compute.readonly'],
+    'compute-rw': ['https://www.googleapis.com/auth/compute'],
+    'default': DEFAULT_SCOPES,
+    'useraccounts-ro': [_USERACCOUNTS_RO],
+    'useraccounts-rw': ['https://www.googleapis.com/auth/cloud.useraccounts'],
+    'datastore': ['https://www.googleapis.com/auth/datastore'],
+    'logging-write': [_LOGGING_WRITE],
+    'monitoring': ['https://www.googleapis.com/auth/monitoring'],
+    'monitoring-write': [_MONITORING_WRITE],
+    'service-control': [_SERVICE_CONTROL_SCOPE],
+    'service-management': [_SERVICE_MANAGEMENT_SCOPE],
+    'sql': ['https://www.googleapis.com/auth/sqlservice'],
+    'sql-admin': ['https://www.googleapis.com/auth/sqlservice.admin'],
+    'storage-full': ['https://www.googleapis.com/auth/devstorage.full_control'],
+    'storage-ro': [_STORAGE_RO],
+    'storage-rw': ['https://www.googleapis.com/auth/devstorage.read_write'],
+    'taskqueue': ['https://www.googleapis.com/auth/taskqueue'],
+    'userinfo-email': ['https://www.googleapis.com/auth/userinfo.email'],
 }
 
+
+def ScopesForHelp():
+  """Get describing aliases, for use in command help.
+
+  Returns:
+  str, containing a line for each scope with name of the scope alias
+  followed by comma and full url of the scope, and (if the alias expands to more
+  than one scope) more lines containing comma and one scope url each.
+  """
+  aliases = []
+  for alias, value in sorted(SCOPES.iteritems()):
+    aliases.append('{0},{1}'.format(alias, value[0]))
+    for item in value[1:]:
+      aliases.append(',' + item)
+  return '\n'.join(aliases)

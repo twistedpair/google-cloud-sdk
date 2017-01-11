@@ -281,19 +281,16 @@ def UpdateRC(command_completion, path_update, rc_path, bin_path, sdk_root):
     with open(rc_paths.rc_path, 'w') as rc_file:
       rc_file.write(rc_data)
 
-    print("""\
-[{rc_path}] has been updated.
-Start a new shell for the changes to take effect.
-""".format(rc_path=rc_paths.rc_path))
+    print('[{rc_path}] has been updated.'.format(rc_path=rc_paths.rc_path))
+    print(console_io.FormatRequiredUserAction(
+        'Start a new shell for the changes to take effect.'))
 
   if not command_completion:
-    print("""\
-Source [{rc}]
-in your profile to enable shell command completion for gcloud.
-""".format(rc=rc_paths.completion))
+    print(console_io.FormatRequiredUserAction(
+        'Source [{rc}]in your profile to enable shell command completion for '
+        'gcloud.'.format(rc=rc_paths.completion)))
 
   if not path_update:
-    print("""\
-Source [{rc}]
-in your profile to add the Google Cloud SDK command line tools to your $PATH.
-""".format(rc=rc_paths.path))
+    print(console_io.FormatRequiredUserAction(
+        'Source [{rc}] in your profile to add the Google Cloud SDK command '
+        'line tools to your $PATH.'.format(rc=rc_paths.path)))

@@ -292,6 +292,21 @@ def ConvertUrlHandler(handler):
   # static_dir directives we see to a static_files directive before
   # continuing.
   if handler_type == 'staticDirectory':
+    # Groups are disallowed in URLs for static directory handlers.
+    # We check for them using the Python re module. App Engine uses Posix
+    # extended regular expressions, but it's overkill to start packaging a
+    # library that officially supports Posix extended regular expressions for
+    # this simple validation. We just let compile errors slide; Python regular
+    # expressions are mostly a superset.
+    try:
+      compiled = re.compile(handler['urlRegex'])
+    except re.error:
+      pass  # We'll let the API handle this.
+    else:
+      if compiled.groups:  # `groups` is the number of groups in the RE
+        raise ValueError(
+            'Groups are not allowed in URLs for static directory handlers: ' +
+            handler['urlRegex'])
     tmp = {
         'path': AppendRegexToPath(handler['staticDir'], r'\1'),
         'uploadPathRegex': AppendRegexToPath(handler['staticDir'], '.*'),

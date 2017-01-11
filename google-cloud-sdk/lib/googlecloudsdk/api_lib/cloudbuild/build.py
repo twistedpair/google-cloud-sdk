@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """High-level client for interacting with the Cloud Build API."""
-from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.core import exceptions
@@ -96,7 +96,7 @@ class CloudBuildClient(object):
       else:
         log.status.Print('Logs can be found in the Cloud Console.')
         log_loc = 'in the Cloud Console.'
-      op = operations.WaitForOperation(
+      op = operations_util.WaitForOperation(
           operation_service=self.client.operations,
           operation=build_op,
           retry_interval=self._RETRY_INTERVAL,
@@ -108,7 +108,7 @@ class CloudBuildClient(object):
       # marking the build complete.
       log_tailer.Poll(is_last=True)
     else:
-      op = operations.WaitForOperation(
+      op = operations_util.WaitForOperation(
           operation_service=self.client.operations,
           operation=build_op,
           retry_interval=self._RETRY_INTERVAL,

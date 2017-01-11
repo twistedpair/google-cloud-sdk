@@ -818,8 +818,10 @@ version [{1}].  To clear your fixed version setting, run:
 
     md5dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if md5dict1 != md5dict2:
-      self.__Write(log.status,
-                   '\nStart a new shell for the changes to take effect.\n')
+      self.__Write(
+          log.status,
+          console_io.FormatRequiredUserAction(
+              'Start a new shell for the changes to take effect.'))
     self.__Write(log.status, '\nUpdate done!\n')
 
     if not original_update_seed:

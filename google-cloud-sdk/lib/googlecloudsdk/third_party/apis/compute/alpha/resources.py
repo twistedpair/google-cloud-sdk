@@ -100,6 +100,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'healthCheck']
   )
+  HOSTTYPES = (
+      'hostTypes',
+      'projects/{project}/zones/{zone}/hostTypes/{hostType}',
+      {},
+      [u'project', u'zone', u'hostType']
+  )
   HOSTS = (
       'hosts',
       'projects/{project}/zones/{zone}/hosts/{host}',

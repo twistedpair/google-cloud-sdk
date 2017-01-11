@@ -4323,6 +4323,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
   NOT_FOUND    =   13 
   ALREADY_EXISTS =   14 
   FAILED_PRECONDITION =   15 
+  UNAUTHENTICATED =   16 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -4340,6 +4341,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
     13: "NOT_FOUND",
     14: "ALREADY_EXISTS",
     15: "FAILED_PRECONDITION",
+    16: "UNAUTHENTICATED",
   }
 
   def ErrorCode_Name(cls, x): return cls._ErrorCode_NAMES.get(x, "")

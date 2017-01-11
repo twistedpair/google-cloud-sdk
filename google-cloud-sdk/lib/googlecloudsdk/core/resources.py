@@ -30,16 +30,12 @@ import urllib
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 import uritemplate
 
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
 
-_COLLECTIONPATH_RE = re.compile(
-    r'^(?:(?P<collection>{collection})::)?(?P<path>.+)'.format(
-        collection=_COLLECTION_SUB_RE), flags=re.MULTILINE|re.DOTALL)
 # The first two wildcards in this are the API and the API's version. The rest
 # are parameters into a specific collection in that API/version.
 _URL_RE = re.compile(r'(https?://[^/]+/[^/]+/[^/]+/)(.+)')
@@ -109,32 +105,13 @@ class WrongResourceCollectionException(UserError):
     self.path = path
 
 
-class WrongFieldNumberException(UserError):
-  """A command line that was given had too many fields."""
-
-  def __init__(self, path, ordered_params):
-    possibilities = [
-        '/'.join([p.upper() for p in ordered_params[1:]]),
-        '/'.join([''] + [p.upper() for p in ordered_params]),
-    ]
-
-    if len(ordered_params) > 2:
-      possibilities.insert(0, ordered_params[-1].upper())
-
-    bits = ', '.join(possibilities)
-
-    msg = ('wrong number of fields: [{got}] does not match any of'
-           ' {bits}').format(got=path, bits=bits)
-    super(WrongFieldNumberException, self).__init__(msg)
-
-
 class UnknownFieldException(UserError):
   """A command line that was given did not specify a field."""
 
-  def __init__(self, collection_path, expected):
+  def __init__(self, collection_name, expected):
     super(UnknownFieldException, self).__init__(
-        'unknown field [{expected}] in [{path}]'.format(
-            expected=expected, path=collection_path))
+        'unknown field [{expected}] for [{collection_name}]'.format(
+            expected=expected, collection_name=collection_name))
 
 
 class UnknownCollectionException(UserError):
@@ -166,13 +143,46 @@ class _ResourceParser(object):
     self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
 
-  def ParseCollectionPath(self, collection_path, kwargs,
-                          base_url=None, subcollection=''):
+  def ParseRelativeName(
+      self, relative_name, base_url=None, subcollection='', url_unescape=False):
+    """Parse relative name into a Resource object.
+
+    Args:
+      relative_name: str, resource relative name.
+      base_url: str, base url part of the api which manages this resource.
+      subcollection: str, id of subcollection. See the api resource module
+          (googlecloudsdk/third_party/apis/API_NAME/API_VERSION/resources.py).
+      url_unescape: bool, if true relative name parameters will be unescaped.
+
+    Returns:
+      Resource representing this name.
+
+    Raises:
+      InvalidResourceException: if relative name doesn't match collection
+          template.
+    """
+    path_template = self.collection_info.GetPathRegEx(subcollection)
+    match = re.match(path_template, relative_name)
+    if not match:
+      raise InvalidResourceException(
+          '{0} is not in {1} collection as it does not match path template {2}'
+          .format(relative_name, self.collection_info.full_name, path_template))
+    params = self.collection_info.GetParams(subcollection)
+    fields = match.groups()
+    if url_unescape:
+      fields = map(urllib.unquote, fields)
+
+    return Resource(self.collection_info, subcollection,
+                    param_values=dict(zip(params, fields)),
+                    endpoint_url=base_url)
+
+  def ParseResourceId(self, resource_id, kwargs,
+                      base_url=None, subcollection=''):
     """Given a command line and some keyword args, get the resource.
 
     Args:
-      collection_path: str, The human-typed collection-path from the command
-          line. Can be None to indicate all params should be taken from kwargs.
+      resource_id: str, Some identifier for the resource.
+          Can be None to indicate all params should be taken from kwargs.
       kwargs: {str:(str or func()->str)}, flags (available from context) or
           resolvers that can help parse this resource. If the fields in
           collection-path do not provide all the necessary information,
@@ -188,26 +198,20 @@ class _ResourceParser(object):
       InvalidResourceException: If the provided collection-path is malformed.
       WrongResourceCollectionException: If the collection-path specified the
           wrong collection.
-      WrongFieldNumberException: If the collection-path's path provided too many
-          fields.
       UnknownFieldException: If the collection-path's path did not provide
           enough fields.
     """
+    if resource_id is not None:
+      try:
+        return self.ParseRelativeName(
+            resource_id, base_url=base_url, subcollection=subcollection)
+      except InvalidResourceException:
+        pass
+
     params = self.collection_info.GetParams(subcollection)
-    if collection_path is not None:
-      match = _COLLECTIONPATH_RE.match(collection_path)
-      if not match:
-        raise InvalidResourceException(collection_path)
-      collection, path = match.groups()
+    fields = [None] * len(params)
 
-      if collection and collection != self.collection_info.full_name:
-        raise WrongResourceCollectionException(
-            expected=self.collection_info.full_name,
-            got=collection, path=collection_path)
-
-      fields = _GetParamValuesFromPath(params, path)
-    else:
-      fields = [None] * len(params)
+    fields[-1] = resource_id
 
     param_values = dict(zip(params, fields))
 
@@ -224,21 +228,8 @@ class _ResourceParser(object):
         # properties.RequiredPropertyError if property was tied to parameter.
         param_values[param] = self.params_defaults_func(param)
 
-    missing_params = [p for p, f in param_values.iteritems() if f is None]
-    if missing_params:
-      raise UnknownFieldException(collection_path, ','.join(missing_params))
-
     ref = Resource(self.collection_info, subcollection, param_values,
-                   collection_path, base_url)
-
-     # Multiple parameters are specified, a full or partial collection path.
-    if (collection_path is not None and '/' in collection_path and not
-        properties.VALUES.core
-        .disable_collection_path_deprecation_warning.Get()):
-      log.warn('Resource ids like [{0}] (specifying multiple parameters '
-               'separated by "/") are undocumented and deprecated, support for '
-               'which will be removed in the near future.'.format(path))
-
+                   base_url)
     return ref
 
   def __str__(self):
@@ -253,7 +244,7 @@ class Resource(object):
   """Information about a Cloud resource."""
 
   def __init__(self, collection_info, subcollection, param_values,
-               collection_path, endpoint_url):
+               endpoint_url):
     """Create a Resource object that may be partially resolved.
 
     To allow resolving of unknown params to happen after parse-time, the
@@ -265,18 +256,19 @@ class Resource(object):
           for this resource.
       subcollection: str, id for subcollection of this collection.
       param_values: {param->value}, A list of values for parameters.
-      collection_path: str, The original command-line argument used to create
-          this Resource.
       endpoint_url: str, override service endpoint url for this resource. If
            None default base url of collection api will be used.
+    Raises:
+      UnknownFieldException: if param_values have None value.
     """
     self._collection_info = collection_info
-    self.__collection_path = collection_path
     self._endpoint_url = endpoint_url or collection_info.base_url
     self._subcollection = subcollection
     self._path = collection_info.GetPath(subcollection)
     self._params = collection_info.GetParams(subcollection)
     for param, value in param_values.iteritems():
+      if value is None:
+        raise UnknownFieldException(collection_info.full_name, param)
       setattr(self, param, value)
     self._initialized = True
 
@@ -327,19 +319,21 @@ class Resource(object):
     escape_func = urllib.quote if url_escape else lambda x, safe: x
 
     effective_params = dict(
-        [(k, escape_func(getattr(self, k), safe='') or '*')
+        [(k, escape_func(getattr(self, k), safe=''))
          for k in self._params])
 
     return urllib.unquote(
         uritemplate.expand(self._path, effective_params))
 
+  def AsDict(self):
+    """Returns resource reference parameters and its values."""
+    return {k: getattr(self, k) for k in self._params}
+
   def SelfLink(self):
     """Returns URI for this resource."""
-    effective_params = dict(
-        [(k, getattr(self, k) or '*') for k in self._params])
     self_link = '{0}{1}'.format(self._endpoint_url,
                                 uritemplate.expand(self._path,
-                                                   effective_params))
+                                                   self.AsDict()))
     if (self._collection_info.api_name
         in ('compute', 'clouduseraccounts', 'storage')):
       # TODO(b/15425944): Unquote URLs for now for these apis.
@@ -579,13 +573,24 @@ class Registry(object):
       return None
     return resolver() if callable(resolver) else resolver
 
-  def ParseCollectionPath(self, collection, collection_path, kwargs):
-    """Parse a collection path into a Resource.
+  def _GetParserForCollection(self, collection):
+    # Register relevant API if necessary and possible
+    api_name = _APINameFromCollection(collection)
+    api_version = self.RegisterApiByName(api_name)
+
+    parser = (self.parsers_by_collection
+              .get(api_name, {}).get(api_version, {}).get(collection, None))
+    if parser is None:
+      raise InvalidCollectionException(collection)
+    return parser
+
+  def ParseResourceId(self, collection, resource_id, kwargs):
+    """Parse a resource id string into a Resource.
 
     Args:
       collection: str, the name/id for the resource from commandline argument.
-      collection_path: str, The human-typed collection-path from the command
-          line. Can be None to indicate all params should be taken from kwargs.
+      resource_id: str, Some resouce identifier.
+          Can be None to indicate all params should be taken from kwargs.
       kwargs: {str:(str or func()->str)}, flags (available from context) or
           resolvers that can help parse this resource. If the fields in
           collection-path do not provide all the necessary information,
@@ -597,36 +602,16 @@ class Registry(object):
       InvalidCollectionException: If the provided collection-path is malformed.
 
     """
-    # Register relevant API if necessary and possible
-    api_name = _APINameFromCollection(collection)
-    api_version = self.RegisterApiByName(api_name)
-
-    parser = (self.parsers_by_collection
-              .get(api_name, {}).get(api_version, {}).get(collection, None))
-    if parser is None:
-      raise InvalidCollectionException(collection)
-
-    # Use current override endpoint for this resource name.
-    endpoint_override_property = getattr(
-        properties.VALUES.api_endpoint_overrides, api_name, None)
-    base_url = None
-    if endpoint_override_property is not None:
-      base_url = endpoint_override_property.Get()
-      if base_url is not None:
-        # Check base url style. If it includes api version then override
-        # also replaces the version, otherwise it only overrides the domain.
-        client_class = core_apis.GetClientClass(api_name, api_version)
-        _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
-            client_class.BASE_URL)
-        if url_version is None:
-          base_url += api_version + u'/'
+    parser = self._GetParserForCollection(collection)
+    base_url = _GetApiBaseUrl(parser.collection_info.api_name,
+                              parser.collection_info.api_version)
 
     parser_collection = parser.collection_info.full_name
     subcollection = ''
     if len(parser_collection) != len(collection):
       subcollection = collection[len(parser_collection)+1:]
-    return parser.ParseCollectionPath(
-        collection_path, kwargs, base_url, subcollection)
+    return parser.ParseResourceId(
+        resource_id, kwargs, base_url, subcollection)
 
   def GetCollectionInfo(self, collection_name):
     api_name = _APINameFromCollection(collection_name)
@@ -733,26 +718,19 @@ class Registry(object):
       raise InvalidResourceException(url)
     subcollection, parser = cur_level[None]
     params = dict(zip(parser.collection_info.GetParams(subcollection), params))
-    return parser.ParseCollectionPath(
+    return parser.ParseResourceId(
         None, params, base_url=endpoint,
         subcollection=subcollection)
 
   def ParseRelativeName(self, relative_name, collection, url_unescape=False):
     """Parser relative names. See Resource.RelativeName() method."""
-    collection_info = self.GetCollectionInfo(collection)
-    subcollection = collection_info.GetSubcollection(collection)
-    path_template = collection_info.GetPathRegEx(subcollection)
-    match = re.match(path_template, relative_name)
-    if not match:
-      raise InvalidResourceException(
-          '{0} is not in {1} collection as it does not match path template {2}'
-          .format(relative_name, collection, path_template))
-    params = collection_info.GetParams(subcollection)
-    fields = match.groups()
-    if url_unescape:
-      fields = map(urllib.unquote, fields)
+    parser = self._GetParserForCollection(collection)
+    base_url = _GetApiBaseUrl(parser.collection_info.api_name,
+                              parser.collection_info.api_version)
+    subcollection = parser.collection_info.GetSubcollection(collection)
 
-    return self.Create(collection, **dict(zip(params, fields)))
+    return parser.ParseRelativeName(
+        relative_name, base_url, subcollection, url_unescape)
 
   def ParseStorageURL(self, url, collection=None):
     """Parse gs://bucket/object_path into storage.v1 api resource."""
@@ -763,16 +741,16 @@ class Registry(object):
       if collection and collection != 'storage.objects':
         raise WrongResourceCollectionException('storage.objects', collection,
                                                url)
-      return self.ParseCollectionPath(
+      return self.ParseResourceId(
           collection='storage.objects',
-          collection_path=None,
+          resource_id=None,
           kwargs={'bucket': match.group(1), 'object': match.group(2)})
 
     if collection and collection != 'storage.buckets':
       raise WrongResourceCollectionException('storage.buckets', collection, url)
-    return self.ParseCollectionPath(
+    return self.ParseResourceId(
         collection='storage.buckets',
-        collection_path=None,
+        resource_id=None,
         kwargs={'bucket': match.group(1)})
 
   def Parse(self, line, params=None, collection=None, enforce_collection=True):
@@ -820,14 +798,14 @@ class Registry(object):
             if '/' in line:
               bucket, objectpath = line.split('/', 1)
             else:
-              return self.ParseCollectionPath(
+              return self.ParseResourceId(
                   collection='storage.buckets',
-                  collection_path=None,
+                  resource_id=None,
                   kwargs={'bucket': line})
           if bucket is not None:
-            return self.ParseCollectionPath(
+            return self.ParseResourceId(
                 collection='storage.objects',
-                collection_path=None,
+                resource_id=None,
                 kwargs={'bucket': bucket, 'object': objectpath})
           raise
         # TODO(user): consider not doing this here.
@@ -842,27 +820,12 @@ class Registry(object):
       elif line.startswith('gs://'):
         return self.ParseStorageURL(line, collection=collection)
 
+    if line is not None and not line:
+      raise InvalidResourceException(line)
     if not collection:
-      match = _COLLECTIONPATH_RE.match(line)
-      if not match:
-        raise InvalidResourceException(line)
-      collection, unused_path = match.groups()
-      if not collection:
-        raise UnknownCollectionException(line)
-    # Special handle storage collection paths.
-    if collection == 'storage.objects':
-      p = dict(params or {})
-      if 'bucket' not in p or 'object' not in p:
-        if '/' not in line:
-          raise UnknownFieldException(line, 'bucket')
-        p['bucket'], p['object'] = line.split('/', 1)
+      raise UnknownCollectionException(line)
 
-      return self.ParseCollectionPath(
-          collection='storage.objects',
-          collection_path=None,
-          kwargs=p)
-
-    return self.ParseCollectionPath(collection, line, params or {})
+    return self.ParseResourceId(collection, line, params or {})
 
   def Create(self, collection, **params):
     """Create a Resource from known collection and params.
@@ -887,64 +850,20 @@ class Registry(object):
 REGISTRY = Registry()
 
 
-def _GetParamValuesFromPath(params, path):
-  """Get the ordered fields for the provided collection-path.
-
-  Args:
-    params: list(str), which might be represented in the path.
-    path: str, The not-None string provided on the command line.
-
-  Returns:
-    [str], The ordered list of URL params corresponding to this parser's
-    resource type.
-
-  Raises:
-    InvalidResourceException: If the provided collection-path is malformed.
-    WrongResourceCollectionException: If the collection-path specified the
-        wrong collection.
-    WrongFieldNumberException: If the collection-path's path provided too many
-        fields.
-    UnknownFieldException: If the collection-path's path did not provide
-        enough fields.
-  """
-
-  # collection-paths that begin with a slash must have an entry for all
-  # ordered params, especially including the project.
-  has_project = path.startswith('/')
-
-  # Pending b/17727265, path might contain multiple items after being split
-  # on a '/'.
-  fields = path.split('/')
-
-  if has_project:
-    # first token must be empty, but we already recorded the fact that the
-    # next token must be the project
-    fields = fields[1:]
-
-  total_param_count = len(params)
-
-  if has_project and total_param_count != len(fields):
-    raise WrongFieldNumberException(
-        path=path, ordered_params=params)
-
-  # Check if there were too many fields provided.
-  if len(fields) > total_param_count:
-    raise WrongFieldNumberException(
-        path=path, ordered_params=params)
-
-  # If the project is not included, we can either have only one or all-but-one
-  # token. So, just simple names or everything that isn't the project.
-  if not has_project and len(fields) not in [1, total_param_count - 1]:
-    raise WrongFieldNumberException(
-        path=path, ordered_params=params)
-
-  num_missing = total_param_count - len(fields)
-  # pad the beginning with Nones so we don't have to count backwards.
-  fields = [None] * num_missing + fields
-
-  # Did the user enter a literal empty argument at any stage?
-  if '' in fields:
-    raise WrongFieldNumberException(
-        path=path, ordered_params=params)
-
-  return fields
+def _GetApiBaseUrl(api_name, api_version):
+  """Determine base url to use for resources of given version."""
+  # Use current override endpoint for this resource name.
+  endpoint_override_property = getattr(
+      properties.VALUES.api_endpoint_overrides, api_name, None)
+  base_url = None
+  if endpoint_override_property is not None:
+    base_url = endpoint_override_property.Get()
+    if base_url is not None:
+      # Check base url style. If it includes api version then override
+      # also replaces the version, otherwise it only overrides the domain.
+      client_class = core_apis.GetClientClass(api_name, api_version)
+      _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
+          client_class.BASE_URL)
+      if url_version is None:
+        base_url += api_version + u'/'
+  return base_url

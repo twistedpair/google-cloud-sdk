@@ -19,6 +19,8 @@ from apitools.base.py import extra_types
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log as sdk_log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 class TypedLogSink(object):
@@ -85,6 +87,14 @@ def GetMessagesV1():
   return core_apis.GetMessagesModule('logging', 'v1beta3')
 
 
+def GetCurrentProjectParent():
+  """Returns the relative resource path to the current project."""
+  project = properties.VALUES.core.project.Get(required=True)
+  project_ref = resources.REGISTRY.Parse(
+      project, collection='cloudresourcemanager.projects')
+  return project_ref.RelativeName()
+
+
 def CheckSinksCommandArguments(args):
   """Validates arguments that are provided to 'sinks create/update' command.
 
@@ -103,10 +113,6 @@ def CheckSinksCommandArguments(args):
   if not is_project_sink and args.output_version_format == 'V2':
     raise exceptions.InvalidArgumentException(
         '--output-version-format', 'Only project sinks support V2 format')
-
-  if not is_project_sink and args.unique_writer_identity:
-    raise exceptions.InvalidArgumentException(
-        '--unique-writer-identity', 'Only project sinks support this feature')
 
 
 def FormatTimestamp(timestamp):
@@ -127,6 +133,54 @@ def ConvertToJsonObject(json_string):
     return extra_types.JsonProtoDecoder(json_string)
   except Exception as e:
     raise exceptions.ToolException('Invalid JSON value: %s' % e.message)
+
+
+def AddNonProjectArgs(parser, help_string):
+  """Adds optional arguments for non-project entities.
+
+  Args:
+    parser: parser to which arguments are added.
+    help_string: text that is prepended to help for each argument.
+  """
+  entity_group = parser.add_mutually_exclusive_group()
+  entity_group.add_argument(
+      '--organization', required=False, metavar='ORGANIZATION_ID',
+      completion_resource='cloudresourcemanager.organizations',
+      help='{0} associated with this organization'.format(help_string))
+
+  entity_group.add_argument(
+      '--folder', required=False, metavar='FOLDER_ID',
+      help='{0} associated with this folder'.format(help_string))
+
+  entity_group.add_argument(
+      '--billing-account', required=False, metavar='BILLING_ACCOUNT_ID',
+      help='{0} associated with this billing account'.format(help_string))
+
+
+def GetParentFromArgs(args):
+  """Returns the relative path to the parent from args.
+
+  Args:
+    args: command line args.
+
+  Returns:
+    The relative path. e.g. 'projects/foo', 'folders/1234'.
+  """
+  if args.organization:
+    org_ref = resources.REGISTRY.Parse(
+        args.organization, params={},
+        collection='cloudresourcemanager.organizations')
+    return org_ref.RelativeName()
+  elif args.folder:
+    # TODO(b/33405530): Use resource parser for folders when folders
+    # is out of alpha
+    return 'folders/{0}'.format(args.folder)
+  elif args.billing_account:
+    # TODO(b/33405530): Use resource parser for billing accounts when
+    # billing accounts is out of alpha
+    return 'billingAccounts/{0}'.format(args.billing_account)
+  else:
+    return GetCurrentProjectParent()
 
 
 def CreateResourceName(parent, collection, resource_id):

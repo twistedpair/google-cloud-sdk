@@ -166,7 +166,7 @@ def _SendRecvPort(request, port):
   if len(nstr) > 5:
     raise ValueError('length too long')
 
-  s = socket.socket()
+  s = socket.socket(socket.AF_INET6)
   s.connect(('localhost', port))
   msg = '%s\n%s' % (nstr, data)
   s.sendall(msg)

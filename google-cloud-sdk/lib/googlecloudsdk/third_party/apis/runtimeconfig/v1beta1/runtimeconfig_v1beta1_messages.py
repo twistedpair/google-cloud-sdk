@@ -549,9 +549,9 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsCreateRequest object.
 
   Fields:
-    projectsId: Part of `parent`. The [project ID](https://support.google.com/
-      cloud/answer/6158840?hl=en&ref_topic=6158848) for this request, in the
-      format `projects/[PROJECT_ID]`.
+    parent: The [project ID](https://support.google.com/cloud/answer/6158840?h
+      l=en&ref_topic=6158848) for this request, in the format
+      `projects/[PROJECT_ID]`.
     requestId: An optional but recommended unique <code>request_id</code>. If
       the server receives two <code>create()</code> requests  with the same
       <code>request_id</code>, then the second request will be ignored and the
@@ -562,7 +562,7 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
     runtimeConfig: A RuntimeConfig resource to be passed as the request body.
   """
 
-  projectsId = _messages.StringField(1, required=True)
+  parent = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   runtimeConfig = _messages.MessageField('RuntimeConfig', 3)
 
@@ -571,40 +571,34 @@ class RuntimeconfigProjectsConfigsDeleteRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsDeleteRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The RuntimeConfig resource to delete, in the
-      format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    name: The RuntimeConfig resource to delete, in the format:
+      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsGetIamPolicyRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsGetIamPolicyRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  resource = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsGetRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsGetRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the RuntimeConfig resource to
-      retrieve, in the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    name: The name of the RuntimeConfig resource to retrieve, in the format:
+      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsListRequest(_messages.Message):
@@ -616,111 +610,80 @@ class RuntimeconfigProjectsConfigsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Set `pageToken` to a
       `nextPageToken` returned by a previous list request to get the next page
       of results.
-    projectsId: Part of `parent`. The [project ID](https://support.google.com/
-      cloud/answer/6158840?hl=en&ref_topic=6158848) for this request, in the
-      format `projects/[PROJECT_ID]`.
+    parent: The [project ID](https://support.google.com/cloud/answer/6158840?h
+      l=en&ref_topic=6158848) for this request, in the format
+      `projects/[PROJECT_ID]`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
+  parent = _messages.StringField(3, required=True)
 
 
 class RuntimeconfigProjectsConfigsOperationsGetRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsOperationsGetRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    operationsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the operation resource.
+    name: The name of the operation resource.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  operationsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
-    operationsId: Part of `resource`. See documentation of `projectsId`.
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  operationsId = _messages.StringField(2, required=True)
-  permissions = _messages.StringField(3, repeated=True)
-  projectsId = _messages.StringField(4, required=True)
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsSetIamPolicyRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 3)
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class RuntimeconfigProjectsConfigsTestIamPermissionsRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsTestIamPermissionsRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 3)
-
-
-class RuntimeconfigProjectsConfigsUpdateRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsUpdateRequest object.
-
-  Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the RuntimeConfig resource to
-      update, in the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
-    runtimeConfig: A RuntimeConfig resource to be passed as the request body.
-  """
-
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 3)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesCreateRequest object.
 
   Fields:
-    configsId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The path to the RutimeConfig resource that
-      this variable should belong to. The configuration must exist beforehand;
-      the path must by in the format:
-      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    parent: The path to the RutimeConfig resource that this variable should
+      belong to. The configuration must exist beforehand; the path must by in
+      the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
     requestId: An optional but recommended unique <code>request_id</code>. If
       the server receives two <code>create()</code> requests  with the same
       <code>request_id</code>, then the second request will be ignored and the
@@ -731,52 +694,40 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
     variable: A Variable resource to be passed as the request body.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  variable = _messages.MessageField('Variable', 4)
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  variable = _messages.MessageField('Variable', 3)
 
 
 class RuntimeconfigProjectsConfigsVariablesDeleteRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesDeleteRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the variable to delete, in the
-      format:
+    name: The name of the variable to delete, in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]/variables/[VARIABLE_NAME]`
     recursive: Set to `true` to recursively delete multiple variables with the
       same prefix.
-    variablesId: Part of `name`. See documentation of `projectsId`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  recursive = _messages.BooleanField(3)
-  variablesId = _messages.StringField(4, required=True)
+  name = _messages.StringField(1, required=True)
+  recursive = _messages.BooleanField(2)
 
 
 class RuntimeconfigProjectsConfigsVariablesGetRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesGetRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the variable to return, in the
-      format:
+    name: The name of the variable to return, in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]/variables/[VARIBLE_NAME]`
-    variablesId: Part of `name`. See documentation of `projectsId`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  variablesId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesListRequest object.
 
   Fields:
-    configsId: Part of `parent`. See documentation of `projectsId`.
     filter: Filters variables by matching the specified filter. For example:
       `projects/example-project/config/[CONFIG_NAME]/variables/example-
       variable`.
@@ -785,85 +736,55 @@ class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Set `pageToken` to a
       `nextPageToken` returned by a previous list request to get the next page
       of results.
-    projectsId: Part of `parent`. The path to the RuntimeConfig resource for
-      which you want to list variables. The configuration must exist
-      beforehand; the path must by in the format:
-      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    parent: The path to the RuntimeConfig resource for which you want to list
+      variables. The configuration must exist beforehand; the path must by in
+      the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
   """
 
-  configsId = _messages.StringField(1, required=True)
-  filter = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectsId = _messages.StringField(5, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
-    variablesId: Part of `resource`. See documentation of `projectsId`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  permissions = _messages.StringField(2, repeated=True)
-  projectsId = _messages.StringField(3, required=True)
-  variablesId = _messages.StringField(4, required=True)
-
-
-class RuntimeconfigProjectsConfigsVariablesUpdateRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesUpdateRequest object.
-
-  Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the variable to update, in the
-      format:
-      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]/variables/[VARIABLE_NAME]`
-    variable: A Variable resource to be passed as the request body.
-    variablesId: Part of `name`. See documentation of `projectsId`.
-  """
-
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  variable = _messages.MessageField('Variable', 3)
-  variablesId = _messages.StringField(4, required=True)
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class RuntimeconfigProjectsConfigsVariablesWatchRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsVariablesWatchRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the variable to watch, in the
-      format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
-    variablesId: Part of `name`. See documentation of `projectsId`.
+    name: The name of the variable to watch, in the format:
+      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
     watchVariableRequest: A WatchVariableRequest resource to be passed as the
       request body.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  variablesId = _messages.StringField(3, required=True)
-  watchVariableRequest = _messages.MessageField('WatchVariableRequest', 4)
+  name = _messages.StringField(1, required=True)
+  watchVariableRequest = _messages.MessageField('WatchVariableRequest', 2)
 
 
 class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsWaitersCreateRequest object.
 
   Fields:
-    configsId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The path to the configuration that will own
-      the waiter. The configuration must exist beforehand; the path must by in
-      the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
+    parent: The path to the configuration that will own the waiter. The
+      configuration must exist beforehand; the path must by in the format:
+      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
     requestId: An optional but recommended unique <code>request_id</code>. If
       the server receives two <code>create()</code> requests  with the same
       <code>request_id</code>, then the second request will be ignored and the
@@ -874,85 +795,68 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
     waiter: A Waiter resource to be passed as the request body.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  waiter = _messages.MessageField('Waiter', 4)
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  waiter = _messages.MessageField('Waiter', 3)
 
 
 class RuntimeconfigProjectsConfigsWaitersDeleteRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsWaitersDeleteRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The Waiter resource to delete, in the format:
+    name: The Waiter resource to delete, in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]/waiters/[WAITER_NAME]`
-    waitersId: Part of `name`. See documentation of `projectsId`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  waitersId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsWaitersGetRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsWaitersGetRequest object.
 
   Fields:
-    configsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The fully-qualified name of the Waiter
-      resource object to retrieve, in the format:
+    name: The fully-qualified name of the Waiter resource object to retrieve,
+      in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]/waiters/[WAITER_NAME]`
-    waitersId: Part of `name`. See documentation of `projectsId`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  waitersId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class RuntimeconfigProjectsConfigsWaitersListRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsWaitersListRequest object.
 
   Fields:
-    configsId: Part of `parent`. See documentation of `projectsId`.
     pageSize: Specifies the number of results to return per page. If there are
       fewer elements than the specified number, returns all elements.
     pageToken: Specifies a page token to use. Set `pageToken` to a
       `nextPageToken` returned by a previous list request to get the next page
       of results.
-    projectsId: Part of `parent`. The path to the configuration for which you
-      want to get a list of waiters. The configuration must exist beforehand;
-      the path must by in the format:
-      `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    parent: The path to the configuration for which you want to get a list of
+      waiters. The configuration must exist beforehand; the path must by in
+      the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
   """
 
-  configsId = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectsId = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Message):
   """A RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest object.
 
   Fields:
-    configsId: Part of `resource`. See documentation of `projectsId`.
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
-    projectsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
-    waitersId: Part of `resource`. See documentation of `projectsId`.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
   """
 
-  configsId = _messages.StringField(1, required=True)
-  permissions = _messages.StringField(2, repeated=True)
-  projectsId = _messages.StringField(3, required=True)
-  waitersId = _messages.StringField(4, required=True)
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -963,9 +867,14 @@ class SetIamPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, a default mask is used: paths: "bindings, etag" This field is
+      only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -40,7 +40,7 @@ GKE_DOCKER = 'gci-ensure-gke-docker'
 ALLOWED_PROTOCOLS = ['TCP', 'UDP']
 
 # Pin this version of gcloud to GCI image major release version
-GCI_MAJOR_RELEASE = 'gci-stable-51'
+GCI_MAJOR_RELEASE = 'gci-stable-55'
 
 GCI_PROJECT = 'google-containers'
 

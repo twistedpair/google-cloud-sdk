@@ -14,8 +14,10 @@
 """Common classes and functions for firewall rules."""
 import re
 
+import enum
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import exceptions
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -31,17 +33,34 @@ LEGAL_SPECS = re.compile(
     re.VERBOSE)
 
 
-def AddCommonArgs(parser, for_update=False):
+class ArgumentValidationError(exceptions.Error):
+  """Raised when a user specifies --rules and --allow parameters together."""
+
+  def __init__(self, error_message):
+    super(ArgumentValidationError, self).__init__(error_message)
+
+
+class ActionType(enum.Enum):
+  """Firewall Action type."""
+  ALLOW = 1
+  DENY = 2
+
+
+def AddCommonArgs(parser, for_update=False, with_egress_support=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
 
-  allow = parser.add_argument(
+  ruleset_parser = parser
+  if with_egress_support:
+    ruleset_parser = parser.add_mutually_exclusive_group(
+        required=not for_update)
+  allow = ruleset_parser.add_argument(
       '--allow',
       metavar=ALLOWED_METAVAR,
       type=arg_parsers.ArgList(min_length=min_length),
       help='The list of IP protocols and ports which will be allowed.',
-      required=not for_update)
+      required=(not for_update) and (not with_egress_support))
   allow.detailed_help = """\
       A list of protocols and ports whose traffic will be allowed.
 
@@ -89,13 +108,14 @@ def AddCommonArgs(parser, for_update=False):
     source_ranges.detailed_help += """
       Setting this will override the existing source ranges for the firewall.
       The following will clear the existing source ranges:
+
         $ {command} MY-RULE --source-ranges
       """
   else:
     source_ranges.detailed_help += """
       If neither --source-ranges nor --source-tags is provided, then this
       flag will default to 0.0.0.0/0, allowing all sources. Multiple IP
-      address blocks can be specified if they are separated by spaces.
+      address blocks can be specified if they are separated by commas.
       """
 
   source_tags = parser.add_argument(
@@ -118,6 +138,7 @@ def AddCommonArgs(parser, for_update=False):
     source_tags.detailed_help += """
       Setting this will override the existing source tags for the firewall.
       The following will clear the existing source tags:
+
         $ {command} MY-RULE --source-tags
       """
 
@@ -145,11 +166,116 @@ def AddCommonArgs(parser, for_update=False):
         $ {command} MY-RULE --target-tags
       """
 
+  # Add egress deny firewall cli support.
+  if with_egress_support:
+    AddArgsForEgress(parser, ruleset_parser, for_update)
 
-def ParseAllowed(allowed, message_classes):
-  """Parses protocol:port mappings from --allow command line."""
-  allowed_value_list = []
-  for spec in allowed or []:
+
+def AddArgsForEgress(parser, ruleset_parser, for_update=False):
+  """Adds arguments for egress firewall create or update subcommands."""
+  min_length = 0 if for_update else 1
+
+  if not for_update:
+    ruleset_parser.add_argument(
+        '--action',
+        choices=['ALLOW', 'DENY'],
+        type=lambda x: x.upper(),
+        help="""\
+        The action for the firewall rule: whether to allow or deny matching
+        traffic. If specified, the flag `--rules` must also be specified.
+        """)
+
+  rules = parser.add_argument(
+      '--rules',
+      metavar=ALLOWED_METAVAR,
+      type=arg_parsers.ArgList(min_length=min_length),
+      help="""\
+        The list of IP protocols and ports which will be taken action
+        according to --action parameter.
+        """,
+      required=False)
+  rules.detailed_help = """\
+      A list of protocols and ports to which the firewall rule will apply.
+
+      PROTOCOL is the IP protocol whose traffic will be checked.
+      PROTOCOL can be either the name of a well-known protocol
+      (e.g., tcp or icmp) or the IP protocol number.
+      A list of IP protocols can be found at
+      link:http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml[].
+
+      A port or port range can be specified after PROTOCOL to which the
+      firewall rule apply on traffic through specific ports. If no port
+      or port range is specified, connections through all ranges are applied.
+      For example, the following will create a rule that denys TCP
+      traffic through port 80 and ICMP traffic:
+
+        $ {command} MY-RULE --action deny --rules tcp:80,icmp
+
+      TCP and UDP rules must include a port or port range.
+      """
+  if for_update:
+    rules.detailed_help += """
+      Setting this will override the current values.
+      """
+  else:
+    rules.detailed_help += """
+      If specified, the flag --action must also be specified.
+      """
+  # Do NOT allow change direction in update case.
+  if not for_update:
+    direction = parser.add_argument(
+        '--direction',
+        choices=['INGRESS', 'EGRESS', 'IN', 'OUT'],
+        type=lambda x: x.upper(),
+        help='Direction of traffic to which this firewall applies.')
+    direction.detailed_help = """\
+      If direction is NOT specified, then default is to apply on incoming
+      traffic. For incoming traffic, it is NOT supported to specify
+      destination-ranges; For outbound traffic, it is NOT supported to specify
+      source-ranges or source-tags.
+      """
+
+  priority = parser.add_argument(
+      '--priority', type=int, help='Priority for the firewall rule.')
+  priority.detailed_help = """\
+      This is an integer between 0 and 65535, both inclusive. When NOT
+      specified, the value assumed is 1000. Relative priority determines
+      precedence of conflicting rules: lower priority values imply
+      higher precedence. DENY rules take precedence over ALLOW rules
+      having equal priority.
+      """
+
+  destination_ranges = parser.add_argument(
+      '--destination-ranges',
+      default=None if for_update else [],
+      metavar='CIDR_RANGE',
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=('A list of destination IP address blocks in CIDR format.'))
+  destination_ranges.detailed_help = """\
+      The firewall rule will apply to traffic that has destination IP address
+      in these IP address block list. The IP address blocks must be specified
+      in CIDR format:
+      link:http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing[].
+      """
+  if for_update:
+    destination_ranges.detailed_help += """
+      Setting this will override the existing destination ranges for the
+      firewall. The following will clear the existing destination ranges:
+
+        $ {command} MY-RULE --destination-ranges
+      """
+  else:
+    destination_ranges.detailed_help += """
+      If --destination-ranges is NOT provided, then this
+      flag will default to 0.0.0.0/0, allowing all destinations. Multiple IP
+      address blocks can be specified if they are separated by commas.
+      """
+
+
+def ParseRules(rules, message_classes, action=ActionType.ALLOW):
+  """Parses protocol:port mappings from --allow or --rules command line."""
+  rule_value_list = []
+  for spec in rules or []:
     match = LEGAL_SPECS.match(spec)
     if not match:
       raise calliope_exceptions.ToolException(
@@ -159,8 +285,12 @@ def ParseAllowed(allowed, message_classes):
       ports = [match.group('ports')]
     else:
       ports = []
-    allowed_value_list.append(message_classes.Firewall.AllowedValueListEntry(
-        IPProtocol=match.group('protocol'),
-        ports=ports))
 
-  return allowed_value_list
+    if action == ActionType.ALLOW:
+      rule = message_classes.Firewall.AllowedValueListEntry(
+          IPProtocol=match.group('protocol'), ports=ports)
+    else:
+      rule = message_classes.Firewall.DeniedValueListEntry(
+          IPProtocol=match.group('protocol'), ports=ports)
+    rule_value_list.append(rule)
+  return rule_value_list

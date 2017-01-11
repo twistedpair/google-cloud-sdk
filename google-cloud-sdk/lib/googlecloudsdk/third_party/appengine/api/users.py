@@ -56,10 +56,10 @@ class User(object):
   akin to a username. For some users, this nickname is an email address, but for
   other users, a different nickname is used.
 
-  A user could be a Google Accounts user or a federated login user.
+  A user is a Google Accounts user.
 
-  `federated_identity` and `federated_provider` are only avaliable for
-  federated users.
+  `federated_identity` and `federated_provider` are decommissioned and should
+  not be used.
   """
 
 
@@ -77,9 +77,8 @@ class User(object):
     Args:
       email: An optional string of the user's email address. It defaults to
           the current user's email address.
-      federated_identity: Federated identity of user. It defaults to the current
-          user's federated identity.
-      federated_provider: Federated provider URL of user.
+      federated_identity: Decommissioned, don't use.
+      federated_provider: Decommissioned, don't use.
 
     Raises:
       UserNotFoundError: If the user is not logged in and both `email` and
@@ -121,15 +120,14 @@ class User(object):
     self.__federated_provider = federated_provider
     self.__auth_domain = _auth_domain
     self.__user_id = _user_id or None  # User.user_id() should only return a
-                                       # string of length > 0 or None.
+    # string of length > 0 or None.
 
   def nickname(self):
     """Returns the user's nickname.
 
     The nickname will be a unique, human readable identifier for this user with
     respect to this application. It will be an email address for some users,
-    part of the email address for some users, and the federated identity for
-    federated users who have not asserted an email address.
+    and part of the email address for some users.
 
     Returns:
       The nickname of the user as a string.
@@ -166,7 +164,7 @@ class User(object):
     return self.__auth_domain
 
   def federated_identity(self):
-    """Gets the user's federated identity.
+    """Decommissioned, don't use.
 
     Returns:
       A string containing the federated identity of the user. If the user is not
@@ -175,7 +173,7 @@ class User(object):
     return self.__federated_identity
 
   def federated_provider(self):
-    """Gets the user's federated provider.
+    """Decommissioned, don't use.
 
     Returns:
       A string containing the federated provider. If the user is not a federated
@@ -224,13 +222,14 @@ def create_login_url(dest_url=None, _auth_domain=None,
     dest_url: String that is the desired final destination URL for the user
         once login is complete. If `dest_url` does not specify a host, the host
         from the current request is used.
-    federated_identity: Triggers an OpenID login flow. If `federated_identity`
-        is not specified, Google OpenID login will be used.
+    federated_identity: Decommissioned, don't use. Setting this to a non-None
+        value raises a NotAllowedError
 
   Returns:
-       Login URL as a string. If `federated_identity` is set, the returned
-       string represents a federated login that uses the specified identity. If
-       `federated_identity` is not set, the login URL will use Google Accounts.
+       Login URL as a string. The login URL will use Google Accounts.
+
+  Raises:
+      NotAllowedError: If federated_identity is not None.
   """
   req = user_service_pb.CreateLoginURLRequest()
   resp = user_service_pb.CreateLoginURLResponse()
@@ -241,7 +240,7 @@ def create_login_url(dest_url=None, _auth_domain=None,
   if _auth_domain:
     req.set_auth_domain(_auth_domain)
   if federated_identity:
-    req.set_federated_identity(federated_identity)
+    raise NotAllowedError('OpenID 2.0 support is decomissioned')
 
   try:
     apiproxy_stub_map.MakeSyncCall('user', 'CreateLoginURL', req, resp)
@@ -266,8 +265,7 @@ CreateLoginURL = create_login_url
 def create_logout_url(dest_url, _auth_domain=None):
   """Computes the logout URL and specified destination URL for the request.
 
-  This function works for both federated login applications and Google Accounts
-  applications.
+  This function works for Google Accounts applications.
 
   Args:
     dest_url: String that is the desired final destination URL for the user

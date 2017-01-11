@@ -485,7 +485,9 @@ class CLILoader(object):
         This also flattens keys for *--format* and *--filter*. For example,
         *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
         *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
-        will expand to N records in the flattened output."""
+        will expand to N records in the flattened output. This flag interacts
+        with other flags that are applied in this order: *--flatten*,
+        *--sort-by*, *--filter*, *--limit*."""
 
     format_flag = top_element.ai.add_argument(
         '--format',

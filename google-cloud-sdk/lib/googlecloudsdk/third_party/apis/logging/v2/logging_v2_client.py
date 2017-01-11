@@ -61,8 +61,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log.
-The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -89,8 +88,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations.
-Only logs that have entries are listed.
+      """Lists the logs in projects or organizations. Only logs that have entries are listed.
 
       Args:
         request: (LoggingBillingAccountsLogsListRequest) input message
@@ -127,11 +125,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination.  The.
-export of newly-ingested log entries begins immediately, unless the current
-time is outside the sink's start and end times or the sink's
-`writer_identity` is not permitted to write to the destination.  A sink can
-export log entries only from the resource owning the sink.
+      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the current time is outside the sink's start and end times or the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingBillingAccountsSinksCreateRequest) input message
@@ -158,8 +152,7 @@ export log entries only from the resource owning the sink.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
-service account is also deleted.
+      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingBillingAccountsSinksDeleteRequest) input message
@@ -240,14 +233,7 @@ service account is also deleted.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. If the named sink doesn't exist, then this method is.
-identical to
-[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
-If the named sink does exist, then this method replaces the following
-fields in the existing sink with values from the new sink: `destination`,
-`filter`, `output_version_format`, `start_time`, and `end_time`.
-The updated filter might also have a new `writer_identity`; see the
-`unique_writer_identity` field.
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingBillingAccountsSinksUpdateRequest) input message
@@ -294,9 +280,7 @@ The updated filter might also have a new `writer_identity`; see the
           }
 
     def List(self, request, global_params=None):
-      """Lists log entries.  Use this method to retrieve log entries from.
-Stackdriver Logging.  For ways to export log entries, see
-[Exporting Logs](/logging/docs/export).
+      """Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs.
 
       Args:
         request: (ListLogEntriesRequest) input message
@@ -322,8 +306,7 @@ Stackdriver Logging.  For ways to export log entries, see
     )
 
     def Write(self, request, global_params=None):
-      """Writes log entries to Stackdriver Logging.  All log entries are.
-written by this method.
+      """Writes log entries to Stackdriver Logging. All log entries are written by this method.
 
       Args:
         request: (WriteLogEntriesRequest) input message
@@ -359,8 +342,7 @@ written by this method.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log.
-The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries.
 
       Args:
         request: (LoggingFoldersLogsDeleteRequest) input message
@@ -387,8 +369,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations.
-Only logs that have entries are listed.
+      """Lists the logs in projects or organizations. Only logs that have entries are listed.
 
       Args:
         request: (LoggingFoldersLogsListRequest) input message
@@ -425,11 +406,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination.  The.
-export of newly-ingested log entries begins immediately, unless the current
-time is outside the sink's start and end times or the sink's
-`writer_identity` is not permitted to write to the destination.  A sink can
-export log entries only from the resource owning the sink.
+      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the current time is outside the sink's start and end times or the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingFoldersSinksCreateRequest) input message
@@ -456,8 +433,7 @@ export log entries only from the resource owning the sink.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
-service account is also deleted.
+      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingFoldersSinksDeleteRequest) input message
@@ -538,14 +514,7 @@ service account is also deleted.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. If the named sink doesn't exist, then this method is.
-identical to
-[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
-If the named sink does exist, then this method replaces the following
-fields in the existing sink with values from the new sink: `destination`,
-`filter`, `output_version_format`, `start_time`, and `end_time`.
-The updated filter might also have a new `writer_identity`; see the
-`unique_writer_identity` field.
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingFoldersSinksUpdateRequest) input message
@@ -592,8 +561,7 @@ The updated filter might also have a new `writer_identity`; see the
           }
 
     def List(self, request, global_params=None):
-      """Lists the descriptors for monitored resource types used by Stackdriver.
-Logging.
+      """Lists the descriptors for monitored resource types used by Stackdriver Logging.
 
       Args:
         request: (LoggingMonitoredResourceDescriptorsListRequest) input message
@@ -629,8 +597,7 @@ Logging.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log.
-The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -657,8 +624,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations.
-Only logs that have entries are listed.
+      """Lists the logs in projects or organizations. Only logs that have entries are listed.
 
       Args:
         request: (LoggingOrganizationsLogsListRequest) input message
@@ -695,11 +661,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination.  The.
-export of newly-ingested log entries begins immediately, unless the current
-time is outside the sink's start and end times or the sink's
-`writer_identity` is not permitted to write to the destination.  A sink can
-export log entries only from the resource owning the sink.
+      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the current time is outside the sink's start and end times or the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingOrganizationsSinksCreateRequest) input message
@@ -726,8 +688,7 @@ export log entries only from the resource owning the sink.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
-service account is also deleted.
+      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingOrganizationsSinksDeleteRequest) input message
@@ -808,14 +769,7 @@ service account is also deleted.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. If the named sink doesn't exist, then this method is.
-identical to
-[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
-If the named sink does exist, then this method replaces the following
-fields in the existing sink with values from the new sink: `destination`,
-`filter`, `output_version_format`, `start_time`, and `end_time`.
-The updated filter might also have a new `writer_identity`; see the
-`unique_writer_identity` field.
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingOrganizationsSinksUpdateRequest) input message
@@ -862,8 +816,7 @@ The updated filter might also have a new `writer_identity`; see the
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log.
-The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message
@@ -890,8 +843,7 @@ The log reappears if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations.
-Only logs that have entries are listed.
+      """Lists the logs in projects or organizations. Only logs that have entries are listed.
 
       Args:
         request: (LoggingProjectsLogsListRequest) input message
@@ -1073,11 +1025,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination.  The.
-export of newly-ingested log entries begins immediately, unless the current
-time is outside the sink's start and end times or the sink's
-`writer_identity` is not permitted to write to the destination.  A sink can
-export log entries only from the resource owning the sink.
+      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the current time is outside the sink's start and end times or the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingProjectsSinksCreateRequest) input message
@@ -1104,8 +1052,7 @@ export log entries only from the resource owning the sink.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique `writer_identity`, then that.
-service account is also deleted.
+      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingProjectsSinksDeleteRequest) input message
@@ -1186,14 +1133,7 @@ service account is also deleted.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. If the named sink doesn't exist, then this method is.
-identical to
-[sinks.create](/logging/docs/api/reference/rest/v2/projects.sinks/create).
-If the named sink does exist, then this method replaces the following
-fields in the existing sink with values from the new sink: `destination`,
-`filter`, `output_version_format`, `start_time`, and `end_time`.
-The updated filter might also have a new `writer_identity`; see the
-`unique_writer_identity` field.
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message

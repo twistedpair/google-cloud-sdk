@@ -28,6 +28,7 @@ from googlecloudsdk.core.credentials import http
 
 # Copy into dataproc for cleaner separation
 SCOPE_ALIASES = compute_constants.SCOPES
+SCOPE_ALIASES_FOR_HELP = compute_constants.ScopesForHelp()
 
 
 def ExpandScopeAliases(scopes):

@@ -94,7 +94,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.delete',
         ordered_params=[u'project', u'deployment'],
         path_params=[u'deployment', u'project'],
-        query_params=[],
+        query_params=[u'deletePolicy'],
         relative_path=u'projects/{project}/global/deployments/{deployment}',
         request_field='',
         request_type_name=u'DeploymentmanagerDeploymentsDeleteRequest',

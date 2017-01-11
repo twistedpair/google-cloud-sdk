@@ -139,7 +139,7 @@ def WriteEnvYaml(env, output_dir):
     output_dir: str, Path of directory to which env.yaml file should be written.
   """
   env_file_path = os.path.join(output_dir, 'env.yaml')
-  with files.Context(open(env_file_path, 'w')) as env_file:
+  with open(env_file_path, 'w') as env_file:
     resource_printer.Print([env], print_format='yaml', out=env_file)
 
 
@@ -154,7 +154,7 @@ def ReadEnvYaml(output_dir):
   """
   env_file_path = os.path.join(output_dir, 'env.yaml')
   try:
-    with files.Context(open(env_file_path, 'r')) as env_file:
+    with open(env_file_path, 'r') as env_file:
       return yaml.safe_load(env_file)
   except IOError as err:
     if err.errno == errno.ENOENT:

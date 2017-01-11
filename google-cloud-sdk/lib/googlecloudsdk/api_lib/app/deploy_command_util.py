@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -205,9 +206,10 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
       repo=_GetImageName(project, service.module, version_id),
       nocache=False,
       tag=config.DOCKER_IMAGE_TAG)
+  object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
   try:
-    cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                             image.tagged_repo, gen_files=gen_files,
+    cloud_build.UploadSource(image.dockerfile_dir, object_ref,
+                             gen_files=gen_files,
                              skip_files=service.parsed.skip_files.regex)
   except (OSError, IOError) as err:
     if platforms.OperatingSystem.IsWindows():
@@ -215,8 +217,7 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
         raise WindowMaxPathError(err.filename)
     raise
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-  cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
-                                image.tagged_repo)
+  cloud_build.ExecuteCloudBuild(project, object_ref, image.tagged_repo)
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
   return image.tagged_repo
 

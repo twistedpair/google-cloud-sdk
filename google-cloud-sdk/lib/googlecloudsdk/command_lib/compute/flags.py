@@ -169,20 +169,21 @@ class ResourceStub(object):
     self.deprecated = deprecated
 
 
-def GetDefaultScopeLister(compute_client, project):
+def GetDefaultScopeLister(compute_client, project=None):
   """Constructs default zone/region lister."""
   # TODO(user): Zones can be extracted from regions.
   scope_func = {
       compute_scope.ScopeEnum.ZONE:
-          functools.partial(zones_service.List, compute_client, project),
+          functools.partial(zones_service.List, compute_client),
       compute_scope.ScopeEnum.REGION:
-          functools.partial(regions_service.List, compute_client, project),
-      compute_scope.ScopeEnum.GLOBAL: lambda: [ResourceStub(name='')]
+          functools.partial(regions_service.List, compute_client),
+      compute_scope.ScopeEnum.GLOBAL: lambda _: [ResourceStub(name='')]
   }
   def Lister(scopes, _):
+    prj = project or properties.VALUES.core.project.Get(required=True)
     results = {}
     for scope in scopes:
-      results[scope] = scope_func[scope]()
+      results[scope] = scope_func[scope](prj)
     return results
   return Lister
 

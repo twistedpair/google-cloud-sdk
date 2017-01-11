@@ -53,6 +53,10 @@ _NO_EXECUTABLE_ERROR_MSG = """
     with setuptools installed on the PYTHON_PATH is required for
     building cloud ml training jobs
 """
+_NO_INIT_ERROR_MSG = """\
+[{}] is not a valid Python package because it does not contain an \
+`__init__.py` file. Please create one and try again.\
+"""
 
 
 class SetupFailureError(exceptions.Error):
@@ -72,11 +76,15 @@ def RunSetupAndUpload(packages, staging_bucket, package_path, job_name):
       uploaded.
     package_path: str. Relative path to source directory to be built.
     job_name: str. Name of the Cloud ML Job. Used to prefix uploaded packages.
+
   Returns:
       [str]. Fully qualified gcs paths from uploaded packages.
+
   Raises:
     ValueError: If packages is empty, and building package_path produces no
     tar archives.
+    SetupFailureError: If the provided package path does not contain
+      `__init__.py`.
     ArgumentError: if no packages were found in the given path.
   """
   def _MakePairs(paths):
@@ -84,6 +92,14 @@ def RunSetupAndUpload(packages, staging_bucket, package_path, job_name):
     return [(path, os.path.basename(path)) for path in paths]
 
   if package_path:
+    if not os.path.exists(os.path.join(package_path, '__init__.py')):
+      # We could drop `__init__.py` in here, but it's pretty likely that this
+      # indicates an incorrect directory or some bigger problem and we don't
+      # want to obscure that.
+      #
+      # Note that we could more strictly validate here by checking each package
+      # in the `--module-name` argument, but this should catch most issues.
+      raise SetupFailureError(_NO_INIT_ERROR_MSG.format(package_path))
     with files.TemporaryDirectory() as temp_dir:
       setup_dir, package_name = os.path.split(os.path.abspath(package_path))
       dest_dir = os.path.join(temp_dir, 'dest')

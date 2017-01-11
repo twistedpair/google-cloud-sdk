@@ -83,9 +83,20 @@ def DisplayProposedDeployment(app, project, app_config, version, promote):
     resource_printer.Print(deploy_messages, fmt, out=log.status)
 
   if app_config.Configs():
-    fmt = 'list[title="You are about to deploy the following configurations:"]'
-    resource_printer.Print(
-        [u'{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
-         for c in app_config.Configs().values()], fmt, out=log.status)
+    DisplayProposedConfigDeployments(project, app_config.Configs().values())
 
   return deployed_urls
+
+
+def DisplayProposedConfigDeployments(project, configs):
+  """Prints the details of the proposed config deployments.
+
+  Args:
+    project: The name of the current project.
+    configs: [yaml_parsing.ConfigYamlInfo], The configurations being
+      deployed.
+  """
+  fmt = 'list[title="You are about to update the following configurations:"]'
+  resource_printer.Print(
+      [u'{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
+       for c in configs], fmt, out=log.status)

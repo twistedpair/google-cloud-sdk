@@ -212,6 +212,14 @@ class ObjectReference(object):
     return cls(BucketReference.FromBucketUrl(match.group('bucket')),
                match.group('object'))
 
+  @classmethod
+  def IsStorageUrl(cls, path):
+    try:
+      cls.FromUrl(path)
+    except ValueError:
+      return False
+    return True
+
   def ToUrl(self):
     return '{}/{}'.format(self.bucket_ref.ToBucketUrl(), self.name)
 

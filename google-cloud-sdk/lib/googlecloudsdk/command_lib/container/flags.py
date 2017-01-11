@@ -345,3 +345,12 @@ info."""
       default=None,
       help=help_text)
 
+
+def AddTagsFlag(parser, help_text):
+  """Adds a --tags to the given parser."""
+  parser.add_argument(
+      '--tags',
+      metavar='TAG',
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+

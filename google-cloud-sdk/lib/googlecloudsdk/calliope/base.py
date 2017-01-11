@@ -211,8 +211,9 @@ FILTER_FLAG = Argument(
     detailed_help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
     If the expression evaluates True then that item is listed. For more
-    details run $ gcloud topic filters. If *--limit* is also specified
-    then it is applied after *--filter*.""")
+    details and examples of filter expressions run $ gcloud topic filters. This
+    flag interacts with other flags that are applied in this order: *--flatten*,
+    *--sort-by*, *--filter*, *--limit*.""")
 
 LIMIT_FLAG = Argument(
     '--limit',
@@ -221,7 +222,8 @@ LIMIT_FLAG = Argument(
     help='The maximum number of resources to list.',
     detailed_help="""\
     The maximum number of resources to list. The default is *unlimited*.
-    If *--filter* is also specified then it is applied before *--limit*.
+    This flag interacts with other flags that are applied in this order:
+    *--flatten*, *--sort-by*, *--filter*, *--limit*.
     """)
 
 PAGE_SIZE_FLAG = Argument(
@@ -246,7 +248,8 @@ SORT_BY_FLAG = Argument(
     detailed_help="""\
     A comma-separated list of resource field key names to sort by. The
     default order is ascending. Prefix a field with ``~'' for descending
-    order on that field.
+    order on that field. This flag interacts with other flags that are applied
+    in this order: *--flatten*, *--sort-by*, *--filter*, *--limit*.
     """)
 
 URI_FLAG = Argument(
@@ -799,7 +802,7 @@ def Deprecate(is_removed=True,
     """Wrapper Function that creates actual decorated class.
 
     Args:
-      cmd_class: base.Command subclass to be decorated
+      cmd_class: base.Command or base.Group subclass to be decorated
 
     Returns:
       The decorated class.
@@ -822,7 +825,10 @@ def Deprecate(is_removed=True,
         run_func(*args, **kw)
       return WrappedRun
 
-    cmd_class.Run = RunDecorator(cmd_class.Run)
+    if issubclass(cmd_class, Group):
+      cmd_class.Filter = RunDecorator(cmd_class.Filter)
+    else:
+      cmd_class.Run = RunDecorator(cmd_class.Run)
 
     if is_removed:
       return Hidden(cmd_class)

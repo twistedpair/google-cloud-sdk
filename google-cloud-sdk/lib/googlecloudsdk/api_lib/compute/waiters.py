@@ -15,7 +15,7 @@
 import httplib
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import path_simplifier
-from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import log
 
 # 30 minute timeout... wild guess on avoiding timeouts on large disk clones.
@@ -124,7 +124,7 @@ def WaitForOperations(operations, project, operation_service, resource_service,
   operation_type = operation_service.GetResponseType('Get')
 
   responses = []
-  start = time_utils.CurrentTimeSec()
+  start = time_util.CurrentTimeSec()
   sleep_sec = 0
 
   while operations:
@@ -215,7 +215,7 @@ def WaitForOperations(operations, project, operation_service, resource_service,
 
     # Did we time out? If so, record the operations that timed out so
     # they can be reported to the user.
-    if time_utils.CurrentTimeSec() - start > timeout:
+    if time_util.CurrentTimeSec() - start > timeout:
       log.debug('Timeout of %ss reached.', timeout)
       _RecordUnfinishedOperations(operations, errors)
       break
@@ -225,4 +225,4 @@ def WaitForOperations(operations, project, operation_service, resource_service,
     # Don't re-use sleep_sec, since we want to keep the same time increment
     sleep_time = min(sleep_sec, _MAX_TIME_BETWEEN_POLLS_SEC)
     log.debug('Sleeping for %ss.', sleep_time)
-    time_utils.Sleep(sleep_time)
+    time_util.Sleep(sleep_time)

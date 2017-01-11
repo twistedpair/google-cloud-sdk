@@ -50,7 +50,7 @@ class Parser(object):
     _snake_re: Compiled re for converting key names to angry snake case.
   """
 
-  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse']
+  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse', 'wrap']
 
   def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Constructor.
@@ -110,6 +110,7 @@ class Parser(object):
       self.skip_reorder = False
       self.subformat = None
       self.transform = None
+      self.wrap = None
 
     def __str__(self):
       option = []
@@ -121,6 +122,8 @@ class Parser(object):
         option.append('reverse')
       if self.subformat:
         option.append('subformat')
+      if self.wrap:
+        option.append('wrap')
       if option:
         options = ', [{0}]'.format('|'.join(option))
       else:
@@ -239,6 +242,10 @@ class Parser(object):
       attribute.transform = attribute_add.transform
     if attribute_add.subformat:
       attribute.subformat = attribute_add.subformat
+    if attribute_add.wrap is not None:
+      attribute.wrap = attribute_add.wrap
+    elif attribute.wrap is None:
+      attribute.wrap = False
     self._projection.AddAlias(attribute.label, key)
 
     if not self.__key_attributes_only or attribute.hidden:
@@ -332,6 +339,8 @@ class Parser(object):
         attribute.reverse = value
       elif name == 'sort':
         attribute.order = value
+      elif name == 'wrap':
+        attribute.wrap = value
       else:
         raise resource_exceptions.ExpressionSyntaxError(
             'Unknown key attribute [{0}].'.format(self._lex.Annotate(here)))

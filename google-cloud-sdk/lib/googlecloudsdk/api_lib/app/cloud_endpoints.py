@@ -143,11 +143,13 @@ def PushServiceConfig(swagger_file, project, client, messages):
   services_util.CreateServiceIfNew(service_name, project)
 
   # Push the service configuration.
-  config_id = services_util.PushOpenApiServiceConfig(
+  push_config_result = services_util.PushOpenApiServiceConfig(
       service_name,
       swagger_file_contents,
       os.path.basename(swagger_file),
       async=False)
+  config_id = services_util.GetServiceConfigIdFromSubmitConfigSourceResponse(
+      push_config_result)
 
   if config_id and service_name:
     # Print this to screen and to the log because the output is needed by the

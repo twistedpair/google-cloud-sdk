@@ -98,13 +98,14 @@ def UploadFiles(files_to_upload, num_processes=DEFAULT_NUM_PROCESSES,
 
   Args:
     files_to_upload: list of FileUploadTask
-    num_processes: int or None, the number of processes to use (None for 1
-        process per core.
-    threads_per_process: int, the number of threads to use per process.
+    num_processes: int (optional), the number of processes to use
+    threads_per_process: int (optional), the number of threads to use per
+        process.
   """
   log.debug(u'Uploading:\n' + u'\n'.join(map(str, files_to_upload)))
   log.debug(u'Using [%d] processes, [%d] threads per process', num_processes,
             threads_per_process)
+
   with parallel.GetPool(num_processes, threads_per_process) as pool:
     pool.Map(_UploadFile, files_to_upload)
 
@@ -156,12 +157,13 @@ def DeleteObjects(objects_to_delete, num_processes=DEFAULT_NUM_PROCESSES,
 
   Args:
     objects_to_delete: list of ObjectDeleteTask
-    num_processes: int or None, the number of processes to use (None for 1
-        process per core.
-    threads_per_process: int, the number of threads to use per process.
+    num_processes: int (optional), the number of processes to use
+    threads_per_process: int (optional), the number of threads to use per
+        process.
   """
   log.debug(u'Deleting:\n' + u'\n'.join(map(str, objects_to_delete)))
   log.debug(u'Using [%d] processes, [%d] threads per process', num_processes,
             threads_per_process)
+
   with parallel.GetPool(num_processes, threads_per_process) as pool:
     pool.Map(_DeleteObject, objects_to_delete)

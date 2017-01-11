@@ -170,8 +170,7 @@ def SetIamPolicy(project_ref, policy):
 def SetIamPolicyFromFile(project_ref, policy_file):
   """Read projects IAM policy from a file, and set it."""
   messages = projects_util.GetMessages()
-
-  policy = iam_util.ParseJsonPolicyFile(policy_file, messages.Policy)
+  policy = iam_util.ParsePolicyFile(policy_file, messages.Policy)
   try:
     return SetIamPolicy(project_ref, policy)
   except exceptions.HttpError as error:

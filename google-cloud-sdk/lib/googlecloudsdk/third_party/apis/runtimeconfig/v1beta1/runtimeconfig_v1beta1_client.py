@@ -66,12 +66,13 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.operations.get',
-        ordered_params=[u'projectsId', u'configsId', u'operationsId'],
-        path_params=[u'configsId', u'operationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsOperationsGetRequest',
         response_type_name=u'Operation',
@@ -94,12 +95,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.operations.testIamPermissions',
-        ordered_params=[u'projectsId', u'configsId', u'operationsId'],
-        path_params=[u'configsId', u'operationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[u'permissions'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -136,12 +138,13 @@ documentation.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.variables.create',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'requestId'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        relative_path=u'v1beta1/{+parent}/variables',
         request_field=u'variable',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesCreateRequest',
         response_type_name=u'Variable',
@@ -167,12 +170,13 @@ variables by prefix.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
         http_method=u'DELETE',
         method_id=u'runtimeconfig.projects.configs.variables.delete',
-        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[u'recursive'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesDeleteRequest',
         response_type_name=u'Empty',
@@ -193,12 +197,13 @@ variables by prefix.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.variables.get',
-        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesGetRequest',
         response_type_name=u'Variable',
@@ -220,12 +225,13 @@ This only lists variable names, not the values.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.variables.list',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        relative_path=u'v1beta1/{+parent}/variables',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',
         response_type_name=u'ListVariablesResponse',
@@ -248,12 +254,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.variables.testIamPermissions',
-        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[u'permissions'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -264,7 +271,7 @@ permissions, not a NOT_FOUND error.
       """Updates an existing variable with a new value.
 
       Args:
-        request: (RuntimeconfigProjectsConfigsVariablesUpdateRequest) input message
+        request: (Variable) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Variable) The response message.
@@ -274,14 +281,15 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
         http_method=u'PUT',
         method_id=u'runtimeconfig.projects.configs.variables.update',
-        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-        request_field=u'variable',
-        request_type_name=u'RuntimeconfigProjectsConfigsVariablesUpdateRequest',
+        relative_path=u'v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Variable',
         response_type_name=u'Variable',
         supports_download=False,
     )
@@ -312,12 +320,13 @@ documentation.
           config, request, global_params=global_params)
 
     Watch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.variables.watch',
-        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
+        relative_path=u'v1beta1/{+name}:watch',
         request_field=u'watchVariableRequest',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesWatchRequest',
         response_type_name=u'Variable',
@@ -352,12 +361,13 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.waiters.create',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'requestId'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        relative_path=u'v1beta1/{+parent}/waiters',
         request_field=u'waiter',
         request_type_name=u'RuntimeconfigProjectsConfigsWaitersCreateRequest',
         response_type_name=u'Operation',
@@ -378,12 +388,13 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
         http_method=u'DELETE',
         method_id=u'runtimeconfig.projects.configs.waiters.delete',
-        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
-        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsWaitersDeleteRequest',
         response_type_name=u'Empty',
@@ -404,12 +415,13 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.waiters.get',
-        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
-        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsWaitersGetRequest',
         response_type_name=u'Waiter',
@@ -430,12 +442,13 @@ still exist and must be deleted prior to subsequent creation attempts.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.waiters.list',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        relative_path=u'v1beta1/{+parent}/waiters',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsWaitersListRequest',
         response_type_name=u'ListWaitersResponse',
@@ -458,12 +471,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.waiters.testIamPermissions',
-        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
-        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[u'permissions'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -495,12 +509,13 @@ unique within project.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.create',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'requestId'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs',
+        relative_path=u'v1beta1/{+parent}/configs',
         request_field=u'runtimeConfig',
         request_type_name=u'RuntimeconfigProjectsConfigsCreateRequest',
         response_type_name=u'RuntimeConfig',
@@ -521,12 +536,13 @@ unique within project.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
         http_method=u'DELETE',
         method_id=u'runtimeconfig.projects.configs.delete',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsDeleteRequest',
         response_type_name=u'Empty',
@@ -547,12 +563,13 @@ unique within project.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.get',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsGetRequest',
         response_type_name=u'RuntimeConfig',
@@ -575,12 +592,13 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.getIamPolicy',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy',
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsGetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -601,12 +619,13 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs',
         http_method=u'GET',
         method_id=u'runtimeconfig.projects.configs.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/configs',
+        relative_path=u'v1beta1/{+parent}/configs',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsListRequest',
         response_type_name=u'ListConfigsResponse',
@@ -628,12 +647,13 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.setIamPolicy',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy',
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
         request_type_name=u'RuntimeconfigProjectsConfigsSetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -656,12 +676,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions',
         http_method=u'POST',
         method_id=u'runtimeconfig.projects.configs.testIamPermissions',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'RuntimeconfigProjectsConfigsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -672,7 +693,7 @@ permissions, not a NOT_FOUND error.
       """Updates a RuntimeConfig resource. The configuration must exist beforehand.
 
       Args:
-        request: (RuntimeconfigProjectsConfigsUpdateRequest) input message
+        request: (RuntimeConfig) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (RuntimeConfig) The response message.
@@ -682,14 +703,15 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
         http_method=u'PUT',
         method_id=u'runtimeconfig.projects.configs.update',
-        ordered_params=[u'projectsId', u'configsId'],
-        path_params=[u'configsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-        request_field=u'runtimeConfig',
-        request_type_name=u'RuntimeconfigProjectsConfigsUpdateRequest',
+        relative_path=u'v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name=u'RuntimeConfig',
         response_type_name=u'RuntimeConfig',
         supports_download=False,
     )

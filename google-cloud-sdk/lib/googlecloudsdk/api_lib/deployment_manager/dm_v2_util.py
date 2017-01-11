@@ -286,3 +286,65 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
     return ResourcesAndOutputs(resources, outputs)
   except apitools_exceptions.HttpError as error:
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+
+
+class StringPropertyParser(object):
+  """No-op string value parser, prints a deprecation warning on first call."""
+
+  def __init__(self):
+    self.warned = False
+
+  def ParseStringsAndWarn(self, value):
+    # print a warning and then return the value as-is
+    if not self.warned:
+      self.warned = True
+      log.warn(
+          "Delimiter '=' is deprecated for properties flag. Use ':' instead.")
+    return value
+
+
+def ParseAsYaml(value):
+  return yaml.load(value)
+
+
+def NewParserDict():
+  return {
+      '=': StringPropertyParser().ParseStringsAndWarn,  # deprecated
+      ':': ParseAsYaml,
+  }
+
+
+def DmUpdateLabels(labels, messages, update_labels=None, remove_labels=None):
+  """Returns a list of DeploymentLabelEntry based on current state plus edits.
+
+  Args:
+    labels: The current list of DeploymentLabelEntry.
+    messages: Object to build requests with.
+    update_labels: A dict of label key=value edits.
+    remove_labels: A list of labels keys to remove.
+
+  Returns:
+    A new list of DeploymentLabelEntry representing the update and remove edits.
+  """
+  if not update_labels and not remove_labels:
+    return labels
+
+  new_labels = {}
+
+  # Add pre-existing labels.
+  if labels:
+    for label in labels:
+      new_labels[label.key] = label.value
+
+  # Add label updates and/or addtions.
+  if update_labels:
+    new_labels.update(update_labels)
+
+  # Remove labels if requested.
+  if remove_labels:
+    for key in remove_labels:
+      new_labels.pop(key, None)
+
+  # Return a new list of DeploymentLabelEntry with all edits applied.
+  return [messages.DeploymentLabelEntry(key=key, value=value)
+          for key, value in sorted(new_labels.iteritems())]

@@ -45,14 +45,15 @@ def FetchLogs(log_filter=None,
     order_by: the sort order, either DESC or ASC.
     limit: how many entries to return.
     parent: the name of the log's parent resource, e.g. "projects/foo" or
-      "organizations/123". Defaults to the current project.
+      "organizations/123" or "folders/123". Defaults to the current project.
 
   Returns:
     A generator that returns matching log entries.
     Callers are responsible for handling any http exceptions.
   """
   if parent:
-    if not ('projects/' in parent or 'organizations/' in parent):
+    if not ('projects/' in parent or 'organizations/' in parent
+            or 'folders/' in parent or 'billingAccounts/' in parent):
       raise exceptions.InvalidArgumentException(
           'parent', 'Unknown parent type in parent %s' % parent)
   else:

@@ -11,7 +11,7 @@ class AppengineV1(base_api.BaseApiClient):
   BASE_URL = u'https://appengine.googleapis.com/'
 
   _PACKAGE = u'appengine'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/appengine.admin', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -40,9 +40,6 @@ class AppengineV1(base_api.BaseApiClient):
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
-    self.experimental_apps_operations = self.ExperimentalAppsOperationsService(self)
-    self.experimental_apps = self.ExperimentalAppsService(self)
-    self.experimental = self.ExperimentalService(self)
 
   class AppsLocationsService(base_api.BaseApiService):
     """Service class for the apps_locations resource."""
@@ -119,9 +116,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (AppengineAppsOperationsGetRequest) input message
@@ -148,11 +143,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding below allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`.
+      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding below allows API services to override the binding to use different resource name schemes, such as users/*/operations.
 
       Args:
         request: (AppengineAppsOperationsListRequest) input message
@@ -189,14 +180,7 @@ to use different resource name schemes, such as `users/*/operations`.
           }
 
     def Debug(self, request, global_params=None):
-      """Enables debugging on a VM instance. This allows you to use the SSH.
-command to connect to the virtual machine where the instance lives.
-While in "debug mode", the instance continues to serve live traffic.
-You should delete the instance when you are done debugging and then
-allow the system to take over and determine if another instance
-should be started.
-
-Only applicable for instances in App Engine flexible environment.
+      """Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesDebugRequest) input message
@@ -368,9 +352,7 @@ Only applicable for instances in App Engine flexible environment.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified Version resource.
-By default, only a `BASIC_VIEW` will be returned.
-Specify the `FULL_VIEW` parameter to get the full resource.
+      """Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
 
       Args:
         request: (AppengineAppsServicesVersionsGetRequest) input message
@@ -424,21 +406,11 @@ Specify the `FULL_VIEW` parameter to get the full resource.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Version resource.
-You can specify the following fields depending on the App Engine
-environment and type of scaling that the version resource uses:
-
-* [`serving_status`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status):
-  For Version resources that use basic scaling, manual scaling, or run in
-  the App Engine flexible environment.
-* [`instance_class`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class):
-  For Version resources that run in the App Engine standard environment.
-* [`automatic_scaling.min_idle_instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):
-  For Version resources that use automatic scaling and run in the App
-  Engine standard environment.
-* [`automatic_scaling.max_idle_instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):
-  For Version resources that use automatic scaling and run in the App
-  Engine standard environment.
+      """Updates the specified Version resource. You can specify the following fields depending on the App Engine environment and type of scaling that the version resource uses:.
+serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status):  For Version resources that use basic scaling, manual scaling, or run in  the App Engine flexible environment.
+instance_class (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class):  For Version resources that run in the App Engine standard environment.
+automatic_scaling.min_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
+automatic_scaling.max_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
 
       Args:
         request: (AppengineAppsServicesVersionsPatchRequest) input message
@@ -592,6 +564,34 @@ environment and type of scaling that the version resource uses:
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      """Creates an App Engine application for a Google Cloud Platform project. Required fields:.
+id - The ID of the target Cloud Platform project.
+location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/python/console/).
+
+      Args:
+        request: (Application) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'appengine.apps.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/apps',
+        request_field='<request>',
+        request_type_name=u'Application',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets information about an application.
 
@@ -620,7 +620,9 @@ environment and type of scaling that the version resource uses:
     )
 
     def Patch(self, request, global_params=None):
-      """Updates application parameters.
+      """Updates the specified Application resource. You can update the following fields:.
+auth_domain - Google authentication domain for controlling user access to the application.
+default_cookie_expiration - Cookie expiration policy for the application.
 
       Args:
         request: (AppengineAppsPatchRequest) input message
@@ -647,10 +649,7 @@ environment and type of scaling that the version resource uses:
     )
 
     def Repair(self, request, global_params=None):
-      """Recreates the required App Engine features for the application in your.
-project, for example a Cloud Storage bucket or App Engine service account.
-Use this method if you receive an error message about a missing feature,
-for example "*Error retrieving the App Engine service account*".
+      """Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account.
 
       Args:
         request: (AppengineAppsRepairRequest) input message
@@ -675,93 +674,3 @@ for example "*Error retrieving the App Engine service account*".
         response_type_name=u'Operation',
         supports_download=False,
     )
-
-  class ExperimentalAppsOperationsService(base_api.BaseApiService):
-    """Service class for the experimental_apps_operations resource."""
-
-    _NAME = u'experimental_apps_operations'
-
-    def __init__(self, client):
-      super(AppengineV1.ExperimentalAppsOperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
-
-      Args:
-        request: (AppengineExperimentalAppsOperationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'experimental/apps/{appsId}/operations/{operationsId}',
-        http_method=u'GET',
-        method_id=u'appengine.experimental.apps.operations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'experimental/{+name}',
-        request_field='',
-        request_type_name=u'AppengineExperimentalAppsOperationsGetRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding below allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`.
-
-      Args:
-        request: (AppengineExperimentalAppsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'experimental/apps/{appsId}/operations',
-        http_method=u'GET',
-        method_id=u'appengine.experimental.apps.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'experimental/{+name}/operations',
-        request_field='',
-        request_type_name=u'AppengineExperimentalAppsOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ExperimentalAppsService(base_api.BaseApiService):
-    """Service class for the experimental_apps resource."""
-
-    _NAME = u'experimental_apps'
-
-    def __init__(self, client):
-      super(AppengineV1.ExperimentalAppsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ExperimentalService(base_api.BaseApiService):
-    """Service class for the experimental resource."""
-
-    _NAME = u'experimental'
-
-    def __init__(self, client):
-      super(AppengineV1.ExperimentalService, self).__init__(client)
-      self._upload_configs = {
-          }

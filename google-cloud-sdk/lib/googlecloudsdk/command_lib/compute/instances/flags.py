@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
+import argparse
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
@@ -20,6 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.core import log
 import ipaddr
 
 MIGRATION_OPTIONS = {
@@ -333,6 +336,16 @@ def AddCustomMachineTypeArgs(parser):
       --custom-memory must be specified if a custom machine type is desired,
       and the --machine-type flag must be omitted.
       """
+
+
+def AddExtendedMachineTypeArgs(parser):
+  """Adds the argument enabling extended custom machine types for instances."""
+  parser.add_argument(
+      '--custom-extensions',
+      action='store_true',
+      help=('If provided, uses extended custom machine type. Both --custom-cpu'
+            ' and --custom-memory must be specified if --custom-extensions is'
+            ' provided.'))
 
 
 def _GetAddress(compute_client, address_ref):
@@ -684,43 +697,50 @@ def AddPrivateNetworkIpArgs(parser):
       """
 
 
-def AddServiceAccountAndScopeArgs(parser):
+def AddServiceAccountAndScopeArgs(parser, instance_exists):
   """Add args for configuring service account and scopes.
 
   This should replace AddScopeArgs (b/30802231).
 
   Args:
     parser: ArgumentParser, parser to which flags will be added.
+    instance_exists: bool, If instance already exists and we are modifying it.
   """
   service_account_group = parser.add_mutually_exclusive_group()
   service_account_group.add_argument(
       '--no-service-account', action='store_true',
-      help='Remove service account from the instance')
+      help='Remove service account from the instance' if instance_exists
+      else 'Create instance without service account')
 
   service_account = service_account_group.add_argument(
       '--service-account',
       help='Service account and scopes for the instances')
+  sa_exists = 'keep the service account it currently has'
+  sa_not_exists = 'get project\'s default service account'
   service_account.detailed_help = """\
   A service account is an identity attached to the instance. Its access tokens
   can be accessed through the instance metadata server and are used to
   authenticate applications on the instance. The account can be either an email
-  address or an alias corresponding to a service account. If account is omitted,
-  the project's default service account is used. The default service account can
-  be specified explicitly by using the alias default.
+  address or an alias corresponding to a service account. You can explicitly
+  specify the Compute Engine default service account using the 'default' alias.
 
-  If not provided instance will keep the service account it currently has.
-  """
+  If not provided, the instance will {0}.
+  """.format(sa_exists if instance_exists else sa_not_exists)
 
   scopes_group = parser.add_mutually_exclusive_group()
   scopes_group.add_argument(
       '--no-scopes', action='store_true',
-      help='Remove all scopes from the instance')
+      help='Remove all scopes from the instance' if instance_exists
+      else 'Create instance without scopes')
   scopes = scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),
+      metavar='SCOPE',
       help='Comma separated list of scopes for the instance')
+  scopes_exists = 'keep the scopes it currently has'
+  scopes_not_exists = 'be assigned the default scopes, described below'
   scopes.detailed_help = """\
-  If not provided instance will keep the scopes it currently has.
+  If not provided, the instance will {0}.
 
   SCOPE can be either the full URI of the scope or an alias. Available
   aliases are:
@@ -790,13 +810,13 @@ def AddServiceAccountAndScopeArgs(parser):
 
     userinfo-email
       - https://www.googleapis.com/auth/userinfo.email
-    """
+    """.format(scopes_exists if instance_exists else scopes_not_exists)
 
 
 def ValidateServiceAccountAndScopeArgs(args):
   if args.no_service_account and not args.no_scopes:
-    raise exceptions.InvalidArgumentException(
-        '--no-scopes', 'argument --no-scopes: required with argument '
+    raise exceptions.RequiredArgumentException(
+        '--no-scopes', 'required with argument '
         '--no-service-account')
   # TODO(b/30802231) Inline this call when AddScopeArgs is removed
   ValidateScopeFlags(args)
@@ -808,36 +828,34 @@ def AddScopeArgs(parser):
 
   def AddScopesHelp():
     return """\
-        Specifies service accounts and scopes for the
-        instances. Service accounts generate access tokens that can be
-        accessed through the instance metadata server and used to
-        authenticate applications on the instance. The account can be
-        either an email address or an alias corresponding to a
-        service account. If account is omitted, the project's default
-        service account is used. The default service account can be
-        specified explicitly by using the alias ``default''. Example:
+Specifies service accounts and scopes for the
+instances. Service accounts generate access tokens that can be
+accessed through the instance metadata server and used to
+authenticate applications on the instance. The account can be
+either an email address or an alias corresponding to a
+service account. If account is omitted, the project's default
+service account is used. The default service account can be
+specified explicitly by using the alias ``default''. Example:
 
-          $ {{command}} example-instance --scopes compute-rw,me@project.gserviceaccount.com=storage-rw
+  $ {{command}} example-instance --scopes compute-rw,me@project.gserviceaccount.com=storage-rw
 
-        If this flag is not provided, the following scopes are used:
-        {default_scopes}. To create instances with no scopes, use
-        ``--no-scopes'':
+If this flag is not provided, the following scopes are used:
+{default_scopes}. To create instances with no scopes, use
+``--no-scopes'':
 
-          $ {{command}} example-instance --no-scopes
+  $ {{command}} example-instance --no-scopes
 
-        SCOPE can be either the full URI of the scope or an
-        alias. Available aliases are:
+SCOPE can be either the full URI of the scope or an
+alias. Available aliases are:
 
-        [options="header",format="csv",grid="none",frame="none"]
-        |========
-        Alias,URI
-        {aliases}
-        |========
-        """.format(
-            default_scopes=', '.join(constants.DEFAULT_SCOPES),
-            aliases='\n        '.join(
-                ','.join(value) for value in
-                sorted(constants.SCOPES.iteritems())))
+[options="header",format="csv",grid="none",frame="none"]
+|========
+Alias,URI
+{aliases}
+|========
+""".format(
+    default_scopes=', '.join(constants.DEFAULT_SCOPES),
+    aliases=constants.ScopesForHelp())
   scopes = scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(min_length=1),
@@ -897,8 +915,7 @@ def AddMaintenancePolicyArgs(parser):
 
 def AddDockerArgs(parser):
   """Adds Docker-related args."""
-  docker_spec_group = parser.add_mutually_exclusive_group(required=True)
-  docker_image = docker_spec_group.add_argument(
+  docker_image = parser.add_argument(
       '--docker-image',
       help=('Docker image URL to run on VM.'))
   docker_image.detailed_help = """\
@@ -906,17 +923,7 @@ def AddDockerArgs(parser):
       gcr.io/google-containers/busybox
   """
 
-  container_manifest = docker_spec_group.add_argument(
-      '--container-manifest',
-      help=('Container manifest to run on VM.'))
-  container_manifest.detailed_help = """\
-  Container deployment specification, conforming to Kubernetes podspec format:
-      http://kubernetes.io/docs/user-guide/deployments/
-
-  When specified, --run-command, --run-as-privileged, and --port-mappings cannot
-  be used. Instead, if needed, those options must be provided with the container
-  manifest.
-  """
+  parser.add_argument('--container-manifest', help=argparse.SUPPRESS)
 
   run_command = parser.add_argument(
       '--run-command',
@@ -969,7 +976,14 @@ def AddDockerArgs(parser):
 
 def ValidateDockerArgs(args):
   """Validates Docker-related args."""
+  if not args.container_manifest and not args.docker_image:
+    raise exceptions.RequiredArgumentException(
+        '--docker-image', 'You must provide Docker image')
+
   if args.container_manifest:
+    log.warn('--container-manifest flag is deprecated and will be removed. '
+             'Use --docker-image flag instead.')
+
     if args.run_command:
       raise exceptions.InvalidArgumentException(
           '--run-command', 'argument --run-command: not allowed with argument '

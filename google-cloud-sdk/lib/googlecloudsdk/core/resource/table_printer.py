@@ -16,6 +16,7 @@
 
 import json
 import operator
+import re
 import StringIO
 
 from googlecloudsdk.core import log
@@ -26,6 +27,7 @@ from googlecloudsdk.core.resource import resource_transform
 
 # Table output column padding.
 _TABLE_COLUMN_PAD = 2
+_BOX_CHAR_LENGTH = 1
 
 
 def _Stringify(value):  # pylint: disable=invalid-name
@@ -77,14 +79,16 @@ class SubFormat(object):
     printer: The nested printer object.
     out: The nested printer output stream.
     rows: The nested format aggregate rows if the parent has no columns.
+    wrap: If column text should be wrapped.
   """
 
-  def __init__(self, index, hidden, printer, out):
+  def __init__(self, index, hidden, printer, out, wrap):
     self.index = index
     self.hidden = hidden
     self.printer = printer
     self.out = out
     self.rows = []
+    self.wrap = wrap
 
 
 class TablePrinter(resource_printer_base.ResourcePrinter):
@@ -120,6 +124,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     _rows_per_page: The number of rows in each resource page. 0 for no paging.
     _rows: The list of all resource columns indexed by row.
     _visible: Ordered list of visible column indexes.
+    _wrap: True if at least one column can be text wrapped.
   """
 
   # TODO(user): Drop TablePrinter._rows_per_page 3Q2016.
@@ -158,11 +163,14 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           self._aggregate = False
         if col.attribute.optional:
           self._optional = True
+        if col.attribute.wrap:
+          self._wrap = True
       index = 0
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
           # This initializes a nested Printer to a string stream.
           out = self._out if self._aggregate else StringIO.StringIO()
+          wrap = None
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr,
                                  defaults=self.column_attributes)
@@ -170,8 +178,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         else:
           out = None
           printer = None
+          wrap = col.attribute.wrap
         self._subformats.append(
-            SubFormat(index, col.attribute.hidden, printer, out))
+            SubFormat(index, col.attribute.hidden, printer, out, wrap))
         index += 1
     self._visible = None
     if not has_subformats:
@@ -202,6 +211,51 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     for index in self._visible:
       visible.append(row[index])
     return visible
+
+  def _GetNextLineAndRemainder(self, s, max_width,
+                               include_all_whitespace=False):
+    """Helper function to get next line of wrappable text."""
+    # Get maximum split index where the next line will be wider than max.
+    current_width = 0
+    i = 0
+    while i < len(s):
+      # pylint:disable=protected-access
+      if self._console_attr._csi and s[i:].startswith(self._console_attr._csi):
+        i += self._console_attr.GetControlSequenceLen(s[i:])
+      else:
+        current_width += console_attr.GetCharacterDisplayWidth(s[i])
+        if current_width <= max_width:
+          i += 1
+        else:
+          break
+
+    split = i
+    if not include_all_whitespace:
+      split += len(s[i:]) - len(s[i:].lstrip())
+
+    # Check if there is a newline character before the split.
+    first_newline = re.search('\\n', s)
+    if first_newline and first_newline.end() <= split:
+      split = first_newline.end()
+    # If not, split on the last whitespace character before the split
+    # (if possible)
+    else:
+      max_whitespace = None
+      for r in re.finditer(r'\s+', s):
+        if r.end() > split:
+          if include_all_whitespace and r.start() <= split:
+            max_whitespace = split
+          break
+        max_whitespace = r.end()
+      if max_whitespace:
+        split = max_whitespace
+
+    if not include_all_whitespace:
+      next_line = s[:split].rstrip()
+    else:
+      next_line = s[:split]
+    remaining_value = s[split:]
+    return next_line, remaining_value
 
   def Finish(self):
     """Prints the table."""
@@ -316,6 +370,28 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       for i, col in enumerate(heading[0]):
         col_widths[i] = max(col_widths[i], self._console_attr.DisplayWidth(col))
 
+    # If table is wider than the console and columns can be wrapped,
+    # change wrapped column widths to fit within the available space.
+    wrap = []
+    for i, col in enumerate(self._Visible(self.column_attributes.Columns())):
+      if col.attribute.wrap:
+        wrap.append(i)
+    if wrap:
+      visible_cols = len(self._Visible(self.column_attributes.Columns()))
+      table_padding = (visible_cols - 1) * table_column_pad
+      if box:
+        table_padding = (_BOX_CHAR_LENGTH * (visible_cols + 1)
+                         + visible_cols * table_column_pad * 2)
+      total_col_width = self._console_attr.GetTermSize()[0] - table_padding
+      if total_col_width < sum(col_widths):
+        non_wrappable_width = sum(
+            [col_width for (i, col_width) in enumerate(col_widths)
+             if i not in wrap])
+        available_width = total_col_width - non_wrappable_width
+        for i, col_width in enumerate(col_widths):
+          if i in wrap:
+            col_widths[i] = max(int((available_width * 1.0)/len(wrap)), 1)
+
     # Print the title if specified.
     title = self.attributes.get('title') if self._page_count <= 1 else None
     if title is not None:
@@ -328,7 +404,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         if box:
           line += box.h * (col_widths[i] + sep)
         sep = 3
-      if width < self._console_attr.DisplayWidth(title):
+      if width < self._console_attr.DisplayWidth(title) and not wrap:
         # Title is wider than the table => pad each column to make room.
         pad = ((self._console_attr.DisplayWidth(title) + len(col_widths) - 1) /
                len(col_widths))
@@ -394,64 +470,87 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       elif box and self._subformats:
         self._out.write(t_rule)
         self._out.write('\n')
-      pad = 0
-      for i in range(len(row)):
-        if box:
-          self._out.write(box.v + ' ')
+      row_finished = False
+      while not row_finished:
+        pad = 0
+        row_finished = True
+        for i in range(len(row)):
           width = col_widths[i]
-        elif i < len(row) - 1:
-          width = col_widths[i]
-        else:
-          width = 0
-        justify = align[i] if align else lambda s, w: s.ljust(w)
-        cell = row[i]
-        if isinstance(cell, console_attr.Colorizer):
-          if pad:
-            self._out.write(' ' * pad)
-            pad = 0
-          # pylint: disable=cell-var-from-loop
-          cell.Render(justify=lambda s: justify(s, width))
           if box:
-            self._out.write(' ' * table_column_pad)
+            self._out.write(box.v + ' ')
+          justify = align[i] if align else lambda s, w: s.ljust(w)
+          # Wrap text if needed.
+          s = unicode(row[i])
+          if self._console_attr.DisplayWidth(s) > width or '\n' in s:
+            is_colorizer = isinstance(row[i], console_attr.Colorizer)
+            cell_value, remainder = self._GetNextLineAndRemainder(
+                s, width, include_all_whitespace=is_colorizer)
+            if is_colorizer:
+              # pylint:disable=protected-access
+              cell = console_attr.Colorizer(cell_value, row[i]._color,
+                                            row[i]._justify)
+              row[i] = console_attr.Colorizer(remainder,
+                                              row[i]._color,
+                                              row[i]._justify)
+              # pylint:disable=protected-access
+            else:
+              cell = cell_value
+              row[i] = remainder
+            if remainder:
+              row_finished = False
           else:
-            pad = table_column_pad
-        else:
-          value = justify(_Justify(self._console_attr, cell), width)
-          if box:
-            self._out.write(value)
-            self._out.write(' ' * table_column_pad)
-          elif value.strip():
+            cell = row[i]
+            row[i] = ' '
+          if isinstance(cell, console_attr.Colorizer):
+            if i == len(row) - 1 and not box:
+              width = 0
             if pad:
               self._out.write(' ' * pad)
               pad = 0
-            stripped = value.rstrip()
-            self._out.write(stripped)
-            pad = (table_column_pad + self._console_attr.DisplayWidth(value) -
-                   self._console_attr.DisplayWidth(stripped))
+            # pylint: disable=cell-var-from-loop
+            cell.Render(justify=lambda s: justify(s, width))
+            if box:
+              self._out.write(' ' * table_column_pad)
+            else:
+              pad = table_column_pad
           else:
-            pad += table_column_pad + self._console_attr.DisplayWidth(value)
-      if box:
-        self._out.write(box.v)
-      if self._rows:
-        self._out.write('\n')
-        if heading:
-          heading = []
-          continue
+            value = justify(_Justify(self._console_attr, cell), width)
+            if box:
+              self._out.write(value)
+              self._out.write(' ' * table_column_pad)
+            elif value.strip():
+              if pad:
+                self._out.write(' ' * pad)
+                pad = 0
+              stripped = value.rstrip()
+              self._out.write(stripped)
+              pad = (table_column_pad + self._console_attr.DisplayWidth(value) -
+                     self._console_attr.DisplayWidth(stripped))
+            else:
+              pad += table_column_pad + self._console_attr.DisplayWidth(value)
         if box:
-          self._out.write(b_rule)
+          self._out.write(box.v)
+        if self._rows:
           self._out.write('\n')
-        r = self._rows.pop(0)
-        for subformat in self._subformats:
-          if subformat.printer:
-            # Indent the nested printer lines.
-            subformat.printer.Print(r[subformat.index])
-            nested_output = subformat.out.getvalue()
-            for line in nested_output.split('\n')[:-1]:
-              self._out.write('    ' + line + '\n')
-            # Rewind the output buffer.
-            subformat.out.truncate(0)
-      else:
-        self._out.write('\n')
+          if heading:
+            heading = []
+            continue
+          if row_finished:
+            if box:
+              self._out.write(b_rule)
+              self._out.write('\n')
+            r = self._rows.pop(0)
+            for subformat in self._subformats:
+              if subformat.printer:
+                # Indent the nested printer lines.
+                subformat.printer.Print(r[subformat.index])
+                nested_output = subformat.out.getvalue()
+                for line in nested_output.split('\n')[:-1]:
+                  self._out.write('    ' + line + '\n')
+                # Rewind the output buffer.
+                subformat.out.truncate(0)
+        else:
+          self._out.write('\n')
     if box and not self._subformats:
       self._out.write(b_rule)
       self._out.write('\n')

@@ -150,7 +150,7 @@ def Update(cli):
     cli: Calliope CLI object for generating the completion table.
   """
   # Overwrite the completion table file with updated content
-  with files.Context(open(_TablePath(), 'w')) as table_file:
+  with open(_TablePath(), 'w') as table_file:
     table = CompletionTableGenerator(cli).Walk(hidden=False)
     table_file.write('table=')
     pprint(table, table_file)

@@ -20,7 +20,7 @@ from googlecloudsdk.core import resources
 ACCOUNT_ID_ARG_PARAMS = dict(
     metavar='ACCOUNT_ID',
     completion_resource='cloudbilling.billingAccounts',
-    list_command_path='billing accounts',
+    list_command_path='billing.accounts',
     help=(
         'Specify a billing account id. Billing account '
         'ids look like: 0X0X0X-0X0X0X-0X0X0X, and can '
