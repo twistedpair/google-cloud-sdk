@@ -2,6 +2,12 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 139.0.1 (2017/01/12)
+
+*   Fixed crash in `gcloud dataproc clusters create`
+    *   https://code.google.com/p/google-cloud-sdk/issues/detail?id=1464
+
+
 ## 139.0.0 (2017/01/11)
 
 ### Breaking Changes

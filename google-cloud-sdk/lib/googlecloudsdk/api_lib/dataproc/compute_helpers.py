@@ -37,7 +37,7 @@ def ExpandScopeAliases(scopes):
   expanded_scopes = []
   for scope in scopes:
     if scope in SCOPE_ALIASES:
-      expanded_scopes.append(SCOPE_ALIASES[scope])
+      expanded_scopes += SCOPE_ALIASES[scope]
     else:
       # Validate scopes server side.
       expanded_scopes.append(scope)
