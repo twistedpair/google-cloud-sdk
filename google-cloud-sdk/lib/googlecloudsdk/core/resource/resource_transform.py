@@ -1265,7 +1265,7 @@ _API_TO_TRANSFORMS = {
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
     'container': ('googlecloudsdk.api_lib.container.transforms',
                   'GetTransforms'),
-    'debug': ('googlecloudsdk.api_lib.debug.transforms', 'GetTransforms'),
+    'debug': ('googlecloudsdk.command_lib.debug.transforms', 'GetTransforms'),
     'runtimeconfig': (
         'googlecloudsdk.api_lib.deployment_manager.runtime_configs.transforms',
         'GetTransforms'

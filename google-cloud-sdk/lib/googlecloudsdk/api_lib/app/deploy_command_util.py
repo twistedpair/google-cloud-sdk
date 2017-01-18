@@ -25,9 +25,11 @@ from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
+from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
@@ -176,7 +178,7 @@ def _GetImageName(project, service, version):
 
 
 def BuildAndPushDockerImage(project, service, source_dir, version_id,
-                            code_bucket_ref):
+                            code_bucket_ref, use_runtime_builders=False):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -186,26 +188,29 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
+    use_runtime_builders: bool, whether to use the new CloudBuild-based runtime
+      builders (alternative is old externalized runtimes).
+
   Returns:
     str, The name of the pushed container image.
   """
   # Nothing to do if this is not an image-based deployment.
   if not service.RequiresImage():
     return None
-
-  gen_files = {}
-  gen_files.update(_GetDockerfiles(service, source_dir))
-  gen_files.update(_GetSourceContextsForUpload(source_dir))
-
   log.status.Print(
       'Building and pushing image for service [{service}]'
       .format(service=service.module))
+
+  gen_files = dict(_GetSourceContextsForUpload(source_dir))
+  if not use_runtime_builders:
+    gen_files.update(_GetDockerfiles(service, source_dir))
 
   image = docker_image.Image(
       dockerfile_dir=source_dir,
       repo=_GetImageName(project, service.module, version_id),
       nocache=False,
       tag=config.DOCKER_IMAGE_TAG)
+
   object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
   try:
     cloud_build.UploadSource(image.dockerfile_dir, object_ref,
@@ -217,8 +222,18 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
         raise WindowMaxPathError(err.filename)
     raise
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-  cloud_build.ExecuteCloudBuild(project, object_ref, image.tagged_repo)
+
+  if use_runtime_builders:
+    builder_version = runtime_builders.RuntimeBuilderVersion.FromServiceInfo(
+        service)
+    build = builder_version.LoadCloudBuild({'_OUTPUT_IMAGE': image.tagged_repo})
+  else:
+    build = cloud_build.GetDefaultBuild(image.tagged_repo)
+
+  cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
+      cloud_build.FixUpBuild(build, object_ref), project=project)
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
+
   return image.tagged_repo
 
 

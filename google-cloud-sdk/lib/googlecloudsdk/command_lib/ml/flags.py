@@ -74,7 +74,14 @@ MODULE_NAME = base.Argument(
     help='Name of the module to run')
 PACKAGE_PATH = base.Argument(
     '--package-path',
-    help='Path to a Python package to build')
+    help='Path to a Python package to build',
+    detailed_help="""\
+Path to a Python package to build. This should point to a directory containing
+the Python source for the job. It will be built using setuptools (which must be
+installed) using its *parent* directory as context. If the parent directory
+contains a `setup.py` file, the build will use that; otherwise, it will use a
+simple built-in one.
+""")
 PACKAGES = base.Argument(
     '--packages',
     # TODO(b/33234717) remove nargs=+ after deprecation period
@@ -82,7 +89,13 @@ PACKAGES = base.Argument(
     default=[],
     type=arg_parsers.ArgList(),
     metavar='PACKAGE',
-    help='Path to Python archives used for training')
+    help='Path to Python archives used for training',
+    detailed_help="""\
+Path to Python archives used for training. These can be local paths
+(absolute or relative), in which case they will be uploaded to the Cloud
+Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
+(`gs://bucket-name/path/to/package.tar.gz`).
+""")
 USER_ARGS = base.Argument(
     'user_args',
     nargs=argparse.REMAINDER,

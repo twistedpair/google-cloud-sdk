@@ -14,16 +14,11 @@
 
 """Common helper methods for DeploymentManager V2 Deployments."""
 
-import StringIO
-import time
-
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
 import yaml
@@ -47,79 +42,6 @@ def PrettyPrint(resource, print_format='json'):
       resources=[resource],
       print_format=print_format,
       out=log.out)
-
-
-def GetOperationError(error):
-  """Returns a ready-to-print string representation from the operation error.
-
-  Args:
-    error: operation error object
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  error_message = StringIO.StringIO()
-  resource_printer.Print(error, 'yaml', out=error_message)
-  return error_message.getvalue()
-
-
-def WaitForOperation(client, messages, operation_name, project,
-                     operation_description, timeout=None):
-  """Wait for an operation to complete.
-
-  Polls the operation requested approximately every second, showing a
-  progress indicator. Returns when the operation has completed.
-
-  Args:
-    client: Object to make requests with
-    messages: Object to build requests with
-    operation_name: The name of the operation to wait on, as returned by
-        operations.list.
-    project: The name of the project that this operation belongs to.
-    operation_description: A short description of the operation to wait on,
-        such as 'create' or 'delete'. Will be displayed to the user.
-    timeout: Optional (approximate) timeout in seconds, after which wait
-        will return failure.
-
-  Raises:
-      HttpException: A http error response was received while executing api
-          request. Will be raised if the operation cannot be found.
-      OperationError: The operation finished with error(s).
-      OperationTimeOutError: The operation exceeded the timeout without
-        completing.
-  """
-  ticks = 0
-  message = ('Waiting for '
-             + ('{0} '.format(operation_description)
-                if operation_description else '')
-             + operation_name)
-  with progress_tracker.ProgressTracker(message, autotick=False) as ticker:
-    while timeout is None or ticks < timeout:
-      ticks += 1
-
-      try:
-        operation = client.operations.Get(
-            messages.DeploymentmanagerOperationsGetRequest(
-                project=project,
-                operation=operation_name,
-            )
-        )
-      except apitools_exceptions.HttpError as error:
-        raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
-      ticker.Tick()
-      # Operation status will be one of PENDING, RUNNING, DONE
-      if operation.status == 'DONE':
-        if operation.error:
-          raise exceptions.OperationError(
-              'Error in Operation ' + operation_name +
-              ':\n' + GetOperationError(operation.error))
-        else:  # Operation succeeded
-          return
-      time.sleep(1)  # wait one second and try again
-    # Timeout exceeded
-    raise exceptions.OperationTimeoutError(
-        'Wait for Operation {0} exceeded {1} second timeout.'.format(
-            operation_name, timeout))
 
 
 def PrintTable(header, resource_list):
@@ -313,38 +235,3 @@ def NewParserDict():
       ':': ParseAsYaml,
   }
 
-
-def DmUpdateLabels(labels, messages, update_labels=None, remove_labels=None):
-  """Returns a list of DeploymentLabelEntry based on current state plus edits.
-
-  Args:
-    labels: The current list of DeploymentLabelEntry.
-    messages: Object to build requests with.
-    update_labels: A dict of label key=value edits.
-    remove_labels: A list of labels keys to remove.
-
-  Returns:
-    A new list of DeploymentLabelEntry representing the update and remove edits.
-  """
-  if not update_labels and not remove_labels:
-    return labels
-
-  new_labels = {}
-
-  # Add pre-existing labels.
-  if labels:
-    for label in labels:
-      new_labels[label.key] = label.value
-
-  # Add label updates and/or addtions.
-  if update_labels:
-    new_labels.update(update_labels)
-
-  # Remove labels if requested.
-  if remove_labels:
-    for key in remove_labels:
-      new_labels.pop(key, None)
-
-  # Return a new list of DeploymentLabelEntry with all edits applied.
-  return [messages.DeploymentLabelEntry(key=key, value=value)
-          for key, value in sorted(new_labels.iteritems())]

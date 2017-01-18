@@ -41,6 +41,19 @@ OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
 SERVICES_COLLECTION = 'servicemanagement-v1.services'
 CONFIG_COLLECTION = 'servicemanagement-v1.serviceConfigs'
 
+ALL_IAM_PERMISSIONS = [
+    'servicemanagement.services.get',
+    'servicemanagement.services.getProjectSettings',
+    'servicemanagement.services.delete',
+    'servicemanagement.services.update',
+    'servicemanagement.services.use',
+    'servicemanagement.services.updateProjectSettings',
+    'servicemanagement.services.check',
+    'servicemanagement.services.report',
+    'servicemanagement.services.setIamPolicy',
+    'servicemanagement.services.getIamPolicy',
+]
+
 
 class OperationErrorException(core_exceptions.Error):
 

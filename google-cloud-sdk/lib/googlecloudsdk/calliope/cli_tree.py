@@ -111,9 +111,10 @@ class Command(object):
     sections: {str:str}, Optional section help dict, indexed by section name.
   """
 
-  def __init__(self, command, parent):
+  def __init__(self, command, parent, include_hidden_flags=True):
 
     self.release = command.ReleaseTrack().id
+    self.path = command.GetPath()
     self.name = command.name.replace('_', '-')
     self.hidden = command.IsHidden()
     self.flags = {}
@@ -185,8 +186,10 @@ class Command(object):
           name = name.replace('_', '-')
           # Don't include ancestor flags.
           if not self.__Ancestor(name):
-            flag = Flag(name, description=_NormalizeDescription(arg.help),
-                        default=arg.default)
+            flag = Flag(
+                name,
+                description=arg.help,
+                default=arg.default)
             # ArgParse does not have an explicit Boolean flag type. By
             # convention a flag with arg.nargs=0 and action='store_true' or
             # action='store_false' is a Boolean flag. arg.type gives no hint
@@ -228,7 +231,8 @@ class Command(object):
             flag.resource = getattr(arg, 'completion_resource', '')
             if name in group_name and group_name[name] in group_id:
               flag.group = group_id[group_name[name]]
-            self.flags[flag.name] = flag
+            if include_hidden_flags or not flag.hidden:
+              self.flags[flag.name] = flag
 
     # Collect the positionals.
     for arg in args.positional_args:

@@ -22,12 +22,11 @@ class DebugError(exceptions.Error):
   pass
 
 
-class NoEndpointError(DebugError):
+class InvalidBreakpointTypeError(DebugError):
 
-  def __str__(self):
-    return (
-        'Debug endpoint not initialized. DebugObject.InitializeApiClients must '
-        'be called before using this module.\n')
+  def __init__(self, type_name):
+    super(InvalidBreakpointTypeError, self).__init__(
+        '{0} is not a valid breakpoint type'.format(type_name.capitalize()))
 
 
 class BreakpointNotFoundError(DebugError):
@@ -36,6 +35,20 @@ class BreakpointNotFoundError(DebugError):
     super(BreakpointNotFoundError, self).__init__(
         '{0} ID not found: {1}'.format(type_name.capitalize(),
                                        ', '.join(breakpoint_ids)))
+
+
+class InvalidLogFormatException(DebugError):
+  """A log format expression was invalid."""
+
+  def __init__(self, message):
+    super(InvalidLogFormatException, self).__init__(message)
+
+
+class InvalidLocationException(DebugError):
+  """A location argument was invalid."""
+
+  def __init__(self, message):
+    super(InvalidLocationException, self).__init__(message)
 
 
 class UnknownHttpError(api_exceptions.HttpException, DebugError):

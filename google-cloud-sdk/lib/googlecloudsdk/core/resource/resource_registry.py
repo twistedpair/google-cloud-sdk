@@ -1094,6 +1094,16 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'deploymentmanager.type_providers': resource_info.ResourceInfo(
+        async_collection='deploymentmanager.operations',
+        list_format="""
+          table(
+            name,
+            insertTime.date(format="%Y-%m-%d"):label=INSERT_DATE
+          )
+        """,
+    ),
+
     # dns
 
     'dns.changes': resource_info.ResourceInfo(

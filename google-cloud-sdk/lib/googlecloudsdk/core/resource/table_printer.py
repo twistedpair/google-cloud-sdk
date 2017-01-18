@@ -34,8 +34,10 @@ def _Stringify(value):  # pylint: disable=invalid-name
   """Represents value as a JSON string if it's not a string."""
   if value is None:
     return ''
-  elif isinstance(value, (basestring, console_attr.Colorizer)):
+  elif isinstance(value, console_attr.Colorizer):
     return value
+  elif isinstance(value, basestring):
+    return console_attr.DecodeFromInput(value)
   elif isinstance(value, float):
     return resource_transform.TransformFloat(value)
   elif hasattr(value, '__str__'):
@@ -217,21 +219,14 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     """Helper function to get next line of wrappable text."""
     # Get maximum split index where the next line will be wider than max.
     current_width = 0
-    i = 0
-    while i < len(s):
-      # pylint:disable=protected-access
-      if self._console_attr._csi and s[i:].startswith(self._console_attr._csi):
-        i += self._console_attr.GetControlSequenceLen(s[i:])
-      else:
-        current_width += console_attr.GetCharacterDisplayWidth(s[i])
-        if current_width <= max_width:
-          i += 1
-        else:
-          break
-
-    split = i
+    split = 0
+    while split < len(s):
+      current_width += console_attr.GetCharacterDisplayWidth(s[split])
+      if current_width > max_width:
+        break
+      split += 1
     if not include_all_whitespace:
-      split += len(s[i:]) - len(s[i:].lstrip())
+      split += len(s[split:]) - len(s[split:].lstrip())
 
     # Check if there is a newline character before the split.
     first_newline = re.search('\\n', s)
@@ -480,18 +475,15 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
             self._out.write(box.v + ' ')
           justify = align[i] if align else lambda s, w: s.ljust(w)
           # Wrap text if needed.
-          s = unicode(row[i])
-          if self._console_attr.DisplayWidth(s) > width or '\n' in s:
-            is_colorizer = isinstance(row[i], console_attr.Colorizer)
+          s = row[i]
+          is_colorizer = isinstance(s, console_attr.Colorizer)
+          if self._console_attr.DisplayWidth(s) > width or '\n' in unicode(s):
             cell_value, remainder = self._GetNextLineAndRemainder(
-                s, width, include_all_whitespace=is_colorizer)
+                unicode(s), width, include_all_whitespace=is_colorizer)
             if is_colorizer:
               # pylint:disable=protected-access
-              cell = console_attr.Colorizer(cell_value, row[i]._color,
-                                            row[i]._justify)
-              row[i] = console_attr.Colorizer(remainder,
-                                              row[i]._color,
-                                              row[i]._justify)
+              cell = console_attr.Colorizer(cell_value, s._color, s._justify)
+              row[i] = console_attr.Colorizer(remainder, s._color, s._justify)
               # pylint:disable=protected-access
             else:
               cell = cell_value
@@ -499,11 +491,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
             if remainder:
               row_finished = False
           else:
-            cell = row[i]
+            cell = s
             row[i] = ' '
-          if isinstance(cell, console_attr.Colorizer):
-            if i == len(row) - 1 and not box:
-              width = 0
+          if not box and i == len(row) - 1:
+            width = 0
+          if is_colorizer:
             if pad:
               self._out.write(' ' * pad)
               pad = 0

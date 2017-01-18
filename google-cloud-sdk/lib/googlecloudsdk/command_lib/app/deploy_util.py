@@ -60,6 +60,15 @@ class VersionPromotionError(core_exceptions.Error):
         'Original error: ' + str(err))
 
 
+GSUTIL_DEPRECATION_WARNING = """\
+Your gcloud installation has a deprecated config property enabled: \
+[app/use_gsutil], which will be removed in a future version.  Run \
+`gcloud config unset app/use_gsutil` to switch to the recommended approach.  \
+If you encounter any issues, please report using `gcloud feedback`.  To \
+revert temporarily, run `gcloud config set app/use_gsutil True`.
+"""
+
+
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
@@ -71,26 +80,31 @@ class DeployOptions(object):
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     upload_strategy: deploy_app_command_util.UploadStrategy, the file upload
        strategy to be used for this deployment.
+    use_runtime_builders: bool, whether to use the new CloudBuild-based
+      runtime builders (alternative is old externalized runtimes).
   """
 
   def __init__(self, promote, stop_previous_version, enable_endpoints,
-               upload_strategy):
+               upload_strategy, use_runtime_builders):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
     self.upload_strategy = upload_strategy
+    self.use_runtime_builders = use_runtime_builders
 
   @classmethod
-  def FromProperties(cls, enable_endpoints, upload_strategy):
+  def FromProperties(cls, enable_endpoints, upload_strategy,
+                     use_runtime_builders):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
     if upload_strategy is None:
       upload_strategy = deploy_app_command_util.UploadStrategy.PROCESSES
     if properties.VALUES.app.use_gsutil.GetBool():
+      log.warning(GSUTIL_DEPRECATION_WARNING)
       upload_strategy = deploy_app_command_util.UploadStrategy.GSUTIL
     return cls(promote, stop_previous_version, enable_endpoints,
-               upload_strategy)
+               upload_strategy, use_runtime_builders)
 
 
 class ServiceDeployer(object):
@@ -159,7 +173,7 @@ class ServiceDeployer(object):
       if not image:
         image = deploy_command_util.BuildAndPushDockerImage(
             new_version.project, service, source_dir, new_version.id,
-            code_bucket_ref)
+            code_bucket_ref, self.deploy_options.use_runtime_builders)
       elif service.parsed.skip_files.regex:
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
@@ -306,7 +320,7 @@ def ArgsDeploy(parser):
 
 
 def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
-              upload_strategy=None):
+              upload_strategy=None, use_runtime_builders=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -317,6 +331,8 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
         than the default stager registry.
     upload_strategy: deploy_app_command_util.UploadStrategy, the parallelism
       straetgy to use for uploading files, or None to use the default.
+    use_runtime_builders: bool, whether to use the new CloudBuild-based
+      runtime builders (alternative is old externalized runtimes).
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -324,8 +340,9 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
     is a list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
   project = properties.VALUES.core.project.Get(required=True)
-  deploy_options = DeployOptions.FromProperties(enable_endpoints,
-                                                upload_strategy=upload_strategy)
+  deploy_options = DeployOptions.FromProperties(
+      enable_endpoints, upload_strategy=upload_strategy,
+      use_runtime_builders=use_runtime_builders)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.
@@ -360,14 +377,6 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
 
   app = _PossiblyCreateApp(api_client, project)
   app = _PossiblyRepairApp(api_client, app)
-
-  if properties.VALUES.app.use_gsutil.GetBool():
-    log.warning('Your gcloud installation has a deprecated config property '
-                'enabled: [app/use_gsutil], which will be removed in a '
-                'future version.  Run `gcloud config unset app/use_gsutil` to '
-                'switch to the recommended approach.  If you encounter any '
-                'issues, please report using `gcloud feedback`.  To revert '
-                'temporarily, run `gcloud config set app/use_gsutil True`.\n')
 
   # Tell the user what is going to happen, and ask them to confirm.
   version_id = args.version or util.GenerateVersionId()

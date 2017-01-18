@@ -11,4 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Package marker file."""
+
+"""Stores lookup keys for help search table."""
+
+COMMAND = 'command'
+COMMANDS = 'commands'
+FLAG = 'flag'
+POSITIONAL = 'positional'
+RELEASE = 'release'
+MARKDOWN = 'markdown'
+TEXT = 'text'
+GENERATED = 'generated'
+SUBSECTIONS = 'subsections'
+NAME = 'name'
+FLAGS = 'flags'
+POSITIONALS = 'positionals'
+SECTIONS = 'sections'
+DESCRIPTION = 'description'
+CAPSULE = 'capsule'
+CHOICES = 'choices'
+RELEASE = 'release'
+ALPHA = 'ALPHA'
+BETA = 'BETA'
+GA = 'GA'
+PATH = 'path'
+DEFAULT = 'default'
+SUMMARY = 'summary'

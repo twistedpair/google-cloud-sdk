@@ -14,6 +14,7 @@
 
 """Provides common arguments for the Bio command surface."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.bio import util
 
@@ -25,3 +26,57 @@ def GetOperationNameFlag(verb):
       metavar='OPERATION_NAME',
       completion_resource=util.OPERATIONS_COLLECTION,
       help='Name for the operation you want to {0}.'.format(verb))
+
+
+# DeepVariant flags
+def GetPipelineInputPairFlag():
+  return base.Argument(
+      '--input-pair',
+      type=arg_parsers.ArgList(min_length=2, max_length=2),
+      metavar='FASTQ_PATH',
+      required=True,
+      help='''A comma-separated pair of Google Cloud Storage paths of the
+        forward and reverse strand FASTQ files used as input.''')
+
+
+def GetPipelineOutputPathFlag():
+  return base.Argument(
+      '--output-path',
+      required=True,
+      help='''The Google Cloud Storage path for copying the final output files.
+        For example, `gs://<user_bucket>/<sample_name>/`.''')
+
+
+def GetPipelineSampleNameFlag():
+  return base.Argument(
+      '--sample-name', required=True, help='''The sample name.''')
+
+
+def GetPipelineLoggingFlag():
+  return base.Argument(
+      '--logging',
+      required=True,
+      metavar='LOGGING_PATH',
+      help='''The Google Cloud Storage path for output logs. For example,
+        `gs://<user_bucket>/<log_path>`.''',
+      detailed_help='''The location in Google Cloud Storage to which the
+        pipeline logs will be copied. Can be specified as a fully qualified
+        directory path, in which case logs will be output with a unique id
+        as the filename in that directory, or as a fully specified path,
+        which must end in `.log`, in which case that path will be
+        used. Stdout and stderr logs from the run are also generated and
+        output as `-stdout.log` and `-stderr.log`. For example,
+        `gs://<user_bucket>/<log_path>`.''')
+
+
+def GetPipelineZonesFlag():
+  return base.Argument(
+      '--zones',
+      metavar='ZONE',
+      type=arg_parsers.ArgList(),
+      completion_resource='compute.zones',
+      help='Google Compute Engine zones to use for running the pipeline.',
+      detailed_help='''A list of Google Compute Engine zones which may
+        be used to run the pipeline. A zone with available quota will be
+        randomly selected at the time of execution. If empty, any zone may
+        be selected.''')

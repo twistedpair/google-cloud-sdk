@@ -266,3 +266,8 @@ class HttpException(core_exceptions.Error):
   @property
   def message(self):
     return str(self)
+
+  def __eq__(self, other):
+    if isinstance(other, HttpException):
+      return self.message == other.message
+    return False

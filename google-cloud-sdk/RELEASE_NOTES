@@ -1,6 +1,42 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2016 Google Inc. All rights reserved.
+Copyright 2014-2017 Google Inc. All rights reserved.
+
+## 140.0.0 (2017/01/18)
+
+### Cloud SDK
+
+* `gcloud alpha search-help` is now available in alpha.
+  Run `gcloud alpha search-help [TERM]` to find gcloud commands whose help text
+  contains [TERM].
+
+### Google Cloud ML
+
+* `gcloud ml jobs submit training` now supports packages already in Google
+   Cloud Storage via the `--packages` flag.
+
+### Google Cloud Datalab
+
+* Upgrade the Datalab CLI to the 20170110 build.
+
+### Google Cloud Debugger
+
+* The `gcloud debug` command group is now available in GA.
+
+### Google Container Registry
+
+* An issue that affected Docker client version parsing during
+  `docker-credential-gcr configure-docker` has been fixed.
+
+### Google Cloud Deployment Manager
+
+* 'deployment-manager deployments update' can update deployments with a new
+  description using --description flag.
+
+### Emulators
+
+* The pubsub emulator now accepts web-safe Base64 encoded data.
+
 
 ## 139.0.1 (2017/01/12)
 
@@ -22,9 +58,9 @@ Copyright 2014-2016 Google Inc. All rights reserved.
   `logging beta metrics update` commands have changed their flags and
    importantly now use Logging V2 filter syntax. See the help for more
   information.
-* (Google App Engine) Flexible deployments now skip files matching `node_modules` and
-  `.git` by default, but no longer skip other hidden files by default. Standard
-  deployments are not changing.
+* (Google App Engine) Flexible deployments now skip files matching
+  `node_modules` and `.git` by default, but no longer skip other hidden files by
+  default. Standard deployments are not changing.
 * (Google Compute Engine)
   `gcloud compute target-pools set-backup --backup-pool` and
   `gcloud compute project-info set-usage-bucket --bucket` flags now warn if you
@@ -48,7 +84,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 ### Google Cloud Logging
 
 * Add `--billing-account` flag to `gcloud logging read`
-* gcloud beta logging metrics list/describe now output the version of the filter associated with the metric
+* gcloud beta logging metrics list/describe now output the version of the filter
+  associated with the metric
 
 ### Google Cloud ML
 
@@ -59,7 +96,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google App Engine
 
-* (Google App Engine) Fixed bug with `gcloud app instances describe`.  --service and --version flags are now required.
+* (Google App Engine) Fixed bug with `gcloud app instances describe`.  --service
+  and --version flags are now required.
 * `gcloud beta app deploy` now uses multi-threading rather than
   multi-processing for file uploads; if you've been seeing issues on Windows,
   please try the `beta` command out.
@@ -91,7 +129,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Stackdriver Debugger
 
-* Fixed log view URLs in the debug logpoints commands to use the V2 query syntax.
+* Fixed log view URLs in the debug logpoints commands to use the V2 query
+  syntax.
 
 ### Google Service Management
 
@@ -348,7 +387,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Cloud Deployment Manager/Runtime Configuration
 
-* Runtime configuration variables can now be set and retrieved using text values.
+* Runtime configuration variables can now be set and retrieved using text
+  values.
 
 ### Bigtable Emulator
 
@@ -360,7 +400,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
   To preview this runtime, specify `python_version: 3.5` in the `runtime_config`
   stanza of your [`app.yaml`](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml)
   file.
-* Added the `gcloud beta app services describe` command, which prints information about a given service.
+* Added the `gcloud beta app services describe` command, which prints
+  information about a given service.
 
 
 ## 134.0.0 (2016/11/09)
@@ -464,7 +505,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 ### Cloud Tools for Powershell
 
-* Fix a bug where the module is not picking up the active user credentials correctly.
+* Fix a bug where the module is not picking up the active user credentials
+  correctly.
 * Make `New-GcsObject` `-ObjectName` parameter optional when uploading a file.
 * Add ability to pipeline `GcsObject` to `Write-GcsObject` cmdlet.
 
@@ -1015,11 +1057,13 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Added the `gcloud alpha dataflow jobs drain` command. The `drain` command
   takes a streaming job and stops receiving new data from the sources. It then
   processes the buffered data. For more information please see the documentation
-  for stopping a running pipeline at <https://cloud.google.com/dataflow/pipelines/stopping-a-pipeline>.
+  for stopping a running pipeline at
+  <https://cloud.google.com/dataflow/pipelines/stopping-a-pipeline>.
 
 ### Google Cloud DNS
 
-* Fix for issue reported in: <http://stackoverflow.com/questions/38636010/removing-dns-entries-with-gcloud>.
+* Fix for issue reported in:
+  <http://stackoverflow.com/questions/38636010/removing-dns-entries-with-gcloud>.
 
 ### Stackdriver Error Reporting
 
@@ -1084,7 +1128,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 ### Google Cloud SDK
 
 * `gcloud auth login` will stop writing application default credentials in a
-  future release. See: <https://developers.google.com/identity/protocols/application-default-credentials#toolcloudsdk>
+  future release. See:
+  <https://developers.google.com/identity/protocols/application-default-credentials#toolcloudsdk>
   for more information.
 
 * Command line flag abbreviations are now deprecated and produce warning
@@ -1745,8 +1790,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 ### Google App Engine
 
  * Add fingerprinting support for PHP applications. You can now run
-   `gcloud preview app gen-config` to auto-generate the necessary configuration for
-   deploying PHP applications to the App Engine Flexible Environment.
+   `gcloud preview app gen-config` to auto-generate the necessary configuration
+   for deploying PHP applications to the App Engine Flexible Environment.
 
 ### Google Container Engine
 
@@ -1782,7 +1827,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   all managed VMs deployments.
 
   This change may require you to enable the Container Builder API. Visit
-  https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview?project=*PROJECT_ID*;
+  <https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview?project=*PROJECT_ID*;>
   to enable it, where *PROJECT_ID* is your current project ID.
 
 * Updated Google App Engine components to 1.9.34.
@@ -1906,7 +1951,8 @@ command surface.
 
 ### Google Cloud Genomics
 
-* `genomics alpha operations cancel` assumes the `operations/` prefix if not present.
+* `genomics alpha operations cancel` assumes the `operations/` prefix if not
+  present.
 
 ### Google Cloud Storage
 
@@ -1952,7 +1998,8 @@ command surface.
 
 ### Google Compute Engine
 
-* Added flag `--advertised-route-priority` to `gcloud alpha compute routers create`
+* Added flag `--advertised-route-priority` to `gcloud alpha compute routers
+  create`
 * Added support for regional instance groups in alpha
 
 ### Google App Engine

@@ -21,7 +21,6 @@ import urllib
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.debug import errors
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
@@ -36,34 +35,6 @@ from googlecloudsdk.core.util import retry
 # one named 'default'.
 DEFAULT_MODULE = 'default'
 DEFAULT_VERSION = 'default'
-
-# Currently, Breakpoint IDs are generated using three hex encoded numbers,
-# separated by '-'. The first is always 13-16 digits, the second is always
-# exactly 4 digits, and the third can be up to 8 digits.
-_BREAKPOINT_ID_PATTERN = re.compile(r'^[0-9a-f]{13,16}-[0-9a-f]{4}-[0-9a-f]+$')
-
-
-def AddIdOptions(parser, entity, plural_entity, action_description):
-  parser.add_argument(
-      'ids', metavar='ID', nargs='*',
-      help="""\
-          Zero or more {entity} resource identifiers. The specified
-          {plural_entity} will be {action_description}.
-      """.format(entity=entity, plural_entity=plural_entity,
-                 action_description=action_description))
-  parser.add_argument(
-      '--location', metavar='LOCATION-REGEXP', action='append',
-      help="""\
-          A regular expression to match against {entity}
-          locations. All {plural_entity} matching this value will be
-          {action_description}.  You may specify --location multiple times.
-
-          EXAMPLE:
-
-            {{command}} \\
-                --location foo.py:[1-3] --location bar.py:4
-      """.format(entity=entity, plural_entity=plural_entity,
-                 action_description=action_description))
 
 
 def SplitLogExpressions(format_string):
@@ -83,7 +54,7 @@ def SplitLogExpressions(format_string):
   Returns:
     string, [string] - The new format string and the array of expressions.
   Raises:
-    InvalidArgumentException: if the string has unbalanced braces.
+    InvalidLogFormatException: if the string has unbalanced braces.
   """
   expressions = []
   log_format = ''
@@ -128,9 +99,8 @@ def SplitLogExpressions(format_string):
       log_format += c
   if brace_count:
     # Unbalanced left brace.
-    raise exceptions.InvalidArgumentException(
-        'LOG_FORMAT_STRING',
-        'Too many "{" characters in format string')
+    raise errors.InvalidLogFormatException(
+        'There are too many "{" characters in the log format string')
   return log_format, expressions
 
 
@@ -182,6 +152,8 @@ def LogQueryV2String(breakpoint, separator=' '):
     separator: A string to append between conditions
   Returns:
     A log query suitable for use with gcloud logging read.
+  Raises:
+    InvalidLogFormatException if the breakpoint has an invalid log expression.
   """
   query = (
       'resource.type=gae_app{sep}'
@@ -223,49 +195,50 @@ def LogViewUrl(breakpoint):
 
 class DebugObject(object):
   """Base class for debug api wrappers."""
-  _debug_client = None
-  _debug_messages = None
-  _resource_client = None
-  _resource_messages = None
 
   # Lock for remote calls in routines which might be multithreaded. Client
   # connections are not thread-safe. Currently, only WaitForBreakpoint can
   # be called from multiple threads.
   _client_lock = threading.Lock()
 
-  # Breakpoint type constants (initialized by IntializeApiClients)
-  SNAPSHOT_TYPE = None
-  LOGPOINT_TYPE = None
+  # Breakpoint type name constants
+  SNAPSHOT_TYPE = 'SNAPSHOT'
+  LOGPOINT_TYPE = 'LOGPOINT'
+
+  def BreakpointAction(self, type_name):
+    if type_name == self.SNAPSHOT_TYPE:
+      return self._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE
+    if type_name == self.LOGPOINT_TYPE:
+      return self._debug_messages.Breakpoint.ActionValueValuesEnum.LOG
+    raise errors.InvalidBreakpointTypeError(type_name)
 
   CLIENT_VERSION = 'google.com/gcloud/{0}'.format(config.CLOUD_SDK_VERSION)
 
-  @classmethod
-  def _CheckClient(cls):
-    if (not cls._debug_client or not cls._debug_messages or
-        not cls._resource_client or not cls._resource_messages):
-      raise errors.NoEndpointError()
-
-  @classmethod
-  def InitializeApiClients(cls):
+  def __init__(self, debug_client=None, debug_messages=None,
+               resource_client=None, resource_messages=None):
     """Sets up class with instantiated api client."""
-    cls._debug_client = apis.GetClientInstance('clouddebugger', 'v2')
-    cls._debug_messages = apis.GetMessagesModule('clouddebugger', 'v2')
-    cls._resource_client = apis.GetClientInstance(
-        'cloudresourcemanager', 'v1beta1')
-    cls._resource_messages = apis.GetMessagesModule(
-        'cloudresourcemanager', 'v1beta1')
-    cls.SNAPSHOT_TYPE = (
-        cls._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE)
-    cls.LOGPOINT_TYPE = cls._debug_messages.Breakpoint.ActionValueValuesEnum.LOG
-    cls._resource_parser = resources.REGISTRY.Clone()
-    cls._resource_parser.RegisterApiByName('clouddebugger', 'v2')
+    self._debug_client = (
+        debug_client or apis.GetClientInstance('clouddebugger', 'v2'))
+    self._debug_messages = (
+        debug_messages or apis.GetMessagesModule('clouddebugger', 'v2'))
+    self._resource_client = (
+        resource_client or
+        apis.GetClientInstance('cloudresourcemanager', 'v1beta1'))
+    self._resource_messages = (
+        resource_messages or
+        apis.GetMessagesModule('cloudresourcemanager', 'v1beta1'))
+    self._resource_parser = resources.REGISTRY.Clone()
+    self._resource_parser.RegisterApiByName('clouddebugger', 'v2')
 
 
 class Debugger(DebugObject):
   """Abstracts Cloud Debugger service for a project."""
 
-  def __init__(self, project):
-    self._CheckClient()
+  def __init__(self, project, debug_client=None, debug_messages=None,
+               resource_client=None, resource_messages=None):
+    super(Debugger, self).__init__(
+        debug_client=debug_client, debug_messages=debug_messages,
+        resource_client=resource_client, resource_messages=resource_messages)
     self._project = project
 
   def ListDebuggees(self, include_inactive=False, include_stale=False):
@@ -432,7 +405,11 @@ class Debugger(DebugObject):
 class Debuggee(DebugObject):
   """Represents a single debuggee."""
 
-  def __init__(self, message):
+  def __init__(self, message, debug_client=None, debug_messages=None,
+               resource_client=None, resource_messages=None):
+    super(Debuggee, self).__init__(
+        debug_client=debug_client, debug_messages=debug_messages,
+        resource_client=resource_client, resource_messages=resource_messages)
     self.project = message.project
     self.agent_version = message.agentVersion
     self.description = message.description
@@ -547,9 +524,8 @@ class Debuggee(DebugObject):
     Returns:
       A list of all matching breakpoints.
     Raises:
-      InvalidArgumentException if a regular expression is not valid.
+      InvalidLocationException if a regular expression is not valid.
     """
-    self._CheckClient()
     resource_ids = resource_ids or []
     location_regexp = location_regexp or []
     ids = set(
@@ -557,11 +533,14 @@ class Debuggee(DebugObject):
             r, params={'debuggeeId': self.target_id},
             collection='clouddebugger.debugger.debuggees.breakpoints').Name()
          for r in resource_ids])
-    try:
-      patterns = [re.compile(r'^(.*/)?(' + r + ')$')
-                  for r in location_regexp]
-    except re.error as e:
-      raise exceptions.InvalidArgumentException('LOCATION', str(e))
+    patterns = []
+    for r in location_regexp:
+      try:
+        patterns.append(re.compile(r'^(.*/)?(' + r + ')$'))
+      except re.error as e:
+        raise errors.InvalidLocationException(
+            'The location pattern "{0}" is not a valid Python regular '
+            'expression: {1}'.format(r, e))
 
     request = (self._debug_messages.
                ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(
@@ -625,7 +604,6 @@ class Debuggee(DebugObject):
     Returns:
       The created Breakpoint message.
     """
-    self._CheckClient()
     labels_value = None
     if labels:
       labels_value = self._debug_messages.Breakpoint.LabelsValue(
@@ -672,15 +650,14 @@ class Debuggee(DebugObject):
     Returns:
       The created Breakpoint message.
     Raises:
-      InvalidArgumentException: if location or log_format is empty or malformed.
+      InvalidLocationException: if location is empty or malformed.
+      InvalidLogFormatException: if log_format is empty or malformed.
     """
-    self._CheckClient()
     if not location:
-      raise exceptions.InvalidArgumentException(
-          'LOCATION', 'The location must not be empty.')
+      raise errors.InvalidLocationException(
+          'The location must not be empty.')
     if not log_format_string:
-      raise exceptions.InvalidArgumentException(
-          'LOG_FORMAT_STRING',
+      raise errors.InvalidLogFormatException(
           'The log format string must not be empty.')
     labels_value = None
     if labels:
@@ -839,7 +816,7 @@ class Debuggee(DebugObject):
       result.HideExistingField('expressions')
 
     if not message.status or not message.status.isError:
-      if message.action == self.LOGPOINT_TYPE:
+      if message.action == self.BreakpointAction(self.LOGPOINT_TYPE):
         # We can only generate view URLs for GAE, since there's not a standard
         # way to view them in GCE. Use the presence of minorversion as an
         # indicator that it's GAE.
@@ -859,19 +836,17 @@ class Debuggee(DebugObject):
     Returns:
       The corresponding SourceLocation message.
     Raises:
-      InvalidArgumentException: if the line is not of the form path:line
+      InvalidLocationException: if the line is not of the form path:line
     """
     components = location.split(':')
     if len(components) != 2:
-      raise exceptions.InvalidArgumentException(
-          'LOCATION',
+      raise errors.InvalidLocationException(
           'Location must be of the form "path:line"')
     try:
       return self._debug_messages.SourceLocation(path=components[0],
                                                  line=int(components[1]))
     except ValueError:
-      raise exceptions.InvalidArgumentException(
-          'LOCATION',
+      raise errors.InvalidLocationException(
           'Location must be of the form "path:line", where "line" must be an '
           'integer.')
 
@@ -887,7 +862,8 @@ class Debuggee(DebugObject):
       added.
     """
     return [self.AddTargetInfo(r) for r in result
-            if not restrict_to_type or r.action == restrict_to_type
+            if not restrict_to_type
+            or r.action == self.BreakpointAction(restrict_to_type)
             or (not r.action and restrict_to_type == self.SNAPSHOT_TYPE)]
 
 

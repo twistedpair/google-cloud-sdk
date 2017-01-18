@@ -16,6 +16,8 @@
 
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resolvers
+from googlecloudsdk.core import resources
 
 
 def GetMessages():
@@ -28,3 +30,12 @@ def GetClient():
 
 def GetProject():
   return properties.VALUES.core.project.Get(required=True)
+
+
+def GetResources():
+  resolver = resolvers.FromProperty(properties.VALUES.core.project)
+  resources.REGISTRY.SetParamDefault('deploymentmanager',
+                                     None,
+                                     'project',
+                                     resolver)
+  return resources.REGISTRY

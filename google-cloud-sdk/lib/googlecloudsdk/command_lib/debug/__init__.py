@@ -12,21 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Base functions for DM commands targeting the v2beta API."""
 
-from googlecloudsdk.command_lib.deployment_manager import dm_base
-from googlecloudsdk.core import apis
-
-
-def GetClient():
-  return apis.GetClientInstance('deploymentmanager', 'v2beta')
-
-
-def GetMessages():
-  return apis.GetMessagesModule('deploymentmanager', 'v2beta')
-
-
-def GetResources():
-  registry = dm_base.GetResources()
-  registry.RegisterApiByName('deploymentmanager', 'v2beta')
-  return registry
+"""Utilities for debug surface commands."""

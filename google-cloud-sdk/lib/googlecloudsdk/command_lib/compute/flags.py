@@ -89,7 +89,8 @@ class ScopesFetchingException(exceptions.Error):
   pass
 
 
-class BadArgumentException(exceptions.Error):
+class BadArgumentException(ValueError):
+  """Unhandled error for validating function arguments."""
   pass
 
 
@@ -344,7 +345,8 @@ class ResourceResolver(object):
     Returns:
       Resource reference or list of references if plural.
     Raises:
-      BadArgumentException: when names is not a list.
+      BadArgumentException: when names is not a list or default_scope is not one
+          of the configured scopes.
       UnderSpecifiedResourceError: if it was not possible to resolve given names
           as resources references.
     """
@@ -355,7 +357,7 @@ class ResourceResolver(object):
       resource_scope = self.scopes[resource_scope]
     if default_scope is not None:
       if default_scope not in self.scopes:
-        raise exceptions.Error(
+        raise BadArgumentException(
             'Unexpected value for default_scope {0}, expected None or {1}'
             .format(default_scope,
                     ' or '.join([s.scope_enum.name for s in self.scopes])))

@@ -20,9 +20,10 @@ import os
 import StringIO
 import tarfile
 
+from apitools.base.py import encoding
 from docker import docker
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -173,40 +174,82 @@ def GetServiceTimeoutString(timeout_property_str):
   return None
 
 
-def ExecuteCloudBuild(project, object_ref, output_image):
-  """Execute a CloudBuild to build an app and wait for it to finish.
+class InvalidBuildError(ValueError):
+  """Error indicating that ExecuteCloudBuild was given a bad Build message."""
+
+  def __init__(self, field):
+    super(InvalidBuildError, self).__init__(
+        'Field [{}] was provided, but should not have been. '
+        'You may be using an improper Cloud Build pipeline.'.format(field))
+
+
+def _ValidateBuildFields(build, fields):
+  """Validates that a Build message doesn't have fields that we populate."""
+  for field in fields:
+    if getattr(build, field, None) is not None:
+      raise InvalidBuildError(field)
+
+
+def GetDefaultBuild(output_image):
+  """Get the default build for this runtime.
+
+  This build just uses the latest docker builder image (location pulled from the
+  app/container_builder_image property) to run a `docker build` with the given
+  tag.
 
   Args:
-    project: the cloud project ID.
-    object_ref: storage_util.ObjectReference, the Cloud Storage location of the
-      source tarball.
-    output_image: GCR location for the output docker image;
-                  eg, gcr.io/test-gae/hardcoded-output-tag.
+    output_image: GCR location for the output docker image (e.g.
+      `gcr.io/test-gae/hardcoded-output-tag`)
 
-  Raises:
-    BuildFailedError: when the build fails.
+  Returns:
+    Build, a CloudBuild Build message with the given steps (ready to be given to
+      FixUpBuild).
   """
+  messages = cloudbuild_util.GetMessagesModule()
   builder = properties.VALUES.app.container_builder_image.Get()
   log.debug('Using builder image: [{0}]'.format(builder))
-  # Use the same bucket for logs, since we know we can write to it.
-  logs_bucket = object_ref.bucket
+  return messages.Build(
+      steps=[messages.BuildStep(name=builder,
+                                args=['build', '-t', output_image, '.'])],
+      images=[output_image])
 
-  build_timeout = properties.VALUES.app.cloud_build_timeout.Get()
-  timeout_str = GetServiceTimeoutString(build_timeout)
 
-  cloudbuild_client = cloudbuild_build.CloudBuildClient()
-  build = cloudbuild_client.messages.Build(
-      timeout=timeout_str,
-      source=cloudbuild_client.messages.Source(
-          storageSource=cloudbuild_client.messages.StorageSource(
-              bucket=object_ref.bucket,
-              object=object_ref.name,
-          ),
+def FixUpBuild(build, object_ref):
+  """Return a modified Build object with run-time values populated.
+
+  Specifically:
+  - `source` is pulled from the given object_ref
+  - `timeout` comes from the app/cloud_build_timeout property
+  - `logsBucket` uses the bucket from object_ref
+
+  Args:
+    build: cloudbuild Build message. The Build to modify. Fields 'timeout',
+      'source', and 'logsBucket' will be added and may not be given.
+    object_ref: storage_util.ObjectReference, the Cloud Storage location of the
+      source tarball.
+
+  Returns:
+    Build, (copy) of the given Build message with the specified fields
+      populated.
+
+  Raises:
+    InvalidBuildError: if the Build message had one of the fields this function
+      sets pre-populated
+  """
+  messages = cloudbuild_util.GetMessagesModule()
+  # Make a copy, so we don't modify the original
+  build = encoding.CopyProtoMessage(build)
+  # Check that nothing we're expecting to fill in has been set already
+  _ValidateBuildFields(build, ('source', 'timeout', 'logsBucket'))
+
+  build.timeout = GetServiceTimeoutString(
+      properties.VALUES.app.cloud_build_timeout.Get())
+  build.logsBucket = object_ref.bucket
+  build.source = messages.Source(
+      storageSource=messages.StorageSource(
+          bucket=object_ref.bucket,
+          object=object_ref.name,
       ),
-      steps=[cloudbuild_client.messages.BuildStep(
-          name=builder,
-          args=['build', '-t', output_image, '.']
-      )],
-      images=[output_image],
-      logsBucket=logs_bucket)
-  cloudbuild_client.ExecuteCloudBuild(build, project=project)
+  )
+
+  return build

@@ -46,6 +46,46 @@ class Error(Exception):
   pass
 
 
+def CopyTree(src, dst):
+  """Copies a directory recursively, without copying file stat info.
+
+  More specifically, behaves like `cp -R` rather than `cp -Rp`, which means that
+  the destination directory and its contents will be *writable* and *deletable*.
+
+  (Yes, an omnipotent being can shutil.copytree a directory so read-only that
+  they cannot delete it. But they cannot do that with this function.)
+
+  Adapted from shutil.copytree.
+
+  Args:
+    src: str, the path to the source directory
+    dst: str, the path to the destination directory. Must not already exist and
+      be writable.
+
+  Raises:
+    shutil.Error: if copying failed for any reason.
+  """
+  os.makedirs(dst)
+  errors = []
+  for name in os.listdir(src):
+    srcname = os.path.join(src, name)
+    dstname = os.path.join(dst, name)
+    try:
+      if os.path.isdir(srcname):
+        CopyTree(srcname, dstname)
+      else:
+        # Will raise a SpecialFileError for unsupported file types
+        shutil.copy2(srcname, dstname)
+    # catch the Error from the recursive copytree so that we can
+    # continue with other files
+    except shutil.Error as err:
+      errors.extend(err.args[0])
+    except EnvironmentError as why:
+      errors.append((srcname, dstname, str(why)))
+  if errors:
+    raise shutil.Error(errors)
+
+
 def MakeDir(path, mode=0777):
   """Creates the given directory and its parents and does not fail if it exists.
 

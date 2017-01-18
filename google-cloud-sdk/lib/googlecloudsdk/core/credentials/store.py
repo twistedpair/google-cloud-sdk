@@ -36,6 +36,7 @@ from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import multistore_file
+from oauth2client.contrib import reauth_errors
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -94,6 +95,28 @@ class TokenRefreshError(AuthenticationException,
     message = ('There was a problem refreshing your current auth tokens: {0}'
                .format(error))
     super(TokenRefreshError, self).__init__(message)
+
+
+class ReauthenticationException(Error):
+  """Exceptions that tells the user to retry his command or run auth login."""
+
+  def __init__(self, message):
+    super(ReauthenticationException, self).__init__(textwrap.dedent("""\
+        {message}
+        Please retry your command or run:
+
+          $ gcloud auth login
+
+        To obtain new credentials.""".format(message=message)))
+
+
+class TokenRefreshReauthError(ReauthenticationException):
+  """An exception raised when the auth tokens fail to refresh due to reauth."""
+
+  def __init__(self, error):
+    message = ('There was a problem reauthenticating while refreshing your '
+               'current auth tokens: {0}').format(error)
+    super(TokenRefreshReauthError, self).__init__(message)
 
 
 class InvalidCredentialFileException(Error):
@@ -238,6 +261,7 @@ def Load(account=None, scopes=None, prevent_refresh=False):
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
         be reached.
     TokenRefreshError: If the credentials fail to refresh.
+    TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
@@ -306,11 +330,14 @@ def Refresh(creds, http_client=None):
 
   Raises:
     TokenRefreshError: If the credentials fail to refresh.
+    TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
   try:
     creds.refresh(http_client or http.Http())
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     raise TokenRefreshError(e.message)
+  except reauth_errors.ReauthError as e:
+    raise TokenRefreshReauthError(e.message)
 
 
 def Store(creds, account=None, scopes=None):
@@ -518,6 +545,7 @@ def AcquireFromGCE(account=None):
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
       be reached.
     TokenRefreshError: If the credentials fail to refresh.
+    TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
     Error: If a non-default service account is used.
   """
   default_account = c_gce.Metadata().DefaultAccount()

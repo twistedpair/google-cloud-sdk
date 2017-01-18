@@ -371,6 +371,8 @@ SET_NAMED_PORTS_HELP = {
 
         *{command}* sets the list of named ports for all instances
         in an instance group.
+
+        Note: Running this command will clear all existing named ports.
         """,
     'EXAMPLES': """\
         For example, to apply the named ports to an entire instance group:

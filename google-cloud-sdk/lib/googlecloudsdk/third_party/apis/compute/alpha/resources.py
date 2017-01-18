@@ -22,6 +22,12 @@ BASE_URL = 'https://www.googleapis.com/compute/alpha/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  ACCELERATORTYPES = (
+      'acceleratorTypes',
+      'projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
+      {},
+      [u'project', u'zone', u'acceleratorType']
+  )
   ADDRESSES = (
       'addresses',
       'projects/{project}/regions/{region}/addresses/{address}',

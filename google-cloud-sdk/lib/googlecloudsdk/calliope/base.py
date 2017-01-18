@@ -565,8 +565,30 @@ class Command(_Common):
       info = resource_registry.Get(info.async_collection)
     return info
 
-  def Format(self, unused_args):
-    """Returns the default format string."""
+  def Format(self, args):
+    """Returns the default format string.
+
+    Calliope supports a powerful formatting mini-language. It allows running
+    things like
+
+        $ my-tool run-foo --format=json
+        $ my-tool run-foo --format='value(bar.baz.map().qux().list())'
+        $ my-tool run-foo --format='table[box](a, b, c:label=SOME_DESCRIPTION)'
+
+    For the best current documentation on this formatting language, see
+    `gcloud topic formats` and `gcloud topic projections`.
+
+    When a command is run with no `--format` flag, this method is run and its
+    result is used as the format string.
+
+    Args:
+      args: the argparse namespace object for this command execution. Not used
+        in the default implementation, but available for subclasses to use.
+
+    Returns:
+      str, the default format string for this command.
+    """
+    del args  # Unused in Format
     return 'default'
 
   def ListFormat(self, args):

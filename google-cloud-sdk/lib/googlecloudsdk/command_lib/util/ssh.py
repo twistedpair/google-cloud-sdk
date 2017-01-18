@@ -43,13 +43,16 @@ _SSH_ERROR_EXIT_CODE = 255
 # overridden with a file path.
 SSH_OUTPUT_FILE = None
 
-DEFAULT_SSH_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
-
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 
 # The default timeout for waiting for a host to become reachable.
 # Useful for giving some time after VM booting, key propagation etc.
 _DEFAULT_TIMEOUT = 60
+
+
+class MissingCommandError(core_exceptions.Error):
+  """Indicates that an external executable couldn't be found."""
+  pass
 
 
 class CommandError(core_exceptions.Error):
@@ -78,70 +81,48 @@ def _IsValidSshUsername(user):
   return all(ord(c) < 128 and c != ' ' for c in user)
 
 
-# TODO(user): This function can be dropped 1Q2017.
-def _IsPublicKeyCorrupt95Through97(key):
-  """Returns True if the encoded public key has the release 95.0.0 corruption.
-
-  Windows corruption checks for release 95.0.0 through 97.0.0.
-  Corrupt Windows encoded keys have these properties:
-    type:       'ssh-rsa'
-    exponent:   65537
-    length:     256
-    next byte:  bit 0x80 set
-  A valid key either has exponent != 65537 or:
-    type:       'ssh-rsa'
-    exponent:   65537
-    length:     257
-    next byte:  0
-
-  Args:
-    key: The base64 encoded public key.
-
-  Returns:
-    True if the encoded public key has the release 95.0.0 corruption.
-  """
-  # The corruption only happened on Windows.
-  if not platforms.OperatingSystem.IsWindows():
-    return False
-
-  # All corrupt encodings have the same encoded prefix (up to the second to
-  # last byte of the modulus size).
-  prefix = 'AAAAB3NzaC1yc2EAAAADAQABAAAB'
-  if not key.startswith(prefix):
-    return False
-
-  # The next 3 base64 chars determine the next 2 encoded bytes.
-  modulus = key[len(prefix):len(prefix) + 3]
-  # The last byte of the size must be 01 and the first byte of the modulus must
-  # be 00, and that corresponds to one of two base64 encodings:
-  if modulus in ('AQC', 'AQD'):
-    return False
-
-  # Looks bad.
-  return True
-
-
 class KeyFileStatus(enum.Enum):
   PRESENT = 'OK'
   ABSENT = 'NOT FOUND'
   BROKEN = 'BROKEN'
 
 
-class KeyFileKind(enum.Enum):
+class _KeyFileKind(enum.Enum):
   """List of supported (by gcloud) key file kinds."""
   PRIVATE = 'private'
   PUBLIC = 'public'
   PPK = 'PuTTY PPK'
 
 
-class KeyFilesVerifier(object):
-  """Checks if SSH key files are correct.
+class Keys(object):
+  """Manages private and public SSH key files.
 
+  This class manages the SSH public and private key files, and verifies
+  correctness of them. A Keys object is instantiated with a path to a
+  private key file. The public key locations are inferred by the private
+  key file by simply appending a different file ending (`.pub` and `.ppk`).
+
+  If the keys are broken or do not yet exist, the EnsureKeysExist method
+  can be utilized to shell out to the system SSH keygen and write new key
+  files.
+
+  By default, there is an SSH key for the gcloud installation,
+  `DEFAULT_KEY_FILE` which should likely be used. Note that SSH keys are
+  generated and managed on a per-installation basis. Strictly speaking,
+  there is no 1:1 relationship between installation and user account.
+
+  Verifies correctness of key files:
    - Populates list of SSH key files (key pair, ppk key on Windows).
    - Checks if files are present and (to basic extent) correct.
    - Can remove broken key (if permitted by user).
    - Provides status information.
   """
+
+  DEFAULT_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
+
+  KEYGEN_COMMAND_WINDOWS = 'winkeygen'
+
+  KEYGEN_COMMAND_NIX = 'ssh-keygen'
 
   class KeyFileData(object):
 
@@ -152,13 +133,39 @@ class KeyFilesVerifier(object):
       self.filename = filename
       self.status = None
 
-  def __init__(self, private_key_file, public_key_file):
+  def __init__(self, key_file):
+    """Create a Keys object which manages the given files.
+
+    Args:
+      key_file: str, The file path to the private SSH key file (other files are
+          derived from this name). Automatically handles symlinks and user
+          expansion.
+    """
+    private_key_file = os.path.realpath(os.path.expanduser(key_file))
+    self.dir = os.path.dirname(private_key_file)
     self.keys = {
-        KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
-        KeyFileKind.PUBLIC: self.KeyFileData(public_key_file)
+        _KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
+        _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub')
     }
     if platforms.OperatingSystem.IsWindows():
-      self.keys[KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
+      self.keys[_KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
+
+  @classmethod
+  def FromFilename(cls, filename=None):
+    """Create Keys object given a file name.
+
+    Args:
+      filename: str or None, the name to the file or DEFAULT_KEY_FILE if None
+
+    Returns:
+      Keys, an instance which manages the keys with the given name.
+    """
+    return Keys(filename or Keys.DEFAULT_KEY_FILE)
+
+  @property
+  def key_file(self):
+    """Filename of the private key file."""
+    return self.keys[_KeyFileKind.PRIVATE].filename
 
   def _StatusMessage(self):
     """Prepares human readable SSH key status information."""
@@ -182,9 +189,9 @@ class KeyFilesVerifier(object):
     """Performs minimum key files validation.
 
     Returns:
-      PRESENT if private and public meet minimum key file requirements.
-      ABSENT if there is no sign of public nor private key file.
-      BROKEN if there is some key, but it is broken or incomplete.
+      KeyFileStatus.PRESENT if key files meet minimum requirements.
+      KeyFileStatus.ABSENT if neither private nor public keys exist.
+      KeyFileStatus.BROKEN if there is some key, but it is broken or incomplete.
     """
     def ValidateFile(kind):
       status_or_line = self._WarnOrReadFirstKeyLine(self.keys[kind].filename,
@@ -201,12 +208,12 @@ class KeyFilesVerifier(object):
     # The remaining checks are for the public key file.
 
     # Must have at least 2 space separated fields.
-    if self.keys[KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
-      fields = self.keys[KeyFileKind.PUBLIC].first_line.split(' ')
-      if len(fields) < 2 or _IsPublicKeyCorrupt95Through97(fields[1]):
+    if self.keys[_KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
+      fields = self.keys[_KeyFileKind.PUBLIC].first_line.split(' ')
+      if len(fields) < 2 or self._IsPublicKeyCorrupt95Through97(fields[1]):
         log.warn(
             'The public SSH key file for gcloud is corrupt.')
-        self.keys[KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
+        self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
     collected_values = [x.status for x in self.keys.itervalues()]
@@ -217,6 +224,48 @@ class KeyFilesVerifier(object):
     else:
       return KeyFileStatus.BROKEN
 
+  # TODO(user): This function can be dropped 1Q2017.
+  def _IsPublicKeyCorrupt95Through97(self, key):
+    """Returns True if the encoded public key has the release 95.0.0 corruption.
+
+    Windows corruption checks for release 95.0.0 through 97.0.0.
+    Corrupt Windows encoded keys have these properties:
+      type:       'ssh-rsa'
+      exponent:   65537
+      length:     256
+      next byte:  bit 0x80 set
+    A valid key either has exponent != 65537 or:
+      type:       'ssh-rsa'
+      exponent:   65537
+      length:     257
+      next byte:  0
+
+    Args:
+      key: The base64 encoded public key.
+
+    Returns:
+      True if the encoded public key has the release 95.0.0 corruption.
+    """
+    # The corruption only happened on Windows.
+    if not platforms.OperatingSystem.IsWindows():
+      return False
+
+    # All corrupt encodings have the same encoded prefix (up to the second to
+    # last byte of the modulus size).
+    prefix = 'AAAAB3NzaC1yc2EAAAADAQABAAAB'
+    if not key.startswith(prefix):
+      return False
+
+    # The next 3 base64 chars determine the next 2 encoded bytes.
+    modulus = key[len(prefix):len(prefix) + 3]
+    # The last byte of the size must be 01 and the first byte of the modulus
+    # must be 00, and that corresponds to one of two base64 encodings:
+    if modulus in ('AQC', 'AQD'):
+      return False
+
+    # Looks bad.
+    return True
+
   # TODO(b/33193000) Change non-interactive behavior for 2.06.2017 Release cut
   def RemoveKeyFilesIfPermittedOrFail(self, force_key_file_overwrite):
     """Removes all SSH key files if user permitted this behavior.
@@ -226,7 +275,7 @@ class KeyFilesVerifier(object):
     non-destructive.
 
     Args:
-      force_key_file_overwrite: bool, value of the flag specified or not by user
+      force_key_file_overwrite: bool or None, check implementation
     """
     permissive = True  # TODO(b/33193000) Flip this bool value
     message = 'Your SSH key files are broken.\n' + self._StatusMessage()
@@ -234,10 +283,10 @@ class KeyFilesVerifier(object):
       raise console_io.OperationCancelledError(message + 'Operation aborted.')
     message += 'We are going to overwrite all above files.'
     if force_key_file_overwrite:
-      # self.force_key_file_overwrite is True
+      # force_key_file_overwrite is True
       log.warn(message)
     else:
-      # self.force_key_file_overwrite is None
+      # force_key_file_overwrite is None
       # Deprecated code path is triggered only when flags are not provided.
       # Show deprecation warning only in that case.
       # Show deprecation warning before prompt to increase chance user read
@@ -301,6 +350,84 @@ class KeyFilesVerifier(object):
         status = KeyFileStatus.BROKEN
     log.warn('The %s SSH key file for gcloud %s.', kind, msg)
     return status
+
+  def GetPublicKey(self):
+    """Returns the public key verbatim from file as a string.
+
+    Precondition: The public key must exist. Run Keys.EnsureKeysExist() prior.
+
+    Returns:
+      str, The public key.
+    """
+    # TODO(b/33467618): There is a file-format specification for the key file.
+    # It looks roughly like this: `TYPE KEY [COMMENT]`. Make sure to use that
+    # instead.
+    filepath = self.keys[_KeyFileKind.PUBLIC].filename
+    with open(filepath) as f:
+      # We get back a unicode list of keys for the remaining metadata, so
+      # convert to unicode. Assume UTF 8, but if we miss a character we can just
+      # replace it with a '?'. The only source of issues would be the hostnames,
+      # which are relatively inconsequential.
+      return f.readline().strip().decode('utf8', 'replace')
+
+  def EnsureKeysExist(self, overwrite):
+    """Generate ssh key files if they do not yet exist.
+
+    Precondition: self.KeygenExecutable exists (does not return None)
+
+    Args:
+      overwrite: bool or None, overwrite key files if they are broken.
+
+    Raises:
+      console_io.OperationCancelledError: if interrupted by user
+      CommandError: if the ssh-keygen command failed.
+    """
+    # TODO(b/33467618): Existence of keygen binary is currently a precondition
+    # Handle this in executable refactoring.
+    key_files_validity = self.Validate()
+
+    keygen_executable = self.KeygenExecutable()
+
+    if key_files_validity is KeyFileStatus.BROKEN:
+      self.RemoveKeyFilesIfPermittedOrFail(overwrite)
+      # Fallthrough
+    if key_files_validity is not KeyFileStatus.PRESENT:
+      if key_files_validity is KeyFileStatus.ABSENT:
+        # If key is broken, message is already displayed
+        log.warn('You do not have an SSH key for gcloud.')
+        log.warn('[%s] will be executed to generate a key.',
+                 keygen_executable)
+
+      if not os.path.exists(self.dir):
+        msg = ('This tool needs to create the directory [{0}] before being '
+               'able to generate SSH keys.'.format(self.dir))
+        console_io.PromptContinue(
+            message=msg, cancel_on_no=True,
+            cancel_string='SSH key generation aborted by user.')
+        files.MakeDir(self.dir, 0700)
+
+      keygen_args = [keygen_executable]
+      if platforms.OperatingSystem.IsWindows():
+        # No passphrase in the current implementation.
+        keygen_args.append(self.key_file)
+      else:
+        if properties.VALUES.core.disable_prompts.GetBool():
+          # Specify empty passphrase on command line
+          keygen_args.extend(['-P', ''])
+        keygen_args.extend([
+            '-t', 'rsa',
+            '-f', self.key_file,
+        ])
+      RunExecutable(keygen_args)
+
+  def KeygenExecutable(self):
+    # TODO(b/33467618): Clean up executable mapping -- should be unified.
+    path = None
+    keygen_command = Keys.KEYGEN_COMMAND_NIX
+    if platforms.OperatingSystem.IsWindows():
+      path = _SdkHelperBin()
+      keygen_command = Keys.KEYGEN_COMMAND_WINDOWS
+    return files.FindExecutableOnPath(keygen_command, path=path)
 
 
 class KnownHosts(object):
@@ -502,7 +629,7 @@ class SSHCommand(base.Command):
         help='The path to the SSH key file.')
     ssh_key_file.detailed_help = """\
         The path to the SSH key file. By default, this is ``{0}''.
-        """.format(DEFAULT_SSH_KEY_FILE)
+        """.format(Keys.DEFAULT_KEY_FILE)
     force_key_file_overwrite = parser.add_argument(
         '--force-key-file-overwrite',
         action='store_true',
@@ -523,72 +650,12 @@ class SSHCommand(base.Command):
     # Last line empty to preserve spacing between last paragraph and calliope
     # attachment "Use --no-force-key-file-overwrite to disable."
 
-  def GetPublicKey(self):
-    """Generates an SSH key using ssh-keygen (if necessary) and returns it.
-
-    Raises:
-      CommandError: if the ssh-keygen command failed.
-
-    Returns:
-      str, The public key.
-    """
-    public_ssh_key_file = self.ssh_key_file + '.pub'
-
-    key_files_summary = KeyFilesVerifier(self.ssh_key_file, public_ssh_key_file)
-
-    key_files_validity = key_files_summary.Validate()
-
-    if key_files_validity is KeyFileStatus.BROKEN:
-      key_files_summary.RemoveKeyFilesIfPermittedOrFail(
-          self.force_key_file_overwrite)
-      # Fallthrough
-    if key_files_validity is not KeyFileStatus.PRESENT:
-      if key_files_validity is KeyFileStatus.ABSENT:
-        # If key is broken, message is already displayed
-        log.warn('You do not have an SSH key for gcloud.')
-        log.warn('[%s] will be executed to generate a key.',
-                 self.ssh_keygen_executable)
-
-      ssh_directory = os.path.dirname(public_ssh_key_file)
-      if not os.path.exists(ssh_directory):
-        if console_io.PromptContinue(
-            'This tool needs to create the directory [{0}] before being able '
-            'to generate SSH keys.'.format(ssh_directory)):
-          files.MakeDir(ssh_directory, 0700)
-        else:
-          raise exceptions.ToolException('SSH key generation aborted by user.')
-
-      keygen_args = [self.ssh_keygen_executable]
-      if platforms.OperatingSystem.IsWindows():
-        # No passphrase in the current implementation.
-        keygen_args.append(self.ssh_key_file)
-      else:
-        if properties.VALUES.core.disable_prompts.GetBool():
-          # Specify empty passphrase on command line
-          keygen_args.extend(['-P', ''])
-        keygen_args.extend([
-            '-t', 'rsa',
-            '-f', self.ssh_key_file,
-        ])
-      RunExecutable(keygen_args)
-
-    with open(public_ssh_key_file) as f:
-      # We get back a unicode list of keys for the remaining metadata, so
-      # convert to unicode. Assume UTF 8, but if we miss a character we can just
-      # replace it with a '?'. The only source of issues would be the hostnames,
-      # which are relatively inconsequential.
-      return f.readline().strip().decode('utf8', 'replace')
-
-  def Run(self, args):
+  def Run(self, args, ensure_keys_exist=True):
     """Subclasses must call this in their Run() before continuing."""
-
-    # Used in GetPublicKey
-    self.force_key_file_overwrite = args.force_key_file_overwrite
 
     if platforms.OperatingSystem.IsWindows():
       scp_command = 'pscp'
       ssh_command = 'plink'
-      ssh_keygen_command = 'winkeygen'
       ssh_term_command = 'putty'
       # The ssh helper executables are installed in this dir only.
       path = _SdkHelperBin()
@@ -597,22 +664,21 @@ class SSHCommand(base.Command):
     else:
       scp_command = 'scp'
       ssh_command = 'ssh'
-      ssh_keygen_command = 'ssh-keygen'
       ssh_term_command = None
       path = None
       self.ssh_term_executable = None
     self.scp_executable = files.FindExecutableOnPath(scp_command, path=path)
     self.ssh_executable = files.FindExecutableOnPath(ssh_command, path=path)
-    self.ssh_keygen_executable = files.FindExecutableOnPath(
-        ssh_keygen_command, path=path)
+
+    self.keys = Keys.FromFilename(args.ssh_key_file)
     if (not self.scp_executable or
         not self.ssh_executable or
-        not self.ssh_keygen_executable or
+        not self.keys.KeygenExecutable() or
         ssh_term_command and not self.ssh_term_executable):
-      raise exceptions.ToolException('Your platform does not support OpenSSH.')
+      raise MissingCommandError('Your platform does not support OpenSSH.')
 
-    self.ssh_key_file = os.path.realpath(os.path.expanduser(
-        args.ssh_key_file or DEFAULT_SSH_KEY_FILE))
+    if ensure_keys_exist:
+      self.keys.EnsureKeysExist(args.force_key_file_overwrite)
 
 
 class SSHCLICommand(SSHCommand):
@@ -649,10 +715,13 @@ class SSHCLICommand(SSHCommand):
         this flag to specify a value for the connection.
         """
 
+  def Run(self, args):
+    super(SSHCLICommand, self).Run(args, ensure_keys_exist=not args.plain)
+
   def GetDefaultFlags(self):
     """Returns a list of default commandline flags."""
     return [
-        '-i', self.ssh_key_file,
+        '-i', self.keys.key_file,
         '-o', 'UserKnownHostsFile={0}'.format(KnownHosts.DEFAULT_PATH),
         '-o', 'IdentitiesOnly=yes',  # ensure our SSH key trumps any ssh_agent
         '-o', 'CheckHostIP=no'

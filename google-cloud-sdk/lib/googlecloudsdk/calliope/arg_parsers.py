@@ -828,7 +828,7 @@ class UpdateAction(argparse.Action):
 
   will produce a list of dicts:
 
-    [{ 'k1': 'v1'}, 'k2': 'v2' }]
+    [{ 'k1': 'v1'}, { 'k2': 'v2' }]
 
   The UpdateAction class allows for both of the above user inputs to result
   in the same: a single dictionary:

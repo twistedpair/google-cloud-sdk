@@ -269,11 +269,15 @@ class GoogleCloudMlV1beta1Model(_messages.Message):
       created.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
+    regions: Optional. The list of regions where the model is going to be
+      deployed. Currently only one region per model is supported. Defaults to
+      'us-central1' if nothing is set.
   """
 
   defaultVersion = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
   description = _messages.StringField(2)
   name = _messages.StringField(3)
+  regions = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
@@ -469,6 +473,9 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
     outputPath: Required. The output Google Cloud Storage location.
     region: Required. The Google Compute Engine region to run the prediction
       job in.
+    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
+      this batch prediction. If not set, Google Cloud ML will choose a
+      version.
     versionName: Use this field if you want to specify a version of the model
       to use. The string is formatted the same way as `model_version`, with
       the addition of the version information:  `"projects/<var>[YOUR_PROJECT]
@@ -496,7 +503,8 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
   modelName = _messages.StringField(4)
   outputPath = _messages.StringField(5)
   region = _messages.StringField(6)
-  versionName = _messages.StringField(7)
+  runtimeVersion = _messages.StringField(7)
+  versionName = _messages.StringField(8)
 
 
 class GoogleCloudMlV1beta1PredictionOutput(_messages.Message):
@@ -504,14 +512,16 @@ class GoogleCloudMlV1beta1PredictionOutput(_messages.Message):
 
   Fields:
     errorCount: The number of data instances which resulted in errors.
+    nodeHours: Node hours used by the batch prediction job.
     outputPath: The output Google Cloud Storage location provided at the job
       creation time.
     predictionCount: The number of generated predictions.
   """
 
   errorCount = _messages.IntegerField(1)
-  outputPath = _messages.StringField(2)
-  predictionCount = _messages.IntegerField(3)
+  nodeHours = _messages.FloatField(2)
+  outputPath = _messages.StringField(3)
+  predictionCount = _messages.IntegerField(4)
 
 
 class GoogleCloudMlV1beta1SetDefaultVersionRequest(_messages.Message):
@@ -561,6 +571,9 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       packages.
     region: Required. The Google Compute Engine region to run the training job
       in.
+    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
+      training.  If not set, Google Cloud ML will choose the latest stable
+      version.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     workerCount: Optional. The number of worker replicas to use for the
@@ -615,24 +628,29 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
   parameterServerType = _messages.StringField(6)
   pythonModule = _messages.StringField(7)
   region = _messages.StringField(8)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 9)
-  workerCount = _messages.IntegerField(10)
-  workerType = _messages.StringField(11)
+  runtimeVersion = _messages.StringField(9)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 10)
+  workerCount = _messages.IntegerField(11)
+  workerType = _messages.StringField(12)
 
 
 class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
-  """Represents results of a training job.
+  """Represents results of a training job. Output only.
 
   Fields:
     completedTrialCount: The number of hyperparameter tuning trials that
-      completed successfully.
-    consumedMlUnits: The amount of ML units consumed by the job.
-    trials: Results for individual Hyperparameter trials.
+      completed successfully. Only set for hyperparameter tuning jobs.
+    consumedMLUnits: The amount of ML units consumed by the job.
+    isHyperparameterTuningJob: Whether this job is a hyperparameter tuning
+      job.
+    trials: Results for individual Hyperparameter trials. Only set for
+      hyperparameter tuning jobs.
   """
 
   completedTrialCount = _messages.IntegerField(1)
-  consumedMlUnits = _messages.FloatField(2)
-  trials = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutput', 3, repeated=True)
+  consumedMLUnits = _messages.FloatField(2)
+  isHyperparameterTuningJob = _messages.BooleanField(3)
+  trials = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutput', 4, repeated=True)
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):
@@ -662,6 +680,10 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       prediction.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
+    onlinePredictionLogging: Optional. If true, enables StackDriver Logging
+      for online prediction. Default is false.
+    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
+      this deployment. If not set, Google Cloud ML will choose a version.
   """
 
   createTime = _messages.StringField(1)
@@ -670,6 +692,8 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   isDefault = _messages.BooleanField(4)
   lastUseTime = _messages.StringField(5)
   name = _messages.StringField(6)
+  onlinePredictionLogging = _messages.BooleanField(7)
+  runtimeVersion = _messages.StringField(8)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

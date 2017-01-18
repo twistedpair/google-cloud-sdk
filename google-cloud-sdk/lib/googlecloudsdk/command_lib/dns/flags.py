@@ -12,21 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Base functions for DM commands targeting the v2beta API."""
+"""Common flags for some of the DNS commands."""
 
-from googlecloudsdk.command_lib.deployment_manager import dm_base
-from googlecloudsdk.core import apis
-
-
-def GetClient():
-  return apis.GetClientInstance('deploymentmanager', 'v2beta')
+from googlecloudsdk.calliope import base
 
 
-def GetMessages():
-  return apis.GetMessagesModule('deploymentmanager', 'v2beta')
-
-
-def GetResources():
-  registry = dm_base.GetResources()
-  registry.RegisterApiByName('deploymentmanager', 'v2beta')
-  return registry
+def GetDnsZoneArg(help_text):
+  return base.Argument(
+      'dns_zone', metavar='ZONE_NAME',
+      completion_resource='dns.managedZones',
+      help=help_text)

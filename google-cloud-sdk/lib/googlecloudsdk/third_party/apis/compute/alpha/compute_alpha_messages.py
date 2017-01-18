@@ -26,6 +26,217 @@ class AcceleratorConfig(_messages.Message):
   acceleratorType = _messages.StringField(2)
 
 
+class AcceleratorType(_messages.Message):
+  """An Accelerator Type resource.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    deprecated: [Output Only] The deprecation status associated with this
+      accelerator type.
+    description: [Output Only] An optional textual description of the
+      resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] The type of the resource. Always
+      compute#acceleratorType for accelerator types.
+    maximumCardsPerInstance: [Output Only] Maximum accelerator cards allowed
+      per instance.
+    name: [Output Only] Name of the resource.
+    selfLink: [Output Only] Server-defined fully-qualified URL for this
+      resource.
+    zone: [Output Only] The name of the zone where the accelerator type
+      resides, such as us-central1-a.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  deprecated = _messages.MessageField('DeprecationStatus', 2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#acceleratorType')
+  maximumCardsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  zone = _messages.StringField(9)
+
+
+class AcceleratorTypeAggregatedList(_messages.Message):
+  """A AcceleratorTypeAggregatedList object.
+
+  Messages:
+    ItemsValue: [Output Only] A map of scoped accelerator type lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A map of scoped accelerator type lists.
+    kind: [Output Only] Type of resource. Always
+      compute#acceleratorTypeAggregatedList for aggregated lists of
+      accelerator types.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """[Output Only] A map of scoped accelerator type lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of accelerator types.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AcceleratorTypesScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AcceleratorTypesScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#acceleratorTypeAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class AcceleratorTypeList(_messages.Message):
+  """Contains a list of accelerator types.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of AcceleratorType resources.
+    kind: [Output Only] Type of resource. Always compute#acceleratorTypeList
+      for lists of accelerator types.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('AcceleratorType', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#acceleratorTypeList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class AcceleratorTypesScopedList(_messages.Message):
+  """A AcceleratorTypesScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] An informational warning that appears when the
+      accelerator types list is empty.
+
+  Fields:
+    acceleratorTypes: [Output Only] List of accelerator types contained in
+      this scope.
+    warning: [Output Only] An informational warning that appears when the
+      accelerator types list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] An informational warning that appears when the
+    accelerator types list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  acceleratorTypes = _messages.MessageField('AcceleratorType', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class AccessConfig(_messages.Message):
   """An access configuration attached to an instance's network interface. Only
   one access config per instance is supported.
@@ -100,6 +311,9 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    IpVersionValueValuesEnum: The IP Version that will be used by this
+      address. Valid options are IPV4 or IPV6. This can only be specified for
+      a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this Address and can only take the following values:
       CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
@@ -123,6 +337,8 @@ class Address(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipVersion: The IP Version that will be used by this address. Valid options
+      are IPV4 or IPV6. This can only be specified for a global address.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -156,6 +372,19 @@ class Address(_messages.Message):
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    """The IP Version that will be used by this address. Valid options are
+    IPV4 or IPV6. This can only be specified for a global address.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      UNSPECIFIED_VERSION: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    UNSPECIFIED_VERSION = 2
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this Address
@@ -213,15 +442,16 @@ class Address(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#address')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  users = _messages.StringField(13, repeated=True)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 5)
+  kind = _messages.StringField(6, default=u'compute#address')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 10)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  users = _messages.StringField(14, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -353,6 +583,7 @@ class AddressesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -370,9 +601,10 @@ class AddressesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -613,14 +845,16 @@ class AttachedDiskInitializeParams(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Provides the configuration for non-admin_activity logging for a service.
-  Controls exemptions and specific log sub-types.
+  """Specifies the audit configuration for a service. It consists of which
+  permission types are logged, and what identities, if any, are exempted from
+  logging. An AuditConifg must have one or more AuditLogConfigs.
 
   Fields:
-    auditLogConfigs: The configuration for each type of logging
+    auditLogConfigs: The configuration for logging of each type of permission.
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
+      same format of Binding.members. This field is deprecated in favor of
+      per-permission-type exemptions.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -632,14 +866,18 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for a sub-type of logging.
+  """Provides the configuration for logging a type of permissions. Example:  {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
 
   Fields:
-    exemptedMembers: Specifies the identities that are exempted from this type
-      of logging Follows the same format of Binding.members.
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of [Binding.members][].
     logType: The log type that this config enables.
   """
 
@@ -908,6 +1146,7 @@ class AutoscalersScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -925,9 +1164,10 @@ class AutoscalersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1249,17 +1489,6 @@ class BackendBucketList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
-class BackendSSLPolicy(_messages.Message):
-  """Message containing backend SSL policies.
-
-  Fields:
-    pinnedPeerCertificates: List of PEM-encoded peer certificates, from which
-      the public keys are extracted for authenticating the backend service.
-  """
-
-  pinnedPeerCertificates = _messages.StringField(1, repeated=True)
-
-
 class BackendService(_messages.Message):
   """A BackendService resource. This resource defines a group of backend
   virtual machines and their serving capacity.
@@ -1282,7 +1511,6 @@ class BackendService(_messages.Message):
       only until the end of the browser session (or equivalent). The maximum
       allowed value for TTL is one day.  When the load balancing scheme is
       INTERNAL, this field is not used.
-    backendSslPolicy: Backend SSL policies to enforce.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
     connectionDraining: A ConnectionDraining attribute.
@@ -1393,28 +1621,27 @@ class BackendService(_messages.Message):
     NONE = 4
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  backendSslPolicy = _messages.MessageField('BackendSSLPolicy', 2)
-  backends = _messages.MessageField('Backend', 3, repeated=True)
-  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 4)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 5)
-  creationTimestamp = _messages.StringField(6)
-  customRequestHeaders = _messages.StringField(7, repeated=True)
-  description = _messages.StringField(8)
-  enableCDN = _messages.BooleanField(9)
-  fingerprint = _messages.BytesField(10)
-  healthChecks = _messages.StringField(11, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 12)
-  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(14, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
-  name = _messages.StringField(16)
-  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(18)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 19)
-  region = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
-  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  backends = _messages.MessageField('Backend', 2, repeated=True)
+  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
+  creationTimestamp = _messages.StringField(5)
+  customRequestHeaders = _messages.StringField(6, repeated=True)
+  description = _messages.StringField(7)
+  enableCDN = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  healthChecks = _messages.StringField(10, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
+  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1578,6 +1805,7 @@ class BackendServicesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -1595,9 +1823,10 @@ class BackendServicesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1914,6 +2143,7 @@ class CommitmentsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -1931,9 +2161,10 @@ class CommitmentsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1959,6 +2190,120 @@ class CommitmentsScopedList(_messages.Message):
 
   commitments = _messages.MessageField('Commitment', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
+  """A ComputeAcceleratorTypesAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeAcceleratorTypesGetRequest(_messages.Message):
+  """A ComputeAcceleratorTypesGetRequest object.
+
+  Fields:
+    acceleratorType: Name of the accelerator type to return.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  acceleratorType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeAcceleratorTypesListRequest(_messages.Message):
+  """A ComputeAcceleratorTypesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -2101,6 +2446,23 @@ class ComputeAddressesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeAddressesSetLabelsRequest(_messages.Message):
+  """A ComputeAddressesSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeAddressesTestIamPermissionsRequest(_messages.Message):
@@ -3453,6 +3815,23 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
+  """A ComputeForwardingRulesSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
 class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   """A ComputeForwardingRulesSetTargetRequest object.
 
@@ -3573,6 +3952,21 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeGlobalAddressesSetLabelsRequest(_messages.Message):
+  """A ComputeGlobalAddressesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeGlobalAddressesTestIamPermissionsRequest(_messages.Message):
   """A ComputeGlobalAddressesTestIamPermissionsRequest object.
 
@@ -3672,6 +4066,21 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeGlobalForwardingRulesSetLabelsRequest(_messages.Message):
+  """A ComputeGlobalForwardingRulesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
@@ -4354,7 +4763,7 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpHealthChecksPatchRequest object.
 
   Fields:
-    httpHealthCheck: Name of the HttpHealthCheck resource to update.
+    httpHealthCheck: Name of the HttpHealthCheck resource to patch.
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -4581,12 +4990,14 @@ class ComputeImagesInsertRequest(_messages.Message):
   """A ComputeImagesInsertRequest object.
 
   Fields:
+    forceCreation: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
   """
 
-  image = _messages.MessageField('Image', 1)
-  project = _messages.StringField(2, required=True)
+  forceCreation = _messages.BooleanField(1)
+  image = _messages.MessageField('Image', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class ComputeImagesListRequest(_messages.Message):
@@ -5713,6 +6124,23 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   instancesSetLabelsRequest = _messages.MessageField('InstancesSetLabelsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
+  """A ComputeInstancesSetMachineResourcesRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMachineResourcesRequest = _messages.MessageField('InstancesSetMachineResourcesRequest', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
 
@@ -9640,6 +10068,23 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
+  """A ComputeVpnTunnelsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
 class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
   """A ComputeVpnTunnelsTestIamPermissionsRequest object.
 
@@ -10227,16 +10672,13 @@ class DiskList(_messages.Message):
   """A list of Disk resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of persistent disks.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Disk resources.
     kind: [Output Only] Type of resource. Always compute#diskList for lists of
       disks.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -10429,6 +10871,7 @@ class DiskTypesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -10446,9 +10889,10 @@ class DiskTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10539,6 +10983,7 @@ class DisksScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -10556,9 +11001,10 @@ class DisksScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10651,6 +11097,18 @@ class Firewall(_messages.Message):
       that belongs to a tag listed in the sourceTags property. The connection
       does not need to match both properties for the firewall to apply. Only
       IPv4 is supported.
+    sourceServiceAccounts: If source service accounts are specified, the
+      firewall will apply only to traffic originating from an instance with a
+      service account in this list. Source service accounts cannot be used to
+      control traffic to an instance's external IP address because service
+      accounts are associated with an instance, not an IP address.
+      sourceRanges can be set at the same time as sourceServiceAccounts. If
+      both are set, the firewall will apply to traffic that has source IP
+      address within sourceRanges OR the source IP belongs to an instance with
+      service account listed in sourceServiceAccount. The connection does not
+      need to match both properties for the firewall to apply.
+      sourceServiceAccounts cannot be used at the same time as sourceTags or
+      targetTags.
     sourceTags: If source tags are specified, the firewall will apply only to
       traffic with source IP that belongs to a tag listed in source tags.
       Source tags cannot be used to control traffic to an instance's external
@@ -10734,9 +11192,10 @@ class Firewall(_messages.Message):
   priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   selfLink = _messages.StringField(12)
   sourceRanges = _messages.StringField(13, repeated=True)
-  sourceTags = _messages.StringField(14, repeated=True)
-  targetServiceAccounts = _messages.StringField(15, repeated=True)
-  targetTags = _messages.StringField(16, repeated=True)
+  sourceServiceAccounts = _messages.StringField(14, repeated=True)
+  sourceTags = _messages.StringField(15, repeated=True)
+  targetServiceAccounts = _messages.StringField(16, repeated=True)
+  targetTags = _messages.StringField(17, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -10788,6 +11247,9 @@ class ForwardingRule(_messages.Message):
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
       Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  When the load
       balancing scheme is INTERNAL, only TCP and UDP are valid.
+    IpVersionValueValuesEnum: The IP Version that will be used by this
+      forwarding rule. Valid options are IPV4 or IPV6. This can only be
+      specified for a global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: This signifies what the ForwardingRule
       will be used for and can only take the following values: INTERNAL,
       EXTERNAL The value of INTERNAL means that this will be used for Internal
@@ -10828,6 +11290,9 @@ class ForwardingRule(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipVersion: The IP Version that will be used by this forwarding rule. Valid
+      options are IPV4 or IPV6. This can only be specified for a global
+      forwarding rule.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -10920,6 +11385,19 @@ class ForwardingRule(_messages.Message):
     TCP = 4
     UDP = 5
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    """The IP Version that will be used by this forwarding rule. Valid options
+    are IPV4 or IPV6. This can only be specified for a global forwarding rule.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      UNSPECIFIED_VERSION: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    UNSPECIFIED_VERSION = 2
+
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     """This signifies what the ForwardingRule will be used for and can only
     take the following values: INTERNAL, EXTERNAL The value of INTERNAL means
@@ -10981,21 +11459,22 @@ class ForwardingRule(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 13)
-  portRange = _messages.StringField(14)
-  ports = _messages.StringField(15, repeated=True)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  serviceLabel = _messages.StringField(18)
-  serviceName = _messages.StringField(19)
-  subnetwork = _messages.StringField(20)
-  target = _messages.StringField(21)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
+  kind = _messages.StringField(8, default=u'compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 14)
+  portRange = _messages.StringField(15)
+  ports = _messages.StringField(16, repeated=True)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  serviceLabel = _messages.StringField(19)
+  serviceName = _messages.StringField(20)
+  subnetwork = _messages.StringField(21)
+  target = _messages.StringField(22)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -11125,6 +11604,7 @@ class ForwardingRulesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -11142,9 +11622,10 @@ class ForwardingRulesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11577,7 +12058,7 @@ class Host(_messages.Message):
       host, in the format: zones/zone/hostTypes/host-type. This is provided by
       the client when the host is created. For example, the following is a
       valid partial url to a predefined host type:  zones/us-
-      central1-f/hostTypes/n1-host-64-416
+      central1-b/hostTypes/n1-host-64-416
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instances: A list of resource URLs to the virtual machine instances in
@@ -11897,6 +12378,7 @@ class HostTypesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -11914,9 +12396,10 @@ class HostTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11997,6 +12480,7 @@ class HostsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -12014,9 +12498,10 @@ class HostsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -12490,6 +12975,8 @@ class Instance(_messages.Message):
       read the Specifications for custom machine types.
     metadata: The metadata key/value pairs assigned to this instance. This
       includes custom metadata and predefined keys.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. We may
+      schedule on the specified or later cpu/platform.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -12584,15 +13071,16 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   machineType = _messages.StringField(13)
   metadata = _messages.MessageField('Metadata', 14)
-  name = _messages.StringField(15)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  selfLink = _messages.StringField(18)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  tags = _messages.MessageField('Tags', 22)
-  zone = _messages.StringField(23)
+  minCpuPlatform = _messages.StringField(15)
+  name = _messages.StringField(16)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  selfLink = _messages.StringField(19)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  tags = _messages.MessageField('Tags', 23)
+  zone = _messages.StringField(24)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -13117,8 +13605,11 @@ class InstanceGroupManagerVersion(_messages.Message):
 
   Fields:
     instanceTemplate: A string attribute.
+    name: Name of the version. Unique among all versions in the scope of this
+      managed instance group.
     tag: Tag describing the version. Used to trigger rollout of a target
-      version even if instance_template remains unchanged.
+      version even if instance_template remains unchanged. Deprecated in favor
+      of 'name'.
     targetSize: Intended number of instances that are created from
       instanceTemplate. The final number of instances created from
       instanceTemplate will be equal to: * if expressed as fixed number:
@@ -13129,8 +13620,9 @@ class InstanceGroupManagerVersion(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
-  tag = _messages.StringField(2)
-  targetSize = _messages.MessageField('FixedOrPercent', 3)
+  name = _messages.StringField(2)
+  tag = _messages.StringField(3)
+  targetSize = _messages.MessageField('FixedOrPercent', 4)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -13161,9 +13653,15 @@ class InstanceGroupManagersListManagedInstancesResponse(_messages.Message):
   Fields:
     managedInstances: [Output Only] The list of instances in the managed
       instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class InstanceGroupManagersRecreateInstancesRequest(_messages.Message):
@@ -13259,6 +13757,7 @@ class InstanceGroupManagersScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -13276,9 +13775,10 @@ class InstanceGroupManagersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13479,6 +13979,7 @@ class InstanceGroupsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -13496,9 +13997,10 @@ class InstanceGroupsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13835,6 +14337,7 @@ class InstancesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -13852,9 +14355,10 @@ class InstancesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13943,6 +14447,16 @@ class InstancesSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class InstancesSetMachineResourcesRequest(_messages.Message):
+  """A InstancesSetMachineResourcesRequest object.
+
+  Fields:
+    guestAccelerators: A AcceleratorConfig attribute.
+  """
+
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
 
 
 class InstancesSetMachineTypeRequest(_messages.Message):
@@ -14209,6 +14723,7 @@ class MachineTypesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -14226,9 +14741,10 @@ class MachineTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14318,6 +14834,7 @@ class ManagedInstance(_messages.Message):
     standbyMode: [Output Only] Standby mode of the instance. This field is
       non-empty iff the instance is a standby.
     tag: [Output Only] Tag describing the version.
+    version: [Output Only] Intended version of this instance.
   """
 
   class CurrentActionValueValuesEnum(_messages.Enum):
@@ -14401,6 +14918,7 @@ class ManagedInstance(_messages.Message):
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
   standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 7)
   tag = _messages.StringField(8)
+  version = _messages.MessageField('ManagedInstanceVersion', 9)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -14444,6 +14962,20 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstanceVersion(_messages.Message):
+  """A ManagedInstanceVersion object.
+
+  Fields:
+    instanceTemplate: [Output Only] The intended template of the instance.
+      This field is empty when current_action is one of { DELETING, ABANDONING
+      }.
+    name: [Output Only] Name of the version.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class Metadata(_messages.Message):
@@ -14869,6 +15401,7 @@ class Operation(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -14886,9 +15419,10 @@ class Operation(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -15066,6 +15600,7 @@ class OperationsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -15083,9 +15618,10 @@ class OperationsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -15168,10 +15704,7 @@ class Policy(_messages.Message):
   see the [IAM developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -15596,9 +16129,15 @@ class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
 
   Fields:
     managedInstances: List of managed instances.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
@@ -15840,7 +16379,7 @@ class Route(_messages.Message):
   smallest priority value. If there is still a tie, it uses the layer three
   and four packet headers to select just one of the remaining matching routes.
   The packet is then forwarded as specified by the nextHop field of the
-  winning route - either to another instance destination, a instance gateway
+  winning route - either to another instance destination, an instance gateway,
   or a Google Compute Engine-operated gateway.  Packets that do not match any
   route in the sending instance's routing table are dropped.
 
@@ -15932,6 +16471,7 @@ class Route(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -15949,9 +16489,10 @@ class Route(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16196,13 +16737,15 @@ class RouterStatus(_messages.Message):
 
   Fields:
     bestRoutes: Best routes for this router's network.
+    bestRoutesForRouter: Best routes learned by this router.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     network: URI of the network to which this router belongs.
   """
 
   bestRoutes = _messages.MessageField('Route', 1, repeated=True)
-  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 2, repeated=True)
-  network = _messages.StringField(3)
+  bestRoutesForRouter = _messages.MessageField('Route', 2, repeated=True)
+  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 3, repeated=True)
+  network = _messages.StringField(4)
 
 
 class RouterStatusBgpPeerStatus(_messages.Message):
@@ -16324,6 +16867,7 @@ class RoutersScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -16341,9 +16885,10 @@ class RoutersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17049,6 +17594,7 @@ class SubnetworksScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -17066,9 +17612,10 @@ class SubnetworksScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17487,6 +18034,7 @@ class TargetInstancesScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -17504,9 +18052,10 @@ class TargetInstancesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17832,6 +18381,7 @@ class TargetPoolsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -17849,9 +18399,10 @@ class TargetPoolsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18323,6 +18874,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -18340,9 +18892,10 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18851,6 +19404,7 @@ class VpnTunnelsScopedList(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -18868,9 +19422,10 @@ class VpnTunnelsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18956,6 +19511,8 @@ class Zone(_messages.Message):
       DOWN.
 
   Fields:
+    availableCpuPlatforms: [Output Only] Available cpu/platform selections for
+      the zone.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -18981,15 +19538,16 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#zone')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  availableCpuPlatforms = _messages.StringField(1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#zone')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class ZoneList(_messages.Message):
