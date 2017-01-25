@@ -14,7 +14,6 @@
 """Utilities for ml versions commands."""
 from googlecloudsdk.api_lib.ml import operations
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import progress_tracker
 
 
 def ParseVersion(model, version):
@@ -24,14 +23,13 @@ def ParseVersion(model, version):
       collection='ml.projects.models.versions')
 
 
-def WaitForOpMaybe(client, op, async_=False, msg='Waiting'):
+def WaitForOpMaybe(op, async_=False, message=None):
   """Waits for an operation if async_ flag is on.
 
   Args:
-    client: apitools API client for the Cloud ML service
     op: Cloud ML operation, the operation to poll
     async_: bool, whether to wait for the operation or return immediately
-    msg: str, the message to display while waiting for the operation
+    message: str, the message to display while waiting for the operation
 
   Returns:
     The result of the operation if async_ is true, or the Operation message
@@ -39,6 +37,5 @@ def WaitForOpMaybe(client, op, async_=False, msg='Waiting'):
   """
   if async_:
     return op
-  with progress_tracker.ProgressTracker(msg):
-    op = operations.WaitForOperation(client.projects_operations, op)
-  return op.response
+  return operations.OperationsClient().WaitForOperation(
+      op, message=message).response

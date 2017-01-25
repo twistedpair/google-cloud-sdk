@@ -188,6 +188,7 @@ def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
     auto_delete = disk.get('auto-delete') == 'yes'
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     image_uri, _ = scope_prompter.ExpandImageFlag(
+        user_project=scope_prompter.project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),
         image_project=disk.get('image-project'),

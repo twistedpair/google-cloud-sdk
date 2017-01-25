@@ -33,20 +33,6 @@ VERSION_FLAG = base.Argument(
     required=True,
     help='The version of the app that you want to operate on.')
 
-# TODO(user): Add service globbing.
-MODULES_ARG = base.Argument(
-    'modules',
-    nargs='+',
-    help='One or more service names to perform this action on.  To select the '
-    'default service for your app, use "default".')
-
-MODULES_OPTIONAL_ARG = base.Argument(
-    'modules',
-    nargs='*',
-    help='An optional list of service names to perform this action on.  To '
-    'select the default service for your app, use "default".  If no services '
-    'are given, all services are used.')
-
 IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',

@@ -160,7 +160,7 @@ def WaitFor(poller, operation_ref, message,
   Args:
     poller: OperationPoller, poller to use during retrials.
     operation_ref: object, passed to operation poller poll method.
-    message: str, string to display for progrss_tracker.
+    message: str, string to display for progress_tracker.
     pre_start_sleep_ms: int, Time to wait before making first poll request.
     max_retrials: int, max number of retrials before raising RetryException.
     max_wait_ms: int, number of ms to wait before raising WaitException.
@@ -176,7 +176,6 @@ def WaitFor(poller, operation_ref, message,
     AbortWaitError: if ctrl-c was pressed.
     TimeoutError: if retryer has finished wihout being done.
   """
-
   def _CtrlCHandler(unused_signal, unused_frame):
     raise AbortWaitError('Ctrl-C aborted wait.')
 

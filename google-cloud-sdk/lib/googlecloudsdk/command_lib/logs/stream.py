@@ -11,15 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for streaming logs."""
-import copy
+"""Logic for streaming logs.
+
+We implement streaming with two important implementation details.  First,
+we use polling because Cloud Logging does not support streaming. Second, we
+have no guarantee that we will receive logs in chronological order.
+This is because clients can emit logs with chosen timestamps.  However,
+we want to generate an ordered list of logs.  So, we choose to not fetch logs
+in the most recent N seconds.  We also decided to skip logs that are returned
+too late (their timestamp is more than N seconds old).
+"""
 import datetime
 import time
 
-from apitools.base.py import encoding
 from googlecloudsdk.api_lib.logging import common as logging_common
-from googlecloudsdk.core import apis
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
 
@@ -98,157 +103,66 @@ class LogFetcher(object):
   """A class which fetches job logs."""
 
   LOG_BATCH_SIZE = 5000
-  LOG_FORMAT = """\
-      value(
-          severity,
-          timestamp.date("%Y-%m-%d %H:%M:%S %z",tz="LOCAL"),
-          task_name,
-          trial_id,
-          message
-      )"""
 
-  def __init__(self, job_id, polling_interval, allow_multiline_logs,
-               task_name=None):
-    self.job_id = job_id
+  def __init__(self, filters=None, polling_interval=5, continue_func=None):
+    """Initializes the LogFetcher.
+
+    Args:
+      filters: list of string filters used in the API call.
+      polling_interval: amount of time to sleep between each poll.
+      continue_func: One-arg function that takes in the number of empty polls
+        and outputs a boolean to decide if we should keep polling or not.
+    """
+    self.base_filters = filters or []
     self.polling_interval = polling_interval
+    # Default is to poll infinitely.
+    if continue_func:
+      self.should_continue = continue_func
+    else:
+      self.should_continue = lambda x: True
     self.log_position = LogPosition()
-    self.allow_multiline_logs = allow_multiline_logs
-    self.client = apis.GetClientInstance('ml', 'v1beta1')
-    self.task_name = task_name
 
-  def GetLogs(self, log_position, utcnow=None):
-    """Retrieve a batch of logs."""
-    if utcnow is None:
-      utcnow = datetime.datetime.utcnow()
-    filters = ['resource.type="ml_job"',
-               'resource.labels.job_id="{0}"'.format(self.job_id),
-               log_position.GetFilterLowerBound(),
-               log_position.GetFilterUpperBound(utcnow)]
-    if self.task_name:
-      filters.append('resource.labels.task_name="{}"'.format(self.task_name))
-    return logging_common.FetchLogs(
-        log_filter=' AND '.join(filters),
+  def GetLogs(self):
+    """Retrieves a batch of logs.
+
+    After we fetch the logs, we ensure that none of the logs have been seen
+    before.  Along the way, we update the most recent timestamp.
+
+    Returns:
+      A list of valid log entries.
+    """
+    utcnow = datetime.datetime.utcnow()
+    lower_filter = self.log_position.GetFilterLowerBound()
+    upper_filter = self.log_position.GetFilterUpperBound(utcnow)
+    new_filter = self.base_filters + [lower_filter, upper_filter]
+    entries = logging_common.FetchLogs(
+        log_filter=' AND '.join(new_filter),
         order_by='ASC',
         limit=self.LOG_BATCH_SIZE)
-
-  def CheckJobFinished(self):
-    """Returns True if the job is finished."""
-    res = resources.REGISTRY.Parse(self.job_id, collection='ml.projects.jobs')
-    req = self.client.MESSAGES_MODULE.MlProjectsJobsGetRequest(
-        projectsId=res.projectsId, jobsId=res.jobsId)
-    resp = self.client.projects_jobs.Get(req)
-    return resp.endTime is not None
+    return [entry for entry in entries if
+            self.log_position.Update(entry.timestamp, entry.insertId)]
 
   def YieldLogs(self):
-    """Return log messages from the given job.
+    """Polls Get API for more logs.
 
-    YieldLogs returns messages from the given job, in time order.  If the job
-    is still running when we finish printing all the logs that exist, we will
-    go into a polling loop where we check periodically for new logs.  On the
-    other hand, if the job has ended, YieldLogs will raise StopException when
-    there are no more logs to display.
-
-    The log message storage system is optimized for throughput, not for
-    immediate, in-order visibility.  It may take several seconds for a new log
-    message to become visible.  To work around this limitation, we refrain from
-    printing out log messages which are newer than 5 seconds old.
-
-    Log messages are sorted by timestamp.  Log messages with the same timestamp
-    are further sorted by their unique insertId.  By using the combination of
-    timestamp and insertId, we can ensure that each query returns a set of log
-    messages that we haven't seen before.
+    We poll so long as our continue function, which considers the number of
+    periods without new logs, returns True.
 
     Yields:
-        A dictionary containing the fields of the log message.
+        A single log entry.
     """
-
-    periods_without_progress = 0
-    last_progress_time = datetime.datetime.utcnow()
-    while True:
-      log_retriever = self.GetLogs(log_position=self.log_position)
-      made_progress = False
-      while True:
-        try:
-          log_entry = log_retriever.next()
-        except StopIteration:
-          break
-        if not self.log_position.Update(log_entry.timestamp,
-                                        log_entry.insertId):
-          continue
-        made_progress = True
-        last_progress_time = datetime.datetime.utcnow()
-        multiline_log_dict = self.EntryToDict(log_entry)
-        if self.allow_multiline_logs:
-          yield multiline_log_dict
-        else:
-          message_lines = multiline_log_dict['message'].splitlines()
-          if not message_lines:
-            message_lines = ['']
-          for message_line in message_lines:
-            single_line_dict = copy.deepcopy(multiline_log_dict)
-            single_line_dict['message'] = message_line
-            yield single_line_dict
-      if made_progress:
-        periods_without_progress = 0
+    empty_polls = 0
+    logs = self.GetLogs()
+    # If we find new logs, we continue to poll regardless of user-supplied
+    # continue function.
+    while logs or self.should_continue(empty_polls):
+      if logs:
+        empty_polls = 0
+        for log in logs:
+          yield log
       else:
-        # If our last log query was the second in a row to make no progress,
-        # and the last progress was more than 5 seconds ago, check the job
-        # status to make sure that it's still running.
-        # If it is not, terminate the stream-logs command.
-        periods_without_progress += 1
-        if periods_without_progress > 1:
-          if last_progress_time + datetime.timedelta(
-              seconds=5) <= datetime.datetime.utcnow():
-            if self.CheckJobFinished():
-              raise StopIteration
-        time.sleep(self.polling_interval)
+        empty_polls += 1
+      time.sleep(self.polling_interval)
+      logs = self.GetLogs()
+    raise StopIteration
 
-  def EntryToDict(self, log_entry):
-    """Convert a log entry to a dictionary."""
-    output = {}
-    output['severity'] = log_entry.severity.name
-    output['timestamp'] = log_entry.timestamp
-    label_attributes = self.GetLabelAttributes(log_entry)
-    output['task_name'] = label_attributes['task_name']
-    if 'trial_id' in label_attributes:
-      output['trial_id'] = label_attributes['trial_id']
-    output['message'] = ''
-    if log_entry.jsonPayload is not None:
-      json_data = ToDict(log_entry.jsonPayload)
-      # 'message' contains a free-text message that we want to pull out of the
-      # JSON.
-      if 'message' in json_data:
-        if json_data['message']:
-          output['message'] += json_data['message']
-        del json_data['message']
-      # Don't put 'levelname' in the JSON, since it duplicates the
-      # information in log_entry.severity.name
-      if 'levelname' in json_data:
-        del json_data['levelname']
-      output['json'] = json_data
-    elif log_entry.textPayload is not None:
-      output['message'] += str(log_entry.textPayload)
-    elif log_entry.protoPayload is not None:
-      output['json'] = encoding.MessageToDict(log_entry.protoPayload)
-    return output
-
-  def GetLabelAttributes(self, log_entry):
-    """Read the label attributes of the given log entry."""
-    label_attributes = {'task_name': 'unknown_task'}
-    if not hasattr(log_entry, 'labels'):
-      return label_attributes
-    labels = ToDict(log_entry.labels)
-    if labels.get('ml.googleapis.com/task_name') is not None:
-      label_attributes['task_name'] = labels['ml.googleapis.com/task_name']
-    if labels.get('ml.googleapis.com/trial_id') is not None:
-      label_attributes['trial_id'] = labels['ml.googleapis.com/trial_id']
-    return label_attributes
-
-
-def ToDict(message):
-  if not message:
-    return {}
-  if isinstance(message, dict):
-    return message
-  else:
-    return encoding.MessageToDict(message)

@@ -45,7 +45,7 @@ class CloudFunction(_messages.Message):
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
-    StatusValueValuesEnum: [Output only] Status of the function deployment.
+    StatusValueValuesEnum: Status of the function deployment. Output only.
 
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
@@ -65,27 +65,31 @@ class CloudFunction(_messages.Message):
       "sources/cloud.pubsub/actions/publish"     resource:
       "projects/[PROJECT_NAME]/buckets/[BUCKET_NAME]"   }
     gcsUrl: Google Cloud Storage URL pointing to the zip archive which
-      contains the function.
+      contains the function.  Deprecated: To be removed by Beta. Replacement:
+      source_archive_url
     httpsTrigger: A https endpoint type of source that can be trigger via URL.
-    latestOperation: [Output only] Name of the most recent operation modifying
-      the function. If the function status is DEPLOYING or DELETING, then it
-      points to the active operation.
+    latestOperation: Name of the most recent operation modifying the function.
+      If the function status is DEPLOYING or DELETING, then it points to the
+      active operation. Output only.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern: projects/*/locations/*/functions/*
     pubsubTrigger: A pub/sub type of source.  Deprecated: To be removed by
       Beta. Replacement:   condition_trigger: {     action:
       "sources/cloud.pubsub/actions/publish"     resource:
       "projects/[PROJECT_ID]/topics/[TOPIC_NAME]"   }
-    serviceAccount: [Output only] The service account of the function.
+    serviceAccount: The service account of the function. Output only.
+    sourceArchiveUrl: The URL, starting with gs://, pointing to the zip
+      archive which contains the function.
     sourceRepository: The hosted repository where the function is defined.
-    status: [Output only] Status of the function deployment.
-    timeout: The cloud function execution timeout. Execution is considered
-      failed and can be terminated if the function is not completed at the end
-      of the timeout period. Defaults to 60 seconds.
+    status: Status of the function deployment. Output only.
+    timeout: The function execution timeout. Execution is considered failed
+      and can be terminated if the function is not completed at the end of the
+      timeout period. Defaults to 60 seconds.
+    updateTime: [Output only] The last update timestamp of a cloud function.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output only] Status of the function deployment.
+    """Status of the function deployment. Output only.
 
     Values:
       STATUS_UNSPECIFIED: Status not specified.
@@ -111,9 +115,11 @@ class CloudFunction(_messages.Message):
   name = _messages.StringField(8)
   pubsubTrigger = _messages.StringField(9)
   serviceAccount = _messages.StringField(10)
-  sourceRepository = _messages.MessageField('SourceRepository', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  timeout = _messages.StringField(13)
+  sourceArchiveUrl = _messages.StringField(11)
+  sourceRepository = _messages.MessageField('SourceRepository', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  timeout = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -179,7 +185,7 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
     location: The project and location from which the function should be
       listed, specified in the format: projects/*/locations/* If you want to
       list functions in all locations, use '-' in place of a location.
-    pageSize: Maximum number of functions to return.
+    pageSize: Maximum number of functions to return per call.
     pageToken: The value returned by the last ListFunctionsResponse; indicates
       that this is a continuation of a prior ListFunctions call, and that the
       system should return the next page of data.
@@ -261,7 +267,7 @@ class ListFunctionsResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for LocationService.ListLocations.
+  """The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -458,7 +464,8 @@ class Operation(_messages.Message):
 
 
 class OperationMetadataV1Beta2(_messages.Message):
-  """Metadata describing an Operation
+  """Metadata describing an Operation  See description of cl/108626115 for the
+  reason why the metadata proto message contains the API version.
 
   Enums:
     TypeValueValuesEnum: Type of operation.
@@ -522,11 +529,11 @@ class SourceRepository(_messages.Message):
 
   Fields:
     branch: The name of the branch from which the function should be fetched.
-    deployedRevision: [Output only] The id of the revision that was resolved
-      at the moment of function creation or update. For example when a user
-      deployed from a branch, it will be the revision id of the latest change
-      on this branch at that time. If user deployed from revision then this
-      value will be always equal to the revision specified by the user.
+    deployedRevision: The id of the revision that was resolved at the moment
+      of function creation or update. For example when a user deployed from a
+      branch, it will be the revision id of the latest change on this branch
+      at that time. If user deployed from revision then this value will be
+      always equal to the revision specified by the user. Output only.
     repositoryUrl: URL to the hosted repository where the function is defined.
       Only paths in https://source.developers.google.com domain are supported.
       The path should contain the name of the repository.

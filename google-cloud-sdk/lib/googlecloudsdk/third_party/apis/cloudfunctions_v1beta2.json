@@ -209,7 +209,11 @@
           "type": "string"
         },
         "gcsUrl": {
-          "description": "Google Cloud Storage URL pointing to the zip archive which contains the\nfunction.",
+          "description": "Google Cloud Storage URL pointing to the zip archive which contains the\nfunction.\n\nDeprecated: To be removed by Beta.\nReplacement: source_archive_url",
+          "type": "string"
+        },
+        "sourceArchiveUrl": {
+          "description": "The URL, starting with gs:\/\/, pointing to the zip archive which contains\nthe function.",
           "type": "string"
         },
         "sourceRepository": {
@@ -233,7 +237,7 @@
           "$ref": "EventTrigger"
         },
         "status": {
-          "description": "[Output only] Status of the function deployment.",
+          "description": "Status of the function deployment. Output only.",
           "enumDescriptions": [
             "Status not specified.",
             "Successfully deployed.",
@@ -251,7 +255,7 @@
           ]
         },
         "latestOperation": {
-          "description": "[Output only] Name of the most recent operation modifying the function. If\nthe function status is DEPLOYING or DELETING, then it points to the active\noperation.",
+          "description": "Name of the most recent operation modifying the function. If\nthe function status is DEPLOYING or DELETING, then it points to the active\noperation. Output only.",
           "type": "string"
         },
         "entryPoint": {
@@ -259,7 +263,7 @@
           "type": "string"
         },
         "timeout": {
-          "description": "The cloud function execution timeout. Execution is considered failed and\ncan be terminated if the function is not completed at the end of the\ntimeout period. Defaults to 60 seconds.",
+          "description": "The function execution timeout. Execution is considered failed and\ncan be terminated if the function is not completed at the end of the\ntimeout period. Defaults to 60 seconds.",
           "type": "string",
           "format": "google-duration"
         },
@@ -269,8 +273,13 @@
           "format": "int32"
         },
         "serviceAccount": {
-          "description": "[Output only] The service account of the function.",
+          "description": "The service account of the function. Output only.",
           "type": "string"
+        },
+        "updateTime": {
+          "description": "[Output only] The last update timestamp of a cloud function.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -300,7 +309,7 @@
           "type": "string"
         },
         "deployedRevision": {
-          "description": "[Output only] The id of the revision that was resolved at the moment of\nfunction creation or update. For example when a user deployed from a\nbranch, it will be the revision id of the latest change on this branch at\nthat time. If user deployed from revision then this value will be always\nequal to the revision specified by the user.",
+          "description": "The id of the revision that was resolved at the moment of\nfunction creation or update. For example when a user deployed from a\nbranch, it will be the revision id of the latest change on this branch at\nthat time. If user deployed from revision then this value will be always\nequal to the revision specified by the user. Output only.",
           "type": "string"
         }
       }
@@ -367,7 +376,7 @@
     },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
-      "description": "The response message for LocationService.ListLocations.",
+      "description": "The response message for Locations.ListLocations.",
       "type": "object",
       "properties": {
         "locations": {
@@ -415,7 +424,7 @@
     },
     "OperationMetadataV1Beta2": {
       "id": "OperationMetadataV1Beta2",
-      "description": "Metadata describing an Operation",
+      "description": "Metadata describing an Operation\n\nSee description of cl\/108626115 for the reason why the metadata proto\nmessage contains the API version.",
       "type": "object",
       "properties": {
         "target": {
@@ -544,7 +553,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Maximum number of functions to return.",
+                      "description": "Maximum number of functions to return per call.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -595,7 +604,7 @@
                   "path": "v1beta2/{+location}/functions",
                   "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/functions",
                   "httpMethod": "POST",
-                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, it will return ALREADY_EXISTS error.",
+                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\nALREADY_EXISTS error.",
                   "parameters": {
                     "location": {
                       "description": "The project and location in which the function should be created, specified\nin the format: projects\/*\/locations\/*",

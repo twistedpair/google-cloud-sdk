@@ -31,20 +31,27 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
-DISK_ARG = compute_flags.ResourceArgument(
-    resource_name='disk',
-    completion_resource_id='compute.disks',
-    name='DISK_NAME',
-    zonal_collection='compute.disks',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
-DISKS_ARG = compute_flags.ResourceArgument(
-    resource_name='disk',
-    completion_resource_id='compute.disks',
-    plural=True,
-    name='DISK_NAME',
-    zonal_collection='compute.disks',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+def MakeDiskArg(plural):
+  return compute_flags.ResourceArgument(
+      resource_name='disk',
+      completion_resource_id='compute.disks',
+      plural=plural,
+      name='DISK_NAME',
+      zonal_collection='compute.disks',
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+def MakeDiskArgZonalOrRegional(plural):
+  return compute_flags.ResourceArgument(
+      resource_name='disk',
+      completion_resource_id='compute.disks',
+      plural=plural,
+      name='DISK_NAME',
+      zonal_collection='compute.disks',
+      regional_collection='compute.regionDisks',
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',

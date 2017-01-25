@@ -20,6 +20,7 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.core import log
 
@@ -150,9 +151,9 @@ def CheckCustomCpuRamRatio(compute_client, project, zone, machine_type_name):
           error_message='Could not fetch machine type:')
 
 
-def CreateServiceAccountMessages(messages, scopes, service_account,
-                                 silence_deprecation_warning=False):
+def CreateServiceAccountMessages(messages, scopes, service_account):
   """Returns a list of ServiceAccount messages corresponding to scopes."""
+  silence_deprecation_warning = False
   if scopes is None:
     scopes = constants.DEFAULT_SCOPES
   # if user provided --no-service-account, it is already verified that
@@ -169,15 +170,15 @@ def CreateServiceAccountMessages(messages, scopes, service_account,
       scope_uri = scope
     elif len(parts) == 2:
       account, scope_uri = parts
+      if service_account_specified:
+        raise exceptions.InvalidArgumentException(
+            '--scopes',
+            'It is illegal to mix old --scopes flag format '
+            '[--scopes {0}={1}] with [--service-account ACCOUNT] flag. Use '
+            '[--scopes {1} --service-account {2}] instead.'
+            .format(account, scope_uri, service_account))
       # TODO(b/33688878) Remove support for this deprecated format
       if not silence_deprecation_warning:
-        if service_account_specified:
-          raise exceptions.InvalidArgumentException(
-              '--scopes',
-              'It is illegal to mix old --scopes flag format '
-              '[--scopes {0}={1}] with [--service-account ACCOUNT] flag. Use '
-              '[--scopes {1} --service-account {2}] instead.'
-              .format(account, scope_uri, service_account))
         log.warning(
             'Flag format --scopes [ACCOUNT=]SCOPE, [[ACCOUNT=]SCOPE, ...] is '
             'deprecated and will be removed 24th Jan 2018. Use --scopes SCOPE'
@@ -341,6 +342,19 @@ def CreateNetworkInterfaceMessages(
   return result
 
 
+def ParseDiskResource(resources, name, zone, type_):
+  if type_ == compute_scopes.ScopeEnum.REGION:
+    return resources.Parse(
+        name,
+        collection='compute.regionDisks',
+        params={'region': utils.ZoneNameToRegionName(zone)})
+  else:
+    return resources.Parse(
+        name,
+        collection='compute.disks',
+        params={'zone': zone})
+
+
 def CreatePersistentAttachedDiskMessages(
     resources, compute_client, csek_keys, disks, instance_ref):
   """Returns a list of AttachedDisk messages and the boot disk's reference."""
@@ -362,10 +376,11 @@ def CreatePersistentAttachedDiskMessages(
     boot = disk.get('boot') == 'yes'
     auto_delete = disk.get('auto-delete') == 'yes'
 
-    disk_ref = resources.Parse(
-        name,
-        collection='compute.disks',
-        params={'zone': instance_ref.zone})
+    if 'scope' in disk and disk['scope'] == 'regional':
+      scope = compute_scopes.ScopeEnum.REGION
+    else:
+      scope = compute_scopes.ScopeEnum.ZONE
+    disk_ref = ParseDiskResource(resources, name, instance_ref.zone, scope)
 
     if boot:
       boot_disk_ref = disk_ref
@@ -450,6 +465,7 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
       disk_type_uri = None
 
     image_uri, _ = scope_prompter.ExpandImageFlag(
+        user_project=scope_prompter.project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),
         image_project=disk.get('image-project'),
@@ -486,6 +502,26 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
     disks_messages.append(create_disk)
 
   return disks_messages
+
+
+def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
+                                    accelerator_count):
+  """Returns a list of accelerator config messages.
+
+  Args:
+    msgs: tracked GCE API messages.
+    accelerator_type_ref: reference to the accelerator type.
+    accelerator_count: number of accelerators to attach to the VM.
+
+  Returns:
+    a list of accelerator config message that specifies the type and number of
+    accelerators to attach to an instance.
+  """
+
+  accelerator_config = msgs.AcceleratorConfig(
+      acceleratorType=accelerator_type_ref.SelfLink(),
+      acceleratorCount=accelerator_count)
+  return [accelerator_config]
 
 
 def CreateDefaultBootAttachedDiskMessage(

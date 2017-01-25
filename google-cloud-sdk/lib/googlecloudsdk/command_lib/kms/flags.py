@@ -15,6 +15,8 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import times
+
 
 # Collection names.
 LOCATION_COLLECTION = 'cloudkms.projects.locations'
@@ -105,4 +107,4 @@ def SetRotationPeriod(args, crypto_key):
 
 def SetNextRotationTime(args, crypto_key):
   if args.next_rotation_time is not None:
-    crypto_key.nextRotationTime = args.next_rotation_time.isoformat('T') + 'Z'
+    crypto_key.nextRotationTime = times.FormatDateTime(args.next_rotation_time)

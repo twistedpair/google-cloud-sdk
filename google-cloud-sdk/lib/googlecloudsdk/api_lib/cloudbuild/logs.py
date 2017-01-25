@@ -196,7 +196,6 @@ class CloudBuildClient(object):
     statuses = self.messages.Build.StatusValueValuesEnum
     working_statuses = [
         statuses.QUEUED,
-        statuses.QUEUING,
         statuses.WORKING,
     ]
 

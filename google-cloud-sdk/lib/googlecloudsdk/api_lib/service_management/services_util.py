@@ -25,6 +25,7 @@ from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import times
@@ -87,16 +88,6 @@ def GetEndpointsServiceName():
 
 def GetServiceManagementServiceName():
   return 'servicemanagement.googleapis.com'
-
-
-def ParseOperationName(op_name):
-  optional_prefix_to_strip = 'operations/'
-
-  # If a user includes the leading "operations/", just strip it off
-  if op_name.startswith(optional_prefix_to_strip):
-    op_name = op_name[len(optional_prefix_to_strip):]
-
-  return op_name
 
 
 def GetValidatedProject(project_id):
@@ -440,10 +431,13 @@ def GetProcessedOperationResult(result, async=False):
 
   if not async:
     op_name = result_dict['name']
+    op_ref = resources.REGISTRY.Parse(
+        op_name,
+        collection='servicemanagement.operations')
     log.status.Print(
         'Waiting for async operation {0} to complete...'.format(op_name))
     result_dict = encoding.MessageToDict(WaitForOperation(
-        op_name, apis.GetClientInstance('servicemanagement', 'v1')))
+        op_ref, apis.GetClientInstance('servicemanagement', 'v1')))
 
   # Convert metadata startTime to local time
   if 'metadata' in result_dict and 'startTime' in result_dict['metadata']:
@@ -471,11 +465,11 @@ def GetCallerViews():
   }
 
 
-def WaitForOperation(op_name, client):
+def WaitForOperation(operation_ref, client):
   """Waits for an operation to complete.
 
   Args:
-    op_name: The name of the operation on which to wait.
+    operation_ref: A reference to the operation on which to wait.
     client: The client object that contains the GetOperation request object.
 
   Raises:
@@ -486,14 +480,12 @@ def WaitForOperation(op_name, client):
     The Operation object, if successful. Raises an exception on failure.
   """
   WaitForOperation.operation_response = None
-
   messages = GetMessagesModule()
+  operation_id = operation_ref.operationsId
 
-  def _CheckOperation(op_name):  # pylint: disable=missing-docstring
-    op_name = ParseOperationName(op_name)
-
+  def _CheckOperation(operation_id):  # pylint: disable=missing-docstring
     request = messages.ServicemanagementOperationsGetRequest(
-        operationsId=op_name,
+        operationsId=operation_id,
     )
 
     result = client.operations.Get(request)
@@ -508,17 +500,17 @@ def WaitForOperation(op_name, client):
   try:
     retry.Retryer(exponential_sleep_multiplier=1.1, wait_ceiling_ms=10000,
                   max_wait_ms=30*60*1000).RetryOnResult(
-                      _CheckOperation, [op_name], should_retry_if=False,
+                      _CheckOperation, [operation_id], should_retry_if=False,
                       sleep_ms=1500)
   except retry.MaxRetrialsException:
     raise exceptions.ToolException('Timed out while waiting for '
-                                   'operation %s. Note that the operation '
-                                   'is still pending.' % op_name)
+                                   'operation {0}. Note that the operation '
+                                   'is still pending.'.format(operation_id))
 
   # Check to see if the operation resulted in an error
   if WaitForOperation.operation_response.error is not None:
     raise OperationErrorException(
-        'The operation with ID {0} resulted in a failure.'.format(op_name))
+        'The operation with ID {0} resulted in a failure.'.format(operation_id))
 
   # If we've gotten this far, the operation completed successfully,
   # so return the Operation object

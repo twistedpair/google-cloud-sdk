@@ -84,12 +84,7 @@ class ReleaseTrack(object):
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in ALPHA and may change without notice.')
-  PREVIEW = _TRACK(
-      'PREVIEW', 'preview',
-      '{0}(PREVIEW){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in DEVELOPER PREVIEW and may change without '
-      'notice.')
-  _ALL = [GA, BETA, ALPHA, PREVIEW]
+  _ALL = [GA, BETA, ALPHA]
 
   @staticmethod
   def AllValues():

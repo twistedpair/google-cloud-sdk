@@ -30,13 +30,14 @@ class ModelsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1beta1')
     self.messages = messages or apis.GetMessagesModule('ml', 'v1beta1')
 
-  def Create(self, model):
+  def Create(self, model_name, regions):
     """Create a new model."""
-    model_ref = _ParseModel(model)
+    model_ref = _ParseModel(model_name)
+    regions_list = regions or []
     req = self.messages.MlProjectsModelsCreateRequest(
         projectsId=model_ref.projectsId,
         googleCloudMlV1beta1Model=self.messages.GoogleCloudMlV1beta1Model(
-            name=model_ref.Name()))
+            name=model_ref.Name(), regions=regions_list))
     return self.client.projects_models.Create(req)
 
   def Delete(self, model):

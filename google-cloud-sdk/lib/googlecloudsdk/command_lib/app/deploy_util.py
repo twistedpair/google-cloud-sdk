@@ -439,8 +439,8 @@ def PrintPostDeployHints(new_versions, updated_configs):
   if yaml_parsing.ConfigYamlInfo.CRON in updated_configs:
     log.status.Print('\nCron jobs have been updated.')
     if yaml_parsing.ConfigYamlInfo.QUEUE not in updated_configs:
-      log.status.Print('\nThe Cloud Platform Console Task Queues page has a '
-                       'tab that shows the tasks that are running cron jobs.')
+      log.status.Print('\nVisit the Cloud Platform Console Task Queues page '
+                       'to view your queues and cron jobs.')
   if yaml_parsing.ConfigYamlInfo.DISPATCH in updated_configs:
     log.status.Print('\nCustom routings have been updated.')
   if yaml_parsing.ConfigYamlInfo.DOS in updated_configs:
@@ -451,8 +451,8 @@ def PrintPostDeployHints(new_versions, updated_configs):
                      'and redeploy it.')
   if yaml_parsing.ConfigYamlInfo.QUEUE in updated_configs:
     log.status.Print('\nTask queues have been updated.')
-    log.status.Print('\nThe Cloud Platform Console Task Queues page has a tab '
-                     'that shows the tasks that are running cron jobs.')
+    log.status.Print('\nVisit the Cloud Platform Console Task Queues page '
+                     'to view your queues and cron jobs.')
   if yaml_parsing.ConfigYamlInfo.INDEX in updated_configs:
     log.status.Print('\nIndexes are being rebuilt. This may take a moment.')
 

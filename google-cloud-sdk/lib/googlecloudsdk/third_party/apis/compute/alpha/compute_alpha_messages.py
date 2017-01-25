@@ -244,8 +244,8 @@ class AccessConfig(_messages.Message):
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this access configuration and can only take the following
-      values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is
-      not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+      values: PREMIUM , SELECT. If this field is not specified, it is assumed
+      to be PREMIUM.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -259,9 +259,8 @@ class AccessConfig(_messages.Message):
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
     networkTier: This signifies the networking tier used for configuring this
-      access configuration and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
-      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+      access configuration and can only take the following values: PREMIUM ,
+      SELECT. If this field is not specified, it is assumed to be PREMIUM.
     publicDnsName: [Output Only] The public DNS domain name for the instance.
     publicPtrDomainName: The DNS domain name for the public PTR record. This
       field can only be set when the set_public_ptr field is enabled.
@@ -276,16 +275,15 @@ class AccessConfig(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this access
-    configuration and can only take the following values:
-    CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
-    specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+    configuration and can only take the following values: PREMIUM , SELECT. If
+    this field is not specified, it is assumed to be PREMIUM.
 
     Values:
-      CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_SELECT: <no description>
+      PREMIUM: <no description>
+      SELECT: <no description>
     """
-    CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_SELECT = 1
+    PREMIUM = 0
+    SELECT = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -315,9 +313,8 @@ class Address(_messages.Message):
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
-      configuring this Address and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
-      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+      configuring this Address and can only take the following values: PREMIUM
+      , SELECT. If this field is not specified, it is assumed to be PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
       reserved and available to use. An IN_USE address is currently being used
@@ -359,9 +356,8 @@ class Address(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     networkTier: This signifies the networking tier used for configuring this
-      Address and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-      CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to
-      be CLOUD_NETWORK_PREMIUM.
+      Address and can only take the following values: PREMIUM , SELECT. If
+      this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -388,16 +384,15 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this Address
-    and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-    CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be
-    CLOUD_NETWORK_PREMIUM.
+    and can only take the following values: PREMIUM , SELECT. If this field is
+    not specified, it is assumed to be PREMIUM.
 
     Values:
-      CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_SELECT: <no description>
+      PREMIUM: <no description>
+      SELECT: <no description>
     """
-    CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_SELECT = 1
+    PREMIUM = 0
+    SELECT = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
@@ -1496,9 +1491,9 @@ class BackendService(_messages.Message):
   Enums:
     LoadBalancingSchemeValueValuesEnum:
     ProtocolValueValuesEnum: The protocol this BackendService uses to
-      communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
-      and SSL. The default is HTTP.  For internal load balancing, the possible
-      values are TCP and UDP, and the default is TCP.
+      communicate with backends.  Possible values are HTTP, HTTPS, TCP, and
+      SSL. The default is HTTP.  For internal load balancing, only TCP is
+      supported, The default is TCP.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE.  When the load balancing scheme is EXTERNAL, can be
       NONE, CLIENT_IP, or GENERATED_COOKIE.  When the load balancing scheme is
@@ -1552,9 +1547,9 @@ class BackendService(_messages.Message):
       balancing scheme is EXTERNAL.  When the load balancing scheme is
       INTERNAL, this field is not used.
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL. The
-      default is HTTP.  For internal load balancing, the possible values are
-      TCP and UDP, and the default is TCP.
+      backends.  Possible values are HTTP, HTTPS, TCP, and SSL. The default is
+      HTTP.  For internal load balancing, only TCP is supported, The default
+      is TCP.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -1581,9 +1576,8 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     """The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP and SSL. The default is HTTP.
-    For internal load balancing, the possible values are TCP and UDP, and the
-    default is TCP.
+    Possible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.  For
+    internal load balancing, only TCP is supported, The default is TCP.
 
     Values:
       HTTP: <no description>
@@ -11258,8 +11252,8 @@ class ForwardingRule(_messages.Message):
       LB, SSL Proxy)
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
-      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+      PREMIUM , SELECT. If this field is not specified, it is assumed to be
+      PREMIUM.
 
   Messages:
     LabelsValue: Labels to apply to this resource. These can be later modified
@@ -11322,9 +11316,8 @@ class ForwardingRule(_messages.Message):
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values:
-      CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not
-      specified, it is assumed to be CLOUD_NETWORK_PREMIUM.
+      load balancer and can only take the following values: PREMIUM , SELECT.
+      If this field is not specified, it is assumed to be PREMIUM.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
@@ -11359,10 +11352,10 @@ class ForwardingRule(_messages.Message):
     target: The URL of the target resource to receive the matched traffic. For
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
-      global TargetHttpProxy or TargetHttpsProxy resource. The forwarded
-      traffic must be of a type appropriate to the target object. For example,
-      TargetHttpProxy requires HTTP traffic, and TargetHttpsProxy requires
-      HTTPS traffic.  This field is not used for internal load balancing.
+      global load balancing resource. The forwarded traffic must be of a type
+      appropriate to the target object. For example, TargetHttpProxy requires
+      HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.  This field
+      is not used for internal load balancing.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -11416,16 +11409,15 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: CLOUD_NETWORK_PREMIUM ,
-    CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be
-    CLOUD_NETWORK_PREMIUM.
+    balancer and can only take the following values: PREMIUM , SELECT. If this
+    field is not specified, it is assumed to be PREMIUM.
 
     Values:
-      CLOUD_NETWORK_PREMIUM: <no description>
-      CLOUD_NETWORK_SELECT: <no description>
+      PREMIUM: <no description>
+      SELECT: <no description>
     """
-    CLOUD_NETWORK_PREMIUM = 0
-    CLOUD_NETWORK_SELECT = 1
+    PREMIUM = 0
+    SELECT = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -15129,10 +15121,13 @@ class NetworkInterface(_messages.Message):
       for network interfaces.
     name: [Output Only] The name of the network interface, generated by the
       server. For network devices, these are eth0, eth1, etc.
-    network: URL of the network resource for this instance. This is required
-      for creating an instance but optional when creating a firewall rule. If
-      not specified when creating a firewall rule, the default network is
-      used:  global/networks/default   If you specify this property, you can
+    network: URL of the network resource for this instance. When creating an
+      instance, if neither the network nor the subnetwork is specified, the
+      default network global/networks/default is used; if the network is not
+      specified but the subnetwork is specified, the network is inferred.
+      This field is optional when creating a firewall rule. If not specified
+      when creating a firewall rule, the default network
+      global/networks/default is used.  If you specify this property, you can
       specify the network as a full or partial URL. For example, the following
       are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
       roject/global/networks/network  -
@@ -15878,6 +15873,7 @@ class Quota(_messages.Message):
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
+      CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
@@ -15908,7 +15904,6 @@ class Quota(_messages.Message):
       TARGET_SSL_PROXIES: <no description>
       TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
-      TOTAL_CPUS: <no description>
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
@@ -15916,37 +15911,37 @@ class Quota(_messages.Message):
     BACKEND_BUCKETS = 1
     BACKEND_SERVICES = 2
     CPUS = 3
-    DISKS_TOTAL_GB = 4
-    FIREWALLS = 5
-    FORWARDING_RULES = 6
-    GPUS = 7
-    HEALTH_CHECKS = 8
-    IMAGES = 9
-    INSTANCES = 10
-    INSTANCE_GROUPS = 11
-    INSTANCE_GROUP_MANAGERS = 12
-    INSTANCE_TEMPLATES = 13
-    IN_USE_ADDRESSES = 14
-    LOCAL_SSD_TOTAL_GB = 15
-    NETWORKS = 16
-    PREEMPTIBLE_CPUS = 17
-    REGIONAL_AUTOSCALERS = 18
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 19
-    ROUTERS = 20
-    ROUTES = 21
-    SNAPSHOTS = 22
-    SSD_TOTAL_GB = 23
-    SSL_CERTIFICATES = 24
-    STATIC_ADDRESSES = 25
-    SUBNETWORKS = 26
-    TARGET_HTTPS_PROXIES = 27
-    TARGET_HTTP_PROXIES = 28
-    TARGET_INSTANCES = 29
-    TARGET_POOLS = 30
-    TARGET_SSL_PROXIES = 31
-    TARGET_TCP_PROXIES = 32
-    TARGET_VPN_GATEWAYS = 33
-    TOTAL_CPUS = 34
+    CPUS_ALL_REGIONS = 4
+    DISKS_TOTAL_GB = 5
+    FIREWALLS = 6
+    FORWARDING_RULES = 7
+    GPUS = 8
+    HEALTH_CHECKS = 9
+    IMAGES = 10
+    INSTANCES = 11
+    INSTANCE_GROUPS = 12
+    INSTANCE_GROUP_MANAGERS = 13
+    INSTANCE_TEMPLATES = 14
+    IN_USE_ADDRESSES = 15
+    LOCAL_SSD_TOTAL_GB = 16
+    NETWORKS = 17
+    PREEMPTIBLE_CPUS = 18
+    REGIONAL_AUTOSCALERS = 19
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 20
+    ROUTERS = 21
+    ROUTES = 22
+    SNAPSHOTS = 23
+    SSD_TOTAL_GB = 24
+    SSL_CERTIFICATES = 25
+    STATIC_ADDRESSES = 26
+    SUBNETWORKS = 27
+    TARGET_HTTPS_PROXIES = 28
+    TARGET_HTTP_PROXIES = 29
+    TARGET_INSTANCES = 30
+    TARGET_POOLS = 31
+    TARGET_SSL_PROXIES = 32
+    TARGET_TCP_PROXIES = 33
+    TARGET_VPN_GATEWAYS = 34
     URL_MAPS = 35
     VPN_TUNNELS = 36
 
@@ -18084,8 +18079,8 @@ class TargetInstancesScopedList(_messages.Message):
 
 
 class TargetPool(_messages.Message):
-  """A TargetPool resource. This resource defines a pool of instances,
-  associated HttpHealthCheck resources, and the fallback target pool.
+  """A TargetPool resource. This resource defines a pool of instances, an
+  associated HttpHealthCheck resource, and the fallback target pool.
 
   Enums:
     SessionAffinityValueValuesEnum: Sesssion affinity option, must be one of
@@ -18124,10 +18119,11 @@ class TargetPool(_messages.Message):
       primary pool in the "force" mode, where traffic will be spread to the
       healthy instances with the best effort, or to all instances when no
       instance is healthy.
-    healthChecks: A list of URLs to the HttpHealthCheck resource. A member
-      instance in this pool is considered healthy if and only if all specified
-      health checks pass. An empty list means all member instances will be
-      considered healthy at all times.
+    healthChecks: The URL of the HttpHealthCheck resource. A member instance
+      in this pool is considered healthy if and only if the health checks
+      pass. An empty list means all member instances will be considered
+      healthy at all times. Only HttpHealthChecks are supported. Only one
+      health check may be specified.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instances: A list of resource URLs to the virtual machine instances
@@ -18282,8 +18278,7 @@ class TargetPoolsAddHealthCheckRequest(_messages.Message):
   """A TargetPoolsAddHealthCheckRequest object.
 
   Fields:
-    healthChecks: A list of HttpHealthCheck resources to add to the target
-      pool.
+    healthChecks: The HttpHealthCheck to add to the target pool.
   """
 
   healthChecks = _messages.MessageField('HealthCheckReference', 1, repeated=True)

@@ -57,6 +57,9 @@ If --distributed is not specified, this flag is ignored.
 """)
 
 
+OPERATION_NAME = base.Argument('operation', help='Name of the operation.')
+
+
 # TODO(user): move these into a class
 CONFIG = base.Argument(
     '--config',

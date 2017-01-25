@@ -2,6 +2,43 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 141.0.0 (2017/01/25)
+
+### Breaking Changes
+
+* (Google Cloud SDK) The deprecated `gcloud preview app` and
+  `gcloud preview datastore` have been removed. Commands are available under the
+  GA release track.
+
+### Google App Engine
+* `gcloud app operations` is now in GA.
+* Added support for using Yarn with Node.js applications.
+
+### Google Cloud ML
+* Added a "--regions" flag in `gcloud beta ml models create` to set the
+  region(s) where the model will be deployed.
+* Implemented `gcloud beta ml operations` commands.
+* Fixed a bug where `gcloud beta ml local train --distributed` did not work with
+  TensorFlow >= 0.12
+
+### Google Compute Engine
+* Deprecated old --scopes format in `gcloud compute instances create` in favor
+  of --scopes format consistent with `gcloud compute set-scopes`.
+* Deprecated old --scopes format in `gcloud compute instance-templates create`
+  in favor of --scopes format consistent with `gcloud compute set-scopes`.
+
+### Google Container Engine
+* Updated Google Container Engine's kubectl from version 1.5.1 to 1.5.2.
+
+### Google Container Registry
+* Mitigated an issue regarding gcr.kubernetes.io's certificate when users
+  invoked `gcloud docker`.
+
+### Google Cloud Key Management Service (Beta)
+* Fixed an issue that prevented setting next-rotation-time in
+  `gcloud beta kms crytpokeys set-rotation-schedule`.
+
+
 ## 140.0.0 (2017/01/18)
 
 ### Cloud SDK

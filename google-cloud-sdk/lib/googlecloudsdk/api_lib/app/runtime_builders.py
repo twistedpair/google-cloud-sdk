@@ -47,7 +47,7 @@ following (ls/grep steps just for illustrating where files are):
     $ ls /tmp/runtime-root
     python.yaml
     $ gcloud config set app/use_runtime_builders true
-    $ gcloud config set app/runtime_builders_path file:///tmp/runtime-root
+    $ gcloud config set app/runtime_builders_root file:///tmp/runtime-root
     $ cd $MY_APP_DIR
     $ grep 'runtime' app.yaml
     runtime: python
@@ -56,7 +56,7 @@ following (ls/grep steps just for illustrating where files are):
     $ gcloud beta app deploy
 
 A (possibly) easier way of achieving the same thing if you don't have a
-runtime_builders_path set up for development yet:
+runtime_builders_root set up for development yet:
 
    $ cd $MY_APP_DIR
    $ export _OUTPUT_IMAGE=gcr.io/$PROJECT/appengine/dummy
@@ -85,7 +85,7 @@ class CloudBuildFileNotFound(CloudBuildLoadError):
 
   def __init__(self, name, root, builder_version):
     msg = ('Could not find file [{name}] in directory [{root}]. '
-           'Please ensure that your app/runtime_builders_path property is set '
+           'Please ensure that your app/runtime_builders_root property is set '
            'correctly and that ')
     if builder_version.version:
       msg += ('[{version}] is a valid version of the builder for runtime '
@@ -103,7 +103,7 @@ class CloudBuildObjectNotFound(CloudBuildLoadError):
 
   def __init__(self, name, bucket, builder_version):
     msg = ('Could not find object [{name}] in bucket [{bucket}]. '
-           'Please ensure that your app/runtime_builders_path property is set '
+           'Please ensure that your app/runtime_builders_root property is set '
            'correctly and that ')
     if builder_version.version:
       msg += ('[{version}] is a valid version of the builder for runtime '
@@ -122,7 +122,7 @@ class InvalidRuntimeBuilderPath(CloudBuildLoadError):
   def __init__(self, path):
     super(InvalidRuntimeBuilderPath, self).__init__(
         '[{}] is not a valid runtime builder path. '
-        'Please set the app/runtime_builders_path property to a URL with '
+        'Please set the app/runtime_builders_root property to a URL with '
         'either the Google Cloud Storage (`gs://`) or local file (`file://`) '
         'protocol.'.format(path))
 
@@ -169,7 +169,7 @@ class RuntimeBuilderVersion(object):
   def LoadCloudBuild(self, params):
     """Loads the cloudbuild.yaml configuration file for this runtime version.
 
-    Pulls the file from the app/runtime_builders_path value. Supported protocols
+    Pulls the file from the app/runtime_builders_root value. Supported protocols
     are Cloud Storage ('gs://') and local filesystem ('file://').
 
     Args:
@@ -182,8 +182,7 @@ class RuntimeBuilderVersion(object):
     Raises:
       CloudBuildLoadError: if the cloudbuild.yaml file could not be loaded.
     """
-    # TODO(b/34171706): Rename this property
-    build_file_root = properties.VALUES.app.runtime_builders_path.Get(
+    build_file_root = properties.VALUES.app.runtime_builders_root.Get(
         required=True)
     build_file_name = self.ToYamlFileName()
     messages = cloudbuild_util.GetMessagesModule()

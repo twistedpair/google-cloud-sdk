@@ -55,7 +55,8 @@ def MakeProcess(module_name,
   config = {
       'job': {'job_name': module_name, 'args': args},
       'task': {'type': task_type, 'index': index} if cluster else {},
-      'cluster': cluster or {}
+      'cluster': cluster or {},
+      'environment': 'cloud'
   }
   log.info(('launching training process:\n'
             'command: {cmd}\n config: {config}').format(

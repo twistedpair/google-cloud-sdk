@@ -95,6 +95,14 @@ def GetCurrentProjectParent():
   return project_ref.RelativeName()
 
 
+def WarnOnUsingLogOrServiceArguments(args):
+  """Warns on using the --log or --service flag."""
+  if args.log:
+    sdk_log.warn('--log is deprecated and will soon be removed.')
+  elif args.service:
+    sdk_log.warn('--service is deprecated and will soon be removed.')
+
+
 def CheckSinksCommandArguments(args):
   """Validates arguments that are provided to 'sinks create/update' command.
 
@@ -104,6 +112,7 @@ def CheckSinksCommandArguments(args):
   Raises:
     InvalidArgumentException on error.
   """
+  WarnOnUsingLogOrServiceArguments(args)
   is_project_sink = not (args.log or args.service)
 
   if not is_project_sink and args.log_filter:
@@ -256,7 +265,5 @@ def PrintPermissionInstructions(destination, writer_identity):
   elif destination.startswith('pubsub'):
     sdk_log.status.Print('Please remember to grant {0} Pub/Sub '
                          'Publisher role to the topic.'.format(grantee))
-  sdk_log.status.Print('Please use --unique_writer_identity for all project '
-                       'sinks. This will soon become the default.')
   sdk_log.status.Print('More information about sinks can be found at https://'
                        'cloud.google.com/logging/docs/export/configure_export')

@@ -270,6 +270,13 @@ class Resource(object):
       if value is None:
         raise UnknownFieldException(collection_info.full_name, param)
       setattr(self, param, value)
+
+    self._self_link = '{0}{1}'.format(
+        self._endpoint_url, uritemplate.expand(self._path, self.AsDict()))
+    if (self._collection_info.api_name
+        in ('compute', 'clouduseraccounts', 'storage')):
+      # TODO(b/15425944): Unquote URLs for now for these apis.
+      self._self_link = urllib.unquote(self._self_link)
     self._initialized = True
 
   def __setattr__(self, key, value):
@@ -331,22 +338,24 @@ class Resource(object):
 
   def SelfLink(self):
     """Returns URI for this resource."""
-    self_link = '{0}{1}'.format(self._endpoint_url,
-                                uritemplate.expand(self._path,
-                                                   self.AsDict()))
-    if (self._collection_info.api_name
-        in ('compute', 'clouduseraccounts', 'storage')):
-      # TODO(b/15425944): Unquote URLs for now for these apis.
-      return urllib.unquote(self_link)
-    return self_link
+    return self._self_link
 
   def __str__(self):
-    return self.SelfLink()
+    return self._self_link
 
   def __eq__(self, other):
     if isinstance(other, Resource):
       return self.SelfLink() == other.SelfLink()
     return False
+
+  def __lt__(self, other):
+    return self.SelfLink() < other.SelfLink()
+
+  def __hash__(self):
+    return hash(self._self_link)
+
+  def __repr__(self):
+    return self._self_link
 
 
 def _CopyNestedDictSpine(maybe_dictionary):

@@ -44,6 +44,7 @@ DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore
     Dockerfile
     npm-debug.log
+    yarn-error.log
     .git
     .hg
     .svn

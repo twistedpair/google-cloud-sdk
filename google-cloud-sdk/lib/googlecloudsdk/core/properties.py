@@ -615,8 +615,8 @@ class _SectionApp(_Section):
     # files. The configuration files will live at
     # "<PREFIX>/<runtime>-<version>.yaml" or "<PREFIX>/<runtime>.yaml" for the
     # latest version.
-    self.runtime_builders_path = self._Add(
-        'runtime_builders_path',
+    self.runtime_builders_root = self._Add(
+        'runtime_builders_root',
         default='gs://google_appengine/flex_builders/',
         hidden=True)
 

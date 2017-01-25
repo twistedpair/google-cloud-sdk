@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170111",
+ "revision": "20170117",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -317,10 +317,10 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
      "enum": [
-      "CLOUD_NETWORK_PREMIUM",
-      "CLOUD_NETWORK_SELECT"
+      "PREMIUM",
+      "SELECT"
      ],
      "enumDescriptions": [
       "",
@@ -421,10 +421,10 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
      "enum": [
-      "CLOUD_NETWORK_PREMIUM",
-      "CLOUD_NETWORK_SELECT"
+      "PREMIUM",
+      "SELECT"
      ],
      "enumDescriptions": [
       "",
@@ -1438,7 +1438,7 @@
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP and SSL. The default is HTTP.\n\nFor internal load balancing, the possible values are TCP and UDP, and the default is TCP.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.\n\nFor internal load balancing, only TCP is supported, The default is TCP.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -2958,10 +2958,10 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: CLOUD_NETWORK_PREMIUM , CLOUD_NETWORK_SELECT. If this field is not specified, it is assumed to be CLOUD_NETWORK_PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
      "enum": [
-      "CLOUD_NETWORK_PREMIUM",
-      "CLOUD_NETWORK_SELECT"
+      "PREMIUM",
+      "SELECT"
      ],
      "enumDescriptions": [
       "",
@@ -3002,7 +3002,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global TargetHttpProxy or TargetHttpsProxy resource. The forwarded traffic must be of a type appropriate to the target object. For example, TargetHttpProxy requires HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.\n\nThis field is not used for internal load balancing."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For example, TargetHttpProxy requires HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.\n\nThis field is not used for internal load balancing."
     }
    }
   },
@@ -6323,12 +6323,7 @@
     },
     "network": {
      "type": "string",
-     "description": "URL of the network resource for this instance. This is required for creating an instance but optional when creating a firewall rule. If not specified when creating a firewall rule, the default network is used:\n\nglobal/networks/default \n\nIf you specify this property, you can specify the network as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/global/networks/network \n- projects/project/global/networks/network \n- global/networks/default",
-     "annotations": {
-      "required": [
-       "compute.instances.insert"
-      ]
-     }
+     "description": "URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred.\n\nThis field is optional when creating a firewall rule. If not specified when creating a firewall rule, the default network global/networks/default is used.\n\nIf you specify this property, you can specify the network as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/global/networks/network \n- projects/project/global/networks/network \n- global/networks/default"
     },
     "networkIP": {
      "type": "string",
@@ -7020,6 +7015,7 @@
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
       "CPUS",
+      "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
       "FIREWALLS",
       "FORWARDING_RULES",
@@ -7050,7 +7046,6 @@
       "TARGET_SSL_PROXIES",
       "TARGET_TCP_PROXIES",
       "TARGET_VPN_GATEWAYS",
-      "TOTAL_CPUS",
       "URL_MAPS",
       "VPN_TUNNELS"
      ],
@@ -9215,7 +9210,7 @@
   "TargetPool": {
    "id": "TargetPool",
    "type": "object",
-   "description": "A TargetPool resource. This resource defines a pool of instances, associated HttpHealthCheck resources, and the fallback target pool.",
+   "description": "A TargetPool resource. This resource defines a pool of instances, an associated HttpHealthCheck resource, and the fallback target pool.",
    "properties": {
     "backupPool": {
      "type": "string",
@@ -9236,7 +9231,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "A list of URLs to the HttpHealthCheck resource. A member instance in this pool is considered healthy if and only if all specified health checks pass. An empty list means all member instances will be considered healthy at all times.",
+     "description": "The URL of the HttpHealthCheck resource. A member instance in this pool is considered healthy if and only if the health checks pass. An empty list means all member instances will be considered healthy at all times. Only HttpHealthChecks are supported. Only one health check may be specified.",
      "items": {
       "type": "string"
      }
@@ -9376,7 +9371,7 @@
    "properties": {
     "healthChecks": {
      "type": "array",
-     "description": "A list of HttpHealthCheck resources to add to the target pool.",
+     "description": "The HttpHealthCheck to add to the target pool.",
      "items": {
       "$ref": "HealthCheckReference"
      }

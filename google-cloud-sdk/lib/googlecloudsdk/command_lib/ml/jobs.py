@@ -233,7 +233,7 @@ def BuildPackages(package_path, output_dir):
   - if the current directory isn't writable, we silenly make a temporary copy
 
   Args:
-    package_path: str. Absolute path to the package. This should be the path to
+    package_path: str. Path to the package. This should be the path to
       the directory containing the Python code to be built, *not* its parent
       (which optionally contains setup.py and other metadata).
     output_dir: str, path to a long-lived directory in which the built packages
@@ -246,6 +246,7 @@ def BuildPackages(package_path, output_dir):
     SetuptoolsFailedError: If the setup.py file fails to successfully build.
     MissingInitError: If the package doesn't contain an `__init__.py` file.
   """
+  package_path = os.path.abspath(package_path)
   with files.TemporaryDirectory() as temp_dir:
     package_root = _CopyIfNotWritable(os.path.dirname(package_path), temp_dir)
     if not os.path.exists(os.path.join(package_path, '__init__.py')):
@@ -261,11 +262,24 @@ def BuildPackages(package_path, output_dir):
     package_name = os.path.basename(package_path)
     setup_py_path = _GenerateSetupPyIfNeeded(provided_setup_py_path, temp_dir,
                                              package_name)
+    generated = provided_setup_py_path != setup_py_path
     try:
       return _RunSetupTools(package_root, setup_py_path, output_dir)
     except RuntimeError as err:
-      raise SetuptoolsFailedError(str(err),
-                                  provided_setup_py_path != setup_py_path)
+      raise SetuptoolsFailedError(str(err), generated)
+    finally:
+      if generated:
+        # For some reason, this artifact gets generated in the package root by
+        # setuptools, even after setting PYTHONDONTWRITEBYTECODE or running
+        # `python setup.py clean --all`. It's weird to leave someone a .pyc for
+        # a file they never had, so we clean it up.
+        pyc_file = os.path.join(package_root, 'setup.pyc')
+        try:
+          os.unlink(pyc_file)
+        except OSError:
+          log.debug(
+              "Couldn't remove file [%s] (it may never have been created).",
+              pyc_file)
 
 
 def _UploadFilesByPath(paths, staging_bucket, job_name):

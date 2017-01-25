@@ -38,6 +38,10 @@ DISK_METAVAR = (
     'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
     '[auto-delete={yes,no}]')
 
+DISK_METAVAR_ZONAL_OR_REGIONAL = (
+    'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
+    '[auto-delete={yes,no}] [scope={zonal,regional}]')
+
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     completion_resource_id='compute.instances',
@@ -165,7 +169,7 @@ def AddLocalSsdArgs(parser):
       """
 
 
-def AddDiskArgs(parser):
+def AddDiskArgs(parser, enable_regional_disks=False):
   """Adds arguments related to disks for instances and instance-templates."""
 
   boot_disk_device_name = parser.add_argument(
@@ -206,18 +210,24 @@ def AddDiskArgs(parser):
       default=True,
       help='Automatically delete boot disks when their instances are deleted.')
 
+  disk_arg_spec = {
+      'name': str,
+      'mode': str,
+      'boot': str,
+      'device-name': str,
+      'auto-delete': str,
+  }
+
+  if enable_regional_disks:
+    disk_arg_spec['scope'] = str
+
   disk = parser.add_argument(
       '--disk',
-      type=arg_parsers.ArgDict(spec={
-          'name': str,
-          'mode': str,
-          'boot': str,
-          'device-name': str,
-          'auto-delete': str,
-      }),
+      type=arg_parsers.ArgDict(spec=disk_arg_spec),
       action='append',
       help='Attaches persistent disks to the instances.')
-  disk.detailed_help = """
+
+  detailed_help = """
       Attaches persistent disks to the instances. The disks
       specified must already exist.
 
@@ -244,6 +254,15 @@ def AddDiskArgs(parser):
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
       """
+  if enable_regional_disks:
+    detailed_help += """
+      *scope*::: Can be `zonal` or `regional`. If ``zonal'', the disk is
+      interpreted as a zonal disk in the same zone as the instance (default).
+      If ``regional'', the disk is interpreted as a regional disk in the same
+      region as the instance. The default value for this is ``zonal''.
+
+      """
+  disk.detailed_help = detailed_help
 
 
 def AddCreateDiskArgs(parser):
@@ -818,59 +837,6 @@ def ValidateServiceAccountAndScopeArgs(args):
     raise exceptions.RequiredArgumentException(
         '--no-scopes', 'required with argument '
         '--no-service-account')
-  # TODO(b/30802231) Inline this call when AddScopeArgs is removed
-  ValidateScopeFlags(args)
-
-
-def AddScopeArgs(parser):
-  """Adds scope arguments for instances and instance-templates."""
-  scopes_group = parser.add_mutually_exclusive_group()
-
-  def AddScopesHelp():
-    return """\
-Specifies service accounts and scopes for the
-instances. Service accounts generate access tokens that can be
-accessed through the instance metadata server and used to
-authenticate applications on the instance. The account can be
-either an email address or an alias corresponding to a
-service account. If account is omitted, the project's default
-service account is used. The default service account can be
-specified explicitly by using the alias ``default''. Example:
-
-  $ {{command}} example-instance --scopes compute-rw,me@project.gserviceaccount.com=storage-rw
-
-If this flag is not provided, the following scopes are used:
-{default_scopes}. To create instances with no scopes, use
-``--no-scopes'':
-
-  $ {{command}} example-instance --no-scopes
-
-SCOPE can be either the full URI of the scope or an
-alias. Available aliases are:
-
-[options="header",format="csv",grid="none",frame="none"]
-|========
-Alias,URI
-{aliases}
-|========
-""".format(
-    default_scopes=', '.join(constants.DEFAULT_SCOPES),
-    aliases=constants.ScopesForHelp())
-  scopes = scopes_group.add_argument(
-      '--scopes',
-      type=arg_parsers.ArgList(min_length=1),
-      help='Specifies service accounts and scopes for the instances.',
-      metavar='[ACCOUNT=]SCOPE')
-  scopes.detailed_help = AddScopesHelp
-
-  scopes_group.add_argument(
-      '--no-scopes',
-      action='store_true',
-      help=('If provided, the default scopes ({scopes}) are not added to the '
-            'instances.'.format(scopes=', '.join(constants.DEFAULT_SCOPES))))
-
-
-def ValidateScopeFlags(args):
   # Reject empty scopes
   for scope in (args.scopes or []):
     if not scope:
@@ -911,6 +877,48 @@ def AddMaintenancePolicyArgs(parser):
       type=lambda x: x.upper(),
       help=('Specifies the behavior of the instances when their host '
             'machines undergo maintenance. The default is MIGRATE.'))
+
+
+def AddAcceleratorArgs(parser):
+  """Adds Accelerator-related args."""
+  # Attaches accelerators (e.g. GPUs) to the instances. e.g. --accelerator
+  # type=nvidia-tesla-k80,count=4
+  accelerator = parser.add_argument(
+      '--accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      metavar='ACCELERATOR',
+      help='Attaches accelerators (e.g. GPUs) to the instances.')
+  accelerator.detailed_help = """
+      Attaches accelerators (e.g. GPUs) to the instances.
+
+      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      of accelerator to attach to the instances. Use 'gcloud compute
+      accelerator-types list' to learn about all available accelerator types.
+
+      *count*::: The number of pieces of the accelerator to attach to the
+      instances. The default value is 1.
+      """
+
+
+def ValidateAcceleratorArgs(args):
+  """Valiadates flags specyfying accelerators (e.g. GPUs).
+
+  Args:
+    args: parsed comandline arguments.
+  Raises:
+    InvalidArgumentException: when type is not specified in the accelerator
+    config dictionary.
+  """
+  accelerator_args = getattr(args, 'accelerator', None)
+  if accelerator_args:
+    accelerator_type_name = accelerator_args.get('type', '')
+    if not accelerator_type_name:
+      raise exceptions.InvalidArgumentException(
+          '--accelerator', 'accelerator type must be specified. '
+          'e.g. --accelerator type=nvidia-tesla-k80,count=2')
 
 
 def AddDockerArgs(parser):
@@ -1037,3 +1045,21 @@ def ValidateNicFlags(args):
   raise exceptions.ConflictingArgumentsException(
       '--network-interface',
       'all of the following: ' + ', '.join(conflicting_args))
+
+
+def AddDiskScopeFlag(parser):
+  """Adds --disk-scope flag."""
+  disk_scope = parser.add_argument(
+      '--disk-scope',
+      choices=['zonal', 'regional'],
+      help='If given, the disk specified in --disk is interpreted as a zonal '
+           'disk in the same zone as the instance (default).',
+      default='zonal')
+  disk_scope.detailed_help = """
+      *zonal*::: If given, the disk specified in --disk is interpreted as a
+      zonal disk in the same zone as the instance (default).
+
+      *regional*::: If given, the disk specified in --disk is interpreted as a
+      regional disk in the same region as the instance.
+
+  """

@@ -1153,7 +1153,7 @@ RESOURCE_REGISTRY = {
           table(
             name.basename(),
             status,
-            triggers.len()
+            trigger():label=TRIGGER
           )
         """,
     ),

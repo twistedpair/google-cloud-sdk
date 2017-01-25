@@ -21,7 +21,8 @@ from googlecloudsdk.core.console import console_io
 
 FAMILY_PREFIX = 'family/'
 GUEST_OS_FEATURES = []
-GUEST_OS_FEATURES_BETA = ['VIRTIO_SCSI_MULTIQUEUE',
+GUEST_OS_FEATURES_BETA = ['MULTI_IP_SUBNET',
+                          'VIRTIO_SCSI_MULTIQUEUE',
                           'WINDOWS',
                          ]
 GUEST_OS_FEATURES_ALPHA = ['MULTI_IP_SUBNET',
@@ -37,7 +38,7 @@ class ImageResourceFetcher(object):
 class ImageExpander(object):
   """Mixin class for expanding image aliases."""
 
-  def GetMatchingImages(self, image, alias, errors):
+  def GetMatchingImages(self, user_project, image, alias, errors):
     """Yields images from a public image project and the user's project."""
     service = self.compute.images
     requests = [
@@ -52,7 +53,7 @@ class ImageExpander(object):
          self.messages.ComputeImagesListRequest(
              filter='name eq ^{0}$'.format(image),
              maxResults=constants.MAX_RESULTS_PER_PAGE,
-             project=self.project)),
+             project=user_project)),
     ]
 
     return request_helper.MakeRequests(
@@ -93,6 +94,7 @@ class ImageExpander(object):
     return res[0]
 
   def ExpandImageFlag(self,
+                      user_project,
                       image=None,
                       image_family=None,
                       image_project=None,
@@ -106,6 +108,7 @@ class ImageExpander(object):
     provided, only the given project is queried.
 
     Args:
+      user_project: The user's project.
       image: The name of the image.
       image_family: The family of the image. Is ignored if image name is
         specified.
@@ -172,7 +175,8 @@ class ImageExpander(object):
     WarnAlias(alias)
 
     errors = []
-    images = self.GetMatchingImages(image_ref.Name(), alias, errors)
+    images = self.GetMatchingImages(user_project, image_ref.Name(), alias,
+                                    errors)
 
     user_image = None
     public_images = []
@@ -180,7 +184,9 @@ class ImageExpander(object):
     for image in images:
       if image.deprecated:
         continue
-      if '/projects/{0}/'.format(self.project) in image.selfLink:
+      image_ref2 = self.resources.Parse(
+          image.selfLink, collection='compute.images', enforce_collection=True)
+      if image_ref2.project == user_project:
         user_image = image
       else:
         public_images.append(image)

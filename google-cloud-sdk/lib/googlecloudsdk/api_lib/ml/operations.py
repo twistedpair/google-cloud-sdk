@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,60 +12,102 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for dealing with long-running operations (simple uri)."""
+from apitools.base.py import list_pager
 
-# TODO(b/30137432): Remove this and use api_lib.app.api.operations instead.
-
-from apitools.base.py import encoding
-
-from googlecloudsdk.api_lib.app.api import requests
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import apis
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import retry
 
 
-class OperationError(exceptions.Error):
-  pass
+def GetMessagesModule():
+  return apis.GetMessagesModule('ml', 'v1beta1')
 
 
-class OperationTimeoutError(exceptions.Error):
-  pass
+def GetClientInstance(no_http=False):
+  return apis.GetClientInstance('ml', 'v1beta1', no_http=no_http)
 
 
-def WaitForOperation(operation_service, operation, registry=None):
-  """Wait until the operation is complete or times out.
+# TODO(b/30137432): Remove this and use api_lib.app.api.operations directly
+class CloudMlOperationPoller(waiter.CloudOperationPoller):
+  """Poller for Cloud ML operations API.
 
-  Args:
-    operation_service: The apitools service type for operations
-    operation: The operation resource to wait on
-    registry: A resource registry to use for operation get requests.
-  Returns:
-    The operation resource when it has completed
-  Raises:
-    OperationTimeoutError: when the operation polling times out
-    OperationError: when the operation completed with an error
+  This is necessary because the core operations library doesn't directly support
+  simple_uri.
   """
-  if operation.done:
+
+  def __init__(self, client):
+    self.client = client
+    super(CloudMlOperationPoller, self).__init__(
+        self.client.client.projects_operations,
+        self.client.client.projects_operations)
+
+  def Poll(self, operation_ref):
+    return self.client.Get(operation_ref)
+
+  def GetResult(self, operation):
     return operation
-  if not registry:
-    registry = resources.REGISTRY
-  ref = registry.Parse(
-      operation.name,
-      collection='ml.projects.operations')
-  request = (operation_service.client
-             .MESSAGES_MODULE.MlProjectsOperationsGetRequest(
-                 projectsId=ref.projectsId, operationsId=ref.operationsId))
-  try:
-    operation = retry.Retryer(max_wait_ms=60 * 60 * 1000).RetryOnResult(
-        operation_service.Get,
-        args=(request,),
-        should_retry_if=lambda op, _: not op.done,
+
+
+class OperationsClient(object):
+  """Client for operations service in the Cloud ML API."""
+
+  def __init__(self, client=None, messages=None):
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule()
+
+  def List(self, projects_id):
+    return list_pager.YieldFromList(
+        self.client.projects_operations,
+        self.messages.MlProjectsOperationsListRequest(projectsId=projects_id),
+        field='operations',
+        batch_size_attribute='pageSize')
+
+  def Get(self, operation_ref):
+    return self.client.projects_operations.Get(
+        self.messages.MlProjectsOperationsGetRequest(
+            operationsId=operation_ref.operationsId,
+            projectsId=operation_ref.projectsId))
+
+  def Cancel(self, operation_ref):
+    return self.client.projects_operations.Cancel(
+        self.messages.MlProjectsOperationsCancelRequest(
+            operationsId=operation_ref.operationsId,
+            projectsId=operation_ref.projectsId))
+
+  def Delete(self, operation_ref):
+    return self.client.projects_operations.Delete(
+        self.messages.MlProjectsOperationsDeleteRequest(
+            operationsId=operation_ref.operationsId,
+            projectsId=operation_ref.projectsId))
+
+  def WaitForOperation(self, operation, message=None):
+    """Wait until the operation is complete or times out.
+
+    Args:
+      operation: The operation resource to wait on
+      message: str, the message to print while waiting.
+
+    Returns:
+      The operation resource when it has completed
+
+    Raises:
+      OperationTimeoutError: when the operation polling times out
+      OperationError: when the operation completed with an error
+    """
+    poller = CloudMlOperationPoller(self)
+    if poller.IsDone(operation):
+      return operation
+
+    operation_ref = resources.REGISTRY.Parse(
+        operation.name,
+        collection='ml.projects.operations')
+    if message is None:
+      message = 'Waiting for operation [{}]'.format(operation_ref.operationsId)
+    return waiter.WaitFor(
+        poller, operation_ref, message,
+        pre_start_sleep_ms=0,
+        max_wait_ms=60*60*1000,
+        exponential_sleep_multiplier=None,
+        jitter_ms=None,
+        wait_ceiling_ms=None,
         sleep_ms=5000)
-    if operation.error:
-      raise OperationError(
-          requests.ExtractErrorMessage(
-              encoding.MessageToPyValue(operation.error)))
-    return operation
-  except retry.WaitException:
-    raise OperationTimeoutError(
-        'Operation [{0}] timed out. This operation may still be underway.'
-        .format(operation.name))

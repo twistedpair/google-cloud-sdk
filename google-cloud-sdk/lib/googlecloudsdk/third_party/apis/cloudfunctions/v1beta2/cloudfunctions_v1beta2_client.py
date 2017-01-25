@@ -118,7 +118,8 @@ limited traffic allowed.
 
     def Create(self, request, global_params=None):
       """Creates a new function. If a function with the given name already exists in.
-the specified project, it will return ALREADY_EXISTS error.
+the specified project, the long running operation will return
+ALREADY_EXISTS error.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsCreateRequest) input message

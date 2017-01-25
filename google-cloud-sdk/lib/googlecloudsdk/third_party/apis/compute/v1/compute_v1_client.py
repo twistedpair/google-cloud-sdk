@@ -3354,6 +3354,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def SetServiceAccount(self, request, global_params=None):
+      """Sets the service account on the instance.
+
+      Args:
+        request: (ComputeInstancesSetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setServiceAccount',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setServiceAccount',
+        request_field=u'instancesSetServiceAccountRequest',
+        request_type_name=u'ComputeInstancesSetServiceAccountRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetTags(self, request, global_params=None):
       """Sets tags for the specified instance to the data included in the request.
 

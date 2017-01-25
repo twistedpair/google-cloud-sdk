@@ -21,9 +21,10 @@ from apitools.base.py import exceptions
 
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
-class RepoCreationError(exceptions.Error):
+class RepoCreationError(core_exceptions.Error):
   """Unable to create repo."""
 
   def __init__(self, message):

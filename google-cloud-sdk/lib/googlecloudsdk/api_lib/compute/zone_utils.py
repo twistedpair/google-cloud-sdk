@@ -34,7 +34,7 @@ class ZoneResourceFetcher(object):
             self.compute.zones,
             'Get',
             self.messages.ComputeZonesGetRequest(
-                project=self.project,
+                project=resource_ref.project,
                 zone=resource_ref.zone)))
 
     res = list(request_helper.MakeRequests(

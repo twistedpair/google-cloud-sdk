@@ -20,6 +20,7 @@ import re
 import subprocess
 import textwrap
 
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
@@ -36,7 +37,7 @@ _HELPER_MIN = (2, 0, 1)
 _TRAILING_SPACES = re.compile(r'(^|^.*[^\\ ]|^.*\\ ) *$')
 
 
-class Error(Exception):
+class Error(exceptions.Error):
   """Exceptions for this module."""
 
 

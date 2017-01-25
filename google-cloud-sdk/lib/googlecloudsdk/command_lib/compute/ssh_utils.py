@@ -311,7 +311,10 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey()
+    # First, grab the public key from the user's computer. If the public key
+    # doesn't already exist, GetPublicKey() should create it.
+    public_key = self.GetPublicKey()
+
     new_metadata = _AddSSHKeyToMetadataMessage(self.messages, user, public_key,
                                                instance.metadata,
                                                iam_keys=iam_keys)
@@ -333,7 +336,11 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey()
+    # First, grab the public key from the user's computer. If the public key
+    # doesn't already exist, GetPublicKey() should create it.
+    public_key = self.GetPublicKey()
+
+    # Second, let's make sure the public key is in the project metadata.
     project = self.GetProject(project_name)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
@@ -346,7 +353,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
 
   def _EnsureSSHKeyExistsForUser(self, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
-    public_key = self.keys.GetPublicKey()
+    public_key = self.GetPublicKey()
     should_upload = True
     try:
       user_info = fetcher.LookupUser(user)

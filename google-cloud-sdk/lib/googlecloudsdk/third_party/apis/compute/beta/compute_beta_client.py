@@ -34,6 +34,7 @@ class ComputeBeta(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.acceleratorTypes = self.AcceleratorTypesService(self)
     self.addresses = self.AddressesService(self)
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
@@ -78,6 +79,94 @@ class ComputeBeta(base_api.BaseApiClient):
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
+
+  class AcceleratorTypesService(base_api.BaseApiService):
+    """Service class for the acceleratorTypes resource."""
+
+    _NAME = u'acceleratorTypes'
+
+    def __init__(self, client):
+      super(ComputeBeta.AcceleratorTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of accelerator types.
+
+      Args:
+        request: (ComputeAcceleratorTypesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorTypeAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/acceleratorTypes',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesAggregatedListRequest',
+        response_type_name=u'AcceleratorTypeAggregatedList',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified accelerator type. Get a list of available accelerator types by making a list() request.
+
+      Args:
+        request: (ComputeAcceleratorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.get',
+        ordered_params=[u'project', u'zone', u'acceleratorType'],
+        path_params=[u'acceleratorType', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesGetRequest',
+        response_type_name=u'AcceleratorType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of accelerator types available to the specified project.
+
+      Args:
+        request: (ComputeAcceleratorTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorTypeList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesListRequest',
+        response_type_name=u'AcceleratorTypeList',
+        supports_download=False,
+    )
 
   class AddressesService(base_api.BaseApiService):
     """Service class for the addresses resource."""
@@ -3024,7 +3113,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -3234,7 +3323,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+      """Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdateRequest) input message
@@ -4017,6 +4106,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def SetMachineResources(self, request, global_params=None):
+      """Changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
+
+      Args:
+        request: (ComputeInstancesSetMachineResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMachineResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMachineResources.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setMachineResources',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineResources',
+        request_field=u'instancesSetMachineResourcesRequest',
+        request_type_name=u'ComputeInstancesSetMachineResourcesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetMachineType(self, request, global_params=None):
       """Changes the machine type for a stopped instance to the machine type specified in the request.
 
@@ -4621,7 +4736,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.projects.listXpnHosts',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
         relative_path=u'projects/{project}/listXpnHosts',
         request_field=u'projectsListXpnHostsRequest',
         request_type_name=u'ComputeProjectsListXpnHostsRequest',

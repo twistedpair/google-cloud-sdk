@@ -203,14 +203,10 @@ def AddUpdateArgs(parser, include_beta=False):
       help='This signifies what the forwarding rule will be used for.')
 
 
-def AddIPProtocols(parser, include_beta=False):
+def AddIPProtocols(parser):
   """Adds IP protocols flag, with values available in the given version."""
 
-  protocols = ['AH', 'ESP']
-  if include_beta:
-    # ICMP is only supported in Alpha and Beta.
-    protocols.append('ICMP')
-  protocols.extend(['SCTP', 'TCP', 'UDP'])
+  protocols = ['AH', 'ESP', 'ICMP', 'SCTP', 'TCP', 'UDP']
 
   parser.add_argument(
       '--ip-protocol',

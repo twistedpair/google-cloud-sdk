@@ -473,7 +473,7 @@ class Day(object):
       return times.ParseDateTime(s, '%Y-%m-%d').date()
     except times.Error as e:
       raise ArgumentTypeError(
-          _GenerateErrorMessage('Failed to parse date: {0}'.format(unicode(e)),
+          _GenerateErrorMessage(u'Failed to parse date: {0}'.format(unicode(e)),
                                 user_input=s))
 
 
@@ -490,7 +490,7 @@ class Datetime(object):
     except times.Error as e:
       raise ArgumentTypeError(
           _GenerateErrorMessage(
-              'Failed to parse date/time: {0}'.format(unicode(e)),
+              u'Failed to parse date/time: {0}'.format(unicode(e)),
               user_input=s))
 
 

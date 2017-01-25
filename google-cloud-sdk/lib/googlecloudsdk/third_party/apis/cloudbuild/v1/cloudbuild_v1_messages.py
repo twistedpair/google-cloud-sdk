@@ -52,7 +52,7 @@ class Build(_messages.Message):
     results: Results of the build. @OutputOnly
     source: Describes where to find the source files to build.
     sourceProvenance: A permanent fixed identifier for source. @OutputOnly
-    startTime: Time at which execution of the build was started.
+    startTime: Time at which execution of the build was started. @OutputOnly
     status: Status of the build. @OutputOnly
     statusDetail: Customer-readable message about the current status.
       @OutputOnly
@@ -68,7 +68,6 @@ class Build(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
-      QUEUING: Build has been received and is being queued.
       QUEUED: Build is queued; work has not yet begun.
       WORKING: Build is being executed.
       SUCCESS: Build finished successfully.
@@ -78,14 +77,13 @@ class Build(_messages.Message):
       CANCELLED: Build was canceled by a user.
     """
     STATUS_UNKNOWN = 0
-    QUEUING = 1
-    QUEUED = 2
-    WORKING = 3
-    SUCCESS = 4
-    FAILURE = 5
-    INTERNAL_ERROR = 6
-    TIMEOUT = 7
-    CANCELLED = 8
+    QUEUED = 1
+    WORKING = 2
+    SUCCESS = 3
+    FAILURE = 4
+    INTERNAL_ERROR = 5
+    TIMEOUT = 6
+    CANCELLED = 7
 
   buildTriggerId = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -163,6 +161,8 @@ class BuildStep(_messages.Message):
       be used as the entrypoint, and the remainder will be used as arguments.
     dir: Working directory (relative to project source root) to use when
       running this operation's container.
+    entrypoint: Optional entrypoint to be used instead of the build step
+      image's default If unset, the image's default will be used.
     env: A list of environment variable definitions to be used when running a
       step.  The elements are of the form "KEY=VALUE" for the environment
       variable "KEY" being given the value "VALUE".
@@ -189,10 +189,11 @@ class BuildStep(_messages.Message):
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)
-  env = _messages.StringField(3, repeated=True)
-  id = _messages.StringField(4)
-  name = _messages.StringField(5)
-  waitFor = _messages.StringField(6, repeated=True)
+  entrypoint = _messages.StringField(3)
+  env = _messages.StringField(4, repeated=True)
+  id = _messages.StringField(5)
+  name = _messages.StringField(6)
+  waitFor = _messages.StringField(7, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
