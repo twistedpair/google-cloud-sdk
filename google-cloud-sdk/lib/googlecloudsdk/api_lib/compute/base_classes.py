@@ -572,8 +572,7 @@ class MultiScopeLister(BaseLister):
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors=errors)
 
 
 def GetMultiScopeListerHelp(resource, scopes):
@@ -718,8 +717,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
         requests=[get_request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors=errors)
 
     resource_list = lister.ProcessResults(objects, field_selector=None)
     resource_list = list(self.ComputeDynamicProperties(args, resource_list))
@@ -975,20 +973,6 @@ class BaseAsyncMutator(BaseCommand):
   def service(self):
     """The service that can mutate resources."""
 
-  @property
-  def custom_get_requests(self):
-    """Returns request objects for getting the mutated resources.
-
-    This should be a dict mapping operation targetLink names to
-    requests that can be passed to batch_helper. This is useful for
-    verbs whose operations do not point to the resources being mutated
-    (e.g., Disks.createSnapshot).
-
-    If None, the operations' targetLinks are used to fetch the mutated
-    resources.
-    """
-    return None
-
   @abc.abstractproperty
   def method(self):
     """The method name on the service as a string."""
@@ -1036,8 +1020,7 @@ class BaseAsyncMutator(BaseCommand):
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=self.custom_get_requests))
+        errors=errors))
 
     return resource_list
 
@@ -1323,8 +1306,7 @@ class ReadWriteCommand(BaseCommand):
         requests=[get_request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,
@@ -1351,8 +1333,7 @@ class ReadWriteCommand(BaseCommand):
         requests=[self.GetSetRequest(args, new_object, objects[0])],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors=errors)
 
     resource_list = lister.ProcessResults(
         resources=resource_list,
@@ -1702,8 +1683,7 @@ class BaseEdit(BaseCommand):
         requests=[self.GetSetRequest(args, new_object, self.original_object)],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,
@@ -1720,8 +1700,7 @@ class BaseEdit(BaseCommand):
         requests=[get_request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,

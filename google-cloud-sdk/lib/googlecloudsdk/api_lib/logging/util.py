@@ -16,6 +16,7 @@
 
 from apitools.base.py import extra_types
 
+from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log as sdk_log
@@ -103,6 +104,24 @@ def WarnOnUsingLogOrServiceArguments(args):
     sdk_log.warn('--service is deprecated and will soon be removed.')
 
 
+def CheckLegacySinksCommandArguments(args):
+  """Validates that legacy sinks only use project arguments."""
+  WarnOnUsingLogOrServiceArguments(args)
+  is_legacy_sink = args.log or args.service
+
+  if is_legacy_sink and args.organization:
+    raise exceptions.InvalidArgumentException(
+        '--organization', 'Legacy sinks do not support this feature')
+
+  if is_legacy_sink and args.folder:
+    raise exceptions.InvalidArgumentException(
+        '--folder', 'Legacy sinks do not support this feature')
+
+  if is_legacy_sink and args.billing_account:
+    raise exceptions.InvalidArgumentException(
+        '--billing-account', 'Legacy sinks do not support this feature')
+
+
 def CheckSinksCommandArguments(args):
   """Validates arguments that are provided to 'sinks create/update' command.
 
@@ -112,16 +131,17 @@ def CheckSinksCommandArguments(args):
   Raises:
     InvalidArgumentException on error.
   """
-  WarnOnUsingLogOrServiceArguments(args)
-  is_project_sink = not (args.log or args.service)
+  is_legacy_sink = args.log or args.service
 
-  if not is_project_sink and args.log_filter:
+  if is_legacy_sink and args.log_filter:
     raise exceptions.InvalidArgumentException(
-        '--log-filter', 'Only project sinks support filters')
+        '--log-filter', 'Legacy sinks do not support filters')
 
-  if not is_project_sink and args.output_version_format == 'V2':
+  if is_legacy_sink and args.output_version_format == 'V2':
     raise exceptions.InvalidArgumentException(
-        '--output-version-format', 'Only project sinks support V2 format')
+        '--output-version-format', 'Legacy sinks do not support V2 format')
+
+  CheckLegacySinksCommandArguments(args)
 
 
 def FormatTimestamp(timestamp):
@@ -155,15 +175,15 @@ def AddNonProjectArgs(parser, help_string):
   entity_group.add_argument(
       '--organization', required=False, metavar='ORGANIZATION_ID',
       completion_resource='cloudresourcemanager.organizations',
-      help='{0} associated with this organization'.format(help_string))
+      help='{0} associated with this organization.'.format(help_string))
 
   entity_group.add_argument(
       '--folder', required=False, metavar='FOLDER_ID',
-      help='{0} associated with this folder'.format(help_string))
+      help='{0} associated with this folder.'.format(help_string))
 
   entity_group.add_argument(
       '--billing-account', required=False, metavar='BILLING_ACCOUNT_ID',
-      help='{0} associated with this billing account'.format(help_string))
+      help='{0} associated with this billing account.'.format(help_string))
 
 
 def GetParentFromArgs(args):
@@ -177,17 +197,19 @@ def GetParentFromArgs(args):
   """
   if args.organization:
     org_ref = resources.REGISTRY.Parse(
-        args.organization, params={},
+        args.organization,
         collection='cloudresourcemanager.organizations')
     return org_ref.RelativeName()
   elif args.folder:
-    # TODO(b/33405530): Use resource parser for folders when folders
-    # is out of alpha
-    return 'folders/{0}'.format(args.folder)
+    folder_ref = folders.FoldersRegistry().Parse(
+        args.folder,
+        collection='cloudresourcemanager.folders')
+    return folder_ref.RelativeName()
   elif args.billing_account:
-    # TODO(b/33405530): Use resource parser for billing accounts when
-    # billing accounts is out of alpha
-    return 'billingAccounts/{0}'.format(args.billing_account)
+    billing_account_ref = resources.REGISTRY.Parse(
+        args.billing_account,
+        collection='cloudbilling.billingAccounts')
+    return billing_account_ref.RelativeName()
   else:
     return GetCurrentProjectParent()
 

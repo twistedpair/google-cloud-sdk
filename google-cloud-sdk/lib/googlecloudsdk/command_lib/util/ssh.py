@@ -21,7 +21,6 @@ import re
 import subprocess
 import enum
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.command_lib.util import time_util
@@ -43,13 +42,15 @@ _SSH_ERROR_EXIT_CODE = 255
 # overridden with a file path.
 SSH_OUTPUT_FILE = None
 
-DEFAULT_SSH_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
-
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 
 # The default timeout for waiting for a host to become reachable.
 # Useful for giving some time after VM booting, key propagation etc.
 _DEFAULT_TIMEOUT = 60
+
+
+class MissingCommandError(core_exceptions.Error):
+  """Indicates that an external executable couldn't be found."""
 
 
 class CommandError(core_exceptions.Error):
@@ -71,54 +72,96 @@ class CommandError(core_exceptions.Error):
         exit_code=return_code)
 
 
+class Environment(object):
+  """Environment maps SSH commands to executable location on file system.
+
+    Recommended usage:
+
+    env = Environment.Current()
+    env.RequireSSH()
+    cmd = [env.ssh, 'user@host']
+
+  An attribute which is None indicates that the executable couldn't be found.
+
+  Attributes:
+    ssh: Location of ssh command.
+    ssh_term: Location of ssh terminal command, for interactive sessions.
+    scp: Location of scp command.
+    keygen: Location of the keygen command.
+  """
+
+  _NIX_COMMANDS = {
+      'ssh': 'ssh',
+      'ssh_term': 'ssh',  # For interactive mode
+      'scp': 'scp',
+      'keygen': 'ssh-keygen',
+  }
+
+  _WINDOWS_COMMANDS = {
+      'ssh': 'plink',
+      'ssh_term': 'putty',
+      'scp': 'pscp',
+      'keygen': 'winkeygen',
+  }
+
+  def __init__(self, ssh=None, ssh_term=None, scp=None, keygen=None):
+    """Create a new environment by supplying executable paths.
+
+    None supplied as an argument indicates that the executable is not available
+    in the current environment.
+
+    Args:
+      ssh: Location of ssh command.
+      ssh_term: Location of ssh terminal command, for interactive sessions.
+      scp: Location of scp command.
+      keygen: Location of the keygen command.
+    """
+    self.ssh = ssh
+    self.ssh_term = ssh_term
+    self.scp = scp
+    self.keygen = keygen
+
+  def SupportsSSH(self):
+    """Whether all SSH commands are supported.
+
+    Returns:
+      True if and only if all commands are supported, else False.
+    """
+    return all((self.ssh, self.ssh_term, self.scp, self.keygen))
+
+  def RequireSSH(self):
+    """Simply raises an error if any SSH command is not supported.
+
+    Raises:
+      MissingCommandError: One or more of the commands were not found.
+    """
+    if not self.SupportsSSH():
+      raise MissingCommandError('Your platform does not support SSH.')
+
+  @classmethod
+  def Current(cls):
+    """Retrieve the current environment.
+
+    Returns:
+      Environment, the active and current environment on this machine.
+    """
+    if platforms.OperatingSystem.IsWindows():
+      commands = Environment._WINDOWS_COMMANDS
+      path = _SdkHelperBin()
+    else:
+      commands = Environment._NIX_COMMANDS
+      path = None
+    env = Environment()
+    for key, cmd in commands.iteritems():
+      setattr(env, key, files.FindExecutableOnPath(cmd, path=path))
+    return env
+
+
 def _IsValidSshUsername(user):
   # All characters must be ASCII, and no spaces are allowed
   # This may grant false positives, but will prevent backwards-incompatible
   # behavior.
   return all(ord(c) < 128 and c != ' ' for c in user)
-
-
-# TODO(user): This function can be dropped 1Q2017.
-def _IsPublicKeyCorrupt95Through97(key):
-  """Returns True if the encoded public key has the release 95.0.0 corruption.
-
-  Windows corruption checks for release 95.0.0 through 97.0.0.
-  Corrupt Windows encoded keys have these properties:
-    type:       'ssh-rsa'
-    exponent:   65537
-    length:     256
-    next byte:  bit 0x80 set
-  A valid key either has exponent != 65537 or:
-    type:       'ssh-rsa'
-    exponent:   65537
-    length:     257
-    next byte:  0
-
-  Args:
-    key: The base64 encoded public key.
-
-  Returns:
-    True if the encoded public key has the release 95.0.0 corruption.
-  """
-  # The corruption only happened on Windows.
-  if not platforms.OperatingSystem.IsWindows():
-    return False
-
-  # All corrupt encodings have the same encoded prefix (up to the second to
-  # last byte of the modulus size).
-  prefix = 'AAAAB3NzaC1yc2EAAAADAQABAAAB'
-  if not key.startswith(prefix):
-    return False
-
-  # The next 3 base64 chars determine the next 2 encoded bytes.
-  modulus = key[len(prefix):len(prefix) + 3]
-  # The last byte of the size must be 01 and the first byte of the modulus must
-  # be 00, and that corresponds to one of two base64 encodings:
-  if modulus in ('AQC', 'AQD'):
-    return False
-
-  # Looks bad.
-  return True
 
 
 class KeyFileStatus(enum.Enum):
@@ -127,21 +170,38 @@ class KeyFileStatus(enum.Enum):
   BROKEN = 'BROKEN'
 
 
-class KeyFileKind(enum.Enum):
+class _KeyFileKind(enum.Enum):
   """List of supported (by gcloud) key file kinds."""
   PRIVATE = 'private'
   PUBLIC = 'public'
   PPK = 'PuTTY PPK'
 
 
-class KeyFilesVerifier(object):
-  """Checks if SSH key files are correct.
+class Keys(object):
+  """Manages private and public SSH key files.
 
+  This class manages the SSH public and private key files, and verifies
+  correctness of them. A Keys object is instantiated with a path to a
+  private key file. The public key locations are inferred by the private
+  key file by simply appending a different file ending (`.pub` and `.ppk`).
+
+  If the keys are broken or do not yet exist, the EnsureKeysExist method
+  can be utilized to shell out to the system SSH keygen and write new key
+  files.
+
+  By default, there is an SSH key for the gcloud installation,
+  `DEFAULT_KEY_FILE` which should likely be used. Note that SSH keys are
+  generated and managed on a per-installation basis. Strictly speaking,
+  there is no 1:1 relationship between installation and user account.
+
+  Verifies correctness of key files:
    - Populates list of SSH key files (key pair, ppk key on Windows).
    - Checks if files are present and (to basic extent) correct.
    - Can remove broken key (if permitted by user).
    - Provides status information.
   """
+
+  DEFAULT_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
 
   class KeyFileData(object):
 
@@ -152,13 +212,39 @@ class KeyFilesVerifier(object):
       self.filename = filename
       self.status = None
 
-  def __init__(self, private_key_file, public_key_file):
+  def __init__(self, key_file):
+    """Create a Keys object which manages the given files.
+
+    Args:
+      key_file: str, The file path to the private SSH key file (other files are
+          derived from this name). Automatically handles symlinks and user
+          expansion.
+    """
+    private_key_file = os.path.realpath(os.path.expanduser(key_file))
+    self.dir = os.path.dirname(private_key_file)
     self.keys = {
-        KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
-        KeyFileKind.PUBLIC: self.KeyFileData(public_key_file)
+        _KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
+        _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub')
     }
     if platforms.OperatingSystem.IsWindows():
-      self.keys[KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
+      self.keys[_KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
+
+  @classmethod
+  def FromFilename(cls, filename=None):
+    """Create Keys object given a file name.
+
+    Args:
+      filename: str or None, the name to the file or DEFAULT_KEY_FILE if None
+
+    Returns:
+      Keys, an instance which manages the keys with the given name.
+    """
+    return cls(filename or Keys.DEFAULT_KEY_FILE)
+
+  @property
+  def key_file(self):
+    """Filename of the private key file."""
+    return self.keys[_KeyFileKind.PRIVATE].filename
 
   def _StatusMessage(self):
     """Prepares human readable SSH key status information."""
@@ -182,9 +268,9 @@ class KeyFilesVerifier(object):
     """Performs minimum key files validation.
 
     Returns:
-      PRESENT if private and public meet minimum key file requirements.
-      ABSENT if there is no sign of public nor private key file.
-      BROKEN if there is some key, but it is broken or incomplete.
+      KeyFileStatus.PRESENT if key files meet minimum requirements.
+      KeyFileStatus.ABSENT if neither private nor public keys exist.
+      KeyFileStatus.BROKEN if there is some key, but it is broken or incomplete.
     """
     def ValidateFile(kind):
       status_or_line = self._WarnOrReadFirstKeyLine(self.keys[kind].filename,
@@ -201,12 +287,12 @@ class KeyFilesVerifier(object):
     # The remaining checks are for the public key file.
 
     # Must have at least 2 space separated fields.
-    if self.keys[KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
-      fields = self.keys[KeyFileKind.PUBLIC].first_line.split(' ')
-      if len(fields) < 2 or _IsPublicKeyCorrupt95Through97(fields[1]):
+    if self.keys[_KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
+      fields = self.keys[_KeyFileKind.PUBLIC].first_line.split(' ')
+      if len(fields) < 2:
         log.warn(
             'The public SSH key file for gcloud is corrupt.')
-        self.keys[KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
+        self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
     collected_values = [x.status for x in self.keys.itervalues()]
@@ -217,54 +303,44 @@ class KeyFilesVerifier(object):
     else:
       return KeyFileStatus.BROKEN
 
-  # TODO(b/33193000) Change non-interactive behavior for 2.06.2017 Release cut
-  def RemoveKeyFilesIfPermittedOrFail(self, force_key_file_overwrite):
+  def RemoveKeyFilesIfPermittedOrFail(self, force_key_file_overwrite=None):
     """Removes all SSH key files if user permitted this behavior.
 
-    User can express intent through --(no)--force-key-file-overwrite flag or
-    prompt (only in interactive mode). Default behavior is to be
-    non-destructive.
+    Precondition: The SSH key files are currently in a broken state.
+
+    Depending on `force_key_file_overwrite`, delete all SSH key files:
+
+    - If True, delete key files.
+    - If False, cancel immediately.
+    - If None and
+      - interactive, prompt the user.
+      - non-interactive, cancel.
 
     Args:
-      force_key_file_overwrite: bool, value of the flag specified or not by user
+      force_key_file_overwrite: bool or None, overwrite broken key files.
+
+    Raises:
+      console_io.OperationCancelledError: Operation intentionally cancelled.
+      OSError: Error deleting the broken file(s).
     """
-    permissive = True  # TODO(b/33193000) Flip this bool value
     message = 'Your SSH key files are broken.\n' + self._StatusMessage()
     if force_key_file_overwrite is False:
       raise console_io.OperationCancelledError(message + 'Operation aborted.')
     message += 'We are going to overwrite all above files.'
-    if force_key_file_overwrite:
-      # self.force_key_file_overwrite is True
-      log.warn(message)
-    else:
-      # self.force_key_file_overwrite is None
-      # Deprecated code path is triggered only when flags are not provided.
-      # Show deprecation warning only in that case.
-      # Show deprecation warning before prompt to increase chance user read
-      # this.
-      # TODO(b/33193000) Remove this deprecation warning
-      log.warn('Permissive behavior in non-interactive mode is DEPRECATED '
-               'and will be removed 1st Jun 2017.\n'
-               'Use --no-force-key-file-overwrite flag to opt-in for new '
-               'behavior now.\n'
-               'If You want to preserve old behavior, You can opt-out from '
-               'new behavior using --force-key-file-overwrite flag.')
-      try:
-        console_io.PromptContinue(message, default=False,
-                                  throw_if_unattended=permissive,
-                                  cancel_on_no=True)
-      except console_io.UnattendedPromptError:
-        # Used to workaround default in non-interactive prompt for old behavior
-        pass  # TODO(b/33193000) Remove this - exception will not be raised
+    log.warn(message)
+    if force_key_file_overwrite is None:
+      # - Interactive when pressing 'Y', continue
+      # - Interactive when pressing enter or 'N', raise OperationCancelledError
+      # - Non-interactive, raise OperationCancelledError
+      console_io.PromptContinue(default=False, cancel_on_no=True)
 
-    # Remove existing broken key files and prepare to regenerate them.
-    # User agreed.
+    # Remove existing broken key files.
     for key_file in self.keys.viewvalues():
       try:
         os.remove(key_file.filename)
       except OSError as e:
-        # May be due to the fact that key_file.filename points to a directory
         if e.errno == errno.EISDIR:
+          # key_file.filename points to a directory
           raise
 
   def _WarnOrReadFirstKeyLine(self, path, kind):
@@ -301,6 +377,71 @@ class KeyFilesVerifier(object):
         status = KeyFileStatus.BROKEN
     log.warn('The %s SSH key file for gcloud %s.', kind, msg)
     return status
+
+  def GetPublicKey(self):
+    """Returns the public key verbatim from file as a string.
+
+    Precondition: The public key must exist. Run Keys.EnsureKeysExist() prior.
+
+    Returns:
+      str, The public key.
+    """
+    # TODO(b/33467618): There is a file-format specification for the key file.
+    # It looks roughly like this: `TYPE KEY [COMMENT]`. Make sure to use that
+    # instead.
+    filepath = self.keys[_KeyFileKind.PUBLIC].filename
+    with open(filepath) as f:
+      # We get back a unicode list of keys for the remaining metadata, so
+      # convert to unicode. Assume UTF 8, but if we miss a character we can just
+      # replace it with a '?'. The only source of issues would be the hostnames,
+      # which are relatively inconsequential.
+      return f.readline().strip().decode('utf8', 'replace')
+
+  def EnsureKeysExist(self, keygen, overwrite):
+    """Generate ssh key files if they do not yet exist.
+
+    Precondition: Environment.SupportsSSH()
+
+    Args:
+      keygen: str, path to ssh-keygen, see Environment.keygen
+      overwrite: bool or None, overwrite key files if they are broken.
+
+    Raises:
+      console_io.OperationCancelledError: if interrupted by user
+      CommandError: if the ssh-keygen command failed.
+    """
+    key_files_validity = self.Validate()
+
+    if key_files_validity is KeyFileStatus.BROKEN:
+      self.RemoveKeyFilesIfPermittedOrFail(overwrite)
+      # Fallthrough
+    if key_files_validity is not KeyFileStatus.PRESENT:
+      if key_files_validity is KeyFileStatus.ABSENT:
+        # If key is broken, message is already displayed
+        log.warn('You do not have an SSH key for gcloud.')
+        log.warn('[%s] will be executed to generate a key.', keygen)
+
+      if not os.path.exists(self.dir):
+        msg = ('This tool needs to create the directory [{0}] before being '
+               'able to generate SSH keys.'.format(self.dir))
+        console_io.PromptContinue(
+            message=msg, cancel_on_no=True,
+            cancel_string='SSH key generation aborted by user.')
+        files.MakeDir(self.dir, 0700)
+
+      keygen_args = [keygen]
+      if platforms.OperatingSystem.IsWindows():
+        # No passphrase in the current implementation.
+        keygen_args.append(self.key_file)
+      else:
+        if properties.VALUES.core.disable_prompts.GetBool():
+          # Specify empty passphrase on command line
+          keygen_args.extend(['-P', ''])
+        keygen_args.extend([
+            '-t', 'rsa',
+            '-f', self.key_file,
+        ])
+      RunExecutable(keygen_args)
 
 
 class KnownHosts(object):
@@ -484,301 +625,157 @@ def RunExecutable(cmd_args, strict_error_checking=True,
 
 def _SdkHelperBin():
   """Returns the SDK helper executable bin directory."""
+  # TODO(b/33467618): Remove this method?
   return os.path.join(config.Paths().sdk_root, 'bin', 'sdk')
 
 
-class SSHCommand(base.Command):
-  """Base class for subcommands that need to connect to instances using SSH.
+def GetDefaultFlags(key_file=None):
+  """Returns a list of default commandline flags."""
+  if not key_file:
+    key_file = Keys.DEFAULT_KEY_FILE
+  return [
+      '-i', key_file,
+      '-o', 'UserKnownHostsFile={0}'.format(KnownHosts.DEFAULT_PATH),
+      '-o', 'IdentitiesOnly=yes',  # ensure our SSH key trumps any ssh_agent
+      '-o', 'CheckHostIP=no'
+  ]
 
-  Subclasses can call EnsureSSHKeyIsInProject() to make sure that the
-  user's public SSH key is placed in the project metadata before
-  proceeding.
+
+def _LocalizeWindowsCommand(cmd_args, env):
+  """Translate cmd_args[1:] from ssh form to plink/putty form.
+
+   The translations are:
+
+      ssh form                      plink/putty form
+      ========                      ================
+      -i PRIVATE_KEY_FILE           -i PRIVATE_KEY_FILE.ppk
+      -o ANYTHING                   <ignore>
+      -p PORT                       -P PORT
+      [USER]@HOST                   [USER]@HOST
+      -BOOLEAN_FLAG                 -BOOLEAN_FLAG
+      -FLAG WITH_VALUE              -FLAG WITH_VALUE
+      POSITIONAL                    POSITIONAL
+
+  Args:
+    cmd_args: [str], The command line that will be executed.
+    env: Environment, the environment we're running in.
+
+  Returns:
+    Returns translated_cmd_args, the localized command line.
   """
-
-  @staticmethod
-  def Args(parser):
-    ssh_key_file = parser.add_argument(
-        '--ssh-key-file',
-        help='The path to the SSH key file.')
-    ssh_key_file.detailed_help = """\
-        The path to the SSH key file. By default, this is ``{0}''.
-        """.format(DEFAULT_SSH_KEY_FILE)
-    force_key_file_overwrite = parser.add_argument(
-        '--force-key-file-overwrite',
-        action='store_true',
-        default=None,
-        help=('Enable/Disable force overwrite of the files associated with a '
-              'broken SSH key.')
-    )
-    force_key_file_overwrite.detailed_help = """\
-        If enabled gcloud will regenerate and overwrite the files associated
-        with a broken SSH key without asking for confirmation in both
-        interactive and non-interactive environment.
-
-        If disabled gcloud will not attempt to regenerate the files associated
-        with a broken SSH key and fail in both interactive and non-interactive
-        environment.
-
-    """
-    # Last line empty to preserve spacing between last paragraph and calliope
-    # attachment "Use --no-force-key-file-overwrite to disable."
-
-  def GetPublicKey(self):
-    """Generates an SSH key using ssh-keygen (if necessary) and returns it.
-
-    Raises:
-      CommandError: if the ssh-keygen command failed.
-
-    Returns:
-      str, The public key.
-    """
-    public_ssh_key_file = self.ssh_key_file + '.pub'
-
-    key_files_summary = KeyFilesVerifier(self.ssh_key_file, public_ssh_key_file)
-
-    key_files_validity = key_files_summary.Validate()
-
-    if key_files_validity is KeyFileStatus.BROKEN:
-      key_files_summary.RemoveKeyFilesIfPermittedOrFail(
-          self.force_key_file_overwrite)
-      # Fallthrough
-    if key_files_validity is not KeyFileStatus.PRESENT:
-      if key_files_validity is KeyFileStatus.ABSENT:
-        # If key is broken, message is already displayed
-        log.warn('You do not have an SSH key for gcloud.')
-        log.warn('[%s] will be executed to generate a key.',
-                 self.ssh_keygen_executable)
-
-      ssh_directory = os.path.dirname(public_ssh_key_file)
-      if not os.path.exists(ssh_directory):
-        if console_io.PromptContinue(
-            'This tool needs to create the directory [{0}] before being able '
-            'to generate SSH keys.'.format(ssh_directory)):
-          files.MakeDir(ssh_directory, 0700)
-        else:
-          raise exceptions.ToolException('SSH key generation aborted by user.')
-
-      keygen_args = [self.ssh_keygen_executable]
-      if platforms.OperatingSystem.IsWindows():
-        # No passphrase in the current implementation.
-        keygen_args.append(self.ssh_key_file)
-      else:
-        if properties.VALUES.core.disable_prompts.GetBool():
-          # Specify empty passphrase on command line
-          keygen_args.extend(['-P', ''])
-        keygen_args.extend([
-            '-t', 'rsa',
-            '-f', self.ssh_key_file,
-        ])
-      RunExecutable(keygen_args)
-
-    with open(public_ssh_key_file) as f:
-      # We get back a unicode list of keys for the remaining metadata, so
-      # convert to unicode. Assume UTF 8, but if we miss a character we can just
-      # replace it with a '?'. The only source of issues would be the hostnames,
-      # which are relatively inconsequential.
-      return f.readline().strip().decode('utf8', 'replace')
-
-  def Run(self, args):
-    """Subclasses must call this in their Run() before continuing."""
-
-    # Used in GetPublicKey
-    self.force_key_file_overwrite = args.force_key_file_overwrite
-
-    if platforms.OperatingSystem.IsWindows():
-      scp_command = 'pscp'
-      ssh_command = 'plink'
-      ssh_keygen_command = 'winkeygen'
-      ssh_term_command = 'putty'
-      # The ssh helper executables are installed in this dir only.
-      path = _SdkHelperBin()
-      self.ssh_term_executable = files.FindExecutableOnPath(
-          ssh_term_command, path=path)
+  positionals = 0
+  cmd_args = list(cmd_args)  # Get a mutable copy.
+  translated_args = [cmd_args.pop(0)]
+  while cmd_args:  # Each iteration processes 1 or 2 args.
+    arg = cmd_args.pop(0)
+    if arg == '-i' and cmd_args:
+      # -i private_key_file -- use private_key_file.ppk -- if it doesn't exist
+      # then winkeygen will be called to generate it before attempting to
+      # connect.
+      translated_args.append(arg)
+      translated_args.append(cmd_args.pop(0) + '.ppk')
+    elif arg == '-o' and cmd_args:
+      # Ignore `-o anything'.
+      cmd_args.pop(0)
+    elif arg == '-p' and cmd_args:
+      # -p PORT => -P PORT
+      translated_args.append('-P')
+      translated_args.append(cmd_args.pop(0))
+    elif arg in ['-2', '-a', '-C', '-l', '-load', '-m', '-pw', '-R', '-T',
+                 '-v', '-x'] and cmd_args:
+      # Pass through putty/plink flag with value.
+      translated_args.append(arg)
+      translated_args.append(cmd_args.pop(0))
+    elif arg.startswith('-'):
+      # Pass through putty/plink Boolean flags
+      translated_args.append(arg)
     else:
-      scp_command = 'scp'
-      ssh_command = 'ssh'
-      ssh_keygen_command = 'ssh-keygen'
-      ssh_term_command = None
-      path = None
-      self.ssh_term_executable = None
-    self.scp_executable = files.FindExecutableOnPath(scp_command, path=path)
-    self.ssh_executable = files.FindExecutableOnPath(ssh_command, path=path)
-    self.ssh_keygen_executable = files.FindExecutableOnPath(
-        ssh_keygen_command, path=path)
-    if (not self.scp_executable or
-        not self.ssh_executable or
-        not self.ssh_keygen_executable or
-        ssh_term_command and not self.ssh_term_executable):
-      raise exceptions.ToolException('Your platform does not support OpenSSH.')
+      positionals += 1
+      translated_args.append(arg)
 
-    self.ssh_key_file = os.path.realpath(os.path.expanduser(
-        args.ssh_key_file or DEFAULT_SSH_KEY_FILE))
+  # If there is only 1 positional then it must be [USER@]HOST and we should
+  # use env.ssh_term_executable to open an xterm window.
+  # TODO(b/33467618): Logically, this is not related to Windows, but to the
+  # intent of the SSH command. Remember in next round of refactoring.
+  if positionals == 1 and translated_args[0] == env.ssh:
+    translated_args[0] = env.ssh_term
+
+  return translated_args
 
 
-class SSHCLICommand(SSHCommand):
-  """Base class for subcommands that use ssh or scp."""
+def LocalizeCommand(cmd_args, env):
+  """Translates an ssh/scp command line to match the local implementation.
 
-  @staticmethod
-  def Args(parser):
-    SSHCommand.Args(parser)
+  Args:
+    cmd_args: [str], The command line that will be executed.
+    env: Environment, the environment we're running in.
 
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help=('If provided, prints the command that would be run to standard '
-              'out instead of executing it.'))
+  Returns:
+    Returns translated_cmd_args, the localized command line.
+  """
+  if platforms.OperatingSystem.IsWindows():
+    return _LocalizeWindowsCommand(cmd_args, env)
+  return cmd_args
 
-    plain = parser.add_argument(
-        '--plain',
-        action='store_true',
-        help='Suppresses the automatic addition of ssh/scp flags.')
-    plain.detailed_help = """\
-        Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
-        is useful if you want to take care of authentication yourself or
-        use specific ssh/scp features.
-        """
 
-    strict_host_key = parser.add_argument(
-        '--strict-host-key-checking',
-        choices=['yes', 'no', 'ask'],
-        help='Override the default behavior for ssh/scp StrictHostKeyChecking')
-    strict_host_key.detailed_help = """\
-        Override the default behavior of StrictHostKeyChecking. By default,
-        StrictHostKeyChecking is set to 'no' the first time you connect to an
-        instance and will be set to 'yes' for all subsequent connections. Use
-        this flag to specify a value for the connection.
-        """
+def GetHostKeyArgs(host_key_alias=None, plain=False,
+                   strict_host_key_checking=None):
+  """Returns default values for HostKeyAlias and StrictHostKeyChecking.
 
-  def GetDefaultFlags(self):
-    """Returns a list of default commandline flags."""
-    return [
-        '-i', self.ssh_key_file,
-        '-o', 'UserKnownHostsFile={0}'.format(KnownHosts.DEFAULT_PATH),
-        '-o', 'IdentitiesOnly=yes',  # ensure our SSH key trumps any ssh_agent
-        '-o', 'CheckHostIP=no'
-    ]
+  Args:
+    host_key_alias: Alias of the host key in the known_hosts file.
+    plain: bool, if running in plain mode.
+    strict_host_key_checking: bool, whether to enforce strict host key
+        checking. If false, it will be determined by existence of host_key_alias
+        in the known hosts file.
 
-  def _LocalizeWindowsCommand(self, cmd_args):
-    """Translate cmd_args[1:] from ssh form to plink/putty form.
+  Returns:
+    list, list of arguments to add to the ssh command line.
+  """
+  if plain or platforms.OperatingSystem.IsWindows():
+    return []
 
-     The translations are:
+  known_hosts = KnownHosts.FromDefaultFile()
+  if strict_host_key_checking:
+    strict_host_key_value = strict_host_key_checking
+  elif known_hosts.ContainsAlias(host_key_alias):
+    strict_host_key_value = 'yes'
+  else:
+    strict_host_key_value = 'no'
 
-        ssh form                      plink/putty form
-        ========                      ================
-        -i PRIVATE_KEY_FILE           -i PRIVATE_KEY_FILE.ppk
-        -o ANYTHING                   <ignore>
-        -p PORT                       -P PORT
-        [USER]@HOST                   [USER]@HOST
-        -BOOLEAN_FLAG                 -BOOLEAN_FLAG
-        -FLAG WITH_VALUE              -FLAG WITH_VALUE
-        POSITIONAL                    POSITIONAL
+  cmd_args = ['-o', 'HostKeyAlias={0}'.format(host_key_alias), '-o',
+              'StrictHostKeyChecking={0}'.format(strict_host_key_value)]
+  return cmd_args
 
-    Args:
-      cmd_args: [str], The command line that will be executed.
 
-    Returns:
-      Returns translated_cmd_args, the localized command line.
-    """
-    positionals = 0
-    cmd_args = list(cmd_args)  # Get a mutable copy.
-    translated_args = [cmd_args.pop(0)]
-    while cmd_args:  # Each iteration processes 1 or 2 args.
-      arg = cmd_args.pop(0)
-      if arg == '-i' and cmd_args:
-        # -i private_key_file -- use private_key_file.ppk -- if it doesn't exist
-        # then winkeygen will be called to generate it before attempting to
-        # connect.
-        translated_args.append(arg)
-        translated_args.append(cmd_args.pop(0) + '.ppk')
-      elif arg == '-o' and cmd_args:
-        # Ignore `-o anything'.
-        cmd_args.pop(0)
-      elif arg == '-p' and cmd_args:
-        # -p PORT => -P PORT
-        translated_args.append('-P')
-        translated_args.append(cmd_args.pop(0))
-      elif arg in ['-2', '-a', '-C', '-l', '-load', '-m', '-pw', '-R', '-T',
-                   '-v', '-x'] and cmd_args:
-        # Pass through putty/plink flag with value.
-        translated_args.append(arg)
-        translated_args.append(cmd_args.pop(0))
-      elif arg.startswith('-'):
-        # Pass through putty/plink Boolean flags
-        translated_args.append(arg)
-      else:
-        positionals += 1
-        translated_args.append(arg)
+def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
+                     plain=False, strict_host_key_checking=None,
+                     timeout=_DEFAULT_TIMEOUT):
+  """Blocks until SSHing to the given host succeeds."""
+  ssh_args_for_polling = [env.ssh]
+  ssh_args_for_polling.extend(GetDefaultFlags(key_file))
+  ssh_args_for_polling.extend(
+      GetHostKeyArgs(host_key_alias, plain, strict_host_key_checking))
 
-    # If there is only 1 positional then it must be [USER@]HOST and we should
-    # use self.ssh_term_executable to open an xterm window.
-    if positionals == 1 and translated_args[0] == self.ssh_executable:
-      translated_args[0] = self.ssh_term_executable
+  ssh_args_for_polling.append(UserHost(user, host))
+  ssh_args_for_polling.append('true')
+  ssh_args_for_polling = LocalizeCommand(ssh_args_for_polling, env)
 
-    return translated_args
-
-  def LocalizeCommand(self, cmd_args):
-    """Translates an ssh/scp command line to match the local implementation.
-
-    Args:
-      cmd_args: [str], The command line that will be executed.
-
-    Returns:
-      Returns translated_cmd_args, the localized command line.
-    """
-    if platforms.OperatingSystem.IsWindows():
-      return self._LocalizeWindowsCommand(cmd_args)
-    return cmd_args
-
-  def GetHostKeyArgs(self, args, host_key_alias):
-    """Returns default values for HostKeyAlias and StrictHostKeyChecking.
-
-    Args:
-      args: argparse.Namespace, The calling command invocation args.
-      host_key_alias: Alias of the host key in the known_hosts file.
-
-    Returns:
-      list, list of arguments to add to the ssh command line.
-    """
-    if args.plain or platforms.OperatingSystem.IsWindows():
-      return []
-
-    known_hosts = KnownHosts.FromDefaultFile()
-    if args.strict_host_key_checking:
-      strict_host_key_value = args.strict_host_key_checking
-    elif known_hosts.ContainsAlias(host_key_alias):
-      strict_host_key_value = 'yes'
-    else:
-      strict_host_key_value = 'no'
-
-    cmd_args = ['-o', 'HostKeyAlias={0}'.format(host_key_alias), '-o',
-                'StrictHostKeyChecking={0}'.format(strict_host_key_value)]
-    return cmd_args
-
-  def WaitUntilSSHable(self, args, user, host, host_key_alias,
-                       timeout=_DEFAULT_TIMEOUT):
-    """Blocks until SSHing to the given host succeeds."""
-    ssh_args_for_polling = [self.ssh_executable]
-    ssh_args_for_polling.extend(self.GetDefaultFlags())
-    ssh_args_for_polling.extend(self.GetHostKeyArgs(args, host_key_alias))
-
-    ssh_args_for_polling.append(UserHost(user, host))
-    ssh_args_for_polling.append('true')
-    ssh_args_for_polling = self.LocalizeCommand(ssh_args_for_polling)
-
-    start_sec = time_util.CurrentTimeSec()
-    while True:
-      logging.debug('polling instance for SSHability')
-      retval = subprocess.call(ssh_args_for_polling)
-      if retval == 0:
-        break
-      if time_util.CurrentTimeSec() - start_sec > timeout:
-        raise exceptions.ToolException(
-            'Could not SSH to the instance.  It is possible that '
-            'your SSH key has not propagated to the instance yet. '
-            'Try running this command again.  If you still cannot connect, '
-            'verify that the firewall and instance are set to accept '
-            'ssh traffic.')
-      time_util.Sleep(5)
+  start_sec = time_util.CurrentTimeSec()
+  while True:
+    logging.debug('polling instance for SSHability')
+    retval = subprocess.call(ssh_args_for_polling)
+    if retval == 0:
+      break
+    if time_util.CurrentTimeSec() - start_sec > timeout:
+      # TODO(b/33467618): Create another exception
+      raise exceptions.ToolException(
+          'Could not SSH to the instance.  It is possible that '
+          'your SSH key has not propagated to the instance yet. '
+          'Try running this command again.  If you still cannot connect, '
+          'verify that the firewall and instance are set to accept '
+          'ssh traffic.')
+    time_util.Sleep(5)
 
 
 # A remote path has three parts host[@user]:[path], where @user and path are

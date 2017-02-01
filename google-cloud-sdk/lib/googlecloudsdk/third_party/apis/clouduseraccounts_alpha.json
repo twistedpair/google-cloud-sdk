@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20161202",
+ "revision": "20170120",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -88,18 +88,18 @@
   "AuditConfig": {
    "id": "AuditConfig",
    "type": "object",
-   "description": "Provides the configuration for non-admin_activity logging for a service. Controls exemptions and specific log sub-types.",
+   "description": "Specifies the audit configuration for a service. It consists of which permission types are logged, and what identities, if any, are exempted from logging. An AuditConifg must have one or more AuditLogConfigs.",
    "properties": {
     "auditLogConfigs": {
      "type": "array",
-     "description": "The configuration for each type of logging",
+     "description": "The configuration for logging of each type of permission.",
      "items": {
       "$ref": "AuditLogConfig"
      }
     },
     "exemptedMembers": {
      "type": "array",
-     "description": "Specifies the identities that are exempted from \"data access\" audit logging for the `service` specified above. Follows the same format of Binding.members.",
+     "description": "Specifies the identities that are exempted from \"data access\" audit logging for the `service` specified above. Follows the same format of Binding.members. This field is deprecated in favor of per-permission-type exemptions.",
      "items": {
       "type": "string"
      }
@@ -113,11 +113,11 @@
   "AuditLogConfig": {
    "id": "AuditLogConfig",
    "type": "object",
-   "description": "Provides the configuration for a sub-type of logging.",
+   "description": "Provides the configuration for logging a type of permissions. Example:\n\n{ \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:foo@gmail.com\" ] }, { \"log_type\": \"DATA_WRITE\", } ] }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from DATA_READ logging.",
    "properties": {
     "exemptedMembers": {
      "type": "array",
-     "description": "Specifies the identities that are exempted from this type of logging Follows the same format of Binding.members.",
+     "description": "Specifies the identities that do not cause logging for this type of permission. Follows the same format of [Binding.members][].",
      "items": {
       "type": "string"
      }
@@ -493,7 +493,7 @@
     },
     "creationTimestamp": {
      "type": "string",
-     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+     "description": "[Deprecated] This field is deprecated."
     },
     "description": {
      "type": "string",
@@ -632,11 +632,13 @@
          "NOT_CRITICAL_ERROR",
          "NO_RESULTS_ON_PAGE",
          "REQUIRED_TOS_AGREEMENT",
+         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
          "RESOURCE_NOT_DELETED",
          "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -723,7 +725,7 @@
    "properties": {
     "auditConfigs": {
      "type": "array",
-     "description": "Specifies audit logging configs for \"data access\". \"data access\": generally refers to data reads/writes and admin reads. \"admin activity\": generally refers to admin writes.\n\nNote: `AuditConfig` doesn't apply to \"admin activity\", which always enables audit logging.",
+     "description": "Specifies cloud audit logging configuration for this policy.",
      "items": {
       "$ref": "AuditConfig"
      }
@@ -1055,7 +1057,6 @@
        "default": "500",
        "format": "uint32",
        "minimum": "0",
-       "maximum": "500",
        "location": "query"
       },
       "orderBy": {
@@ -1277,7 +1278,6 @@
        "default": "500",
        "format": "uint32",
        "minimum": "0",
-       "maximum": "500",
        "location": "query"
       },
       "orderBy": {
@@ -1505,7 +1505,6 @@
        "default": "500",
        "format": "uint32",
        "minimum": "0",
-       "maximum": "500",
        "location": "query"
       },
       "orderBy": {
@@ -1736,7 +1735,6 @@
        "default": "500",
        "format": "uint32",
        "minimum": "0",
-       "maximum": "500",
        "location": "query"
       },
       "orderBy": {

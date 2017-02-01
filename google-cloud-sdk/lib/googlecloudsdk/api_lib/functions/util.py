@@ -70,13 +70,6 @@ class Resources(enum.Enum):
   PROJECT = Resource('project', 'cloudresourcemanager.projects')
 
 
-@enum.unique
-class Obligatoriness(enum.Enum):
-  REQUIRED = 'required'
-  OPTIONAL = 'optional'
-  FORBIDDEN = 'forbidden'
-
-
 class TriggerProvider(object):
   """Represents --trigger-provider flag value options."""
 
@@ -97,10 +90,9 @@ class TriggerEvent(object):
   # Currently any and only project resource is optional
   optional_resource_types = [Resources.PROJECT]
 
-  def __init__(self, label, resource_type, path_obligatoriness):
+  def __init__(self, label, resource_type):
     self.label = label
     self.resource_type = resource_type
-    self.path_obligatoriness = path_obligatoriness
 
   @property
   def event_is_optional(self):
@@ -115,19 +107,17 @@ class TriggerEvent(object):
 # Don't use this structure directly. Use registry object instead.
 _ALL_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
-        TriggerEvent('topic.publish', Resources.TOPIC, Obligatoriness.FORBIDDEN)
+        TriggerEvent('topic.publish', Resources.TOPIC),
     ]),
     TriggerProvider('cloud.storage', [
-        TriggerEvent('object.change', Resources.BUCKET,
-                     Obligatoriness.FORBIDDEN)
+        TriggerEvent('object.change', Resources.BUCKET),
     ]),
     TriggerProvider('firebase.auth', [
-        TriggerEvent('user.create', Resources.PROJECT,
-                     Obligatoriness.FORBIDDEN),
-        TriggerEvent('user.delete', Resources.PROJECT, Obligatoriness.FORBIDDEN)
+        TriggerEvent('user.create', Resources.PROJECT),
+        TriggerEvent('user.delete', Resources.PROJECT),
     ]),
     TriggerProvider('firebase.database', [
-        TriggerEvent('data.write', Resources.PROJECT, Obligatoriness.REQUIRED)
+        TriggerEvent('data.write', Resources.PROJECT),
     ])
 ]  # by convention, first event type is default
 

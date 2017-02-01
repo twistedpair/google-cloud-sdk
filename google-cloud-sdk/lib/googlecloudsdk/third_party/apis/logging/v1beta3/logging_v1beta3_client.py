@@ -165,9 +165,7 @@ class LoggingV1beta3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a log service sink.
-All log entries from a specified log service are written to the
-destination.
+      """Creates a log service sink. All log entries from a specified log service are written to the destination.
 
       Args:
         request: (LoggingProjectsLogServicesSinksCreateRequest) input message
@@ -193,8 +191,7 @@ destination.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a log service sink.
-After deletion, no new log entries are written to the destination.
+      """Deletes a log service sink. After deletion, no new log entries are written to the destination.
 
       Args:
         request: (LoggingProjectsLogServicesSinksDeleteRequest) input message
@@ -272,8 +269,7 @@ After deletion, no new log entries are written to the destination.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a log service sink.
-If the sink does not exist, it is created.
+      """Updates a log service sink. If the sink does not exist, it is created.
 
       Args:
         request: (LoggingProjectsLogServicesSinksUpdateRequest) input message
@@ -345,12 +341,7 @@ If the sink does not exist, it is created.
           }
 
     def Write(self, request, global_params=None):
-      """Writes log entries to Stackdriver Logging. Each entry consists of a.
-`LogEntry` object.  You must fill in the required fields of the
-object.  You can supply a map, `commonLabels`, that holds default
-(key, value) data for the `entries[].metadata.labels` map in each
-entry, saving you the trouble of creating identical copies for
-each entry.
+      """Writes log entries to Stackdriver Logging. Each entry consists of a LogEntry object. You must fill in the required fields of the object. You can supply a map, commonLabels, that holds default (key, value) data for the entries[].metadata.labels map in each entry, saving you the trouble of creating identical copies for each entry.
 
       Args:
         request: (LoggingProjectsLogsEntriesWriteRequest) input message
@@ -386,8 +377,7 @@ each entry.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a log sink.
-All log entries for a specified log are written to the destination.
+      """Creates a log sink. All log entries for a specified log are written to the destination.
 
       Args:
         request: (LoggingProjectsLogsSinksCreateRequest) input message
@@ -413,8 +403,7 @@ All log entries for a specified log are written to the destination.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a log sink.
-After deletion, no new log entries are written to the destination.
+      """Deletes a log sink. After deletion, no new log entries are written to the destination.
 
       Args:
         request: (LoggingProjectsLogsSinksDeleteRequest) input message
@@ -492,8 +481,7 @@ After deletion, no new log entries are written to the destination.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a log sink.
-If the sink does not exist, it is created.
+      """Updates a log sink. If the sink does not exist, it is created.
 
       Args:
         request: (LoggingProjectsLogsSinksUpdateRequest) input message
@@ -529,8 +517,7 @@ If the sink does not exist, it is created.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a log and all its log entries.
-The log will reappear if it receives new entries.
+      """Deletes a log and all its log entries. The log will reappear if it receives new entries.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message
@@ -556,8 +543,7 @@ The log will reappear if it receives new entries.
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in the project.
-Only logs that have entries are listed.
+      """Lists the logs in the project. Only logs that have entries are listed.
 
       Args:
         request: (LoggingProjectsLogsListRequest) input message
@@ -733,8 +719,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a project sink.
-A logs filter determines which log entries are written to the destination.
+      """Creates a project sink. A logs filter determines which log entries are written to the destination.
 
       Args:
         request: (LoggingProjectsSinksCreateRequest) input message
@@ -760,8 +745,7 @@ A logs filter determines which log entries are written to the destination.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a project sink.
-After deletion, no new log entries are written to the destination.
+      """Deletes a project sink. After deletion, no new log entries are written to the destination.
 
       Args:
         request: (LoggingProjectsSinksDeleteRequest) input message
@@ -839,9 +823,7 @@ After deletion, no new log entries are written to the destination.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a project sink.
-If the sink does not exist, it is created.
-The destination, filter, or both may be updated.
+      """Updates a project sink. If the sink does not exist, it is created. The destination, filter, or both may be updated.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message

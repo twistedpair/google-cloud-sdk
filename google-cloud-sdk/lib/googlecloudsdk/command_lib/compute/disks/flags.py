@@ -14,6 +14,8 @@
 
 """Flags and helpers for the compute disks commands."""
 
+import argparse
+
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
@@ -51,7 +53,7 @@ def MakeDiskArgZonalOrRegional(plural):
       zonal_collection='compute.disks',
       regional_collection='compute.regionDisks',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      region_explanation=argparse.SUPPRESS)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',

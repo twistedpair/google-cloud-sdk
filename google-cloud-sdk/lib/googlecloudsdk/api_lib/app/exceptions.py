@@ -14,6 +14,8 @@
 
 """This module holds exceptions raised by api lib."""
 
+
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 
 
@@ -36,6 +38,20 @@ class StorageError(exceptions.Error):
 class DeleteError(exceptions.Error):
   """Raised when deletes fail."""
 
+
+# TODO(b/34516298): use generic HttpException when compatible with v2.
+class HttpException(calliope_exceptions.HttpException):
+  """Wrapper for HttpException with custom message to include details."""
+
+  def __init__(self, error, error_format=None, error_message=''):
+    super(HttpException, self).__init__(error, error_format)
+    self.error_message = error_message
+
+  def __str__(self):
+    no_details_message = super(HttpException, self).__str__()
+    if self.error_message:
+      return self.error_message
+    return no_details_message
 
 STATUS_CODE_TO_ERROR = {
     404: NotFoundError,

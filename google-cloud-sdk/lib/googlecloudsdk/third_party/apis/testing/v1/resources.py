@@ -22,12 +22,6 @@ BASE_URL = 'https://testing.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  PROJECTS_DEVICES = (
-      'projects.devices',
-      'projects/{projectId}/devices/{deviceId}',
-      {},
-      [u'projectId', u'deviceId']
-  )
   PROJECTS_TESTMATRICES = (
       'projects.testMatrices',
       'projects/{projectId}/testMatrices/{testMatrixId}',

@@ -198,13 +198,69 @@ def _MetadataHasBlockProjectSshKeys(metadata):
   return matching_values[0].lower() == 'true'
 
 
-class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
+class BaseSSHCommand(base_classes.BaseCommand):
   """Base class for subcommands that need to connect to instances using SSH.
 
   Subclasses can call EnsureSSHKeyIsInProject() to make sure that the
   user's public SSH key is placed in the project metadata before
   proceeding.
+
+  Attributes:
+    keys: ssh.Keys, the public/private key pair.
+    env: ssh.Environment, the current environment, used by subclasses.
   """
+
+  @staticmethod
+  def Args(parser):
+    """Args is called by calliope to gather arguments for this command.
+
+    Please add arguments in alphabetical order except for no- or a clear-
+    pair for that argument which can follow the argument itself.
+    Args:
+      parser: An argparse parser that you can use to add arguments that go
+          on the command line after this command. Positional arguments are
+          allowed.
+    """
+    force_key_file_overwrite = parser.add_argument(
+        '--force-key-file-overwrite',
+        action='store_true',
+        default=None,
+        help=('Force overwrite the files associated with a broken SSH key.')
+    )
+    force_key_file_overwrite.detailed_help = """\
+        If enabled gcloud will regenerate and overwrite the files associated
+        with a broken SSH key without asking for confirmation in both
+        interactive and non-interactive environment.
+
+        If disabled gcloud will not attempt to regenerate the files associated
+        with a broken SSH key and fail in both interactive and non-interactive
+        environment.
+
+    """
+    # Last line empty to preserve spacing between last paragraph and calliope
+    # attachment "Use --no-force-key-file-overwrite to disable."
+    ssh_key_file = parser.add_argument(
+        '--ssh-key-file',
+        help='The path to the SSH key file.')
+    ssh_key_file.detailed_help = """\
+        The path to the SSH key file. By default, this is ``{0}''.
+        """.format(ssh.Keys.DEFAULT_KEY_FILE)
+
+  def Run(self, args):
+    """Sets up resources to be used by concrete subclasses.
+
+    Subclasses must call this in their Run() before continuing.
+
+    Args:
+      args: argparse.Namespace, arguments that this command was invoked with.
+
+    Raises:
+      ssh.CommandNotFoundError: SSH is not supported.
+    """
+
+    self.keys = ssh.Keys.FromFilename(args.ssh_key_file)
+    self.env = ssh.Environment.Current()
+    self.env.RequireSSH()
 
   def GetProject(self, project):
     """Returns the project object.
@@ -226,8 +282,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
                    ))],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,
@@ -250,8 +305,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
              ))],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseException(
           errors,
@@ -283,8 +337,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
              ))],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,
@@ -311,10 +364,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    # First, grab the public key from the user's computer. If the public key
-    # doesn't already exist, GetPublicKey() should create it.
-    public_key = self.GetPublicKey()
-
+    public_key = self.keys.GetPublicKey()
     new_metadata = _AddSSHKeyToMetadataMessage(self.messages, user, public_key,
                                                instance.metadata,
                                                iam_keys=iam_keys)
@@ -336,11 +386,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    # First, grab the public key from the user's computer. If the public key
-    # doesn't already exist, GetPublicKey() should create it.
-    public_key = self.GetPublicKey()
-
-    # Second, let's make sure the public key is in the project metadata.
+    public_key = self.keys.GetPublicKey()
     project = self.GetProject(project_name)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
@@ -353,7 +399,7 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
 
   def _EnsureSSHKeyExistsForUser(self, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
-    public_key = self.GetPublicKey()
+    public_key = self.keys.GetPublicKey()
     should_upload = True
     try:
       user_info = fetcher.LookupUser(user)
@@ -382,8 +428,53 @@ class BaseSSHCommand(base_classes.BaseCommand, ssh.SSHCommand):
     return 'instances'
 
 
-class BaseSSHCLICommand(BaseSSHCommand, ssh.SSHCLICommand):
+class BaseSSHCLICommand(BaseSSHCommand):
   """Base class for subcommands that use ssh or scp."""
+
+  @staticmethod
+  def Args(parser):
+    """Args is called by calliope to gather arguments for this command.
+
+    Please add arguments in alphabetical order except for no- or a clear-
+    pair for that argument which can follow the argument itself.
+    Args:
+      parser: An argparse parser that you can use to add arguments that go
+          on the command line after this command. Positional arguments are
+          allowed.
+    """
+    BaseSSHCommand.Args(parser)
+
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help=('If provided, prints the command that would be run to standard '
+              'out instead of executing it.'))
+
+    plain = parser.add_argument(
+        '--plain',
+        action='store_true',
+        help='Suppresses the automatic addition of ssh/scp flags.')
+    plain.detailed_help = """\
+        Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
+        is useful if you want to take care of authentication yourself or
+        use specific ssh/scp features.
+        """
+
+    strict_host_key = parser.add_argument(
+        '--strict-host-key-checking',
+        choices=['yes', 'no', 'ask'],
+        help='Override the default behavior for ssh/scp StrictHostKeyChecking')
+    strict_host_key.detailed_help = """\
+        Override the default behavior of StrictHostKeyChecking. By default,
+        StrictHostKeyChecking is set to 'no' the first time you connect to an
+        instance and will be set to 'yes' for all subsequent connections. Use
+        this flag to specify a value for the connection.
+        """
+
+  def Run(self, args):
+    super(BaseSSHCLICommand, self).Run(args)
+    if not args.plain:
+      self.keys.EnsureKeysExist(self.env.keygen, args.force_key_file_overwrite)
 
   def GetInstance(self, instance_ref):
     """Fetch an instance based on the given instance_ref."""
@@ -399,8 +490,7 @@ class BaseSSHCLICommand(BaseSSHCommand, ssh.SSHCLICommand):
         requests=[request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseToolException(
           errors,
@@ -437,7 +527,7 @@ class BaseSSHCLICommand(BaseSSHCommand, ssh.SSHCLICommand):
     Returns:
       int, the exit code of the command that was run
     """
-    cmd_args = self.LocalizeCommand(cmd_args)
+    cmd_args = ssh.LocalizeCommand(cmd_args, self.env)
     if args.dry_run:
       log.out.Print(' '.join(cmd_args))
       return
@@ -507,8 +597,10 @@ class BaseSSHCLICommand(BaseSSHCommand, ssh.SSHCLICommand):
     if keys_newly_added and wait_for_sshable:
       external_ip_address = GetExternalIPAddress(instance)
       host_key_alias = self.HostKeyAlias(instance)
-      self.WaitUntilSSHable(args, user, external_ip_address, host_key_alias,
-                            _SSH_KEY_PROPAGATION_TIMEOUT_SEC)
+      ssh.WaitUntilSSHable(
+          user, external_ip_address, self.env, self.keys.key_file,
+          host_key_alias, args.plain, args.strict_host_key_checking,
+          _SSH_KEY_PROPAGATION_TIMEOUT_SEC)
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 

@@ -50,8 +50,7 @@ class UserResourceFetcher(object):
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseException(errors, UserException,
                            error_message='Could not fetch some users:')
@@ -81,8 +80,7 @@ class UserResourceFetcher(object):
         requests=[request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseException(errors, UserException,
                            error_message='Could not create user:')
@@ -105,8 +103,7 @@ class UserResourceFetcher(object):
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseException(errors, UserException,
                            error_message='Could not remove public key:')
@@ -148,8 +145,7 @@ class UserResourceFetcher(object):
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors:
       utils.RaiseException(errors, UserException,
                            error_message='Could not upload public key:')

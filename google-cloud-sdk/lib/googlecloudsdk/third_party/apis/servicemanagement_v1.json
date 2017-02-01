@@ -1300,11 +1300,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the metric descriptor. Depending on the\nimplementation, the name typically includes: (1) the parent resource name\nthat defines the scope of the metric type or of its data; and (2) the\nmetric's URL-encoded type, which also appears in the `type` field of this\ndescriptor. For example, following is the resource name of a custom\nmetric within the GCP project 123456789:\n\n    \"projects\/123456789\/metricDescriptors\/custom.googleapis.com%2Finvoice%2Fpaid%2Famount\"",
+          "description": "The resource name of the metric descriptor. Depending on the\nimplementation, the name typically includes: (1) the parent resource name\nthat defines the scope of the metric type or of its data; and (2) the\nmetric's URL-encoded type, which also appears in the `type` field of this\ndescriptor. For example, following is the resource name of a custom\nmetric within the GCP project `my-project-id`:\n\n    \"projects\/my-project-id\/metricDescriptors\/custom.googleapis.com%2Finvoice%2Fpaid%2Famount\"",
           "type": "string"
         },
         "type": {
-          "description": "The metric type, including its DNS name prefix. The type is not\nURL-encoded.  All user-defined metric types have the DNS name\n`custom.googleapis.com`.  Metric types should use a natural hierarchical\ngrouping. For example:\n\n    \"custom.googleapis.com\/invoice\/paid\/amount\"\n    \"appengine.googleapis.com\/http\/server\/response_latencies\"",
+          "description": "The metric type, including its DNS name prefix. The type is not\nURL-encoded.  All user-defined custom metric types have the DNS name\n`custom.googleapis.com`.  Metric types should use a natural hierarchical\ngrouping. For example:\n\n    \"custom.googleapis.com\/invoice\/paid\/amount\"\n    \"appengine.googleapis.com\/http\/server\/response_latencies\"",
           "type": "string"
         },
         "labels": {
@@ -1594,14 +1594,14 @@
       "type": "object",
       "properties": {
         "consumerOverrides": {
-          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for group-based quotas, where GROUP_NAME is\nthe google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config. For example:\n'borrowedCountPerOrganization'.\n\n- '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig and <REGION_OR_ZONE> is the name of the region or zone for which\nthe override is defined. For example:\n'borrowedCountPerOrganization:us-central1'.\nOnly metric-based quotas can have per-region overrides. Per-region override\ntakes effect if both per-region override and global override are defined.",
+          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for group-based quotas, where GROUP_NAME is\nthe google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config. For example:\n'borrowedCountPerOrganization'.\n\n- '<LIMIT_NAME>[@DIMENSION_SETTINGS]+ for dimensional set overrides\n  Where DIMENSION_SETTING is <dimension_name>:<dimension_value>.\n  For example\n  Limit1@region:us-central1\n     is an override for limit 1, for region us-central1\n  limit1@zone:us-central1-a\n     is an override for limit 1, for zone us-central1-a.  NOTE that for\n     backwards compatibility, this is the same as region:us-central1-a\n  limit2@region:us-east1@user:12345\n     is an override for region us-east1, and user set to 12345.\nOnly metric-based quotas can have these overrides. Per-region override\ntakes effect if both per-region override and global override are defined.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
           }
         },
         "producerOverrides": {
-          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for group-based quotas, where GROUP_NAME is\nthe google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config. For example:\n'borrowedCountPerOrganization'.\n\n- '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig and <REGION_OR_ZONE> is the name of the region or zone for which\nthe override is defined. For example:\n'borrowedCountPerOrganization:us-central1'.\nOnly metric-based quotas can have per-region overrides. Per-region override\ntakes effect if both per-region override and global override are defined.",
+          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is the same as the key for consumer_overrides.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
@@ -1941,7 +1941,7 @@
       "type": "object",
       "properties": {
         "containerId": {
-          "description": "A Quota limit is defined at container level ORGANIZATION, PROJECT, or\nRESOURCE. The container of a quota bucket for a quota limit is identified\nby organization id, project id, or resource id respectively. For example:\nresource:\/projects\/my-project-123\/vms\/ABCDEF\norganization:google.com\nproject:my-project-123",
+          "description": "A Quota limit is defined at container level ORGANIZATION, PROJECT, or\nThe container of a quota bucket for a quota limit is identified\nby organization id, or project id respectively. For example:\norganization:google.com\nproject:my-project-123",
           "type": "string"
         },
         "region": {
@@ -2445,42 +2445,6 @@
         }
       }
     },
-    "ServiceAccessPolicy": {
-      "id": "ServiceAccessPolicy",
-      "description": "Policy describing who can access a service and any visibility labels on that\nservice.",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "description": "The service protected by this policy.",
-          "type": "string"
-        },
-        "accessList": {
-          "description": "ACL for access to the unrestricted surface of the service.",
-          "$ref": "ServiceAccessList"
-        },
-        "visibilityLabelAccessLists": {
-          "description": "ACLs for access to restricted parts of the service.  The map key is the\nvisibility label that is being controlled.  Note that access to any label\nalso implies access to the unrestricted surface.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "ServiceAccessList"
-          }
-        }
-      }
-    },
-    "ServiceAccessList": {
-      "id": "ServiceAccessList",
-      "description": "List of users and groups that are granted access to a service or visibility\nlabel.",
-      "type": "object",
-      "properties": {
-        "members": {
-          "description": "Members that are granted access.\n\n- \"user:{$user_email}\" - Grant access to an individual user\n- \"group:{$group_email}\" - Grant access to direct members of the group\n- \"domain:{$domain}\" - Grant access to all members of the domain. For now,\n     domain membership check will be similar to Devconsole\/TT check:\n     compare domain part of the user email to configured domain name.\n     When IAM integration is complete, this will be replaced with IAM\n     check.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "QueryUserAccessResponse": {
       "id": "QueryUserAccessResponse",
       "description": "Request message for QueryUserAccess method.",
@@ -2507,6 +2471,11 @@
         "policy": {
           "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
           "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, a default\nmask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -2528,7 +2497,7 @@
           }
         },
         "auditConfigs": {
-          "description": "Specifies audit logging configs for \"data access\".\n\"data access\": generally refers to data reads\/writes and admin reads.\n\"admin activity\": generally refers to admin writes.\n\nNote: `AuditConfig` doesn't apply to \"admin activity\", which always\nenables audit logging.",
+          "description": "Specifies cloud audit logging configuration for this policy.",
           "type": "array",
           "items": {
             "$ref": "AuditConfig"
@@ -2572,7 +2541,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Provides the configuration for non-admin_activity logging for a service.\nControls exemptions and specific log sub-types.",
+      "description": "Specifies the audit configuration for a service.\nIt consists of which permission types are logged, and what identities, if\nany, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.",
       "type": "object",
       "properties": {
         "service": {
@@ -2580,14 +2549,14 @@
           "type": "string"
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.",
+          "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.\nThis field is deprecated in favor of per-permission-type exemptions.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "auditLogConfigs": {
-          "description": "The configuration for each type of logging\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
           "type": "array",
           "items": {
             "$ref": "AuditLogConfig"
@@ -2597,16 +2566,16 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for a sub-type of logging.",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
           "enumDescriptions": [
             "Default case. Should never be this.",
-            "Log admin reads",
-            "Log data writes",
-            "Log data reads"
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
           ],
           "type": "string",
           "enum": [
@@ -2617,7 +2586,7 @@
           ]
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that are exempted from this type of logging\nFollows the same format of Binding.members.",
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2937,11 +2906,11 @@
           "description": "The status code.",
           "enumDescriptions": [
             "Unspecifed code.",
-            "The step has completed without errors.",
-            "The step has not started yet.",
-            "The step is in progress.",
-            "The step has completed with errors.",
-            "The step has completed with cancellation."
+            "The operation or step has completed without errors.",
+            "The operation or step has not started yet.",
+            "The operation or step is in progress.",
+            "The operation or step has completed with errors.",
+            "The operation or step has completed with cancellation."
           ],
           "type": "string",
           "enum": [
@@ -3022,7 +2991,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists all managed services. The result is limited to services that the\ncaller has \"servicemanagement.services.get\" permission for. If the request\nis made without authentication, it returns only public services that are\navailable to everyone.",
+          "description": "Lists managed services.\n\nIf called without any authentication, it returns only the public services.\nIf called with authentication, it returns all services that the caller has\n\"servicemanagement.services.get\" permission for.\n\n**BETA:** If the caller specifies the `consumer_id`, it returns only the\nservices enabled on the consumer. The `consumer_id` must have the format\nof \"project:{PROJECT-ID}\".",
           "parameters": {
             "producerProjectId": {
               "description": "Include services produced by the specified project.",
@@ -3386,61 +3355,6 @@
           },
           "response": {
             "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ]
-        },
-        "getAccessPolicy": {
-          "id": "servicemanagement.services.getAccessPolicy",
-          "path": "v1/services/{serviceName}/accessPolicy",
-          "flatPath": "v1/services/{serviceName}/accessPolicy",
-          "httpMethod": "GET",
-          "description": "Producer method to retrieve current policy.",
-          "parameters": {
-            "serviceName": {
-              "description": "The name of the service.  For example: `example.googleapis.com`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "serviceName"
-          ],
-          "response": {
-            "$ref": "ServiceAccessPolicy"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/service.management",
-            "https://www.googleapis.com/auth/service.management.readonly"
-          ]
-        },
-        "updateAccessPolicy": {
-          "id": "servicemanagement.services.updateAccessPolicy",
-          "path": "v1/services/{serviceName}/accessPolicy",
-          "flatPath": "v1/services/{serviceName}/accessPolicy",
-          "httpMethod": "PUT",
-          "description": "Producer method to update the current policy.  This method will return an\nerror if the policy is too large (more than 50 entries across all lists).",
-          "parameters": {
-            "serviceName": {
-              "description": "The name of the service.  For example: `example.googleapis.com`.\nIf set, policy's service_name should be same as this one.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "serviceName"
-          ],
-          "request": {
-            "$ref": "ServiceAccessPolicy"
-          },
-          "response": {
-            "$ref": "ServiceAccessPolicy"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",

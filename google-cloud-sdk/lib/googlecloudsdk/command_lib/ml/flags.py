@@ -87,8 +87,6 @@ simple built-in one.
 """)
 PACKAGES = base.Argument(
     '--packages',
-    # TODO(b/33234717) remove nargs=+ after deprecation period
-    nargs='+',
     default=[],
     type=arg_parsers.ArgList(),
     metavar='PACKAGE',
@@ -99,10 +97,24 @@ Path to Python archives used for training. These can be local paths
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 (`gs://bucket-name/path/to/package.tar.gz`).
 """)
-USER_ARGS = base.Argument(
-    'user_args',
-    nargs=argparse.REMAINDER,
-    help='Additional user arguments to be fowarded to user code')
+
+
+def GetUserArgs(local=False):
+  # TODO(b/31400045): Move the details to detailed_help. Right now if we do that
+  # it clobbers the argparse.REMAINDER help text.
+  if local:
+    help_text = """\
+Additional user arguments to be fowarded to user code. Any relative paths will
+be relative to the *parent* directory of `--package-path`.
+"""
+  else:
+    help_text = 'Additional user arguments to be fowarded to user code'
+  return base.Argument(
+      'user_args',
+      nargs=argparse.REMAINDER,
+      help=help_text)
+
+
 VERSION_NAME = base.Argument('version', help='Name of the model version.')
 VERSION_DATA = base.Argument(
     '--origin',
@@ -122,6 +134,7 @@ _SCALE_TIER_CHOICES = {
               'using small datasets.'),
     'STANDARD_1': 'Many workers and a few parameter servers.',
     'PREMIUM_1': 'A large number of workers with many parameter servers.',
+    'BASIC_GPU': 'A single worker instance with a GPU.',
     'CUSTOM': """\
 The CUSTOM tier is not a set tier, but rather enables you to use your own
 cluster specification. When you use this tier, set values to configure your
@@ -147,6 +160,12 @@ SCALE_TIER = base.Argument(
           'parameter servers.'),
     choices=_SCALE_TIER_CHOICES,
     default=None)
+# TODO(b/34626942) : Update runtime_version help string with link to runtime
+# version doc page once it exists.
+RUNTIME_VERSION = base.Argument(
+    '--runtime-version',
+    help=('The Google Cloud ML runtime version for this job. '
+          'Defaults to the latest stable version. For example: "0.11"'))
 
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',

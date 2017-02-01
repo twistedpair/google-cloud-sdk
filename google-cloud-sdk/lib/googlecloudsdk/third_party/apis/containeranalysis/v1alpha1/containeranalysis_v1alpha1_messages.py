@@ -61,14 +61,17 @@ class Artifact(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Provides the configuration for non-admin_activity logging for a service.
-  Controls exemptions and specific log sub-types.
+  """Specifies the audit configuration for a service. It consists of which
+  permission types are logged, and what identities, if any, are exempted from
+  logging. An AuditConifg must have one or more AuditLogConfigs.
 
   Fields:
-    auditLogConfigs: The configuration for each type of logging Next ID: 4
+    auditLogConfigs: The configuration for logging of each type of permission.
+      Next ID: 4
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
+      same format of Binding.members. This field is deprecated in favor of
+      per-permission-type exemptions.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -80,14 +83,19 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for a sub-type of logging.
+  """Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
 
   Fields:
-    exemptedMembers: Specifies the identities that are exempted from this type
-      of logging Follows the same format of Binding.members.
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
     logType: The log type that this config enables.
   """
 
@@ -96,9 +104,9 @@ class AuditLogConfig(_messages.Message):
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Log admin reads
-      DATA_WRITE: Log data writes
-      DATA_READ: Log data reads
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
     """
     LOG_TYPE_UNSPECIFIED = 0
     ADMIN_READ = 1
@@ -878,9 +886,9 @@ class Distribution(_messages.Message):
     were built
 
     Values:
-      UNKNOWN: <no description>
-      X86: <no description>
-      X64: <no description>
+      UNKNOWN: Unknown architecture
+      X86: X86 architecture
+      X64: x64 architecture
     """
     UNKNOWN = 0
     X86 = 1
@@ -1066,7 +1074,7 @@ class Layer(_messages.Message):
     """The recovered Dockerfile directive used to construct this layer.
 
     Values:
-      UNKNOWN_DIRECTIVE: <no description>
+      UNKNOWN_DIRECTIVE: Default value for unsupported/missing directive
       MAINTAINER: https://docs.docker.com/reference/builder/#maintainer
       RUN: https://docs.docker.com/reference/builder/#run
       CMD: https://docs.docker.com/reference/builder/#cmd
@@ -1199,7 +1207,8 @@ class Note(_messages.Message):
 
   Enums:
     KindValueValuesEnum: This explicitly denotes which kind of note is
-      specified. @OutputOnly
+      specified. This field can be used as a filter in list requests.
+      @OutputOnly
 
   Fields:
     baseImage: A note describing a base image.
@@ -1208,7 +1217,8 @@ class Note(_messages.Message):
       filter in list requests. @OutputOnly
     expirationTime: Time of expiration for this Note, null if Note currently
       does not expire.
-    kind: This explicitly denotes which kind of note is specified. @OutputOnly
+    kind: This explicitly denotes which kind of note is specified. This field
+      can be used as a filter in list requests. @OutputOnly
     longDescription: A detailed description of this note
     name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
@@ -1221,7 +1231,8 @@ class Note(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """This explicitly denotes which kind of note is specified. @OutputOnly
+    """This explicitly denotes which kind of note is specified. This field can
+    be used as a filter in list requests. @OutputOnly
 
     Values:
       UNKNOWN: Unknown
@@ -1258,7 +1269,8 @@ class Occurrence(_messages.Message):
 
   Enums:
     KindValueValuesEnum: This explicitly denotes which of the occurrence
-      details is specified. @OutputOnly
+      details is specified. This field can be used as a filter in list
+      requests. @OutputOnly
 
   Fields:
     buildDetails: Build details for a verifiable build.
@@ -1268,7 +1280,8 @@ class Occurrence(_messages.Message):
     installation: Describes the installation of a package on the linked
       resource.
     kind: This explicitly denotes which of the occurrence details is
-      specified. @OutputOnly
+      specified. This field can be used as a filter in list requests.
+      @OutputOnly
     name: The name of the occurrence in the form
       "projects/{project_id}/occurrences/{occurrence_id}" @OutputOnly
     noteName: An analysis note associated with this image, in the form
@@ -1284,7 +1297,7 @@ class Occurrence(_messages.Message):
 
   class KindValueValuesEnum(_messages.Enum):
     """This explicitly denotes which of the occurrence details is specified.
-    @OutputOnly
+    This field can be used as a filter in list requests. @OutputOnly
 
     Values:
       UNKNOWN: Unknown
@@ -1357,10 +1370,7 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -1509,9 +1519,14 @@ class SetIamPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, a default mask is used: paths: "bindings, etag" This field is
+      only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class Source(_messages.Message):

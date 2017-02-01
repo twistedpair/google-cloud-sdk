@@ -289,7 +289,7 @@ def _SetDefaultVersion(new_version, api_client):
   # TODO(b/31824825): It sometimes takes a while for a new service to show up.
   # Retry it if we get a service not found error.
   def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
-    return exc_type == calliope_exceptions.HttpException
+    return issubclass(exc_type, calliope_exceptions.HttpException)
 
   try:
     retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2)

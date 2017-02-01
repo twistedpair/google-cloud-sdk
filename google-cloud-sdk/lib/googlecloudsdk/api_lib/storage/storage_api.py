@@ -117,6 +117,20 @@ class StorageClient(object):
         return resp.resource
       rewrite_token = resp.rewriteToken
 
+  def GetObject(self, object_ref):
+    """Gets an object from the given Cloud Storage bucket.
+
+    Args:
+      object_ref: storage_util.ObjectReference, The user-specified bucket to
+        download from.
+
+    Returns:
+      Object: a StorageV1 Object message with details about the object.
+    """
+    return self.client.objects.Get(self.messages.StorageObjectsGetRequest(
+        bucket=object_ref.bucket,
+        object=object_ref.name))
+
   def CopyFileToGCS(self, bucket_ref, local_path, target_path):
     """Upload a file to the GCS results bucket using the storage API.
 

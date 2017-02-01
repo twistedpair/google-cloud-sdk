@@ -769,6 +769,7 @@ class ExplainQueryStage(_messages.Message):
       input.
     recordsRead: Number of records read into the stage.
     recordsWritten: Number of records written by the stage.
+    status: Current status for the stage.
     steps: List of operations within the stage in dependency order
       (approximately chronological).
     waitRatioAvg: Relative amount of time the average shard spent waiting to
@@ -789,11 +790,12 @@ class ExplainQueryStage(_messages.Message):
   readRatioMax = _messages.FloatField(6)
   recordsRead = _messages.IntegerField(7)
   recordsWritten = _messages.IntegerField(8)
-  steps = _messages.MessageField('ExplainQueryStep', 9, repeated=True)
-  waitRatioAvg = _messages.FloatField(10)
-  waitRatioMax = _messages.FloatField(11)
-  writeRatioAvg = _messages.FloatField(12)
-  writeRatioMax = _messages.FloatField(13)
+  status = _messages.StringField(9)
+  steps = _messages.MessageField('ExplainQueryStep', 10, repeated=True)
+  waitRatioAvg = _messages.FloatField(11)
+  waitRatioMax = _messages.FloatField(12)
+  writeRatioAvg = _messages.FloatField(13)
+  writeRatioMax = _messages.FloatField(14)
 
 
 class ExplainQueryStep(_messages.Message):
@@ -990,11 +992,10 @@ class JobConfiguration(_messages.Message):
   Messages:
     LabelsValue: [Experimental] The labels associated with this job. You can
       use these to organize and group your jobs. Label keys and values can be
-      no longer than 63 characters, can only contain letters, numeric
-      characters, underscores and dashes. International characters are
+      no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
-      and must be unique within a dataset. Both keys and values are
-      additionally constrained to be <= 128 bytes in size.
+      and each label in the list must have a different key.
 
   Fields:
     copy: [Pick one] Copies a table.
@@ -1005,11 +1006,10 @@ class JobConfiguration(_messages.Message):
     extract: [Pick one] Configures an extract job.
     labels: [Experimental] The labels associated with this job. You can use
       these to organize and group your jobs. Label keys and values can be no
-      longer than 63 characters, can only contain letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter and must be
-      unique within a dataset. Both keys and values are additionally
-      constrained to be <= 128 bytes in size.
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and each label in the list must have a different key.
     load: [Pick one] Configures a load job.
     query: [Pick one] Configures a query job.
   """
@@ -1018,11 +1018,10 @@ class JobConfiguration(_messages.Message):
   class LabelsValue(_messages.Message):
     """[Experimental] The labels associated with this job. You can use these
     to organize and group your jobs. Label keys and values can be no longer
-    than 63 characters, can only contain letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter and must be unique
-    within a dataset. Both keys and values are additionally constrained to be
-    <= 128 bytes in size.
+    than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes. International characters are allowed.
+    Label values are optional. Label keys must start with a letter and each
+    label in the list must have a different key.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1127,9 +1126,13 @@ class JobConfigurationLoad(_messages.Message):
       can ignore when running the job. If the number of bad records exceeds
       this value, an invalid error is returned in the job result. The default
       value is 0, which requires that all records are valid.
-    nullMarker: [Optional] This string will be interpreted as a null value
-      when it appears in a CSV file. The default value is the empty string.
-      Please refer to the documentation for further information.
+    nullMarker: [Optional] Specifies a string that represents a null value in
+      a CSV file. For example, if you specify "\N", BigQuery interprets "\N"
+      as a null value when loading a CSV file. The default value is the empty
+      string. If you set this property to a custom value, BigQuery still
+      interprets the empty string as a null value for all data types except
+      for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets
+      the empty string as an empty value.
     projectionFields: [Experimental] If sourceFormat is set to
       "DATASTORE_BACKUP", indicates which entity properties to load into
       BigQuery from a Cloud Datastore backup. Property names are case
@@ -1241,8 +1244,9 @@ class JobConfigurationQuery(_messages.Message):
       Queries that will have bytes billed beyond this limit will fail (without
       incurring a charge). If unspecified, this will be set to your project
       default.
-    parameterMode: [Experimental] Standard SQL only. Whether to use positional
-      (?) or named (@myparam) query parameters in this query.
+    parameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to use
+      positional (?) query parameters or to NAMED to use named (@myparam)
+      query parameters in this query.
     preserveNulls: [Deprecated] This property is deprecated.
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
@@ -1731,8 +1735,9 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
-    parameterMode: [Experimental] Standard SQL only. Whether to use positional
-      (?) or named (@myparam) query parameters in this query.
+    parameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to use
+      positional (?) query parameters or to NAMED to use named (@myparam)
+      query parameters in this query.
     preserveNulls: [Deprecated] This property is deprecated.
     query: [Required] A query string, following the BigQuery query syntax, of
       the query to execute. Example: "SELECT count(f1) FROM
@@ -1882,11 +1887,10 @@ class Table(_messages.Message):
   Messages:
     LabelsValue: [Experimental] The labels associated with this table. You can
       use these to organize and group your tables. Label keys and values can
-      be no longer than 63 characters, can only contain letters, numeric
-      characters, underscores and dashes. International characters are
+      be no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
-      and must be unique within a dataset. Both keys and values are
-      additionally constrained to be <= 128 bytes in size.
+      and each label in the list must have a different key.
 
   Fields:
     creationTime: [Output-only] The time when this table was created, in
@@ -1906,11 +1910,10 @@ class Table(_messages.Message):
     kind: [Output-only] The type of the resource.
     labels: [Experimental] The labels associated with this table. You can use
       these to organize and group your tables. Label keys and values can be no
-      longer than 63 characters, can only contain letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter and must be
-      unique within a dataset. Both keys and values are additionally
-      constrained to be <= 128 bytes in size.
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and each label in the list must have a different key.
     lastModifiedTime: [Output-only] The time when this table was last
       modified, in milliseconds since the epoch.
     location: [Output-only] The geographic location where the table resides.
@@ -1943,11 +1946,10 @@ class Table(_messages.Message):
   class LabelsValue(_messages.Message):
     """[Experimental] The labels associated with this table. You can use these
     to organize and group your tables. Label keys and values can be no longer
-    than 63 characters, can only contain letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter and must be unique
-    within a dataset. Both keys and values are additionally constrained to be
-    <= 128 bytes in size.
+    than 63 characters, can only contain lowercase letters, numeric
+    characters, underscores and dashes. International characters are allowed.
+    Label values are optional. Label keys must start with a letter and each
+    label in the list must have a different key.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

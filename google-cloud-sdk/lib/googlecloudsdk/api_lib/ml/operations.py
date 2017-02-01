@@ -55,30 +55,28 @@ class OperationsClient(object):
     self.client = client or GetClientInstance()
     self.messages = messages or GetMessagesModule()
 
-  def List(self, projects_id):
+  def List(self, project_ref):
     return list_pager.YieldFromList(
         self.client.projects_operations,
-        self.messages.MlProjectsOperationsListRequest(projectsId=projects_id),
+        self.messages.MlProjectsOperationsListRequest(
+            name=project_ref.RelativeName()),
         field='operations',
         batch_size_attribute='pageSize')
 
   def Get(self, operation_ref):
     return self.client.projects_operations.Get(
         self.messages.MlProjectsOperationsGetRequest(
-            operationsId=operation_ref.operationsId,
-            projectsId=operation_ref.projectsId))
+            name=operation_ref.RelativeName()))
 
   def Cancel(self, operation_ref):
     return self.client.projects_operations.Cancel(
         self.messages.MlProjectsOperationsCancelRequest(
-            operationsId=operation_ref.operationsId,
-            projectsId=operation_ref.projectsId))
+            name=operation_ref.RelativeName()))
 
   def Delete(self, operation_ref):
     return self.client.projects_operations.Delete(
         self.messages.MlProjectsOperationsDeleteRequest(
-            operationsId=operation_ref.operationsId,
-            projectsId=operation_ref.projectsId))
+            name=operation_ref.RelativeName()))
 
   def WaitForOperation(self, operation, message=None):
     """Wait until the operation is complete or times out.
@@ -102,7 +100,7 @@ class OperationsClient(object):
         operation.name,
         collection='ml.projects.operations')
     if message is None:
-      message = 'Waiting for operation [{}]'.format(operation_ref.operationsId)
+      message = 'Waiting for operation [{}]'.format(operation_ref.Name())
     return waiter.WaitFor(
         poller, operation_ref, message,
         pre_start_sleep_ms=0,

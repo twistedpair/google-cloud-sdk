@@ -242,12 +242,11 @@ def _PerformParameterSubstitution(build, params):
     step.env = [_Substitute(e, params) for e in step.env]
 
 
-def LoadCloudbuildConfig(path, messages=None, params=None):
+def LoadCloudbuildConfig(path, messages, params=None):
   """Load a cloudbuild config file into a Build message.
 
   Args:
-    path: str, The path to a JSON or YAML file to be decoded. The file
-        extension (.json or .yaml) indicates which encoding will be used.
+    path: str, The path to a JSON or YAML file to be decoded.
     messages: module, The messages module that has a Build type.
     params: dict, parameters to substitute into a templated YAML file. This
         feature should only be consumed internally and not exposed directly to
@@ -267,7 +266,8 @@ def LoadCloudbuildConfig(path, messages=None, params=None):
 
   # Turn the data into a dict
   try:
-    structured_data = yaml.load(open(path))
+    with open(path) as f:
+      structured_data = yaml.safe_load(f)
     if not isinstance(structured_data, dict):
       raise ParserError(path, 'Could not parse into a message.')
   except yaml.parser.ParserError as pe:

@@ -233,8 +233,7 @@ def GetInstanceGroupManagerOrThrow(igm_ref, project, compute,
       requests=[(service, 'Get', request)],
       http=http,
       batch_url=batch_url,
-      errors=errors,
-      custom_get_requests=None,
+      errors=errors
   ))
 
   if errors or len(igm_details) != 1:
@@ -305,8 +304,7 @@ def AutoscalersForLocations(zones, regions,
       requests=requests,
       http=http,
       batch_url=batch_url,
-      errors=errors,
-      custom_get_requests=None))
+      errors=errors))
 
   if errors:
     utils.RaiseToolException(

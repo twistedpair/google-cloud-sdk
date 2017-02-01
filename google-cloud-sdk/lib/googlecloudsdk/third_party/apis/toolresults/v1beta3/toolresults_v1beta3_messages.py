@@ -58,14 +58,121 @@ class Any(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class BasicPerfSampleSeries(_messages.Message):
+  """Encapsulates the metadata for basic sample series represented by a line
+  chart
+
+  Enums:
+    PerfMetricTypeValueValuesEnum:
+    PerfUnitValueValuesEnum:
+    SampleSeriesLabelValueValuesEnum:
+
+  Fields:
+    perfMetricType: A PerfMetricTypeValueValuesEnum attribute.
+    perfUnit: A PerfUnitValueValuesEnum attribute.
+    sampleSeriesLabel: A SampleSeriesLabelValueValuesEnum attribute.
+  """
+
+  class PerfMetricTypeValueValuesEnum(_messages.Enum):
+    """PerfMetricTypeValueValuesEnum enum type.
+
+    Values:
+      cpu: <no description>
+      memory: <no description>
+      network: <no description>
+      perfMetricTypeUnspecified: <no description>
+    """
+    cpu = 0
+    memory = 1
+    network = 2
+    perfMetricTypeUnspecified = 3
+
+  class PerfUnitValueValuesEnum(_messages.Enum):
+    """PerfUnitValueValuesEnum enum type.
+
+    Values:
+      kibibyte: <no description>
+      percent: <no description>
+      perfUnitUnspecified: <no description>
+    """
+    kibibyte = 0
+    percent = 1
+    perfUnitUnspecified = 2
+
+  class SampleSeriesLabelValueValuesEnum(_messages.Enum):
+    """SampleSeriesLabelValueValuesEnum enum type.
+
+    Values:
+      cpuKernel: <no description>
+      cpuTotal: <no description>
+      cpuUser: <no description>
+      memoryRssPrivate: <no description>
+      memoryRssShared: <no description>
+      memoryRssTotal: <no description>
+      ntBytesReceived: <no description>
+      ntBytesTransferred: <no description>
+      sampleSeriesTypeUnspecified: <no description>
+    """
+    cpuKernel = 0
+    cpuTotal = 1
+    cpuUser = 2
+    memoryRssPrivate = 3
+    memoryRssShared = 4
+    memoryRssTotal = 5
+    ntBytesReceived = 6
+    ntBytesTransferred = 7
+    sampleSeriesTypeUnspecified = 8
+
+  perfMetricType = _messages.EnumField('PerfMetricTypeValueValuesEnum', 1)
+  perfUnit = _messages.EnumField('PerfUnitValueValuesEnum', 2)
+  sampleSeriesLabel = _messages.EnumField('SampleSeriesLabelValueValuesEnum', 3)
+
+
+class BatchCreatePerfSamplesRequest(_messages.Message):
+  """The request must provide up to a maximum of 5000 samples to be created; a
+  larger sample size will cause an INVALID_ARGUMENT error
+
+  Fields:
+    perfSamples: The set of PerfSamples to create should not include existing
+      timestamps
+  """
+
+  perfSamples = _messages.MessageField('PerfSample', 1, repeated=True)
+
+
+class BatchCreatePerfSamplesResponse(_messages.Message):
+  """A BatchCreatePerfSamplesResponse object.
+
+  Fields:
+    perfSamples: A PerfSample attribute.
+  """
+
+  perfSamples = _messages.MessageField('PerfSample', 1, repeated=True)
+
+
+class CPUInfo(_messages.Message):
+  """A CPUInfo object.
+
+  Fields:
+    cpuProcessor: description of the device processor ie '1.8 GHz hexa core
+      64-bit ARMv8-A'
+    cpuSpeedInGhz: the CPU clock speed in GHz
+    numberOfCores: the number of CPU cores
+  """
+
+  cpuProcessor = _messages.StringField(1)
+  cpuSpeedInGhz = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  numberOfCores = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Duration(_messages.Message):
   """A Duration represents a signed, fixed-length span of time represented as
   a count of seconds and fractions of seconds at nanosecond resolution. It is
   independent of any calendar and concepts like "day" or "month". It is
   related to Timestamp in that the difference between two Timestamp values is
   a Duration and it can be added or subtracted from a Timestamp. Range is
-  approximately +-10,000 years.  Example 1: Compute Duration from two
-  Timestamps in pseudo code.  Timestamp start = ...; Timestamp end = ...;
+  approximately +-10,000 years.  # Examples  Example 1: Compute Duration from
+  two Timestamps in pseudo code.  Timestamp start = ...; Timestamp end = ...;
   Duration duration = ...;  duration.seconds = end.seconds - start.seconds;
   duration.nanos = end.nanos - start.nanos;  if (duration.seconds  0) {
   duration.seconds += 1; duration.nanos -= 1000000000; } else if
@@ -76,7 +183,14 @@ class Duration(_messages.Message):
   end.nanos = start.nanos + duration.nanos;  if (end.nanos = 1000000000) {
   end.seconds += 1; end.nanos -= 1000000000; }  Example 3: Compute Duration
   from datetime.timedelta in Python.  td = datetime.timedelta(days=3,
-  minutes=10) duration = Duration() duration.FromTimedelta(td)
+  minutes=10) duration = Duration() duration.FromTimedelta(td)  # JSON Mapping
+  In JSON format, the Duration type is encoded as a string rather than an
+  object, where the string ends in the suffix "s" (indicating seconds) and is
+  preceded by the number of seconds, with nanoseconds expressed as fractional
+  seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
+  format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON
+  format as "3.000000001s", and 3 seconds and 1 microsecond should be
+  expressed in JSON format as "3.000001s".
 
   Fields:
     nanos: Signed fractions of a second at nanosecond resolution of the span
@@ -294,6 +408,31 @@ class ListHistoriesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListPerfSampleSeriesResponse(_messages.Message):
+  """A ListPerfSampleSeriesResponse object.
+
+  Fields:
+    perfSampleSeries: The resulting PerfSampleSeries sorted by id
+  """
+
+  perfSampleSeries = _messages.MessageField('PerfSampleSeries', 1, repeated=True)
+
+
+class ListPerfSamplesResponse(_messages.Message):
+  """A ListPerfSamplesResponse object.
+
+  Fields:
+    nextPageToken: Optional, returned if result size exceeds the page size
+      specified in the request (or the default page size, 500, if
+      unspecified). It indicates the last sample timestamp to be used as
+      page_token in subsequent request
+    perfSamples: A PerfSample attribute.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  perfSamples = _messages.MessageField('PerfSample', 2, repeated=True)
+
+
 class ListStepThumbnailsResponse(_messages.Message):
   """A response containing the thumbnails in a step.
 
@@ -326,6 +465,19 @@ class ListStepsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   steps = _messages.MessageField('Step', 2, repeated=True)
+
+
+class MemoryInfo(_messages.Message):
+  """A MemoryInfo object.
+
+  Fields:
+    memoryCapInKibibyte: Maximum memory that can be allocated to the process
+      in KiB
+    memoryTotalInKibibyte: Total memory available on the device in KiB
+  """
+
+  memoryCapInKibibyte = _messages.IntegerField(1)
+  memoryTotalInKibibyte = _messages.IntegerField(2)
 
 
 class Outcome(_messages.Message):
@@ -371,6 +523,89 @@ class Outcome(_messages.Message):
   skippedDetail = _messages.MessageField('SkippedDetail', 3)
   successDetail = _messages.MessageField('SuccessDetail', 4)
   summary = _messages.EnumField('SummaryValueValuesEnum', 5)
+
+
+class PerfEnvironment(_messages.Message):
+  """Encapsulates performance environment info
+
+  Fields:
+    cpuInfo: CPU related environment info
+    memoryInfo: Memory related environment info
+  """
+
+  cpuInfo = _messages.MessageField('CPUInfo', 1)
+  memoryInfo = _messages.MessageField('MemoryInfo', 2)
+
+
+class PerfMetricsSummary(_messages.Message):
+  """A summary of perf metrics collected and performance environment info
+
+  Enums:
+    PerfMetricsValueListEntryValuesEnum:
+
+  Fields:
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    perfEnvironment: Describes the environment in which the performance
+      metrics were collected
+    perfMetrics: Set of resource collected
+    projectId: The cloud project
+    stepId: A tool results step ID.
+  """
+
+  class PerfMetricsValueListEntryValuesEnum(_messages.Enum):
+    """PerfMetricsValueListEntryValuesEnum enum type.
+
+    Values:
+      cpu: <no description>
+      memory: <no description>
+      network: <no description>
+      perfMetricTypeUnspecified: <no description>
+    """
+    cpu = 0
+    memory = 1
+    network = 2
+    perfMetricTypeUnspecified = 3
+
+  executionId = _messages.StringField(1)
+  historyId = _messages.StringField(2)
+  perfEnvironment = _messages.MessageField('PerfEnvironment', 3)
+  perfMetrics = _messages.EnumField('PerfMetricsValueListEntryValuesEnum', 4, repeated=True)
+  projectId = _messages.StringField(5)
+  stepId = _messages.StringField(6)
+
+
+class PerfSample(_messages.Message):
+  """Resource representing a single performance measure or data point
+
+  Fields:
+    sampleTime: Timestamp of collection
+    value: Value observed
+  """
+
+  sampleTime = _messages.MessageField('Timestamp', 1)
+  value = _messages.FloatField(2)
+
+
+class PerfSampleSeries(_messages.Message):
+  """Resource representing a collection of performance samples (or data
+  points)
+
+  Fields:
+    basicPerfSampleSeries: Basic series represented by a line chart
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    projectId: The cloud project
+    sampleSeriesId: A sample series id
+    stepId: A tool results step ID.
+  """
+
+  basicPerfSampleSeries = _messages.MessageField('BasicPerfSampleSeries', 1)
+  executionId = _messages.StringField(2)
+  historyId = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  sampleSeriesId = _messages.StringField(5)
+  stepId = _messages.StringField(6)
 
 
 class ProjectSettings(_messages.Message):
@@ -1054,6 +1289,23 @@ class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message
   step = _messages.MessageField('Step', 5)
 
 
+class ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest
+  object.
+
+  Fields:
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    projectId: The cloud project
+    stepId: A tool results step ID.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  stepId = _messages.StringField(4, required=True)
+
+
 class ToolresultsProjectsHistoriesExecutionsStepsGetRequest(_messages.Message):
   """A ToolresultsProjectsHistoriesExecutionsStepsGetRequest object.
 
@@ -1110,6 +1362,111 @@ class ToolresultsProjectsHistoriesExecutionsStepsPatchRequest(_messages.Message)
   requestId = _messages.StringField(4)
   step = _messages.MessageField('Step', 5)
   stepId = _messages.StringField(6, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest
+  object.
+
+  Fields:
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    projectId: The cloud project
+    sampleSeriesId: A sample series id
+    stepId: A tool results step ID.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  sampleSeriesId = _messages.StringField(4, required=True)
+  stepId = _messages.StringField(5, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest
+  object.
+
+  Enums:
+    FilterValueValuesEnum: Specify one or more PerfMetricType values such as
+      CPU to filter the result
+
+  Fields:
+    executionId: A tool results execution ID.
+    filter: Specify one or more PerfMetricType values such as CPU to filter
+      the result
+    historyId: A tool results history ID.
+    projectId: The cloud project
+    stepId: A tool results step ID.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    """Specify one or more PerfMetricType values such as CPU to filter the
+    result
+
+    Values:
+      cpu: <no description>
+      memory: <no description>
+      network: <no description>
+      perfMetricTypeUnspecified: <no description>
+    """
+    cpu = 0
+    memory = 1
+    network = 2
+    perfMetricTypeUnspecified = 3
+
+  executionId = _messages.StringField(1, required=True)
+  filter = _messages.EnumField('FilterValueValuesEnum', 2, repeated=True)
+  historyId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+  stepId = _messages.StringField(5, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatch
+  CreateRequest object.
+
+  Fields:
+    batchCreatePerfSamplesRequest: A BatchCreatePerfSamplesRequest resource to
+      be passed as the request body.
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    projectId: The cloud project
+    sampleSeriesId: A sample series id
+    stepId: A tool results step ID.
+  """
+
+  batchCreatePerfSamplesRequest = _messages.MessageField('BatchCreatePerfSamplesRequest', 1)
+  executionId = _messages.StringField(2, required=True)
+  historyId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+  sampleSeriesId = _messages.StringField(5, required=True)
+  stepId = _messages.StringField(6, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListR
+  equest object.
+
+  Fields:
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    pageSize: The default page size is 500 samples, and the maximum size is
+      5000. If the page_size is greater than 5000, the effective page size
+      will be 5000
+    pageToken: Optional, the next_page_token returned in the previous response
+    projectId: The cloud project
+    sampleSeriesId: A sample series id
+    stepId: A tool results step ID.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  sampleSeriesId = _messages.StringField(6, required=True)
+  stepId = _messages.StringField(7, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest(_messages.Message):

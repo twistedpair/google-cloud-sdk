@@ -291,6 +291,8 @@ The caller must have READ permission to the project where the pipeline
 is stored and WRITE permission to the project where the pipeline will be
 run, as VMs will be created and storage will be used.
 
+If a pipeline operation is still running after 6 days, it will be canceled.
+
       Args:
         request: (RunPipelineRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

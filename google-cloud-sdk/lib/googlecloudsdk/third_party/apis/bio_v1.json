@@ -215,22 +215,6 @@
           "description": "Required. Sample name.",
           "type": "string"
         },
-        "sampleId": {
-          "description": "The sample ID. Unset by default. This is used as the 'LB' field in the @RG\nheaders for any output BAM files.",
-          "type": "string"
-        },
-        "readGroupId": {
-          "description": "The read group ID (the 'ID' in a BAM @RG header). Defaults to 'none'.",
-          "type": "string"
-        },
-        "platform": {
-          "description": "The platform used to generate the data (the 'PL' in a BAM @RG header), for\nexample 'Illumina'. Unset by default.",
-          "type": "string"
-        },
-        "sequencingCenter": {
-          "description": "The sequencing center producing the reads (the 'CN' in a BAM @RG header).\nUnset by default.",
-          "type": "string"
-        },
         "outputPath": {
           "description": "Required. The Google Cloud Storage path for copying the final output files.\nFor example, 'gs:\/\/<user_bucket>\/<sample_name>\/'.",
           "type": "string"

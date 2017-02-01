@@ -266,14 +266,12 @@
           "description": "The type of the instance. Defaults to `PRODUCTION`.",
           "enumDescriptions": [
             "The type of the instance is unspecified. If set when creating an\ninstance, a `PRODUCTION` instance will be created. If set when updating\nan instance, the type will be left unchanged.",
-            "An instance meant for production use. `serve_nodes` must be set\non the cluster.",
-            "The instance is meant for development purposes only.\nIt uses shared resources and has no performance or uptime guarantees.\nAfter a development instance is created, it can be upgraded by\nupdating the instance to type `PRODUCTION`. An instance created\nas a production instance cannot be changed to a development instance.\nWhen creating a development instance, `serve_nodes` on the cluster must\nnot be set."
+            "An instance meant for production use. `serve_nodes` must be set\non the cluster."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
-            "PRODUCTION",
-            "DEVELOPMENT"
+            "PRODUCTION"
           ]
         }
       }
@@ -508,21 +506,6 @@
         }
       }
     },
-    "CreateTableFromSnapshotRequest": {
-      "id": "CreateTableFromSnapshotRequest",
-      "description": "Request message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.CreateTableFromSnapshot",
-      "type": "object",
-      "properties": {
-        "tableId": {
-          "description": "The name by which the new table should be referred to within the parent\ninstance, e.g., `foobar` rather than `<parent>\/tables\/foobar`.",
-          "type": "string"
-        },
-        "sourceSnapshot": {
-          "description": "The unique name of the snapshot from which to restore the table. The\nsnapshot and the table must be in the same instance.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
-          "type": "string"
-        }
-      }
-    },
     "ListTablesResponse": {
       "id": "ListTablesResponse",
       "description": "Response message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.ListTables",
@@ -591,74 +574,6 @@
         "deleteAllDataFromTable": {
           "description": "Delete all rows in the table. Setting this to false is a no-op.",
           "type": "boolean"
-        }
-      }
-    },
-    "SnapshotTableRequest": {
-      "id": "SnapshotTableRequest",
-      "description": "Request message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.SnapshotTable",
-      "type": "object",
-      "properties": {
-        "cluster": {
-          "description": "The name of the cluster where the snapshot will be created in.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
-          "type": "string"
-        },
-        "snapshotId": {
-          "description": "The ID by which the new snapshot should be referred to within the parent\ncluster, e.g., `mysnapshot` of the form: `_a-zA-Z0-9*`\nrather than `projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/mysnapshot`.",
-          "type": "string"
-        },
-        "ttl": {
-          "description": "The amount of time that the new snapshot can stay active after it is\ncreated. Once 'ttl' expires, the snapshot will get deleted. The maximum\namount of time a snapshot can stay active is 365 days. If 'ttl' is not\nspecified, the default maximum of 365 days will be used.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "Snapshot": {
-      "id": "Snapshot",
-      "description": "A snapshot of a table at a particular time. A snapshot can be used as a\ncheckpoint for data restoration or a data source for a new table.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "(`OutputOnly`)\nThe unique name of the snapshot.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
-          "type": "string"
-        },
-        "sourceTable": {
-          "description": "(`OutputOnly`)\nThe source table at the time the snapshot was taken.",
-          "$ref": "Table"
-        },
-        "dataSizeBytes": {
-          "description": "(`OutputOnly`)\nThe size of the data in the source table at the time the snapshot was\ntaken.",
-          "type": "string",
-          "format": "int64"
-        },
-        "createTime": {
-          "description": "(`OutputOnly`)\nThe time when the snapshot is created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "deleteTime": {
-          "description": "(`OutputOnly`)\nThe time when the snapshot will be deleted. The maximum amount of time a\nsnapshot can stay active is 365 days. If 'ttl' is not specified,\nthe default maximum of 365 days will be used.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ListSnapshotsResponse": {
-      "id": "ListSnapshotsResponse",
-      "description": "Response message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots",
-      "type": "object",
-      "properties": {
-        "snapshots": {
-          "description": "The snapshots present in the requested cluster.",
-          "type": "array",
-          "items": {
-            "$ref": "Snapshot"
-          }
-        },
-        "nextPageToken": {
-          "description": "Set if not all snapshots could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
-          "type": "string"
         }
       }
     },
@@ -1119,99 +1034,6 @@
                   ]
                 }
               }
-              ,
-              "resources": {
-                "snapshots": {
-                  "methods": {
-                    "get": {
-                      "id": "bigtableadmin.projects.instances.clusters.snapshots.get",
-                      "path": "v2/{+name}",
-                      "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
-                      "httpMethod": "GET",
-                      "description": "Gets metadata information about the specified snapshot.",
-                      "parameters": {
-                        "name": {
-                          "description": "The unique name of the requested snapshot.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/snapshots\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Snapshot"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ]
-                    },
-                    "list": {
-                      "id": "bigtableadmin.projects.instances.clusters.snapshots.list",
-                      "path": "v2/{+parent}/snapshots",
-                      "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots",
-                      "httpMethod": "GET",
-                      "description": "Lists all snapshots associated with the specified cluster.",
-                      "parameters": {
-                        "parent": {
-                          "description": "The unique name of the cluster for which snapshots should be listed.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of snapshots to return.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The value of `next_page_token` returned by a previous call.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListSnapshotsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ]
-                    },
-                    "delete": {
-                      "id": "bigtableadmin.projects.instances.clusters.snapshots.delete",
-                      "path": "v2/{+name}",
-                      "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}",
-                      "httpMethod": "DELETE",
-                      "description": "Permanently deletes the specified snapshot.",
-                      "parameters": {
-                        "name": {
-                          "description": "The unique name of the snapshot to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>\/snapshots\/<snapshot>`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+\/snapshots\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Empty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ]
-                    }
-                  }
-                }
-              }
             },
             "tables": {
               "methods": {
@@ -1238,34 +1060,6 @@
                   },
                   "response": {
                     "$ref": "Table"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "createFromSnapshot": {
-                  "id": "bigtableadmin.projects.instances.tables.createFromSnapshot",
-                  "path": "v2/{+parent}/tables:createFromSnapshot",
-                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables:createFromSnapshot",
-                  "httpMethod": "POST",
-                  "description": "Creates a new table from the specified snapshot. The target table must\nnot exist. The snapshot and the table must be in the same instance.",
-                  "parameters": {
-                    "parent": {
-                      "description": "The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "CreateTableFromSnapshotRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1426,34 +1220,6 @@
                   },
                   "response": {
                     "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "snapshot": {
-                  "id": "bigtableadmin.projects.instances.tables.snapshot",
-                  "path": "v2/{+name}:snapshot",
-                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:snapshot",
-                  "httpMethod": "POST",
-                  "description": "Creates a new snapshot in the specified cluster from the specified\nsource table. The cluster and the table must be in the same instance.",
-                  "parameters": {
-                    "name": {
-                      "description": "The unique name of the table to have the snapshot taken.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "SnapshotTableRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

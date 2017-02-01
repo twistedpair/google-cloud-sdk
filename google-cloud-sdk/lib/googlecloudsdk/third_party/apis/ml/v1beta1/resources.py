@@ -22,29 +22,47 @@ BASE_URL = 'https://ml.googleapis.com/v1beta1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId']
+  )
   PROJECTS_JOBS = (
       'projects.jobs',
-      'projects/{projectsId}/jobs/{jobsId}',
-      {},
-      [u'projectsId', u'jobsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/jobs/{jobsId}',
+      },
+      [u'name']
   )
   PROJECTS_MODELS = (
       'projects.models',
-      'projects/{projectsId}/models/{modelsId}',
-      {},
-      [u'projectsId', u'modelsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/models/{modelsId}',
+      },
+      [u'name']
   )
   PROJECTS_MODELS_VERSIONS = (
       'projects.models.versions',
-      'projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
-      {},
-      [u'projectsId', u'modelsId', u'versionsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+      },
+      [u'name']
   )
   PROJECTS_OPERATIONS = (
       'projects.operations',
-      'projects/{projectsId}/operations/{operationsId}',
-      {},
-      [u'projectsId', u'operationsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/operations/{operationsId}',
+      },
+      [u'name']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

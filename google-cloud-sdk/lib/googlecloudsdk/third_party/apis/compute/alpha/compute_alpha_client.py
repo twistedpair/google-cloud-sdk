@@ -1171,32 +1171,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeCommitmentsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.commitments.getIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/commitments/{resource}/getIamPolicy',
-        request_field='',
-        request_type_name=u'ComputeCommitmentsGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
     def Insert(self, request, global_params=None):
       """Creates an commitment in the specified project using the data included in the request.
 
@@ -1246,32 +1220,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'ComputeCommitmentsListRequest',
         response_type_name=u'CommitmentList',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeCommitmentsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.commitments.setIamPolicy',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/commitments/{resource}/setIamPolicy',
-        request_field=u'policy',
-        request_type_name=u'ComputeCommitmentsSetIamPolicyRequest',
-        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -1443,7 +1391,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id=u'compute.disks.createSnapshot',
         ordered_params=[u'project', u'zone', u'disk'],
         path_params=[u'disk', u'project', u'zone'],
-        query_params=[u'guestFlush'],
+        query_params=[u'guestFlush', u'requestId'],
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/createSnapshot',
         request_field=u'snapshot',
         request_type_name=u'ComputeDisksCreateSnapshotRequest',
@@ -1469,7 +1417,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id=u'compute.disks.delete',
         ordered_params=[u'project', u'zone', u'disk'],
         path_params=[u'disk', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}',
         request_field='',
         request_type_name=u'ComputeDisksDeleteRequest',
@@ -1521,7 +1469,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id=u'compute.disks.insert',
         ordered_params=[u'project', u'zone'],
         path_params=[u'project', u'zone'],
-        query_params=[u'sourceImage'],
+        query_params=[u'requestId', u'sourceImage'],
         relative_path=u'projects/{project}/zones/{zone}/disks',
         request_field=u'disk',
         request_type_name=u'ComputeDisksInsertRequest',
@@ -1573,7 +1521,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id=u'compute.disks.resize',
         ordered_params=[u'project', u'zone', u'disk'],
         path_params=[u'disk', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/resize',
         request_field=u'disksResizeRequest',
         request_type_name=u'ComputeDisksResizeRequest',
@@ -4959,6 +4907,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def SetMinCpuPlatform(self, request, global_params=None):
+      """Changes the minimum cpu/platform that this instance should be started as. This is called on a stopped instance.
+
+      Args:
+        request: (ComputeInstancesSetMinCpuPlatformRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMinCpuPlatform')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMinCpuPlatform.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setMinCpuPlatform',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMinCpuPlatform',
+        request_field=u'instancesSetMinCpuPlatformRequest',
+        request_type_name=u'ComputeInstancesSetMinCpuPlatformRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetScheduling(self, request, global_params=None):
       """Sets an instance's scheduling options.
 
@@ -6383,7 +6357,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionDisks.createSnapshot',
         ordered_params=[u'project', u'region', u'disk'],
         path_params=[u'disk', u'project', u'region'],
-        query_params=[u'guestFlush'],
+        query_params=[u'guestFlush', u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/disks/{disk}/createSnapshot',
         request_field=u'snapshot',
         request_type_name=u'ComputeRegionDisksCreateSnapshotRequest',
@@ -6409,7 +6383,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionDisks.delete',
         ordered_params=[u'project', u'region', u'disk'],
         path_params=[u'disk', u'project', u'region'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/disks/{disk}',
         request_field='',
         request_type_name=u'ComputeRegionDisksDeleteRequest',
@@ -6461,7 +6435,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionDisks.insert',
         ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
-        query_params=[u'sourceImage'],
+        query_params=[u'requestId', u'sourceImage'],
         relative_path=u'projects/{project}/regions/{region}/disks',
         request_field=u'disk',
         request_type_name=u'ComputeRegionDisksInsertRequest',
@@ -6513,7 +6487,7 @@ If you increase the size of the instance group, the group creates new instances 
         method_id=u'compute.regionDisks.resize',
         ordered_params=[u'project', u'region', u'disk'],
         path_params=[u'disk', u'project', u'region'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/disks/{disk}/resize',
         request_field=u'regionDisksResizeRequest',
         request_type_name=u'ComputeRegionDisksResizeRequest',

@@ -15,7 +15,6 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.core import apis
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -34,8 +33,10 @@ class ModelsClient(object):
     """Create a new model."""
     model_ref = _ParseModel(model_name)
     regions_list = regions or []
+    project_ref = resources.REGISTRY.Parse(model_ref.projectsId,
+                                           collection='ml.projects')
     req = self.messages.MlProjectsModelsCreateRequest(
-        projectsId=model_ref.projectsId,
+        parent=project_ref.RelativeName(),
         googleCloudMlV1beta1Model=self.messages.GoogleCloudMlV1beta1Model(
             name=model_ref.Name(), regions=regions_list))
     return self.client.projects_models.Create(req)
@@ -44,20 +45,20 @@ class ModelsClient(object):
     """Delete an existing model."""
     model_ref = _ParseModel(model)
     req = self.messages.MlProjectsModelsDeleteRequest(
-        projectsId=model_ref.projectsId, modelsId=model_ref.Name())
+        name=model_ref.RelativeName())
     return self.client.projects_models.Delete(req)
 
   def Get(self, model):
     """Get details about a model."""
     model_ref = _ParseModel(model)
     req = self.messages.MlProjectsModelsGetRequest(
-        projectsId=model_ref.projectsId, modelsId=model_ref.Name())
+        name=model_ref.RelativeName())
     return self.client.projects_models.Get(req)
 
-  def List(self):
+  def List(self, project_ref):
     """List models in the project."""
     req = self.messages.MlProjectsModelsListRequest(
-        projectsId=properties.VALUES.core.project.Get())
+        parent=project_ref.RelativeName())
     return list_pager.YieldFromList(
         self.client.projects_models,
         req,

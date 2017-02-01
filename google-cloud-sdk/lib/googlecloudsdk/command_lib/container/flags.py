@@ -56,7 +56,7 @@ The default Kubernetes version are available using the following command.
   return parser.add_argument('--cluster-version', help=help_text)
 
 
-def AddClusterAutoscalingFlags(parser, update_group=None, suppressed=False):
+def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
@@ -66,51 +66,53 @@ def AddClusterAutoscalingFlags(parser, update_group=None, suppressed=False):
     parser: A given parser.
     update_group: An optional group of mutually exclusive flag options
         to which an --enable-autoscaling flag is added.
-    suppressed: If true, supress help text for added options.
+    hidden: If true, suppress help text for added options.
   """
-
-  hide_or = lambda x: argparse.SUPPRESS if suppressed else x
 
   group = parser.add_argument_group('Cluster autoscaling')
   autoscaling_group = group if update_group is None else update_group
   autoscaling_group.add_argument(
       '--enable-autoscaling',
       default=None if update_group else False,
-      help=hide_or("""\
+      help="""\
 Enables autoscaling for a node pool.
 
 Enables autoscaling in the node pool specified by --node-pool or
-the default node pool if --node-pool is not provided."""),
+the default node pool if --node-pool is not provided.""",
+      hidden=hidden,
       action='store_true')
   # If we have an update group, add a custom inverted arg.
   if update_group:
     autoscaling_group.add_argument(
         '--disable-autoscaling',
         default=None,
-        help=hide_or("""\
+        help="""\
 Disables autoscaling for a node pool.
 
 Disables autoscaling in the node pool specified by --node-pool or
-the default node pool if --node-pool is not provided."""),
+the default node pool if --node-pool is not provided.""",
+        hidden=hidden,
         action='store_false',
         dest='enable_autoscaling')
   group.add_argument(
       '--max-nodes',
-      help=hide_or("""\
+      help="""\
 Maximum number of nodes in the node pool.
 
 Maximum number of nodes to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
---enable-autoscaling is also specified."""),
+--enable-autoscaling is also specified.""",
+      hidden=hidden,
       type=int)
   group.add_argument(
       '--min-nodes',
-      help=hide_or("""\
+      help="""\
 Minimum number of nodes in the node pool.
 
 Minimum number of nodes to which the node pool specified by --node-pool
 (or default node pool if unspecified) can scale. Ignored unless
---enable-autoscaling is also specified."""),
+--enable-autoscaling is also specified.""",
+      hidden=hidden,
       type=int)
 
 
@@ -352,5 +354,17 @@ def AddTagsFlag(parser, help_text):
       '--tags',
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+
+
+def AddServiceAccountFlag(parser, suppressed=False):
+  """Adds a --service-account to the given parser."""
+  help_text = argparse.SUPPRESS if suppressed else """\
+The Google Cloud Platform Service Account to be used by the node VMs. \
+If no Service Account is specified, the "default" service account is used.
+"""
+
+  parser.add_argument(
+      '--service-account',
       help=help_text)
 

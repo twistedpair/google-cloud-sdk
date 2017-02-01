@@ -200,6 +200,7 @@
             "A single worker instance. This tier is suitable for learning how to use\nCloud ML, and for experimenting with new models using small datasets.",
             "Many workers and a few parameter servers.",
             "A large number of workers with many parameter servers.",
+            "A single worker instance with a GPU.",
             "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
@@ -207,6 +208,7 @@
             "BASIC",
             "STANDARD_1",
             "PREMIUM_1",
+            "BASIC_GPU",
             "CUSTOM"
           ]
         },
@@ -258,6 +260,10 @@
           "description": "Required. The Google Compute Engine region to run the training job in.",
           "type": "string"
         },
+        "jobDir": {
+          "description": "Optional. A GCS path in which to store training outputs and other data\nneeded for training. This path will be passed to your TensorFlow program as\nthe 'job_dir' command-line arg. The benefit of specifying this field is that\nCloud ML will validate the path for use in training.",
+          "type": "string"
+        },
         "runtimeVersion": {
           "description": "Optional. The Google Cloud ML runtime version to use for training.  If not\nset, Google Cloud ML will choose the latest stable version.",
           "type": "string"
@@ -299,6 +305,10 @@
           "description": "Optional. The number of training trials to run concurrently.\nYou can reduce the time it takes to perform hyperparameter tuning by adding\ntrials in parallel. However, each trail only benefits from the information\ngained in completed trials. That means that a trial does not get access to\nthe results of trials running at the same time, which could reduce the\nquality of the overall optimization.\n\nEach trial will use the same scale tier and machine types.\n\nDefaults to one.",
           "type": "integer",
           "format": "int32"
+        },
+        "hyperparameterMetricTag": {
+          "description": "Optional. The Tensorflow summary tag name to use for optimizing trials. For\ncurrent versions of Tensorflow, this tag name should exactly match what is\nshown in Tensorboard, including all scopes.  For versions of Tensorflow\nprior to 0.12, this should be only the tag passed to tf.Summary.\nBy default, \"training\/hptuning\/metric\" will be used.",
+          "type": "string"
         }
       }
     },
@@ -385,6 +395,10 @@
           "description": "Use this field if you want to specify a version of the model to use. The\nstring is formatted the same way as `model_version`, with the addition\nof the version information:\n\n`\"projects\/<var>[YOUR_PROJECT]<\/var>\/models\/<var>YOUR_MODEL\/versions\/<var>[YOUR_VERSION]<\/var>\"`",
           "type": "string"
         },
+        "uri": {
+          "description": "Use this field if you want to specify a GCS path to the model to use.",
+          "type": "string"
+        },
         "dataFormat": {
           "description": "Required. The format of the input data files.",
           "enumDescriptions": [
@@ -422,7 +436,7 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The Google Cloud ML runtime version to use for this batch\nprediction. If not set, Google Cloud ML will choose a version.",
+          "description": "Optional. The Google Cloud ML runtime version to use for this batch\nprediction. If not set, Google Cloud ML will pick the runtime version used\nduring the CreateVersion request for this model version, or choose the\nlatest stable version when model version information is not available\nsuch as when the model is specified by uri.",
           "type": "string"
         }
       }
@@ -662,6 +676,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "onlinePredictionLogging": {
+          "description": "Optional. If true, enables StackDriver Logging for online prediction.\nDefault is false.",
+          "type": "boolean"
         }
       }
     },
@@ -695,10 +713,6 @@
           "description": "Output only. The time the version was last used for prediction.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "onlinePredictionLogging": {
-          "description": "Optional. If true, enables StackDriver Logging for online prediction.\nDefault is false.",
-          "type": "boolean"
         },
         "runtimeVersion": {
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
@@ -751,7 +765,7 @@
     },
     "GoogleCloudMlV1beta1__PredictRequest": {
       "id": "GoogleCloudMlV1beta1__PredictRequest",
-      "description": "Request for predictions to be issued against a trained model.\n\nThe body of the request is a single JSON object with a single top-level\nfield:\n\n<dl>\n  <dt>instances<\/dt>\n  <dd>A JSON array containing values representing the instances to use for\n      prediction.<\/dd>\n<\/dl>\n\nThe structure of each element of the instances list is determined by your\nmodel's input definition. Instances can include named inputs or can contain\nonly unlabeled values.\n\nMost data does not include named inputs. Some instances will be simple\nJSON values (boolean, number, or string). However, instances are often lists\nof simple values, or complex nested lists. Here are some examples of request\nbodies:\n\nCSV data with each row encoded as a string value:\n<pre>\n{\"instances\": [\"1.0,true,\\\\\"x\\\\\"\", \"-2.0,false,\\\\\"y\\\\\"\"]}\n<\/pre>\nPlain text:\n<pre>\n{\"instances\": [\"the quick brown fox\", \"la bruja le dio\"]}\n<\/pre>\nSentences encoded as lists of words (vectors of strings):\n<pre>\n{\"instances\": [[\"the\",\"quick\",\"brown\"], [\"la\",\"bruja\",\"le\"]]}\n<\/pre>\nFloating point scalar values:\n<pre>\n{\"instances\": [0.0, 1.1, 2.2]}\n<\/pre>\nVectors of integers:\n<pre>\n{\"instances\": [[0, 1, 2], [3, 4, 5],...]}\n<\/pre>\nTensors (in this case, two-dimensional tensors):\n<pre>\n{\"instances\": [[[0, 1, 2], [3, 4, 5]], ...]}\n<\/pre>\nImages represented as a three-dimensional list. In this encoding scheme the\nfirst two dimensions represent the rows and columns of the image, and the\nthird contains the R, G, and B values for each pixel.\n<pre>\n{\"instances\": [[[[138, 30, 66], [130, 20, 56], ...]]]]}\n<\/pre>\nData must be encoded as UTF-8. If your data uses another character encoding,\nyou must base64 encode the data and mark it as binary. To mark a JSON string\nas binary, replace it with an object with a single attribute named `b`:\n<pre>{\"b\": \"...\"} <\/pre>\nFor example:\n\nTwo Serialized tf.Examples (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"X5ad6u\"}, {\"b64\": \"IA9j4nx\"}]}\n<\/pre>\nTwo JPEG image byte strings (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"ASa8asdf\"}, {\"b64\": \"JLK7ljk3\"}]}\n<\/pre>\nIf your data includes named references, format each instance as a JSON object\nwith the named references as the keys:\n\nJSON input data to be preprocessed:\n<pre>\n{\"instances\": [{\"a\": 1.0,  \"b\": true,  \"c\": \"x\"},\n               {\"a\": -2.0, \"b\": false, \"c\": \"y\"}]}\n<\/pre>\nSome models have an underlying TensorFlow graph that accepts multiple input\ntensors. In this case, you should use the names of JSON name\/value pairs to\nidentify the input tensors, as shown in the following exmaples:\n\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(base64-encoded string):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": {\"b64\": \"ASa8asdf\"}},\n               {\"tag\": \"car\", \"image\": {\"b64\": \"JLK7ljk3\"}}]}\n<\/pre>\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(3-dimensional array of 8-bit ints):\n<pre>\n{\"instances\": [{\"tag\": \"beach\", \"image\": [[[263, 1, 10], [262, 2, 11], ...]]},\n               {\"tag\": \"car\", \"image\": [[[10, 11, 24], [23, 10, 15], ...]]}]}\n<\/pre>\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.",
+      "description": "Request for predictions to be issued against a trained model.\n\nThe body of the request is a single JSON object with a single top-level\nfield:\n\n<dl>\n  <dt>instances<\/dt>\n  <dd>A JSON array containing values representing the instances to use for\n      prediction.<\/dd>\n<\/dl>\n\nThe structure of each element of the instances list is determined by your\nmodel's input definition. Instances can include named inputs or can contain\nonly unlabeled values.\n\nNot all data includes named inputs. Some instances will be simple\nJSON values (boolean, number, or string). However, instances are often lists\nof simple values, or complex nested lists. Here are some examples of request\nbodies:\n\nCSV data with each row encoded as a string value:\n<pre>\n{\"instances\": [\"1.0,true,\\\\\"x\\\\\"\", \"-2.0,false,\\\\\"y\\\\\"\"]}\n<\/pre>\nPlain text:\n<pre>\n{\"instances\": [\"the quick brown fox\", \"la bruja le dio\"]}\n<\/pre>\nSentences encoded as lists of words (vectors of strings):\n<pre>\n{\n  \"instances\": [\n    [\"the\",\"quick\",\"brown\"],\n    [\"la\",\"bruja\",\"le\"],\n    ...\n  ]\n}\n<\/pre>\nFloating point scalar values:\n<pre>\n{\"instances\": [0.0, 1.1, 2.2]}\n<\/pre>\nVectors of integers:\n<pre>\n{\n  \"instances\": [\n    [0, 1, 2],\n    [3, 4, 5],\n    ...\n  ]\n}\n<\/pre>\nTensors (in this case, two-dimensional tensors):\n<pre>\n{\n  \"instances\": [\n    [\n      [0, 1, 2],\n      [3, 4, 5]\n    ],\n    ...\n  ]\n}\n<\/pre>\nImages can be represented different ways. In this encoding scheme the first\ntwo dimensions represent the rows and columns of the image, and the third\ncontains lists (vectors) of the R, G, and B values for each pixel.\n<pre>\n{\n  \"instances\": [\n    [\n      [\n        [138, 30, 66],\n        [130, 20, 56],\n        ...\n      ],\n      [\n        [126, 38, 61],\n        [122, 24, 57],\n        ...\n      ],\n      ...\n    ],\n    ...\n  ]\n}\n<\/pre>\nJSON strings must be encoded as UTF-8. To send binary data, you must\nbase64-encode the data and mark it as binary. To mark a JSON string\nas binary, replace it with a JSON object with a single attribute named `b64`:\n<pre>{\"b64\": \"...\"} <\/pre>\nFor example:\n\nTwo Serialized tf.Examples (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"X5ad6u\"}, {\"b64\": \"IA9j4nx\"}]}\n<\/pre>\nTwo JPEG image byte strings (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"ASa8asdf\"}, {\"b64\": \"JLK7ljk3\"}]}\n<\/pre>\nIf your data includes named references, format each instance as a JSON object\nwith the named references as the keys:\n\nJSON input data to be preprocessed:\n<pre>\n{\n  \"instances\": [\n    {\n      \"a\": 1.0,\n      \"b\": true,\n      \"c\": \"x\"\n    },\n    {\n      \"a\": -2.0,\n      \"b\": false,\n      \"c\": \"y\"\n    }\n  ]\n}\n<\/pre>\nSome models have an underlying TensorFlow graph that accepts multiple input\ntensors. In this case, you should use the names of JSON name\/value pairs to\nidentify the input tensors, as shown in the following exmaples:\n\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(base64-encoded string):\n<pre>\n{\n  \"instances\": [\n    {\n      \"tag\": \"beach\",\n      \"image\": {\"b64\": \"ASa8asdf\"}\n    },\n    {\n      \"tag\": \"car\",\n      \"image\": {\"b64\": \"JLK7ljk3\"}\n    }\n  ]\n}\n<\/pre>\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(3-dimensional array of 8-bit ints):\n<pre>\n{\n  \"instances\": [\n    {\n      \"tag\": \"beach\",\n      \"image\": [\n        [\n          [138, 30, 66],\n          [130, 20, 56],\n          ...\n        ],\n        [\n          [126, 38, 61],\n          [122, 24, 57],\n          ...\n        ],\n        ...\n      ]\n    },\n    {\n      \"tag\": \"car\",\n      \"image\": [\n        [\n          [255, 0, 102],\n          [255, 0, 97],\n          ...\n        ],\n        [\n          [254, 1, 101],\n          [254, 2, 93],\n          ...\n        ],\n        ...\n      ]\n    },\n    ...\n  ]\n}\n<\/pre>\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.",
       "type": "object",
       "properties": {
         "httpBody": {
@@ -848,20 +862,21 @@
       "methods": {
         "predict": {
           "id": "ml.projects.predict",
-          "path": "v1beta1/projects/{projectsId}:predict",
+          "path": "v1beta1/{+name}:predict",
           "flatPath": "v1beta1/projects/{projectsId}:predict",
           "httpMethod": "POST",
-          "description": "Performs prediction on the data in the request.\n\nResponses are very similar to requests. There are two top-level fields,\neach of which are JSON lists:\n\n<dl>\n  <dt>predictions<\/dt>\n  <dd>The list of predictions, one per instance in the request.<\/dd>\n  <dt>error<\/dt>\n  <dd>An error message returned instead of a prediction list if any\n      instance produced an error.<\/dd>\n<\/dl>\n\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.\n\nEven though there is one prediction per instance, the format of a\nprediction is not directly related to the format of an instance.\nPredictions take whatever format is specified in the outputs collection\ndefined in the model. The collection of predictions is returned in a JSON\nlist. Each member of the list can be a simple value, a list, or a JSON\nobject of any complexity. If your model has more than one output tensor,\neach prediction will be a JSON object containing a name\/value pair for each\noutput. The names identify the output aliases in the graph.\n\nThe following examples show some possible responses:\n\nA simple set of predictions for three input instances, where each\nprediction is an integer value:\n<pre>\n{\"predictions\": [5, 4, 3]}\n<\/pre>\nA more complex set of predictions, each containing two named values that\ncorrespond to output tensors, named **label** and **scores** respectively.\nThe value of **label** is the predicted category (\"car\" or \"beach\") and\n**scores** contains a list of probabilities for that instance across the\npossible categories.\n<pre>\n{\"predictions\": [{\"label\": \"beach\", \"scores\": [0.1, 0.9]},\n                 {\"label\": \"car\", \"scores\": [0.75, 0.25]}]}\n<\/pre>\nA response when there is an error processing an input instance:\n<pre>\n{\"error\": \"Divide by zero\"}\n<\/pre>",
+          "description": "Performs prediction on the data in the request.\n\n**** REMOVE FROM GENERATED DOCUMENTATION",
           "parameters": {
-            "projectsId": {
-              "description": "Part of `name`. Required. The resource name of a model or a version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+            "name": {
+              "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires `Viewer` role on the parent project.",
               "location": "path",
               "required": true,
+              "pattern": "^projects\/.+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "projectsId"
+            "name"
           ],
           "request": {
             "$ref": "GoogleCloudMlV1beta1__PredictRequest"
@@ -875,20 +890,21 @@
         },
         "getConfig": {
           "id": "ml.projects.getConfig",
-          "path": "v1beta1/projects/{projectsId}:getConfig",
+          "path": "v1beta1/{+name}:getConfig",
           "flatPath": "v1beta1/projects/{projectsId}:getConfig",
           "httpMethod": "GET",
           "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account persmissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning.",
           "parameters": {
-            "projectsId": {
-              "description": "Part of `name`. Required. The project name.\n\nAuthorization: requires `Viewer` role on the specified project.",
+            "name": {
+              "description": "Required. The project name.\n\nAuthorization: requires `Viewer` role on the specified project.",
               "location": "path",
               "required": true,
+              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "projectsId"
+            "name"
           ],
           "response": {
             "$ref": "GoogleCloudMlV1beta1__GetConfigResponse"
@@ -904,20 +920,21 @@
           "methods": {
             "create": {
               "id": "ml.projects.jobs.create",
-              "path": "v1beta1/projects/{projectsId}/jobs",
+              "path": "v1beta1/{+parent}/jobs",
               "flatPath": "v1beta1/projects/{projectsId}/jobs",
               "httpMethod": "POST",
               "description": "Creates a training or a batch prediction job.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
+                "parent": {
+                  "description": "Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "request": {
                 "$ref": "GoogleCloudMlV1beta1__Job"
@@ -931,15 +948,16 @@
             },
             "list": {
               "id": "ml.projects.jobs.list",
-              "path": "v1beta1/projects/{projectsId}/jobs",
+              "path": "v1beta1/{+parent}/jobs",
               "flatPath": "v1beta1/projects/{projectsId}/jobs",
               "httpMethod": "GET",
               "description": "Lists the jobs in the project.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. Required. The name of the project for which to list jobs.\n\nAuthorization: requires `Viewer` role on the specified project.",
+                "parent": {
+                  "description": "Required. The name of the project for which to list jobs.\n\nAuthorization: requires `Viewer` role on the specified project.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -960,7 +978,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "response": {
                 "$ref": "GoogleCloudMlV1beta1__ListJobsResponse"
@@ -971,27 +989,21 @@
             },
             "get": {
               "id": "ml.projects.jobs.get",
-              "path": "v1beta1/projects/{projectsId}/jobs/{jobsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/jobs/{jobsId}",
               "httpMethod": "GET",
               "description": "Describes a job.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. Required. The name of the job to get the description of.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                "name": {
+                  "description": "Required. The name of the job to get the description of.\n\nAuthorization: requires `Viewer` role on the parent project.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "jobsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "jobsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleCloudMlV1beta1__Job"
@@ -1002,27 +1014,21 @@
             },
             "cancel": {
               "id": "ml.projects.jobs.cancel",
-              "path": "v1beta1/projects/{projectsId}/jobs/{jobsId}:cancel",
+              "path": "v1beta1/{+name}:cancel",
               "flatPath": "v1beta1/projects/{projectsId}/jobs/{jobsId}:cancel",
               "httpMethod": "POST",
               "description": "Cancels a running job.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. Required. The name of the job to cancel.\n\nAuthorization: requires `Editor` role on the parent project.",
+                "name": {
+                  "description": "Required. The name of the job to cancel.\n\nAuthorization: requires `Editor` role on the parent project.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "jobsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "jobsId"
+                "name"
               ],
               "request": {
                 "$ref": "GoogleCloudMlV1beta1__CancelJobRequest"
@@ -1040,15 +1046,16 @@
           "methods": {
             "list": {
               "id": "ml.projects.operations.list",
-              "path": "v1beta1/projects/{projectsId}/operations",
+              "path": "v1beta1/{+name}/operations",
               "flatPath": "v1beta1/projects/{projectsId}/operations",
               "httpMethod": "GET",
               "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation collection.",
+                "name": {
+                  "description": "The name of the operation collection.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -1069,7 +1076,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleLongrunning__ListOperationsResponse"
@@ -1080,27 +1087,21 @@
             },
             "get": {
               "id": "ml.projects.operations.get",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "GET",
               "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource.",
+                "name": {
+                  "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "operationsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleLongrunning__Operation"
@@ -1111,27 +1112,21 @@
             },
             "delete": {
               "id": "ml.projects.operations.delete",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "DELETE",
               "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be deleted.",
+                "name": {
+                  "description": "The name of the operation resource to be deleted.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "operationsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleProtobuf__Empty"
@@ -1142,27 +1137,21 @@
             },
             "cancel": {
               "id": "ml.projects.operations.cancel",
-              "path": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
+              "path": "v1beta1/{+name}:cancel",
               "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}:cancel",
               "httpMethod": "POST",
               "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The name of the operation resource to be cancelled.",
+                "name": {
+                  "description": "The name of the operation resource to be cancelled.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "operationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "operationsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleProtobuf__Empty"
@@ -1177,20 +1166,21 @@
           "methods": {
             "create": {
               "id": "ml.projects.models.create",
-              "path": "v1beta1/projects/{projectsId}/models",
+              "path": "v1beta1/{+parent}/models",
               "flatPath": "v1beta1/projects/{projectsId}/models",
               "httpMethod": "POST",
               "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/create).",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
+                "parent": {
+                  "description": "Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "request": {
                 "$ref": "GoogleCloudMlV1beta1__Model"
@@ -1204,15 +1194,16 @@
             },
             "list": {
               "id": "ml.projects.models.list",
-              "path": "v1beta1/projects/{projectsId}/models",
+              "path": "v1beta1/{+parent}/models",
               "flatPath": "v1beta1/projects/{projectsId}/models",
               "httpMethod": "GET",
               "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `parent`. Required. The name of the project whose models are to be listed.\n\nAuthorization: requires `Viewer` role on the specified project.",
+                "parent": {
+                  "description": "Required. The name of the project whose models are to be listed.\n\nAuthorization: requires `Viewer` role on the specified project.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
@@ -1228,7 +1219,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "parent"
               ],
               "response": {
                 "$ref": "GoogleCloudMlV1beta1__ListModelsResponse"
@@ -1239,27 +1230,21 @@
             },
             "get": {
               "id": "ml.projects.models.get",
-              "path": "v1beta1/projects/{projectsId}/models/{modelsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "GET",
               "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed).",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. Required. The name of the model.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                "name": {
+                  "description": "Required. The name of the model.\n\nAuthorization: requires `Viewer` role on the parent project.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "modelsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "modelsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleCloudMlV1beta1__Model"
@@ -1270,27 +1255,21 @@
             },
             "delete": {
               "id": "ml.projects.models.delete",
-              "path": "v1beta1/projects/{projectsId}/models/{modelsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "DELETE",
               "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/delete).",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
+                "name": {
+                  "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "modelsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "modelsId"
+                "name"
               ],
               "response": {
                 "$ref": "GoogleLongrunning__Operation"
@@ -1306,27 +1285,21 @@
               "methods": {
                 "create": {
                   "id": "ml.projects.models.versions.create",
-                  "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
+                  "path": "v1beta1/{+parent}/versions",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "POST",
                   "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
+                    "parent": {
+                      "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "modelsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "modelsId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "GoogleCloudMlV1beta1__Version"
@@ -1340,21 +1313,16 @@
                 },
                 "list": {
                   "id": "ml.projects.models.versions.list",
-                  "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
+                  "path": "v1beta1/{+parent}/versions",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "GET",
                   "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has a lot of versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages):",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. Required. The name of the model for which to list the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                    "parent": {
+                      "description": "Required. The name of the model for which to list the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "modelsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
                       "type": "string"
                     },
                     "pageToken": {
@@ -1370,8 +1338,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "modelsId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "GoogleCloudMlV1beta1__ListVersionsResponse"
@@ -1382,34 +1349,21 @@
                 },
                 "get": {
                   "id": "ml.projects.models.versions.get",
-                  "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "GET",
                   "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. Required. The name of the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                    "name": {
+                      "description": "Required. The name of the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "modelsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "versionsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "modelsId",
-                    "versionsId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "GoogleCloudMlV1beta1__Version"
@@ -1420,34 +1374,21 @@
                 },
                 "delete": {
                   "id": "ml.projects.models.versions.delete",
-                  "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                    "name": {
+                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "modelsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "versionsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "modelsId",
-                    "versionsId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "GoogleLongrunning__Operation"
@@ -1458,34 +1399,21 @@
                 },
                 "setDefault": {
                   "id": "ml.projects.models.versions.setDefault",
-                  "path": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault",
+                  "path": "v1beta1/{+name}:setDefault",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault",
                   "httpMethod": "POST",
                   "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                    "name": {
+                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "modelsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "versionsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "modelsId",
-                    "versionsId"
+                    "name"
                   ],
                   "request": {
                     "$ref": "GoogleCloudMlV1beta1__SetDefaultVersionRequest"

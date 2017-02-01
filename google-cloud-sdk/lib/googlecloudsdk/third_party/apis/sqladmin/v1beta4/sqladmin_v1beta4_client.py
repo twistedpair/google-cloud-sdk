@@ -759,6 +759,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TruncateLog(self, request, global_params=None):
+      """Truncate MySQL general and slow query log tables.
+
+      Args:
+        request: (SqlInstancesTruncateLogRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('TruncateLog')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TruncateLog.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'sql.instances.truncateLog',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/instances/{instance}/truncateLog',
+        request_field=u'instancesTruncateLogRequest',
+        request_type_name=u'SqlInstancesTruncateLogRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.
 

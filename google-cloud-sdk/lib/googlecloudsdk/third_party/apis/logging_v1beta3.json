@@ -143,33 +143,33 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of logs, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogs`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of logs, use the value of nextPageToken as pageToken in the next call of ListLogs. If nextPageToken is empty, then there are no more results.",
           "type": "string"
         }
       }
     },
     "Log": {
       "id": "Log",
-      "description": "_Output only._ Describes a log, which is a named stream of log entries.",
+      "description": "Output only. Describes a log, which is a named stream of log entries.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the log. Example:\n`\"\/projects\/my-gcp-project-id\/logs\/LOG_NAME\"`, where `LOG_NAME`\nis the URL-encoded given name of the log.  The log includes those\nlog entries whose `LogEntry.log` field contains this given name.\nTo avoid name collisions, it is a best practice to prefix the\ngiven log name with the service name, but this is not required.\nExamples of log given names:\n`\"appengine.googleapis.com\/request_log\"`, `\"apache-access\"`.",
+          "description": "The resource name of the log. Example: \"\/projects\/my-gcp-project-id\/logs\/LOG_NAME\", where LOG_NAME is the URL-encoded given name of the log. The log includes those log entries whose LogEntry.log field contains this given name. To avoid name collisions, it is a best practice to prefix the given log name with the service name, but this is not required. Examples of log given names: \"appengine.googleapis.com\/request_log\", \"apache-access\".",
           "type": "string"
         },
         "displayName": {
-          "description": "_Optional._ The common name of the log.  Example: `\"request_log\"`.",
+          "description": "Optional. The common name of the log. Example: \"request_log\".",
           "type": "string"
         },
         "payloadType": {
-          "description": "_Optional_. A URI representing the expected payload type for log entries.",
+          "description": "Optional. A URI representing the expected payload type for log entries.",
           "type": "string"
         }
       }
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance:\nservice Foo {\n  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n}\nThe JSON representation for Empty is empty JSON object {}.",
       "type": "object",
       "properties": {
       }
@@ -180,7 +180,7 @@
       "type": "object",
       "properties": {
         "commonLabels": {
-          "description": "Metadata labels that apply to all log entries in this request, so that you\ndon't have to repeat them in each log entry's `metadata.labels` field.  If\nany of the log entries contains a (key, value) with the same key that is in\n`commonLabels`, then the entry's (key, value) overrides the one in\n`commonLabels`.",
+          "description": "Metadata labels that apply to all log entries in this request, so that you don't have to repeat them in each log entry's metadata.labels field. If any of the log entries contains a (key, value) with the same key that is in commonLabels, then the entry's (key, value) overrides the one in commonLabels.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -194,7 +194,7 @@
           }
         },
         "partialSuccess": {
-          "description": "Optional. Whether valid entries should be written even if some other\nentries fail due to INVALID_ARGUMENT or PERMISSION_DENIED errors. If any\nentry is not written, the response status will be the error associated\nwith one of the failed entries and include error details in the form of\nWriteLogEntriesPartialErrors.",
+          "description": "Optional. Whether valid entries should be written even if some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED errors. If any entry is not written, the response status will be the error associated with one of the failed entries and include error details in the form of WriteLogEntriesPartialErrors.",
           "type": "boolean"
         }
       }
@@ -209,7 +209,7 @@
           "$ref": "LogEntryMetadata"
         },
         "protoPayload": {
-          "description": "The log entry payload, represented as a protocol buffer that is\nexpressed as a JSON object. Some Google Cloud Platform services\nuse this field for their log entry payloads.",
+          "description": "The log entry payload, represented as a protocol buffer that is expressed as a JSON object. Some Google Cloud Platform services use this field for their log entry payloads.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -221,7 +221,7 @@
           "type": "string"
         },
         "structPayload": {
-          "description": "The log entry payload, represented as a structure that\nis expressed as a JSON object.",
+          "description": "The log entry payload, represented as a structure that is expressed as a JSON object.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -229,44 +229,44 @@
           }
         },
         "insertId": {
-          "description": "Optional. A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same project with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
+          "description": "Optional. A unique ID for the log entry. If you provide this field, the logging service considers other log entries in the same project with the same ID as duplicates which can be removed. If omitted, Stackdriver Logging will generate a unique ID for this log entry.",
           "type": "string"
         },
         "log": {
-          "description": "Optional. The log to which this entry belongs. When a log entry is written,\nthe value of this field is set by the logging system.",
+          "description": "Optional. The log to which this entry belongs. When a log entry is written, the value of this field is set by the logging system.",
           "type": "string"
         },
         "httpRequest": {
-          "description": "Optional. Information about the HTTP request associated with this\nlog entry, if applicable.",
+          "description": "Optional. Information about the HTTP request associated with this log entry, if applicable.",
           "$ref": "HttpRequest"
         },
         "operation": {
-          "description": "Optional. Information about an operation associated with the log entry, if\napplicable.",
+          "description": "Optional. Information about an operation associated with the log entry, if applicable.",
           "$ref": "LogEntryOperation"
         },
         "writerEmailAddress": {
-          "description": "Optional. The email address of the role that wrote the entry on behalf of a\nuser. Not populated for entries written by a user.",
+          "description": "Optional. The email address of the role that wrote the entry on behalf of a user. Not populated for entries written by a user.",
           "type": "string"
         }
       }
     },
     "LogEntryMetadata": {
       "id": "LogEntryMetadata",
-      "description": "Additional data that is associated with a log entry,\nset by the service creating the log entry.",
+      "description": "Additional data that is associated with a log entry, set by the service creating the log entry.",
       "type": "object",
       "properties": {
         "timestamp": {
-          "description": "Optional. The time the event described by the log entry occurred.\nTimestamps must be later than January 1, 1970.  If omitted,\nStackdriver Logging will use the time the log entry is received.",
+          "description": "Optional. The time the event described by the log entry occurred. Timestamps must be later than January 1, 1970. If omitted, Stackdriver Logging will use the time the log entry is received.",
           "type": "string",
           "format": "google-datetime"
         },
         "severity": {
-          "description": "Optional. The severity of the log entry. If omitted, `LogSeverity.DEFAULT`\nis used.",
+          "description": "Optional. The severity of the log entry. If omitted, LogSeverity.DEFAULT is used.",
           "enumDescriptions": [
             "(0) The log entry has no assigned severity level.",
             "(100) Debug or trace information.",
             "(200) Routine information, such as ongoing status or performance.",
-            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(300) Normal but significant events, such as start up, shut down, or a configuration change.",
             "(400) Warning events might cause problems.",
             "(500) Error events are likely to cause problems.",
             "(600) Critical events cause more severe problems or outages.",
@@ -287,7 +287,7 @@
           ]
         },
         "projectId": {
-          "description": "Optional. The project ID of the Google Cloud Platform service that\ncreated the log entry.",
+          "description": "Optional. The project ID of the Google Cloud Platform service that created the log entry.",
           "type": "string"
         },
         "projectNumber": {
@@ -296,15 +296,15 @@
           "format": "int64"
         },
         "serviceName": {
-          "description": "Required. The API name of the Google Cloud Platform service that\ncreated the log entry.  For example, `\"compute.googleapis.com\"`.",
+          "description": "Required. The API name of the Google Cloud Platform service that created the log entry. For example, \"compute.googleapis.com\".",
           "type": "string"
         },
         "region": {
-          "description": "Optional. The region name of the Google Cloud Platform service that\ncreated the log entry.  For example, `\"us-central1\"`.",
+          "description": "Optional. The region name of the Google Cloud Platform service that created the log entry. For example, \"us-central1\".",
           "type": "string"
         },
         "zone": {
-          "description": "Optional. The zone of the Google Cloud Platform service that created\nthe log entry.  For example, `\"us-central1-a\"`.",
+          "description": "Optional. The zone of the Google Cloud Platform service that created the log entry. For example, \"us-central1-a\".",
           "type": "string"
         },
         "userId": {
@@ -312,7 +312,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "Optional. A set of (key, value) data that provides additional information\nabout the log entry.\nIf the log entry is from one of the Google Cloud Platform sources listed\nbelow, the indicated (key, value) information must be provided:\n\nGoogle App Engine, service_name `appengine.googleapis.com`:\n\n      \"appengine.googleapis.com\/module_id\", <module ID>\n      \"appengine.googleapis.com\/version_id\", <version ID>\n          and one of:\n      \"appengine.googleapis.com\/replica_index\", <instance index>\n      \"appengine.googleapis.com\/clone_id\", <instance ID>\n\n    or else provide the following Compute Engine labels:\n\nGoogle Compute Engine, service_name `compute.googleapis.com`:\n\n       \"compute.googleapis.com\/resource_type\", \"instance\"\n       \"compute.googleapis.com\/resource_id\", <instance ID>",
+          "description": "Optional. A set of (key, value) data that provides additional information about the log entry. If the log entry is from one of the Google Cloud Platform sources listed below, the indicated (key, value) information must be provided:Google App Engine, service_name appengine.googleapis.com:\n  \"appengine.googleapis.com\/module_id\", <module ID>\n  \"appengine.googleapis.com\/version_id\", <version ID>\n      and one of:\n  \"appengine.googleapis.com\/replica_index\", <instance index>\n  \"appengine.googleapis.com\/clone_id\", <instance ID>\n\nor else provide the following Compute Engine labels:\nGoogle Compute Engine, service_name compute.googleapis.com:\n   \"compute.googleapis.com\/resource_type\", \"instance\"\n   \"compute.googleapis.com\/resource_id\", <instance ID>\n",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -322,50 +322,50 @@
     },
     "HttpRequest": {
       "id": "HttpRequest",
-      "description": "A common proto for logging HTTP requests. Only contains semantics\ndefined by the HTTP specification. Product-specific logging\ninformation MUST be defined in a separate message.",
+      "description": "A common proto for logging HTTP requests. Only contains semantics defined by the HTTP specification. Product-specific logging information MUST be defined in a separate message.",
       "type": "object",
       "properties": {
         "requestMethod": {
-          "description": "The request method. Examples: `\"GET\"`, `\"HEAD\"`, `\"PUT\"`, `\"POST\"`.",
+          "description": "The request method. Examples: \"GET\", \"HEAD\", \"PUT\", \"POST\".",
           "type": "string"
         },
         "requestUrl": {
-          "description": "The scheme (http, https), the host name, the path and the query\nportion of the URL that was requested.\nExample: `\"http:\/\/example.com\/some\/info?color=red\"`.",
+          "description": "The scheme (http, https), the host name, the path and the query portion of the URL that was requested. Example: \"http:\/\/example.com\/some\/info?color=red\".",
           "type": "string"
         },
         "requestSize": {
-          "description": "The size of the HTTP request message in bytes, including the request\nheaders and the request body.",
+          "description": "The size of the HTTP request message in bytes, including the request headers and the request body.",
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "description": "The response code indicating the status of response.\nExamples: 200, 404.",
+          "description": "The response code indicating the status of response. Examples: 200, 404.",
           "type": "integer",
           "format": "int32"
         },
         "responseSize": {
-          "description": "The size of the HTTP response message sent back to the client, in bytes,\nincluding the response headers and the response body.",
+          "description": "The size of the HTTP response message sent back to the client, in bytes, including the response headers and the response body.",
           "type": "string",
           "format": "int64"
         },
         "userAgent": {
-          "description": "The user agent sent by the client. Example:\n`\"Mozilla\/4.0 (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)\"`.",
+          "description": "The user agent sent by the client. Example: \"Mozilla\/4.0 (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)\".",
           "type": "string"
         },
         "remoteIp": {
-          "description": "The IP address (IPv4 or IPv6) of the client that issued the HTTP\nrequest. Examples: `\"192.168.1.1\"`, `\"FE80::0202:B3FF:FE1E:8329\"`.",
+          "description": "The IP address (IPv4 or IPv6) of the client that issued the HTTP request. Examples: \"192.168.1.1\", \"FE80::0202:B3FF:FE1E:8329\".",
           "type": "string"
         },
         "serverIp": {
-          "description": "The IP address (IPv4 or IPv6) of the origin server that the request was\nsent to.",
+          "description": "The IP address (IPv4 or IPv6) of the origin server that the request was sent to.",
           "type": "string"
         },
         "referer": {
-          "description": "The referer URL of the request, as defined in\n[HTTP\/1.1 Header Field Definitions](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
+          "description": "The referer URL of the request, as defined in HTTP\/1.1 Header Field Definitions (http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
           "type": "string"
         },
         "latency": {
-          "description": "The request processing latency on the server, from the time the request was\nreceived until the response was sent.",
+          "description": "The request processing latency on the server, from the time the request was received until the response was sent.",
           "type": "string",
           "format": "google-duration"
         },
@@ -374,15 +374,15 @@
           "type": "boolean"
         },
         "cacheHit": {
-          "description": "Whether or not an entity was served from cache\n(with or without validation).",
+          "description": "Whether or not an entity was served from cache (with or without validation).",
           "type": "boolean"
         },
         "cacheValidatedWithOriginServer": {
-          "description": "Whether or not the response was validated with the origin server before\nbeing served from cache. This field is only meaningful if `cache_hit` is\nTrue.",
+          "description": "Whether or not the response was validated with the origin server before being served from cache. This field is only meaningful if cache_hit is True.",
           "type": "boolean"
         },
         "cacheFillBytes": {
-          "description": "The number of HTTP response bytes inserted into cache. Set only when a\ncache fill was attempted.",
+          "description": "The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.",
           "type": "string",
           "format": "int64"
         }
@@ -390,58 +390,58 @@
     },
     "LogEntryOperation": {
       "id": "LogEntryOperation",
-      "description": "Additional information about a potentially long running operation with which\na log entry is associated.",
+      "description": "Additional information about a potentially long running operation with which a log entry is associated.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "Optional. An opaque identifier. A producer of log entries should ensure\nthat `id` is only reused for entries related to one operation.",
+          "description": "Optional. An opaque identifier. A producer of log entries should ensure that id is only reused for entries related to one operation.",
           "type": "string"
         },
         "producer": {
-          "description": "Optional. Ensures the operation can be uniquely identified. The\ncombination of `id` and `producer` should be made globally unique by\nfilling `producer` with a value that disambiguates the service that\ncreated `id`.",
+          "description": "Optional. Ensures the operation can be uniquely identified. The combination of id and producer should be made globally unique by filling producer with a value that disambiguates the service that created id.",
           "type": "string"
         },
         "first": {
-          "description": "Optional. True for the first entry associated with `id`.",
+          "description": "Optional. True for the first entry associated with id.",
           "type": "boolean"
         },
         "last": {
-          "description": "Optional. True for the last entry associated with `id`.",
+          "description": "Optional. True for the last entry associated with id.",
           "type": "boolean"
         }
       }
     },
     "WriteLogEntriesResponse": {
       "id": "WriteLogEntriesResponse",
-      "description": "Result returned from WriteLogEntries.\nempty",
+      "description": "Result returned from WriteLogEntries. empty",
       "type": "object",
       "properties": {
       }
     },
     "ListLogEntriesResponse": {
       "id": "ListLogEntriesResponse",
-      "description": "Result returned from `ListLogEntries`.",
+      "description": "Result returned from ListLogEntries.",
       "type": "object",
       "properties": {
         "entries": {
-          "description": "A list of log entries.  Fewer than `pageSize` entries may be\nreturned, but that is not an indication that there are no more entries.",
+          "description": "A list of log entries. Fewer than pageSize entries may be returned, but that is not an indication that there are no more entries.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of entries, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogEntries`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of entries, use the value of nextPageToken as pageToken in the next call of ListLogEntries. If nextPageToken is empty, then there are no more results.",
           "type": "string",
           "format": "byte"
         },
         "lastObservedEntryTimestamp": {
-          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned. Deprecated: use\nsearched_through_timestamp.",
+          "description": "The timestamp of the last log entry that was examined before returning this response. This can be used to observe progress between successive queries, in particular when only a page token is returned. Deprecated: use searched_through_timestamp.",
           "type": "string",
           "format": "google-datetime"
         },
         "searchedThroughTimestamp": {
-          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using next_page_token are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis can be used to observe progress between successive queries, in\nparticular when only a page token is returned.",
+          "description": "The furthest point in time through which the search has progressed. All future entries returned using next_page_token are guaranteed to have a timestamp at or past this point in time in the direction of the search. This can be used to observe progress between successive queries, in particular when only a page token is returned.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -449,24 +449,24 @@
     },
     "ListLogEntriesRequest": {
       "id": "ListLogEntriesRequest",
-      "description": "The parameters to `ListLogEntries`.",
+      "description": "The parameters to ListLogEntries.",
       "type": "object",
       "properties": {
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.\nThe maximum length of the filter is 20000 characters.",
+          "description": "An advanced logs filter. The response includes only entries that match the filter. If filter is empty, then all entries in all logs are retrieved. The maximum length of the filter is 20000 characters.",
           "type": "string"
         },
         "orderBy": {
-          "description": "Sort order of the results, consisting of a `LogEntry` field optionally\nfollowed by a space and `desc`.  Examples: `\"metadata.timestamp\"`,\n`\"metadata.timestamp desc\"`.  The only `LogEntry` field supported for\nsorting is `metadata.timestamp`. The default sort order is ascending (from\nolder to newer entries) unless `desc` is appended.",
+          "description": "Sort order of the results, consisting of a LogEntry field optionally followed by a space and desc. Examples: \"metadata.timestamp\", \"metadata.timestamp desc\". The only LogEntry field supported for sorting is metadata.timestamp. The default sort order is ascending (from older to newer entries) unless desc is appended.",
           "type": "string"
         },
         "pageSize": {
-          "description": "The maximum number of entries to return per request.  Fewer entries may be\nreturned, but that is not an indication that there are no more entries.",
+          "description": "The maximum number of entries to return per request. Fewer entries may be returned, but that is not an indication that there are no more entries.",
           "type": "integer",
           "format": "int32"
         },
         "pageToken": {
-          "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogEntries`\noperation. If a page token is specified, other request parameters must\nmatch the parameters from the request that generated the page token.",
+          "description": "An opaque token, returned as nextPageToken by a prior ListLogEntries operation. If a page token is specified, other request parameters must match the parameters from the request that generated the page token.",
           "type": "string",
           "format": "byte"
         }
@@ -474,7 +474,7 @@
     },
     "ListLogServicesResponse": {
       "id": "ListLogServicesResponse",
-      "description": "Result returned from `ListLogServicesRequest`.",
+      "description": "Result returned from ListLogServicesRequest.",
       "type": "object",
       "properties": {
         "logServices": {
@@ -485,22 +485,22 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of services, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogServices`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of services, use the value of nextPageToken as pageToken in the next call of ListLogServices. If nextPageToken is empty, then there are no more results.",
           "type": "string"
         }
       }
     },
     "LogService": {
       "id": "LogService",
-      "description": "_Output only._ Describes a service that writes log entries.",
+      "description": "Output only. Describes a service that writes log entries.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The service's name. Example: `\"appengine.googleapis.com\"`.\nLog names beginning with this string are reserved for this service.\nThis value can appear in the `LogEntry.metadata.serviceName` field of\nlog entries associated with this log service.",
+          "description": "The service's name. Example: \"appengine.googleapis.com\". Log names beginning with this string are reserved for this service. This value can appear in the LogEntry.metadata.serviceName field of log entries associated with this log service.",
           "type": "string"
         },
         "indexKeys": {
-          "description": "A list of the names of the keys used to index and label\nindividual log entries from this service.  The first two keys are\nused as the primary and secondary index, respectively.\nAdditional keys may be used to label the entries.  For example,\nApp Engine indexes its entries by module and by version, so its\n`indexKeys` field is the following:\n\n    [ \"appengine.googleapis.com\/module_id\",\n      \"appengine.googleapis.com\/version_id\" ]",
+          "description": "A list of the names of the keys used to index and label individual log entries from this service. The first two keys are used as the primary and secondary index, respectively. Additional keys may be used to label the entries. For example, App Engine indexes its entries by module and by version, so its indexKeys field is the following:\n[ \"appengine.googleapis.com\/module_id\",\n  \"appengine.googleapis.com\/version_id\" ]\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -514,25 +514,25 @@
       "type": "object",
       "properties": {
         "serviceIndexPrefixes": {
-          "description": "A list of log service index values.\nEach index value has the form `\"\/value1\/value2\/...\"`,\nwhere `value1` is a value in the primary index, `value2` is\na value in the secondary index, and so forth.",
+          "description": "A list of log service index values. Each index value has the form \"\/value1\/value2\/...\", where value1 is a value in the primary index, value2 is a value in the secondary index, and so forth.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of indexes, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogServiceIndexes`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of indexes, use the value of nextPageToken as pageToken in the next call of ListLogServiceIndexes. If nextPageToken is empty, then there are no more results.",
           "type": "string"
         }
       }
     },
     "ListLogSinksResponse": {
       "id": "ListLogSinksResponse",
-      "description": "Result returned from `ListLogSinks`.",
+      "description": "Result returned from ListLogSinks.",
       "type": "object",
       "properties": {
         "sinks": {
-          "description": "The requested log sinks. If a returned `LogSink` object has\nan empty `destination` field, the client can retrieve the complete\n`LogSink` object by calling `log.sinks.get`.",
+          "description": "The requested log sinks. If a returned LogSink object has an empty destination field, the client can retrieve the complete LogSink object by calling log.sinks.get.",
           "type": "array",
           "items": {
             "$ref": "LogSink"
@@ -546,26 +546,26 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned name of this sink. For example,\n`\"my-syslog-sink\"`.  The name must be unique among the sinks of a\nsimilar kind in the project.",
+          "description": "Required. The client-assigned name of this sink. For example, \"my-syslog-sink\". The name must be unique among the sinks of a similar kind in the project.",
           "type": "string"
         },
         "destination": {
-          "description": "Required. The resource name of the destination.\nStackdriver Logging writes designated log entries to this destination.\nFor example, `\"storage.googleapis.com\/my-output-bucket\"`.",
+          "description": "Required. The resource name of the destination. Stackdriver Logging writes designated log entries to this destination. For example, \"storage.googleapis.com\/my-output-bucket\".",
           "type": "string"
         },
         "filter": {
-          "description": "Optional. An advanced logs filter. If present, only log entries matching\nthe filter are written.  Only project sinks use this field; log sinks and\nlog service sinks must not include a filter.\nThe maximum length of the filter is 20000 characters.",
+          "description": "Optional. An advanced logs filter. If present, only log entries matching the filter are written. Only project sinks use this field; log sinks and log service sinks must not include a filter. The maximum length of the filter is 20000 characters.",
           "type": "string"
         },
         "errors": {
-          "description": "_Output only._ If any errors occur when invoking a sink method,\nthen this field contains descriptions of the errors.",
+          "description": "Output only. If any errors occur when invoking a sink method, then this field contains descriptions of the errors.",
           "type": "array",
           "items": {
             "$ref": "LogError"
           }
         },
         "startTime": {
-          "description": "Optional. Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges. The start_time must be less than the end_time.",
+          "description": "Optional. Time range for which this sink is active. Logs are exported only if start_time <= entry.timestamp < end_time Both start_time and end_time may be omitted to specify (half) infinite ranges. The start_time must be less than the end_time.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -582,11 +582,11 @@
       "type": "object",
       "properties": {
         "resource": {
-          "description": "A resource name associated with this error. For example,\nthe name of a Cloud Storage bucket that has insufficient permissions\nto be a destination for log entries.",
+          "description": "A resource name associated with this error. For example, the name of a Cloud Storage bucket that has insufficient permissions to be a destination for log entries.",
           "type": "string"
         },
         "status": {
-          "description": "The error description, including a classification code,\nan error message, and other details.",
+          "description": "The error description, including a classification code, an error message, and other details.",
           "$ref": "Status"
         },
         "timeNanos": {
@@ -598,7 +598,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The Status type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by gRPC (https:\/\/github.com\/grpc). The error model is designed to be:\nSimple to use and understand for most users\nFlexible enough to meet unexpected needsOverviewThe Status message contains three pieces of data: error code, error message, and error details. The error code should be an enum value of google.rpc.Code, but it may accept additional error codes if needed. The error message should be a developer-facing English message that helps developers understand and resolve the error. If a localized user-facing error message is needed, put the localized message in the error details or localize it in the client. The optional error details may contain arbitrary information about the error. There is a predefined set of error detail types in the package google.rpc which can be used for common error conditions.Language mappingThe Status message is the logical representation of the error model, but it is not necessarily the actual wire format. When the Status message is exposed in different client libraries and different wire protocols, it can be mapped differently. For example, it will likely be mapped to some exceptions in Java, but more likely mapped to some error codes in C.Other usesThe error model and the Status message can be used in a variety of environments, either with or without APIs, to provide a consistent developer experience across different environments.Example uses of this error model include:\nPartial errors. If a service needs to return partial errors to the client, it may embed the Status in the normal response to indicate the partial errors.\nWorkflow errors. A typical workflow has multiple steps. Each step may have a Status message for error reporting purpose.\nBatch operations. If a client uses batch request and batch response, the Status message should be used directly inside batch response, one for each error sub-response.\nAsynchronous operations. If an API call embeds asynchronous operation results in its response, the status of those operations should be represented directly using the Status message.\nLogging. If some API errors are stored in logs, the message Status could be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -607,11 +607,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -625,11 +625,11 @@
     },
     "ListLogServiceSinksResponse": {
       "id": "ListLogServiceSinksResponse",
-      "description": "Result returned from `ListLogServiceSinks`.",
+      "description": "Result returned from ListLogServiceSinks.",
       "type": "object",
       "properties": {
         "sinks": {
-          "description": "The requested log service sinks. If a returned `LogSink` object has\nan empty `destination` field, the client can retrieve the complete\n`LogSink` object by calling `logServices.sinks.get`.",
+          "description": "The requested log service sinks. If a returned LogSink object has an empty destination field, the client can retrieve the complete LogSink object by calling logServices.sinks.get.",
           "type": "array",
           "items": {
             "$ref": "LogSink"
@@ -639,11 +639,11 @@
     },
     "ListSinksResponse": {
       "id": "ListSinksResponse",
-      "description": "Result returned from `ListSinks`.",
+      "description": "Result returned from ListSinks.",
       "type": "object",
       "properties": {
         "sinks": {
-          "description": "The requested sinks.  If a returned `LogSink` object has\nan empty `destination` field, the client can retrieve the complete\n`LogSink` object by calling `projects.sinks.get`.",
+          "description": "The requested sinks. If a returned LogSink object has an empty destination field, the client can retrieve the complete LogSink object by calling projects.sinks.get.",
           "type": "array",
           "items": {
             "$ref": "LogSink"
@@ -664,18 +664,18 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of entries, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogMetrics`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of entries, use the value of nextPageToken as pageToken in the next call of ListLogMetrics. If nextPageToken is empty, then there are no more results.",
           "type": "string"
         }
       }
     },
     "LogMetric": {
       "id": "LogMetric",
-      "description": "Describes a logs-based metric.\nThe value of the metric is the number of log entries\nin your project that match a logs filter.",
+      "description": "Describes a logs-based metric. The value of the metric is the number of log entries in your project that match a logs filter.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned name for this metric, such as\n`\"severe_errors\"`.  Metric names are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.,+!*',()%\/\\`.  The slash\ncharacter (`\/`) denotes a hierarchy of name pieces, and it cannot\nbe the first character of the name.",
+          "description": "Required. The client-assigned name for this metric, such as \"severe_errors\". Metric names are limited to 1000 characters and can include only the following characters: A-Z, a-z, 0-9, and the special characters _-.,+!*',()%\/\\. The slash character (\/) denotes a hierarchy of name pieces, and it cannot be the first character of the name.",
           "type": "string"
         },
         "description": {
@@ -683,14 +683,14 @@
           "type": "string"
         },
         "filter": {
-          "description": "Required. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nExample: `\"log=syslog AND metadata.severity>=ERROR\"`.\nThe maximum length of the filter is 20000 characters.",
+          "description": "Required. An advanced logs filter. Example: \"log=syslog AND metadata.severity>=ERROR\". The maximum length of the filter is 20000 characters.",
           "type": "string"
         }
       }
     },
     "RequestLog": {
       "id": "RequestLog",
-      "description": "Complete log information about a single HTTP request to an App Engine\napplication.",
+      "description": "Complete log information about a single HTTP request to an App Engine application.",
       "type": "object",
       "properties": {
         "appId": {
@@ -706,7 +706,7 @@
           "type": "string"
         },
         "requestId": {
-          "description": "Globally unique identifier for a request, which is based on the request\nstart time.  Request IDs for requests which started later will compare\ngreater as strings than those for requests which started earlier.",
+          "description": "Globally unique identifier for a request, which is based on the request start time. Request IDs for requests which started later will compare greater as strings than those for requests which started earlier.",
           "type": "string"
         },
         "ip": {
@@ -734,15 +734,15 @@
           "format": "int64"
         },
         "method": {
-          "description": "Request method. Example: `\"GET\"`, `\"HEAD\"`, `\"PUT\"`, `\"POST\"`, `\"DELETE\"`.",
+          "description": "Request method. Example: \"GET\", \"HEAD\", \"PUT\", \"POST\", \"DELETE\".",
           "type": "string"
         },
         "resource": {
-          "description": "Contains the path and query portion of the URL that was requested. For\nexample, if the URL was \"http:\/\/example.com\/app?name=val\", the resource\nwould be \"\/app?name=val\".  The fragment identifier, which is identified by\nthe `#` character, is not included.",
+          "description": "Contains the path and query portion of the URL that was requested. For example, if the URL was \"http:\/\/example.com\/app?name=val\", the resource would be \"\/app?name=val\". The fragment identifier, which is identified by the # character, is not included.",
           "type": "string"
         },
         "httpVersion": {
-          "description": "HTTP version of request. Example: `\"HTTP\/1.1\"`.",
+          "description": "HTTP version of request. Example: \"HTTP\/1.1\".",
           "type": "string"
         },
         "status": {
@@ -764,7 +764,7 @@
           "type": "string"
         },
         "nickname": {
-          "description": "The logged-in user who made the request.\n\nMost likely, this is the part of the user's email before the `@` sign.  The\nfield value is the same for different requests from the same user, but\ndifferent users can have similar names.  This information is also\navailable to the application via the App Engine Users API.\n\nThis field will be populated starting with App Engine 1.9.21.",
+          "description": "The logged-in user who made the request.Most likely, this is the part of the user's email before the @ sign. The field value is the same for different requests from the same user, but different users can have similar names. This information is also available to the application via the App Engine Users API.This field will be populated starting with App Engine 1.9.21.",
           "type": "string"
         },
         "urlMapEntry": {
@@ -798,7 +798,7 @@
           "format": "google-duration"
         },
         "instanceIndex": {
-          "description": "If the instance processing this request belongs to a manually scaled\nmodule, then this is the 0-based index of the instance. Otherwise, this\nvalue is -1.",
+          "description": "If the instance processing this request belongs to a manually scaled module, then this is the 0-based index of the instance. Otherwise, this value is -1.",
           "type": "integer",
           "format": "int32"
         },
@@ -807,7 +807,7 @@
           "type": "boolean"
         },
         "first": {
-          "description": "Whether this is the first `RequestLog` entry for this request.  If an\nactive request has several `RequestLog` entries written to Stackdriver\nLogging, then this field will be set for one of them.",
+          "description": "Whether this is the first RequestLog entry for this request. If an active request has several RequestLog entries written to Stackdriver Logging, then this field will be set for one of them.",
           "type": "boolean"
         },
         "instanceId": {
@@ -830,7 +830,7 @@
           "type": "string"
         },
         "sourceReference": {
-          "description": "Source code for the application that handled this request. There can be\nmore than one source reference per deployed application if source code is\ndistributed among multiple repositories.",
+          "description": "Source code for the application that handled this request. There can be more than one source reference per deployed application if source code is distributed among multiple repositories.",
           "type": "array",
           "items": {
             "$ref": "SourceReference"
@@ -854,7 +854,7 @@
             "(0) The log entry has no assigned severity level.",
             "(100) Debug or trace information.",
             "(200) Routine information, such as ongoing status or performance.",
-            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(300) Normal but significant events, such as start up, shut down, or a configuration change.",
             "(400) Warning events might cause problems.",
             "(500) Error events are likely to cause problems.",
             "(600) Critical events cause more severe problems or outages.",
@@ -890,7 +890,7 @@
       "type": "object",
       "properties": {
         "file": {
-          "description": "Source file name. Depending on the runtime environment, this might be a\nsimple name or a fully-qualified name.",
+          "description": "Source file name. Depending on the runtime environment, this might be a simple name or a fully-qualified name.",
           "type": "string"
         },
         "line": {
@@ -899,22 +899,22 @@
           "format": "int64"
         },
         "functionName": {
-          "description": "Human-readable name of the function or method being invoked, with optional\ncontext such as the class or package name. This information is used in\ncontexts such as the logs viewer, where a file and line number are less\nmeaningful. The format can vary by language. For example:\n`qual.if.ied.Class.method` (Java), `dir\/package.func` (Go), `function`\n(Python).",
+          "description": "Human-readable name of the function or method being invoked, with optional context such as the class or package name. This information is used in contexts such as the logs viewer, where a file and line number are less meaningful. The format can vary by language. For example: qual.if.ied.Class.method (Java), dir\/package.func (Go), function (Python).",
           "type": "string"
         }
       }
     },
     "SourceReference": {
       "id": "SourceReference",
-      "description": "A reference to a particular snapshot of the source tree used to build and\ndeploy an application.",
+      "description": "A reference to a particular snapshot of the source tree used to build and deploy an application.",
       "type": "object",
       "properties": {
         "repository": {
-          "description": "Optional. A URI string identifying the repository.\nExample: \"https:\/\/github.com\/GoogleCloudPlatform\/kubernetes.git\"",
+          "description": "Optional. A URI string identifying the repository. Example: \"https:\/\/github.com\/GoogleCloudPlatform\/kubernetes.git\"",
           "type": "string"
         },
         "revisionId": {
-          "description": "The canonical and persistent identifier of the deployed revision.\nExample (git): \"0035781c50ec7aa23385dc841529ce8a4b70db1b\"",
+          "description": "The canonical and persistent identifier of the deployed revision. Example (git): \"0035781c50ec7aa23385dc841529ce8a4b70db1b\"",
           "type": "string"
         }
       }
@@ -930,21 +930,21 @@
               "path": "v1beta3/projects/{projectsId}/logs",
               "flatPath": "v1beta3/projects/{projectsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "description": "Lists the logs in the project. Only logs that have entries are listed.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project whose logs are requested.\nIf both `serviceName` and `serviceIndexPrefix` are empty, then\nall logs with entries in this project are listed.",
+                  "description": "Part of `projectName`. The resource name of the project whose logs are requested. If both serviceName and serviceIndexPrefix are empty, then all logs with entries in this project are listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "serviceName": {
-                  "description": "If not empty, this field must be a log service name such as\n`\"compute.googleapis.com\"`. Only logs associated with that\nthat log service are listed.",
+                  "description": "If not empty, this field must be a log service name such as \"compute.googleapis.com\". Only logs associated with that that log service are listed.",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceIndexPrefix": {
-                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `serviceName` is the name of a log service,\nthen this field may contain values for the log service's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.",
+                  "description": "The purpose of this field is to restrict the listed logs to those with entries of a certain kind. If serviceName is the name of a log service, then this field may contain values for the log service's indexes. Only logs that have entries whose indexes include the values are listed. The format for this field is \"\/val1\/val2...\/valN\", where val1 is a value for the first index, val2 for the second index, etc. An empty value (a single slash) for an index matches all values, and you can omit values for later indexes entirely.",
                   "location": "query",
                   "type": "string"
                 },
@@ -955,7 +955,7 @@
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogs`\noperation.  If `pageToken` is supplied, then the other fields of this\nrequest are ignored, and instead the previous `ListLogs` operation is\ncontinued.",
+                  "description": "An opaque token, returned as nextPageToken by a prior ListLogs operation. If pageToken is supplied, then the other fields of this request are ignored, and instead the previous ListLogs operation is continued.",
                   "location": "query",
                   "type": "string"
                 }
@@ -978,7 +978,7 @@
               "path": "v1beta3/projects/{projectsId}/logs/{logsId}",
               "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.",
+              "description": "Deletes a log and all its log entries. The log will reappear if it receives new entries.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `logName`. The resource name of the log to be deleted.",
@@ -1015,7 +1015,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "httpMethod": "POST",
-                  "description": "Writes log entries to Stackdriver Logging. Each entry consists of a\n`LogEntry` object.  You must fill in the required fields of the\nobject.  You can supply a map, `commonLabels`, that holds default\n(key, value) data for the `entries[].metadata.labels` map in each\nentry, saving you the trouble of creating identical copies for\neach entry.\n",
+                  "description": "Writes log entries to Stackdriver Logging. Each entry consists of a LogEntry object. You must fill in the required fields of the object. You can supply a map, commonLabels, that holds default (key, value) data for the entries[].metadata.labels map in each entry, saving you the trouble of creating identical copies for each entry.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `logName`. The resource name of the log that will receive the log entries.",
@@ -1058,7 +1058,7 @@
                   "description": "Lists log sinks associated with a log.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `logName`. Required. The log whose sinks are requested.\nFor example, `\"compute.google.com\/syslog\"`.",
+                      "description": "Part of `logName`. Required. The log whose sinks are requested. For example, \"compute.google.com\/syslog\".",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1130,7 +1130,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks",
                   "httpMethod": "POST",
-                  "description": "Creates a log sink.\nAll log entries for a specified log are written to the destination.",
+                  "description": "Creates a log sink. All log entries for a specified log are written to the destination.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `logName`. Required. The resource name of the log to which to the sink is bound.",
@@ -1165,7 +1165,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}",
                   "httpMethod": "PUT",
-                  "description": "Updates a log sink.\nIf the sink does not exist, it is created.",
+                  "description": "Updates a log sink. If the sink does not exist, it is created.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `sinkName`. Required. The resource name of the sink to update.",
@@ -1207,7 +1207,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a log sink.\nAfter deletion, no new log entries are written to the destination.",
+                  "description": "Deletes a log sink. After deletion, no new log entries are written to the destination.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `sinkName`. Required. The resource name of the log sink to delete.",
@@ -1255,29 +1255,29 @@
               "description": "Lists log entries in the specified project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.",
+                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries. The log service or log containing the entries is specified in the filter parameter. Example: projects\/my_project_id.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "filter": {
-                  "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe response includes only entries that match the filter.\nIf `filter` is empty, then all entries in all logs are retrieved.\nThe maximum length of the filter is 20000 characters.",
+                  "description": "An advanced logs filter. The response includes only entries that match the filter. If filter is empty, then all entries in all logs are retrieved. The maximum length of the filter is 20000 characters.",
                   "location": "query",
                   "type": "string"
                 },
                 "orderBy": {
-                  "description": "Sort order of the results, consisting of a `LogEntry` field optionally\nfollowed by a space and `desc`.  Examples: `\"metadata.timestamp\"`,\n`\"metadata.timestamp desc\"`.  The only `LogEntry` field supported for\nsorting is `metadata.timestamp`. The default sort order is ascending (from\nolder to newer entries) unless `desc` is appended.",
+                  "description": "Sort order of the results, consisting of a LogEntry field optionally followed by a space and desc. Examples: \"metadata.timestamp\", \"metadata.timestamp desc\". The only LogEntry field supported for sorting is metadata.timestamp. The default sort order is ascending (from older to newer entries) unless desc is appended.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries to return per request.  Fewer entries may be\nreturned, but that is not an indication that there are no more entries.",
+                  "description": "The maximum number of entries to return per request. Fewer entries may be returned, but that is not an indication that there are no more entries.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogEntries`\noperation. If a page token is specified, other request parameters must\nmatch the parameters from the request that generated the page token.",
+                  "description": "An opaque token, returned as nextPageToken by a prior ListLogEntries operation. If a page token is specified, other request parameters must match the parameters from the request that generated the page token.",
                   "location": "query",
                   "type": "string",
                   "format": "byte"
@@ -1308,7 +1308,7 @@
               "description": "Lists log entries in the specified project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.",
+                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries. The log service or log containing the entries is specified in the filter parameter. Example: projects\/my_project_id.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1348,13 +1348,13 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of `LogService` objects to return in one operation.",
+                  "description": "The maximum number of LogService objects to return in one operation.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogServices`\noperation.  If `pageToken` is supplied, then the other fields of this\nrequest are ignored, and instead the previous `ListLogServices` operation\nis continued.",
+                  "description": "An opaque token, returned as nextPageToken by a prior ListLogServices operation. If pageToken is supplied, then the other fields of this request are ignored, and instead the previous ListLogServices operation is continued.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1385,7 +1385,7 @@
                   "description": "Lists the current index values for a log service.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `serviceName`. The resource name of a log service whose service indexes are requested.\nExample:\n`\"projects\/my-project-id\/logServices\/appengine.googleapis.com\"`.",
+                      "description": "Part of `serviceName`. The resource name of a log service whose service indexes are requested. Example: \"projects\/my-project-id\/logServices\/appengine.googleapis.com\".",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1397,24 +1397,24 @@
                       "type": "string"
                     },
                     "indexPrefix": {
-                      "description": "Restricts the index values returned to be those with a specified prefix\nfor each index key.\nThis field has the form `\"\/prefix1\/prefix2\/...\"`, in order corresponding\nto the `LogService indexKeys`.\nNon-empty prefixes must begin with `\/`.\nFor example, App Engine's two keys are the module ID and the version ID.\nFollowing is the effect of using various values for `indexPrefix`:\n\n+  `\"\/Mod\/\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod` retrieves `\/Mod\/10`, `\/Mod\/11` and `\/ModA\/10` but not `\/XXX\/33`.\n+  `\"\/Mod\/1\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod\/10\/\"` retrieves `\/Mod\/10` only.\n+  An empty prefix or `\"\/\"` retrieves all values.",
+                      "description": "Restricts the index values returned to be those with a specified prefix for each index key. This field has the form \"\/prefix1\/prefix2\/...\", in order corresponding to the LogService indexKeys. Non-empty prefixes must begin with \/. For example, App Engine's two keys are the module ID and the version ID. Following is the effect of using various values for indexPrefix:\n\"\/Mod\/\" retrieves \/Mod\/10 and \/Mod\/11 but not \/ModA\/10.\n\"\/Mod retrieves \/Mod\/10, \/Mod\/11 and \/ModA\/10 but not \/XXX\/33.\n\"\/Mod\/1\" retrieves \/Mod\/10 and \/Mod\/11 but not \/ModA\/10.\n\"\/Mod\/10\/\" retrieves \/Mod\/10 only.\nAn empty prefix or \"\/\" retrieves all values.",
                       "location": "query",
                       "type": "string"
                     },
                     "depth": {
-                      "description": "A non-negative integer that limits the number of levels of the index\nhierarchy that are returned.\nIf `depth` is 1 (default), only the first index key value is returned.\nIf `depth` is 2, both primary and secondary key values are returned.\nIf `depth` is 0, the depth is the number of slash-separators in the\n`indexPrefix` field, not counting a slash appearing as the last character\nof the prefix.\nIf the `indexPrefix` field is empty, the default depth is 1.\nIt is an error for `depth` to be any positive value\nless than the number of components in `indexPrefix`.",
+                      "description": "A non-negative integer that limits the number of levels of the index hierarchy that are returned. If depth is 1 (default), only the first index key value is returned. If depth is 2, both primary and secondary key values are returned. If depth is 0, the depth is the number of slash-separators in the indexPrefix field, not counting a slash appearing as the last character of the prefix. If the indexPrefix field is empty, the default depth is 1. It is an error for depth to be any positive value less than the number of components in indexPrefix.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageSize": {
-                      "description": "The maximum number of log service index resources to return in one\noperation.",
+                      "description": "The maximum number of log service index resources to return in one operation.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "An opaque token, returned as `nextPageToken` by a prior\n`ListLogServiceIndexes` operation.  If `pageToken` is supplied, then the\nother fields of this request are ignored, and instead the previous\n`ListLogServiceIndexes` operation is continued.",
+                      "description": "An opaque token, returned as nextPageToken by a prior ListLogServiceIndexes operation. If pageToken is supplied, then the other fields of this request are ignored, and instead the previous ListLogServiceIndexes operation is continued.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1517,7 +1517,7 @@
                   "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks",
                   "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks",
                   "httpMethod": "POST",
-                  "description": "Creates a log service sink.\nAll log entries from a specified log service are written to the\ndestination.",
+                  "description": "Creates a log service sink. All log entries from a specified log service are written to the destination.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `serviceName`. Required. The resource name of the log service to which the sink is bound.",
@@ -1552,7 +1552,7 @@
                   "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}",
                   "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}",
                   "httpMethod": "PUT",
-                  "description": "Updates a log service sink.\nIf the sink does not exist, it is created.",
+                  "description": "Updates a log service sink. If the sink does not exist, it is created.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `sinkName`. Required. The resource name of the log service sink to update.",
@@ -1594,7 +1594,7 @@
                   "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}",
                   "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a log service sink.\nAfter deletion, no new log entries are written to the destination.",
+                  "description": "Deletes a log service sink. After deletion, no new log entries are written to the destination.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `sinkName`. Required. The resource name of the log service sink to delete.",
@@ -1700,7 +1700,7 @@
               "path": "v1beta3/projects/{projectsId}/sinks",
               "flatPath": "v1beta3/projects/{projectsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a project sink.\nA logs filter determines which log entries are written to the destination.",
+              "description": "Creates a project sink. A logs filter determines which log entries are written to the destination.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `projectName`. Required. The resource name of the project to which the sink is bound.",
@@ -1728,7 +1728,7 @@
               "path": "v1beta3/projects/{projectsId}/sinks/{sinksId}",
               "flatPath": "v1beta3/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a project sink.\nIf the sink does not exist, it is created.\nThe destination, filter, or both may be updated.",
+              "description": "Updates a project sink. If the sink does not exist, it is created. The destination, filter, or both may be updated.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `sinkName`. Required. The resource name of the project sink to update.",
@@ -1763,7 +1763,7 @@
               "path": "v1beta3/projects/{projectsId}/sinks/{sinksId}",
               "flatPath": "v1beta3/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a project sink.\nAfter deletion, no new log entries are written to the destination.",
+              "description": "Deletes a project sink. After deletion, no new log entries are written to the destination.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `sinkName`. Required. The resource name of the project sink to delete.",
@@ -1808,12 +1808,12 @@
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                  "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

@@ -872,7 +872,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned. If importing Variants, an ImportVariantsResponse is returned. For exports, an empty response is returned.",
+          "description": "If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned. If importing Variants, an ImportVariantsResponse is returned. For pipelines and exports, an empty response is returned.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -902,7 +902,7 @@
           "type": "string"
         },
         "sourceUris": {
-          "description": "A list of URIs pointing at [BAM\nfiles](https:\/\/samtools.github.io\/hts-specs\/SAMv1.pdf)\nin Google Cloud Storage.",
+          "description": "A list of URIs pointing at [BAM\nfiles](https:\/\/samtools.github.io\/hts-specs\/SAMv1.pdf)\nin Google Cloud Storage.\nThose URIs can include wildcards (*), but do not add or remove\nmatching files before import has completed.\n\nNote that Google Cloud Storage object listing is only eventually\nconsistent: files added may be not be immediately visible to\neveryone. Thus, if using a wildcard it is preferable not to start\nthe import immediately after the files are created.",
           "type": "array",
           "items": {
             "type": "string"

@@ -436,7 +436,7 @@ class Operation(_messages.Message):
       with the Operation.
     ResponseValue: If importing ReadGroupSets, an ImportReadGroupSetsResponse
       is returned. If importing Variants, an ImportVariantsResponse is
-      returned. For exports, an empty response is returned.
+      returned. For pipelines and exports, an empty response is returned.
 
   Fields:
     done: If the value is `false`, it means the operation is still in
@@ -451,7 +451,7 @@ class Operation(_messages.Message):
       /CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
     response: If importing ReadGroupSets, an ImportReadGroupSetsResponse is
       returned. If importing Variants, an ImportVariantsResponse is returned.
-      For exports, an empty response is returned.
+      For pipelines and exports, an empty response is returned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -483,8 +483,8 @@ class Operation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
     """If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned.
-    If importing Variants, an ImportVariantsResponse is returned. For exports,
-    an empty response is returned.
+    If importing Variants, an ImportVariantsResponse is returned. For
+    pipelines and exports, an empty response is returned.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.
@@ -1039,9 +1039,11 @@ class SetOperationStatusRequest(_messages.Message):
         have been delayed long enough for the deadline to expire.  HTTP
         Mapping: 504 Gateway Timeout
       NOT_FOUND: Some requested entity (e.g., file or directory) was not
-        found. For privacy reasons, this code *may* be returned when the
-        client does not have the access rights to the entity, though such
-        usage is discouraged.  HTTP Mapping: 404 Not Found
+        found.  Note to server developers: if a request is denied for an
+        entire class of users, such as gradual feature rollout or undocumented
+        whitelist, `NOT_FOUND` may be used. If a request is denied for some
+        users within a class of users, such as user-based access control,
+        `PERMISSION_DENIED` must be used.  HTTP Mapping: 404 Not Found
       ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
         or directory) already exists.  HTTP Mapping: 409 Conflict
       PERMISSION_DENIED: The caller does not have permission to execute the
@@ -1049,8 +1051,9 @@ class SetOperationStatusRequest(_messages.Message):
         rejections caused by exhausting some resource (use
         `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
         must not be used if the caller can not be identified (use
-        `UNAUTHENTICATED` instead for those errors).  HTTP Mapping: 403
-        Forbidden
+        `UNAUTHENTICATED` instead for those errors). This error code does not
+        imply the request is valid or the requested entity exists or satisfies
+        other pre-conditions.  HTTP Mapping: 403 Forbidden
       UNAUTHENTICATED: The request does not have valid authentication
         credentials for the operation.  HTTP Mapping: 401 Unauthorized
       RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user

@@ -361,6 +361,37 @@ ServiceAccount.
         supports_download=False,
     )
 
+    def SignJwt(self, request, global_params=None):
+      """Signs a JWT using a service account's system-managed private key.
+
+If no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an
+an expiry time of one hour by default. If you request an expiry time of
+more than one hour, the request will fail.
+
+      Args:
+        request: (IamProjectsServiceAccountsSignJwtRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SignJwtResponse) The response message.
+      """
+      config = self.GetMethodConfig('SignJwt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SignJwt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signJwt',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.signJwt',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:signJwt',
+        request_field=u'signJwtRequest',
+        request_type_name=u'IamProjectsServiceAccountsSignJwtRequest',
+        response_type_name=u'SignJwtResponse',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Tests the specified permissions against the IAM access control policy.
 for a ServiceAccount.

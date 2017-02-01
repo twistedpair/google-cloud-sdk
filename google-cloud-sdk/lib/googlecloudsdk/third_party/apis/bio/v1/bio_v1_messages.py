@@ -385,26 +385,14 @@ class RunDeepVariantV1alphaRequest(_messages.Message):
     options: Common pipeline options.
     outputPath: Required. The Google Cloud Storage path for copying the final
       output files. For example, 'gs://<user_bucket>/<sample_name>/'.
-    platform: The platform used to generate the data (the 'PL' in a BAM @RG
-      header), for example 'Illumina'. Unset by default.
-    readGroupId: The read group ID (the 'ID' in a BAM @RG header). Defaults to
-      'none'.
-    sampleId: The sample ID. Unset by default. This is used as the 'LB' field
-      in the @RG headers for any output BAM files.
     sampleName: Required. Sample name.
-    sequencingCenter: The sequencing center producing the reads (the 'CN' in a
-      BAM @RG header). Unset by default.
   """
 
   inputFastq1 = _messages.StringField(1, repeated=True)
   inputFastq2 = _messages.StringField(2, repeated=True)
   options = _messages.MessageField('PipelineOptions', 3)
   outputPath = _messages.StringField(4)
-  platform = _messages.StringField(5)
-  readGroupId = _messages.StringField(6)
-  sampleId = _messages.StringField(7)
-  sampleName = _messages.StringField(8)
-  sequencingCenter = _messages.StringField(9)
+  sampleName = _messages.StringField(5)
 
 
 class RuntimeMetadata(_messages.Message):

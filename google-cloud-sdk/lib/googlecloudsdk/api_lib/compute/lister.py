@@ -107,8 +107,7 @@ def _GetResources(service, project, scopes, scope_name,
       requests=requests,
       http=http,
       batch_url=batch_url,
-      errors=errors,
-      custom_get_requests=None)
+      errors=errors)
 
 
 def GetZonalResources(service, project, requested_zones,

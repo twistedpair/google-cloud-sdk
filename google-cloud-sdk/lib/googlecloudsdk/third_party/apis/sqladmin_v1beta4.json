@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20161202",
+ "revision": "20170120",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -735,6 +735,17 @@
     }
    }
   },
+  "InstancesTruncateLogRequest": {
+   "id": "InstancesTruncateLogRequest",
+   "type": "object",
+   "description": "Instance truncate log request.",
+   "properties": {
+    "truncateLogContext": {
+     "$ref": "TruncateLogContext",
+     "description": "Contains details about the truncate log operation."
+    }
+   }
+  },
   "IpConfiguration": {
    "id": "IpConfiguration",
    "type": "object",
@@ -1087,6 +1098,10 @@
       "type": "string"
      }
     },
+    "availabilityType": {
+     "type": "string",
+     "description": "Reserved for future use."
+    },
     "backupConfiguration": {
      "$ref": "BackupConfiguration",
      "description": "The daily backup configuration for the instance."
@@ -1153,6 +1168,11 @@
     "storageAutoResize": {
      "type": "boolean",
      "description": "Configuration to increase storage size automatically. The default value is false. Applies only to Second Generation instances."
+    },
+    "storageAutoResizeLimit": {
+     "type": "string",
+     "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. Applies only to Second Generation instances.",
+     "format": "int64"
     },
     "tier": {
      "type": "string",
@@ -1341,6 +1361,22 @@
      "type": "string",
      "description": "This is always sql#tiersList.",
      "default": "sql#tiersList"
+    }
+   }
+  },
+  "TruncateLogContext": {
+   "id": "TruncateLogContext",
+   "type": "object",
+   "description": "Database Instance truncate log context.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#truncateLogContext.",
+     "default": "sql#truncateLogContext"
+    },
+    "logType": {
+     "type": "string",
+     "description": "The type of log to truncate. Valid values are MYSQL_GENERAL_TABLE and MYSQL_SLOW_TABLE."
     }
    }
   },
@@ -2282,6 +2318,40 @@
       "project",
       "instance"
      ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/sqlservice.admin"
+     ]
+    },
+    "truncateLog": {
+     "id": "sql.instances.truncateLog",
+     "path": "projects/{project}/instances/{instance}/truncateLog",
+     "httpMethod": "POST",
+     "description": "Truncate MySQL general and slow query log tables",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Cloud SQL instance ID. This does not include the project ID.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID of the Cloud SQL project.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesTruncateLogRequest"
+     },
      "response": {
       "$ref": "Operation"
      },

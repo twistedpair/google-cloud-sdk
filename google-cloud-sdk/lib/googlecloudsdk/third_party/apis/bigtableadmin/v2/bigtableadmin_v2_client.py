@@ -35,7 +35,6 @@ class BigtableadminV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
-    self.projects_instances_clusters_snapshots = self.ProjectsInstancesClustersSnapshotsService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
@@ -174,97 +173,6 @@ to use different resource name schemes, such as `users/*/operations`.
         request_field='',
         request_type_name=u'BigtableadminOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsInstancesClustersSnapshotsService(base_api.BaseApiService):
-    """Service class for the projects_instances_clusters_snapshots resource."""
-
-    _NAME = u'projects_instances_clusters_snapshots'
-
-    def __init__(self, client):
-      super(BigtableadminV2.ProjectsInstancesClustersSnapshotsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      """Permanently deletes the specified snapshot.
-
-      Args:
-        request: (BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.clusters.snapshots.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      """Gets metadata information about the specified snapshot.
-
-      Args:
-        request: (BigtableadminProjectsInstancesClustersSnapshotsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Snapshot) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots/{snapshotsId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.snapshots.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersSnapshotsGetRequest',
-        response_type_name=u'Snapshot',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """Lists all snapshots associated with the specified cluster.
-
-      Args:
-        request: (BigtableadminProjectsInstancesClustersSnapshotsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSnapshotsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/snapshots',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.clusters.snapshots.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/snapshots',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesClustersSnapshotsListRequest',
-        response_type_name=u'ListSnapshotsResponse',
         supports_download=False,
     )
 
@@ -452,34 +360,6 @@ specified in the request.
         supports_download=False,
     )
 
-    def CreateFromSnapshot(self, request, global_params=None):
-      """Creates a new table from the specified snapshot. The target table must.
-not exist. The snapshot and the table must be in the same instance.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('CreateFromSnapshot')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CreateFromSnapshot.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables:createFromSnapshot',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.createFromSnapshot',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v2/{+parent}/tables:createFromSnapshot',
-        request_field=u'createTableFromSnapshotRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Delete(self, request, global_params=None):
       """Permanently deletes a specified table and all of its data.
 
@@ -615,34 +495,6 @@ on the specified table.
         request_field=u'modifyColumnFamiliesRequest',
         request_type_name=u'BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest',
         response_type_name=u'Table',
-        supports_download=False,
-    )
-
-    def Snapshot(self, request, global_params=None):
-      """Creates a new snapshot in the specified cluster from the specified.
-source table. The cluster and the table must be in the same instance.
-
-      Args:
-        request: (BigtableadminProjectsInstancesTablesSnapshotRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Snapshot')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Snapshot.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:snapshot',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.tables.snapshot',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}:snapshot',
-        request_field=u'snapshotTableRequest',
-        request_type_name=u'BigtableadminProjectsInstancesTablesSnapshotRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 

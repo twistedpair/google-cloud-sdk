@@ -107,6 +107,35 @@ existing policy.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+      Args:
+        request: (SourcerepoIamProjectsReposTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/iam/projects/{projectsId}/repos/{reposId}',
+        http_method=u'GET',
+        method_id=u'sourcerepo.iam.projects.repos.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[u'permissions'],
+        relative_path=u'v1/iam/{+resource}',
+        request_field='',
+        request_type_name=u'SourcerepoIamProjectsReposTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class IamProjectsService(base_api.BaseApiService):
     """Service class for the iam_projects resource."""
 

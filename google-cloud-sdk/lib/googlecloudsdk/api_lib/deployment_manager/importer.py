@@ -265,7 +265,7 @@ def _HandleTemplateImport(import_object):
   return import_objects
 
 
-def _CreateImports(messages, config_object):
+def CreateImports(messages, config_object):
   """Constructs a list of ImportFiles from the provided import file names.
 
   Args:
@@ -347,7 +347,7 @@ def _SanitizeBaseName(base_name):
   return sanitized[0].lower() + sanitized[1:]
 
 
-def _BuildConfig(full_path, properties):
+def BuildConfig(full_path, properties):
   """Takes the argument from the --config flag, and returns a processed config.
 
   Args:
@@ -435,11 +435,11 @@ def BuildTargetConfig(messages, full_path, properties=None):
     ConfigError: if the config file or import files cannot be read from
         the specified locations, or if they are malformed.
   """
-  config_object = _BuildConfig(full_path, properties)
+  config_object = BuildConfig(full_path, properties)
 
   return messages.TargetConfiguration(
       config=messages.ConfigFile(content=config_object.GetContent()),
-      imports=_CreateImports(messages, config_object))
+      imports=CreateImports(messages, config_object))
 
 
 def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,

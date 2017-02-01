@@ -13,8 +13,6 @@
 # limitations under the License.
 
 """'functions deploy' utilities."""
-import argparse
-
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
@@ -62,7 +60,7 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
                                      resolver=project)
   ref = resources.REGISTRY.Parse(
       trigger_resource,
-      collection=resource_type.value.collection_id
+      collection=resource_type.value.collection_id,
   )
   return ref.RelativeName()
 
@@ -85,7 +83,8 @@ def DeduceAndCheckArgs(args):
     args: The argument namespace.
 
   Returns:
-    args with all implicit information turned into explicit form.
+    None, when using HTTPS trigger. Otherwise a dictionary containing
+    trigger_provider, trigger_event, and trigger_resource.
   """
   # This function should raise ArgumentParsingError, but:
   # 1. ArgumentParsingError requires the  argument returned from add_argument)
@@ -93,6 +92,19 @@ def DeduceAndCheckArgs(args):
   #    to be reused here.
   # 2. _CheckArgs() is invoked from Run() and ArgumentParsingError thrown
   #    from Run are not caught.
+  _ValidateSourceArgs(args)
+  _ValidateTriggerArgs(args)
+  return _CheckTriggerProviderArgs(args)
+
+
+def _ValidateSourceArgs(args):
+  """Check if args related to source code to deploy are valid.
+
+  Args:
+    args: parsed command line arguments.
+  Raises:
+    FunctionsError.
+  """
   if args.source_url is None:
     if args.source_revision is not None:
       raise exceptions.FunctionsError(
@@ -125,25 +137,42 @@ def DeduceAndCheckArgs(args):
     log.warn('--source flag is deprecated. Use --local-path (for sources on '
              'local file system) or --source-path (for sources in Cloud '
              'Source Repositories) instead.')
+
+
+def _ValidateTriggerArgs(args):
+  """Check if args related function triggers are valid.
+
+  Args:
+    args: parsed command line arguments.
+  Raises:
+    FunctionsError.
+  """
   if args.trigger_gs_uri is not None:
     log.warn('--trigger-gs-uri flag is deprecated. Use --trigger-bucket '
              'instead.')
 
-  if args.trigger_params:
-    log.warn('The --trigger-params argument is deprecated and will soon be '
-             'removed. Please use --trigger-path instead.')
-    if args.trigger_path:
-      raise exceptions.FunctionsError(
-          'Only one of --trigger-path and --trigger-params may be used.')
-    args.trigger_path = args.trigger_params['path']
-  if args.trigger_provider is None and ((args.trigger_event is not None) or
-                                        (args.trigger_resource is not None) or
-                                        (args.trigger_path is not None)):
+  if args.trigger_provider is None and (args.trigger_event is not None or
+                                        args.trigger_resource is not None):
     raise exceptions.FunctionsError(
         '--trigger-event, --trigger-resource, and --trigger-path may only '
         'be used with --trigger-provider')
-  if args.trigger_provider is not None:
-    return _CheckTriggerProviderArgs(args)
+
+
+def _BucketTrigger(trigger_bucket):
+  bucket_name = trigger_bucket[5:-1]
+  return {
+      'trigger_provider': 'cloud.storage',
+      'trigger_event': 'object.change',
+      'trigger_resource': bucket_name,
+  }
+
+
+def _TopicTrigger(trigger_topic):
+  return {
+      'trigger_provider': 'cloud.pubsub',
+      'trigger_event': 'topic.publish',
+      'trigger_resource': trigger_topic,
+  }
 
 
 def _CheckTriggerProviderArgs(args):
@@ -162,61 +191,57 @@ def _CheckTriggerProviderArgs(args):
     args: The argument namespace.
 
   Returns:
-    args with all implicit information turned into explicit form.
+    None, when using HTTPS trigger. Otherwise a dictionary containing
+    trigger_provider, trigger_event, and trigger_resource.
   """
+  if args.trigger_http:
+    return None
+  if args.trigger_bucket:
+    return _BucketTrigger(args.trigger_bucket)
+  if args.trigger_topic:
+    return _TopicTrigger(args.trigger_topic)
 
-  # Create a copy of namespace (copy.copy doesn't work here)
-  result = argparse.Namespace(**vars(args))
+  # TODO(user): move validation to a separate function.
+  trigger_provider = args.trigger_provider
+  trigger_event = args.trigger_event
+  trigger_resource = args.trigger_resource
   # check and infer correct usage of flags accompanying --trigger-provider
-  if result.trigger_event is None:
-    result.trigger_event = util.trigger_provider_registry.Provider(
-        result.trigger_provider).default_event.label
-  elif result.trigger_event not in util.trigger_provider_registry.EventsLabels(
-      result.trigger_provider):
+  if trigger_event is None:
+    trigger_event = util.trigger_provider_registry.Provider(
+        trigger_provider).default_event.label
+  elif trigger_event not in util.trigger_provider_registry.EventsLabels(
+      trigger_provider):
     raise exceptions.FunctionsError('You can use only one of [' + ','.join(
-        util.trigger_provider_registry.EventsLabels(result.trigger_provider)
-    ) + '] with --trigger-provider=' + result.trigger_provider)
+        util.trigger_provider_registry.EventsLabels(trigger_provider)
+    ) + '] with --trigger-provider=' + trigger_provider)
   # checked if Event Type is correct
 
-  if result.trigger_resource is None and util.trigger_provider_registry.Event(
-      result.trigger_provider,
-      result.trigger_event).resource_type != util.Resources.PROJECT:
+  if trigger_resource is None and util.trigger_provider_registry.Event(
+      trigger_provider, trigger_event).resource_type != util.Resources.PROJECT:
     raise exceptions.FunctionsError(
         'You must provide --trigger-resource when using '
         '--trigger-provider={0} and --trigger-event={1}'.format(
-            result.trigger_provider, result.trigger_event))
-  path_allowance = util.trigger_provider_registry.Event(
-      result.trigger_provider, result.trigger_event).path_obligatoriness
-  if result.trigger_path is None and (
-      path_allowance == util.Obligatoriness.REQUIRED):
-    raise exceptions.FunctionsError(
-        'You must provide --trigger-path when using '
-        '--trigger-provider={0} and --trigger-event={1}'.format(
-            result.trigger_provider, result.trigger_event))
-  if result.trigger_path is not None and (
-      path_allowance == util.Obligatoriness.FORBIDDEN):
-    raise exceptions.FunctionsError(
-        'You must not provide --trigger-path when using '
-        '--trigger-provider={0} and --trigger-event={1}'.format(
-            result.trigger_provider, result.trigger_event))
+            trigger_provider, trigger_event))
   # checked if Resource Type and Path were provided or not as required
 
   resource_type = util.trigger_provider_registry.Event(
-      result.trigger_provider, result.trigger_event).resource_type
+      trigger_provider, trigger_event).resource_type
   if resource_type == util.Resources.TOPIC:
-    result.trigger_resource = util.ValidatePubsubTopicNameOrRaise(
-        result.trigger_resource)
+    trigger_resource = util.ValidatePubsubTopicNameOrRaise(
+        trigger_resource)
   elif resource_type == util.Resources.BUCKET:
-    result.trigger_resource = storage_util.BucketReference.FromBucketUrl(
-        result.trigger_resource).bucket
+    trigger_resource = storage_util.BucketReference.FromBucketUrl(
+        trigger_resource).bucket
   elif resource_type == util.Resources.PROJECT:
-    if result.trigger_resource:
-      properties.VALUES.core.project.Validate(result.trigger_resource)
+    if trigger_resource:
+      properties.VALUES.core.project.Validate(trigger_resource)
   else:
     # Check if programmer allowed other methods in
     # util.PROVIDER_EVENT_RESOURCE but forgot to update code here
     raise core_exceptions.InternalError()
-  if result.trigger_path is not None:
-    util.ValidatePathOrRaise(result.trigger_path)
   # checked if provided resource and path have correct format
-  return result
+  return {
+      'trigger_provider': trigger_provider,
+      'trigger_event': trigger_event,
+      'trigger_resource': trigger_resource,
+  }

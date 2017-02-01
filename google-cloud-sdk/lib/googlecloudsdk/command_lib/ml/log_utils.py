@@ -71,7 +71,7 @@ def MakeContinueFunction(job_id):
       res = resources.REGISTRY.Parse(job_id, collection='ml.projects.jobs',
                                      params={'projectsId': proj_id})
       req = client.MESSAGES_MODULE.MlProjectsJobsGetRequest(
-          projectsId=res.projectsId, jobsId=res.jobsId)
+          name=res.RelativeName())
       resp = client.projects_jobs.Get(req)
       return resp.endTime is None
     else:

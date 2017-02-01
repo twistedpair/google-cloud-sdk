@@ -37,6 +37,12 @@ class Collections(enum.Enum):
       {},
       ['bucketId']
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId']
+  )
   PROJECTS_LOCATIONS_FUNCTIONS = (
       'projects.locations.functions',
       '{+name}',

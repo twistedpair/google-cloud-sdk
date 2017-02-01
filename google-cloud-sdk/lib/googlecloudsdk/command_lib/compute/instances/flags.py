@@ -832,6 +832,146 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
     """.format(scopes_exists if instance_exists else scopes_not_exists)
 
 
+def AddNetworkInterfaceArgs(parser):
+  """Adds network interface flag to the argparse."""
+
+  network_interface = parser.add_argument(
+      '--network-interface',
+      default=constants.DEFAULT_NETWORK_INTERFACE,
+      action=arg_parsers.StoreOnceAction,
+      help=('Specifies the name of the network interface which contains the'
+            'access configuration.'))
+  network_interface.detailed_help = """\
+      Specifies the name of the network interface which contains the access
+      configuration. If this is not provided, then "nic0" is used
+      as the default.
+      """
+
+
+def AddPublicDnsArgs(parser, instance=True):
+  """Adds public DNS arguments for instance or access configuration."""
+
+  public_dns_args = parser.add_mutually_exclusive_group()
+  no_public_dns = public_dns_args.add_argument(
+      '--no-public-dns',
+      action='store_true',
+      help=(
+          'If provided, the instance will not be assigned a public DNS name.'))
+  if instance:
+    no_public_dns.detailed_help = """\
+        If provided, the instance will not be assigned a public DNS name.
+        """
+  else:
+    no_public_dns.detailed_help = """\
+        If provided, the external IP in the access configuration will not be
+        assigned a public DNS name.
+        """
+
+  public_dns = public_dns_args.add_argument(
+      '--public-dns',
+      action='store_true',
+      help='Assigns a public DNS name to the instance.')
+  if instance:
+    public_dns.detailed_help = """\
+        Assigns a public DNS name to the instance.
+        """
+  else:
+    public_dns.detailed_help = """\
+        Assigns a public DNS name to the external IP in the access
+        configuration. This option can only be specified for the default
+        network-interface, "nic0".
+        """
+
+  public_ptr_args = parser.add_mutually_exclusive_group()
+  no_public_ptr = public_ptr_args.add_argument(
+      '--no-public-ptr',
+      action='store_true',
+      help=(
+          'If provided, no DNS PTR record is created. Mutually exclusive with '
+          'public-ptr-domain.'))
+  if instance:
+    no_public_ptr.detailed_help = """\
+        If provided, no DNS PTR record is created for the external IP of the
+        instance. Mutually exclusive with public-ptr-domain.
+        """
+  else:
+    no_public_ptr.detailed_help = """\
+        If provided, no DNS PTR record is created for the external IP in the
+        access configuration. Mutually exclusive with public-ptr-domain.
+        """
+
+  public_ptr = public_ptr_args.add_argument(
+      '--public-ptr',
+      action='store_true',
+      help='Creates a DNS PTR record for the external IP of the instance.')
+  if instance:
+    public_ptr.detailed_help = """\
+        Creates a DNS PTR record for the external IP of the instance.
+        """
+  else:
+    public_ptr.detailed_help = """\
+        Creates a DNS PTR record for the external IP in the access
+        configuration. This option can only be specified for the default
+        network-interface, "nic0".
+        """
+
+  public_ptr_domain_args = parser.add_mutually_exclusive_group()
+  no_public_ptr_domain = public_ptr_domain_args.add_argument(
+      '--no-public-ptr-domain',
+      action='store_true',
+      help=(
+          'If both this flag and --public-ptr are specified, creates a DNS PTR '
+          'record for the external IP of the instance with the PTR domain name '
+          'being the DNS name of the instance.'))
+  if instance:
+    no_public_ptr_domain.detailed_help = """\
+        If both this flag and --public-ptr are specified, creates a DNS PTR
+        record for the external IP of the instance with the PTR domain name
+        being the DNS name of the instance.
+        """
+  else:
+    no_public_ptr_domain.detailed_help = """\
+        If both this flag and --public-ptr are specified, creates a DNS PTR
+        record for the external IP in the access configuration with the PTR
+        domain name being the DNS name of the instance.
+        """
+
+  public_ptr_domain = public_ptr_domain_args.add_argument(
+      '--public-ptr-domain',
+      help='Assigns a custom PTR domain for the external IP of the instance. '
+      'Mutually exclusive with no-public-ptr.')
+  if instance:
+    public_ptr_domain.detailed_help = """\
+        Assigns a custom PTR domain for the external IP of the instance.
+        Mutually exclusive with no-public-ptr.
+        """
+  else:
+    public_ptr_domain.detailed_help = """\
+        Assigns a custom PTR domain for the external IP in the access
+        configuration. Mutually exclusive with no-public-ptr. This option can
+        only be specified for the default network-interface, "nic0".
+        """
+
+
+def ValidatePublicDnsFlags(args):
+  """Validates the values of public DNS related flags."""
+
+  network_interface = getattr(args, 'network_interface', None)
+  public_dns = getattr(args, 'public_dns', None)
+  public_ptr = getattr(args, 'public_ptr', None)
+  if public_dns is True or public_ptr is True:
+    if (network_interface is not None and
+        network_interface != constants.DEFAULT_NETWORK_INTERFACE):
+      raise exceptions.ToolException(
+          'Public DNS can only be enabled for default network interface '
+          '\'{0}\' rather than \'{1}\'.'.format(
+              constants.DEFAULT_NETWORK_INTERFACE, network_interface))
+
+  if args.public_ptr_domain is not None and args.no_public_ptr is True:
+    raise exceptions.ConflictingArgumentsException('--public-ptr-domain',
+                                                   '--no-public-ptr')
+
+
 def ValidateServiceAccountAndScopeArgs(args):
   if args.no_service_account and not args.no_scopes:
     raise exceptions.RequiredArgumentException(
@@ -883,13 +1023,15 @@ def AddAcceleratorArgs(parser):
   """Adds Accelerator-related args."""
   # Attaches accelerators (e.g. GPUs) to the instances. e.g. --accelerator
   # type=nvidia-tesla-k80,count=4
+  # TODO(b/34676942): METAVAR should be synthesized or it should not be needed
+  # for ArgDict type of argument.
   accelerator = parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(spec={
           'type': str,
           'count': int,
       }),
-      metavar='ACCELERATOR',
+      metavar='type=TYPE,[count=COUNT]',
       help='Attaches accelerators (e.g. GPUs) to the instances.')
   accelerator.detailed_help = """
       Attaches accelerators (e.g. GPUs) to the instances.
@@ -1049,17 +1191,14 @@ def ValidateNicFlags(args):
 
 def AddDiskScopeFlag(parser):
   """Adds --disk-scope flag."""
-  disk_scope = parser.add_argument(
+  parser.add_argument(
       '--disk-scope',
-      choices=['zonal', 'regional'],
-      help='If given, the disk specified in --disk is interpreted as a zonal '
-           'disk in the same zone as the instance (default).',
+      choices={'zonal':
+               'The disk specified in --disk is interpreted as a '
+               'zonal disk in the same zone as the instance',
+               'regional':
+               'The disk specified in --disk is interpreted as a '
+               'regional disk in the same region as the instance'},
+      help='The scope of the disk.',
+      hidden=True,
       default='zonal')
-  disk_scope.detailed_help = """
-      *zonal*::: If given, the disk specified in --disk is interpreted as a
-      zonal disk in the same zone as the instance (default).
-
-      *regional*::: If given, the disk specified in --disk is interpreted as a
-      regional disk in the same region as the instance.
-
-  """

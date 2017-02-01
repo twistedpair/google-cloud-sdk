@@ -34,11 +34,214 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_histories_executions_steps_perfMetricsSummary = self.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(self)
+    self.projects_histories_executions_steps_perfSampleSeries_samples = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(self)
+    self.projects_histories_executions_steps_perfSampleSeries = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(self)
     self.projects_histories_executions_steps_thumbnails = self.ProjectsHistoriesExecutionsStepsThumbnailsService(self)
     self.projects_histories_executions_steps = self.ProjectsHistoriesExecutionsStepsService(self)
     self.projects_histories_executions = self.ProjectsHistoriesExecutionsService(self)
     self.projects_histories = self.ProjectsHistoriesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_steps_perfMetricsSummary resource."""
+
+    _NAME = u'projects_histories_executions_steps_perfMetricsSummary'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a PerfMetricsSummary resource.
+
+May return any of the following error code(s): - ALREADY_EXISTS - A PerfMetricSummary already exists for the given Step - NOT_FOUND - The containing Step does not exist
+
+      Args:
+        request: (PerfMetricsSummary) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PerfMetricsSummary) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'toolresults.projects.histories.executions.steps.perfMetricsSummary.create',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
+        request_field='<request>',
+        request_type_name=u'PerfMetricsSummary',
+        response_type_name=u'PerfMetricsSummary',
+        supports_download=False,
+    )
+
+  class ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_steps_perfSampleSeries_samples resource."""
+
+    _NAME = u'projects_histories_executions_steps_perfSampleSeries_samples'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      """Creates a batch of PerfSamples - a client can submit multiple batches of Perf Samples through repeated calls to this method in order to split up a large request payload - duplicates and existing timestamp entries will be ignored. - the batch operation may partially succeed - the set of elements successfully inserted is returned in the response (omits items which already existed in the database).
+
+May return any of the following canonical error codes: - NOT_FOUND - The containing PerfSampleSeries does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchCreatePerfSamplesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.samples.batchCreate',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples:batchCreate',
+        request_field=u'batchCreatePerfSamplesRequest',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateRequest',
+        response_type_name=u'BatchCreatePerfSamplesResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the Performance Samples of a given Sample Series - The list results are sorted by timestamps ascending - The default page size is 500 samples; and maximum size allowed 5000 - The response token indicates the last returned PerfSample timestamp - When the results size exceeds the page size, submit a subsequent request including the page token to return the rest of the samples up to the page limit.
+
+May return any of the following canonical error codes: - OUT_OF_RANGE - The specified request page_token is out of valid range - NOT_FOUND - The containing PerfSampleSeries does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPerfSamplesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.samples.list',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}/samples',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListRequest',
+        response_type_name=u'ListPerfSamplesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_steps_perfSampleSeries resource."""
+
+    _NAME = u'projects_histories_executions_steps_perfSampleSeries'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a PerfSampleSeries.
+
+May return any of the following error code(s): - ALREADY_EXISTS - PerfMetricSummary already exists for the given Step - NOT_FOUND - The containing Step does not exist
+
+      Args:
+        request: (PerfSampleSeries) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PerfSampleSeries) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.create',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
+        request_field='<request>',
+        request_type_name=u'PerfSampleSeries',
+        response_type_name=u'PerfSampleSeries',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a PerfSampleSeries.
+
+May return any of the following error code(s): - NOT_FOUND - The specified PerfSampleSeries does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PerfSampleSeries) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.get',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'sampleSeriesId', u'stepId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries/{sampleSeriesId}',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesGetRequest',
+        response_type_name=u'PerfSampleSeries',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists PerfSampleSeries for a given Step.
+
+The request provides an optional filter which specifies one or more PerfMetricsType to include in the result; if none returns all. The resulting PerfSampleSeries are sorted by ids.
+
+May return any of the following canonical error codes: - NOT_FOUND - The containing Step does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPerfSampleSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.perfSampleSeries.list',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        query_params=[u'filter'],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfSampleSeries',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest',
+        response_type_name=u'ListPerfSampleSeriesResponse',
+        supports_download=False,
+    )
 
   class ProjectsHistoriesExecutionsStepsThumbnailsService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_thumbnails resource."""
@@ -147,6 +350,34 @@ May return any of the following canonical error codes:
         request_field='',
         request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsGetRequest',
         response_type_name=u'Step',
+        supports_download=False,
+    )
+
+    def GetPerfMetricsSummary(self, request, global_params=None):
+      """Retrieves a PerfMetricsSummary.
+
+May return any of the following error code(s): - NOT_FOUND - The specified PerfMetricsSummary does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PerfMetricsSummary) The response message.
+      """
+      config = self.GetMethodConfig('GetPerfMetricsSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPerfMetricsSummary.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.steps.getPerfMetricsSummary',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'stepId'],
+        path_params=[u'executionId', u'historyId', u'projectId', u'stepId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryRequest',
+        response_type_name=u'PerfMetricsSummary',
         supports_download=False,
     )
 

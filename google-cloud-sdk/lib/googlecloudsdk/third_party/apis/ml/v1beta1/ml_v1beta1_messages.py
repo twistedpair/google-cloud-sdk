@@ -128,6 +128,12 @@ class GoogleCloudMlV1beta1HyperparameterSpec(_messages.Message):
   Fields:
     goal: Required. The type of goal to use for tuning. Available types are
       `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
+    hyperparameterMetricTag: Optional. The Tensorflow summary tag name to use
+      for optimizing trials. For current versions of Tensorflow, this tag name
+      should exactly match what is shown in Tensorboard, including all scopes.
+      For versions of Tensorflow prior to 0.12, this should be only the tag
+      passed to tf.Summary. By default, "training/hptuning/metric" will be
+      used.
     maxParallelTrials: Optional. The number of training trials to run
       concurrently. You can reduce the time it takes to perform hyperparameter
       tuning by adding trials in parallel. However, each trail only benefits
@@ -154,9 +160,10 @@ class GoogleCloudMlV1beta1HyperparameterSpec(_messages.Message):
     MINIMIZE = 2
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
-  maxParallelTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  params = _messages.MessageField('GoogleCloudMlV1beta1ParameterSpec', 4, repeated=True)
+  hyperparameterMetricTag = _messages.StringField(2)
+  maxParallelTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxTrials = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  params = _messages.MessageField('GoogleCloudMlV1beta1ParameterSpec', 5, repeated=True)
 
 
 class GoogleCloudMlV1beta1Job(_messages.Message):
@@ -269,6 +276,8 @@ class GoogleCloudMlV1beta1Model(_messages.Message):
       created.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
+    onlinePredictionLogging: Optional. If true, enables StackDriver Logging
+      for online prediction. Default is false.
     regions: Optional. The list of regions where the model is going to be
       deployed. Currently only one region per model is supported. Defaults to
       'us-central1' if nothing is set.
@@ -277,7 +286,8 @@ class GoogleCloudMlV1beta1Model(_messages.Message):
   defaultVersion = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
   description = _messages.StringField(2)
   name = _messages.StringField(3)
-  regions = _messages.StringField(4, repeated=True)
+  onlinePredictionLogging = _messages.BooleanField(4)
+  regions = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
@@ -407,46 +417,54 @@ class GoogleCloudMlV1beta1PredictRequest(_messages.Message):
   instances to use for       prediction.</dd> </dl>  The structure of each
   element of the instances list is determined by your model's input
   definition. Instances can include named inputs or can contain only unlabeled
-  values.  Most data does not include named inputs. Some instances will be
-  simple JSON values (boolean, number, or string). However, instances are
-  often lists of simple values, or complex nested lists. Here are some
-  examples of request bodies:  CSV data with each row encoded as a string
-  value: <pre> {"instances": ["1.0,true,\\"x\\"", "-2.0,false,\\"y\\""]}
-  </pre> Plain text: <pre> {"instances": ["the quick brown fox", "la bruja le
-  dio"]} </pre> Sentences encoded as lists of words (vectors of strings):
-  <pre> {"instances": [["the","quick","brown"], ["la","bruja","le"]]} </pre>
-  Floating point scalar values: <pre> {"instances": [0.0, 1.1, 2.2]} </pre>
-  Vectors of integers: <pre> {"instances": [[0, 1, 2], [3, 4, 5],...]} </pre>
-  Tensors (in this case, two-dimensional tensors): <pre> {"instances": [[[0,
-  1, 2], [3, 4, 5]], ...]} </pre> Images represented as a three-dimensional
-  list. In this encoding scheme the first two dimensions represent the rows
-  and columns of the image, and the third contains the R, G, and B values for
-  each pixel. <pre> {"instances": [[[[138, 30, 66], [130, 20, 56], ...]]]]}
-  </pre> Data must be encoded as UTF-8. If your data uses another character
-  encoding, you must base64 encode the data and mark it as binary. To mark a
-  JSON string as binary, replace it with an object with a single attribute
-  named `b`: <pre>{"b": "..."} </pre> For example:  Two Serialized tf.Examples
-  (fake data, for illustrative purposes only): <pre> {"instances": [{"b64":
+  values.  Not all data includes named inputs. Some instances will be simple
+  JSON values (boolean, number, or string). However, instances are often lists
+  of simple values, or complex nested lists. Here are some examples of request
+  bodies:  CSV data with each row encoded as a string value: <pre>
+  {"instances": ["1.0,true,\\"x\\"", "-2.0,false,\\"y\\""]} </pre> Plain text:
+  <pre> {"instances": ["the quick brown fox", "la bruja le dio"]} </pre>
+  Sentences encoded as lists of words (vectors of strings): <pre> {
+  "instances": [     ["the","quick","brown"],     ["la","bruja","le"],     ...
+  ] } </pre> Floating point scalar values: <pre> {"instances": [0.0, 1.1,
+  2.2]} </pre> Vectors of integers: <pre> {   "instances": [     [0, 1, 2],
+  [3, 4, 5],     ...   ] } </pre> Tensors (in this case, two-dimensional
+  tensors): <pre> {   "instances": [     [       [0, 1, 2],       [3, 4, 5]
+  ],     ...   ] } </pre> Images can be represented different ways. In this
+  encoding scheme the first two dimensions represent the rows and columns of
+  the image, and the third contains lists (vectors) of the R, G, and B values
+  for each pixel. <pre> {   "instances": [     [       [         [138, 30,
+  66],         [130, 20, 56],         ...       ],       [         [126, 38,
+  61],         [122, 24, 57],         ...       ],       ...     ],     ...
+  ] } </pre> JSON strings must be encoded as UTF-8. To send binary data, you
+  must base64-encode the data and mark it as binary. To mark a JSON string as
+  binary, replace it with a JSON object with a single attribute named `b64`:
+  <pre>{"b64": "..."} </pre> For example:  Two Serialized tf.Examples (fake
+  data, for illustrative purposes only): <pre> {"instances": [{"b64":
   "X5ad6u"}, {"b64": "IA9j4nx"}]} </pre> Two JPEG image byte strings (fake
   data, for illustrative purposes only): <pre> {"instances": [{"b64":
   "ASa8asdf"}, {"b64": "JLK7ljk3"}]} </pre> If your data includes named
   references, format each instance as a JSON object with the named references
-  as the keys:  JSON input data to be preprocessed: <pre> {"instances": [{"a":
-  1.0,  "b": true,  "c": "x"},                {"a": -2.0, "b": false, "c":
-  "y"}]} </pre> Some models have an underlying TensorFlow graph that accepts
-  multiple input tensors. In this case, you should use the names of JSON
-  name/value pairs to identify the input tensors, as shown in the following
-  exmaples:  For a graph with input tensor aliases "tag" (string) and "image"
-  (base64-encoded string): <pre> {"instances": [{"tag": "beach", "image":
-  {"b64": "ASa8asdf"}},                {"tag": "car", "image": {"b64":
-  "JLK7ljk3"}}]} </pre> For a graph with input tensor aliases "tag" (string)
-  and "image" (3-dimensional array of 8-bit ints): <pre> {"instances":
-  [{"tag": "beach", "image": [[[263, 1, 10], [262, 2, 11], ...]]},
-  {"tag": "car", "image": [[[10, 11, 24], [23, 10, 15], ...]]}]} </pre> If the
-  call is successful, the response body will contain one prediction entry per
-  instance in the request body. If prediction fails for any instance, the
-  response body will contain no predictions and will contian a single error
-  entry instead.
+  as the keys:  JSON input data to be preprocessed: <pre> {   "instances": [
+  {       "a": 1.0,       "b": true,       "c": "x"     },     {       "a":
+  -2.0,       "b": false,       "c": "y"     }   ] } </pre> Some models have
+  an underlying TensorFlow graph that accepts multiple input tensors. In this
+  case, you should use the names of JSON name/value pairs to identify the
+  input tensors, as shown in the following exmaples:  For a graph with input
+  tensor aliases "tag" (string) and "image" (base64-encoded string): <pre> {
+  "instances": [     {       "tag": "beach",       "image": {"b64":
+  "ASa8asdf"}     },     {       "tag": "car",       "image": {"b64":
+  "JLK7ljk3"}     }   ] } </pre> For a graph with input tensor aliases "tag"
+  (string) and "image" (3-dimensional array of 8-bit ints): <pre> {
+  "instances": [     {       "tag": "beach",       "image": [         [
+  [138, 30, 66],           [130, 20, 56],           ...         ],         [
+  [126, 38, 61],           [122, 24, 57],           ...         ],         ...
+  ]     },     {       "tag": "car",       "image": [         [
+  [255, 0, 102],           [255, 0, 97],           ...         ],         [
+  [254, 1, 101],           [254, 2, 93],           ...         ],         ...
+  ]     },     ...   ] } </pre> If the call is successful, the response body
+  will contain one prediction entry per instance in the request body. If
+  prediction fails for any instance, the response body will contain no
+  predictions and will contian a single error entry instead.
 
   Fields:
     httpBody:  Required. The prediction request body.
@@ -474,8 +492,11 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
     region: Required. The Google Compute Engine region to run the prediction
       job in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      this batch prediction. If not set, Google Cloud ML will choose a
-      version.
+      this batch prediction. If not set, Google Cloud ML will pick the runtime
+      version used during the CreateVersion request for this model version, or
+      choose the latest stable version when model version information is not
+      available such as when the model is specified by uri.
+    uri: Use this field if you want to specify a GCS path to the model to use.
     versionName: Use this field if you want to specify a version of the model
       to use. The string is formatted the same way as `model_version`, with
       the addition of the version information:  `"projects/<var>[YOUR_PROJECT]
@@ -504,7 +525,8 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
   outputPath = _messages.StringField(5)
   region = _messages.StringField(6)
   runtimeVersion = _messages.StringField(7)
-  versionName = _messages.StringField(8)
+  uri = _messages.StringField(8)
+  versionName = _messages.StringField(9)
 
 
 class GoogleCloudMlV1beta1PredictionOutput(_messages.Message):
@@ -538,6 +560,10 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
   Fields:
     args: Optional. Command line arguments to pass to the program.
     hyperparameters: Optional. The set of Hyperparameters to tune.
+    jobDir: Optional. A GCS path in which to store training outputs and other
+      data needed for training. This path will be passed to your TensorFlow
+      program as the 'job_dir' command-line arg. The benefit of specifying
+      this field is that Cloud ML will validate the path for use in training.
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker.  The following types are supported:
       <dl>   <dt>standard</dt>   <dd>   A basic machine configuration suitable
@@ -597,6 +623,7 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
         datasets.
       STANDARD_1: Many workers and a few parameter servers.
       PREMIUM_1: A large number of workers with many parameter servers.
+      BASIC_GPU: A single worker instance with a GPU.
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *
@@ -618,20 +645,22 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
     BASIC = 0
     STANDARD_1 = 1
     PREMIUM_1 = 2
-    CUSTOM = 3
+    BASIC_GPU = 3
+    CUSTOM = 4
 
   args = _messages.StringField(1, repeated=True)
   hyperparameters = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterSpec', 2)
-  masterType = _messages.StringField(3)
-  packageUris = _messages.StringField(4, repeated=True)
-  parameterServerCount = _messages.IntegerField(5)
-  parameterServerType = _messages.StringField(6)
-  pythonModule = _messages.StringField(7)
-  region = _messages.StringField(8)
-  runtimeVersion = _messages.StringField(9)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 10)
-  workerCount = _messages.IntegerField(11)
-  workerType = _messages.StringField(12)
+  jobDir = _messages.StringField(3)
+  masterType = _messages.StringField(4)
+  packageUris = _messages.StringField(5, repeated=True)
+  parameterServerCount = _messages.IntegerField(6)
+  parameterServerType = _messages.StringField(7)
+  pythonModule = _messages.StringField(8)
+  region = _messages.StringField(9)
+  runtimeVersion = _messages.StringField(10)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 11)
+  workerCount = _messages.IntegerField(12)
+  workerType = _messages.StringField(13)
 
 
 class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
@@ -680,8 +709,6 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       prediction.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
-    onlinePredictionLogging: Optional. If true, enables StackDriver Logging
-      for online prediction. Default is false.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       this deployment. If not set, Google Cloud ML will choose a version.
   """
@@ -692,8 +719,7 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   isDefault = _messages.BooleanField(4)
   lastUseTime = _messages.StringField(5)
   name = _messages.StringField(6)
-  onlinePredictionLogging = _messages.BooleanField(7)
-  runtimeVersion = _messages.StringField(8)
+  runtimeVersion = _messages.StringField(7)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
@@ -908,11 +934,11 @@ class MlProjectsGetConfigRequest(_messages.Message):
   """A MlProjectsGetConfigRequest object.
 
   Fields:
-    projectsId: Part of `name`. Required. The project name.  Authorization:
-      requires `Viewer` role on the specified project.
+    name: Required. The project name.  Authorization: requires `Viewer` role
+      on the specified project.
   """
 
-  projectsId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsJobsCancelRequest(_messages.Message):
@@ -922,14 +948,12 @@ class MlProjectsJobsCancelRequest(_messages.Message):
     googleCloudMlV1beta1CancelJobRequest: A
       GoogleCloudMlV1beta1CancelJobRequest resource to be passed as the
       request body.
-    jobsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the job to cancel.
-      Authorization: requires `Editor` role on the parent project.
+    name: Required. The name of the job to cancel.  Authorization: requires
+      `Editor` role on the parent project.
   """
 
   googleCloudMlV1beta1CancelJobRequest = _messages.MessageField('GoogleCloudMlV1beta1CancelJobRequest', 1)
-  jobsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class MlProjectsJobsCreateRequest(_messages.Message):
@@ -938,26 +962,23 @@ class MlProjectsJobsCreateRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1Job: A GoogleCloudMlV1beta1Job resource to be passed
       as the request body.
-    projectsId: Part of `parent`. Required. The project name.  Authorization:
-      requires `Editor` role on the specified project.
+    parent: Required. The project name.  Authorization: requires `Editor` role
+      on the specified project.
   """
 
   googleCloudMlV1beta1Job = _messages.MessageField('GoogleCloudMlV1beta1Job', 1)
-  projectsId = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class MlProjectsJobsGetRequest(_messages.Message):
   """A MlProjectsJobsGetRequest object.
 
   Fields:
-    jobsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the job to get the
-      description of.  Authorization: requires `Viewer` role on the parent
-      project.
+    name: Required. The name of the job to get the description of.
+      Authorization: requires `Viewer` role on the parent project.
   """
 
-  jobsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsJobsListRequest(_messages.Message):
@@ -972,15 +993,14 @@ class MlProjectsJobsListRequest(_messages.Message):
     pageToken: Optional. A page token to request the next page of results.
       You get the token from the `next_page_token` field of the response from
       the previous call.
-    projectsId: Part of `parent`. Required. The name of the project for which
-      to list jobs.  Authorization: requires `Viewer` role on the specified
-      project.
+    parent: Required. The name of the project for which to list jobs.
+      Authorization: requires `Viewer` role on the specified project.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  projectsId = _messages.StringField(4, required=True)
+  parent = _messages.StringField(4, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):
@@ -989,38 +1009,34 @@ class MlProjectsModelsCreateRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1Model: A GoogleCloudMlV1beta1Model resource to be
       passed as the request body.
-    projectsId: Part of `parent`. Required. The project name.  Authorization:
-      requires `Editor` role on the specified project.
+    parent: Required. The project name.  Authorization: requires `Editor` role
+      on the specified project.
   """
 
   googleCloudMlV1beta1Model = _messages.MessageField('GoogleCloudMlV1beta1Model', 1)
-  projectsId = _messages.StringField(2, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class MlProjectsModelsDeleteRequest(_messages.Message):
   """A MlProjectsModelsDeleteRequest object.
 
   Fields:
-    modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the model.
-      Authorization: requires `Editor` role on the parent project.
+    name: Required. The name of the model.  Authorization: requires `Editor`
+      role on the parent project.
   """
 
-  modelsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsModelsGetRequest(_messages.Message):
   """A MlProjectsModelsGetRequest object.
 
   Fields:
-    modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the model.
-      Authorization: requires `Viewer` role on the parent project.
+    name: Required. The name of the model.  Authorization: requires `Viewer`
+      role on the parent project.
   """
 
-  modelsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsModelsListRequest(_messages.Message):
@@ -1034,14 +1050,13 @@ class MlProjectsModelsListRequest(_messages.Message):
     pageToken: Optional. A page token to request the next page of results.
       You get the token from the `next_page_token` field of the response from
       the previous call.
-    projectsId: Part of `parent`. Required. The name of the project whose
-      models are to be listed.  Authorization: requires `Viewer` role on the
-      specified project.
+    parent: Required. The name of the project whose models are to be listed.
+      Authorization: requires `Viewer` role on the specified project.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
+  parent = _messages.StringField(3, required=True)
 
 
 class MlProjectsModelsVersionsCreateRequest(_messages.Message):
@@ -1050,53 +1065,42 @@ class MlProjectsModelsVersionsCreateRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1Version: A GoogleCloudMlV1beta1Version resource to be
       passed as the request body.
-    modelsId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. Required. The name of the model.
-      Authorization: requires `Editor` role on the parent project.
+    parent: Required. The name of the model.  Authorization: requires `Editor`
+      role on the parent project.
   """
 
   googleCloudMlV1beta1Version = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
-  modelsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
   """A MlProjectsModelsVersionsDeleteRequest object.
 
   Fields:
-    modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the version. You can get
-      the names of all the versions of a model by calling [projects.models.ver
-      sions.list](/ml/reference/rest/v1beta1/projects.models.versions/list).
-      Authorization: requires `Editor` role on the parent project.
-    versionsId: Part of `name`. See documentation of `projectsId`.
+    name: Required. The name of the version. You can get the names of all the
+      versions of a model by calling [projects.models.versions.list](/ml/refer
+      ence/rest/v1beta1/projects.models.versions/list).  Authorization:
+      requires `Editor` role on the parent project.
   """
 
-  modelsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  versionsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsModelsVersionsGetRequest(_messages.Message):
   """A MlProjectsModelsVersionsGetRequest object.
 
   Fields:
-    modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the version.
-      Authorization: requires `Viewer` role on the parent project.
-    versionsId: Part of `name`. See documentation of `projectsId`.
+    name: Required. The name of the version.  Authorization: requires `Viewer`
+      role on the parent project.
   """
 
-  modelsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  versionsId = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsModelsVersionsListRequest(_messages.Message):
   """A MlProjectsModelsVersionsListRequest object.
 
   Fields:
-    modelsId: Part of `parent`. See documentation of `projectsId`.
     pageSize: Optional. The number of versions to retrieve per "page" of
       results. If there are more remaining results than this number, the
       response message will contain a valid value in the `next_page_token`
@@ -1104,15 +1108,13 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
     pageToken: Optional. A page token to request the next page of results.
       You get the token from the `next_page_token` field of the response from
       the previous call.
-    projectsId: Part of `parent`. Required. The name of the model for which to
-      list the version.  Authorization: requires `Viewer` role on the parent
-      project.
+    parent: Required. The name of the model for which to list the version.
+      Authorization: requires `Viewer` role on the parent project.
   """
 
-  modelsId = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectsId = _messages.StringField(4, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
@@ -1122,57 +1124,44 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
     googleCloudMlV1beta1SetDefaultVersionRequest: A
       GoogleCloudMlV1beta1SetDefaultVersionRequest resource to be passed as
       the request body.
-    modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. Required. The name of the version to make the
-      default for the model. You can get the names of all the versions of a
-      model by calling [projects.models.versions.list](/ml/reference/rest/v1be
-      ta1/projects.models.versions/list).  Authorization: requires `Editor`
-      role on the parent project.
-    versionsId: Part of `name`. See documentation of `projectsId`.
+    name: Required. The name of the version to make the default for the model.
+      You can get the names of all the versions of a model by calling [project
+      s.models.versions.list](/ml/reference/rest/v1beta1/projects.models.versi
+      ons/list).  Authorization: requires `Editor` role on the parent project.
   """
 
   googleCloudMlV1beta1SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1beta1SetDefaultVersionRequest', 1)
-  modelsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-  versionsId = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class MlProjectsOperationsCancelRequest(_messages.Message):
   """A MlProjectsOperationsCancelRequest object.
 
   Fields:
-    operationsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the operation resource to be
-      cancelled.
+    name: The name of the operation resource to be cancelled.
   """
 
-  operationsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsOperationsDeleteRequest(_messages.Message):
   """A MlProjectsOperationsDeleteRequest object.
 
   Fields:
-    operationsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the operation resource to be
-      deleted.
+    name: The name of the operation resource to be deleted.
   """
 
-  operationsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsOperationsGetRequest(_messages.Message):
   """A MlProjectsOperationsGetRequest object.
 
   Fields:
-    operationsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the operation resource.
+    name: The name of the operation resource.
   """
 
-  operationsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsOperationsListRequest(_messages.Message):
@@ -1180,15 +1169,15 @@ class MlProjectsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
+    name: The name of the operation collection.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
-    projectsId: Part of `name`. The name of the operation collection.
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectsId = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class MlProjectsPredictRequest(_messages.Message):
@@ -1197,12 +1186,12 @@ class MlProjectsPredictRequest(_messages.Message):
   Fields:
     googleCloudMlV1beta1PredictRequest: A GoogleCloudMlV1beta1PredictRequest
       resource to be passed as the request body.
-    projectsId: Part of `name`. Required. The resource name of a model or a
-      version.  Authorization: requires `Viewer` role on the parent project.
+    name: Required. The resource name of a model or a version.  Authorization:
+      requires `Viewer` role on the parent project.
   """
 
   googleCloudMlV1beta1PredictRequest = _messages.MessageField('GoogleCloudMlV1beta1PredictRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

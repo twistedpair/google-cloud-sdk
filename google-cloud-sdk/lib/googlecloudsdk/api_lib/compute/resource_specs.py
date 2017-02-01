@@ -17,7 +17,6 @@ import httplib
 
 from apitools.base.protorpclite import messages
 
-from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
@@ -242,16 +241,6 @@ def _MembersToCell(group):
     return len(members)
   # Must be '0' instead of 0 to pass comparison 0 or ''.
   return '0'
-
-
-def _AliasToCell(image):
-  """Returns the alias name for a given image."""
-  project = _ProjectToCell(image)
-  name = image.get('name')
-  aliases = [alias for alias, value in constants.IMAGE_ALIASES.items()
-             if name.startswith(value.name_prefix)
-             and value.project == project]
-  return ', '.join(aliases)
 
 
 def _BackendsToCell(backend_service):
@@ -930,9 +919,7 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
-
-_SPECS_ALPHA = _SPECS_BETA.copy()
-_SPECS_ALPHA['backendBuckets'] = _InternalSpec(
+_SPECS_BETA['backendBuckets'] = _InternalSpec(
     message_class_name='BackendBucket',
     table_cols=[
         ('NAME', 'name'),
@@ -947,12 +934,45 @@ _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
         'description',
         'enableCdn',
     ])
+_SPECS_BETA['urlMaps'] = _InternalSpec(
+    message_class_name='UrlMap',
+    table_cols=[
+        ('NAME', 'name'),
+        ('DEFAULT_SERVICE', 'defaultService'),
+    ],
+    transformations=[
+        ('defaultService', path_simplifier.TypeSuffix),
+        ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
+        ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
+        ('tests[].service', path_simplifier.TypeSuffix),
+    ],
+    editables=[
+        'defaultService',
+        'description',
+        'hostRules',
+        'pathMatchers',
+        'tests',
+    ])
 
+
+_SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['hosts'] = _InternalSpec(
     message_class_name='Host',
     table_cols=[
         ('NAME', 'name'),
         ('REQUEST_PATH', 'requestPath'),
+    ],
+    transformations=[],
+    editables=None)
+_SPECS_ALPHA['hostTypes'] = _InternalSpec(
+    message_class_name='HostType',
+    table_cols=[
+        ('NAME', 'name'),
+        ('ZONE', 'zone'),
+        ('DEPRECATED', 'deprecated'),
+        ('CPUs', 'guestCpus'),
+        ('MEMORY(MB)', 'memoryMb'),
+        ('LOCAL SSD(GB)', 'localSsdGb'),
     ],
     transformations=[],
     editables=None)

@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute related commands."""
 
+import argparse
 import functools
 
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
@@ -95,7 +96,8 @@ class BadArgumentException(ValueError):
 
 
 def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
-                explanation=ZONE_PROPERTY_EXPLANATION):
+                explanation=ZONE_PROPERTY_EXPLANATION,
+                hidden=False):
   """Adds a --zone flag to the given parser.
 
   Args:
@@ -106,6 +108,7 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                     "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-zone.
     explanation: str, detailed explanation of the flag.
+    hidden: bool, If True, --zone argument help will be hidden.
   """
   short_help = 'The zone of the {0} to {1}.'.format(
       resource_type, operation_type)
@@ -115,6 +118,7 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
   zone = parser.add_argument(
       '--' + flag_name,
       help=short_help,
+      hidden=hidden,
       completion_resource='compute.zones',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   zone.detailed_help = '{0} {1}'.format(
@@ -123,7 +127,8 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
 
 def AddRegionFlag(parser, resource_type, operation_type,
                   flag_prefix=None,
-                  explanation=REGION_PROPERTY_EXPLANATION):
+                  explanation=REGION_PROPERTY_EXPLANATION,
+                  hidden=False):
   """Adds a --region flag to the given parser.
 
   Args:
@@ -134,6 +139,7 @@ def AddRegionFlag(parser, resource_type, operation_type,
                     "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-region.
     explanation: str, detailed explanation of the flag.
+    hidden: bool, If True, --region argument help will be hidden.
   """
   short_help = 'The region of the {0} to {1}.'.format(
       resource_type, operation_type)
@@ -143,6 +149,7 @@ def AddRegionFlag(parser, resource_type, operation_type,
   region = parser.add_argument(
       '--' + flag_name,
       help=short_help,
+      hidden=hidden,
       completion_resource='compute.regions',
       action=actions.StoreProperty(properties.VALUES.compute.region))
   region.detailed_help = '{0} {1}'.format(
@@ -494,9 +501,11 @@ class ResourceArgument(object):
                               and uses this collection to resolve as
                               global resource.
       region_explanation: str, long help that will be given for region flag,
-                               empty by default.
+                               empty by default. Provide argparse.SUPPRESS to
+                               hide in help.
       zone_explanation: str, long help that will be given for zone flag, empty
-                             by default.
+                             by default. Provide argparse.SUPPRESS to hide in
+                             help.
       short_help: str, help for the flag being added, if not provided help text
                        will be 'The name[s] of the ${resource_name}[s].'.
       detailed_help: str, detailed help for the flag being added, if not
@@ -584,7 +593,8 @@ class ResourceArgument(object):
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
           operation_type=operation_type,
-          explanation=self._zone_explanation)
+          explanation=self._zone_explanation,
+          hidden=self._zone_explanation is argparse.SUPPRESS)
 
     if compute_scope.ScopeEnum.REGION in self.scopes:
       AddRegionFlag(
@@ -592,7 +602,8 @@ class ResourceArgument(object):
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
           operation_type=operation_type,
-          explanation=self._region_explanation)
+          explanation=self._region_explanation,
+          hidden=self._region_explanation is argparse.SUPPRESS)
 
     if compute_scope.ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
       scope.add_argument(

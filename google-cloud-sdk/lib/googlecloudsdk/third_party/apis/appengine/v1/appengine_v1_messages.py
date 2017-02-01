@@ -239,10 +239,10 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
   """A AppengineAppsServicesPatchRequest object.
 
   Fields:
-    migrateTraffic: Set to true to gradually shift traffic from one version to
-      another single version. By default, traffic is shifted immediately. For
-      gradual traffic migration, the target version must be located within
-      instances that are configured for both warmup requests
+    migrateTraffic: Set to true to gradually shift traffic to one or more
+      versions that you specify. By default, traffic is shifted immediately.
+      For gradual traffic migration, the target versions must be located
+      within instances that are configured for both warmup requests
       (https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1/apps.services.versions#inboundservicetype) and
       automatic scaling (https://cloud.google.com/appengine/docs/admin-

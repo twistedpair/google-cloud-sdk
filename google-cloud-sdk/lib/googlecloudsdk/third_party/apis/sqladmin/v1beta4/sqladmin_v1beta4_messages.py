@@ -521,6 +521,16 @@ class InstancesRestoreBackupRequest(_messages.Message):
   restoreBackupContext = _messages.MessageField('RestoreBackupContext', 1)
 
 
+class InstancesTruncateLogRequest(_messages.Message):
+  """Instance truncate log request.
+
+  Fields:
+    truncateLogContext: Contains details about the truncate log operation.
+  """
+
+  truncateLogContext = _messages.MessageField('TruncateLogContext', 1)
+
+
 class IpConfiguration(_messages.Message):
   """IP Management configuration.
 
@@ -793,6 +803,7 @@ class Settings(_messages.Message):
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. This property is only applicable to First Generation
       instances.
+    availabilityType: Reserved for future use.
     backupConfiguration: The daily backup configuration for the instance.
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
@@ -830,27 +841,32 @@ class Settings(_messages.Message):
       this instance and do not try to update this value.
     storageAutoResize: Configuration to increase storage size automatically.
       The default value is false. Applies only to Second Generation instances.
+    storageAutoResizeLimit: The maximum size to which storage capacity can be
+      automatically increased. The default value is 0, which specifies that
+      there is no limit. Applies only to Second Generation instances.
     tier: The tier of service for this instance, for example D1, D2. For more
       information, see pricing.
   """
 
   activationPolicy = _messages.StringField(1)
   authorizedGaeApplications = _messages.StringField(2, repeated=True)
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 3)
-  crashSafeReplicationEnabled = _messages.BooleanField(4)
-  dataDiskSizeGb = _messages.IntegerField(5)
-  dataDiskType = _messages.StringField(6)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 7, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(8)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 9)
-  kind = _messages.StringField(10, default=u'sql#settings')
-  locationPreference = _messages.MessageField('LocationPreference', 11)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 12)
-  pricingPlan = _messages.StringField(13)
-  replicationType = _messages.StringField(14)
-  settingsVersion = _messages.IntegerField(15)
-  storageAutoResize = _messages.BooleanField(16)
-  tier = _messages.StringField(17)
+  availabilityType = _messages.StringField(3)
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 4)
+  crashSafeReplicationEnabled = _messages.BooleanField(5)
+  dataDiskSizeGb = _messages.IntegerField(6)
+  dataDiskType = _messages.StringField(7)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 8, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(9)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 10)
+  kind = _messages.StringField(11, default=u'sql#settings')
+  locationPreference = _messages.MessageField('LocationPreference', 12)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 13)
+  pricingPlan = _messages.StringField(14)
+  replicationType = _messages.StringField(15)
+  settingsVersion = _messages.IntegerField(16)
+  storageAutoResize = _messages.BooleanField(17)
+  storageAutoResizeLimit = _messages.IntegerField(18)
+  tier = _messages.StringField(19)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):
@@ -1180,6 +1196,21 @@ class SqlInstancesStopReplicaRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class SqlInstancesTruncateLogRequest(_messages.Message):
+  """A SqlInstancesTruncateLogRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    instancesTruncateLogRequest: A InstancesTruncateLogRequest resource to be
+      passed as the request body.
+    project: Project ID of the Cloud SQL project.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesTruncateLogRequest = _messages.MessageField('InstancesTruncateLogRequest', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesUpdateRequest(_messages.Message):
@@ -1519,6 +1550,19 @@ class TiersListResponse(_messages.Message):
 
   items = _messages.MessageField('Tier', 1, repeated=True)
   kind = _messages.StringField(2, default=u'sql#tiersList')
+
+
+class TruncateLogContext(_messages.Message):
+  """Database Instance truncate log context.
+
+  Fields:
+    kind: This is always sql#truncateLogContext.
+    logType: The type of log to truncate. Valid values are MYSQL_GENERAL_TABLE
+      and MYSQL_SLOW_TABLE.
+  """
+
+  kind = _messages.StringField(1, default=u'sql#truncateLogContext')
+  logType = _messages.StringField(2)
 
 
 class User(_messages.Message):

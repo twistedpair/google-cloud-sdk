@@ -80,8 +80,7 @@ class ClientAdapter(object):
         requests=requests,
         http=self._client.http,
         batch_url=self._batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors=errors))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')

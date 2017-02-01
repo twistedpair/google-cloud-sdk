@@ -891,8 +891,8 @@ class BackendService(_messages.Message):
     LoadBalancingSchemeValueValuesEnum:
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, TCP, and
-      SSL. The default is HTTP.  For internal load balancing, only TCP is
-      supported, The default is TCP.
+      SSL. The default is HTTP.  For internal load balancing, the possible
+      values are TCP and UDP, and the default is TCP.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE.  When the load balancing scheme is EXTERNAL, can be
       NONE, CLIENT_IP, or GENERATED_COOKIE.  When the load balancing scheme is
@@ -943,8 +943,8 @@ class BackendService(_messages.Message):
       INTERNAL, this field is not used.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, TCP, and SSL. The default is
-      HTTP.  For internal load balancing, only TCP is supported, The default
-      is TCP.
+      HTTP.  For internal load balancing, the possible values are TCP and UDP,
+      and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -972,7 +972,8 @@ class BackendService(_messages.Message):
   class ProtocolValueValuesEnum(_messages.Enum):
     """The protocol this BackendService uses to communicate with backends.
     Possible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.  For
-    internal load balancing, only TCP is supported, The default is TCP.
+    internal load balancing, the possible values are TCP and UDP, and the
+    default is TCP.
 
     Values:
       HTTP: <no description>
@@ -10546,8 +10547,7 @@ class Operation(_messages.Message):
 
   Fields:
     clientOperationId: [Output Only] Reserved for future use.
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
     endTime: [Output Only] The time that this operation was completed. This

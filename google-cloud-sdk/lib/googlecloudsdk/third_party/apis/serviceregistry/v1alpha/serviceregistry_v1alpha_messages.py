@@ -131,8 +131,7 @@ class Operation(_messages.Message):
 
   Fields:
     clientOperationId: [Output Only] Reserved for future use.
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
     endTime: [Output Only] The time that this operation was completed. This

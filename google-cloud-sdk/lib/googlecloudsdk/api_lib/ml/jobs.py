@@ -39,28 +39,26 @@ class JobsClient(object):
   def state_enum(self):
     return self.messages.GoogleCloudMlV1beta1Job.StateValueValuesEnum
 
-  def List(self):
+  def List(self, project_ref):
     req = self.messages.MlProjectsJobsListRequest(
-        projectsId=properties.VALUES.core.project.Get())
+        parent=project_ref.RelativeName())
     return list_pager.YieldFromList(
         self.client.projects_jobs, req, field='jobs',
         batch_size_attribute='pageSize')
 
-  def Create(self, job):
+  def Create(self, project_ref, job):
     req = self.messages.MlProjectsJobsCreateRequest(
-        projectsId=properties.VALUES.core.project.Get(),
+        parent=project_ref.RelativeName(),
         googleCloudMlV1beta1Job=job)
     return self.client.projects_jobs.Create(req)
 
   def Cancel(self, job_ref):
     """Cancels given job."""
-    req = self.messages.MlProjectsJobsCancelRequest(
-        projectsId=job_ref.projectsId, jobsId=job_ref.Name())
+    req = self.messages.MlProjectsJobsCancelRequest(name=job_ref.RelativeName())
     return self.client.projects_jobs.Cancel(req)
 
   def Get(self, job_ref):
-    req = self.messages.MlProjectsJobsGetRequest(
-        projectsId=job_ref.projectsId, jobsId=job_ref.jobsId)
+    req = self.messages.MlProjectsJobsGetRequest(name=job_ref.RelativeName())
     return self.client.projects_jobs.Get(req)
 
 
@@ -70,7 +68,8 @@ def BuildTrainingJob(path=None,
                      trainer_uri=None,
                      region=None,
                      scale_tier=None,
-                     user_args=None):
+                     user_args=None,
+                     runtime_version=None):
   """Builds a GoogleCloudMlV1beta1Job from a config file and/or flag values.
 
   Args:
@@ -84,6 +83,8 @@ def BuildTrainingJob(path=None,
         yaml file)
       user_args: [str]. A list of arguments to pass through to the job.
       (overrides yaml file)
+      runtime_version: the runtime version in which to run the job (overrides
+        yaml file)
   Returns:
       A constructed GoogleCloudMlV1beta1Job object.
   """
@@ -106,7 +107,8 @@ def BuildTrainingJob(path=None,
       'args': user_args,
       'packageUris': trainer_uri,
       'region': region,
-      'scaleTier': scale_tier
+      'scaleTier': scale_tier,
+      'runtimeVersion': runtime_version
   }
   for field_name, value in additional_fields.items():
     if value is not None:
@@ -121,7 +123,8 @@ def BuildBatchPredictionJob(job_name=None,
                             input_paths=None,
                             data_format=None,
                             output_path=None,
-                            region=None):
+                            region=None,
+                            runtime_version=None):
   """Builds a GoogleCloudMlV1beta1Job for batch prediction from flag values.
 
   Args:
@@ -132,6 +135,7 @@ def BuildBatchPredictionJob(job_name=None,
       data_format: format of the input files
       output_path: single value for the output location
       region: compute region in which to run the job
+      runtime_version: the runtime version in which to run the job
   Returns:
       A constructed GoogleCloudMlV1beta1Job object.
   """
@@ -142,7 +146,8 @@ def BuildBatchPredictionJob(job_name=None,
   prediction_input = messages.GoogleCloudMlV1beta1PredictionInput(
       inputPaths=input_paths,
       outputPath=output_path,
-      region=region
+      region=region,
+      runtimeVersion=runtime_version
   )
   prediction_input.dataFormat = prediction_input.DataFormatValueValuesEnum(
       data_format)

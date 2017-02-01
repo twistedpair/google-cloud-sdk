@@ -113,46 +113,6 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesClustersSnapshotsDeleteRequest object.
-
-  Fields:
-    name: The unique name of the snapshot to be deleted. Values are of the
-      form `projects/<project>/instances/<instance>/clusters/<cluster>/snapsho
-      ts/<snapshot>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminProjectsInstancesClustersSnapshotsGetRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesClustersSnapshotsGetRequest object.
-
-  Fields:
-    name: The unique name of the requested snapshot. Values are of the form `p
-      rojects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<sna
-      pshot>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminProjectsInstancesClustersSnapshotsListRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesClustersSnapshotsListRequest object.
-
-  Fields:
-    pageSize: The maximum number of snapshots to return.
-    pageToken: The value of `next_page_token` returned by a previous call.
-    parent: The unique name of the cluster for which snapshots should be
-      listed. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class BigtableadminProjectsInstancesDeleteRequest(_messages.Message):
   """A BigtableadminProjectsInstancesDeleteRequest object.
 
@@ -185,20 +145,6 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
   """
 
   pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-
-
-class BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesTablesCreateFromSnapshotRequest object.
-
-  Fields:
-    createTableFromSnapshotRequest: A CreateTableFromSnapshotRequest resource
-      to be passed as the request body.
-    parent: The unique name of the instance in which to create the table.
-      Values are of the form `projects/<project>/instances/<instance>`.
-  """
-
-  createTableFromSnapshotRequest = _messages.MessageField('CreateTableFromSnapshotRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -324,20 +270,6 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
 
   modifyColumnFamiliesRequest = _messages.MessageField('ModifyColumnFamiliesRequest', 1)
   name = _messages.StringField(2, required=True)
-
-
-class BigtableadminProjectsInstancesTablesSnapshotRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesTablesSnapshotRequest object.
-
-  Fields:
-    name: The unique name of the table to have the snapshot taken. Values are
-      of the form `projects/<project>/instances/<instance>/tables/<table>`.
-    snapshotTableRequest: A SnapshotTableRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  snapshotTableRequest = _messages.MessageField('SnapshotTableRequest', 2)
 
 
 class Cluster(_messages.Message):
@@ -497,23 +429,6 @@ class CreateInstanceRequest(_messages.Message):
   parent = _messages.StringField(4)
 
 
-class CreateTableFromSnapshotRequest(_messages.Message):
-  """Request message for
-  google.bigtable.admin.v2.BigtableTableAdmin.CreateTableFromSnapshot
-
-  Fields:
-    sourceSnapshot: The unique name of the snapshot from which to restore the
-      table. The snapshot and the table must be in the same instance. Values
-      are of the form `projects/<project>/instances/<instance>/clusters/<clust
-      er>/snapshots/<snapshot>`.
-    tableId: The name by which the new table should be referred to within the
-      parent instance, e.g., `foobar` rather than `<parent>/tables/foobar`.
-  """
-
-  sourceSnapshot = _messages.StringField(1)
-  tableId = _messages.StringField(2)
-
-
 class CreateTableRequest(_messages.Message):
   """Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.CreateTable
@@ -625,17 +540,9 @@ class Instance(_messages.Message):
         when updating an instance, the type will be left unchanged.
       PRODUCTION: An instance meant for production use. `serve_nodes` must be
         set on the cluster.
-      DEVELOPMENT: The instance is meant for development purposes only. It
-        uses shared resources and has no performance or uptime guarantees.
-        After a development instance is created, it can be upgraded by
-        updating the instance to type `PRODUCTION`. An instance created as a
-        production instance cannot be changed to a development instance. When
-        creating a development instance, `serve_nodes` on the cluster must not
-        be set.
     """
     TYPE_UNSPECIFIED = 0
     PRODUCTION = 1
-    DEVELOPMENT = 2
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
@@ -704,21 +611,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListSnapshotsResponse(_messages.Message):
-  """Response message for
-  google.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots
-
-  Fields:
-    nextPageToken: Set if not all snapshots could be returned in a single
-      response. Pass this value to `page_token` in another request to get the
-      next page of results.
-    snapshots: The snapshots present in the requested cluster.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  snapshots = _messages.MessageField('Snapshot', 2, repeated=True)
 
 
 class ListTablesResponse(_messages.Message):
@@ -874,54 +766,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class Snapshot(_messages.Message):
-  """A snapshot of a table at a particular time. A snapshot can be used as a
-  checkpoint for data restoration or a data source for a new table.
-
-  Fields:
-    createTime: (`OutputOnly`) The time when the snapshot is created.
-    dataSizeBytes: (`OutputOnly`) The size of the data in the source table at
-      the time the snapshot was taken.
-    deleteTime: (`OutputOnly`) The time when the snapshot will be deleted. The
-      maximum amount of time a snapshot can stay active is 365 days. If 'ttl'
-      is not specified, the default maximum of 365 days will be used.
-    name: (`OutputOnly`) The unique name of the snapshot. Values are of the
-      form `projects/<project>/instances/<instance>/clusters/<cluster>/snapsho
-      ts/<snapshot>`.
-    sourceTable: (`OutputOnly`) The source table at the time the snapshot was
-      taken.
-  """
-
-  createTime = _messages.StringField(1)
-  dataSizeBytes = _messages.IntegerField(2)
-  deleteTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sourceTable = _messages.MessageField('Table', 5)
-
-
-class SnapshotTableRequest(_messages.Message):
-  """Request message for
-  google.bigtable.admin.v2.BigtableTableAdmin.SnapshotTable
-
-  Fields:
-    cluster: The name of the cluster where the snapshot will be created in.
-      Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
-    snapshotId: The ID by which the new snapshot should be referred to within
-      the parent cluster, e.g., `mysnapshot` of the form: `_a-zA-Z0-9*` rather
-      than `projects/<project>/instances/<instance>/clusters/<cluster>/snapsho
-      ts/mysnapshot`.
-    ttl: The amount of time that the new snapshot can stay active after it is
-      created. Once 'ttl' expires, the snapshot will get deleted. The maximum
-      amount of time a snapshot can stay active is 365 days. If 'ttl' is not
-      specified, the default maximum of 365 days will be used.
-  """
-
-  cluster = _messages.StringField(1)
-  snapshotId = _messages.StringField(2)
-  ttl = _messages.StringField(3)
 
 
 class Split(_messages.Message):

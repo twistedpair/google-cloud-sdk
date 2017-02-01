@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instance templates."""
+
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
@@ -187,7 +189,9 @@ def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
 
     auto_delete = disk.get('auto-delete') == 'yes'
     disk_size_gb = utils.BytesToGb(disk.get('size'))
-    image_uri, _ = scope_prompter.ExpandImageFlag(
+    image_expander = image_utils.ImageExpander(scope_prompter.compute_client,
+                                               scope_prompter.resources)
+    image_uri, _ = image_expander.ExpandImageFlag(
         user_project=scope_prompter.project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),

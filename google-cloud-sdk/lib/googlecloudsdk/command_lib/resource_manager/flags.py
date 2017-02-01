@@ -30,6 +30,7 @@ def FolderIdArg(use_description):
       help='ID for the folder {0}'.format(use_description))
 
 
+@base.Hidden
 def FolderIdFlag(use_description):
   return base.Argument(
       '--folder',

@@ -24,7 +24,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
                  'customer-supplied-encryption')
-EXPECTED_RECORD_KEY_KEYS = set(['uri', 'key', 'key-type'])
+EXPECTED_RECORD_KEY_KEYS = {'uri', 'key', 'key-type'}
 BASE64_RAW_KEY_LENGTH_IN_CHARS = 44
 BASE64_RSA_ENCRYPTED_KEY_LENGTH_IN_CHARS = 344
 
@@ -120,7 +120,7 @@ def ValidateKey(base64_encoded_string, expected_key_length):
 
 
 class CsekKeyBase(object):
-  """A class representing for Csek keys."""
+  """A class representing for CSEK keys."""
 
   __metaclass__ = abc.ABCMeta
 
@@ -163,7 +163,8 @@ class CsekKeyBase(object):
     raise NotImplementedError('GetKeyLength() must be overridden.')
 
   @abc.abstractmethod
-  def ToMessage(self):
+  def ToMessage(self, compute_client):
+    del compute_client
     raise NotImplementedError('ToMessage() must be overridden.')
 
   @property
@@ -172,7 +173,7 @@ class CsekKeyBase(object):
 
 
 class CsekRawKey(CsekKeyBase):
-  """Class representing raw Csek keys."""
+  """Class representing raw CSEK keys."""
 
   def GetKeyLength(self):
     return BASE64_RAW_KEY_LENGTH_IN_CHARS
@@ -183,7 +184,7 @@ class CsekRawKey(CsekKeyBase):
 
 
 class CsekRsaEncryptedKey(CsekKeyBase):
-  """Class representing rsa encrypted Csek keys."""
+  """Class representing rsa encrypted CSEK keys."""
 
   def GetKeyLength(self):
     return BASE64_RSA_ENCRYPTED_KEY_LENGTH_IN_CHARS
@@ -391,7 +392,7 @@ class CsekKeyStore(object):
         # TODO(user) what's the best thing to do if there are multiple
         # matches?
         if search_state[0]:
-          raise exceptions.InvalidKeyFileException(
+          raise InvalidKeyFileException(
               'Uri patterns [{0}] and [{1}] both match '
               'resource [{2}].  Bailing out.'.format(
                   search_state[0], pat, str(resource)))
@@ -446,4 +447,3 @@ def MaybeLookupKeyMessagesByUri(csek_keys_or_none, parser,
                                 uris, compute_client):
   return [MaybeToMessage(k, compute_client) for k in
           MaybeLookupKeysByUri(csek_keys_or_none, parser, uris)]
-

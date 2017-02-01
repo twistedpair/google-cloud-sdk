@@ -60,23 +60,16 @@ class CloudFunction(_messages.Message):
       another service.
     gcsTrigger: Google Cloud Storage resource whose changes trigger the
       events. Currently, it must have the form gs://<bucket>/ (that is, it
-      must refer to a bucket, rather than an object).  Deprecated: To be
-      removed by Beta. Replacement:   condition_trigger: {     action:
-      "sources/cloud.pubsub/actions/publish"     resource:
-      "projects/[PROJECT_NAME]/buckets/[BUCKET_NAME]"   }
+      must refer to a bucket, rather than an object).
     gcsUrl: Google Cloud Storage URL pointing to the zip archive which
-      contains the function.  Deprecated: To be removed by Beta. Replacement:
-      source_archive_url
+      contains the function.
     httpsTrigger: A https endpoint type of source that can be trigger via URL.
     latestOperation: Name of the most recent operation modifying the function.
       If the function status is DEPLOYING or DELETING, then it points to the
       active operation. Output only.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern: projects/*/locations/*/functions/*
-    pubsubTrigger: A pub/sub type of source.  Deprecated: To be removed by
-      Beta. Replacement:   condition_trigger: {     action:
-      "sources/cloud.pubsub/actions/publish"     resource:
-      "projects/[PROJECT_ID]/topics/[TOPIC_NAME]"   }
+    pubsubTrigger: A pub/sub type of source.
     serviceAccount: The service account of the function. Output only.
     sourceArchiveUrl: The URL, starting with gs://, pointing to the zip
       archive which contains the function.
@@ -464,8 +457,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadataV1Beta2(_messages.Message):
-  """Metadata describing an Operation  See description of cl/108626115 for the
-  reason why the metadata proto message contains the API version.
+  """Metadata describing an Operation
 
   Enums:
     TypeValueValuesEnum: Type of operation.

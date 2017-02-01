@@ -216,7 +216,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a dataflow job.
+      """Creates a Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsJobsCreateRequest) input message
@@ -242,7 +242,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the state of the specified dataflow job.
+      """Gets the state of the specified Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsJobsGetRequest) input message
@@ -320,7 +320,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the state of an existing dataflow job.
+      """Updates the state of an existing Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsJobsUpdateRequest) input message
@@ -454,7 +454,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a dataflow job.
+      """Creates a Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsLocationsJobsCreateRequest) input message
@@ -480,7 +480,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the state of the specified dataflow job.
+      """Gets the state of the specified Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsLocationsJobsGetRequest) input message
@@ -558,7 +558,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the state of an existing dataflow job.
+      """Updates the state of an existing Cloud Dataflow job.
 
       Args:
         request: (DataflowProjectsLocationsJobsUpdateRequest) input message
@@ -604,7 +604,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a dataflow job from a template.
+      """Creates a Cloud Dataflow job from a template.
 
       Args:
         request: (DataflowProjectsTemplatesCreateRequest) input message

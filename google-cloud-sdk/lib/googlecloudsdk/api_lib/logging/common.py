@@ -22,7 +22,6 @@ from googlecloudsdk.core import properties
 
 
 def FetchLogs(log_filter=None,
-              log_ids=None,
               order_by='DESC',
               limit=None,
               parent=None):
@@ -34,14 +33,10 @@ def FetchLogs(log_filter=None,
   Entries are sorted on the timestamp field, and afterwards filter is applied.
   If limit is passed, returns only up to that many matching entries.
 
-  It is recommended to provide a filter with resource.type, and log_ids.
-
   If neither log_filter nor log_ids are passed, no filtering is done.
 
   Args:
     log_filter: filter expression used in the request.
-    log_ids: if present, contructs full log names based on parent and filters
-      only those logs in addition to filtering with log_filter.
     order_by: the sort order, either DESC or ASC.
     limit: how many entries to return.
     parent: the name of the log's parent resource, e.g. "projects/foo" or
@@ -61,11 +56,6 @@ def FetchLogs(log_filter=None,
   # The backend has an upper limit of 1000 for page_size.
   # However, there is no need to retrieve more entries if limit is specified.
   page_size = min(limit or 1000, 1000)
-  id_filter = _LogFilterForIds(log_ids, parent)
-  if id_filter and log_filter:
-    combined_filter = '%s AND (%s)' % (id_filter, log_filter)
-  else:
-    combined_filter = id_filter or log_filter
   if order_by.upper() == 'DESC':
     order_by = 'timestamp desc'
   else:
@@ -73,21 +63,8 @@ def FetchLogs(log_filter=None,
 
   client = util.GetClient()
   request = client.MESSAGES_MODULE.ListLogEntriesRequest(resourceNames=[parent],
-                                                         filter=combined_filter,
+                                                         filter=log_filter,
                                                          orderBy=order_by)
   return list_pager.YieldFromList(
       client.entries, request, field='entries', limit=limit,
       batch_size=page_size, batch_size_attribute='pageSize')
-
-
-def _LogFilterForIds(log_ids, parent):
-  """Constructs a log filter expression from the log_ids and parent name."""
-  if not log_ids:
-    return None
-  log_names = ['"%s"' % util.CreateLogResourceName(parent, log_id)
-               for log_id in log_ids]
-  log_names = ' OR '.join(log_names)
-  # TODO(b/27930464): Always use parentheses when resolved
-  if len(log_ids) > 1:
-    log_names = '(%s)' % log_names
-  return 'logName=%s' % log_names

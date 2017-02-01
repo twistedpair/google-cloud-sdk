@@ -24,38 +24,33 @@ class VersionsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1beta1')
     self.messages = messages or apis.GetMessagesModule('ml', 'v1beta1')
 
-  def Create(self, version_ref, origin):
+  def Create(self, model_ref, version_id, origin, runtime_version):
     """Creates a new version in an existing model."""
     return self.client.projects_models_versions.Create(
         self.messages.MlProjectsModelsVersionsCreateRequest(
-            projectsId=version_ref.projectsId,
-            modelsId=version_ref.modelsId,
+            parent=model_ref.RelativeName(),
             googleCloudMlV1beta1Version=(
                 self.messages.GoogleCloudMlV1beta1Version(
-                    name=version_ref.Name(),
-                    deploymentUri=origin))))
+                    name=version_id,
+                    deploymentUri=origin,
+                    runtimeVersion=runtime_version))))
 
   def Delete(self, version_ref):
     """Deletes a version from a model."""
     return self.client.projects_models_versions.Delete(
         self.messages.MlProjectsModelsVersionsDeleteRequest(
-            projectsId=version_ref.projectsId,
-            modelsId=version_ref.modelsId,
-            versionsId=version_ref.Name()))
+            name=version_ref.RelativeName()))
 
   def Get(self, version_ref):
     """Gets details about an existing model version."""
     return self.client.projects_models_versions.Get(
         self.messages.MlProjectsModelsVersionsGetRequest(
-            projectsId=version_ref.projectsId,
-            modelsId=version_ref.modelsId,
-            versionsId=version_ref.versionsId))
+            name=version_ref.RelativeName()))
 
   def List(self, model_ref):
     """Lists the versions for a model."""
     list_request = self.messages.MlProjectsModelsVersionsListRequest(
-        projectsId=model_ref.projectsId,
-        modelsId=model_ref.Name())
+        parent=model_ref.RelativeName())
     return list_pager.YieldFromList(
         self.client.projects_models_versions, list_request,
         field='versions', batch_size_attribute='pageSize')
@@ -64,8 +59,6 @@ class VersionsClient(object):
     """Sets a model's default version."""
     return self.client.projects_models_versions.SetDefault(
         self.messages.MlProjectsModelsVersionsSetDefaultRequest(
-            projectsId=version_ref.projectsId,
-            modelsId=version_ref.modelsId,
-            versionsId=version_ref.Name(),
+            name=version_ref.RelativeName(),
             googleCloudMlV1beta1SetDefaultVersionRequest=(
                 self.messages.GoogleCloudMlV1beta1SetDefaultVersionRequest())))

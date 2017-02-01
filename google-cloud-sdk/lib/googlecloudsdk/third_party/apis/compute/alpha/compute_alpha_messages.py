@@ -1492,8 +1492,8 @@ class BackendService(_messages.Message):
     LoadBalancingSchemeValueValuesEnum:
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, TCP, and
-      SSL. The default is HTTP.  For internal load balancing, only TCP is
-      supported, The default is TCP.
+      SSL. The default is HTTP.  For internal load balancing, the possible
+      values are TCP and UDP, and the default is TCP.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE.  When the load balancing scheme is EXTERNAL, can be
       NONE, CLIENT_IP, or GENERATED_COOKIE.  When the load balancing scheme is
@@ -1548,10 +1548,12 @@ class BackendService(_messages.Message):
       INTERNAL, this field is not used.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, TCP, and SSL. The default is
-      HTTP.  For internal load balancing, only TCP is supported, The default
-      is TCP.
+      HTTP.  For internal load balancing, the possible values are TCP and UDP,
+      and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this backend service.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
@@ -1577,7 +1579,8 @@ class BackendService(_messages.Message):
   class ProtocolValueValuesEnum(_messages.Enum):
     """The protocol this BackendService uses to communicate with backends.
     Possible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.  For
-    internal load balancing, only TCP is supported, The default is TCP.
+    internal load balancing, the possible values are TCP and UDP, and the
+    default is TCP.
 
     Values:
       HTTP: <no description>
@@ -1633,9 +1636,10 @@ class BackendService(_messages.Message):
   portName = _messages.StringField(17)
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
   region = _messages.StringField(19)
-  selfLink = _messages.StringField(20)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
-  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  securityPolicy = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
+  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1734,8 +1738,11 @@ class BackendServiceList(_messages.Message):
     items: A list of BackendService resources.
     kind: [Output Only] Type of resource. Always compute#backendServiceList
       for lists of backend services.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -1950,6 +1957,7 @@ class Commitment(_messages.Message):
     plan: The plan for this commitment, which determines duration and discount
       rate. The currently supported plans are TWELVE_MONTH (1 year), and
       THIRTY_SIX_MONTH (3 years).
+    region: [Output Only] URL of the region where this commitment may be used.
     resources: List of commitment amounts for particular resources. Note that
       VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -2000,12 +2008,13 @@ class Commitment(_messages.Message):
   kind = _messages.StringField(5, default=u'compute#commitment')
   name = _messages.StringField(6)
   plan = _messages.EnumField('PlanValueValuesEnum', 7)
-  resources = _messages.MessageField('ResourceCommitment', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  startTimestamp = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  zone = _messages.StringField(13)
+  region = _messages.StringField(8)
+  resources = _messages.MessageField('ResourceCommitment', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  startTimestamp = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+  zone = _messages.StringField(14)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -2213,7 +2222,8 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2276,7 +2286,8 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2327,7 +2338,8 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2418,7 +2430,8 @@ class ComputeAddressesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2503,7 +2516,8 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2594,7 +2608,8 @@ class ComputeAutoscalersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2744,7 +2759,8 @@ class ComputeBackendBucketsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2852,7 +2868,8 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2954,7 +2971,8 @@ class ComputeBackendServicesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3063,7 +3081,8 @@ class ComputeCommitmentsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3083,20 +3102,6 @@ class ComputeCommitmentsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeCommitmentsGetIamPolicyRequest(_messages.Message):
-  """A ComputeCommitmentsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
 
 
 class ComputeCommitmentsGetRequest(_messages.Message):
@@ -3154,7 +3159,8 @@ class ComputeCommitmentsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3176,22 +3182,6 @@ class ComputeCommitmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
-
-
-class ComputeCommitmentsSetIamPolicyRequest(_messages.Message):
-  """A ComputeCommitmentsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
 
 
 class ComputeCommitmentsTestIamPermissionsRequest(_messages.Message):
@@ -3238,7 +3228,8 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3301,7 +3292,8 @@ class ComputeDiskTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3352,7 +3344,8 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3381,6 +3374,8 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
     disk: Name of the persistent disk to snapshot.
     guestFlush: A boolean attribute.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     snapshot: A Snapshot resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -3388,8 +3383,9 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
   disk = _messages.StringField(1, required=True)
   guestFlush = _messages.BooleanField(2)
   project = _messages.StringField(3, required=True)
-  snapshot = _messages.MessageField('Snapshot', 4)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(4)
+  snapshot = _messages.MessageField('Snapshot', 5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeDisksDeleteRequest(_messages.Message):
@@ -3398,12 +3394,15 @@ class ComputeDisksDeleteRequest(_messages.Message):
   Fields:
     disk: Name of the persistent disk to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   disk = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeDisksGetRequest(_messages.Message):
@@ -3426,14 +3425,17 @@ class ComputeDisksInsertRequest(_messages.Message):
   Fields:
     disk: A Disk resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     sourceImage: Optional. Source image to restore onto a disk.
     zone: The name of the zone for this request.
   """
 
   disk = _messages.MessageField('Disk', 1)
   project = _messages.StringField(2, required=True)
-  sourceImage = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(3)
+  sourceImage = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeDisksListRequest(_messages.Message):
@@ -3463,7 +3465,8 @@ class ComputeDisksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3495,13 +3498,16 @@ class ComputeDisksResizeRequest(_messages.Message):
     disksResizeRequest: A DisksResizeRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   disk = _messages.StringField(1, required=True)
   disksResizeRequest = _messages.MessageField('DisksResizeRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeDisksSetLabelsRequest(_messages.Message):
@@ -3601,7 +3607,8 @@ class ComputeFirewallsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3693,7 +3700,8 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3785,7 +3793,8 @@ class ComputeForwardingRulesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3924,7 +3933,8 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4040,7 +4050,8 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4135,7 +4146,8 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4212,7 +4224,8 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4297,7 +4310,8 @@ class ComputeHealthChecksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4391,7 +4405,8 @@ class ComputeHostTypesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4454,7 +4469,8 @@ class ComputeHostTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4505,7 +4521,8 @@ class ComputeHostsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4610,7 +4627,8 @@ class ComputeHostsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4731,7 +4749,8 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4862,7 +4881,8 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5021,7 +5041,8 @@ class ComputeImagesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5118,7 +5139,8 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5251,7 +5273,8 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5482,7 +5505,8 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5577,7 +5601,8 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5630,7 +5655,8 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5772,7 +5798,8 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5855,7 +5882,8 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6033,7 +6061,8 @@ class ComputeInstancesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6170,6 +6199,26 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   metadata = _messages.MessageField('Metadata', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A ComputeInstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMinCpuPlatformRequest = _messages.MessageField('InstancesSetMinCpuPlatformRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetSchedulingRequest(_messages.Message):
@@ -6362,7 +6411,8 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6425,7 +6475,8 @@ class ComputeMachineTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6527,7 +6578,8 @@ class ComputeNetworksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6830,7 +6882,8 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -6993,7 +7046,8 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7109,7 +7163,8 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7141,6 +7196,8 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
     guestFlush: A boolean attribute.
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     snapshot: A Snapshot resource to be passed as the request body.
   """
 
@@ -7148,7 +7205,8 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
   guestFlush = _messages.BooleanField(2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
-  snapshot = _messages.MessageField('Snapshot', 5)
+  requestId = _messages.StringField(5)
+  snapshot = _messages.MessageField('Snapshot', 6)
 
 
 class ComputeRegionDisksDeleteRequest(_messages.Message):
@@ -7158,11 +7216,14 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
     disk: Name of the regional persistent disk to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   disk = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionDisksGetRequest(_messages.Message):
@@ -7186,13 +7247,16 @@ class ComputeRegionDisksInsertRequest(_messages.Message):
     disk: A Disk resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     sourceImage: Optional. Source image to restore onto a disk.
   """
 
   disk = _messages.MessageField('Disk', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
-  sourceImage = _messages.StringField(4)
+  requestId = _messages.StringField(4)
+  sourceImage = _messages.StringField(5)
 
 
 class ComputeRegionDisksListRequest(_messages.Message):
@@ -7222,7 +7286,8 @@ class ComputeRegionDisksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7255,12 +7320,15 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
     region: Name of the region for this request.
     regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
       as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   disk = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionDisksSetLabelsRequest(_messages.Message):
@@ -7425,7 +7493,8 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7632,7 +7701,8 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7688,7 +7758,8 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7807,7 +7878,8 @@ class ComputeRegionOperationsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7870,7 +7942,8 @@ class ComputeRegionsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -7919,7 +7992,8 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8024,7 +8098,8 @@ class ComputeRoutersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8176,7 +8251,8 @@ class ComputeRoutesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8264,7 +8340,8 @@ class ComputeSnapshotsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8380,7 +8457,8 @@ class ComputeSslCertificatesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8444,7 +8522,8 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8566,7 +8645,8 @@ class ComputeSubnetworksListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8705,7 +8785,8 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8821,7 +8902,8 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8918,7 +9000,8 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9010,7 +9093,8 @@ class ComputeTargetInstancesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9112,7 +9196,8 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9221,7 +9306,8 @@ class ComputeTargetPoolsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9379,7 +9465,8 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9531,7 +9618,8 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9629,7 +9717,8 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9721,7 +9810,8 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9840,7 +9930,8 @@ class ComputeUrlMapsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -9947,7 +10038,8 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -10038,7 +10130,8 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -10155,7 +10248,8 @@ class ComputeZoneOperationsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -10218,7 +10312,8 @@ class ComputeZonesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -10627,6 +10722,7 @@ class DiskAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
+      Acceptable values are 0 to 500, inclusive. (Default: 500)
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -10671,8 +10767,11 @@ class DiskList(_messages.Message):
     items: A list of Disk resources.
     kind: [Output Only] Type of resource. Always compute#diskList for lists of
       disks.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: This token allows you to get the next page of results for
+      list requests. If the number of results is larger than maxResults, use
+      the nextPageToken as a value for the query parameter pageToken in the
+      next list request. Subsequent list requests will have their own
+      nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -14463,6 +14562,16 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   machineType = _messages.StringField(1)
 
 
+class InstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A InstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    minCpuPlatform: Minimum cpu/platform this instance should be started at.
+  """
+
+  minCpuPlatform = _messages.StringField(1)
+
+
 class InstancesSetServiceAccountRequest(_messages.Message):
   """A InstancesSetServiceAccountRequest object.
 
@@ -15267,8 +15376,7 @@ class Operation(_messages.Message):
 
   Fields:
     clientOperationId: [Output Only] Reserved for future use.
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
     endTime: [Output Only] The time that this operation was completed. This

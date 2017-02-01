@@ -12,10 +12,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General formatting utils, App Engine specific formatters."""
-
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
+
+
+LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug', 'any']
+
+# Request logs come from different sources if the app is Flex or Standard.
+FLEX_REQUEST = 'nginx.requests'
+STANDARD_REQUEST = 'request_log'
+DEFAULT_LOGS = ['stderr', 'stdout', 'crash.log',
+                FLEX_REQUEST, STANDARD_REQUEST]
+
+
+def GetFilters(project, log_sources, service=None, version=None, level='any'):
+  """Returns filters for App Engine app logs.
+
+  Args:
+    project: string name of project ID.
+    log_sources: List of streams to fetch logs from.
+    service: String name of service to fetch logs from.
+    version: String name of version to fetch logs from.
+    level: A string representing the severity of logs to fetch.
+
+  Returns:
+    A list of filter strings.
+  """
+  filters = ['resource.type="gae_app"']
+  if service:
+    filters.append('resource.labels.module_id="{0}"'.format(service))
+  if version:
+    filters.append('resource.labels.version_id="{0}"'.format(version))
+  if level != 'any':
+    filters.append('severity>={0}'.format(level.upper()))
+
+  log_ids = ['appengine.googleapis.com/{0}'.format(log_type)
+             for log_type in sorted(log_sources)]
+  res = resources.REGISTRY.Parse(
+      project, collection='appengine.projects').RelativeName()
+
+  filters.append(_LogFilterForIds(log_ids, res))
+  return filters
+
+
+def _LogFilterForIds(log_ids, parent):
+  """Constructs a log filter expression from the log_ids and parent name."""
+  if not log_ids:
+    return None
+  log_names = ['"{0}"'.format(util.CreateLogResourceName(parent, log_id))
+               for log_id in log_ids]
+  log_names = ' OR '.join(log_names)
+  # TODO(b/27930464): Always use parentheses when resolved
+  if len(log_ids) > 1:
+    log_names = '(%s)' % log_names
+  return 'logName=%s' % log_names
 
 
 def FormatAppEntry(entry):

@@ -137,30 +137,27 @@ def _CopyIfNotWritable(source_dir, temp_dir):
   return dest_dir
 
 
-def _GenerateSetupPyIfNeeded(setup_py_path, temp_dir, package_name):
+def _GenerateSetupPyIfNeeded(setup_py_path, package_name):
   """Generates a temporary setup.py file if there is none at the given path.
 
   Args:
     setup_py_path: str, a path to the expected setup.py location.
-    temp_dir: str, the temporary directory in which to generate setup.py, if
-      necessary.
     package_name: str, the name of the Python package for which to write a
       setup.py file (used in the generated file contents).
 
   Returns:
-    str, path to a working setup.py file (possibly generated)
+    bool, whether the setup.py file was generated.
   """
   log.debug('Looking for setup.py file at [%s]', setup_py_path)
   if os.path.isfile(setup_py_path):
     log.info('Using existing setup.py file at [%s]', setup_py_path)
-    return setup_py_path
+    return False
 
   setup_contents = DEFAULT_SETUP_FILE.format(package_name=package_name)
   log.info('Generating temporary setup.py file:\n%s', setup_contents)
-  generated_path = os.path.join(temp_dir, 'setup.py')
-  with open(generated_path, 'w') as setup_file:
+  with open(setup_py_path, 'w') as setup_file:
     setup_file.write(setup_contents)
-  return generated_path
+  return True
 
 
 def _RunSetupTools(package_root, setup_py_path, output_dir):
@@ -258,11 +255,9 @@ def BuildPackages(package_path, output_dir):
       # in the `--module-name` argument, but this should catch most issues.
       raise MissingInitError(package_path)
 
-    provided_setup_py_path = os.path.join(package_root, 'setup.py')
+    setup_py_path = os.path.join(package_root, 'setup.py')
     package_name = os.path.basename(package_path)
-    setup_py_path = _GenerateSetupPyIfNeeded(provided_setup_py_path, temp_dir,
-                                             package_name)
-    generated = provided_setup_py_path != setup_py_path
+    generated = _GenerateSetupPyIfNeeded(setup_py_path, package_name)
     try:
       return _RunSetupTools(package_root, setup_py_path, output_dir)
     except RuntimeError as err:
@@ -272,14 +267,15 @@ def BuildPackages(package_path, output_dir):
         # For some reason, this artifact gets generated in the package root by
         # setuptools, even after setting PYTHONDONTWRITEBYTECODE or running
         # `python setup.py clean --all`. It's weird to leave someone a .pyc for
-        # a file they never had, so we clean it up.
+        # a file they never knew they had, so we clean it up.
         pyc_file = os.path.join(package_root, 'setup.pyc')
-        try:
-          os.unlink(pyc_file)
-        except OSError:
-          log.debug(
-              "Couldn't remove file [%s] (it may never have been created).",
-              pyc_file)
+        for path in (setup_py_path, pyc_file):
+          try:
+            os.unlink(path)
+          except OSError:
+            log.debug(
+                "Couldn't remove file [%s] (it may never have been created).",
+                pyc_file)
 
 
 def _UploadFilesByPath(paths, staging_bucket, job_name):

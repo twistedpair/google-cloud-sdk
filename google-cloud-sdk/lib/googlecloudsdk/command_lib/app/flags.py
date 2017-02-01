@@ -15,6 +15,7 @@
 """This module holds common flags used by the gcloud app commands."""
 import argparse
 
+from googlecloudsdk.api_lib.app import logs_util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -28,16 +29,38 @@ SERVER_FLAG = base.Argument(
     '--server',
     help=argparse.SUPPRESS)
 
-VERSION_FLAG = base.Argument(
-    '--version',
-    required=True,
-    help='The version of the app that you want to operate on.')
-
 IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',
     default=False,
     help=argparse.SUPPRESS)
+
+SERVICE = base.Argument(
+    '--service', '-s',
+    help='Limit to specific service.',
+    required=False)
+
+VERSION = base.Argument(
+    '--version', '-v',
+    help='Limit to specific version.',
+    required=False)
+
+LEVEL = base.Argument(
+    '--level',
+    help='Filter entries with severity equal to or higher than a given level.',
+    required=False,
+    default='any',
+    choices=logs_util.LOG_LEVELS)
+
+LOGS = base.Argument(
+    '--logs',
+    help=('Filter entries from a particular set of logs. Must be a '
+          'comma-separated list of log names (request_log, stdout, stderr, '
+          'etc).'),
+    required=False,
+    default=logs_util.DEFAULT_LOGS,
+    metavar='APP_LOG',
+    type=arg_parsers.ArgList(min_length=1))
 
 
 def ValidateDockerBuildFlag(unused_value):

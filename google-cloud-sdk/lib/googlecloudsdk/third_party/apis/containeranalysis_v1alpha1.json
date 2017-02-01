@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/container-analysis/api/reference/rest/",
   "protocol": "rest",
   "rootUrl": "https://containeranalysis.googleapis.com/",
   "servicePath": "",
@@ -137,7 +137,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which of the occurrence details is specified.\n@OutputOnly",
+          "description": "This explicitly denotes which of the occurrence details is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -814,7 +814,7 @@
         "directive": {
           "description": "The recovered Dockerfile directive used to construct this layer.",
           "enumDescriptions": [
-            "",
+            "Default value for unsupported\/missing directive",
             "https:\/\/docs.docker.com\/reference\/builder\/#maintainer",
             "https:\/\/docs.docker.com\/reference\/builder\/#run",
             "https:\/\/docs.docker.com\/reference\/builder\/#cmd",
@@ -941,7 +941,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which kind of note is specified.\n@OutputOnly",
+          "description": "This explicitly denotes which kind of note is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -1147,9 +1147,9 @@
         "architecture": {
           "description": "The CPU architecture for which packages in this distribution\nchannel were built",
           "enumDescriptions": [
-            "",
-            "",
-            ""
+            "Unknown architecture",
+            "X86 architecture",
+            "x64 architecture"
           ],
           "type": "string",
           "enum": [
@@ -1235,6 +1235,11 @@
         "policy": {
           "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
           "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, a default\nmask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -1256,7 +1261,7 @@
           }
         },
         "auditConfigs": {
-          "description": "Specifies audit logging configs for \"data access\".\n\"data access\": generally refers to data reads\/writes and admin reads.\n\"admin activity\": generally refers to admin writes.\n\nNote: `AuditConfig` doesn't apply to \"admin activity\", which always\nenables audit logging.",
+          "description": "Specifies cloud audit logging configuration for this policy.",
           "type": "array",
           "items": {
             "$ref": "AuditConfig"
@@ -1300,7 +1305,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Provides the configuration for non-admin_activity logging for a service.\nControls exemptions and specific log sub-types.",
+      "description": "Specifies the audit configuration for a service.\nIt consists of which permission types are logged, and what identities, if\nany, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.",
       "type": "object",
       "properties": {
         "service": {
@@ -1308,14 +1313,14 @@
           "type": "string"
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.",
+          "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.\nThis field is deprecated in favor of per-permission-type exemptions.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "auditLogConfigs": {
-          "description": "The configuration for each type of logging\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
           "type": "array",
           "items": {
             "$ref": "AuditLogConfig"
@@ -1325,16 +1330,16 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for a sub-type of logging.",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
           "enumDescriptions": [
             "Default case. Should never be this.",
-            "Log admin reads",
-            "Log data writes",
-            "Log data reads"
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
           ],
           "type": "string",
           "enum": [
@@ -1345,7 +1350,7 @@
           ]
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that are exempted from this type of logging\nFollows the same format of Binding.members.",
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1986,15 +1991,15 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "updateNote": {
-              "id": "containeranalysis.projects.notes.updateNote",
+            "update": {
+              "id": "containeranalysis.projects.notes.update",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/notes/{notesId}",
-              "httpMethod": "POST",
+              "httpMethod": "PUT",
               "description": "Updates an existing note.",
               "parameters": {
                 "name": {
-                  "description": "The name of the note.\nShould be of the form \"providers\/{provider_id}\/notes\/{note_id}\".",
+                  "description": "The name of the note.\nShould be of the form \"projects\/{provider_id}\/notes\/{note_id}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
@@ -2288,15 +2293,15 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "updateNote": {
-              "id": "containeranalysis.providers.notes.updateNote",
+            "update": {
+              "id": "containeranalysis.providers.notes.update",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/providers/{providersId}/notes/{notesId}",
-              "httpMethod": "POST",
+              "httpMethod": "PUT",
               "description": "Updates an existing note.",
               "parameters": {
                 "name": {
-                  "description": "The name of the note.\nShould be of the form \"providers\/{provider_id}\/notes\/{note_id}\".",
+                  "description": "The name of the note.\nShould be of the form \"projects\/{provider_id}\/notes\/{note_id}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^providers\/[^\/]+\/notes\/[^\/]+$",

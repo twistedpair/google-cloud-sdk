@@ -48,8 +48,7 @@ class RegionResourceFetcher(object):
           requests=requests,
           http=self.http,
           batch_url=self.batch_url,
-          errors=errors,
-          custom_get_requests=None))
+          errors=errors))
     else:
       return None
 

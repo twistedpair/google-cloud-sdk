@@ -139,11 +139,11 @@ class AutoUpgradeOptions(_messages.Message):
   the Auto Upgrades will proceed.
 
   Fields:
-    autoUpgradeStartTime: [Output only] This filed is set by GKE when upgrades
-      are about to commence with the approximate start time for the upgrades,
-      in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
-    description: [Output only] This filed is set by GKE when upgrades are
-      about to commence with the description of the upgrade.
+    autoUpgradeStartTime: [Output only] This field is set when upgrades are
+      about to commence with the approximate start time for the upgrades, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    description: [Output only] This field is set when upgrades are about to
+      commence with the description of the upgrade.
     requestedUpgradeStartTime: User requested start time, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
   """
@@ -328,10 +328,9 @@ class ClusterUpdate(_messages.Message):
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
-    desiredMasterVersion:  Whitelisted and internal users can change the
-      master to any version.  The Kubernetes version to change the master to.
-      The only valid value is the latest supported version. Use "-" to have
-      the server automatically select the latest version.
+    desiredMasterVersion: The Kubernetes version to change the master to. The
+      only valid value is the latest supported version. Use "-" to have the
+      server automatically select the latest version.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *

@@ -70,8 +70,7 @@ class BaseGetIamPolicy(base_classes.BaseCommand):
         requests=[get_policy_request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors=errors)
 
     # Converting the objects genrator to a list triggers the
     # logic that actually populates the errors list.
@@ -203,8 +202,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
         requests=[set_policy_request],
         http=self.http,
         batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+        errors=errors)
 
     # Converting the objects genrator to a list triggers the
     # logic that actually populates the errors list.

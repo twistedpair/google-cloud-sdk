@@ -20,7 +20,41 @@ from googlecloudsdk.core.console import console_io
 
 
 class ZoneResourceFetcher(object):
-  """Mixin class for working with zones."""
+  """A (small) collection of utils for working with zones."""
+
+  def __init__(self, compute_client):
+    """Instantiate ZoneResourceFetcher and embed all required data into it.
+
+    ZoneResourceFetcher is a class depending on "base_classes"
+    class layout (properties side-derived from one of base_class class). This
+    function can be used to avoid unfeasible inheritance and use composition
+    instead when refactoring away from base_classes into stateless style.
+
+    This constructor embeds following properties into ZoneResourceFetcher
+    instance:
+     - compute
+     - messages
+     - http
+     - batch_url
+
+    Example:
+      compute_holder = base_classes.ComputeApiHolder(self.ReleaseTrack())
+      client = compute_holder.client
+
+      zone_resource_fetcher = ZoneResourceFetcher(client)
+        or
+      zone_resource_fetcher = ZoneResourceFetcher(self.compute_client)
+        to use in a class derived from some of base_classes
+
+      zone_resource_fetcher.WarnForZonalCreation(...)
+
+    Args:
+      compute_client: compute_holder.client
+    """
+    self._compute = compute_client.apitools_client
+    self._messages = compute_client.messages
+    self._http = compute_client.apitools_client.http
+    self._batch_url = compute_client.batch_url
 
   def GetZones(self, resource_refs):
     """Fetches zone resources."""
@@ -31,18 +65,17 @@ class ZoneResourceFetcher(object):
       if resource_ref.zone not in zone_names:
         zone_names.add(resource_ref.zone)
         requests.append((
-            self.compute.zones,
+            self._compute.zones,
             'Get',
-            self.messages.ComputeZonesGetRequest(
+            self._messages.ComputeZonesGetRequest(
                 project=resource_ref.project,
                 zone=resource_ref.zone)))
 
     res = list(request_helper.MakeRequests(
         requests=requests,
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        http=self._http,
+        batch_url=self._batch_url,
+        errors=errors))
 
     if errors:
       return None

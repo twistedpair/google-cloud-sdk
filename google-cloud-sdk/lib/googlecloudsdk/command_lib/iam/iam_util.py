@@ -13,6 +13,7 @@
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
 import httplib
+import json
 
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
@@ -32,6 +33,8 @@ MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
 CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
                     .PrivateKeyTypeValueValuesEnum)
 KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
+PUBLIC_KEY_TYPES = (
+    msgs.IamProjectsServiceAccountsKeysGetRequest.PublicKeyTypeValueValuesEnum)
 
 
 class IamEtagReadError(core_exceptions.Error):
@@ -458,7 +461,7 @@ class IAMServiceAccountException(core_exceptions.Error):
     if key_id:
       error_msg = '{0}: key [{1}] for service account [{2}]'.format(
           error_msg, key_id, address)
-    else:
+    elif address:
       error_msg = '{0}: service account [{1}]'.format(error_msg, address)
     super(IAMServiceAccountException, self).__init__(error_msg)
 
@@ -470,6 +473,16 @@ def ConvertToServiceAccountException(http_error, address, key_id=None):
     error_msg = 'Not found'
   elif http_error.status_code == httplib.FORBIDDEN:
     error_msg = 'Permission denied'
+  elif http_error.status_code == httplib.BAD_REQUEST:
+    # If the request is not valid then simply report the error message.
+    # In this case, the service account email (the 'address' variable)
+    # should not be included in the error message.
+    content = json.loads(http_error.content)
+    # The variable 'error' is the content of the error message, as can be
+    # seen by using the --log-http flag, in JSON format.
+    error = content.get('error', {})
+    error_msg = error.get('message', 0)
+    address = None
   elif http_error.status_code == httplib.CONFLICT:
     return http_error  # Let it retry.
 
@@ -506,3 +519,18 @@ def EmailAndKeyToResourceName(email, key):
 def GetKeyIdFromResourceName(name):
   """Gets the key id from a resource name. No validation is done."""
   return name.split('/')[5]
+
+
+def PublicKeyTypeFromString(key_str):
+  """Parses a string into a PublicKeyType enum.
+
+  Args:
+    key_str: A string representation of a PublicKeyType. Can be either *pem* or
+    *raw*.
+
+  Returns:
+    A PublicKeyTypeValueValuesEnum value.
+  """
+  if key_str == 'pem':
+    return PUBLIC_KEY_TYPES.TYPE_X509_PEM_FILE
+  return PUBLIC_KEY_TYPES.TYPE_RAW_PUBLIC_KEY

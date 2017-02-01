@@ -23,7 +23,6 @@ START_TIME = time.time()
 # pylint:disable=g-import-not-at-top, We want to get the start time first.
 import errno
 import os
-import signal
 import sys
 
 from googlecloudsdk.calliope import base
@@ -35,28 +34,13 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import keyboard_interrupt
 from googlecloudsdk.core.util import platforms
 import surface
 
 
-# Disable stack traces when people kill a command.
-def CTRLCHandler(unused_signal, unused_frame):
-  """Custom SIGNINT handler.
-
-  Signal handler that doesn't print the stack trace when a command is
-  killed by keyboard interupt.
-  """
-  try:
-    log.err.Print('\n\nCommand killed by keyboard interrupt\n')
-  except NameError:
-    sys.stderr.write('\n\nCommand killed by keyboard interrupt\n')
-  # Kill ourselves with SIGINT so our parent can detect that we exited because
-  # of a signal. SIG_DFL disables further KeyboardInterrupt exceptions.
-  signal.signal(signal.SIGINT, signal.SIG_DFL)
-  os.kill(os.getpid(), signal.SIGINT)
-  # Just in case the kill failed ...
-  sys.exit(1)
-signal.signal(signal.SIGINT, CTRLCHandler)
+# Disable stack traces when the command is interrupted.
+keyboard_interrupt.InstallHandler()
 
 
 def _DoStartupChecks():
@@ -154,4 +138,4 @@ if __name__ == '__main__':
   try:
     main()
   except KeyboardInterrupt:
-    CTRLCHandler(None, None)
+    keyboard_interrupt.HandleInterrupt()

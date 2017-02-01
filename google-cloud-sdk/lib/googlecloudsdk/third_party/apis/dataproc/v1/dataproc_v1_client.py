@@ -103,9 +103,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      """Gets cluster diagnostic information.
-After the operation completes, the Operation.response field
-contains `DiagnoseClusterOutputLocation`.
+      """Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message
@@ -219,10 +217,7 @@ contains `DiagnoseClusterOutputLocation`.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts a job cancellation request. To access the job resource.
-after cancellation, call
-[regions/{region}/jobs.list](/dataproc/reference/rest/v1/projects.regions.jobs/list) or
-[regions/{region}/jobs.get](/dataproc/reference/rest/v1/projects.regions.jobs/get).
+      """Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
 
       Args:
         request: (DataprocProjectsRegionsJobsCancelRequest) input message
@@ -248,8 +243,7 @@ after cancellation, call
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the job from the project. If the job is active, the delete fails,.
-and the response returns `FAILED_PRECONDITION`.
+      """Deletes the job from the project. If the job is active, the delete fails, and the response returns FAILED_PRECONDITION.
 
       Args:
         request: (DataprocProjectsRegionsJobsDeleteRequest) input message
@@ -326,6 +320,32 @@ and the response returns `FAILED_PRECONDITION`.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a job in a project.
+
+      Args:
+        request: (DataprocProjectsRegionsJobsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'dataproc.projects.regions.jobs.patch',
+        ordered_params=[u'projectId', u'region', u'jobId'],
+        path_params=[u'jobId', u'projectId', u'region'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        request_field=u'job',
+        request_type_name=u'DataprocProjectsRegionsJobsPatchRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
     def Submit(self, request, global_params=None):
       """Submits a job to a cluster.
 
@@ -363,16 +383,7 @@ and the response returns `FAILED_PRECONDITION`.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      """Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsCancelRequest) input message
@@ -399,10 +410,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      """Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsDeleteRequest) input message
@@ -429,9 +437,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DataprocProjectsRegionsOperationsGetRequest) input message
@@ -458,11 +464,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding below allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`.
+      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding below allows API services to override the binding to use different resource name schemes, such as users/*/operations.
 
       Args:
         request: (DataprocProjectsRegionsOperationsListRequest) input message

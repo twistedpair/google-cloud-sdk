@@ -316,28 +316,6 @@ class ClientInfo(_messages.Message):
   name = _messages.StringField(1)
 
 
-class ConnectionInfo(_messages.Message):
-  """Information needed to connect to services running on the virtual device.
-  The ssh_port is used to connect to the device, and then the adb_port and
-  vnc_port on the device can be forwarded to two local ports, to which adb and
-  vnc can connect, respectively.  All of the fields in this message are
-  provided by the backend.
-
-  Fields:
-    adbPort: Port for ADB (e.g. 5555) NOT user-specified Required
-    ipAddress: IP address of the device. NOT user-specified Required
-    sshPort: Port for SSH (e.g. 22) NOT user-specified Required
-    vncPassword: Password for VNC NOT user-specified Required
-    vncPort: Port for VNC (e.g. 6444) NOT user-specified Required
-  """
-
-  adbPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  ipAddress = _messages.StringField(2)
-  sshPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  vncPassword = _messages.StringField(4)
-  vncPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-
-
 class Date(_messages.Message):
   """Represents a whole calendar date, e.g. date of birth. The time of day and
   time zone are either specified elsewhere or are not significant. The date is
@@ -360,61 +338,6 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class Device(_messages.Message):
-  """A GCE virtual Android device instance.
-
-  Enums:
-    StateValueValuesEnum: State of the device. NOT user-specified
-
-  Fields:
-    androidDevice: The Android device configuration. User-specified Required
-    creationTime: The time the request to create this device was received. NOT
-      user-specified
-    deviceDetails: Information about the backing GCE instance and connection.
-      NOT user-specified
-    id: Unique id set by the backend. NOT user-specified
-    projectId: Project id set by the backend. NOT user-specified
-    state: State of the device. NOT user-specified
-    stateDetails: Details about the state of the device. NOT user-specified
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """State of the device. NOT user-specified
-
-    Values:
-      DEVICE_UNSPECIFIED: Do not use.  For proto versioning only.
-      PREPARING: The device is in the process of spinning up.
-      READY: The device is created and ready to use.
-      CLOSED: The device has been closed.
-      DEVICE_ERROR: There has been an error.
-    """
-    DEVICE_UNSPECIFIED = 0
-    PREPARING = 1
-    READY = 2
-    CLOSED = 3
-    DEVICE_ERROR = 4
-
-  androidDevice = _messages.MessageField('AndroidDevice', 1)
-  creationTime = _messages.StringField(2)
-  deviceDetails = _messages.MessageField('DeviceDetails', 3)
-  id = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  stateDetails = _messages.MessageField('DeviceStateDetails', 7)
-
-
-class DeviceDetails(_messages.Message):
-  """Details about the GCE instance and connection.
-
-  Fields:
-    connectionInfo: Details about the connection to the device.
-    gceInstanceDetails: Details about the GCE instance backing the device.
-  """
-
-  connectionInfo = _messages.MessageField('ConnectionInfo', 1)
-  gceInstanceDetails = _messages.MessageField('GceInstanceDetails', 2)
-
-
 class DeviceFile(_messages.Message):
   """A single device file description.
 
@@ -423,21 +346,6 @@ class DeviceFile(_messages.Message):
   """
 
   obbFile = _messages.MessageField('ObbFile', 1)
-
-
-class DeviceStateDetails(_messages.Message):
-  """Additional details about the status of the device.
-
-  Fields:
-    errorDetails: If the DeviceState is ERROR, then this string may contain
-      human-readable details about the error.
-    progressDetails: A human-readable, detailed description of the device's
-      status. For example: "Starting Device\n Device Ready".  During the
-      device's lifespan data may be appended to the progress.
-  """
-
-  errorDetails = _messages.StringField(1)
-  progressDetails = _messages.StringField(2)
 
 
 class Distribution(_messages.Message):
@@ -507,26 +415,6 @@ class FileReference(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
-class GceInstanceDetails(_messages.Message):
-  """This information is provided for the user to look up additional details
-  of the backing GCE instance. It is assumed the user does not modify this
-  instance. If so, then the device service makes no guarantees about device
-  functionality.
-
-  Fields:
-    name: Desired instance name of the device. May be user-specified. If not,
-      the backend will choose a name.
-    projectId: The GCE project that contains the instance backing this device.
-      If user-specified, must be the same as the project_id in the
-      CreateDeviceRequest.
-    zone: Desired GCE zone for the device user-specified
-  """
-
-  name = _messages.StringField(1)
-  projectId = _messages.StringField(2)
-  zone = _messages.StringField(3)
-
-
 class GoogleAuto(_messages.Message):
   """Enables automatic Google account login. If set, the service will
   automatically generate a Google test account and add it to the device,
@@ -548,19 +436,6 @@ class GoogleCloudStorage(_messages.Message):
   """
 
   gcsPath = _messages.StringField(1)
-
-
-class ListDevicesResponse(_messages.Message):
-  """Response containing a list of devices. Supports pagination.
-
-  Fields:
-    devices: The GCE virtual Android devices to be returned.
-    nextPageToken: The pagination token to retrieve the next page of device
-      results.
-  """
-
-  devices = _messages.MessageField('Device', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListTestMatricesResponse(_messages.Message):
@@ -987,72 +862,6 @@ class TestSpecification(_messages.Message):
   autoGoogleLogin = _messages.BooleanField(3)
   testSetup = _messages.MessageField('TestSetup', 4)
   testTimeout = _messages.StringField(5)
-
-
-class TestingProjectsDevicesCreateRequest(_messages.Message):
-  """A TestingProjectsDevicesCreateRequest object.
-
-  Fields:
-    device: A Device resource to be passed as the request body.
-    projectId: The GCE project under which to create the device.
-    sshPublicKey: The public key to be set on the device in order to SSH into
-      it.
-  """
-
-  device = _messages.MessageField('Device', 1)
-  projectId = _messages.StringField(2, required=True)
-  sshPublicKey = _messages.StringField(3)
-
-
-class TestingProjectsDevicesDeleteRequest(_messages.Message):
-  """A TestingProjectsDevicesDeleteRequest object.
-
-  Fields:
-    deviceId: The GCE virtual Android device to be deleted.
-    projectId: The GCE project that contains the device to be deleted.
-  """
-
-  deviceId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsDevicesGetRequest(_messages.Message):
-  """A TestingProjectsDevicesGetRequest object.
-
-  Fields:
-    deviceId: The id of the GCE Android virtual device.
-    projectId: The GCE project that contains this device instance.
-  """
-
-  deviceId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsDevicesKeepaliveRequest(_messages.Message):
-  """A TestingProjectsDevicesKeepaliveRequest object.
-
-  Fields:
-    deviceId: The GCE virtual Android device to be issued the keep-alive.
-    projectId: The GCE project that contains the device to be issued the keep-
-      alive.
-  """
-
-  deviceId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsDevicesListRequest(_messages.Message):
-  """A TestingProjectsDevicesListRequest object.
-
-  Fields:
-    pageSize: Used to specify the max number of device results to be returned.
-    pageToken: Used to request a specific page of the device results list.
-    projectId: The GCE project to list the devices from.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

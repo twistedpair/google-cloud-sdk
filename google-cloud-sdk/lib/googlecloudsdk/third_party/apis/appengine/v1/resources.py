@@ -77,6 +77,12 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      ['projectId']
+  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

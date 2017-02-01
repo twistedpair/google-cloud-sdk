@@ -15,9 +15,9 @@ package = 'logging'
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo {   rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for Empty is empty JSON object {}.
   """
 
 
@@ -35,29 +35,28 @@ class HttpRequest(_messages.Message):
     cacheLookup: Whether or not a cache lookup was attempted.
     cacheValidatedWithOriginServer: Whether or not the response was validated
       with the origin server before being served from cache. This field is
-      only meaningful if `cache_hit` is True.
+      only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
       request was received until the response was sent.
-    referer: The referer URL of the request, as defined in [HTTP/1.1 Header
-      Field
-      Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+    referer: The referer URL of the request, as defined in HTTP/1.1 Header
+      Field Definitions
+      (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
-      request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
-    requestMethod: The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`,
-      `"POST"`.
+      request. Examples: "192.168.1.1", "FE80::0202:B3FF:FE1E:8329".
+    requestMethod: The request method. Examples: "GET", "HEAD", "PUT", "POST".
     requestSize: The size of the HTTP request message in bytes, including the
       request headers and the request body.
     requestUrl: The scheme (http, https), the host name, the path and the
       query portion of the URL that was requested. Example:
-      `"http://example.com/some/info?color=red"`.
+      "http://example.com/some/info?color=red".
     responseSize: The size of the HTTP response message sent back to the
       client, in bytes, including the response headers and the response body.
     serverIp: The IP address (IPv4 or IPv6) of the origin server that the
       request was sent to.
     status: The response code indicating the status of response. Examples:
       200, 404.
-    userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
-      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
+    userAgent: The user agent sent by the client. Example: "Mozilla/4.0
+      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)".
   """
 
   cacheFillBytes = _messages.IntegerField(1)
@@ -77,24 +76,22 @@ class HttpRequest(_messages.Message):
 
 
 class ListLogEntriesRequest(_messages.Message):
-  """The parameters to `ListLogEntries`.
+  """The parameters to ListLogEntries.
 
   Fields:
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
-      The response includes only entries that match the filter. If `filter` is
-      empty, then all entries in all logs are retrieved. The maximum length of
-      the filter is 20000 characters.
-    orderBy: Sort order of the results, consisting of a `LogEntry` field
-      optionally followed by a space and `desc`.  Examples:
-      `"metadata.timestamp"`, `"metadata.timestamp desc"`.  The only
-      `LogEntry` field supported for sorting is `metadata.timestamp`. The
-      default sort order is ascending (from older to newer entries) unless
-      `desc` is appended.
-    pageSize: The maximum number of entries to return per request.  Fewer
+    filter: An advanced logs filter. The response includes only entries that
+      match the filter. If filter is empty, then all entries in all logs are
+      retrieved. The maximum length of the filter is 20000 characters.
+    orderBy: Sort order of the results, consisting of a LogEntry field
+      optionally followed by a space and desc. Examples: "metadata.timestamp",
+      "metadata.timestamp desc". The only LogEntry field supported for sorting
+      is metadata.timestamp. The default sort order is ascending (from older
+      to newer entries) unless desc is appended.
+    pageSize: The maximum number of entries to return per request. Fewer
       entries may be returned, but that is not an indication that there are no
       more entries.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogEntries` operation. If a page token is specified, other request
+    pageToken: An opaque token, returned as nextPageToken by a prior
+      ListLogEntries operation. If a page token is specified, other request
       parameters must match the parameters from the request that generated the
       page token.
   """
@@ -106,19 +103,19 @@ class ListLogEntriesRequest(_messages.Message):
 
 
 class ListLogEntriesResponse(_messages.Message):
-  """Result returned from `ListLogEntries`.
+  """Result returned from ListLogEntries.
 
   Fields:
-    entries: A list of log entries.  Fewer than `pageSize` entries may be
+    entries: A list of log entries. Fewer than pageSize entries may be
       returned, but that is not an indication that there are no more entries.
     lastObservedEntryTimestamp: The timestamp of the last log entry that was
       examined before returning this response. This can be used to observe
       progress between successive queries, in particular when only a page
       token is returned. Deprecated: use searched_through_timestamp.
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of entries, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListLogEntries`. If
-      `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there are more results, then nextPageToken is returned
+      in the response. To get the next batch of entries, use the value of
+      nextPageToken as pageToken in the next call of ListLogEntries. If
+      nextPageToken is empty, then there are no more results.
     searchedThroughTimestamp: The furthest point in time through which the
       search has progressed. All future entries returned using next_page_token
       are guaranteed to have a timestamp at or past this point in time in the
@@ -137,10 +134,10 @@ class ListLogMetricsResponse(_messages.Message):
 
   Fields:
     metrics: The list of metrics that was requested.
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of entries, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListLogMetrics`. If
-      `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there are more results, then nextPageToken is returned
+      in the response. To get the next batch of entries, use the value of
+      nextPageToken as pageToken in the next call of ListLogMetrics. If
+      nextPageToken is empty, then there are no more results.
   """
 
   metrics = _messages.MessageField('LogMetric', 1, repeated=True)
@@ -151,14 +148,13 @@ class ListLogServiceIndexesResponse(_messages.Message):
   """Result returned from ListLogServiceIndexesRequest.
 
   Fields:
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of indexes, use the value of
-      `nextPageToken` as `pageToken` in the next call of
-      `ListLogServiceIndexes`. If `nextPageToken` is empty, then there are no
-      more results.
+    nextPageToken: If there are more results, then nextPageToken is returned
+      in the response. To get the next batch of indexes, use the value of
+      nextPageToken as pageToken in the next call of ListLogServiceIndexes. If
+      nextPageToken is empty, then there are no more results.
     serviceIndexPrefixes: A list of log service index values. Each index value
-      has the form `"/value1/value2/..."`, where `value1` is a value in the
-      primary index, `value2` is a value in the secondary index, and so forth.
+      has the form "/value1/value2/...", where value1 is a value in the
+      primary index, value2 is a value in the secondary index, and so forth.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -166,26 +162,26 @@ class ListLogServiceIndexesResponse(_messages.Message):
 
 
 class ListLogServiceSinksResponse(_messages.Message):
-  """Result returned from `ListLogServiceSinks`.
+  """Result returned from ListLogServiceSinks.
 
   Fields:
-    sinks: The requested log service sinks. If a returned `LogSink` object has
-      an empty `destination` field, the client can retrieve the complete
-      `LogSink` object by calling `logServices.sinks.get`.
+    sinks: The requested log service sinks. If a returned LogSink object has
+      an empty destination field, the client can retrieve the complete LogSink
+      object by calling logServices.sinks.get.
   """
 
   sinks = _messages.MessageField('LogSink', 1, repeated=True)
 
 
 class ListLogServicesResponse(_messages.Message):
-  """Result returned from `ListLogServicesRequest`.
+  """Result returned from ListLogServicesRequest.
 
   Fields:
     logServices: A list of log services.
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of services, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListLogServices`. If
-      `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there are more results, then nextPageToken is returned
+      in the response. To get the next batch of services, use the value of
+      nextPageToken as pageToken in the next call of ListLogServices. If
+      nextPageToken is empty, then there are no more results.
   """
 
   logServices = _messages.MessageField('LogService', 1, repeated=True)
@@ -193,12 +189,12 @@ class ListLogServicesResponse(_messages.Message):
 
 
 class ListLogSinksResponse(_messages.Message):
-  """Result returned from `ListLogSinks`.
+  """Result returned from ListLogSinks.
 
   Fields:
-    sinks: The requested log sinks. If a returned `LogSink` object has an
-      empty `destination` field, the client can retrieve the complete
-      `LogSink` object by calling `log.sinks.get`.
+    sinks: The requested log sinks. If a returned LogSink object has an empty
+      destination field, the client can retrieve the complete LogSink object
+      by calling log.sinks.get.
   """
 
   sinks = _messages.MessageField('LogSink', 1, repeated=True)
@@ -209,10 +205,10 @@ class ListLogsResponse(_messages.Message):
 
   Fields:
     logs: A list of log descriptions matching the criteria.
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of logs, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListLogs`. If
-      `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there are more results, then nextPageToken is returned
+      in the response. To get the next batch of logs, use the value of
+      nextPageToken as pageToken in the next call of ListLogs. If
+      nextPageToken is empty, then there are no more results.
   """
 
   logs = _messages.MessageField('Log', 1, repeated=True)
@@ -220,31 +216,30 @@ class ListLogsResponse(_messages.Message):
 
 
 class ListSinksResponse(_messages.Message):
-  """Result returned from `ListSinks`.
+  """Result returned from ListSinks.
 
   Fields:
-    sinks: The requested sinks.  If a returned `LogSink` object has an empty
-      `destination` field, the client can retrieve the complete `LogSink`
-      object by calling `projects.sinks.get`.
+    sinks: The requested sinks. If a returned LogSink object has an empty
+      destination field, the client can retrieve the complete LogSink object
+      by calling projects.sinks.get.
   """
 
   sinks = _messages.MessageField('LogSink', 1, repeated=True)
 
 
 class Log(_messages.Message):
-  """_Output only._ Describes a log, which is a named stream of log entries.
+  """Output only. Describes a log, which is a named stream of log entries.
 
   Fields:
-    displayName: _Optional._ The common name of the log.  Example:
-      `"request_log"`.
-    name: The resource name of the log. Example: `"/projects/my-gcp-project-
-      id/logs/LOG_NAME"`, where `LOG_NAME` is the URL-encoded given name of
-      the log.  The log includes those log entries whose `LogEntry.log` field
+    displayName: Optional. The common name of the log. Example: "request_log".
+    name: The resource name of the log. Example: "/projects/my-gcp-project-
+      id/logs/LOG_NAME", where LOG_NAME is the URL-encoded given name of the
+      log. The log includes those log entries whose LogEntry.log field
       contains this given name. To avoid name collisions, it is a best
       practice to prefix the given log name with the service name, but this is
       not required. Examples of log given names:
-      `"appengine.googleapis.com/request_log"`, `"apache-access"`.
-    payloadType: _Optional_. A URI representing the expected payload type for
+      "appengine.googleapis.com/request_log", "apache-access".
+    payloadType: Optional. A URI representing the expected payload type for
       log entries.
   """
 
@@ -268,9 +263,8 @@ class LogEntry(_messages.Message):
       this log entry, if applicable.
     insertId: Optional. A unique ID for the log entry. If you provide this
       field, the logging service considers other log entries in the same
-      project with the same ID as duplicates which can be removed.  If
-      omitted, Stackdriver Logging will generate a unique ID for this log
-      entry.
+      project with the same ID as duplicates which can be removed. If omitted,
+      Stackdriver Logging will generate a unique ID for this log entry.
     log: Optional. The log to which this entry belongs. When a log entry is
       written, the value of this field is set by the logging system.
     metadata: Required. Information about the log entry.
@@ -358,56 +352,54 @@ class LogEntryMetadata(_messages.Message):
 
   Enums:
     SeverityValueValuesEnum: Optional. The severity of the log entry. If
-      omitted, `LogSeverity.DEFAULT` is used.
+      omitted, LogSeverity.DEFAULT is used.
 
   Messages:
     LabelsValue: Optional. A set of (key, value) data that provides additional
       information about the log entry. If the log entry is from one of the
       Google Cloud Platform sources listed below, the indicated (key, value)
-      information must be provided:  Google App Engine, service_name
-      `appengine.googleapis.com`:        "appengine.googleapis.com/module_id",
-      <module ID>       "appengine.googleapis.com/version_id", <version ID>
-      and one of:       "appengine.googleapis.com/replica_index", <instance
-      index>       "appengine.googleapis.com/clone_id", <instance ID>      or
-      else provide the following Compute Engine labels:  Google Compute
-      Engine, service_name `compute.googleapis.com`:
-      "compute.googleapis.com/resource_type", "instance"
-      "compute.googleapis.com/resource_id", <instance ID>
+      information must be provided:Google App Engine, service_name
+      appengine.googleapis.com:   "appengine.googleapis.com/module_id",
+      <module ID>   "appengine.googleapis.com/version_id", <version ID>
+      and one of:   "appengine.googleapis.com/replica_index", <instance index>
+      "appengine.googleapis.com/clone_id", <instance ID>  or else provide the
+      following Compute Engine labels: Google Compute Engine, service_name
+      compute.googleapis.com:    "compute.googleapis.com/resource_type",
+      "instance"    "compute.googleapis.com/resource_id", <instance ID>
 
   Fields:
     labels: Optional. A set of (key, value) data that provides additional
       information about the log entry. If the log entry is from one of the
       Google Cloud Platform sources listed below, the indicated (key, value)
-      information must be provided:  Google App Engine, service_name
-      `appengine.googleapis.com`:        "appengine.googleapis.com/module_id",
-      <module ID>       "appengine.googleapis.com/version_id", <version ID>
-      and one of:       "appengine.googleapis.com/replica_index", <instance
-      index>       "appengine.googleapis.com/clone_id", <instance ID>      or
-      else provide the following Compute Engine labels:  Google Compute
-      Engine, service_name `compute.googleapis.com`:
-      "compute.googleapis.com/resource_type", "instance"
-      "compute.googleapis.com/resource_id", <instance ID>
+      information must be provided:Google App Engine, service_name
+      appengine.googleapis.com:   "appengine.googleapis.com/module_id",
+      <module ID>   "appengine.googleapis.com/version_id", <version ID>
+      and one of:   "appengine.googleapis.com/replica_index", <instance index>
+      "appengine.googleapis.com/clone_id", <instance ID>  or else provide the
+      following Compute Engine labels: Google Compute Engine, service_name
+      compute.googleapis.com:    "compute.googleapis.com/resource_type",
+      "instance"    "compute.googleapis.com/resource_id", <instance ID>
     projectId: Optional. The project ID of the Google Cloud Platform service
       that created the log entry.
     projectNumber: Optional. This field is supplied by the API at when the
       entry is written.
     region: Optional. The region name of the Google Cloud Platform service
-      that created the log entry.  For example, `"us-central1"`.
+      that created the log entry. For example, "us-central1".
     serviceName: Required. The API name of the Google Cloud Platform service
-      that created the log entry.  For example, `"compute.googleapis.com"`.
+      that created the log entry. For example, "compute.googleapis.com".
     severity: Optional. The severity of the log entry. If omitted,
-      `LogSeverity.DEFAULT` is used.
+      LogSeverity.DEFAULT is used.
     timestamp: Optional. The time the event described by the log entry
-      occurred. Timestamps must be later than January 1, 1970.  If omitted,
+      occurred. Timestamps must be later than January 1, 1970. If omitted,
       Stackdriver Logging will use the time the log entry is received.
     userId: Optional. This field is not used and its value is discarded.
     zone: Optional. The zone of the Google Cloud Platform service that created
-      the log entry.  For example, `"us-central1-a"`.
+      the log entry. For example, "us-central1-a".
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
     """Optional. The severity of the log entry. If omitted,
-    `LogSeverity.DEFAULT` is used.
+    LogSeverity.DEFAULT is used.
 
     Values:
       DEFAULT: (0) The log entry has no assigned severity level.
@@ -436,15 +428,14 @@ class LogEntryMetadata(_messages.Message):
     """Optional. A set of (key, value) data that provides additional
     information about the log entry. If the log entry is from one of the
     Google Cloud Platform sources listed below, the indicated (key, value)
-    information must be provided:  Google App Engine, service_name
-    `appengine.googleapis.com`:        "appengine.googleapis.com/module_id",
-    <module ID>       "appengine.googleapis.com/version_id", <version ID>
-    and one of:       "appengine.googleapis.com/replica_index", <instance
-    index>       "appengine.googleapis.com/clone_id", <instance ID>      or
-    else provide the following Compute Engine labels:  Google Compute Engine,
-    service_name `compute.googleapis.com`:
-    "compute.googleapis.com/resource_type", "instance"
-    "compute.googleapis.com/resource_id", <instance ID>
+    information must be provided:Google App Engine, service_name
+    appengine.googleapis.com:   "appengine.googleapis.com/module_id", <module
+    ID>   "appengine.googleapis.com/version_id", <version ID>       and one
+    of:   "appengine.googleapis.com/replica_index", <instance index>
+    "appengine.googleapis.com/clone_id", <instance ID>  or else provide the
+    following Compute Engine labels: Google Compute Engine, service_name
+    compute.googleapis.com:    "compute.googleapis.com/resource_type",
+    "instance"    "compute.googleapis.com/resource_id", <instance ID>
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -482,14 +473,13 @@ class LogEntryOperation(_messages.Message):
   which a log entry is associated.
 
   Fields:
-    first: Optional. True for the first entry associated with `id`.
+    first: Optional. True for the first entry associated with id.
     id: Optional. An opaque identifier. A producer of log entries should
-      ensure that `id` is only reused for entries related to one operation.
-    last: Optional. True for the last entry associated with `id`.
+      ensure that id is only reused for entries related to one operation.
+    last: Optional. True for the last entry associated with id.
     producer: Optional. Ensures the operation can be uniquely identified. The
-      combination of `id` and `producer` should be made globally unique by
-      filling `producer` with a value that disambiguates the service that
-      created `id`.
+      combination of id and producer should be made globally unique by filling
+      producer with a value that disambiguates the service that created id.
   """
 
   first = _messages.BooleanField(1)
@@ -566,16 +556,14 @@ class LogMetric(_messages.Message):
 
   Fields:
     description: Optional. A description of this metric.
-    filter: Required. An [advanced logs
-      filter](/logging/docs/view/advanced_filters). Example: `"log=syslog AND
-      metadata.severity>=ERROR"`. The maximum length of the filter is 20000
+    filter: Required. An advanced logs filter. Example: "log=syslog AND
+      metadata.severity>=ERROR". The maximum length of the filter is 20000
       characters.
     name: Required. The client-assigned name for this metric, such as
-      `"severe_errors"`.  Metric names are limited to 1000 characters and can
-      include only the following characters: `A-Z`, `a-z`, `0-9`, and the
-      special characters `_-.,+!*',()%/\`.  The slash character (`/`) denotes
-      a hierarchy of name pieces, and it cannot be the first character of the
-      name.
+      "severe_errors". Metric names are limited to 1000 characters and can
+      include only the following characters: A-Z, a-z, 0-9, and the special
+      characters _-.,+!*',()%/\. The slash character (/) denotes a hierarchy
+      of name pieces, and it cannot be the first character of the name.
   """
 
   description = _messages.StringField(1)
@@ -584,19 +572,19 @@ class LogMetric(_messages.Message):
 
 
 class LogService(_messages.Message):
-  """_Output only._ Describes a service that writes log entries.
+  """Output only. Describes a service that writes log entries.
 
   Fields:
     indexKeys: A list of the names of the keys used to index and label
-      individual log entries from this service.  The first two keys are used
-      as the primary and secondary index, respectively. Additional keys may be
-      used to label the entries.  For example, App Engine indexes its entries
-      by module and by version, so its `indexKeys` field is the following:
-      [ "appengine.googleapis.com/module_id",
+      individual log entries from this service. The first two keys are used as
+      the primary and secondary index, respectively. Additional keys may be
+      used to label the entries. For example, App Engine indexes its entries
+      by module and by version, so its indexKeys field is the following: [
+      "appengine.googleapis.com/module_id",
       "appengine.googleapis.com/version_id" ]
-    name: The service's name. Example: `"appengine.googleapis.com"`. Log names
+    name: The service's name. Example: "appengine.googleapis.com". Log names
       beginning with this string are reserved for this service. This value can
-      appear in the `LogEntry.metadata.serviceName` field of log entries
+      appear in the LogEntry.metadata.serviceName field of log entries
       associated with this log service.
   """
 
@@ -610,17 +598,17 @@ class LogSink(_messages.Message):
   Fields:
     destination: Required. The resource name of the destination. Stackdriver
       Logging writes designated log entries to this destination. For example,
-      `"storage.googleapis.com/my-output-bucket"`.
+      "storage.googleapis.com/my-output-bucket".
     endTime: Optional. Time at which this sink expires.
-    errors: _Output only._ If any errors occur when invoking a sink method,
-      then this field contains descriptions of the errors.
+    errors: Output only. If any errors occur when invoking a sink method, then
+      this field contains descriptions of the errors.
     filter: Optional. An advanced logs filter. If present, only log entries
-      matching the filter are written.  Only project sinks use this field; log
+      matching the filter are written. Only project sinks use this field; log
       sinks and log service sinks must not include a filter. The maximum
       length of the filter is 20000 characters.
-    name: Required. The client-assigned name of this sink. For example, `"my-
-      syslog-sink"`.  The name must be unique among the sinks of a similar
-      kind in the project.
+    name: Required. The client-assigned name of this sink. For example, "my-
+      syslog-sink". The name must be unique among the sinks of a similar kind
+      in the project.
     startTime: Optional. Time range for which this sink is active. Logs are
       exported only if start_time <= entry.timestamp < end_time Both
       start_time and end_time may be omitted to specify (half) infinite
@@ -642,9 +630,9 @@ class LoggingProjectsEntriesListRequest(_messages.Message):
     listLogEntriesRequest: A ListLogEntriesRequest resource to be passed as
       the request body.
     projectsId: Part of `projectName`. The resource name of the project from
-      which to retrieve log entries.  The log service or log containing the
-      entries is specified in the `filter` parameter.  Example:
-      `projects/my_project_id`.
+      which to retrieve log entries. The log service or log containing the
+      entries is specified in the filter parameter. Example:
+      projects/my_project_id.
   """
 
   listLogEntriesRequest = _messages.MessageField('ListLogEntriesRequest', 1)
@@ -655,27 +643,25 @@ class LoggingProjectsLogEntriesListRequest(_messages.Message):
   """A LoggingProjectsLogEntriesListRequest object.
 
   Fields:
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
-      The response includes only entries that match the filter. If `filter` is
-      empty, then all entries in all logs are retrieved. The maximum length of
-      the filter is 20000 characters.
-    orderBy: Sort order of the results, consisting of a `LogEntry` field
-      optionally followed by a space and `desc`.  Examples:
-      `"metadata.timestamp"`, `"metadata.timestamp desc"`.  The only
-      `LogEntry` field supported for sorting is `metadata.timestamp`. The
-      default sort order is ascending (from older to newer entries) unless
-      `desc` is appended.
-    pageSize: The maximum number of entries to return per request.  Fewer
+    filter: An advanced logs filter. The response includes only entries that
+      match the filter. If filter is empty, then all entries in all logs are
+      retrieved. The maximum length of the filter is 20000 characters.
+    orderBy: Sort order of the results, consisting of a LogEntry field
+      optionally followed by a space and desc. Examples: "metadata.timestamp",
+      "metadata.timestamp desc". The only LogEntry field supported for sorting
+      is metadata.timestamp. The default sort order is ascending (from older
+      to newer entries) unless desc is appended.
+    pageSize: The maximum number of entries to return per request. Fewer
       entries may be returned, but that is not an indication that there are no
       more entries.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogEntries` operation. If a page token is specified, other request
+    pageToken: An opaque token, returned as nextPageToken by a prior
+      ListLogEntries operation. If a page token is specified, other request
       parameters must match the parameters from the request that generated the
       page token.
     projectsId: Part of `projectName`. The resource name of the project from
-      which to retrieve log entries.  The log service or log containing the
-      entries is specified in the `filter` parameter.  Example:
-      `projects/my_project_id`.
+      which to retrieve log entries. The log service or log containing the
+      entries is specified in the filter parameter. Example:
+      projects/my_project_id.
   """
 
   filter = _messages.StringField(1)
@@ -690,35 +676,33 @@ class LoggingProjectsLogServicesIndexesListRequest(_messages.Message):
 
   Fields:
     depth: A non-negative integer that limits the number of levels of the
-      index hierarchy that are returned. If `depth` is 1 (default), only the
-      first index key value is returned. If `depth` is 2, both primary and
-      secondary key values are returned. If `depth` is 0, the depth is the
-      number of slash-separators in the `indexPrefix` field, not counting a
-      slash appearing as the last character of the prefix. If the
-      `indexPrefix` field is empty, the default depth is 1. It is an error for
-      `depth` to be any positive value less than the number of components in
-      `indexPrefix`.
+      index hierarchy that are returned. If depth is 1 (default), only the
+      first index key value is returned. If depth is 2, both primary and
+      secondary key values are returned. If depth is 0, the depth is the
+      number of slash-separators in the indexPrefix field, not counting a
+      slash appearing as the last character of the prefix. If the indexPrefix
+      field is empty, the default depth is 1. It is an error for depth to be
+      any positive value less than the number of components in indexPrefix.
     indexPrefix: Restricts the index values returned to be those with a
       specified prefix for each index key. This field has the form
-      `"/prefix1/prefix2/..."`, in order corresponding to the `LogService
-      indexKeys`. Non-empty prefixes must begin with `/`. For example, App
+      "/prefix1/prefix2/...", in order corresponding to the LogService
+      indexKeys. Non-empty prefixes must begin with /. For example, App
       Engine's two keys are the module ID and the version ID. Following is the
-      effect of using various values for `indexPrefix`:  +  `"/Mod/"`
-      retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +  `"/Mod`
-      retrieves `/Mod/10`, `/Mod/11` and `/ModA/10` but not `/XXX/33`. +
-      `"/Mod/1"` retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +
-      `"/Mod/10/"` retrieves `/Mod/10` only. +  An empty prefix or `"/"`
+      effect of using various values for indexPrefix: "/Mod/" retrieves
+      /Mod/10 and /Mod/11 but not /ModA/10. "/Mod retrieves /Mod/10, /Mod/11
+      and /ModA/10 but not /XXX/33. "/Mod/1" retrieves /Mod/10 and /Mod/11 but
+      not /ModA/10. "/Mod/10/" retrieves /Mod/10 only. An empty prefix or "/"
       retrieves all values.
     logServicesId: Part of `serviceName`. See documentation of `projectsId`.
     pageSize: The maximum number of log service index resources to return in
       one operation.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogServiceIndexes` operation.  If `pageToken` is supplied, then the
+    pageToken: An opaque token, returned as nextPageToken by a prior
+      ListLogServiceIndexes operation. If pageToken is supplied, then the
       other fields of this request are ignored, and instead the previous
-      `ListLogServiceIndexes` operation is continued.
+      ListLogServiceIndexes operation is continued.
     projectsId: Part of `serviceName`. The resource name of a log service
-      whose service indexes are requested. Example: `"projects/my-project-
-      id/logServices/appengine.googleapis.com"`.
+      whose service indexes are requested. Example: "projects/my-project-
+      id/logServices/appengine.googleapis.com".
   """
 
   depth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -733,12 +717,12 @@ class LoggingProjectsLogServicesListRequest(_messages.Message):
   """A LoggingProjectsLogServicesListRequest object.
 
   Fields:
-    pageSize: The maximum number of `LogService` objects to return in one
+    pageSize: The maximum number of LogService objects to return in one
       operation.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogServices` operation.  If `pageToken` is supplied, then the other
+    pageToken: An opaque token, returned as nextPageToken by a prior
+      ListLogServices operation. If pageToken is supplied, then the other
       fields of this request are ignored, and instead the previous
-      `ListLogServices` operation is continued.
+      ListLogServices operation is continued.
     projectsId: Part of `projectName`. The resource name of the project whose
       services are to be listed.
   """
@@ -856,23 +840,23 @@ class LoggingProjectsLogsListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of results to return.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogs` operation.  If `pageToken` is supplied, then the other fields
-      of this request are ignored, and instead the previous `ListLogs`
-      operation is continued.
+    pageToken: An opaque token, returned as nextPageToken by a prior ListLogs
+      operation. If pageToken is supplied, then the other fields of this
+      request are ignored, and instead the previous ListLogs operation is
+      continued.
     projectsId: Part of `projectName`. The resource name of the project whose
-      logs are requested. If both `serviceName` and `serviceIndexPrefix` are
+      logs are requested. If both serviceName and serviceIndexPrefix are
       empty, then all logs with entries in this project are listed.
     serviceIndexPrefix: The purpose of this field is to restrict the listed
-      logs to those with entries of a certain kind. If `serviceName` is the
-      name of a log service, then this field may contain values for the log
+      logs to those with entries of a certain kind. If serviceName is the name
+      of a log service, then this field may contain values for the log
       service's indexes. Only logs that have entries whose indexes include the
-      values are listed. The format for this field is `"/val1/val2.../valN"`,
-      where `val1` is a value for the first index, `val2` for the second
-      index, etc. An empty value (a single slash) for an index matches all
-      values, and you can omit values for later indexes entirely.
+      values are listed. The format for this field is "/val1/val2.../valN",
+      where val1 is a value for the first index, val2 for the second index,
+      etc. An empty value (a single slash) for an index matches all values,
+      and you can omit values for later indexes entirely.
     serviceName: If not empty, this field must be a log service name such as
-      `"compute.googleapis.com"`. Only logs associated with that that log
+      "compute.googleapis.com". Only logs associated with that that log
       service are listed.
   """
 
@@ -934,7 +918,7 @@ class LoggingProjectsLogsSinksListRequest(_messages.Message):
   Fields:
     logsId: Part of `logName`. See documentation of `projectsId`.
     projectsId: Part of `logName`. Required. The log whose sinks are
-      requested. For example, `"compute.google.com/syslog"`.
+      requested. For example, "compute.google.com/syslog".
   """
 
   logsId = _messages.StringField(1, required=True)
@@ -1001,13 +985,12 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
-      `nextPageToken` in the response indicates that more results might be
-      available.
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     projectsId: Part of `projectName`. Required. The resource name for the
       project whose metrics are wanted.
   """
@@ -1107,11 +1090,11 @@ class RequestLog(_messages.Message):
     cost: An indication of the relative cost of serving this request.
     endTime: Time when the request finished.
     finished: Whether this request is finished or active.
-    first: Whether this is the first `RequestLog` entry for this request.  If
-      an active request has several `RequestLog` entries written to
-      Stackdriver Logging, then this field will be set for one of them.
+    first: Whether this is the first RequestLog entry for this request. If an
+      active request has several RequestLog entries written to Stackdriver
+      Logging, then this field will be set for one of them.
     host: Internet host and port number of the resource being requested.
-    httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
+    httpVersion: HTTP version of request. Example: "HTTP/1.1".
     instanceId: An identifier for the instance that handled the request.
     instanceIndex: If the instance processing this request belongs to a
       manually scaled module, then this is the 0-based index of the instance.
@@ -1121,26 +1104,25 @@ class RequestLog(_messages.Message):
     line: A list of log lines emitted by the application while serving this
       request.
     megaCycles: Number of CPU megacycles used to process request.
-    method: Request method. Example: `"GET"`, `"HEAD"`, `"PUT"`, `"POST"`,
-      `"DELETE"`.
+    method: Request method. Example: "GET", "HEAD", "PUT", "POST", "DELETE".
     moduleId: Module of the application that handled this request.
-    nickname: The logged-in user who made the request.  Most likely, this is
-      the part of the user's email before the `@` sign.  The field value is
-      the same for different requests from the same user, but different users
-      can have similar names.  This information is also available to the
-      application via the App Engine Users API.  This field will be populated
-      starting with App Engine 1.9.21.
+    nickname: The logged-in user who made the request.Most likely, this is the
+      part of the user's email before the @ sign. The field value is the same
+      for different requests from the same user, but different users can have
+      similar names. This information is also available to the application via
+      the App Engine Users API.This field will be populated starting with App
+      Engine 1.9.21.
     pendingTime: Time this request spent in the pending request queue.
     referrer: Referrer URL of request.
     requestId: Globally unique identifier for a request, which is based on the
-      request start time.  Request IDs for requests which started later will
+      request start time. Request IDs for requests which started later will
       compare greater as strings than those for requests which started
       earlier.
     resource: Contains the path and query portion of the URL that was
       requested. For example, if the URL was
       "http://example.com/app?name=val", the resource would be
-      "/app?name=val".  The fragment identifier, which is identified by the
-      `#` character, is not included.
+      "/app?name=val". The fragment identifier, which is identified by the #
+      character, is not included.
     responseSize: Size in bytes sent back to client by request.
     sourceReference: Source code for the application that handled this
       request. There can be more than one source reference per deployed
@@ -1201,8 +1183,8 @@ class SourceLocation(_messages.Message):
       with optional context such as the class or package name. This
       information is used in contexts such as the logs viewer, where a file
       and line number are less meaningful. The format can vary by language.
-      For example: `qual.if.ied.Class.method` (Java), `dir/package.func` (Go),
-      `function` (Python).
+      For example: qual.if.ied.Class.method (Java), dir/package.func (Go),
+      function (Python).
     line: Line within the source file.
   """
 
@@ -1294,38 +1276,37 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  """The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
+  used by gRPC (https://github.com/grpc). The error model is designed to be:
+  Simple to use and understand for most users Flexible enough to meet
+  unexpected needsOverviewThe Status message contains three pieces of data:
+  error code, error message, and error details. The error code should be an
+  enum value of google.rpc.Code, but it may accept additional error codes if
+  needed. The error message should be a developer-facing English message that
+  helps developers understand and resolve the error. If a localized user-
+  facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
+  detail types in the package google.rpc which can be used for common error
+  conditions.Language mappingThe Status message is the logical representation
+  of the error model, but it is not necessarily the actual wire format. When
+  the Status message is exposed in different client libraries and different
+  wire protocols, it can be mapped differently. For example, it will likely be
+  mapped to some exceptions in Java, but more likely mapped to some error
+  codes in C.Other usesThe error model and the Status message can be used in a
+  variety of environments, either with or without APIs, to provide a
+  consistent developer experience across different environments.Example uses
+  of this error model include: Partial errors. If a service needs to return
+  partial errors to the client, it may embed the Status in the normal response
+  to indicate the partial errors. Workflow errors. A typical workflow has
+  multiple steps. Each step may have a Status message for error reporting
+  purpose. Batch operations. If a client uses batch request and batch
+  response, the Status message should be used directly inside batch response,
+  one for each error sub-response. Asynchronous operations. If an API call
+  embeds asynchronous operation results in its response, the status of those
+  operations should be represented directly using the Status message. Logging.
+  If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.
 
   Messages:
@@ -1333,7 +1314,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details. There will be a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1377,16 +1358,16 @@ class WriteLogEntriesRequest(_messages.Message):
   Messages:
     CommonLabelsValue: Metadata labels that apply to all log entries in this
       request, so that you don't have to repeat them in each log entry's
-      `metadata.labels` field.  If any of the log entries contains a (key,
-      value) with the same key that is in `commonLabels`, then the entry's
-      (key, value) overrides the one in `commonLabels`.
+      metadata.labels field. If any of the log entries contains a (key, value)
+      with the same key that is in commonLabels, then the entry's (key, value)
+      overrides the one in commonLabels.
 
   Fields:
     commonLabels: Metadata labels that apply to all log entries in this
       request, so that you don't have to repeat them in each log entry's
-      `metadata.labels` field.  If any of the log entries contains a (key,
-      value) with the same key that is in `commonLabels`, then the entry's
-      (key, value) overrides the one in `commonLabels`.
+      metadata.labels field. If any of the log entries contains a (key, value)
+      with the same key that is in commonLabels, then the entry's (key, value)
+      overrides the one in commonLabels.
     entries: Log entries to write.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
@@ -1398,10 +1379,10 @@ class WriteLogEntriesRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CommonLabelsValue(_messages.Message):
     """Metadata labels that apply to all log entries in this request, so that
-    you don't have to repeat them in each log entry's `metadata.labels` field.
+    you don't have to repeat them in each log entry's metadata.labels field.
     If any of the log entries contains a (key, value) with the same key that
-    is in `commonLabels`, then the entry's (key, value) overrides the one in
-    `commonLabels`.
+    is in commonLabels, then the entry's (key, value) overrides the one in
+    commonLabels.
 
     Messages:
       AdditionalProperty: An additional property for a CommonLabelsValue
@@ -1430,8 +1411,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
 
 class WriteLogEntriesResponse(_messages.Message):
-  """Result returned from WriteLogEntries.
-empty"""
+  """Result returned from WriteLogEntries. empty"""
 
 
 encoding.AddCustomJsonFieldMapping(

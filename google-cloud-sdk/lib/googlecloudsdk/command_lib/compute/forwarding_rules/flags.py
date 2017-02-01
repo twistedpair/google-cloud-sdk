@@ -144,6 +144,13 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
     global_collection='compute.targetSslProxies',
     short_help='The target SSL proxy that will receive the traffic.')
 
+TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
+    name='--target-tcp-proxy',
+    required=False,
+    resource_name='tcp proxy',
+    global_collection='compute.targetTcpProxies',
+    short_help='The target TCP proxy that will receive the traffic.')
+
 TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     name='--target-vpn-gateway',
     required=False,
@@ -176,7 +183,7 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
       """)
 
 
-def AddUpdateArgs(parser, include_beta=False):
+def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   """Adds common flags for mutating forwarding rule targets."""
   del include_beta
   target = parser.add_mutually_exclusive_group(required=True)
@@ -201,6 +208,9 @@ def AddUpdateArgs(parser, include_beta=False):
       type=lambda x: x.upper(),
       default='EXTERNAL',
       help='This signifies what the forwarding rule will be used for.')
+
+  if include_alpha:
+    TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
 
 
 def AddIPProtocols(parser):

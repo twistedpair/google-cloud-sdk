@@ -78,14 +78,17 @@ class Api(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Provides the configuration for non-admin_activity logging for a service.
-  Controls exemptions and specific log sub-types.
+  """Specifies the audit configuration for a service. It consists of which
+  permission types are logged, and what identities, if any, are exempted from
+  logging. An AuditConifg must have one or more AuditLogConfigs.
 
   Fields:
-    auditLogConfigs: The configuration for each type of logging Next ID: 4
+    auditLogConfigs: The configuration for logging of each type of permission.
+      Next ID: 4
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
+      same format of Binding.members. This field is deprecated in favor of
+      per-permission-type exemptions.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -97,14 +100,19 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for a sub-type of logging.
+  """Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
 
   Fields:
-    exemptedMembers: Specifies the identities that are exempted from this type
-      of logging Follows the same format of Binding.members.
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
     logType: The log type that this config enables.
   """
 
@@ -113,9 +121,9 @@ class AuditLogConfig(_messages.Message):
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Log admin reads
-      DATA_WRITE: Log data writes
-      DATA_READ: Log data reads
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
     """
     LOG_TYPE_UNSPECIFIED = 0
     ADMIN_READ = 1
@@ -1792,10 +1800,11 @@ class MetricDescriptor(_messages.Message):
       name that defines the scope of the metric type or of its data; and (2)
       the metric's URL-encoded type, which also appears in the `type` field of
       this descriptor. For example, following is the resource name of a custom
-      metric within the GCP project 123456789:      "projects/123456789/metric
-      Descriptors/custom.googleapis.com%2Finvoice%2Fpaid%2Famount"
+      metric within the GCP project `my-project-id`:      "projects/my-
+      project-
+      id/metricDescriptors/custom.googleapis.com%2Finvoice%2Fpaid%2Famount"
     type: The metric type, including its DNS name prefix. The type is not URL-
-      encoded.  All user-defined metric types have the DNS name
+      encoded.  All user-defined custom metric types have the DNS name
       `custom.googleapis.com`.  Metric types should use a natural hierarchical
       grouping. For example:      "custom.googleapis.com/invoice/paid/amount"
       "appengine.googleapis.com/http/server/response_latencies"
@@ -2276,10 +2285,7 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -2410,9 +2416,8 @@ class QuotaBucketId(_messages.Message):
 
   Fields:
     containerId: A Quota limit is defined at container level ORGANIZATION,
-      PROJECT, or RESOURCE. The container of a quota bucket for a quota limit
-      is identified by organization id, project id, or resource id
-      respectively. For example: resource:/projects/my-project-123/vms/ABCDEF
+      PROJECT, or The container of a quota bucket for a quota limit is
+      identified by organization id, or project id respectively. For example:
       organization:google.com project:my-project-123
     region: If a quota limit is defined on PER_REGION dimension, then each
       region will have its own quota bucket. This field is non-empty only if
@@ -2588,14 +2593,16 @@ class QuotaSettings(_messages.Message):
       service config.  For example: 'ReadGroup/ProjectDaily'.  -
       '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
       google.api.QuotaLimit.name field from the service config. For example:
-      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
-      per-region quota overrides, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config and
-      <REGION_OR_ZONE> is the name of the region or zone for which the
-      override is defined. For example: 'borrowedCountPerOrganization:us-
-      central1'. Only metric-based quotas can have per-region overrides. Per-
-      region override takes effect if both per-region override and global
-      override are defined.
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>[@DIMENSION_SETTINGS]+
+      for dimensional set overrides   Where DIMENSION_SETTING is
+      <dimension_name>:<dimension_value>.   For example   Limit1@region:us-
+      central1      is an override for limit 1, for region us-central1
+      limit1@zone:us-central1-a      is an override for limit 1, for zone us-
+      central1-a.  NOTE that for      backwards compatibility, this is the
+      same as region:us-central1-a   limit2@region:us-east1@user:12345      is
+      an override for region us-east1, and user set to 12345. Only metric-
+      based quotas can have these overrides. Per-region override takes effect
+      if both per-region override and global override are defined.
     EffectiveQuotasValue: The effective quota limits for each group, derived
       from the service defaults together with any producer or consumer
       overrides. For each limit, the effective value is the minimum of the
@@ -2605,20 +2612,7 @@ class QuotaSettings(_messages.Message):
     ProducerOverridesValue: Quota overrides set by the producer. Note that if
       a consumer override is also specified, then the minimum of the two will
       be used. This allows consumers to cap their usage voluntarily.  The key
-      for this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
-      group-based quotas, where GROUP_NAME is the google.api.QuotaGroup.name
-      field and LIMIT_NAME is the google.api.QuotaLimit.name field from the
-      service config.  For example: 'ReadGroup/ProjectDaily'.  -
-      '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config. For example:
-      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
-      per-region quota overrides, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config and
-      <REGION_OR_ZONE> is the name of the region or zone for which the
-      override is defined. For example: 'borrowedCountPerOrganization:us-
-      central1'. Only metric-based quotas can have per-region overrides. Per-
-      region override takes effect if both per-region override and global
-      override are defined.
+      for this map is the same as the key for consumer_overrides.
 
   Fields:
     consumerOverrides: Quota overrides set by the consumer. Consumer overrides
@@ -2630,14 +2624,16 @@ class QuotaSettings(_messages.Message):
       config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
       metric-based quotas, where LIMIT_NAME is the google.api.QuotaLimit.name
       field from the service config. For example:
-      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
-      per-region quota overrides, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config and
-      <REGION_OR_ZONE> is the name of the region or zone for which the
-      override is defined. For example: 'borrowedCountPerOrganization:us-
-      central1'. Only metric-based quotas can have per-region overrides. Per-
-      region override takes effect if both per-region override and global
-      override are defined.
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>[@DIMENSION_SETTINGS]+
+      for dimensional set overrides   Where DIMENSION_SETTING is
+      <dimension_name>:<dimension_value>.   For example   Limit1@region:us-
+      central1      is an override for limit 1, for region us-central1
+      limit1@zone:us-central1-a      is an override for limit 1, for zone us-
+      central1-a.  NOTE that for      backwards compatibility, this is the
+      same as region:us-central1-a   limit2@region:us-east1@user:12345      is
+      an override for region us-east1, and user set to 12345. Only metric-
+      based quotas can have these overrides. Per-region override takes effect
+      if both per-region override and global override are defined.
     effectiveQuotaForMetrics: Use this field for metric-based quota limits.
       Combines service quota configuration and project-specific settings, as a
       map from metric name to the effective quota information for quota limits
@@ -2654,20 +2650,7 @@ class QuotaSettings(_messages.Message):
     producerOverrides: Quota overrides set by the producer. Note that if a
       consumer override is also specified, then the minimum of the two will be
       used. This allows consumers to cap their usage voluntarily.  The key for
-      this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
-      group-based quotas, where GROUP_NAME is the google.api.QuotaGroup.name
-      field and LIMIT_NAME is the google.api.QuotaLimit.name field from the
-      service config.  For example: 'ReadGroup/ProjectDaily'.  -
-      '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config. For example:
-      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
-      per-region quota overrides, where LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config and
-      <REGION_OR_ZONE> is the name of the region or zone for which the
-      override is defined. For example: 'borrowedCountPerOrganization:us-
-      central1'. Only metric-based quotas can have per-region overrides. Per-
-      region override takes effect if both per-region override and global
-      override are defined.
+      this map is the same as the key for consumer_overrides.
     variableTermQuotas: Quotas that are active over a specified time period.
       Only writeable by the producer.
   """
@@ -2683,13 +2666,15 @@ class QuotaSettings(_messages.Message):
     'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for metric-based quotas, where
     LIMIT_NAME is the google.api.QuotaLimit.name field from the service
     config. For example: 'borrowedCountPerOrganization'.  -
-    '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where
-    LIMIT_NAME is the google.api.QuotaLimit.name field from the service config
-    and <REGION_OR_ZONE> is the name of the region or zone for which the
-    override is defined. For example: 'borrowedCountPerOrganization:us-
-    central1'. Only metric-based quotas can have per-region overrides. Per-
-    region override takes effect if both per-region override and global
-    override are defined.
+    '<LIMIT_NAME>[@DIMENSION_SETTINGS]+ for dimensional set overrides   Where
+    DIMENSION_SETTING is <dimension_name>:<dimension_value>.   For example
+    Limit1@region:us-central1      is an override for limit 1, for region us-
+    central1   limit1@zone:us-central1-a      is an override for limit 1, for
+    zone us-central1-a.  NOTE that for      backwards compatibility, this is
+    the same as region:us-central1-a   limit2@region:us-east1@user:12345
+    is an override for region us-east1, and user set to 12345. Only metric-
+    based quotas can have these overrides. Per-region override takes effect if
+    both per-region override and global override are defined.
 
     Messages:
       AdditionalProperty: An additional property for a ConsumerOverridesValue
@@ -2746,20 +2731,8 @@ class QuotaSettings(_messages.Message):
   class ProducerOverridesValue(_messages.Message):
     """Quota overrides set by the producer. Note that if a consumer override
     is also specified, then the minimum of the two will be used. This allows
-    consumers to cap their usage voluntarily.  The key for this map is one of
-    the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for group-based quotas,
-    where GROUP_NAME is the google.api.QuotaGroup.name field and LIMIT_NAME is
-    the google.api.QuotaLimit.name field from the service config.  For
-    example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for metric-based
-    quotas, where LIMIT_NAME is the google.api.QuotaLimit.name field from the
-    service config. For example: 'borrowedCountPerOrganization'.  -
-    '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where
-    LIMIT_NAME is the google.api.QuotaLimit.name field from the service config
-    and <REGION_OR_ZONE> is the name of the region or zone for which the
-    override is defined. For example: 'borrowedCountPerOrganization:us-
-    central1'. Only metric-based quotas can have per-region overrides. Per-
-    region override takes effect if both per-region override and global
-    override are defined.
+    consumers to cap their usage voluntarily.  The key for this map is the
+    same as the key for consumer_overrides.
 
     Messages:
       AdditionalProperty: An additional property for a ProducerOverridesValue
@@ -3019,75 +2992,6 @@ class Service(_messages.Message):
   visibility = _messages.MessageField('Visibility', 25)
 
 
-class ServiceAccessList(_messages.Message):
-  """List of users and groups that are granted access to a service or
-  visibility label.
-
-  Fields:
-    members: Members that are granted access.  - "user:{$user_email}" - Grant
-      access to an individual user - "group:{$group_email}" - Grant access to
-      direct members of the group - "domain:{$domain}" - Grant access to all
-      members of the domain. For now,      domain membership check will be
-      similar to Devconsole/TT check:      compare domain part of the user
-      email to configured domain name.      When IAM integration is complete,
-      this will be replaced with IAM      check.
-  """
-
-  members = _messages.StringField(1, repeated=True)
-
-
-class ServiceAccessPolicy(_messages.Message):
-  """Policy describing who can access a service and any visibility labels on
-  that service.
-
-  Messages:
-    VisibilityLabelAccessListsValue: ACLs for access to restricted parts of
-      the service.  The map key is the visibility label that is being
-      controlled.  Note that access to any label also implies access to the
-      unrestricted surface.
-
-  Fields:
-    accessList: ACL for access to the unrestricted surface of the service.
-    serviceName: The service protected by this policy.
-    visibilityLabelAccessLists: ACLs for access to restricted parts of the
-      service.  The map key is the visibility label that is being controlled.
-      Note that access to any label also implies access to the unrestricted
-      surface.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class VisibilityLabelAccessListsValue(_messages.Message):
-    """ACLs for access to restricted parts of the service.  The map key is the
-    visibility label that is being controlled.  Note that access to any label
-    also implies access to the unrestricted surface.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        VisibilityLabelAccessListsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        VisibilityLabelAccessListsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a VisibilityLabelAccessListsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ServiceAccessList attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ServiceAccessList', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  accessList = _messages.MessageField('ServiceAccessList', 1)
-  serviceName = _messages.StringField(2)
-  visibilityLabelAccessLists = _messages.MessageField('VisibilityLabelAccessListsValue', 3)
-
-
 class ServicemanagementOperationsGetRequest(_messages.Message):
   """A ServicemanagementOperationsGetRequest object.
 
@@ -3292,17 +3196,6 @@ class ServicemanagementServicesEnableRequest(_messages.Message):
 
   enableServiceRequest = _messages.MessageField('EnableServiceRequest', 1)
   serviceName = _messages.StringField(2, required=True)
-
-
-class ServicemanagementServicesGetAccessPolicyRequest(_messages.Message):
-  """A ServicemanagementServicesGetAccessPolicyRequest object.
-
-  Fields:
-    serviceName: The name of the service.  For example:
-      `example.googleapis.com`.
-  """
-
-  serviceName = _messages.StringField(1, required=True)
 
 
 class ServicemanagementServicesGetConfigRequest(_messages.Message):
@@ -3581,9 +3474,14 @@ class SetIamPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, a default mask is used: paths: "bindings, etag" This field is
+      only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class SourceContext(_messages.Message):
@@ -3760,11 +3658,11 @@ class Step(_messages.Message):
 
     Values:
       STATUS_UNSPECIFIED: Unspecifed code.
-      DONE: The step has completed without errors.
-      NOT_STARTED: The step has not started yet.
-      IN_PROGRESS: The step is in progress.
-      FAILED: The step has completed with errors.
-      CANCELLED: The step has completed with cancellation.
+      DONE: The operation or step has completed without errors.
+      NOT_STARTED: The operation or step has not started yet.
+      IN_PROGRESS: The operation or step is in progress.
+      FAILED: The operation or step has completed with errors.
+      CANCELLED: The operation or step has completed with cancellation.
     """
     STATUS_UNSPECIFIED = 0
     DONE = 1

@@ -350,7 +350,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta
     )
 
     def Rollback(self, request, global_params=None):
-      """Rollback the previously Aborted or Failed NodePool upgrade.
+      """Roll back the previously Aborted or Failed NodePool upgrade.
 This will be an no-op if the last upgrade successfully completed.
 
       Args:

@@ -11,14 +11,16 @@ package = 'deploymentmanager'
 
 
 class AuditConfig(_messages.Message):
-  """Provides the configuration for non-admin_activity logging for a service.
-  Controls exemptions and specific log sub-types.
+  """Specifies the audit configuration for a service. It consists of which
+  permission types are logged, and what identities, if any, are exempted from
+  logging. An AuditConifg must have one or more AuditLogConfigs.
 
   Fields:
-    auditLogConfigs: The configuration for each type of logging
+    auditLogConfigs: The configuration for logging of each type of permission.
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
+      same format of Binding.members. This field is deprecated in favor of
+      per-permission-type exemptions.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -30,11 +32,15 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for a sub-type of logging.
+  """Provides the configuration for logging a type of permissions. Example:  {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from
+  DATA_READ logging.
 
   Fields:
-    exemptedMembers: Specifies the identities that are exempted from this type
-      of logging Follows the same format of Binding.members.
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of [Binding.members][].
     logType: The log type that this config enables.
   """
 
@@ -864,8 +870,7 @@ class Operation(_messages.Message):
 
   Fields:
     clientOperationId: [Output Only] Reserved for future use.
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
     endTime: [Output Only] The time that this operation was completed. This
@@ -1031,10 +1036,7 @@ class Policy(_messages.Message):
   see the [IAM developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.

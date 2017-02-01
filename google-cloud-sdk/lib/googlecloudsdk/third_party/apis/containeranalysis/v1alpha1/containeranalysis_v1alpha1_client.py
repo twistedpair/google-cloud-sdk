@@ -302,7 +302,7 @@ or a PERMISSION_DENIED error otherwise.
         supports_download=False,
     )
 
-    def UpdateNote(self, request, global_params=None):
+    def Update(self, request, global_params=None):
       """Updates an existing note.
 
       Args:
@@ -311,14 +311,14 @@ or a PERMISSION_DENIED error otherwise.
       Returns:
         (Note) The response message.
       """
-      config = self.GetMethodConfig('UpdateNote')
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    UpdateNote.method_config = lambda: base_api.ApiMethodInfo(
+    Update.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'POST',
-        method_id=u'containeranalysis.projects.notes.updateNote',
+        http_method=u'PUT',
+        method_id=u'containeranalysis.projects.notes.update',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
@@ -877,7 +877,7 @@ or a PERMISSION_DENIED error otherwise.
         supports_download=False,
     )
 
-    def UpdateNote(self, request, global_params=None):
+    def Update(self, request, global_params=None):
       """Updates an existing note.
 
       Args:
@@ -886,14 +886,14 @@ or a PERMISSION_DENIED error otherwise.
       Returns:
         (Note) The response message.
       """
-      config = self.GetMethodConfig('UpdateNote')
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    UpdateNote.method_config = lambda: base_api.ApiMethodInfo(
+    Update.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
-        http_method=u'POST',
-        method_id=u'containeranalysis.providers.notes.updateNote',
+        http_method=u'PUT',
+        method_id=u'containeranalysis.providers.notes.update',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],

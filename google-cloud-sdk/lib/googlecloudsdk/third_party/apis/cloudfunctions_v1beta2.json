@@ -209,7 +209,7 @@
           "type": "string"
         },
         "gcsUrl": {
-          "description": "Google Cloud Storage URL pointing to the zip archive which contains the\nfunction.\n\nDeprecated: To be removed by Beta.\nReplacement: source_archive_url",
+          "description": "Google Cloud Storage URL pointing to the zip archive which contains the\nfunction.",
           "type": "string"
         },
         "sourceArchiveUrl": {
@@ -221,11 +221,11 @@
           "$ref": "SourceRepository"
         },
         "pubsubTrigger": {
-          "description": "A pub\/sub type of source.\n\nDeprecated: To be removed by Beta.\nReplacement:\n  condition_trigger: {\n    action: \"sources\/cloud.pubsub\/actions\/publish\"\n    resource: \"projects\/[PROJECT_ID]\/topics\/[TOPIC_NAME]\"\n  }",
+          "description": "A pub\/sub type of source.",
           "type": "string"
         },
         "gcsTrigger": {
-          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form gs:\/\/<bucket>\/ (that is, it must refer\nto a bucket, rather than an object).\n\nDeprecated: To be removed by Beta.\nReplacement:\n  condition_trigger: {\n    action: \"sources\/cloud.pubsub\/actions\/publish\"\n    resource: \"projects\/[PROJECT_NAME]\/buckets\/[BUCKET_NAME]\"\n  }",
+          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form gs:\/\/<bucket>\/ (that is, it must refer\nto a bucket, rather than an object).",
           "type": "string"
         },
         "httpsTrigger": {
@@ -424,7 +424,7 @@
     },
     "OperationMetadataV1Beta2": {
       "id": "OperationMetadataV1Beta2",
-      "description": "Metadata describing an Operation\n\nSee description of cl\/108626115 for the reason why the metadata proto\nmessage contains the API version.",
+      "description": "Metadata describing an Operation",
       "type": "object",
       "properties": {
         "target": {

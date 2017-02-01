@@ -92,7 +92,7 @@ def _RecordUnfinishedOperations(operations, errors):
 
 def WaitForOperations(operations, project, operation_service, resource_service,
                       http, batch_url, warnings, errors,
-                      custom_get_requests=None, timeout=None):
+                      timeout=None):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
@@ -107,10 +107,6 @@ def WaitForOperations(operations, project, operation_service, resource_service,
     batch_url: The URL to which batch requests should be sent.
     warnings: An output parameter for capturing warnings.
     errors: An output parameter for capturing errors.
-    custom_get_requests: A mapping of resource names to requests. If
-      this is provided, when an operation is DONE, instead of performing
-      a get on the targetLink, this function will consult custom_get_requests
-      and perform the request dictated by custom_get_requests.
     timeout: The maximum amount of time, in seconds, to wait for the
       operations to reach the DONE state.
 
@@ -156,14 +152,9 @@ def WaitForOperations(operations, project, operation_service, resource_service,
 
         target_link = operation.targetLink
 
-        if custom_get_requests:
-          target_link, service, request_protobuf = (
-              custom_get_requests[operation.targetLink])
-          resource_requests.append((service, 'Get', request_protobuf))
-
         # We shouldn't get the target resource if the operation type
         # is delete because there will be no resource left.
-        elif not _IsDeleteOp(operation.operationType):
+        if not _IsDeleteOp(operation.operationType):
           request = resource_service.GetRequestType('Get')(project=project)
           if operation.zone:
             request.zone = path_simplifier.Name(operation.zone)

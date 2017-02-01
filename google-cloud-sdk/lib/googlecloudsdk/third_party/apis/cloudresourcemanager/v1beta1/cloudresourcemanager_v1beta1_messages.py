@@ -544,7 +544,7 @@ class Project(_messages.Message):
       can be associated with a given resource.  Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed.  Example: <code>"environment" :
-      "dev"</code>  Read-write.
+      "dev"</code> Read-write.
 
   Fields:
     createTime: Creation time.  Read-only.
@@ -556,21 +556,23 @@ class Project(_messages.Message):
       can be associated with a given resource.  Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed.  Example: <code>"environment" :
-      "dev"</code>  Read-write.
+      "dev"</code> Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
     name: The user-assigned display name of the Project. It must be 4 to 30
       characters. Allowed characters are: lowercase and uppercase letters,
       numbers, hyphen, single-quote, double-quote, space, and exclamation
-      point.  Example: <code>My Project</code>  Read-write.
+      point.  Example: <code>My Project</code> Read-write.
     parent: An optional reference to a parent Resource.  The only supported
       parent type is "organization". Once set, the parent cannot be modified.
-      Read-write.
+      The `parent` can be set on creation or using the `UpdateProject` method;
+      the end user must have the `resourcemanager.projects.create` permission
+      on the parent.  Read-write.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
       Trailing hyphens are prohibited.  Example: <code>tokyo-rain-123</code>
       Read-only after creation.
     projectNumber: The number uniquely identifying the project.  Example:
-      <code>415104041262</code>  Read-only.
+      <code>415104041262</code> Read-only.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -600,8 +602,7 @@ class Project(_messages.Message):
     expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 256 labels
     can be associated with a given resource.  Clients should store labels in a
     representation such as JSON that does not depend on specific characters
-    being disallowed.  Example: <code>"environment" : "dev"</code>  Read-
-    write.
+    being disallowed.  Example: <code>"environment" : "dev"</code> Read-write.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

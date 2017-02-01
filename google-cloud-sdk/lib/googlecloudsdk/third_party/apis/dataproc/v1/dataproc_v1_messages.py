@@ -21,43 +21,43 @@ class Cluster(_messages.Message):
   Google Compute Engine instances.
 
   Messages:
-    LabelsValue: [Optional] The labels to associate with this cluster. Label
-      **keys** must contain 1 to 63 characters, and must conform to [RFC
-      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-      empty, but, if present, must contain 1 to 63 characters, and must
-      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
-      than 32 labels can be associated with a cluster.
+    LabelsValue: Optional The labels to associate with this cluster. Label
+      keys must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a cluster.
 
   Fields:
-    clusterName: [Required] The cluster name. Cluster names within a project
+    clusterName: Required The cluster name. Cluster names within a project
       must be unique. Names of deleted clusters can be reused.
-    clusterUuid: [Output-only] A cluster UUID (Unique Universal Identifier).
+    clusterUuid: Output-only A cluster UUID (Unique Universal Identifier).
       Cloud Dataproc generates this value when it creates the cluster.
-    config: [Required] The cluster config. Note that Cloud Dataproc may set
+    config: Required The cluster config. Note that Cloud Dataproc may set
       default values, and values may change when clusters are updated.
-    labels: [Optional] The labels to associate with this cluster. Label
-      **keys** must contain 1 to 63 characters, and must conform to [RFC
-      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-      empty, but, if present, must contain 1 to 63 characters, and must
-      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
-      than 32 labels can be associated with a cluster.
-    metrics: Contains cluster daemon metrics such as HDFS and YARN stats.
-      **Beta Feature**: This report is available for testing purposes only. It
-      may be changed before final release.
-    projectId: [Required] The Google Cloud Platform project ID that the
-      cluster belongs to.
-    status: [Output-only] Cluster status.
-    statusHistory: [Output-only] The previous cluster status.
+    labels: Optional The labels to associate with this cluster. Label keys
+      must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a cluster.
+    metrics: Contains cluster daemon metrics such as HDFS and YARN stats.Beta
+      Feature: This report is available for testing purposes only. It may be
+      changed before final release.
+    projectId: Required The Google Cloud Platform project ID that the cluster
+      belongs to.
+    status: Output-only Cluster status.
+    statusHistory: Output-only The previous cluster status.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Optional] The labels to associate with this cluster. Label **keys**
-    must contain 1 to 63 characters, and must conform to [RFC
-    1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-    empty, but, if present, must contain 1 to 63 characters, and must conform
-    to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more than 32
-    labels can be associated with a cluster.
+    """Optional The labels to associate with this cluster. Label keys must
+    contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with a cluster.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -93,30 +93,30 @@ class ClusterConfig(_messages.Message):
   """The cluster config.
 
   Fields:
-    configBucket: [Optional] A Google Cloud Storage staging bucket used for
+    configBucket: Optional A Google Cloud Storage staging bucket used for
       sharing generated SSH keys and config. If you do not specify a staging
       bucket, Cloud Dataproc will determine an appropriate Cloud Storage
       location (US, ASIA, or EU) for your cluster's staging bucket according
       to the Google Compute Engine zone where your cluster is deployed, and
       then it will create and manage this project-level, per-location bucket
       for you.
-    gceClusterConfig: [Required] The shared Google Compute Engine config
+    gceClusterConfig: Required The shared Google Compute Engine config
       settings for all instances in a cluster.
-    initializationActions: [Optional] Commands to execute on each node after
+    initializationActions: Optional Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's <code>role</code> metadata to run an
-      executable on a master or worker node, as shown below using `curl` (you
-      can also use `wget`):      ROLE=$(curl -H Metadata-Flavor:Google
-      http://metadata/computeMetadata/v1/instance/attributes/dataproc-role)
-      if [[ "${ROLE}" == 'Master' ]]; then       ... master specific actions
-      ...     else       ... worker specific actions ...     fi
-    masterConfig: [Optional] The Google Compute Engine config settings for the
+      executable on a master or worker node, as shown below using curl (you
+      can also use wget): ROLE=$(curl -H Metadata-Flavor:Google
+      http://metadata/computeMetadata/v1/instance/attributes/dataproc-role) if
+      [[ "${ROLE}" == 'Master' ]]; then   ... master specific actions ... else
+      ... worker specific actions ... fi
+    masterConfig: Optional The Google Compute Engine config settings for the
       master instance in a cluster.
-    secondaryWorkerConfig: [Optional] The Google Compute Engine config
-      settings for additional worker instances in a cluster.
-    softwareConfig: [Optional] The config settings for software inside the
+    secondaryWorkerConfig: Optional The Google Compute Engine config settings
+      for additional worker instances in a cluster.
+    softwareConfig: Optional The config settings for software inside the
       cluster.
-    workerConfig: [Optional] The Google Compute Engine config settings for
+    workerConfig: Optional The Google Compute Engine config settings for
       worker instances in a cluster.
   """
 
@@ -130,8 +130,8 @@ class ClusterConfig(_messages.Message):
 
 
 class ClusterMetrics(_messages.Message):
-  """Contains cluster daemon metrics, such as HDFS and YARN stats.  **Beta
-  Feature**: This report is available for testing purposes only. It may be
+  """Contains cluster daemon metrics, such as HDFS and YARN stats.Beta
+  Feature: This report is available for testing purposes only. It may be
   changed before final release.
 
   Messages:
@@ -201,21 +201,21 @@ class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
   Messages:
-    LabelsValue: [Output-only] labels associated with the operation
+    LabelsValue: Output-only labels associated with the operation
 
   Fields:
-    clusterName: [Output-only] Name of the cluster for the operation.
-    clusterUuid: [Output-only] Cluster UUID for the operation.
-    description: [Output-only] Short description of operation.
-    labels: [Output-only] labels associated with the operation
-    operationType: [Output-only] The operation type.
-    status: [Output-only] Current operation status.
-    statusHistory: [Output-only] The previous operation status.
+    clusterName: Output-only Name of the cluster for the operation.
+    clusterUuid: Output-only Cluster UUID for the operation.
+    description: Output-only Short description of operation.
+    labels: Output-only labels associated with the operation
+    operationType: Output-only The operation type.
+    status: Output-only Current operation status.
+    statusHistory: Output-only The previous operation status.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Output-only] labels associated with the operation
+    """Output-only labels associated with the operation
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -250,19 +250,18 @@ class ClusterOperationStatus(_messages.Message):
   """The status of the operation.
 
   Enums:
-    StateValueValuesEnum: [Output-only] A message containing the operation
+    StateValueValuesEnum: Output-only A message containing the operation
       state.
 
   Fields:
-    details: [Output-only]A message containing any operation metadata details.
-    innerState: [Output-only] A message containing the detailed operation
-      state.
-    state: [Output-only] A message containing the operation state.
-    stateStartTime: [Output-only] The time this state was entered.
+    details: Output-onlyA message containing any operation metadata details.
+    innerState: Output-only A message containing the detailed operation state.
+    state: Output-only A message containing the operation state.
+    stateStartTime: Output-only The time this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Output-only] A message containing the operation state.
+    """Output-only A message containing the operation state.
 
     Values:
       UNKNOWN: Unused.
@@ -285,16 +284,16 @@ class ClusterStatus(_messages.Message):
   """The status of a cluster and its instances.
 
   Enums:
-    StateValueValuesEnum: [Output-only] The cluster's state.
+    StateValueValuesEnum: Output-only The cluster's state.
 
   Fields:
-    detail: [Output-only] Optional details of cluster's state.
-    state: [Output-only] The cluster's state.
-    stateStartTime: [Output-only] Time when this state was entered.
+    detail: Output-only Optional details of cluster's state.
+    state: Output-only The cluster's state.
+    stateStartTime: Output-only Time when this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Output-only] The cluster's state.
+    """Output-only The cluster's state.
 
     Values:
       UNKNOWN: The cluster state is unknown.
@@ -324,10 +323,9 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    projectId: Required The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -339,11 +337,10 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersDeleteRequest object.
 
   Fields:
-    clusterName: [Required] The cluster name.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    clusterName: Required The cluster name.
+    projectId: Required The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   clusterName = _messages.StringField(1, required=True)
@@ -355,13 +352,12 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersDiagnoseRequest object.
 
   Fields:
-    clusterName: [Required] The cluster name.
+    clusterName: Required The cluster name.
     diagnoseClusterRequest: A DiagnoseClusterRequest resource to be passed as
       the request body.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    projectId: Required The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   clusterName = _messages.StringField(1, required=True)
@@ -374,11 +370,10 @@ class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersGetRequest object.
 
   Fields:
-    clusterName: [Required] The cluster name.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    clusterName: Required The cluster name.
+    projectId: Required The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   clusterName = _messages.StringField(1, required=True)
@@ -390,25 +385,23 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersListRequest object.
 
   Fields:
-    filter: [Optional] A filter constraining the clusters to list. Filters are
-      case-sensitive and have the following syntax:  field = value [AND [field
-      = value]] ...  where **field** is one of `status.state`, `clusterName`,
-      or `labels.[KEY]`, and `[KEY]` is a label key. **value** can be `*` to
-      match all values. `status.state` can be one of the following: `ACTIVE`,
-      `INACTIVE`, `CREATING`, `RUNNING`, `ERROR`, `DELETING`, or `UPDATING`.
-      `ACTIVE` contains the `CREATING`, `UPDATING`, and `RUNNING` states.
-      `INACTIVE` contains the `DELETING` and `ERROR` states. `clusterName` is
-      the name of the cluster provided at creation time. Only the logical
-      `AND` operator is supported; space-separated items are treated as having
-      an implicit `AND` operator.  Example filter:  status.state = ACTIVE AND
-      clusterName = mycluster \   AND labels.env = staging AND labels.starred
-      = *
-    pageSize: [Optional] The standard List page size.
-    pageToken: [Optional] The standard List page token.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    filter: Optional A filter constraining the clusters to list. Filters are
+      case-sensitive and have the following syntax:field = value AND field =
+      value ...where field is one of status.state, clusterName, or
+      labels.[KEY], and [KEY] is a label key. value can be * to match all
+      values. status.state can be one of the following: ACTIVE, INACTIVE,
+      CREATING, RUNNING, ERROR, DELETING, or UPDATING. ACTIVE contains the
+      CREATING, UPDATING, and RUNNING states. INACTIVE contains the DELETING
+      and ERROR states. clusterName is the name of the cluster provided at
+      creation time. Only the logical AND operator is supported; space-
+      separated items are treated as having an implicit AND operator.Example
+      filter:status.state = ACTIVE AND clusterName = mycluster AND labels.env
+      = staging AND labels.starred = *
+    pageSize: Optional The standard List page size.
+    pageToken: Optional The standard List page token.
+    projectId: Required The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   filter = _messages.StringField(1)
@@ -423,24 +416,22 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterName: [Required] The cluster name.
-    projectId: [Required] The ID of the Google Cloud Platform project the
+    clusterName: Required The cluster name.
+    projectId: Required The ID of the Google Cloud Platform project the
       cluster belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
-    updateMask: [Required] Specifies the path, relative to
-      <code>Cluster</code>, of the field to update. For example, to change the
-      number of workers in a cluster to 5, the <code>update_mask</code>
-      parameter would be specified as
-      <code>config.worker_config.num_instances</code>, and the `PATCH` request
-      body would specify the new value, as follows:      {       "config":{
-      "workerConfig":{           "numInstances":"5"         }       }     }
+    region: Required The Cloud Dataproc region in which to handle the request.
+    updateMask: Required Specifies the path, relative to <code>Cluster</code>,
+      of the field to update. For example, to change the number of workers in
+      a cluster to 5, the <code>update_mask</code> parameter would be
+      specified as <code>config.worker_config.num_instances</code>, and the
+      PATCH request body would specify the new value, as follows: {
+      "config":{     "workerConfig":{       "numInstances":"5"     }   } }
       Similarly, to change the number of preemptible workers in a cluster to
       5, the <code>update_mask</code> parameter would be
-      <code>config.secondary_worker_config.num_instances</code>, and the
-      `PATCH` request body would be set as follows:      {       "config":{
-      "secondaryWorkerConfig":{           "numInstances":"5"         }       }
-      } <strong>Note:</strong> Currently,
+      <code>config.secondary_worker_config.num_instances</code>, and the PATCH
+      request body would be set as follows: {   "config":{
+      "secondaryWorkerConfig":{       "numInstances":"5"     }   } }
+      <strong>Note:</strong> Currently,
       <code>config.worker_config.num_instances</code> and
       <code>config.secondary_worker_config.num_instances</code> are the only
       fields that can be updated.
@@ -459,11 +450,10 @@ class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
   Fields:
     cancelJobRequest: A CancelJobRequest resource to be passed as the request
       body.
-    jobId: [Required] The job ID.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    jobId: Required The job ID.
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   cancelJobRequest = _messages.MessageField('CancelJobRequest', 1)
@@ -476,11 +466,10 @@ class DataprocProjectsRegionsJobsDeleteRequest(_messages.Message):
   """A DataprocProjectsRegionsJobsDeleteRequest object.
 
   Fields:
-    jobId: [Required] The job ID.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    jobId: Required The job ID.
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -492,11 +481,10 @@ class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
   """A DataprocProjectsRegionsJobsGetRequest object.
 
   Fields:
-    jobId: [Required] The job ID.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    jobId: Required The job ID.
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -508,33 +496,32 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   """A DataprocProjectsRegionsJobsListRequest object.
 
   Enums:
-    JobStateMatcherValueValuesEnum: [Optional] Specifies enumerated categories
+    JobStateMatcherValueValuesEnum: Optional Specifies enumerated categories
       of jobs to list (default = match ALL jobs).
 
   Fields:
-    clusterName: [Optional] If set, the returned jobs list includes only jobs
+    clusterName: Optional If set, the returned jobs list includes only jobs
       that were submitted to the named cluster.
-    filter: [Optional] A filter constraining the jobs to list. Filters are
-      case-sensitive and have the following syntax:  [field = value] AND
-      [field [= value]] ...  where **field** is `status.state` or
-      `labels.[KEY]`, and `[KEY]` is a label key. **value** can be `*` to
-      match all values. `status.state` can be either `ACTIVE` or `INACTIVE`.
-      Only the logical `AND` operator is supported; space-separated items are
-      treated as having an implicit `AND` operator.  Example filter:
-      status.state = ACTIVE AND labels.env = staging AND labels.starred = *
-    jobStateMatcher: [Optional] Specifies enumerated categories of jobs to
-      list (default = match ALL jobs).
-    pageSize: [Optional] The number of results to return in each response.
-    pageToken: [Optional] The page token, returned by a previous call, to
+    filter: Optional A filter constraining the jobs to list. Filters are case-
+      sensitive and have the following syntax:field = value AND field = value
+      ...where field is status.state or labels.[KEY], and [KEY] is a label
+      key. value can be * to match all values. status.state can be either
+      ACTIVE or INACTIVE. Only the logical AND operator is supported; space-
+      separated items are treated as having an implicit AND operator.Example
+      filter:status.state = ACTIVE AND labels.env = staging AND labels.starred
+      = *
+    jobStateMatcher: Optional Specifies enumerated categories of jobs to list
+      (default = match ALL jobs).
+    pageSize: Optional The number of results to return in each response.
+    pageToken: Optional The page token, returned by a previous call, to
       request the next page of results.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
-    """[Optional] Specifies enumerated categories of jobs to list (default =
+    """Optional Specifies enumerated categories of jobs to list (default =
     match ALL jobs).
 
     Values:
@@ -555,14 +542,37 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   region = _messages.StringField(7, required=True)
 
 
+class DataprocProjectsRegionsJobsPatchRequest(_messages.Message):
+  """A DataprocProjectsRegionsJobsPatchRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    jobId: Required The job ID.
+    projectId: Required The ID of the Google Cloud Platform project that the
+      job belongs to.
+    region: Required The Cloud Dataproc region in which to handle the request.
+    updateMask: Required Specifies the path, relative to <code>Job</code>, of
+      the field to update. For example, to update the labels of a Job the
+      <code>update_mask</code> parameter would be specified as
+      <code>labels</code>, and the PATCH request body would specify the new
+      value. <strong>Note:</strong> Currently, <code>labels</code> is the only
+      field that can be updated.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  jobId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  updateMask = _messages.StringField(5)
+
+
 class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
   """A DataprocProjectsRegionsJobsSubmitRequest object.
 
   Fields:
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: [Required] The Cloud Dataproc region in which to handle the
-      request.
+    region: Required The Cloud Dataproc region in which to handle the request.
     submitJobRequest: A SubmitJobRequest resource to be passed as the request
       body.
   """
@@ -622,7 +632,7 @@ class DiagnoseClusterOutputLocation(_messages.Message):
   """The location where output from diagnostic command can be found.
 
   Fields:
-    outputUri: [Output-only] The Google Cloud Storage URI of the diagnostic
+    outputUri: Output-only The Google Cloud Storage URI of the diagnostic
       output. This will be a plain text file with summary of collected
       diagnostics.
   """
@@ -638,7 +648,7 @@ class DiagnoseClusterResults(_messages.Message):
   """The location of diagnostic output.
 
   Fields:
-    outputUri: [Output-only] The Google Cloud Storage URI of the diagnostic
+    outputUri: Output-only The Google Cloud Storage URI of the diagnostic
       output. The output report is a plain text file with a summary of
       collected diagnostics.
   """
@@ -650,13 +660,13 @@ class DiskConfig(_messages.Message):
   """Specifies the config of disk options for a group of VM instances.
 
   Fields:
-    bootDiskSizeGb: [Optional] Size in GB of the boot disk (default is 500GB).
-    numLocalSsds: [Optional] Number of attached SSDs, from 0 to 4 (default is
+    bootDiskSizeGb: Optional Size in GB of the boot disk (default is 500GB).
+    numLocalSsds: Optional Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
-      logs and
-      [HDFS](https://hadoop.apache.org/docs/r1.2.1/hdfs_user_guide.html) data.
-      If one or more SSDs are attached, this runtime bulk data is spread
-      across them, and the boot disk contains only basic config and installed
+      logs and HDFS
+      (https://hadoop.apache.org/docs/r1.2.1/hdfs_user_guide.html) data. If
+      one or more SSDs are attached, this runtime bulk data is spread across
+      them, and the boot disk contains only basic config and installed
       binaries.
   """
 
@@ -667,9 +677,9 @@ class DiskConfig(_messages.Message):
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo {   rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for Empty is empty JSON object {}.
   """
 
 
@@ -680,63 +690,63 @@ class GceClusterConfig(_messages.Message):
 
   Messages:
     MetadataValue: The Google Compute Engine metadata entries to add to all
-      instances (see [Project and instance
-      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      instances (see Project and instance metadata
+      (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
 
   Fields:
-    internalIpOnly: [Optional] If true, all instances in the cluster will only
+    internalIpOnly: Optional If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
-      assigned to each instance. This `internal_ip_only` restriction can only
-      be enabled for subnetwork enabled networks, and all off-cluster
+      assigned to each instance. This internal_ip_only restriction can only be
+      enabled for subnetwork enabled networks, and all off-cluster
       dependencies must be configured to be accessible without external IP
       addresses.
     metadata: The Google Compute Engine metadata entries to add to all
-      instances (see [Project and instance
-      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      instances (see Project and instance metadata
+      (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
-    networkUri: [Optional] The Google Compute Engine network to be used for
+    networkUri: Optional The Google Compute Engine network to be used for
       machine communications. Cannot be specified with subnetwork_uri. If
-      neither `network_uri` nor `subnetwork_uri` is specified, the "default"
+      neither network_uri nor subnetwork_uri is specified, the "default"
       network of the project is used, if it exists. Cannot be a "Custom Subnet
-      Network" (see [Using Subnetworks](/compute/docs/subnetworks) for more
-      information). Example: `https://www.googleapis.com/compute/v1/projects/[
-      project_id]/regions/global/default`.
-    serviceAccount: [Optional] The service account of the instances. Defaults
-      to the default Google Compute Engine service account. Custom service
-      accounts need permissions equivalent to the folloing IAM roles:  *
-      roles/logging.logWriter * roles/storage.objectAdmin  (see
+      Network" (see Using Subnetworks for more information). Example: https://
+      www.googleapis.com/compute/v1/projects/[project_id]/regions/global/defau
+      lt.
+    serviceAccount: Optional The service account of the instances. Defaults to
+      the default Google Compute Engine service account. Custom service
+      accounts need permissions equivalent to the folloing IAM roles:
+      roles/logging.logWriter roles/storage.objectAdmin(see
       https://cloud.google.com/compute/docs/access/service-
       accounts#custom_service_accounts for more information). Example:
-      `[account_id]@[project_id].iam.gserviceaccount.com`
-    serviceAccountScopes: [Optional] The URIs of service account scopes to be
+      [account_id]@[project_id].iam.gserviceaccount.com
+    serviceAccountScopes: Optional The URIs of service account scopes to be
       included in Google Compute Engine instances. The following base set of
-      scopes is always included:  *
-      https://www.googleapis.com/auth/cloud.useraccounts.readonly *
-      https://www.googleapis.com/auth/devstorage.read_write *
-      https://www.googleapis.com/auth/logging.write  If no scopes are
-      specified, the following defaults are also provided:  *
-      https://www.googleapis.com/auth/bigquery *
-      https://www.googleapis.com/auth/bigtable.admin.tables *
-      https://www.googleapis.com/auth/bigtable.data *
+      scopes is always included:
+      https://www.googleapis.com/auth/cloud.useraccounts.readonly
+      https://www.googleapis.com/auth/devstorage.read_write
+      https://www.googleapis.com/auth/logging.writeIf no scopes are specified,
+      the following defaults are also provided:
+      https://www.googleapis.com/auth/bigquery
+      https://www.googleapis.com/auth/bigtable.admin.table
+      https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
-    subnetworkUri: [Optional] The Google Compute Engine subnetwork to be used
+    subnetworkUri: Optional The Google Compute Engine subnetwork to be used
       for machine communications. Cannot be specified with network_uri.
       Example:
-      `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
-      east1/sub0`.
-    tags: The Google Compute Engine tags to add to all instances (see [Tagging
-      instances](/compute/docs/label-or-tag-resources#tags)).
-    zoneUri: [Required] The zone where the Google Compute Engine cluster will
-      be located. Example: `https://www.googleapis.com/compute/v1/projects/[pr
-      oject_id]/zones/[zone]`.
+      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
+      east1/sub0.
+    tags: The Google Compute Engine tags to add to all instances (see Tagging
+      instances).
+    zoneUri: Required The zone where the Google Compute Engine cluster will be
+      located. Example: https://www.googleapis.com/compute/v1/projects/[projec
+      t_id]/zones/[zone].
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     """The Google Compute Engine metadata entries to add to all instances (see
-    [Project and instance metadata](https://cloud.google.com/compute/docs
+    Project and instance metadata (https://cloud.google.com/compute/docs
     /storing-retrieving-metadata#project_and_instance_metadata)).
 
     Messages:
@@ -770,40 +780,40 @@ class GceClusterConfig(_messages.Message):
 
 
 class HadoopJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache Hadoop
-  MapReduce](https://hadoop.apache.org/docs/current/hadoop-mapreduce-client
-  /hadoop-mapreduce-client-core/MapReduceTutorial.html) jobs on [Apache Hadoop
-  YARN](https://hadoop.apache.org/docs/r2.7.1/hadoop-yarn/hadoop-yarn-
+  """A Cloud Dataproc job for running Apache Hadoop MapReduce
+  (https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-
+  mapreduce-client-core/MapReduceTutorial.html) jobs on Apache Hadoop YARN
+  (https://hadoop.apache.org/docs/r2.7.1/hadoop-yarn/hadoop-yarn-
   site/YARN.html).
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names to values, used to
+    PropertiesValue: Optional A mapping of property names to values, used to
       configure Hadoop. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
 
   Fields:
-    archiveUris: [Optional] HCFS URIs of archives to be extracted in the
-      working directory of Hadoop drivers and tasks. Supported file types:
-      .jar, .tar, .tar.gz, .tgz, or .zip.
-    args: [Optional] The arguments to pass to the driver. Do not include
-      arguments, such as `-libjars` or `-Dfoo=bar`, that can be set as job
+    archiveUris: Optional HCFS URIs of archives to be extracted in the working
+      directory of Hadoop drivers and tasks. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, or .zip.
+    args: Optional The arguments to pass to the driver. Do not include
+      arguments, such as -libjars or -Dfoo=bar, that can be set as job
       properties, since a collision may occur that causes an incorrect job
       submission.
-    fileUris: [Optional] HCFS (Hadoop Compatible Filesystem) URIs of files to
-      be copied to the working directory of Hadoop drivers and distributed
-      tasks. Useful for naively parallel tasks.
-    jarFileUris: [Optional] Jar file URIs to add to the CLASSPATHs of the
-      Hadoop driver and tasks.
-    loggingConfig: [Optional] The runtime log config for job execution.
+    fileUris: Optional HCFS (Hadoop Compatible Filesystem) URIs of files to be
+      copied to the working directory of Hadoop drivers and distributed tasks.
+      Useful for naively parallel tasks.
+    jarFileUris: Optional Jar file URIs to add to the CLASSPATHs of the Hadoop
+      driver and tasks.
+    loggingConfig: Optional The runtime log config for job execution.
     mainClass: The name of the driver's main class. The jar file containing
       the class must be in the default CLASSPATH or specified in
-      `jar_file_uris`.
+      jar_file_uris.
     mainJarFileUri: The HCFS URI of the jar file containing the main class.
-      Examples:     'gs://foo-bucket/analytics-binaries/extract-useful-
-      metrics-mr.jar'     'hdfs:/tmp/test-samples/custom-wordcount.jar'
+      Examples:  'gs://foo-bucket/analytics-binaries/extract-useful-metrics-
+      mr.jar'  'hdfs:/tmp/test-samples/custom-wordcount.jar'
       'file:///home/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar'
-    properties: [Optional] A mapping of property names to values, used to
+    properties: Optional A mapping of property names to values, used to
       configure Hadoop. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
@@ -811,7 +821,7 @@ class HadoopJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names to values, used to configure
+    """Optional A mapping of property names to values, used to configure
     Hadoop. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in /etc/hadoop/conf/*-site
     and classes in user code.
@@ -847,39 +857,39 @@ class HadoopJob(_messages.Message):
 
 
 class HiveJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache Hive](https://hive.apache.org/)
+  """A Cloud Dataproc job for running Apache Hive (https://hive.apache.org/)
   queries on YARN.
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names and values, used
-      to configure Hive. Properties that conflict with values set by the Cloud
+    PropertiesValue: Optional A mapping of property names and values, used to
+      configure Hive. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
-    ScriptVariablesValue: [Optional] Mapping of query variable names to values
-      (equivalent to the Hive command: `SET name="value";`).
+    ScriptVariablesValue: Optional Mapping of query variable names to values
+      (equivalent to the Hive command: SET name="value";).
 
   Fields:
-    continueOnFailure: [Optional] Whether to continue executing queries if a
-      query fails. The default value is `false`. Setting to `true` can be
-      useful when executing independent parallel queries.
-    jarFileUris: [Optional] HCFS URIs of jar files to add to the CLASSPATH of
+    continueOnFailure: Optional Whether to continue executing queries if a
+      query fails. The default value is false. Setting to true can be useful
+      when executing independent parallel queries.
+    jarFileUris: Optional HCFS URIs of jar files to add to the CLASSPATH of
       the Hive server and Hadoop MapReduce (MR) tasks. Can contain Hive SerDes
       and UDFs.
-    properties: [Optional] A mapping of property names and values, used to
+    properties: Optional A mapping of property names and values, used to
       configure Hive. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains Hive queries.
     queryList: A list of queries.
-    scriptVariables: [Optional] Mapping of query variable names to values
-      (equivalent to the Hive command: `SET name="value";`).
+    scriptVariables: Optional Mapping of query variable names to values
+      (equivalent to the Hive command: SET name="value";).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names and values, used to configure
+    """Optional A mapping of property names and values, used to configure
     Hive. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in
     /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes in
@@ -907,8 +917,8 @@ class HiveJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """[Optional] Mapping of query variable names to values (equivalent to the
-    Hive command: `SET name="value";`).
+    """Optional Mapping of query variable names to values (equivalent to the
+    Hive command: SET name="value";).
 
     Messages:
       AdditionalProperty: An additional property for a ScriptVariablesValue
@@ -940,27 +950,27 @@ class HiveJob(_messages.Message):
 
 
 class InstanceGroupConfig(_messages.Message):
-  """[Optional] The config settings for Google Compute Engine resources in an
+  """Optional The config settings for Google Compute Engine resources in an
   instance group, such as a master or worker group.
 
   Fields:
-    diskConfig: [Optional] Disk option config settings.
-    imageUri: [Output-only] The Google Compute Engine image resource used for
-      cluster instances. Inferred from `SoftwareConfig.image_version`.
-    instanceNames: [Optional] The list of instance names. Cloud Dataproc
-      derives the names from `cluster_name`, `num_instances`, and the instance
-      group if not set by user (recommended practice is to let Cloud Dataproc
-      derive the name).
-    isPreemptible: [Optional] Specifies that this instance group contains
+    diskConfig: Optional Disk option config settings.
+    imageUri: Output-only The Google Compute Engine image resource used for
+      cluster instances. Inferred from SoftwareConfig.image_version.
+    instanceNames: Optional The list of instance names. Cloud Dataproc derives
+      the names from cluster_name, num_instances, and the instance group if
+      not set by user (recommended practice is to let Cloud Dataproc derive
+      the name).
+    isPreemptible: Optional Specifies that this instance group contains
       preemptible instances.
-    machineTypeUri: [Required] The Google Compute Engine machine type used for
+    machineTypeUri: Required The Google Compute Engine machine type used for
       cluster instances. Example:
-      `https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
-      east1-a/machineTypes/n1-standard-2`.
-    managedGroupConfig: [Output-only] The config for Google Compute Engine
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2.
+    managedGroupConfig: Output-only The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
-    numInstances: [Required] The number of VM instances in the instance group.
+    numInstances: Required The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
 
@@ -977,55 +987,55 @@ class Job(_messages.Message):
   """A Cloud Dataproc job resource.
 
   Messages:
-    LabelsValue: [Optional] The labels to associate with this job. Label
-      **keys** must contain 1 to 63 characters, and must conform to [RFC
-      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-      empty, but, if present, must contain 1 to 63 characters, and must
-      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
-      than 32 labels can be associated with a job.
+    LabelsValue: Optional The labels to associate with this job. Label keys
+      must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a job.
 
   Fields:
-    driverControlFilesUri: [Output-only] If present, the location of
+    driverControlFilesUri: Output-only If present, the location of
       miscellaneous control files which may be used as part of job setup and
       handling. If not present, control files may be placed in the same
-      location as `driver_output_uri`.
-    driverOutputResourceUri: [Output-only] A URI pointing to the location of
-      the stdout of the job's driver program.
+      location as driver_output_uri.
+    driverOutputResourceUri: Output-only A URI pointing to the location of the
+      stdout of the job's driver program.
     hadoopJob: Job is a Hadoop job.
     hiveJob: Job is a Hive job.
-    labels: [Optional] The labels to associate with this job. Label **keys**
-      must contain 1 to 63 characters, and must conform to [RFC
-      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-      empty, but, if present, must contain 1 to 63 characters, and must
-      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
-      than 32 labels can be associated with a job.
+    labels: Optional The labels to associate with this job. Label keys must
+      contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a job.
     pigJob: Job is a Pig job.
-    placement: [Required] Job information, including how, when, and where to
-      run the job.
+    placement: Required Job information, including how, when, and where to run
+      the job.
     pysparkJob: Job is a Pyspark job.
-    reference: [Optional] The fully qualified reference to the job, which can
-      be used to obtain the equivalent REST path of the job resource. If this
+    reference: Optional The fully qualified reference to the job, which can be
+      used to obtain the equivalent REST path of the job resource. If this
       property is not specified when a job is created, the server generates a
       <code>job_id</code>.
     sparkJob: Job is a Spark job.
     sparkSqlJob: Job is a SparkSql job.
-    status: [Output-only] The job status. Additional application-specific
-      status information may be contained in the <code>type_job</code> and
+    status: Output-only The job status. Additional application-specific status
+      information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
-    statusHistory: [Output-only] The previous job status.
-    yarnApplications: [Output-only] The collection of YARN applications spun
-      up by this job.  **Beta** Feature: This report is available for testing
-      purposes only. It may be changed before final release.
+    statusHistory: Output-only The previous job status.
+    yarnApplications: Output-only The collection of YARN applications spun up
+      by this job.Beta Feature: This report is available for testing purposes
+      only. It may be changed before final release.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Optional] The labels to associate with this job. Label **keys** must
-    contain 1 to 63 characters, and must conform to [RFC
-    1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
-    empty, but, if present, must contain 1 to 63 characters, and must conform
-    to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more than 32
-    labels can be associated with a job.
+    """Optional The labels to associate with this job. Label keys must contain
+    1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with a job.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1067,9 +1077,9 @@ class JobPlacement(_messages.Message):
   """Cloud Dataproc job config.
 
   Fields:
-    clusterName: [Required] The name of the cluster where the job will be
+    clusterName: Required The name of the cluster where the job will be
       submitted.
-    clusterUuid: [Output-only] A cluster UUID generated by the Cloud Dataproc
+    clusterUuid: Output-only A cluster UUID generated by the Cloud Dataproc
       service when the job is submitted.
   """
 
@@ -1081,12 +1091,12 @@ class JobReference(_messages.Message):
   """Encapsulates the full scoping used to reference a job.
 
   Fields:
-    jobId: [Optional] The job ID, which must be unique within the project. The
+    jobId: Optional The job ID, which must be unique within the project. The
       job ID is generated by the server upon job submission or provided by the
       user as a means to perform retries without creating duplicate jobs. The
       ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       or hyphens (-). The maximum length is 512 characters.
-    projectId: [Required] The ID of the Google Cloud Platform project that the
+    projectId: Required The ID of the Google Cloud Platform project that the
       job belongs to.
   """
 
@@ -1098,18 +1108,18 @@ class JobStatus(_messages.Message):
   """Cloud Dataproc job status.
 
   Enums:
-    StateValueValuesEnum: [Output-only] A state message specifying the overall
+    StateValueValuesEnum: Output-only A state message specifying the overall
       job state.
 
   Fields:
-    details: [Output-only] Optional job state details, such as an error
+    details: Output-only Optional job state details, such as an error
       description if the state is <code>ERROR</code>.
-    state: [Output-only] A state message specifying the overall job state.
-    stateStartTime: [Output-only] The time when this state was entered.
+    state: Output-only A state message specifying the overall job state.
+    stateStartTime: Output-only The time when this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Output-only] A state message specifying the overall job state.
+    """Output-only A state message specifying the overall job state.
 
     Values:
       STATE_UNSPECIFIED: The job state is unknown.
@@ -1144,10 +1154,10 @@ class ListClustersResponse(_messages.Message):
   """The list of all clusters in a project.
 
   Fields:
-    clusters: [Output-only] The clusters in the project.
-    nextPageToken: [Output-only] This token is included in the response if
-      there are more results to fetch. To fetch additional results, provide
-      this value as the `page_token` in a subsequent
+    clusters: Output-only The clusters in the project.
+    nextPageToken: Output-only This token is included in the response if there
+      are more results to fetch. To fetch additional results, provide this
+      value as the page_token in a subsequent
       <code>ListClustersRequest</code>.
   """
 
@@ -1159,10 +1169,10 @@ class ListJobsResponse(_messages.Message):
   """A list of jobs in a project.
 
   Fields:
-    jobs: [Output-only] Jobs list.
-    nextPageToken: [Optional] This token is included in the response if there
+    jobs: Output-only Jobs list.
+    nextPageToken: Optional This token is included in the response if there
       are more results to fetch. To fetch additional results, provide this
-      value as the `page_token` in a subsequent <code>ListJobsRequest</code>.
+      value as the page_token in a subsequent <code>ListJobsRequest</code>.
   """
 
   jobs = _messages.MessageField('Job', 1, repeated=True)
@@ -1199,7 +1209,7 @@ class LoggingConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DriverLogLevelsValue(_messages.Message):
     """The per-package log levels for the driver. This may include "root"
-    package name to configure rootLogger. Examples:   'com.google = FATAL',
+    package name to configure rootLogger. Examples:  'com.google = FATAL',
     'root = INFO', 'org.apache = DEBUG'
 
     Messages:
@@ -1257,9 +1267,9 @@ class ManagedGroupConfig(_messages.Message):
   """Specifies the resources used to actively manage an instance group.
 
   Fields:
-    instanceGroupManagerName: [Output-only] The name of the Instance Group
+    instanceGroupManagerName: Output-only The name of the Instance Group
       Manager for this group.
-    instanceTemplateName: [Output-only] The name of the Instance Template used
+    instanceTemplateName: Output-only The name of the Instance Template used
       for the Managed Instance Group.
   """
 
@@ -1272,8 +1282,8 @@ class NodeInitializationAction(_messages.Message):
   period for executable completion.
 
   Fields:
-    executableFile: [Required] Google Cloud Storage URI of executable file.
-    executionTimeout: [Optional] Amount of time executable has to complete.
+    executableFile: Required Google Cloud Storage URI of executable file.
+    executionTimeout: Optional Amount of time executable has to complete.
       Default is 10 minutes. Cluster creation fails with an explanatory error
       message (the name of the executable that caused the error and the
       exceeded timeout period) if the executable is not completed at end of
@@ -1289,47 +1299,47 @@ class Operation(_messages.Message):
   network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as Delete, the
+      response is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type XxxResponse, where Xxx is the
+      original method name. For example, if the original method name is
+      TakeSnapshot(), the inferred response type is TakeSnapshotResponse.
 
   Fields:
-    done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
-      `response` is available.
+    done: If the value is false, it means the operation is still in progress.
+      If true, the operation is completed, and either error or response is
+      available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
-    response: The normal response of the operation in case of success.  If the
-      original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+      the name should have the format of operations/some/unique/name.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as Delete, the response
+      is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type XxxResponse, where Xxx is the
+      original method name. For example, if the original method name is
+      TakeSnapshot(), the inferred response type is TakeSnapshotResponse.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    """Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1355,13 +1365,13 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
-    methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
-    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+    """The normal response of the operation in case of success. If the
+    original method returns no data on success, such as Delete, the response
+    is google.protobuf.Empty. If the original method is standard
+    Get/Create/Update, the response should be the resource. For other methods,
+    the response should have the type XxxResponse, where Xxx is the original
+    method name. For example, if the original method name is TakeSnapshot(),
+    the inferred response type is TakeSnapshotResponse.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.
@@ -1400,16 +1410,16 @@ class OperationMetadata(_messages.Message):
   Fields:
     clusterName: Name of the cluster for the operation.
     clusterUuid: Cluster UUId for the operation.
-    description: [Output-only] Short description of operation.
+    description: Output-only Short description of operation.
     details: A message containing any operation metadata details.
     endTime: The time that the operation completed.
     innerState: A message containing the detailed operation state.
     insertTime: The time that the operation was requested.
-    operationType: [Output-only] The operation type.
+    operationType: Output-only The operation type.
     startTime: The time that the operation was started by the server.
     state: A message containing the operation state.
-    status: [Output-only] Current operation status.
-    statusHistory: [Output-only] Previous operation status.
+    status: Output-only Current operation status.
+    statusHistory: Output-only Previous operation status.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1474,43 +1484,42 @@ class OperationStatus(_messages.Message):
 
 
 class PigJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache Pig](https://pig.apache.org/)
+  """A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
   queries on YARN.
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names to values, used to
+    PropertiesValue: Optional A mapping of property names to values, used to
       configure Pig. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
-    ScriptVariablesValue: [Optional] Mapping of query variable names to values
-      (equivalent to the Pig command: `name=[value]`).
+    ScriptVariablesValue: Optional Mapping of query variable names to values
+      (equivalent to the Pig command: name=[value]).
 
   Fields:
-    continueOnFailure: [Optional] Whether to continue executing queries if a
-      query fails. The default value is `false`. Setting to `true` can be
-      useful when executing independent parallel queries.
-    jarFileUris: [Optional] HCFS URIs of jar files to add to the CLASSPATH of
+    continueOnFailure: Optional Whether to continue executing queries if a
+      query fails. The default value is false. Setting to true can be useful
+      when executing independent parallel queries.
+    jarFileUris: Optional HCFS URIs of jar files to add to the CLASSPATH of
       the Pig Client and Hadoop MapReduce (MR) tasks. Can contain Pig UDFs.
-    loggingConfig: [Optional] The runtime log config for job execution.
-    properties: [Optional] A mapping of property names to values, used to
+    loggingConfig: Optional The runtime log config for job execution.
+    properties: Optional A mapping of property names to values, used to
       configure Pig. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains the Pig queries.
     queryList: A list of queries.
-    scriptVariables: [Optional] Mapping of query variable names to values
-      (equivalent to the Pig command: `name=[value]`).
+    scriptVariables: Optional Mapping of query variable names to values
+      (equivalent to the Pig command: name=[value]).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names to values, used to configure
-    Pig. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in
-    /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes in
-    user code.
+    """Optional A mapping of property names to values, used to configure Pig.
+    Properties that conflict with values set by the Cloud Dataproc API may be
+    overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
+    /etc/pig/conf/pig.properties, and classes in user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -1534,8 +1543,8 @@ class PigJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """[Optional] Mapping of query variable names to values (equivalent to the
-    Pig command: `name=[value]`).
+    """Optional Mapping of query variable names to values (equivalent to the
+    Pig command: name=[value]).
 
     Messages:
       AdditionalProperty: An additional property for a ScriptVariablesValue
@@ -1568,41 +1577,41 @@ class PigJob(_messages.Message):
 
 
 class PySparkJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache
-  PySpark](https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
+  """A Cloud Dataproc job for running Apache PySpark
+  (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
   applications on YARN.
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names to values, used to
+    PropertiesValue: Optional A mapping of property names to values, used to
       configure PySpark. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
-    archiveUris: [Optional] HCFS URIs of archives to be extracted in the
-      working directory of .jar, .tar, .tar.gz, .tgz, and .zip.
-    args: [Optional] The arguments to pass to the driver.  Do not include
-      arguments, such as `--conf`, that can be set as job properties, since a
+    archiveUris: Optional HCFS URIs of archives to be extracted in the working
+      directory of .jar, .tar, .tar.gz, .tgz, and .zip.
+    args: Optional The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
-    fileUris: [Optional] HCFS URIs of files to be copied to the working
+    fileUris: Optional HCFS URIs of files to be copied to the working
       directory of Python drivers and distributed tasks. Useful for naively
       parallel tasks.
-    jarFileUris: [Optional] HCFS URIs of jar files to add to the CLASSPATHs of
+    jarFileUris: Optional HCFS URIs of jar files to add to the CLASSPATHs of
       the Python driver and tasks.
-    loggingConfig: [Optional] The runtime log config for job execution.
-    mainPythonFileUri: [Required] The HCFS URI of the main Python file to use
-      as the driver. Must be a .py file.
-    properties: [Optional] A mapping of property names to values, used to
+    loggingConfig: Optional The runtime log config for job execution.
+    mainPythonFileUri: Required The HCFS URI of the main Python file to use as
+      the driver. Must be a .py file.
+    properties: Optional A mapping of property names to values, used to
       configure PySpark. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
-    pythonFileUris: [Optional] HCFS file URIs of Python files to pass to the
+    pythonFileUris: Optional HCFS file URIs of Python files to pass to the
       PySpark framework. Supported file types: .py, .egg, and .zip.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names to values, used to configure
+    """Optional A mapping of property names to values, used to configure
     PySpark. Properties that conflict with values set by the Cloud Dataproc
     API may be overwritten. Can include properties set in /etc/spark/conf
     /spark-defaults.conf and classes in user code.
@@ -1641,13 +1650,12 @@ class QueryList(_messages.Message):
   """A list of queries to run on a cluster.
 
   Fields:
-    queries: [Required] The queries to execute. You do not need to terminate a
+    queries: Required The queries to execute. You do not need to terminate a
       query with a semicolon. Multiple queries can be specified in one string
       by separating each with a semicolon. Here is an example of an Cloud
       Dataproc API snippet that uses a QueryList to specify a HiveJob:
-      "hiveJob": {       "queryList": {         "queries": [
-      "query1",           "query2",           "query3;query4",         ]
-      }     }
+      "hiveJob": {   "queryList": {     "queries": [       "query1",
+      "query2",       "query3;query4",     ]   } }
   """
 
   queries = _messages.StringField(1, repeated=True)
@@ -1657,34 +1665,31 @@ class SoftwareConfig(_messages.Message):
   """Specifies the selection and config of software inside the cluster.
 
   Messages:
-    PropertiesValue: [Optional] The properties to set on daemon config files.
-      Property keys are specified in `prefix:property` format, such as
-      `core:fs.defaultFS`. The following are supported prefixes and their
-      mappings:  * core:   `core-site.xml` * hdfs:   `hdfs-site.xml` * mapred:
-      `mapred-site.xml` * yarn:   `yarn-site.xml` * hive:   `hive-site.xml` *
-      pig:    `pig.properties` * spark:  `spark-defaults.conf`
+    PropertiesValue: Optional The properties to set on daemon config
+      files.Property keys are specified in prefix:property format, such as
+      core:fs.defaultFS. The following are supported prefixes and their
+      mappings: core: core-site.xml hdfs: hdfs-site.xml mapred: mapred-
+      site.xml yarn: yarn-site.xml hive: hive-site.xml pig: pig.properties
+      spark: spark-defaults.conf
 
   Fields:
-    imageVersion: [Optional] The version of software inside the cluster. It
-      must match the regular expression `[0-9]+\.[0-9]+`. If unspecified, it
-      defaults to the latest version (see [Cloud Dataproc
-      Versioning](/dataproc/versioning)).
-    properties: [Optional] The properties to set on daemon config files.
-      Property keys are specified in `prefix:property` format, such as
-      `core:fs.defaultFS`. The following are supported prefixes and their
-      mappings:  * core:   `core-site.xml` * hdfs:   `hdfs-site.xml` * mapred:
-      `mapred-site.xml` * yarn:   `yarn-site.xml` * hive:   `hive-site.xml` *
-      pig:    `pig.properties` * spark:  `spark-defaults.conf`
+    imageVersion: Optional The version of software inside the cluster. It must
+      match the regular expression [0-9]+\.[0-9]+. If unspecified, it defaults
+      to the latest version (see Cloud Dataproc Versioning).
+    properties: Optional The properties to set on daemon config files.Property
+      keys are specified in prefix:property format, such as core:fs.defaultFS.
+      The following are supported prefixes and their mappings: core: core-
+      site.xml hdfs: hdfs-site.xml mapred: mapred-site.xml yarn: yarn-site.xml
+      hive: hive-site.xml pig: pig.properties spark: spark-defaults.conf
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] The properties to set on daemon config files.  Property keys
-    are specified in `prefix:property` format, such as `core:fs.defaultFS`.
-    The following are supported prefixes and their mappings:  * core:   `core-
-    site.xml` * hdfs:   `hdfs-site.xml` * mapred: `mapred-site.xml` * yarn:
-    `yarn-site.xml` * hive:   `hive-site.xml` * pig:    `pig.properties` *
-    spark:  `spark-defaults.conf`
+    """Optional The properties to set on daemon config files.Property keys are
+    specified in prefix:property format, such as core:fs.defaultFS. The
+    following are supported prefixes and their mappings: core: core-site.xml
+    hdfs: hdfs-site.xml mapred: mapred-site.xml yarn: yarn-site.xml hive:
+    hive-site.xml pig: pig.properties spark: spark-defaults.conf
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -1711,33 +1716,33 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache Spark](http://spark.apache.org/)
+  """A Cloud Dataproc job for running Apache Spark (http://spark.apache.org/)
   applications on YARN.
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names to values, used to
+    PropertiesValue: Optional A mapping of property names to values, used to
       configure Spark. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
-    archiveUris: [Optional] HCFS URIs of archives to be extracted in the
-      working directory of Spark drivers and tasks. Supported file types:
-      .jar, .tar, .tar.gz, .tgz, and .zip.
-    args: [Optional] The arguments to pass to the driver. Do not include
-      arguments, such as `--conf`, that can be set as job properties, since a
+    archiveUris: Optional HCFS URIs of archives to be extracted in the working
+      directory of Spark drivers and tasks. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    args: Optional The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as job properties, since a
       collision may occur that causes an incorrect job submission.
-    fileUris: [Optional] HCFS URIs of files to be copied to the working
+    fileUris: Optional HCFS URIs of files to be copied to the working
       directory of Spark drivers and distributed tasks. Useful for naively
       parallel tasks.
-    jarFileUris: [Optional] HCFS URIs of jar files to add to the CLASSPATHs of
+    jarFileUris: Optional HCFS URIs of jar files to add to the CLASSPATHs of
       the Spark driver and tasks.
-    loggingConfig: [Optional] The runtime log config for job execution.
+    loggingConfig: Optional The runtime log config for job execution.
     mainClass: The name of the driver's main class. The jar file that contains
       the class must be in the default CLASSPATH or specified in
-      `jar_file_uris`.
+      jar_file_uris.
     mainJarFileUri: The HCFS URI of the jar file that contains the main class.
-    properties: [Optional] A mapping of property names to values, used to
+    properties: Optional A mapping of property names to values, used to
       configure Spark. Properties that conflict with values set by the Cloud
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
@@ -1745,7 +1750,7 @@ class SparkJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names to values, used to configure
+    """Optional A mapping of property names to values, used to configure
     Spark. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
@@ -1781,34 +1786,34 @@ class SparkJob(_messages.Message):
 
 
 class SparkSqlJob(_messages.Message):
-  """A Cloud Dataproc job for running [Apache Spark
-  SQL](http://spark.apache.org/sql/) queries.
+  """A Cloud Dataproc job for running Apache Spark SQL
+  (http://spark.apache.org/sql/) queries.
 
   Messages:
-    PropertiesValue: [Optional] A mapping of property names to values, used to
+    PropertiesValue: Optional A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
       set by the Cloud Dataproc API may be overwritten.
-    ScriptVariablesValue: [Optional] Mapping of query variable names to values
-      (equivalent to the Spark SQL command: SET `name="value";`).
+    ScriptVariablesValue: Optional Mapping of query variable names to values
+      (equivalent to the Spark SQL command: SET name="value";).
 
   Fields:
-    jarFileUris: [Optional] HCFS URIs of jar files to be added to the Spark
+    jarFileUris: Optional HCFS URIs of jar files to be added to the Spark
       CLASSPATH.
-    loggingConfig: [Optional] The runtime log config for job execution.
-    properties: [Optional] A mapping of property names to values, used to
+    loggingConfig: Optional The runtime log config for job execution.
+    properties: Optional A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
       set by the Cloud Dataproc API may be overwritten.
     queryFileUri: The HCFS URI of the script that contains SQL queries.
     queryList: A list of queries.
-    scriptVariables: [Optional] Mapping of query variable names to values
-      (equivalent to the Spark SQL command: SET `name="value";`).
+    scriptVariables: Optional Mapping of query variable names to values
+      (equivalent to the Spark SQL command: SET name="value";).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """[Optional] A mapping of property names to values, used to configure
-    Spark SQL's SparkConf. Properties that conflict with values set by the
-    Cloud Dataproc API may be overwritten.
+    """Optional A mapping of property names to values, used to configure Spark
+    SQL's SparkConf. Properties that conflict with values set by the Cloud
+    Dataproc API may be overwritten.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -1832,8 +1837,8 @@ class SparkSqlJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """[Optional] Mapping of query variable names to values (equivalent to the
-    Spark SQL command: SET `name="value";`).
+    """Optional Mapping of query variable names to values (equivalent to the
+    Spark SQL command: SET name="value";).
 
     Messages:
       AdditionalProperty: An additional property for a ScriptVariablesValue
@@ -1932,38 +1937,37 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  """The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
+  used by gRPC (https://github.com/grpc). The error model is designed to be:
+  Simple to use and understand for most users Flexible enough to meet
+  unexpected needsOverviewThe Status message contains three pieces of data:
+  error code, error message, and error details. The error code should be an
+  enum value of google.rpc.Code, but it may accept additional error codes if
+  needed. The error message should be a developer-facing English message that
+  helps developers understand and resolve the error. If a localized user-
+  facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
+  detail types in the package google.rpc which can be used for common error
+  conditions.Language mappingThe Status message is the logical representation
+  of the error model, but it is not necessarily the actual wire format. When
+  the Status message is exposed in different client libraries and different
+  wire protocols, it can be mapped differently. For example, it will likely be
+  mapped to some exceptions in Java, but more likely mapped to some error
+  codes in C.Other usesThe error model and the Status message can be used in a
+  variety of environments, either with or without APIs, to provide a
+  consistent developer experience across different environments.Example uses
+  of this error model include: Partial errors. If a service needs to return
+  partial errors to the client, it may embed the Status in the normal response
+  to indicate the partial errors. Workflow errors. A typical workflow has
+  multiple steps. Each step may have a Status message for error reporting
+  purpose. Batch operations. If a client uses batch request and batch
+  response, the Status message should be used directly inside batch response,
+  one for each error sub-response. Asynchronous operations. If an API call
+  embeds asynchronous operation results in its response, the status of those
+  operations should be represented directly using the Status message. Logging.
+  If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.
 
   Messages:
@@ -1971,7 +1975,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details. There will be a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -2013,7 +2017,7 @@ class SubmitJobRequest(_messages.Message):
   """A request to submit a job.
 
   Fields:
-    job: [Required] The job resource.
+    job: Required The job resource.
   """
 
   job = _messages.MessageField('Job', 1)
@@ -2021,27 +2025,26 @@ class SubmitJobRequest(_messages.Message):
 
 class YarnApplication(_messages.Message):
   """A YARN application created by a job. Application information is a subset
-  of
-  <code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto</code>.
-  **Beta Feature**: This report is available for testing purposes only. It may
+  of <code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto</cod
+  e>.Beta Feature: This report is available for testing purposes only. It may
   be changed before final release.
 
   Enums:
-    StateValueValuesEnum: [Required] The application state.
+    StateValueValuesEnum: Required The application state.
 
   Fields:
-    name: [Required] The application name.
-    progress: [Required] The numerical progress of the application, from 1 to
+    name: Required The application name.
+    progress: Required The numerical progress of the application, from 1 to
       100.
-    state: [Required] The application state.
-    trackingUrl: [Optional] The HTTP URL of the ApplicationMaster,
+    state: Required The application state.
+    trackingUrl: Optional The HTTP URL of the ApplicationMaster,
       HistoryServer, or TimelineServer that provides application-specific
       information. The URL uses the internal hostname, and requires a proxy
       server for resolution and, possibly, access.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Required] The application state.
+    """Required The application state.
 
     Values:
       STATE_UNSPECIFIED: Status is unspecified.

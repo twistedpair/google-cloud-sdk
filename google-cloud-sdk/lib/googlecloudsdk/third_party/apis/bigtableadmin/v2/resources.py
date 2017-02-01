@@ -56,16 +56,6 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
-  PROJECTS_INSTANCES_CLUSTERS_SNAPSHOTS = (
-      'projects.instances.clusters.snapshots',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/instances/{instancesId}/clusters/'
-              '{clustersId}/snapshots/{snapshotsId}',
-      },
-      [u'name']
-  )
   PROJECTS_INSTANCES_TABLES = (
       'projects.instances.tables',
       '{+name}',

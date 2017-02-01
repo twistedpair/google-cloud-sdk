@@ -774,32 +774,6 @@ public.
         supports_download=False,
     )
 
-    def GetAccessPolicy(self, request, global_params=None):
-      """Producer method to retrieve current policy.
-
-      Args:
-        request: (ServicemanagementServicesGetAccessPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceAccessPolicy) The response message.
-      """
-      config = self.GetMethodConfig('GetAccessPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetAccessPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'servicemanagement.services.getAccessPolicy',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[],
-        relative_path=u'v1/services/{serviceName}/accessPolicy',
-        request_field='',
-        request_type_name=u'ServicemanagementServicesGetAccessPolicyRequest',
-        response_type_name=u'ServiceAccessPolicy',
-        supports_download=False,
-    )
-
     def GetConfig(self, request, global_params=None):
       """Gets a service configuration (version) for a managed service.
 
@@ -855,10 +829,15 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists all managed services. The result is limited to services that the.
-caller has "servicemanagement.services.get" permission for. If the request
-is made without authentication, it returns only public services that are
-available to everyone.
+      """Lists managed services.
+
+If called without any authentication, it returns only the public services.
+If called with authentication, it returns all services that the caller has
+"servicemanagement.services.get" permission for.
+
+**BETA:** If the caller specifies the `consumer_id`, it returns only the
+services enabled on the consumer. The `consumer_id` must have the format
+of "project:{PROJECT-ID}".
 
       Args:
         request: (ServicemanagementServicesListRequest) input message
@@ -1024,33 +1003,6 @@ Operation<response: ManagedService>
         request_field=u'managedService',
         request_type_name=u'ServicemanagementServicesUpdateRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def UpdateAccessPolicy(self, request, global_params=None):
-      """Producer method to update the current policy.  This method will return an.
-error if the policy is too large (more than 50 entries across all lists).
-
-      Args:
-        request: (ServiceAccessPolicy) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceAccessPolicy) The response message.
-      """
-      config = self.GetMethodConfig('UpdateAccessPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateAccessPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'servicemanagement.services.updateAccessPolicy',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[],
-        relative_path=u'v1/services/{serviceName}/accessPolicy',
-        request_field='<request>',
-        request_type_name=u'ServiceAccessPolicy',
-        response_type_name=u'ServiceAccessPolicy',
         supports_download=False,
     )
 

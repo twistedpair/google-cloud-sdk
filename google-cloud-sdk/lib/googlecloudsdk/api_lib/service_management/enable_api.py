@@ -43,14 +43,15 @@ def EnableServiceApiCall(project_id, service_name):
   return client.services.Enable(request)
 
 
-def EnableServiceIfDisabled(project_id, service_name, async=False):
-  """Check to see if the service is enabled, and if it is not, do so.
+def IsServiceEnabled(project_id, service_name):
+  """Return true if the service is enabled.
 
   Args:
-    project_id: The ID of the project for which to enable the service.
-    service_name: The name of the service to enable on the project.
-    async: bool, if True, return the operation ID immediately, without waiting
-           for the op to complete.
+    project_id: The ID of the project we want to query.
+    service_name: The name of the service.
+
+  Returns:
+    True if the service is enabled, false otherwise.
   """
 
   client = services_util.GetClientInstance()
@@ -63,13 +64,29 @@ def EnableServiceIfDisabled(project_id, service_name, async=False):
       batch_size_attribute='pageSize',
       field='services')
 
-  # If the service is already present in the list of enabled services, return
-  # early, otherwise, enable the service.
+  # If the service is present in the list of enabled services, return
+  # True, otherwise return False
   for service in services:
     if service.serviceName.lower() == service_name.lower():
-      log.debug('Service [{0}] is already enabled for project [{1}]'.format(
-          service_name, project_id))
-      return
+      return True
+  return False
+
+
+def EnableServiceIfDisabled(project_id, service_name, async=False):
+  """Check to see if the service is enabled, and if it is not, do so.
+
+  Args:
+    project_id: The ID of the project for which to enable the service.
+    service_name: The name of the service to enable on the project.
+    async: bool, if True, print the operation ID and return immediately,
+           without waiting for the op to complete.
+  """
+
+  # If the service is enabled, we can return
+  if IsServiceEnabled(project_id, service_name):
+    log.debug('Service [{0}] is already enabled for project [{1}]'.format(
+        service_name, project_id))
+    return
 
   # If the service is not yet enabled, enable it
   log.status.Print('Enabling service {0} on project {1}...'.format(

@@ -444,6 +444,20 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.hostTypes': resource_info.ResourceInfo(
+        cache_command='compute sole-tenancy host-types list',
+        list_format="""
+          table(
+            name,
+            zone.basename(),
+            guestCpus:label=CPUs,
+            memoryMb,
+            localSsdGb,
+            deprecated.state:label=DEPRECATED
+          )
+        """,
+    ),
+
     'compute.httpHealthChecks': resource_info.ResourceInfo(
         cache_command='compute http-health-checks list',
         list_format="""
@@ -763,6 +777,10 @@ RESOURCE_REGISTRY = {
 
     'compute.targetSslProxies': resource_info.ResourceInfo(
         cache_command='compute target-ssl-proxies list',
+    ),
+
+    'compute.targetTcpProxies': resource_info.ResourceInfo(
+        cache_command='compute target-tcp-proxies list',
     ),
 
     'compute.targetVpnGateways': resource_info.ResourceInfo(
@@ -1325,7 +1343,7 @@ RESOURCE_REGISTRY = {
           table(
             jobId.basename(),
             state:label=STATUS,
-            createTime.date():label=CREATED
+            createTime.date(tz=LOCAL):label=CREATED
           )
         """,
     ),

@@ -29,6 +29,8 @@
 #     default: <true|false in case there more that one api version>
 #     version: <actual private version of this api,
 #               defaults to public api_version>
+#     resources:
+#       resource_collection_name: <parsing_template>
 
 root_dir: googlecloudsdk/third_party/apis
 
@@ -40,6 +42,8 @@ apis:
     v1:
       discovery_doc: appengine_v1.json
       default: true
+      resources:
+        projects: "projects/{projectId}"
   bigquery:
     v2:
       discovery_doc: bigquery_v2.json
@@ -79,6 +83,8 @@ apis:
   clouderrorreporting:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
+      resources:
+         projects: "projects/{projectId}"
   cloudfunctions:
     v1beta2:
       discovery_doc: cloudfunctions_v1beta2.json
@@ -87,6 +93,7 @@ apis:
         # For now, we only accept global buckets, but should give them to the
         # EventTrigger API in the format that it expects (with the underscore).
         projects.buckets: "projects/_/buckets/{bucketId}"
+        projects.locations: "projects/{projectsId}/locations/{locationsId}"
   cloudkms:
     v1beta1:
       discovery_doc: cloudkms_v1beta1.json
@@ -164,6 +171,8 @@ apis:
   ml:
     v1beta1:
       discovery_doc: ml_v1beta1.json
+      resources:
+        projects: "projects/{projectsId}"
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

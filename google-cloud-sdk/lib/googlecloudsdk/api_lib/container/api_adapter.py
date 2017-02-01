@@ -431,7 +431,8 @@ class CreateClusterOptions(object):
                enable_kubernetes_alpha=None,
                preemptible=None,
                enable_autorepair=None,
-               enable_autoupgrade=None):
+               enable_autoupgrade=None,
+               service_account=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -460,6 +461,7 @@ class CreateClusterOptions(object):
     self.preemptible = preemptible
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
+    self.service_account = service_account
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -510,7 +512,8 @@ class CreateNodePoolOptions(object):
                image_type=None,
                preemptible=None,
                enable_autorepair=None,
-               enable_autoupgrade=None):
+               enable_autoupgrade=None,
+               service_account=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -526,6 +529,7 @@ class CreateNodePoolOptions(object):
     self.preemptible = preemptible
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
+    self.service_account = service_account
 
 
 class UpdateNodePoolOptions(object):
@@ -574,6 +578,9 @@ class V1Adapter(APIAdapter):
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
+
+    if options.service_account:
+      node_config.serviceAccount = options.service_account
 
     max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
     pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
@@ -723,6 +730,8 @@ class V1Adapter(APIAdapter):
       node_config.tags = options.tags
     else:
       node_config.tags = []
+    if options.service_account:
+      node_config.serviceAccount = options.service_account
 
     _AddNodeLabelsToNodeConfig(node_config, options)
 

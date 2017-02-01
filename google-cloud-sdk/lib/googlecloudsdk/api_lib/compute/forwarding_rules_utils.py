@@ -76,6 +76,8 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
                                                             self.resources)
     if args.target_ssl_proxy:
       return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, self.resources)
+    if getattr(args, 'target_tcp_proxy', None):
+      return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, self.resources)
 
   def ValidateRegionalArgs(self, args):
     """Validate the regional forwarding rules args."""
@@ -94,6 +96,10 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
     if getattr(args, 'target_ssl_proxy', None):
       raise exceptions.ToolException(
           'You cannot specify [--target-ssl-proxy] for a regional '
+          'forwarding rule.')
+    if getattr(args, 'target_tcp_proxy', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--target-tcp-proxy] for a regional '
           'forwarding rule.')
     if args.target_instance_zone and not args.target_instance:
       raise exceptions.ToolException(

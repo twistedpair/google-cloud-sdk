@@ -16,10 +16,12 @@
 """
 
 import io
+import json
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 import httplib2
 
@@ -53,7 +55,6 @@ def ExtractErrorMessage(error_details):
         resources=[error_details['details']],
         print_format='json',
         out=error_message)
-
   return error_message.getvalue()
 
 
@@ -62,8 +63,25 @@ def MakeRequest(service_method, request_message):
   try:
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
+    log.debug(error)
     exc = exceptions.HttpException(error)
+    # Make it easier to switch on certain common error codes.
     err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(exc.payload.status_code)
-    raise err() if err else exc
+    if err:
+      raise err
+    try:
+      error_content = json.loads(error.content)
+    # If the error content isn't json, that's OK, just raise HttpException.
+    except ValueError:
+      error_content = {}
+    error_details = error_content.get('error', {})
+    # TODO(b/34516298): use generic HttpException when compatible with v2.
+    # HttpExceptions do not surface details from the response, so use a
+    # gcloud app-specific error message if details are available.
+    if 'details' in error_details and error_details['details']:
+      error_message = ExtractErrorMessage(error_details)
+    else:
+      error_message = None
+    raise api_lib_exceptions.HttpException(error, error_message=error_message)
   except httplib2.HttpLib2Error as error:
     raise exceptions.HttpException('Response error: %s' % error.message)

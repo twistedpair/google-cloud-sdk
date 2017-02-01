@@ -36,7 +36,7 @@ def MakeProcess(module_name,
     module_name: str. Name of the module to run, e.g. trainer.task
     package_root: str. Absolute path to the package root for the module.
       used as CWD for the subprocess.
-    args: [str]. Additional user args.
+    args: [str]. Additional user args. Any relative paths will not work.
     cluster: dict. Cluster configuration dictionary. Suitable for passing to
       tf.train.ClusterSpec.
     task_type: str. Task type of this process. Only relevant if cluster is
@@ -70,7 +70,7 @@ def MakeProcess(module_name,
   env['TF_CONFIG'] = json.dumps(config)
   if task_type == 'master':
     return execution_utils.Exec(
-        cmd, env=env, no_exit=True, **extra_popen_args)
+        cmd, env=env, no_exit=True, cwd=package_root, **extra_popen_args)
   else:
     task = subprocess.Popen(
         cmd,
@@ -97,7 +97,8 @@ def RunDistributed(module_name,
     num_workers: int. Number of workers.
     start_port: int. First port for the contiguous block of ports used
       by the cluster.
-    user_args: [str]. Additional user args for the task.
+    user_args: [str]. Additional user args for the task. Any relative paths will
+      not work.
   Returns:
     int. the retval of 'master' subprocess
   """

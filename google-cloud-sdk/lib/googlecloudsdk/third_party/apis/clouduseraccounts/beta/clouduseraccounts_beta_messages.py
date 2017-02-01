@@ -561,8 +561,7 @@ class Operation(_messages.Message):
 
   Fields:
     clientOperationId: [Output Only] Reserved for future use.
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
     endTime: [Output Only] The time that this operation was completed. This
@@ -690,6 +689,7 @@ class Operation(_messages.Message):
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
@@ -707,9 +707,10 @@ class Operation(_messages.Message):
       NOT_CRITICAL_ERROR = 10
       NO_RESULTS_ON_PAGE = 11
       REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_NOT_DELETED = 13
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
-      UNREACHABLE = 15
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.

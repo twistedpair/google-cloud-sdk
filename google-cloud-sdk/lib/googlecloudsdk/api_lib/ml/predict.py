@@ -15,9 +15,7 @@
 
 import json
 
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
 
@@ -31,12 +29,11 @@ class HttpRequestFailError(core_exceptions.Error):
   pass
 
 
-def Predict(model_name=None, version_name=None, instances=None):
-  """Perform online prediction on the input data file.
+def Predict(model_or_version_ref, instances):
+  """Performs online prediction on the input data file.
 
   Args:
-      model_name: name of the model.
-      version_name: name of the version.
+      model_or_version_ref: a Resource representing either a model or a version.
       instances: a list of JSON or UTF-8 encoded instances to perform
           prediction on.
 
@@ -47,23 +44,11 @@ def Predict(model_name=None, version_name=None, instances=None):
       HttpRequestFailError: if error happens with http request, or parsing
           the http response.
   """
-
-  # Get the url for the predict request.
-  project_id = properties.VALUES.core.project.Get()
-  # TODO(b/31504982): use Resources.SelfLink() to get the url
-  # once b/31504982 is fixed.
-  model_version = '{0}/models/{1}'.format(project_id, model_name)
-  if version_name:
-    model_version += '/versions/{0}'.format(version_name)
-  url = (apis.GetEffectiveApiEndpoint('ml', 'v1beta1') + 'v1beta1/projects/' +
-         model_version + ':predict')
-
+  url = model_or_version_ref.SelfLink() + ':predict'
   # Construct the body for the predict request.
-  body = {'instances': instances}
-
   headers = {'Content-Type': 'application/json'}
   try:
-    http_body = json.dumps(body, sort_keys=True)
+    body = json.dumps({'instances': instances}, sort_keys=True)
   except UnicodeDecodeError:
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
                                'because the input is not utf-8 encoded.')
@@ -72,7 +57,7 @@ def Predict(model_name=None, version_name=None, instances=None):
   # TODO(b/31403673): use M1V1beta1.ProjectsService.Predict once b/31403673
   # is fixed.
   response, response_body = http.Http().request(
-      uri=url, method='POST', body=http_body, headers=headers)
+      uri=url, method='POST', body=body, headers=headers)
   if response.get('status') != '200':
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)

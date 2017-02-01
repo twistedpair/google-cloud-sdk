@@ -22,6 +22,12 @@ BASE_URL = 'https://clouderrorreporting.googleapis.com/v1beta1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      ['projectId']
+  )
   PROJECTS_GROUPS = (
       'projects.groups',
       '{+groupName}',

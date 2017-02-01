@@ -18,6 +18,7 @@ import re
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import csek_utils
+from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
@@ -263,10 +264,21 @@ def CreateMachineTypeUris(
   return machine_type_uris
 
 
-def CreateNetworkInterfaceMessage(
-    resources, compute_client,
-    network, subnet, private_network_ip, no_address, address,
-    instance_refs, alias_ip_ranges_string=None):
+def CreateNetworkInterfaceMessage(resources,
+                                  compute_client,
+                                  network,
+                                  subnet,
+                                  private_network_ip,
+                                  no_address,
+                                  address,
+                                  instance_refs,
+                                  alias_ip_ranges_string=None,
+                                  no_public_dns=None,
+                                  public_dns=None,
+                                  no_public_ptr=None,
+                                  public_ptr=None,
+                                  no_public_ptr_domain=None,
+                                  public_ptr_domain=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   region = utils.ZoneNameToRegionName(instance_refs[0].zone.split('/')[-1])
@@ -309,6 +321,19 @@ def CreateNetworkInterfaceMessage(
           resources, compute_client, address, region)
       if address_resource:
         access_config.natIP = address_resource
+
+    if no_public_dns is True:
+      access_config.setPublicDns = False
+    elif public_dns is True:
+      access_config.setPublicDns = True
+
+    if no_public_ptr is True:
+      access_config.setPublicPtr = False
+    elif public_ptr is True:
+      access_config.setPublicPtr = True
+
+    if no_public_ptr_domain is not True and public_ptr_domain is not None:
+      access_config.publicPtrDomainName = public_ptr_domain
 
     network_interface.accessConfigs = [access_config]
 
@@ -464,7 +489,9 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
       disk_type_ref = None
       disk_type_uri = None
 
-    image_uri, _ = scope_prompter.ExpandImageFlag(
+    image_expander = image_utils.ImageExpander(scope_prompter.compute_client,
+                                               scope_prompter.resources)
+    image_uri, _ = image_expander.ExpandImageFlag(
         user_project=scope_prompter.project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),

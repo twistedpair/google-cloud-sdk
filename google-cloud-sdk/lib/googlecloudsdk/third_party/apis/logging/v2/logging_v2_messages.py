@@ -674,13 +674,13 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@google.com, the same identity
-      used before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
+      the same identity used before the addition of writer identities to this
+      API. The sink's destination must be in the same project as the sink
+      itself.If this field is set to true, or if the sink is owned by a non-
+      project resource such as an organization, then the value of
+      writer_identity will be a unique service account used only for exports
+      from the new sink. For more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -807,13 +807,13 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@google.com, the same identity
-      used before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
+      the same identity used before the addition of writer identities to this
+      API. The sink's destination must be in the same project as the sink
+      itself.If this field is set to true, or if the sink is owned by a non-
+      project resource such as an organization, then the value of
+      writer_identity will be a unique service account used only for exports
+      from the new sink. For more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -957,13 +957,13 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@google.com, the same identity
-      used before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
+      the same identity used before the addition of writer identities to this
+      API. The sink's destination must be in the same project as the sink
+      itself.If this field is set to true, or if the sink is owned by a non-
+      project resource such as an organization, then the value of
+      writer_identity will be a unique service account used only for exports
+      from the new sink. For more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1161,13 +1161,13 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@google.com, the same identity
-      used before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
+      the same identity used before the addition of writer identities to this
+      API. The sink's destination must be in the same project as the sink
+      itself.If this field is set to true, or if the sink is owned by a non-
+      project resource such as an organization, then the value of
+      writer_identity will be a unique service account used only for exports
+      from the new sink. For more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)

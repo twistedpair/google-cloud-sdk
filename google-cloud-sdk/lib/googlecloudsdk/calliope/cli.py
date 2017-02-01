@@ -707,7 +707,7 @@ class CLI(object):
     # Set the command name in case an exception happens before the command name
     # is finished parsing.
     command_path_string = self.__name
-    flag_collection = None
+    specified_arg_names = None
 
     argv = self._ConvertNonAsciiArgsToUnicode(args)
     try:
@@ -715,7 +715,7 @@ class CLI(object):
       command_path_string = '.'.join(args.command_path)
       if not args.calliope_command.IsUnicodeSupported():
         self._EnforceAsciiArgs(argv)
-      flag_collection = self.__parser.GetFlagCollection()
+      specified_arg_names = args.GetSpecifiedArgNames()
 
       # -h|--help|--document are dispatched by parse_args and never get here.
 
@@ -734,7 +734,7 @@ class CLI(object):
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
       metrics.Commands(
-          command_path_string, config.CLOUD_SDK_VERSION, flag_collection)
+          command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names)
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
@@ -754,14 +754,14 @@ class CLI(object):
             for resource in resources:
               yield resource
           except Exception as exc:  # pylint: disable=broad-except
-            self._HandleAllErrors(exc, command_path_string, flag_collection)
+            self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 
         return _Yield()
 
       return resources
 
     except Exception as exc:  # pylint: disable=broad-except
-      self._HandleAllErrors(exc, command_path_string, flag_collection)
+      self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 
     finally:
       properties.VALUES.PopInvocationValues()
@@ -771,43 +771,44 @@ class CLI(object):
       log.SetUserOutputEnabled(None)
       log.SetVerbosity(None)
 
-  def _HandleAllErrors(self, exc, command_path_string, flag_collection):
+  def _HandleAllErrors(self, exc, command_path_string, specified_arg_names):
     """Handle all errors.
 
     Args:
       exc: Exception, The exception that was raised.
       command_path_string: str, The '.' separated command path.
-      flag_collection: str, The flag collection name for metrics.
+      specified_arg_names: [str], The specified arg named scrubbed for metrics.
 
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
     if isinstance(exc, exceptions.ExitCodeNoError):
-      self._HandleKnownError(exc, command_path_string, flag_collection,
+      self._HandleKnownError(exc, command_path_string, specified_arg_names,
                              print_error=False)
     elif isinstance(exc, core_exceptions.Error):
-      self._HandleKnownError(exc, command_path_string, flag_collection,
+      self._HandleKnownError(exc, command_path_string, specified_arg_names,
                              print_error=True)
     else:
       known_exc = exceptions.ConvertKnownError(exc)
       if known_exc:
-        self._HandleKnownError(known_exc, command_path_string, flag_collection,
-                               print_error=True, orig_exc=exc)
+        self._HandleKnownError(known_exc, command_path_string,
+                               specified_arg_names, print_error=True,
+                               orig_exc=exc)
       else:
         # Make sure any uncaught exceptions still make it into the log file.
         log.debug(console_attr.EncodeForOutput(exc), exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc.__class__, flag_collection,
+        metrics.Error(command_path_string, exc.__class__, specified_arg_names,
                       error_extra_info={'error_code': 1})
         raise
 
-  def _HandleKnownError(self, exc, command_path_string, flag_collection,
+  def _HandleKnownError(self, exc, command_path_string, specified_arg_names,
                         print_error=True, orig_exc=None):
     """Print the error and exit for exceptions of known type.
 
     Args:
       exc: Exception, The exception that was raised.
       command_path_string: str, The '.' separated command path.
-      flag_collection: str, The flag collection name for metrics.
+      specified_arg_names: [str], The specified arg named scrubbed for metrics.
       print_error: bool, True to print an error message, False to just exit with
         the given error code.
       orig_exc: Exception or None, The original exception for metrics purposes
@@ -824,7 +825,7 @@ class CLI(object):
     if isinstance(exc, exceptions.HttpException):
       error_extra_info['http_status_code'] = exc.payload.status_code
 
-    metrics.Error(command_path_string, metrics_exc_class, flag_collection,
+    metrics.Error(command_path_string, metrics_exc_class, specified_arg_names,
                   error_extra_info=error_extra_info)
     if properties.VALUES.core.print_handled_tracebacks.GetBool():
       raise

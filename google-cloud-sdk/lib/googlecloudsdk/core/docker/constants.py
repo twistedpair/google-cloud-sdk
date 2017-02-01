@@ -17,7 +17,9 @@ DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 BUCKET_REGISTRIES = ['b.gcr.io', 'bucket.gcr.io']
 APPENGINE_REGISTRY = 'appengine.gcr.io'
-SPECIALTY_REGISTRIES = BUCKET_REGISTRIES + [APPENGINE_REGISTRY]
+LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']
+SPECIALTY_REGISTRIES = (BUCKET_REGISTRIES + LAUNCHER_REGISTRIES +
+                        [APPENGINE_REGISTRY])
 # GCR's regional demand-based mirrors of DockerHub.
 # These are intended for use with the daemon flag, e.g.
 #  --registry-mirror=https://mirror.gcr.io

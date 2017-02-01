@@ -1130,7 +1130,12 @@ class ImportReadGroupSetsRequest(_messages.Message):
       matching reference set.
     sourceUris: A list of URIs pointing at [BAM
       files](https://samtools.github.io/hts-specs/SAMv1.pdf) in Google Cloud
-      Storage.
+      Storage. Those URIs can include wildcards (*), but do not add or remove
+      matching files before import has completed.  Note that Google Cloud
+      Storage object listing is only eventually consistent: files added may be
+      not be immediately visible to everyone. Thus, if using a wildcard it is
+      preferable not to start the import immediately after the files are
+      created.
   """
 
   class PartitionStrategyValueValuesEnum(_messages.Enum):
@@ -1435,7 +1440,7 @@ class Operation(_messages.Message):
       with the Operation.
     ResponseValue: If importing ReadGroupSets, an ImportReadGroupSetsResponse
       is returned. If importing Variants, an ImportVariantsResponse is
-      returned. For exports, an empty response is returned.
+      returned. For pipelines and exports, an empty response is returned.
 
   Fields:
     done: If the value is `false`, it means the operation is still in
@@ -1450,7 +1455,7 @@ class Operation(_messages.Message):
       /CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
     response: If importing ReadGroupSets, an ImportReadGroupSetsResponse is
       returned. If importing Variants, an ImportVariantsResponse is returned.
-      For exports, an empty response is returned.
+      For pipelines and exports, an empty response is returned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1482,8 +1487,8 @@ class Operation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
     """If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned.
-    If importing Variants, an ImportVariantsResponse is returned. For exports,
-    an empty response is returned.
+    If importing Variants, an ImportVariantsResponse is returned. For
+    pipelines and exports, an empty response is returned.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.

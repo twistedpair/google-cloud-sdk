@@ -98,7 +98,7 @@ def _List(requests, http, batch_url, errors):
     requests = new_requests
 
 
-def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
+def MakeRequests(requests, http, batch_url, errors):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -125,10 +125,6 @@ def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error,
       it is added to this list.
-    custom_get_requests: A mapping of resource names to requests. If
-      this is provided, when an operation is DONE, instead of performing
-      a get on the targetLink, this function will consult custom_get_requests
-      and perform the request dictated by custom_get_requests.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -205,7 +201,6 @@ def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
         resource_service=resource_service,
         http=http,
         batch_url=batch_url,
-        custom_get_requests=custom_get_requests,
         warnings=warnings or [],
         errors=errors):
       yield response

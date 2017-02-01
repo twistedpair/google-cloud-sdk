@@ -14,14 +14,17 @@ package = 'runtimeconfig'
 
 
 class AuditConfig(_messages.Message):
-  """Provides the configuration for non-admin_activity logging for a service.
-  Controls exemptions and specific log sub-types.
+  """Specifies the audit configuration for a service. It consists of which
+  permission types are logged, and what identities, if any, are exempted from
+  logging. An AuditConifg must have one or more AuditLogConfigs.
 
   Fields:
-    auditLogConfigs: The configuration for each type of logging Next ID: 4
+    auditLogConfigs: The configuration for logging of each type of permission.
+      Next ID: 4
     exemptedMembers: Specifies the identities that are exempted from "data
       access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members.
+      same format of Binding.members. This field is deprecated in favor of
+      per-permission-type exemptions.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -33,14 +36,19 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for a sub-type of logging.
+  """Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
 
   Fields:
-    exemptedMembers: Specifies the identities that are exempted from this type
-      of logging Follows the same format of Binding.members.
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
     logType: The log type that this config enables.
   """
 
@@ -49,9 +57,9 @@ class AuditLogConfig(_messages.Message):
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Log admin reads
-      DATA_WRITE: Log data writes
-      DATA_READ: Log data reads
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
     """
     LOG_TYPE_UNSPECIFIED = 0
     ADMIN_READ = 1
@@ -436,10 +444,7 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
-    auditConfigs: Specifies audit logging configs for "data access". "data
-      access": generally refers to data reads/writes and admin reads. "admin
-      activity": generally refers to admin writes.  Note: `AuditConfig`
-      doesn't apply to "admin activity", which always enables audit logging.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
