@@ -71,32 +71,31 @@ class Namespace(argparse.Namespace):
     self._deepest_parser = None
     super(Namespace, self).__init__()
 
+  def GetDisplayInfo(self):
+    """Returns the parser display_info."""
+    # pylint: disable=protected-access
+    return self._deepest_parser._calliope_command.ai.display_info
+
   def GetSpecifiedArgNames(self):
     """Returns the scrubbed names for args specified on the comman line."""
     return sorted(self._specified_args.values())
 
-  def SetIfNotSpecified(self, **kwargs):
-    """Sets dest=value for dest if it wasn't specified on the command line.
-
-    This is useful for flags that affect the value of other flags:
-
-      if args.diff
-        # Set format if --format was not specified on the command line.
-        args.SetIfNotSpecified(format='diff(old, new)')
+  def IsSpecified(self, dest):
+    """Returns True if args.dest was specified on the command line.
 
     Args:
-      **kwargs: dest=value pairs. For each pair, if args.dest was not set
-        on the command line the it is set to value.
+      dest: str, The dest name for the arg to check.
 
     Raises:
       UnknownDestination: If there is no registered arg for a destination.
+
+    Returns:
+      True if args.dest was specified on the command line.
     """
-    for dest, value in kwargs.iteritems():
-      if not hasattr(self, dest):
-        raise parser_errors.UnknownDestination(
-            'No registered arg for destination [{}].'.format(dest))
-      if dest not in self._specified_args:
-        setattr(self, dest, value)
+    if not hasattr(self, dest):
+      raise parser_errors.UnknownDestination(
+          'No registered arg for destination [{}].'.format(dest))
+    return dest in self._specified_args
 
 
 class ArgumentParser(argparse.ArgumentParser):

@@ -15,7 +15,8 @@
 import copy
 
 from apitools.base.py import encoding
-from googlecloudsdk.core import apis
+
+from googlecloudsdk.api_lib.ml import jobs
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -55,8 +56,16 @@ def MakeContinueFunction(job_id):
   Returns:
     A one-argument function decides if log fetcher should continue.
   """
-  def CheckJobNotFinished(periods_without_logs):
-    """Checks if we haven't polled enough and then if job is not finished.
+  jobs_client = jobs.JobsClient()
+  project_id = properties.VALUES.core.project.Get(required=True)
+  job_ref = resources.REGISTRY.Create(
+      'ml.projects.jobs', jobsId=job_id, projectsId=project_id)
+  def ShouldContinue(periods_without_logs):
+    """Returns whether to continue polling the logs.
+
+    Returns False only once we've checked the job and it is finished; we only
+    check whether the job is finished once we've gone >1 interval without
+    getting any new logs.
 
     Args:
       periods_without_logs: integer number of empty polls.
@@ -64,19 +73,10 @@ def MakeContinueFunction(job_id):
     Returns:
       True if we haven't tried polling more than once or if job is not finished.
     """
-    client = apis.GetClientInstance('ml', 'v1beta1')
-    if periods_without_logs > 1:
-      # TODO(b/34171242): Use JobsClient() instead.
-      proj_id = properties.VALUES.core.project.Get(required=True)
-      res = resources.REGISTRY.Parse(job_id, collection='ml.projects.jobs',
-                                     params={'projectsId': proj_id})
-      req = client.MESSAGES_MODULE.MlProjectsJobsGetRequest(
-          name=res.RelativeName())
-      resp = client.projects_jobs.Get(req)
-      return resp.endTime is None
-    else:
+    if periods_without_logs <= 1:
       return True
-  return CheckJobNotFinished
+    return jobs_client.Get(job_ref).endTime is None
+  return ShouldContinue
 
 
 def SplitMultiline(log_generator, allow_multiline=False):

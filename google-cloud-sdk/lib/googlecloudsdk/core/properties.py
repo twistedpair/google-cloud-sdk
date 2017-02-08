@@ -721,6 +721,12 @@ class _SectionCore(_Section):
         'collected.  This is value is set based on your choices during '
         'installation, but can be changed at any time.  For more information, '
         'see: https://cloud.google.com/sdk/usage-statistics')
+    self.enable_gri = self._AddBool(
+        'enable_gri',
+        default=False,
+        hidden=True,
+        help_text='If True, the parser for gcloud Resource Identifiers will be'
+                  'enabled when interpreting resource arguments.')
     self.api_host = self._Add(
         'api_host',
         hidden=True,

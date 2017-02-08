@@ -56,6 +56,10 @@ IMAGE_ALIASES = {
         project='coreos-cloud',
         name_prefix='coreos-stable',
         family='coreos-stable'),
+    'cos': ImageAlias(
+        project='cos-cloud',
+        name_prefix='cos',
+        family='cos'),
     'debian-8': ImageAlias(
         project='debian-cloud',
         name_prefix='debian-8-jessie',
@@ -114,6 +118,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'centos-cloud',
     'coreos-cloud',
     'debian-cloud',
+    'cos-cloud',
     'rhel-cloud',
     'suse-cloud',
     'ubuntu-os-cloud',

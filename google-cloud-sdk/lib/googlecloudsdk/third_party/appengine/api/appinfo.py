@@ -146,7 +146,6 @@ MODULE_VERSION_ID_RE_STRING = (r'^(?!-)[a-z\d\-]{0,%d}[a-z\d]$' %
 _IDLE_INSTANCES_REGEX = r'^([\d]+|automatic)$'
 # Note that this regex will not allow zero-prefixed numbers, e.g. 0001.
 _INSTANCES_REGEX = r'^[1-9][\d]*$'
-_INSTANCE_CLASS_REGEX = r'^([fF](1|2|4|4_1G)|[bB](1|2|4|8|4_1G))$'
 
 _CONCURRENT_REQUESTS_REGEX = r'^([1-9]\d*)$'
 
@@ -2008,7 +2007,7 @@ class AppInfoExternal(validation.Validated):
       # The SDK will use this for generated Dockerfiles
       ENTRYPOINT: validation.Optional(validation.Type(str)),
       RUNTIME_CONFIG: validation.Optional(RuntimeConfig),
-      INSTANCE_CLASS: validation.Optional(_INSTANCE_CLASS_REGEX),
+      INSTANCE_CLASS: validation.Optional(validation.Type(str)),
       SOURCE_LANGUAGE: validation.Optional(
           validation.Regex(SOURCE_LANGUAGE_RE_STRING)),
       AUTOMATIC_SCALING: validation.Optional(AutomaticScaling),

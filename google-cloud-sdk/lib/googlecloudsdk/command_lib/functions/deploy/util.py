@@ -17,13 +17,12 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
 def GetLocalPath(args):
-  return args.local_path or args.source or '.'
+  return args.local_path or '.'
 
 
 def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
@@ -73,10 +72,9 @@ def DeduceAndCheckArgs(args):
   1. Check if --source-bucket is present when --source-url is present.
   2. Validate if local-path is a directory.
   3. Check if --source-path is present when --source-url is present.
-  4. Warn about use of deprecated flags (if deprecated flags were used)
-  5. Check if --trigger-event, --trigger-resource or --trigger-path are
+  4. Check if --trigger-event, --trigger-resource or --trigger-path are
      present when --trigger-provider is not present. (and fail if it is so)
-  6. Check --trigger-* family of flags deducing default values if possible and
+  5. Check --trigger-* family of flags deducing default values if possible and
      necessary.
 
   Args:
@@ -118,25 +116,17 @@ def _ValidateSourceArgs(args):
       raise exceptions.FunctionsError(
           'argument --source-tag: can be given only if argument '
           '--source-url is provided')
-    stage_bucket = args.bucket or args.stage_bucket
-    if stage_bucket is None:
+    if args.stage_bucket is None:
       raise exceptions.FunctionsError(
           'argument --stage-bucket: required when the function is deployed '
           'from a local directory (when argument --source-url is not '
           'provided)')
     util.ValidateDirectoryExistsOrRaiseFunctionError(GetLocalPath(args))
   else:
-    if args.source is None and args.source_path is None:
+    if args.source_path is None:
       raise exceptions.FunctionsError(
           'argument --source-path: required when argument --source-url is '
           'provided')
-
-  if args.bucket is not None:
-    log.warn('--bucket flag is deprecated. Use --stage-bucket instead.')
-  if args.source is not None:
-    log.warn('--source flag is deprecated. Use --local-path (for sources on '
-             'local file system) or --source-path (for sources in Cloud '
-             'Source Repositories) instead.')
 
 
 def _ValidateTriggerArgs(args):
@@ -147,9 +137,6 @@ def _ValidateTriggerArgs(args):
   Raises:
     FunctionsError.
   """
-  if args.trigger_gs_uri is not None:
-    log.warn('--trigger-gs-uri flag is deprecated. Use --trigger-bucket '
-             'instead.')
 
   if args.trigger_provider is None and (args.trigger_event is not None or
                                         args.trigger_resource is not None):

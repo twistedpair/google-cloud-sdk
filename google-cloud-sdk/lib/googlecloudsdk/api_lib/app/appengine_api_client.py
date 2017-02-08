@@ -289,17 +289,25 @@ class AppengineApiClient(object):
 
     return self.ListInstances(versions)
 
-  def DebugInstance(self, res):
+  def DebugInstance(self, res, ssh_key=None):
     """Enable debugging of a Flexible instance.
 
     Args:
       res: A googleclousdk.core.Resource object.
+      ssh_key: str, Public SSH key to add to the instance. Examples:
+        `[USERNAME]:ssh-rsa [KEY_VALUE] [USERNAME]` ,
+        `[USERNAME]:ssh-rsa [KEY_VALUE] google-ssh {"userName":"[USERNAME]",`
+        `"expireOn":"[EXPIRE_TIME]"}`
+        For more information, see Adding and Removing SSH Keys
+        (https://cloud.google.com/compute/docs/instances/adding-removing-ssh-
+        keys).
 
     Returns:
       The completed Operation.
     """
     request = self.messages.AppengineAppsServicesVersionsInstancesDebugRequest(
-        name=res.RelativeName())
+        name=res.RelativeName(),
+        debugInstanceRequest=self.messages.DebugInstanceRequest(sshKey=ssh_key))
     operation = requests.MakeRequest(
         self.client.apps_services_versions_instances.Debug, request)
     return operations_util.WaitForOperation(self.client.apps_operations,
@@ -326,6 +334,10 @@ class AppengineApiClient(object):
 
     Args:
       res: A googlecloudsdk.core.Resource object.
+
+    Raises:
+      googlecloudsdk.api_lib.app.exceptions.NotFoundError: If instance does not
+        exist.
 
     Returns:
       Version resource object from the API

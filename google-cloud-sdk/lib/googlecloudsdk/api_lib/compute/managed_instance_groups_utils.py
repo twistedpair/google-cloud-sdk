@@ -203,38 +203,28 @@ def ValidateAutoscalerArgs(args):
           'for queue-based autoscaling.')
 
 
-def GetInstanceGroupManagerOrThrow(igm_ref, project, compute,
-                                   http, batch_url):
+def GetInstanceGroupManagerOrThrow(igm_ref, client):
   """Retrieves the given Instance Group Manager if possible.
 
   Args:
     igm_ref: reference to the Instance Group Manager.
-    project: project owning resources.
-    compute: module representing compute api.
-    http: communication channel.
-    batch_url: batch url.
+    client: The compute client.
   Returns:
     Instance Group Manager object.
   """
   if hasattr(igm_ref, 'region'):
-    service = compute.regionInstanceGroupManagers
-    request = service.GetRequestType('Get')(project=project)
-    request.region = igm_ref.region
+    service = client.apitools_client.regionInstanceGroupManagers
+    request_type = service.GetRequestType('Get')
   if hasattr(igm_ref, 'zone'):
-    service = compute.instanceGroupManagers
-    request = service.GetRequestType('Get')(project=project)
-    request.zone = igm_ref.zone
-  request.instanceGroupManager = igm_ref.Name()
+    service = client.apitools_client.instanceGroupManagers
+    request_type = service.GetRequestType('Get')
+  request = request_type(**igm_ref.AsDict())
 
   errors = []
   # Run throught the generator to actually make the requests and get potential
   # errors.
-  igm_details = list(request_helper.MakeRequests(
-      requests=[(service, 'Get', request)],
-      http=http,
-      batch_url=batch_url,
-      errors=errors
-  ))
+  igm_details = client.MakeRequests([(service, 'Get', request)],
+                                    errors_to_collect=errors)
 
   if errors or len(igm_details) != 1:
     utils.RaiseException(errors, ResourceNotFoundException,

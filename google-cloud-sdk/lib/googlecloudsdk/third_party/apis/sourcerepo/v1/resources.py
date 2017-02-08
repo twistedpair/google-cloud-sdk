@@ -22,15 +22,6 @@ BASE_URL = 'https://sourcerepo.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  IAM_PROJECTS_REPOS = (
-      'iam.projects.repos',
-      'iam/{+resource}',
-      {
-          '':
-              'iam/projects/{projectsId}/repos/{reposId}',
-      },
-      [u'resource']
-  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

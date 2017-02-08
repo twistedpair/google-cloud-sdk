@@ -200,6 +200,9 @@ class _ResourceParser(object):
           wrong collection.
       UnknownFieldException: If the collection-path's path did not provide
           enough fields.
+      GRIPathMismatchException: If the number of path segments in the GRI does
+          not match the expected format of the URL for the given resource
+          collection.
     """
     if resource_id is not None:
       try:
@@ -209,9 +212,22 @@ class _ResourceParser(object):
         pass
 
     params = self.collection_info.GetParams(subcollection)
-    fields = [None] * len(params)
 
-    fields[-1] = resource_id
+    if properties.VALUES.core.enable_gri.GetBool():
+      # Also ensures that the collection specified in the GRI matches ours.
+      gri = _GRI.FromString(resource_id,
+                            collection=self.collection_info.full_name)
+      fields = gri.path_fields
+      if len(fields) > len(params):
+        raise GRIPathMismatchException(
+            resource_id, params,
+            collection=gri.collection if gri.is_fully_qualified else None)
+      elif len(fields) < len(params):
+        fields += [None] * (len(params) - len(fields))
+      fields = reversed(fields)
+    else:
+      fields = [None] * len(params)
+      fields[-1] = resource_id
 
     param_values = dict(zip(params, fields))
 
@@ -378,6 +394,211 @@ def _APINameFromCollection(collection):
     str: The API name.
   """
   return collection.split('.')[0]
+
+
+class GRIException(UserError):
+  """Base class for all GRI related exceptions."""
+  pass
+
+
+class InvalidGRIFormatException(GRIException):
+  """Exception for when a GRI is syntactically invalid."""
+
+  def __init__(self, gri):
+    super(InvalidGRIFormatException, self).__init__(
+        'The given GRI [{gri}] is invalid and could not be parsed.\n'
+        'Valid GRIs take the form of: a:b:c::api.collection'.format(gri=gri)
+    )
+
+
+class InvalidGRICollectionSyntaxException(GRIException):
+  """Exception for when the collection part of a GRI is syntactically invalid.
+  """
+
+  def __init__(self, gri, collection):
+    super(InvalidGRICollectionSyntaxException, self).__init__(
+        'The given GRI [{gri}] could not be parsed because the collection '
+        '[{collection}] is invalid'.format(gri=gri, collection=collection)
+    )
+
+
+class GRICollectionMismatchException(GRIException):
+  """Exception for when the parsed GRI collection does not match the expected.
+  """
+
+  def __init__(self, gri, expected_collection, parsed_collection):
+    super(GRICollectionMismatchException, self).__init__(
+        'The given GRI [{gri}] could not be parsed because collection '
+        '[{expected_collection}] was expected but [{parsed_collection}] was '
+        'provided. Provide a GRI with the correct collection or drop the '
+        'specified collection.'.format(gri=gri,
+                                       expected_collection=expected_collection,
+                                       parsed_collection=parsed_collection)
+    )
+
+
+class InvalidGRIPathSyntaxException(GRIException):
+  """Exception for when a part of the path of the GRI is syntactically invalid.
+  """
+
+  def __init__(self, gri, message):
+    super(InvalidGRIPathSyntaxException, self).__init__(
+        'The given GRI [{gri}] could not be parsed because the path is invalid:'
+        ' {message}'.format(gri=gri, message=message)
+    )
+
+
+class GRIPathMismatchException(GRIException):
+  """Exception for when the path has the wrong number of segments."""
+
+  def __init__(self, gri, params, collection=None):
+    super(GRIPathMismatchException, self).__init__(
+        'The given GRI [{gri}] does not match the required structure for this '
+        'resource type. It must match the format: [{format}]'
+        .format(gri=gri, format=(':'.join(reversed(params)) +
+                                 ('::' + collection if collection else '')))
+    )
+
+
+class _GRI(object):
+  """Encapsulates a parsed GRI string.
+
+  Attributes:
+    path_fields: [str], The individual fields of the path portion of the GRI.
+    collection: str, The collection portion of the GRI.
+    is_fully_qualified: bool, True if the original GRI included the collection.
+      This could be false if the collection is not defined, or if it was passed
+      in explicitly during parsing.
+  """
+
+  def __init__(self, path_fields, collection, is_fully_qualified):
+    """Use FromString() to construct a GRI."""
+    self.path_fields = path_fields
+    self.collection = collection
+    self.is_fully_qualified = is_fully_qualified
+
+  def __str__(self):
+    gri = ':'.join([_GRI._EscapePathSegment(s) for s in self.path_fields])
+    if self.is_fully_qualified:
+      gri += '::' + self.collection
+    return gri
+
+  @classmethod
+  def FromString(cls, gri, collection=None):
+    """Parses a GRI from a string.
+
+    Args:
+      gri: str, The GRI to parse.
+      collection: str, The collection this GRI is for. If provided and the GRI
+        contains a collection, they must match. If not provided, the collection
+        in the GRI will be used, or None if it is not specified.
+
+    Returns:
+      A parsed _GRI object.
+
+    Raises:
+      GRICollectionMismatchException: If the given collection does not match the
+        collection specified in the GRI.
+    """
+    path, parsed_collection = _GRI._SplitCollection(gri)
+
+    if not collection:
+      # No collection was provided, use the one the was parsed from the GRI.
+      # Could be None at this point.
+      collection = parsed_collection
+    else:
+      # A collection was provided, validate it for syntax.
+      _GRI._ValidateCollection(gri, collection)
+      if parsed_collection and parsed_collection != collection:
+        # There was also a collection in the GRI, ensure it matches.
+        raise GRICollectionMismatchException(
+            gri, expected_collection=collection,
+            parsed_collection=parsed_collection)
+
+    path_fields = _GRI._SplitPath(path)
+
+    return _GRI(path_fields, collection,
+                is_fully_qualified=bool(parsed_collection))
+
+  @classmethod
+  def _SplitCollection(cls, gri):
+    """Splits a GRI into its path and collection segments.
+
+    Args:
+      gri: str, The GRI string to parse.
+
+    Returns:
+      (str, str), The path and collection parts of the string. The
+      collection may be None if not specified in the GRI.
+
+    Raises:
+      InvalidGRIFormatException: If the GRI cannot be parsed.
+      InvalidGRIPathSyntaxException: If the GRI path cannot be parsed.
+    """
+    if not gri:
+      return None, None
+    # This is a very complicated regex for what is otherwise a simple concept.
+    # It is basically trying to split the string on double colon separators
+    # which are :: not surrounded by {}.  You cannot do a negation in regex, so
+    # it does this by doing a positive match of {..[^}] [^{]::} and [^{]::[^}].
+    # Because we want to split only on the colons, we use look aheads and
+    # behinds in order to not consume characters (so split does not consider
+    # them as part of the match.
+    parts = re.split(r'(?=(?<={)::+[^:}]|(?<=[^:{])::+}|(?<=[^:{])::+[^:}])::',
+                     gri)
+    if len(parts) > 2:
+      raise InvalidGRIFormatException(gri)
+    elif len(parts) == 2:
+      path, parsed_collection = parts[0], parts[1]
+      _GRI._ValidateCollection(gri, parsed_collection)
+    else:
+      path, parsed_collection = parts[0], None
+
+    # The regex can't correctly match ':' at the beginning or the end, but in
+    # either case, they are invalid.
+    if path.startswith(':') or path.endswith(':'):
+      raise InvalidGRIPathSyntaxException(
+          gri, 'GRIs cannot have empty path segments.')
+
+    return path, parsed_collection
+
+  @classmethod
+  def _ValidateCollection(cls, gri, collection):
+    # Matches: api.collection or api.collection.subcollection (with any level
+    # of nesting).
+    if not re.match(r'^\w+\.\w+(?:\.\w+)*$', collection):
+      raise InvalidGRICollectionSyntaxException(gri, collection)
+
+  @classmethod
+  def _SplitPath(cls, path):
+    """Splits a GRI into its individual path segments.
+
+    Args:
+      path: str, The path segment of the GRI (from _SplitCollection)
+
+    Returns:
+      [str], A list of the path segments of the GRI.
+
+    Raises:
+      InvalidGRIPathSyntaxException: If the GRI cannot be parsed.
+    """
+    if not path:
+      return []
+    # See above method for the description of this regex. It is the same except
+    # with single colons instead of double.
+    parts = re.split(r'(?=(?<={):+[^:}]|(?<=[^:{]):+}|(?<=[^:{]):+[^:}]):',
+                     path)
+
+    # Unescape escaped colons by stripping off one layer of braces.
+    return [_GRI._UnescapePathSegment(part) for part in parts]
+
+  @classmethod
+  def _UnescapePathSegment(cls, segment):
+    return re.sub(r'{(:+)}', r'\1', segment)
+
+  @classmethod
+  def _EscapePathSegment(cls, segment):
+    return re.sub(r'(:+)', r'{\1}', segment)
 
 
 class Registry(object):
@@ -598,7 +819,7 @@ class Registry(object):
 
     Args:
       collection: str, the name/id for the resource from commandline argument.
-      resource_id: str, Some resouce identifier.
+      resource_id: str, Some resource identifier.
           Can be None to indicate all params should be taken from kwargs.
       kwargs: {str:(str or func()->str)}, flags (available from context) or
           resolvers that can help parse this resource. If the fields in
@@ -609,8 +830,22 @@ class Registry(object):
 
     Raises:
       InvalidCollectionException: If the provided collection-path is malformed.
+      UnknownCollectionException: If the collection of the resource could not be
+          determined.
 
     """
+    if properties.VALUES.core.enable_gri.GetBool():
+      # If collection is set already, it will be validated in the split method.
+      # If it is unknown, it will come back with the parsed collection or None.
+      # TODO(user): Ideally we would pass the parsed GRI to the parser
+      # instead of reparsing it there, but this library would need some
+      # refactoring to make that clean.
+      collection = _GRI.FromString(
+          resource_id, collection=collection).collection
+
+    if not collection:
+      raise UnknownCollectionException(resource_id)
+
     parser = self._GetParserForCollection(collection)
     base_url = _GetApiBaseUrl(parser.collection_info.api_name,
                               parser.collection_info.api_version)
@@ -831,8 +1066,6 @@ class Registry(object):
 
     if line is not None and not line:
       raise InvalidResourceException(line)
-    if not collection:
-      raise UnknownCollectionException(line)
 
     return self.ParseResourceId(collection, line, params or {})
 

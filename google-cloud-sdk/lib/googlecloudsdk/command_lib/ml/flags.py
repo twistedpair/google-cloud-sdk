@@ -205,9 +205,13 @@ def ProcessPackages(args):
     args.packages = list(itertools.chain.from_iterable(args.packages))
 
 
-def GetStagingBucket(required):
-  return base.Argument(
-      '--staging-bucket',
-      help='Bucket in which to stage training archives',
-      type=storage_util.BucketReference.FromArgument,
-      required=required)
+STAGING_BUCKET = base.Argument(
+    '--staging-bucket',
+    type=storage_util.BucketReference.FromArgument,
+    help="""\
+        Bucket in which to stage training archives.
+
+        Required only if a file upload is necessary (that is, other flags
+        include local paths) and no other flags implicitly specify an upload
+        path.
+        """)

@@ -15,7 +15,6 @@
 """SSH client utilities for key-generation, dispatching the ssh commands etc."""
 import errno
 import getpass
-import logging
 import os
 import re
 import subprocess
@@ -26,6 +25,7 @@ from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -35,6 +35,7 @@ from googlecloudsdk.core.util import platforms
 
 # `ssh` exits with this exit code in the event of an SSH error (as opposed to a
 # successful `ssh` execution where the *command* errored).
+# TODO(b/33467618): Remove in favor of Environment.ssh_exit_code
 _SSH_ERROR_EXIT_CODE = 255
 
 # Normally, all SSH output is simply returned to the user (or sent to
@@ -47,6 +48,10 @@ PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 # The default timeout for waiting for a host to become reachable.
 # Useful for giving some time after VM booting, key propagation etc.
 _DEFAULT_TIMEOUT = 60
+
+
+class InvalidKeyError(core_exceptions.Error):
+  """Indicates a key file was not found."""
 
 
 class MissingCommandError(core_exceptions.Error):
@@ -72,6 +77,12 @@ class CommandError(core_exceptions.Error):
         exit_code=return_code)
 
 
+class Suite(enum.Enum):
+  """Represents an SSH implementation suite."""
+  OPENSSH = 'OpenSSH'
+  PUTTY = 'PuTTY'
+
+
 class Environment(object):
   """Environment maps SSH commands to executable location on file system.
 
@@ -84,42 +95,52 @@ class Environment(object):
   An attribute which is None indicates that the executable couldn't be found.
 
   Attributes:
-    ssh: Location of ssh command.
-    ssh_term: Location of ssh terminal command, for interactive sessions.
-    scp: Location of scp command.
-    keygen: Location of the keygen command.
+    suite: Suite, The suite for this environment.
+    bin_path: str, The path where the commands are located. If None, use
+        standard `$PATH`.
+    ssh: str, Location of ssh command (or None if not found).
+    ssh_term: str, Location of ssh terminal command (or None if not found), for
+        interactive sessions.
+    scp: str, Location of scp command (or None if not found).
+    keygen: str, Location of the keygen command (or None if not found).
+    ssh_exit_code: int, Exit code indicating SSH command failure.
   """
 
-  _NIX_COMMANDS = {
-      'ssh': 'ssh',
-      'ssh_term': 'ssh',  # For interactive mode
-      'scp': 'scp',
-      'keygen': 'ssh-keygen',
+  # Each suite supports ssh and non-interactive ssh, scp and keygen.
+  COMMANDS = {
+      Suite.OPENSSH: {
+          'ssh': 'ssh',
+          'ssh_term': 'ssh',
+          'scp': 'scp',
+          'keygen': 'ssh-keygen',
+      },
+      Suite.PUTTY: {
+          'ssh': 'plink',
+          'ssh_term': 'putty',
+          'scp': 'pscp',
+          'keygen': 'winkeygen',
+      }
   }
 
-  _WINDOWS_COMMANDS = {
-      'ssh': 'plink',
-      'ssh_term': 'putty',
-      'scp': 'pscp',
-      'keygen': 'winkeygen',
+  # Exit codes indicating that the `ssh` command (not remote) failed
+  SSH_EXIT_CODES = {
+      Suite.OPENSSH: 255,
+      Suite.PUTTY: 1,  # Only `plink`, `putty` always gives 0
   }
 
-  def __init__(self, ssh=None, ssh_term=None, scp=None, keygen=None):
-    """Create a new environment by supplying executable paths.
-
-    None supplied as an argument indicates that the executable is not available
-    in the current environment.
+  def __init__(self, suite, bin_path=None):
+    """Create a new environment by supplying a suite and command directory.
 
     Args:
-      ssh: Location of ssh command.
-      ssh_term: Location of ssh terminal command, for interactive sessions.
-      scp: Location of scp command.
-      keygen: Location of the keygen command.
+      suite: Suite, the suite for this environment.
+      bin_path: str, the path where the commands are located. If None, use
+          standard $PATH.
     """
-    self.ssh = ssh
-    self.ssh_term = ssh_term
-    self.scp = scp
-    self.keygen = keygen
+    self.suite = suite
+    self.bin_path = bin_path
+    for key, cmd in self.COMMANDS[suite].iteritems():
+      setattr(self, key, files.FindExecutableOnPath(cmd, path=self.bin_path))
+    self.ssh_exit_code = self.SSH_EXIT_CODES[suite]
 
   def SupportsSSH(self):
     """Whether all SSH commands are supported.
@@ -146,15 +167,12 @@ class Environment(object):
       Environment, the active and current environment on this machine.
     """
     if platforms.OperatingSystem.IsWindows():
-      commands = Environment._WINDOWS_COMMANDS
-      path = _SdkHelperBin()
+      suite = Suite.PUTTY
+      bin_path = _SdkHelperBin()
     else:
-      commands = Environment._NIX_COMMANDS
-      path = None
-    env = Environment()
-    for key, cmd in commands.iteritems():
-      setattr(env, key, files.FindExecutableOnPath(cmd, path=path))
-    return env
+      suite = Suite.OPENSSH
+      bin_path = None
+    return Environment(suite, bin_path)
 
 
 def _IsValidSshUsername(user):
@@ -203,6 +221,59 @@ class Keys(object):
 
   DEFAULT_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
 
+  class PublicKey(object):
+    """Represents a public key.
+
+    Attributes:
+      key_type: str, Key generation type, e.g. `ssh-rsa` or `ssh-dss`.
+      key_data: str, Base64-encoded key data.
+      comment: str, Non-semantic comment, may be empty string or contain spaces.
+    """
+
+    def __init__(self, key_type, key_data, comment=''):
+      self.key_type = key_type
+      self.key_data = key_data
+      self.comment = comment
+
+    @classmethod
+    def FromKeyString(cls, key_string):
+      """Construct a public key from a typical OpenSSH-style key string.
+
+      Args:
+        key_string: str, on the format `TYPE DATA [COMMENT]`. Example:
+          `ssh-rsa ABCDEF me@host.com`.
+
+      Raises:
+        InvalidKeyError: The public key file does not contain key (heuristic).
+
+      Returns:
+        Keys.PublicKey, the parsed public key.
+      """
+      # We get back a unicode list of keys for the remaining metadata, so
+      # convert to unicode. Assume UTF 8, but if we miss a character we can just
+      # replace it with a '?'. The only source of issues would be the hostnames,
+      # which are relatively inconsequential.
+      parts = key_string.strip().decode('utf8', 'replace').split(' ', 2)
+      if len(parts) < 2:
+        raise InvalidKeyError('Public key [{}] is invalid.'.format(key_string))
+      comment = parts[2].strip() if len(parts) > 2 else ''  # e.g. `me@host`
+      return cls(parts[0], parts[1], comment)
+
+    def ToEntry(self, include_comment=False):
+      """Format this key into a text entry.
+
+      Args:
+        include_comment: str, Include the comment part in this entry.
+
+      Returns:
+        str, A key string on the form `TYPE DATA` or `TYPE DATA COMMENT`.
+      """
+      out_format = u'{type} {data}'
+      if include_comment and self.comment:
+        out_format += u' {comment}'
+      return out_format.format(
+          type=self.key_type, data=self.key_data, comment=self.comment)
+
   class KeyFileData(object):
 
     def __init__(self, filename):
@@ -212,34 +283,37 @@ class Keys(object):
       self.filename = filename
       self.status = None
 
-  def __init__(self, key_file):
+  def __init__(self, key_file, env=None):
     """Create a Keys object which manages the given files.
 
     Args:
       key_file: str, The file path to the private SSH key file (other files are
           derived from this name). Automatically handles symlinks and user
           expansion.
+      env: Environment, Current environment or None to infer from current.
     """
     private_key_file = os.path.realpath(os.path.expanduser(key_file))
     self.dir = os.path.dirname(private_key_file)
+    self.env = env or Environment.Current()
     self.keys = {
         _KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
         _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub')
     }
-    if platforms.OperatingSystem.IsWindows():
+    if self.env.suite is Suite.PUTTY:
       self.keys[_KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
 
   @classmethod
-  def FromFilename(cls, filename=None):
+  def FromFilename(cls, filename=None, env=None):
     """Create Keys object given a file name.
 
     Args:
       filename: str or None, the name to the file or DEFAULT_KEY_FILE if None
+      env: Environment, Current environment or None to infer from current.
 
     Returns:
       Keys, an instance which manages the keys with the given name.
     """
-    return cls(filename or Keys.DEFAULT_KEY_FILE)
+    return cls(filename or Keys.DEFAULT_KEY_FILE, env)
 
   @property
   def key_file(self):
@@ -267,6 +341,10 @@ class Keys(object):
   def Validate(self):
     """Performs minimum key files validation.
 
+    Note that this is a simple best-effort parser intended for machine
+    generated keys. If the file has been user modified, there's a risk
+    of both false positives and false negatives.
+
     Returns:
       KeyFileStatus.PRESENT if key files meet minimum requirements.
       KeyFileStatus.ABSENT if neither private nor public keys exist.
@@ -286,12 +364,13 @@ class Keys(object):
 
     # The remaining checks are for the public key file.
 
-    # Must have at least 2 space separated fields.
+    # Additional validation for public keys.
     if self.keys[_KeyFileKind.PUBLIC].status is KeyFileStatus.PRESENT:
-      fields = self.keys[_KeyFileKind.PUBLIC].first_line.split(' ')
-      if len(fields) < 2:
-        log.warn(
-            'The public SSH key file for gcloud is corrupt.')
+      try:
+        self.GetPublicKey()
+      except InvalidKeyError:
+        log.warn('The public SSH key file [{}] is corrupt.'
+                 .format(self.keys[_KeyFileKind.PUBLIC]))
         self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
@@ -383,27 +462,25 @@ class Keys(object):
 
     Precondition: The public key must exist. Run Keys.EnsureKeysExist() prior.
 
+    Raises:
+      InvalidKeyError: If the public key file does not contain key (heuristic).
+
     Returns:
-      str, The public key.
+      Keys.PublicKey, a public key (that passed primitive validation).
     """
-    # TODO(b/33467618): There is a file-format specification for the key file.
-    # It looks roughly like this: `TYPE KEY [COMMENT]`. Make sure to use that
-    # instead.
     filepath = self.keys[_KeyFileKind.PUBLIC].filename
     with open(filepath) as f:
-      # We get back a unicode list of keys for the remaining metadata, so
-      # convert to unicode. Assume UTF 8, but if we miss a character we can just
-      # replace it with a '?'. The only source of issues would be the hostnames,
-      # which are relatively inconsequential.
-      return f.readline().strip().decode('utf8', 'replace')
+      # TODO(b/33467618): Currently we enforce that key exists on the first
+      # line, but OpenSSH does not enforce that.
+      first_line = f.readline()
+      return self.PublicKey.FromKeyString(first_line)
 
-  def EnsureKeysExist(self, keygen, overwrite):
+  def EnsureKeysExist(self, overwrite):
     """Generate ssh key files if they do not yet exist.
 
     Precondition: Environment.SupportsSSH()
 
     Args:
-      keygen: str, path to ssh-keygen, see Environment.keygen
       overwrite: bool or None, overwrite key files if they are broken.
 
     Raises:
@@ -419,7 +496,8 @@ class Keys(object):
       if key_files_validity is KeyFileStatus.ABSENT:
         # If key is broken, message is already displayed
         log.warn('You do not have an SSH key for gcloud.')
-        log.warn('[%s] will be executed to generate a key.', keygen)
+        log.warn('[%s] will be executed to generate a key.',
+                 self.env.keygen)
 
       if not os.path.exists(self.dir):
         msg = ('This tool needs to create the directory [{0}] before being '
@@ -429,8 +507,8 @@ class Keys(object):
             cancel_string='SSH key generation aborted by user.')
         files.MakeDir(self.dir, 0700)
 
-      keygen_args = [keygen]
-      if platforms.OperatingSystem.IsWindows():
+      keygen_args = [self.env.keygen]
+      if self.env.suite is Suite.PUTTY:
         # No passphrase in the current implementation.
         keygen_args.append(self.key_file)
       else:
@@ -564,6 +642,7 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
+# TODO(b/33467618): Possibly make private and change to verb
 def UserHost(user, host):
   """Returns a string of the form user@host."""
   if user:
@@ -572,6 +651,7 @@ def UserHost(user, host):
     return host
 
 
+# TODO(b/33467618): Remove in favor of SSHCommand
 def RunExecutable(cmd_args, strict_error_checking=True,
                   ignore_ssh_errors=False):
   """Run the given command, handling errors appropriately.
@@ -641,6 +721,7 @@ def GetDefaultFlags(key_file=None):
   ]
 
 
+# TODO(b/33467618): Remove in favor of SSHCommand
 def _LocalizeWindowsCommand(cmd_args, env):
   """Translate cmd_args[1:] from ssh form to plink/putty form.
 
@@ -703,6 +784,7 @@ def _LocalizeWindowsCommand(cmd_args, env):
   return translated_args
 
 
+# TODO(b/33467618): Remove in favor of SSHCommand
 def LocalizeCommand(cmd_args, env):
   """Translates an ssh/scp command line to match the local implementation.
 
@@ -726,8 +808,8 @@ def GetHostKeyArgs(host_key_alias=None, plain=False,
     host_key_alias: Alias of the host key in the known_hosts file.
     plain: bool, if running in plain mode.
     strict_host_key_checking: bool, whether to enforce strict host key
-        checking. If false, it will be determined by existence of host_key_alias
-        in the known hosts file.
+      checking. If false, it will be determined by existence of host_key_alias
+      in the known hosts file.
 
   Returns:
     list, list of arguments to add to the ssh command line.
@@ -748,6 +830,7 @@ def GetHostKeyArgs(host_key_alias=None, plain=False,
   return cmd_args
 
 
+# TODO(b/33467618): Refactor to use SSHCommand
 def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
                      plain=False, strict_host_key_checking=None,
                      timeout=_DEFAULT_TIMEOUT):
@@ -763,7 +846,7 @@ def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
 
   start_sec = time_util.CurrentTimeSec()
   while True:
-    logging.debug('polling instance for SSHability')
+    log.debug('polling instance for SSHability')
     retval = subprocess.call(ssh_args_for_polling)
     if retval == 0:
       break
@@ -776,6 +859,122 @@ def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
           'verify that the firewall and instance are set to accept '
           'ssh traffic.')
     time_util.Sleep(5)
+
+
+class SSHCommand(object):
+  """Represents a platform independent SSH command.
+
+  This class is intended to manage the most important suite- and platform
+  specifics. We manage the following data:
+  - The executable to call, either `ssh`, `putty` or `plink`.
+  - User and host, `user` and `host` arg.
+  - Potential remote command to execute, `remote_command` arg.
+
+  In addition, it manages these flags:
+  -t, -T      Pseudo-terminal allocation
+  -i          Identity file (private key)
+  -p, -P      Port
+  -o Key=Val  OpenSSH specific options that should be added, `options` arg.
+
+  For flexibility, SSHCommand also accepts `extra_flags`. Always use these
+  with caution -- they will be added as-is to the command invocation without
+  validation. Specifically, do not add any of the above mentioned flags.
+  """
+
+  def __init__(self, host, user=None, port=None, identity_file=None,
+               options=None, extra_flags=None, remote_command=None, tty=None):
+    """Construct a suite independent SSH command.
+
+    Note that `extra_flags` and `remote_command` arguments are lists of strings:
+    `remote_command=['echo', '-e', 'hello']` is different from
+    `remote_command=['echo', '-e hello']` -- the former is likely desired.
+    For the same reason, `extra_flags` should be passed like `['-k', 'v']`.
+
+    Args:
+      host: str, hostname (or IP address).
+      user: str, username.
+      port: int, port.
+      identity_file: str, path to private key file.
+      options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
+      extra_flags: [str], extra flags to append to ssh invocation. Both binary
+        style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
+      remote_command: [str], command to run remotely.
+      tty: bool, launch a terminal. If None, determine automatically based on
+        presence of remote command.
+    """
+    self.user = user
+    self.host = host
+    self.port = port
+    self.identity_file = identity_file
+    self.options = options or {}
+    self.extra_flags = extra_flags or []
+    self.remote_command = remote_command or []
+    self.tty = tty
+
+  def Build(self, env=None):
+    """Construct the actual command according to the given environment.
+
+    Args:
+      env: Environment, to construct the command for (or current if None).
+
+    Raises:
+      MissingCommandError: If SSH command(s) required were not found.
+
+    Returns:
+      [str], the command args (where the first arg is the command itself).
+    """
+    env = env or Environment.Current()
+    if not (env.ssh and env.ssh_term):
+      raise MissingCommandError('The current environment lacks SSH.')
+
+    tty = self.tty if self.tty in [True, False] else not self.remote_command
+    args = [env.ssh_term, '-t'] if tty else [env.ssh, '-T']
+
+    if self.port:
+      port_flag = '-P' if env.suite is Suite.PUTTY else '-p'
+      args.extend([port_flag, self.port])
+
+    if self.identity_file:
+      identity_file = self.identity_file
+      if env.suite is Suite.PUTTY and not identity_file.endswith('.ppk'):
+        identity_file += '.ppk'
+      args.extend(['-i', identity_file])
+
+    if env.suite is Suite.OPENSSH:
+      # Always, always deterministic order
+      for key, value in sorted(self.options.iteritems()):
+        args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
+    args.extend(self.extra_flags)
+    args.append(UserHost(self.user, self.host))
+    if self.remote_command:
+      if env.suite is Suite.OPENSSH:  # Putty doesn't like double dash
+        args.append('--')
+      args.extend(self.remote_command)
+    return args
+
+  def Run(self, env=None):
+    """Run the SSH command using the given environment.
+
+    Args:
+      env: Environment, environment to run in (or current if None).
+
+    Raises:
+      MissingCommandError: If SSH command(s) not found.
+      CommandError: SSH command failed (not to be confused with the eventual
+        failure of the remote command).
+
+    Returns:
+      int, The exit code of the remote command, forwarded from the client.
+    """
+    env = env or Environment.Current()
+    args = self.Build(env)
+    log.debug('Running command [{}].'.format(' '.join(args)))
+    # PuTTY and friends always ask on fingerprint mismatch
+    in_str = 'y\n' if env.suite is Suite.PUTTY else None
+    status = execution_utils.Exec(args, no_exit=True, in_str=in_str)
+    if status == env.ssh_exit_code:
+      raise CommandError(args[0], return_code=status)
+    return status
 
 
 # A remote path has three parts host[@user]:[path], where @user and path are

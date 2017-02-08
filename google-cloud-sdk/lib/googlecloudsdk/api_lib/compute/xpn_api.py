@@ -17,7 +17,8 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
 
 
-_API_VERSION = 'alpha'
+# TODO(user): update it when a new XPN API version is released.
+_DEFAULT_API_VERSION = 'alpha'
 
 
 class XpnApiError(exceptions.Error):
@@ -187,5 +188,5 @@ class XpnClient(object):
         host_project, associated_project, xpn_resource_type=xpn_types.PROJECT)
 
 
-def GetXpnClient():
-  return XpnClient(client_adapter.ClientAdapter(_API_VERSION))
+def GetXpnClient(api_version=_DEFAULT_API_VERSION):
+  return XpnClient(client_adapter.ClientAdapter(api_version))

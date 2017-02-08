@@ -21,7 +21,11 @@ import shutil
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import platforms
 
-# pylint:disable=superfluous-parens
+
+# TODO(user): b/34807345 -- print to stderr
+def _TraceAction(action):
+  """Prints action to the standard output -- not really standard practice."""
+  print action
 
 
 # pylint:disable=unused-argument
@@ -45,7 +49,7 @@ def _UpdatePathForWindows(bin_path):
       # Python 2
       import _winreg as winreg
   except ImportError:
-    print("""\
+    _TraceAction("""\
 The installer is unable to automatically update your system PATH. Please add
   {path}
 to your system PATH to enable easy use of the Cloud SDK Command Line Tools.
@@ -86,7 +90,7 @@ to your system PATH to enable easy use of the Cloud SDK Command Line Tools.
 
   PrependEnv('Path', [bin_path])
 
-  print("""\
+  _TraceAction("""\
 The following directory has been added to your PATH.
   {bin_path}
 
@@ -94,13 +98,13 @@ Create a new command shell for the changes to take effect.
 """.format(bin_path=bin_path))
 
 
-def _GetRcData(comment, rc_path, rc_data, pattern=None):
-  """Generates the comment and `source rc_path` lines.
+def _GetRcContents(comment, rc_path, rc_contents, pattern=None):
+  """Generates the RC file contents with new comment and `source rc_path` lines.
 
   Args:
     comment: The shell comment string that precedes the source line.
     rc_path: The path of the rc file to source.
-    rc_data: The current comment and source rc lines or None.
+    rc_contents: The current contents.
     pattern: A regex pattern that matches comment, None for exact match on
       comment.
 
@@ -109,26 +113,94 @@ def _GetRcData(comment, rc_path, rc_data, pattern=None):
   """
   if not pattern:
     pattern = re.escape(comment)
-  subre = re.compile('\n' + pattern + '\n.*\n', re.MULTILINE)
+  # This pattern handles all three variants that we have injected in user RC
+  # files. All have the same sentinel comment line followed by:
+  #   1. a single 'source ...' line
+  #   2. a 3 line if-fi (a bug because this pattern was previously incorrect)
+  #   3. finally a single if-fi line.
+  # If you touch this code ONLY INJECT ONE LINE AFTER THE SENTINEL COMMENT LINE.
+  #
+  # At some point we can drop the alternate patterns and only search for the
+  # sentinel comment line and assume the next line is ours too (that was the
+  # original intent before th 3-line form was added).
+  subre = re.compile('\n' + pattern + '\n('
+                     "source '.*'"
+                     '|'
+                     'if .*; then\n  source .*\nfi'
+                     '|'
+                     'if .*; then source .*; fi'
+                     ')\n', re.MULTILINE)
   # script checks that the rc_path currently exists before sourcing the file
-  line = ('{comment}\nif [ -f {rc_path} ]; then\n'
-          '  source \'{rc_path}\'\nfi\n').format(
-              comment=comment, rc_path=rc_path)
-  filtered_data = subre.sub('', rc_data)
-  rc_data = '{filtered_data}\n{line}'.format(
-      filtered_data=filtered_data, line=line)
-  return rc_data
+  line = ("\n{comment}\nif [ -f '{rc_path}' ]; then source '{rc_path}'; fi\n"
+          .format(comment=comment, rc_path=rc_path))
+  filtered_contents = subre.sub('', rc_contents)
+  rc_contents = '{filtered_contents}{line}'.format(
+      filtered_contents=filtered_contents, line=line)
+  return rc_contents
 
 
-class _RcPaths(object):
-  """Pathnames for the updateable rc file and files it may source."""
+class _RcUpdater(object):
+  """Updates the RC file completion and PATH code injection."""
 
-  def __init__(self, shell, rc_path, sdk_root):
+  def __init__(self, completion_update, path_update, shell, rc_path, sdk_root):
+    self.completion_update = completion_update
+    self.path_update = path_update
     self.rc_path = rc_path
     self.completion = os.path.join(
         sdk_root, 'completion.{shell}.inc'.format(shell=shell))
     self.path = os.path.join(
         sdk_root, 'path.{shell}.inc'.format(shell=shell))
+
+  def Update(self):
+    """Creates or updates the RC file."""
+    if self.rc_path:
+
+      if os.path.isfile(self.rc_path):
+        with open(self.rc_path) as rc_file:
+          rc_contents = rc_file.read()
+          original_rc_contents = rc_contents
+      else:
+        rc_contents = ''
+        original_rc_contents = ''
+
+      if self.path_update:
+        rc_contents = _GetRcContents(
+            '# The next line updates PATH for the Google Cloud SDK.',
+            self.path, rc_contents)
+
+      if self.completion_update:
+        rc_contents = _GetRcContents(
+            '# The next line enables shell command completion for gcloud.',
+            self.completion, rc_contents,
+            pattern=('# The next line enables [a-z][a-z]*'
+                     ' command completion for gcloud.'))
+
+      if rc_contents == original_rc_contents:
+        _TraceAction('No changes necessary for [{rc}].'.format(rc=self.rc_path))
+        return
+
+      if os.path.exists(self.rc_path):
+        rc_backup = self.rc_path + '.backup'
+        _TraceAction('Backing up [{rc}] to [{backup}].'.format(
+            rc=self.rc_path, backup=rc_backup))
+        shutil.copyfile(self.rc_path, rc_backup)
+
+      with open(self.rc_path, 'w') as rc_file:
+        rc_file.write(rc_contents)
+
+      _TraceAction('[{rc_path}] has been updated.'.format(rc_path=self.rc_path))
+      _TraceAction(console_io.FormatRequiredUserAction(
+          'Start a new shell for the changes to take effect.'))
+
+    if not self.completion_update:
+      _TraceAction(console_io.FormatRequiredUserAction(
+          'Source [{rc}]in your profile to enable shell command completion for '
+          'gcloud.'.format(rc=self.completion)))
+
+    if not self.path_update:
+      _TraceAction(console_io.FormatRequiredUserAction(
+          'Source [{rc}] in your profile to add the Google Cloud SDK command '
+          'line tools to your $PATH.'.format(rc=self.path)))
 
 
 def _GetPreferredShell(path, default='bash'):
@@ -172,24 +244,23 @@ def _GetShellRcFileName(shell, host_os):
   return '.bashrc'
 
 
-def _GetRcPaths(command_completion, path_update, rc_path, sdk_root, host_os):
-  """Returns an _RcPaths object for the preferred user shell.
+def _GetRcUpdater(completion_update, path_update, rc_path, sdk_root, host_os):
+  """Returns an _RcUpdater object for the preferred user shell.
 
   Args:
-    command_completion: bool, Whether or not to do command completion. If None,
-      ask.
-    path_update: bool, Whether or not to update PATH. If None, ask.
+    completion_update: bool, Whether or not to do command completion.
+    path_update: bool, Whether or not to update PATH.
     rc_path: str, The path to the rc file to update. If None, ask.
     sdk_root: str, The path to the Cloud SDK root.
     host_os: str, The host os identification string.
 
   Returns:
-    An _RcPaths() object for the preferred user shell.
+    An _RcUpdater() object for the preferred user shell.
   """
 
   # An initial guess on the preferred user shell based on the environment.
   preferred_shell = _GetPreferredShell(os.environ.get('SHELL', '/bin/sh'))
-  if not command_completion and not path_update:
+  if not completion_update and not path_update:
     rc_path = None
   elif not rc_path:
     file_name = _GetShellRcFileName(preferred_shell, host_os)
@@ -207,14 +278,15 @@ def _GetRcPaths(command_completion, path_update, rc_path, sdk_root, host_os):
     # Check the rc_path for a better hint at the user preferred shell.
     preferred_shell = _GetPreferredShell(rc_path, default=preferred_shell)
 
-  return _RcPaths(preferred_shell, rc_path, sdk_root)
+  return _RcUpdater(completion_update, path_update, preferred_shell, rc_path,
+                    sdk_root)
 
 
-def UpdateRC(command_completion, path_update, rc_path, bin_path, sdk_root):
+def UpdateRC(completion_update, path_update, rc_path, bin_path, sdk_root):
   """Update the system path to include bin_path.
 
   Args:
-    command_completion: bool, Whether or not to do command completion. If None,
+    completion_update: bool, Whether or not to do command completion. If None,
       ask.
     path_update: bool, Whether or not to update PATH. If None, ask.
     rc_path: str, The path to the rc file to update. If None, ask.
@@ -232,65 +304,19 @@ def UpdateRC(command_completion, path_update, rc_path, bin_path, sdk_root):
       _UpdatePathForWindows(bin_path)
     return
 
-  if command_completion is None:
+  if completion_update is None:
     if path_update is None:  # Ask only one question if both were not set.
       path_update = console_io.PromptContinue(
           prompt_string=('\nModify profile to update your $PATH '
                          'and enable shell command completion?'))
-      command_completion = path_update
+      completion_update = path_update
     else:
-      command_completion = console_io.PromptContinue(
+      completion_update = console_io.PromptContinue(
           prompt_string=('\nModify profile to enable shell command '
                          'completion?'))
   elif path_update is None:
     path_update = console_io.PromptContinue(
         prompt_string=('\nModify profile to update your $PATH?'))
 
-  rc_paths = _GetRcPaths(command_completion, path_update, rc_path, sdk_root,
-                         host_os)
-
-  if rc_paths.rc_path:
-    if os.path.exists(rc_paths.rc_path):
-      with open(rc_paths.rc_path) as rc_file:
-        rc_data = rc_file.read()
-        cached_rc_data = rc_data
-    else:
-      rc_data = ''
-      cached_rc_data = ''
-
-    if path_update:
-      rc_data = _GetRcData('# The next line updates PATH for the Google Cloud'
-                           ' SDK.', rc_paths.path, rc_data)
-
-    if command_completion:
-      rc_data = _GetRcData('# The next line enables shell command completion'
-                           ' for gcloud.', rc_paths.completion, rc_data,
-                           pattern='# The next line enables [a-z][a-z]*'
-                           ' command completion for gcloud.')
-
-    if cached_rc_data == rc_data:
-      print('No changes necessary for [{rc}].'.format(rc=rc_paths.rc_path))
-      return
-
-    if os.path.exists(rc_paths.rc_path):
-      rc_backup = rc_paths.rc_path + '.backup'
-      print('Backing up [{rc}] to [{backup}].'.format(
-          rc=rc_paths.rc_path, backup=rc_backup))
-      shutil.copyfile(rc_paths.rc_path, rc_backup)
-
-    with open(rc_paths.rc_path, 'w') as rc_file:
-      rc_file.write(rc_data)
-
-    print('[{rc_path}] has been updated.'.format(rc_path=rc_paths.rc_path))
-    print(console_io.FormatRequiredUserAction(
-        'Start a new shell for the changes to take effect.'))
-
-  if not command_completion:
-    print(console_io.FormatRequiredUserAction(
-        'Source [{rc}]in your profile to enable shell command completion for '
-        'gcloud.'.format(rc=rc_paths.completion)))
-
-  if not path_update:
-    print(console_io.FormatRequiredUserAction(
-        'Source [{rc}] in your profile to add the Google Cloud SDK command '
-        'line tools to your $PATH.'.format(rc=rc_paths.path)))
+  _GetRcUpdater(
+      completion_update, path_update, rc_path, sdk_root, host_os).Update()

@@ -240,7 +240,11 @@ class StorageObjectSeriesStream(object):
 
       # If next object exists always fetch current object to get final size.
       if not object_info or next_object_info:
-        object_info = self._GetObject(self._current_object_index)
+        try:
+          object_info = self._GetObject(self._current_object_index)
+        except apitools_exceptions.HttpError as error:
+          log.warn('Failed to fetch GCS output:\n{1}', error)
+          break
         if not object_info:
           # Nothing to read yet.
           break

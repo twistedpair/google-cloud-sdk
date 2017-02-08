@@ -934,6 +934,31 @@ _SPECS_BETA['backendBuckets'] = _InternalSpec(
         'description',
         'enableCdn',
     ])
+_SPECS_BETA['backendServices'] = _InternalSpec(
+    message_class_name='BackendService',
+    table_cols=[
+        ('NAME', 'name'),
+        ('BACKENDS', _BackendsToCell),
+        ('PROTOCOL', 'protocol'),
+    ],
+    transformations=[
+        ('backends[].group', path_simplifier.ScopedSuffix),
+    ],
+    editables=[
+        'backends',
+        'description',
+        'enableCDN',
+        'sessionAffinity',
+        'affinityCookieTTL',
+        'healthChecks',
+        'iap.enabled',
+        'iap.oauth2ClientId',
+        'iap.oauth2ClientSecret',
+        'port',
+        'portName',
+        'protocol',
+        'timeoutSec',
+    ],)
 _SPECS_BETA['urlMaps'] = _InternalSpec(
     message_class_name='UrlMap',
     table_cols=[
@@ -1010,31 +1035,6 @@ _SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(
     ],
     editables=None,
     )
-_SPECS_ALPHA['backendServices'] = _InternalSpec(
-    message_class_name='BackendService',
-    table_cols=[
-        ('NAME', 'name'),
-        ('BACKENDS', _BackendsToCell),
-        ('PROTOCOL', 'protocol'),
-    ],
-    transformations=[
-        ('backends[].group', path_simplifier.ScopedSuffix),
-    ],
-    editables=[
-        'backends',
-        'description',
-        'enableCDN',
-        'sessionAffinity',
-        'affinityCookieTTL',
-        'healthChecks',
-        'iap.enabled',
-        'iap.oauth2ClientId',
-        'iap.oauth2ClientSecret',
-        'port',
-        'portName',
-        'protocol',
-        'timeoutSec',
-    ],)
 _SPECS_ALPHA['urlMaps'] = _InternalSpec(
     message_class_name='UrlMap',
     table_cols=[

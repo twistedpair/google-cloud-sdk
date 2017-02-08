@@ -185,10 +185,6 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
-class CreateRepoRequest(_messages.Message):
-  """Request for CreateRepo."""
-
-
 class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log"""
 
@@ -398,62 +394,17 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
-class SourcerepoIamProjectsReposGetRequest(_messages.Message):
-  """A SourcerepoIamProjectsReposGetRequest object.
+class SourcerepoProjectsReposCreateRequest(_messages.Message):
+  """A SourcerepoProjectsReposCreateRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+    parent: The project in which to create the repo. Values are of the form
+      `projects/<project>`.
+    repo: A Repo resource to be passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-
-
-class SourcerepoIamProjectsReposSetIamPolicyRequest(_messages.Message):
-  """A SourcerepoIamProjectsReposSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class SourcerepoIamProjectsReposTestIamPermissionsRequest(_messages.Message):
-  """A SourcerepoIamProjectsReposTestIamPermissionsRequest object.
-
-  Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
-  resource = _messages.StringField(2, required=True)
-
-
-class SourcerepoProjectsReposCreateRepoRequest(_messages.Message):
-  """A SourcerepoProjectsReposCreateRepoRequest object.
-
-  Fields:
-    createRepoRequest: A CreateRepoRequest resource to be passed as the
-      request body.
-    name: The name of the repository to create. Values are of the form
-      `projects/<project>/repos/<repo>`.
-  """
-
-  createRepoRequest = _messages.MessageField('CreateRepoRequest', 1)
-  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(1, required=True)
+  repo = _messages.MessageField('Repo', 2)
 
 
 class SourcerepoProjectsReposDeleteRequest(_messages.Message):
@@ -465,6 +416,18 @@ class SourcerepoProjectsReposDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SourcerepoProjectsReposGetIamPolicyRequest(_messages.Message):
+  """A SourcerepoProjectsReposGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+  """
+
+  resource = _messages.StringField(1, required=True)
 
 
 class SourcerepoProjectsReposGetRequest(_messages.Message):
@@ -487,6 +450,36 @@ class SourcerepoProjectsReposListRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SourcerepoProjectsReposSetIamPolicyRequest(_messages.Message):
+  """A SourcerepoProjectsReposSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class SourcerepoProjectsReposTestIamPermissionsRequest(_messages.Message):
+  """A SourcerepoProjectsReposTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -554,6 +547,19 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class TestIamPermissionsResponse(_messages.Message):

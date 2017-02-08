@@ -285,21 +285,14 @@ def AddHttpsHealthChecks(parser):
 
 def AddIap(parser):
   """Add support for --iap flag."""
-  identity_function = lambda x: x
-  arg_dict_spec = {'enabled': None,
-                   'disabled': None,
-                   'oauth2-client-id': identity_function,
-                   'oauth2-client-secret': identity_function}
-  iap_flag = parser.add_argument(
+  # We set this to str, but it's really an ArgDict.  See
+  # backend_services_utils.GetIAP for the re-parse and rationale.
+  return parser.add_argument(
       '--iap',
-      type=arg_parsers.ArgDict(min_length=1,
-                               spec=arg_dict_spec,
-                               allow_key_only=True),
+      metavar=('disabled|enabled,['
+               'oauth2-client-id=OAUTH2-CLIENT-ID,'
+               'oauth2-client-secret=OAUTH2-CLIENT-SECRET]'),
       help='Specifies a list of settings for IAP service.')
-  iap_flag.detailed_help = """\
-      Enable or disable IAP service and/or specify OAuth2 client ID and client
-      secret for IAP service.
-      """
 
 
 def AddSessionAffinity(parser, internal_lb=False, target_pools=False,

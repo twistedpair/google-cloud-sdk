@@ -65,10 +65,9 @@ def _PromptDidYouMeanScope(resource_name, underspecified_names, scope_enum,
                            suggested_resource):
   """Prompts "did you mean <scope>".  Returns str or None."""
 
-  names = ['[{0}]'.format(name) for name in underspecified_names]
   message = 'Did you mean {0} [{1}] for {2}: [{3}]'.format(
       scope_enum.flag_name, suggested_resource,
-      resource_name, ','.join(names))
+      resource_name, ', '.join(underspecified_names))
 
   if console_io.PromptContinue(prompt_string=message, default=True,
                                throw_if_unattended=True):

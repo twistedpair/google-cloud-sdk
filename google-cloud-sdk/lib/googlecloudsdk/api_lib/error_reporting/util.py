@@ -16,6 +16,7 @@
 
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 API_VERSION = 'v1beta1'
@@ -77,4 +78,6 @@ class ErrorReporting(object):
     return properties.VALUES.core.project.Get(required=True)
 
   def _MakeProjectName(self, project):
-    return 'projects/' + project
+    project_ref = resources.REGISTRY.Create(API_NAME + '.projects',
+                                            projectId=project)
+    return project_ref.RelativeName()

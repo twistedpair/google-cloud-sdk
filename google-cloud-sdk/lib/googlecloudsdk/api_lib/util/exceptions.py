@@ -24,7 +24,9 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.resource import resource_property
 
 
 class _JsonSortedDict(dict):
@@ -35,7 +37,7 @@ class _JsonSortedDict(dict):
 
 
 class HttpErrorPayload(string.Formatter):
-  """Converts apitools HttpError payload to an object.
+  r"""Converts apitools HttpError payload to an object.
 
   Attributes:
     api_name: The url api name.
@@ -49,23 +51,29 @@ class HttpErrorPayload(string.Formatter):
     status_description: The status_code description.
     status_message: Context specific status message.
     url: The HTTP url.
-    <name>.content: The <name> attribute in the JSON content (synthesized in
+    .<a>.<b>...: The <a>.<b>... attribute in the JSON content (synthesized in
       get_field()).
 
   Examples:
-    Example payload.format(...) HttpException.error_format string:
+    error_format values and resulting output:
 
-    'Error: [{status_code}] {status_message}{url.line}'
-    '{debugInfo.content.line.default}'
+    'Error: [{status_code}] {status_message}{url?\n{?}}{.debugInfo?\n{?}}'
 
       Error: [404] Not found
       https://dotcom/foo/bar
+      <content.debugInfo in yaml print format>
 
-      debugInfo:
-      <content.debugInfo in default print format>
+    'Error: {status_code} {details?\n\ndetails{?COLON?}\n${?}}}'
+
+      Error: 404
+
+      details:
+      - foo
+      - bar
   """
 
   def __init__(self, http_error):
+    self._value = '{?}'
     self.api_name = ''
     self.api_version = ''
     self.content = {}
@@ -90,58 +98,47 @@ class HttpErrorPayload(string.Formatter):
 
     Args:
       field_name: The format string field name to get in the form
-        <name>(.<attr>)*. If the value for <name> is empty then the attributes
-        are ignored. The attributes are:
-          content - get <name> from the JSON payload content
-          key - emit <name>=<value>
-          value - print value of content.<name> in printer format output,
-            by default the object {<name>: value} is printed
-          line - emit a newline. There is a subtle difference between this and
-            explicit "\n". "\n{name}" always prints the newline, "{name.line}"
-            only prints newline if name has a non-null value.
-          (default, flattened, json, yaml) - emit a newline and the value in
-            this printer format
+        name - the value of name in the payload, '' if undefined
+        name?FORMAT - if name is non-empty then re-formats with FORMAT, where
+          {?} is the value of name. For example, if name=NAME then
+          {name?\nname is "{?}".} expands to '\nname is "NAME".'. ':' may not
+          appear in FORMAT, use {?COLON?} instead.
+        .a.b.c - the value of a.b.c in the JSON decoded payload contents.
+          For example, '{.errors.reason?[{?}]}' expands to [REASON] if
+          .errors.reason is defined.
       unused_args: Ignored.
       unused_kwargs: Ignored.
 
     Returns:
       The value of field_name for string.Formatter.format().
     """
-    attributes = field_name.split('.')
-    name = attributes.pop(0)
-    if attributes and attributes[0] == 'content':
-      value = self.content.get(name)
-      attributes.pop(0)
-      if not attributes:
-        attributes = ['default', 'line']
-    else:
+    if field_name.startswith('?'):
+      if field_name == '?':
+        return self._value, field_name
+      if field_name == '?COLON?':
+        return ':', field_name
+    parts = field_name.split('?', 1)
+    name = parts.pop(0)
+    fmt = parts.pop(0) if parts else None
+    if '.' in name:
+      if name.startswith('.'):
+        name = name[1:]
+      key = resource_lex.Lexer(name).Key()
+      value = resource_property.Get(self.content, key, '')
+    elif name:
       value = self.__dict__.get(name, '')
-    if not value:
+    else:
+      value = ''
+    if value in ('', None):
       return '', name
-    label = True
-    parts = []
-    for attr in attributes:
-      if attr == 'line':
-        parts.append('\n')
-      elif attr == 'key':
-        parts.append(name)
-        parts.append('=')
-        parts.append(unicode(value))
-        value = None
-      elif attr == 'value':
-        label = False
-      elif attr in ('default', 'flattened', 'json', 'yaml'):
-        buf = StringIO.StringIO()
-        buf.write('\n')
-        if label:
-          value = {name: value}
-        resource_printer.Print(value, attr, out=buf, single=True)
-        value = buf.getvalue()
-        if value.endswith('\n'):
-          value = value[:-1]
-    if value:
-      parts.append(unicode(value))
-    return ''.join(parts), name
+    if not isinstance(value, (basestring, int, float)):
+      buf = StringIO.StringIO()
+      resource_printer.Print(value, 'default', out=buf, single=True)
+      value = buf.getvalue().strip()
+    if fmt:
+      self._value = value
+      value = self.format(fmt)
+    return value, name
 
   def _ExtractResponseAndJsonContent(self, http_error):
     """Extracts the response and JSON content from the HttpError."""
@@ -161,7 +158,6 @@ class HttpErrorPayload(string.Formatter):
       self.status_message = self.error_info.get('message', '')
     except (KeyError, TypeError, ValueError):
       self.status_message = content
-
     except AttributeError:
       pass
 
@@ -260,12 +256,12 @@ class HttpException(core_exceptions.Error):
     if error_format is None:
       error_format = '{message}'
       if log.GetVerbosity() <= logging.DEBUG:
-        error_format += '{debugInfo.content.line.default}'
+        error_format += '{.debugInfo?\n{?}}'
     return self.payload.format(unicode(error_format))
 
   @property
   def message(self):
-    return str(self)
+    return unicode(self)
 
   def __eq__(self, other):
     if isinstance(other, HttpException):

@@ -364,7 +364,7 @@ class BaseSSHCommand(base_classes.BaseCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey()
+    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     new_metadata = _AddSSHKeyToMetadataMessage(self.messages, user, public_key,
                                                instance.metadata,
                                                iam_keys=iam_keys)
@@ -386,7 +386,7 @@ class BaseSSHCommand(base_classes.BaseCommand):
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
-    public_key = self.keys.GetPublicKey()
+    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     project = self.GetProject(project_name)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
@@ -399,7 +399,7 @@ class BaseSSHCommand(base_classes.BaseCommand):
 
   def _EnsureSSHKeyExistsForUser(self, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
-    public_key = self.keys.GetPublicKey()
+    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     should_upload = True
     try:
       user_info = fetcher.LookupUser(user)
@@ -474,7 +474,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
   def Run(self, args):
     super(BaseSSHCLICommand, self).Run(args)
     if not args.plain:
-      self.keys.EnsureKeysExist(self.env.keygen, args.force_key_file_overwrite)
+      self.keys.EnsureKeysExist(args.force_key_file_overwrite)
 
   def GetInstance(self, instance_ref):
     """Fetch an instance based on the given instance_ref."""

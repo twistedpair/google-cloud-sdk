@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import progress_tracker
 
 
@@ -169,11 +170,16 @@ def WaitForJobTermination(
   last_job_poll_time = 0
   job_complete = False
   wait_display = None
+  driver_output_uri = None
 
   def ReadDriverLogIfPresent():
     if driver_log_stream and driver_log_stream.open:
       # TODO(user): Don't read all output.
       driver_log_stream.ReadIntoWritable(log.err)
+
+  def PrintEqualsLine():
+    attr = console_attr.GetConsoleAttr()
+    log.err.Print('=' * attr.GetTermSize()[0])
 
   if stream_driver_log:
     log.status.Print('Waiting for job output...')
@@ -207,17 +213,23 @@ def WaitForJobTermination(
         last_job_poll_time = now
         try:
           job = client.projects_regions_jobs.Get(request)
-          if (stream_driver_log
-              and not driver_log_stream
-              and job.driverOutputResourceUri):
-            driver_log_stream = storage_helpers.StorageObjectSeriesStream(
-                job.driverOutputResourceUri)
         except apitools_exceptions.HttpError as error:
-          log.warn('GetJob failed:\n%s', error)
+          log.warn('GetJob failed:\n{1}', error)
           # Keep trying until we timeout in case error is transient.
+        if (stream_driver_log
+            and job.driverOutputResourceUri
+            and job.driverOutputResourceUri != driver_output_uri):
+          if driver_output_uri:
+            PrintEqualsLine()
+            log.warn("Job attempt failed. Streaming new attempt's output.")
+            PrintEqualsLine()
+          driver_output_uri = job.driverOutputResourceUri
+          driver_log_stream = storage_helpers.StorageObjectSeriesStream(
+              job.driverOutputResourceUri)
       time.sleep(log_poll_period_s)
       now = time.time()
 
+  # TODO(b/34836493): Get better test coverage of the next 20 lines.
   state = job.status.state
   if state is not goal_state and job.status.details:
     # Just log details, because the state will be in the error message.

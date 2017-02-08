@@ -233,6 +233,7 @@ def Exec(args,
          no_exit=False,
          out_func=None,
          err_func=None,
+         in_str=None,
          **extra_popen_kwargs):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
@@ -248,6 +249,7 @@ def Exec(args,
       process. This can be e.g. log.file_only_logger.debug or log.out.write.
     err_func: str->None, a function to call with the stderr of the executed
       process. This can be e.g. log.file_only_logger.debug or log.err.write.
+    in_str: str, input to send to the subprocess' stdin.
     **extra_popen_kwargs: Any additional kwargs will be passed through directly
       to subprocess.Popen
 
@@ -275,6 +277,8 @@ def Exec(args,
         extra_popen_kwargs['stdout'] = subprocess.PIPE
       if err_func:
         extra_popen_kwargs['stderr'] = subprocess.PIPE
+      if in_str:
+        extra_popen_kwargs['stdin'] = subprocess.PIPE
       try:
         p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
       except OSError as err:
@@ -284,7 +288,7 @@ def Exec(args,
           raise InvalidCommandError(args[0])
         raise
       process_holder.process = p
-      stdout, stderr = p.communicate()
+      stdout, stderr = p.communicate(in_str)
       if out_func:
         out_func(stdout)
       if err_func:

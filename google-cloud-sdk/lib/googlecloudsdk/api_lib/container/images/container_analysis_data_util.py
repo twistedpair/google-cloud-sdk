@@ -129,7 +129,10 @@ class BaseImage(object):
           for x in base_images
       ]
       for layer in reversed(last_basis.layer_info):
-        dockerfile.append('{0} {1}'.format(layer.directive, layer.arguments))
+        if layer.directive and layer.arguments:
+          dockerfile.append('{0} {1}'.format(layer.directive, layer.arguments))
+        else:
+          dockerfile.append('Could not recover information.')
       return ('\n' + _INDENT).join(['Image Basis:'] + dockerfile)
 
   def __init__(self, occurrence):

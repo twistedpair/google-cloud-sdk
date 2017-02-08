@@ -107,6 +107,10 @@ class DuplicateEntriesError(UploadFailureError):
             ', '.join(duplicates)))
 
 
+class NoStagingLocationError(UploadFailureError):
+  """No staging location was provided but one was required."""
+
+
 def _CopyIfNotWritable(source_dir, temp_dir):
   """Returns a writable directory with the same contents as source_dir.
 
@@ -278,19 +282,21 @@ def BuildPackages(package_path, output_dir):
                 pyc_file)
 
 
-def _UploadFilesByPath(paths, staging_bucket, job_name):
+def _UploadFilesByPath(paths, staging_location):
   """Uploads files after validating and transforming input type."""
+  if not staging_location:
+    raise NoStagingLocationError()
   counter = collections.Counter(map(os.path.basename, paths))
   duplicates = [name for name, count in counter.iteritems() if count > 1]
   if duplicates:
     raise DuplicateEntriesError(duplicates)
 
   upload_pairs = [(path, os.path.basename(path)) for path in paths]
-  return uploads.UploadFiles(upload_pairs, staging_bucket, job_name)
+  return uploads.UploadFiles(upload_pairs, staging_location.bucket_ref,
+                             staging_location.name)
 
 
-def UploadPythonPackages(packages=(), package_path=None, staging_bucket=None,
-                         job_name=None):
+def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
   """Uploads Python packages (if necessary), building them as-specified.
 
   A Cloud ML job needs one or more Python packages to run. These Python packages
@@ -327,10 +333,9 @@ def UploadPythonPackages(packages=(), package_path=None, staging_bucket=None,
       empty, a package_path must be provided.
     package_path: str. Relative path to source directory to be built, if any. If
       omitted, one or more packages must be provided.
-    staging_bucket: storage_util.BucketReference. Bucket to which archives are
-      uploaded. Not necessary if only remote packages are given.
-    job_name: str. Name of the Cloud ML Job. Used to prefix uploaded packages.
-      Not necessary if only remote packages are given.
+    staging_location: storage_util.ObjectReference. Cloud Storage prefix to
+      which archives are uploaded. Not necessary if only remote packages are
+      given.
 
   Returns:
     list of str. Fully qualified Cloud Storage URLs (`gs://..`) from uploaded
@@ -342,7 +347,8 @@ def UploadPythonPackages(packages=(), package_path=None, staging_bucket=None,
     SetuptoolsFailedError: If the setup.py file fails to successfully build.
     MissingInitError: If the package doesn't contain an `__init__.py` file.
     DuplicateEntriesError: If multiple files with the same name were provided.
-    ArgumentError: if no packages were found in the given path.
+    ArgumentError: if no packages were found in the given path or no
+      staging_location was but uploads were required.
   """
   remote_paths = []
   local_paths = []
@@ -356,14 +362,24 @@ def UploadPythonPackages(packages=(), package_path=None, staging_bucket=None,
     with files.TemporaryDirectory() as temp_dir:
       local_paths.extend(BuildPackages(package_path,
                                        os.path.join(temp_dir, 'output')))
-      remote_paths.extend(
-          _UploadFilesByPath(local_paths, staging_bucket, job_name))
+      remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
   elif local_paths:
     # Can't combine this with above because above requires the temporary
     # directory to still be around
-    remote_paths.extend(
-        _UploadFilesByPath(local_paths, staging_bucket, job_name))
+    remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
 
   if not remote_paths:
     raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
   return remote_paths
+
+
+def GetStagingLocation(job_id=None, staging_bucket=None, job_dir=None):
+  """Get the appropriate staging location for the job given the arguments."""
+  staging_location = None
+  if staging_bucket:
+    staging_location = storage_util.ObjectReference(staging_bucket,
+                                                    job_id)
+  elif job_dir:
+    staging_location = storage_util.ObjectReference(
+        job_dir.bucket_ref, '/'.join((job_dir.name.rstrip('/'), 'packages')))
+  return staging_location

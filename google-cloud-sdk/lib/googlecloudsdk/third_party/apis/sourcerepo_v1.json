@@ -176,13 +176,6 @@
         }
       }
     },
-    "CreateRepoRequest": {
-      "id": "CreateRepoRequest",
-      "description": "Request for CreateRepo.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
@@ -509,6 +502,20 @@
       "properties": {
       }
     },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "TestIamPermissionsResponse": {
       "id": "TestIamPermissionsResponse",
       "description": "Response message for `TestIamPermissions` method.",
@@ -579,26 +586,26 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "createRepo": {
-              "id": "sourcerepo.projects.repos.createRepo",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/repos/{reposId}",
+            "create": {
+              "id": "sourcerepo.projects.repos.create",
+              "path": "v1/{+parent}/repos",
+              "flatPath": "v1/projects/{projectsId}/repos",
               "httpMethod": "POST",
               "description": "Creates a repo in the given project with the given name..\n\nIf the named repository already exists, `CreateRepo` returns\n`ALREADY_EXISTS`.",
               "parameters": {
-                "name": {
-                  "description": "The name of the repository to create. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
+                "parent": {
+                  "description": "The project in which to create the repo. Values are of the form\n`projects\/<project>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "name"
+                "parent"
               ],
               "request": {
-                "$ref": "CreateRepoRequest"
+                "$ref": "Repo"
               },
               "response": {
                 "$ref": "Repo"
@@ -631,102 +638,87 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
-            }
-          }
-        }
-      }
-    },
-    "iam": {
-      "resources": {
-        "projects": {
-          "resources": {
-            "repos": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "sourcerepo.iam.projects.repos.setIamPolicy",
-                  "path": "v1/iam/{+resource}",
-                  "flatPath": "v1/iam/projects/{projectsId}/repos/{reposId}",
-                  "httpMethod": "POST",
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/repos\/.+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "get": {
-                  "id": "sourcerepo.iam.projects.repos.get",
-                  "path": "v1/iam/{+resource}",
-                  "flatPath": "v1/iam/projects/{projectsId}/repos/{reposId}",
-                  "httpMethod": "GET",
-                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/repos\/.+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "testIamPermissions": {
-                  "id": "sourcerepo.iam.projects.repos.testIamPermissions",
-                  "path": "v1/iam/{+resource}",
-                  "flatPath": "v1/iam/projects/{projectsId}/repos/{reposId}",
-                  "httpMethod": "GET",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/repos\/.+$",
-                      "type": "string"
-                    },
-                    "permissions": {
-                      "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
-                      "location": "query",
-                      "repeated": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+            },
+            "setIamPolicy": {
+              "id": "sourcerepo.projects.repos.setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/repos/{reposId}:setIamPolicy",
+              "httpMethod": "POST",
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "type": "string"
                 }
-              }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "getIamPolicy": {
+              "id": "sourcerepo.projects.repos.getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/repos/{reposId}:getIamPolicy",
+              "httpMethod": "GET",
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "sourcerepo.projects.repos.testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/repos/{reposId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "TestIamPermissionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
         }

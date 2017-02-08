@@ -29,7 +29,7 @@ class ModelsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1beta1')
     self.messages = messages or apis.GetMessagesModule('ml', 'v1beta1')
 
-  def Create(self, model_name, regions):
+  def Create(self, model_name, regions, enable_logging=False):
     """Create a new model."""
     model_ref = _ParseModel(model_name)
     regions_list = regions or []
@@ -38,7 +38,9 @@ class ModelsClient(object):
     req = self.messages.MlProjectsModelsCreateRequest(
         parent=project_ref.RelativeName(),
         googleCloudMlV1beta1Model=self.messages.GoogleCloudMlV1beta1Model(
-            name=model_ref.Name(), regions=regions_list))
+            name=model_ref.Name(),
+            regions=regions_list,
+            onlinePredictionLogging=enable_logging))
     return self.client.projects_models.Create(req)
 
   def Delete(self, model):

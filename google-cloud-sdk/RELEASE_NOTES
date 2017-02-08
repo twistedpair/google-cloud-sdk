@@ -2,6 +2,45 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 143.0.0 (2017/02/08)
+
+### Google App Engine
+
+* `gcloud beta app instances ssh` is now available in beta.
+* Updated app-engine-go component to the 1.9.50 SDK.
+* Fixed a bug where `gcloud beta app deploy` failed while deploying Go apps.
+* Python SDK updated to 1.9.50. For more details, please see
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Google Compute Engine
+
+* Show Cloud OS Images (COS) in 'gcloud compute images list' output.
+* Added beta for 'compute xpn get-xpn-host' and 'compute xpn organizations list-xpn-hosts'.
+
+### Cloud Tools for Powershell
+
+* Added beta cmdlets for Log Sinks and Log Metrics.
+
+### Google Cloud Pub/Sub
+
+* The pubsub emulator now adheres to the documented topic and subscription
+name constraints, including support for '+' and '%25' in names via
+REST.
+
+### Google Cloud ML
+
+* The `--job-dir` flag for `gcloud beta ml jobs submit training` may
+now be used for staging code in the absence of the (now optional)
+`--staging-bucket` flag.
+* `--staging-bucket` flag is only required in `jobs submit training`
+if a file upload is necessary.
+* Add `--job-dir` flag to `ml jobs submit training`
+
+### Google Cloud Deployment Manager/Runtime Configuration
+
+* `gcloud beta deployment-manager runtime-configs` is now available in beta.
+
+
 ## 142.0.0 (2017/02/01)
 
 ### Breaking Changes
@@ -86,7 +125,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
   of `--scopes` format consistent with `gcloud compute set-scopes`.
 * Deprecated old `--scopes` format in `gcloud compute instance-templates create`
   in favor of `--scopes` format consistent with `gcloud compute set-scopes`.
-* Added support for creating GCE VMs with GPU accelerators.
+* Added support for creating Google Compute Engine VMs with GPU accelerators.
 
 ### Google Container Engine
 

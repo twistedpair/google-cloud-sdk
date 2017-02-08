@@ -67,6 +67,7 @@ def BuildTrainingJob(path=None,
                      job_name=None,
                      trainer_uri=None,
                      region=None,
+                     job_dir=None,
                      scale_tier=None,
                      user_args=None,
                      runtime_version=None):
@@ -79,6 +80,7 @@ def BuildTrainingJob(path=None,
       trainer_uri: List of values to set for trainerUri field (overrides yaml
         file)
       region: compute region in which to run the job (overrides yaml file)
+      job_dir: Cloud Storage working directory for the job (overrides yaml file)
       scale_tier: ScaleTierValueValuesEnum the scale tier for the job (overrides
         yaml file)
       user_args: [str]. A list of arguments to pass through to the job.
@@ -107,6 +109,7 @@ def BuildTrainingJob(path=None,
       'args': user_args,
       'packageUris': trainer_uri,
       'region': region,
+      'jobDir': job_dir,
       'scaleTier': scale_tier,
       'runtimeVersion': runtime_version
   }

@@ -39,14 +39,14 @@ GKE_DOCKER = 'gci-ensure-gke-docker'
 
 ALLOWED_PROTOCOLS = ['TCP', 'UDP']
 
-# Pin this version of gcloud to GCI image major release version
-GCI_MAJOR_RELEASE = 'gci-stable-55'
+# Pin this version of gcloud to COS image major release version
+COS_MAJOR_RELEASE = 'cos-stable-55'
 
-GCI_PROJECT = 'google-containers'
+COS_PROJECT = 'cos-cloud'
 
 
 def _GetUserInit(allow_privileged):
-  """Gets user-init metadata value for GCI image."""
+  """Gets user-init metadata value for COS image."""
   allow_privileged_val = 'true' if allow_privileged else 'false'
   return USER_INIT_TEMPLATE % (allow_privileged_val)
 
@@ -140,34 +140,34 @@ def CreateTagsMessage(messages, tags):
   return messages.Tags(items=(tags if tags else ['container-vm']))
 
 
-class NoGciImageException(core_exceptions.Error):
-  """Raised when GCI image could not be found."""
+class NoCosImageException(core_exceptions.Error):
+  """Raised when COS image could not be found."""
 
   def __init__(self):
-    super(NoGciImageException, self).__init__(
-        'Could not find GCI (Google Cloud Image) for release family \'{0}\''
-        .format(GCI_MAJOR_RELEASE))
+    super(NoCosImageException, self).__init__(
+        'Could not find COS (Cloud OS) for release family \'{0}\''
+        .format(COS_MAJOR_RELEASE))
 
 
-def ExpandGciImageFlag(compute_client):
-  """Select a GCI image to run Docker."""
+def ExpandCosImageFlag(compute_client):
+  """Select a COS image to run Docker."""
   compute = compute_client.apitools_client
   images = compute_client.MakeRequests([(
       compute.images,
       'List',
-      compute_client.messages.ComputeImagesListRequest(project=GCI_PROJECT)
+      compute_client.messages.ComputeImagesListRequest(project=COS_PROJECT)
   )])
-  return _SelectNewestGciImage(images)
+  return _SelectNewestCosImage(images)
 
 
-def _SelectNewestGciImage(images):
-  """Selects newest GCI image from the list."""
-  gci_images = sorted([image for image in images
-                       if image.name.startswith(GCI_MAJOR_RELEASE)],
+def _SelectNewestCosImage(images):
+  """Selects newest COS image from the list."""
+  cos_images = sorted([image for image in images
+                       if image.name.startswith(COS_MAJOR_RELEASE)],
                       key=lambda x: times.ParseDateTime(x.creationTimestamp))
-  if not gci_images:
-    raise NoGciImageException()
-  return gci_images[-1].selfLink
+  if not cos_images:
+    raise NoCosImageException()
+  return cos_images[-1].selfLink
 
 
 def _ValidateAndParsePortMapping(port_mappings):

@@ -53,6 +53,7 @@ class Displayer(object):
     _defaults: The resource format and filter default projection.
     _format: The printer format string.
     _info: The resource info or None if not registered.
+    _legacy: True if command uses legacy Command class methods.
     _printer: The printer object.
     _printer_is_initialized: True if self._printer has been initialized.
     _resources: The resources to display, returned by command.Run().
@@ -75,32 +76,42 @@ class Displayer(object):
     """
     self._args = args
     self._command = command
+    self._defaults = None
     self._default_format_used = False
     self._format = None
-    self._info = command.ResourceInfo(args)
+    self._info = None
+    self._legacy = True
     self._printer = None
     self._printer_is_initialized = False
     self._resources = resources
-    self._defaults = resource_projection_spec.ProjectionSpec(
-        defaults=command.Defaults())
+    if not display_info:
+      # pylint: disable=protected-access
+      display_info = args.GetDisplayInfo()
+    if display_info:
+      self._legacy = display_info.legacy
+      self._defaults = resource_projection_spec.ProjectionSpec(
+          defaults=self._defaults,
+          symbols=display_info.transforms,
+          aliases=display_info.aliases)
+      self._format = display_info.format
+    if self._legacy:
+      self._defaults = resource_projection_spec.ProjectionSpec(
+          defaults=command.Defaults())
+      self._info = command.ResourceInfo(args)
+      if self._info:
+        self._defaults.symbols['collection'] = (
+            lambda r, undefined='': self._info.collection or undefined)
+      geturi = command.GetUriFunc()
+      if geturi:
+        self._transform_uri = lambda r, undefined='': geturi(r) or undefined
+        self._defaults.symbols['uri'] = self._transform_uri
+      else:
+        self._transform_uri = resource_transform.TransformUri
+    else:
+      self._transform_uri = self._defaults.symbols.get(
+          'uri', resource_transform.TransformUri)
     self._defaults.symbols[
         resource_transform.GetTypeDataName('conditionals')] = args
-    if self._info:
-      self._defaults.symbols['collection'] = (
-          lambda r, undefined='': self._info.collection or undefined)
-    if display_info:
-      self._format = display_info.format
-      if display_info.transforms or display_info.aliases:
-        self._defaults = resource_projection_spec.ProjectionSpec(
-            defaults=self._defaults,
-            symbols=display_info.transforms,
-            aliases=display_info.aliases)
-    geturi = command.GetUriFunc()
-    if geturi:
-      self._transform_uri = lambda r, undefined='': geturi(r) or undefined
-      self._defaults.symbols['uri'] = self._transform_uri
-    else:
-      self._transform_uri = resource_transform.TransformUri
 
   def _GetFlag(self, flag_name):
     """Returns the value of flag_name in args, None if it is unknown or unset.
@@ -116,7 +127,7 @@ class Displayer(object):
   def _AddUriCacheTap(self):
     """Taps a resource Uri cache updater into self.resources if needed."""
 
-    if not self._info or self._info.bypass_cache:
+    if self._legacy and (not self._info or self._info.bypass_cache):
       return
 
     cache_update_op = self._command.GetUriCacheUpdateOp()
@@ -274,6 +285,8 @@ class Displayer(object):
     Returns:
       format: The format string, '' if there is an explicit Display().
     """
+    if not self._legacy:
+      return self._format
     if hasattr(self._command, 'Display'):
       return ''
     return self._command.Format(self._args)

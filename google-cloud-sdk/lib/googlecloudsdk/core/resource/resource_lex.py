@@ -758,10 +758,35 @@ class Lexer(object):
     return calls
 
 
+def ParseKey(name):
+  """Returns a parsed key for the dotted resource name string.
+
+  This is an encapsulation of Lexer.Key(). That docstring has the input/output
+  details for this function.
+
+  Args:
+    name: A resource name string that may contain dotted components and
+      multi-value indices.
+
+  Raises:
+    ExpressionSyntaxError: If there are unexpected tokens after the key name.
+
+  Returns:
+    A parsed key for he dotted resource name string.
+  """
+  lex = Lexer(name)
+  key = lex.Key()
+  if not lex.EndOfInput():
+    raise resource_exceptions.ExpressionSyntaxError(
+        'Unexpected tokens [{0}] in key.'.format(lex.Annotate()))
+  return key
+
+
 def GetKeyName(key, quote=True):
   """Returns the string representation for a parsed key.
 
-  This is the inverse of Lex.Key().
+  This is the inverse of Lexer.Key(). That docstring has the input/output
+  details for this function.
 
   Args:
     key: A parsed key, which is an ordered list of key names/indices. Each

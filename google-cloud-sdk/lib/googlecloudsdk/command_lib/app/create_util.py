@@ -40,14 +40,15 @@ def CheckAppNotExists(api_client, project):
     AppAlreadyExistsError if app already exists
   """
   try:
-    api_client.GetApplication()  # Should raise NotFoundError
+    app = api_client.GetApplication()  # Should raise NotFoundError
   except api_lib_exceptions.NotFoundError:
     pass
   else:
+    region = ' in region [{}]'.format(app.locationId) if app.locationId else ''
     raise AppAlreadyExistsError(
         'The project [{project}] already contains an App Engine '
-        'application.  You can deploy your application using '
-        '`gcloud app deploy`.'.format(project=project))
+        'application{region}.  You can deploy your application using '
+        '`gcloud app deploy`.'.format(project=project, region=region))
 
 
 def CreateApp(api_client, project, region, suppress_warning=False):

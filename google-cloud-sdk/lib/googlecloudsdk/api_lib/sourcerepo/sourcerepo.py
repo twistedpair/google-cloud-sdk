@@ -19,6 +19,7 @@ import os
 from apitools.base.py import exceptions
 
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import resources
 
 
 class RepoCreationError(exceptions.Error):
@@ -227,9 +228,12 @@ class Source(object):
       (messages.Repo) The full definition of the new repo, as reported by
         the server.
     """
-    request = messages.SourcerepoProjectsReposCreateRepoRequest(
-        name=repo_resource.RelativeName())
-    return self._client.projects_repos.CreateRepo(request)
+    parent = resources.REGISTRY.Create('sourcerepo.projects',
+                                       projectsId=repo_resource.projectsId)
+    request = messages.SourcerepoProjectsReposCreateRequest(
+        parent=parent.RelativeName(),
+        repo=messages.Repo(name=repo_resource.RelativeName()))
+    return self._client.projects_repos.Create(request)
 
   def DeleteRepo(self, repo_resource):
     """Deletes a repo.
