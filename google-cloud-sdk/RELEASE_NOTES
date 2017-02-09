@@ -2,6 +2,12 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 143.0.1 (2017/02/09)
+
+* Fixed issue in which some downloads of the Cloud SDK were missing critical
+  libraries.
+  * https://code.google.com/p/google-cloud-sdk/issues/detail?id=1525
+
 ## 143.0.0 (2017/02/08)
 
 ### Google App Engine
