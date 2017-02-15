@@ -392,7 +392,7 @@ class RemoteCompletion(object):
         # construct collection from self link if the resources parser
         # can't parse due to, for example, a service that can't be registered
         except (resources.InvalidResourceException,
-                resources.UnknownFieldException):
+                resources.RequiredFieldOmittedException):
           lst = ref.split('/')
           collection = lst[3] + '.' + lst[-2]
       lst = RemoteCompletion.CachePath(ref)

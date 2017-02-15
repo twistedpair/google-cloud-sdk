@@ -839,7 +839,7 @@ def Deprecate(is_removed=True,
         if is_removed:
           raise DeprecationException(error)
         log.warn(warning)
-        run_func(*args, **kw)
+        return run_func(*args, **kw)
       return WrappedRun
 
     if issubclass(cmd_class, Group):

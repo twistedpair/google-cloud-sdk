@@ -103,6 +103,10 @@ apis:
     v1:
       discovery_doc: cloudresourcemanager_v1.json
       default: true
+      # Explicitly specifying the Liens service because it does not expose a
+      # Get method.
+      resources:
+        liens: "liens/{liensId}"
     v2alpha1:
       discovery_doc: cloudresourcemanager_v2alpha1.json
   cloudresourcesearch:
@@ -196,6 +200,9 @@ apis:
       discovery_doc: sourcerepo_v1.json
       resources:
         projects: "projects/{projectsId}"
+  spanner:
+    v1:
+      discovery_doc: spanner_v1.json
   sqladmin:
     v1beta3:
       discovery_doc: sqladmin_v1beta3.json

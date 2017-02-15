@@ -6,8 +6,8 @@
   "canonicalName": "Cloud KMS",
   "version": "v1beta1",
   "revision": "0",
-  "title": "Google Cloud KMS API",
-  "description": "Google Cloud Key Management Service lets you manage encryption for your cloud services the same way you do on-premise. You can generate, use, rotate, and destroy AES256 key encryption keys.",
+  "title": "Google Cloud Key Management Service (KMS) API",
+  "description": "Manages encryption for your cloud services the same way you do on-premise. You can generate, use, rotate, and destroy AES256 encryption keys.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -780,15 +780,16 @@
           "methods": {
             "list": {
               "id": "cloudkms.projects.locations.list",
-              "path": "v1beta1/projects/{projectsId}/locations",
+              "path": "v1beta1/{+name}/locations",
               "flatPath": "v1beta1/projects/{projectsId}/locations",
               "httpMethod": "GET",
               "description": "Lists information about the supported locations for this service.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. The resource that owns the locations collection, if applicable.",
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
                   "location": "path",
                   "required": true,
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -809,7 +810,7 @@
                 }
               },
               "parameterOrder": [
-                "projectsId"
+                "name"
               ],
               "response": {
                 "$ref": "ListLocationsResponse"
@@ -820,27 +821,21 @@
             },
             "get": {
               "id": "cloudkms.projects.locations.get",
-              "path": "v1beta1/projects/{projectsId}/locations/{locationsId}",
+              "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}",
               "httpMethod": "GET",
               "description": "Get information about a location.",
               "parameters": {
-                "projectsId": {
-                  "description": "Part of `name`. Resource name for the location.",
+                "name": {
+                  "description": "Resource name for the location.",
                   "location": "path",
                   "required": true,
-                  "type": "string"
-                },
-                "locationsId": {
-                  "description": "Part of `name`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
               "parameterOrder": [
-                "projectsId",
-                "locationsId"
+                "name"
               ],
               "response": {
                 "$ref": "Location"
@@ -856,21 +851,16 @@
               "methods": {
                 "list": {
                   "id": "cloudkms.projects.locations.keyRings.list",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
+                  "path": "v1beta1/{+parent}/keyRings",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
                   "httpMethod": "GET",
                   "description": "Lists KeyRings.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. Required. The resource name of the location associated with the\nKeyRings, in the format `projects\/*\/locations\/*`.",
+                    "parent": {
+                      "description": "Required. The resource name of the location associated with the\nKeyRings, in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -886,8 +876,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId"
+                    "parent"
                   ],
                   "response": {
                     "$ref": "ListKeyRingsResponse"
@@ -898,34 +887,21 @@
                 },
                 "get": {
                   "id": "cloudkms.projects.locations.keyRings.get",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}",
+                  "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}",
                   "httpMethod": "GET",
                   "description": "Returns metadata for a given KeyRing.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `name`. The name of the KeyRing to get.",
+                    "name": {
+                      "description": "The name of the KeyRing to get.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "keyRingsId": {
-                      "description": "Part of `name`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId",
-                    "keyRingsId"
+                    "name"
                   ],
                   "response": {
                     "$ref": "KeyRing"
@@ -936,21 +912,16 @@
                 },
                 "create": {
                   "id": "cloudkms.projects.locations.keyRings.create",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
+                  "path": "v1beta1/{+parent}/keyRings",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
                   "httpMethod": "POST",
                   "description": "Create a new KeyRing in a given Project and Location.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `parent`. Required. The resource name of the location associated with the\nKeyRings, in the format `projects\/*\/locations\/*`.",
+                    "parent": {
+                      "description": "Required. The resource name of the location associated with the\nKeyRings, in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `parent`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "keyRingId": {
@@ -960,8 +931,7 @@
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId"
+                    "parent"
                   ],
                   "request": {
                     "$ref": "KeyRing"
@@ -975,34 +945,21 @@
                 },
                 "setIamPolicy": {
                   "id": "cloudkms.projects.locations.keyRings.setIamPolicy",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy",
+                  "path": "v1beta1/{+resource}:setIamPolicy",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy",
                   "httpMethod": "POST",
                   "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "keyRingsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId",
-                    "keyRingsId"
+                    "resource"
                   ],
                   "request": {
                     "$ref": "SetIamPolicyRequest"
@@ -1016,34 +973,21 @@
                 },
                 "getIamPolicy": {
                   "id": "cloudkms.projects.locations.keyRings.getIamPolicy",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy",
+                  "path": "v1beta1/{+resource}:getIamPolicy",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy",
                   "httpMethod": "GET",
                   "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "keyRingsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId",
-                    "keyRingsId"
+                    "resource"
                   ],
                   "response": {
                     "$ref": "Policy"
@@ -1054,34 +998,21 @@
                 },
                 "testIamPermissions": {
                   "id": "cloudkms.projects.locations.keyRings.testIamPermissions",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions",
                   "httpMethod": "POST",
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                   "parameters": {
-                    "projectsId": {
-                      "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                       "location": "path",
                       "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "keyRingsId": {
-                      "description": "Part of `resource`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId",
-                    "keyRingsId"
+                    "resource"
                   ],
                   "request": {
                     "$ref": "TestIamPermissionsRequest"
@@ -1100,27 +1031,16 @@
                   "methods": {
                     "list": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.list",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
+                      "path": "v1beta1/{+parent}/cryptoKeys",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
                       "httpMethod": "GET",
                       "description": "Lists CryptoKeys.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `parent`. Required. The resource name of the KeyRing to list, in the format\n`projects\/*\/locations\/*\/keyRings\/*`.",
+                        "parent": {
+                          "description": "Required. The resource name of the KeyRing to list, in the format\n`projects\/*\/locations\/*\/keyRings\/*`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1136,9 +1056,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId"
+                        "parent"
                       ],
                       "response": {
                         "$ref": "ListCryptoKeysResponse"
@@ -1149,41 +1067,21 @@
                     },
                     "get": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.get",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
+                      "path": "v1beta1/{+name}",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
                       "httpMethod": "GET",
                       "description": "Returns metadata for a given CryptoKey, as well as its\nprimary CryptoKeyVersion.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. The name of the CryptoKey to get.",
+                        "name": {
+                          "description": "The name of the CryptoKey to get.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "name"
                       ],
                       "response": {
                         "$ref": "CryptoKey"
@@ -1194,27 +1092,16 @@
                     },
                     "create": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.create",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
+                      "path": "v1beta1/{+parent}/cryptoKeys",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
                       "httpMethod": "POST",
                       "description": "Create a new CryptoKey within a KeyRing.\n\nCryptoKey.purpose is required.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `parent`. Required. The name of the KeyRing associated with the\nCryptoKeys.",
+                        "parent": {
+                          "description": "Required. The name of the KeyRing associated with the\nCryptoKeys.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `parent`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+$",
                           "type": "string"
                         },
                         "cryptoKeyId": {
@@ -1224,9 +1111,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId"
+                        "parent"
                       ],
                       "request": {
                         "$ref": "CryptoKey"
@@ -1240,33 +1125,16 @@
                     },
                     "patch": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.patch",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
+                      "path": "v1beta1/{+name}",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
                       "httpMethod": "PATCH",
                       "description": "Update a CryptoKey.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `cryptoKey.name`. Output only. The resource name for this CryptoKey in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+                        "name": {
+                          "description": "Output only. The resource name for this CryptoKey in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `cryptoKey.name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `cryptoKey.name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `cryptoKey.name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         },
                         "updateMask": {
@@ -1277,10 +1145,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "name"
                       ],
                       "request": {
                         "$ref": "CryptoKey"
@@ -1294,41 +1159,21 @@
                     },
                     "encrypt": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.encrypt",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt",
+                      "path": "v1beta1/{+name}:encrypt",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt",
                       "httpMethod": "POST",
                       "description": "Encrypt data, so that it can only be recovered by a call to Decrypt.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. Required. The resource name of the CryptoKey or CryptoKeyVersion\nto use for encryption.\n\nIf a CryptoKey is specified, the server will use its\nprimary version.",
+                        "name": {
+                          "description": "Required. The resource name of the CryptoKey or CryptoKeyVersion\nto use for encryption.\n\nIf a CryptoKey is specified, the server will use its\nprimary version.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "name"
                       ],
                       "request": {
                         "$ref": "EncryptRequest"
@@ -1342,41 +1187,21 @@
                     },
                     "decrypt": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.decrypt",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt",
+                      "path": "v1beta1/{+name}:decrypt",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt",
                       "httpMethod": "POST",
                       "description": "Decrypt data that was protected by Encrypt.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. Required. The resource name of the CryptoKey to use for decryption.\nThe server will choose the appropriate version.",
+                        "name": {
+                          "description": "Required. The resource name of the CryptoKey to use for decryption.\nThe server will choose the appropriate version.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "name"
                       ],
                       "request": {
                         "$ref": "DecryptRequest"
@@ -1390,41 +1215,21 @@
                     },
                     "updatePrimaryVersion": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.updatePrimaryVersion",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
+                      "path": "v1beta1/{+name}:updatePrimaryVersion",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
                       "httpMethod": "POST",
                       "description": "Update the version of a CryptoKey that will be used in Encrypt",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `name`. The resource name of the CryptoKey to update.",
+                        "name": {
+                          "description": "The resource name of the CryptoKey to update.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `name`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "name"
                       ],
                       "request": {
                         "$ref": "UpdateCryptoKeyPrimaryVersionRequest"
@@ -1438,41 +1243,21 @@
                     },
                     "setIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.setIamPolicy",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy",
+                      "path": "v1beta1/{+resource}:setIamPolicy",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy",
                       "httpMethod": "POST",
                       "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "resource"
                       ],
                       "request": {
                         "$ref": "SetIamPolicyRequest"
@@ -1486,41 +1271,21 @@
                     },
                     "getIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.getIamPolicy",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy",
+                      "path": "v1beta1/{+resource}:getIamPolicy",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy",
                       "httpMethod": "GET",
                       "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "resource"
                       ],
                       "response": {
                         "$ref": "Policy"
@@ -1531,41 +1296,21 @@
                     },
                     "testIamPermissions": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.testIamPermissions",
-                      "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions",
+                      "path": "v1beta1/{+resource}:testIamPermissions",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions",
                       "httpMethod": "POST",
                       "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                       "parameters": {
-                        "projectsId": {
-                          "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "keyRingsId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "cryptoKeysId": {
-                          "description": "Part of `resource`. See documentation of `projectsId`.",
-                          "location": "path",
-                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "keyRingsId",
-                        "cryptoKeysId"
+                        "resource"
                       ],
                       "request": {
                         "$ref": "TestIamPermissionsRequest"
@@ -1584,33 +1329,16 @@
                       "methods": {
                         "list": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
+                          "path": "v1beta1/{+parent}/cryptoKeyVersions",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
                           "httpMethod": "GET",
                           "description": "Lists CryptoKeyVersions.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `parent`. Required. The resource name of the CryptoKey to list, in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+                            "parent": {
+                              "description": "Required. The resource name of the CryptoKey to list, in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -1626,10 +1354,7 @@
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId"
+                            "parent"
                           ],
                           "response": {
                             "$ref": "ListCryptoKeyVersionsResponse"
@@ -1640,48 +1365,21 @@
                         },
                         "get": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
+                          "path": "v1beta1/{+name}",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
                           "httpMethod": "GET",
                           "description": "Returns metadata for a given CryptoKeyVersion.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `name`. The name of the CryptoKeyVersion to get.",
+                            "name": {
+                              "description": "The name of the CryptoKeyVersion to get.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeyVersionsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId",
-                            "cryptoKeyVersionsId"
+                            "name"
                           ],
                           "response": {
                             "$ref": "CryptoKeyVersion"
@@ -1692,41 +1390,21 @@
                         },
                         "create": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.create",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
+                          "path": "v1beta1/{+parent}/cryptoKeyVersions",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
                           "httpMethod": "POST",
                           "description": "Create a new CryptoKeyVersion in a CryptoKey.\n\nThe server will assign the next sequential id. If unset,\nstate will be set to\nENABLED.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `parent`. Required. The name of the CryptoKey associated with\nthe CryptoKeyVersions.",
+                            "parent": {
+                              "description": "Required. The name of the CryptoKey associated with\nthe CryptoKeyVersions.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `parent`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
                               "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId"
+                            "parent"
                           ],
                           "request": {
                             "$ref": "CryptoKeyVersion"
@@ -1740,39 +1418,16 @@
                         },
                         "patch": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.patch",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
+                          "path": "v1beta1/{+name}",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
                           "httpMethod": "PATCH",
                           "description": "Update a CryptoKeyVersion's metadata.\n\nstate may be changed between\nENABLED and\nDISABLED using this\nmethod. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to\nmove between other states.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `cryptoKeyVersion.name`. Output only. The resource name for this CryptoKeyVersion in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`.",
+                            "name": {
+                              "description": "Output only. The resource name for this CryptoKeyVersion in the format\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `cryptoKeyVersion.name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `cryptoKeyVersion.name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `cryptoKeyVersion.name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeyVersionsId": {
-                              "description": "Part of `cryptoKeyVersion.name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             },
                             "updateMask": {
@@ -1783,11 +1438,7 @@
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId",
-                            "cryptoKeyVersionsId"
+                            "name"
                           ],
                           "request": {
                             "$ref": "CryptoKeyVersion"
@@ -1801,48 +1452,21 @@
                         },
                         "destroy": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
+                          "path": "v1beta1/{+name}:destroy",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
                           "httpMethod": "POST",
                           "description": "Schedule a CryptoKeyVersion for destruction.\n\nUpon calling this method, CryptoKeyVersion.state will be set to\nDESTROY_SCHEDULED\nand destroy_time will be set to a time 24\nhours in the future, at which point the state\nwill be changed to\nDESTROYED, and the key\nmaterial will be irrevocably destroyed.\n\nBefore the destroy_time is reached,\nRestoreCryptoKeyVersion may be called to reverse the process.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `name`. The resource name of the CryptoKeyVersion to destroy.",
+                            "name": {
+                              "description": "The resource name of the CryptoKeyVersion to destroy.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeyVersionsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId",
-                            "cryptoKeyVersionsId"
+                            "name"
                           ],
                           "request": {
                             "$ref": "DestroyCryptoKeyVersionRequest"
@@ -1856,48 +1480,21 @@
                         },
                         "restore": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore",
-                          "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
+                          "path": "v1beta1/{+name}:restore",
                           "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
                           "httpMethod": "POST",
                           "description": "Restore a CryptoKeyVersion in the\nDESTROY_SCHEDULED,\nstate.\n\nUpon restoration of the CryptoKeyVersion, state\nwill be set to DISABLED,\nand destroy_time will be cleared.",
                           "parameters": {
-                            "projectsId": {
-                              "description": "Part of `name`. The resource name of the CryptoKeyVersion to restore.",
+                            "name": {
+                              "description": "The resource name of the CryptoKeyVersion to restore.",
                               "location": "path",
                               "required": true,
-                              "type": "string"
-                            },
-                            "locationsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "keyRingsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeysId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "cryptoKeyVersionsId": {
-                              "description": "Part of `name`. See documentation of `projectsId`.",
-                              "location": "path",
-                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
                               "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "projectsId",
-                            "locationsId",
-                            "keyRingsId",
-                            "cryptoKeysId",
-                            "cryptoKeyVersionsId"
+                            "name"
                           ],
                           "request": {
                             "$ref": "RestoreCryptoKeyVersionRequest"

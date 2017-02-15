@@ -24,7 +24,7 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.  * `serviceAccount:{emailid}`: An email address
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.  *
@@ -36,6 +36,33 @@ class Binding(_messages.Message):
 
   members = _messages.StringField(1, repeated=True)
   role = _messages.StringField(2)
+
+
+class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
+  """A CloudresourcemanagerLiensDeleteRequest object.
+
+  Fields:
+    liensId: Part of `name`. The name/identifier of the Lien to delete.
+  """
+
+  liensId = _messages.StringField(1, required=True)
+
+
+class CloudresourcemanagerLiensListRequest(_messages.Message):
+  """A CloudresourcemanagerLiensListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. This is a suggestion for
+      the server.
+    pageToken: The `next_page_token` value returned from a previous List
+      request, if any.
+    parent: The name of the resource to list all attached Liens. For example,
+      `projects/1234`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class CloudresourcemanagerOperationsGetRequest(_messages.Message):
@@ -225,6 +252,51 @@ class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
 
 
+class Lien(_messages.Message):
+  """A Lien represents an encumbrance on the actions that can be performed on
+  a resource.
+
+  Fields:
+    createTime: The creation time of this Lien.
+    name: A system-generated unique identifier for this Lien.  Example:
+      `liens/1234abcd`
+    origin: A stable, user-visible/meaningful string identifying the origin of
+      the Lien, intended to be inspected programmatically. Maximum length of
+      200 characters.  Example: 'compute.googleapis.com'
+    parent: A reference to the resource this Lien is attached to. The server
+      will validate the parent against those for which Liens are supported.
+      Example: `projects/1234`
+    reason: Concise user-visible strings indicating why an action cannot be
+      performed on a resource. Maximum lenth of 200 characters.  Example:
+      'Holds production API key'
+    restrictions: The types of operations which should be blocked as a result
+      of this Lien. Each value should correspond to an IAM permission. The
+      server will validate the permissions against those for which Liens are
+      supported.  An empty list is meaningless and will be rejected.  Example:
+      ['resourcemanager.projects.delete']
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  origin = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  reason = _messages.StringField(5)
+  restrictions = _messages.StringField(6, repeated=True)
+
+
+class ListLiensResponse(_messages.Message):
+  """The response message for Liens.ListLiens.
+
+  Fields:
+    liens: A list of Liens.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  liens = _messages.MessageField('Lien', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListProjectsResponse(_messages.Message):
   """A page of the response received from the ListProjects method.  A
   paginated response where more pages are available has `next_page_token` set.
@@ -269,7 +341,8 @@ class Operation(_messages.Message):
     done: If the value is `false`, it means the operation is still in
       progress. If true, the operation is completed, and either `error` or
       `response` is available.
-    error: The error result of the operation in case of failure.
+    error: The error result of the operation in case of failure or
+      cancellation.
     metadata: Service-specific metadata associated with the operation.  It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata.  Any method
@@ -465,7 +538,7 @@ class Project(_messages.Message):
       can be associated with a given resource.  Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed.  Example: <code>"environment" :
-      "dev"</code>  Read-write.
+      "dev"</code> Read-write.
 
   Fields:
     createTime: Creation time.  Read-only.
@@ -477,21 +550,23 @@ class Project(_messages.Message):
       can be associated with a given resource.  Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed.  Example: <code>"environment" :
-      "dev"</code>  Read-write.
+      "dev"</code> Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
     name: The user-assigned display name of the Project. It must be 4 to 30
       characters. Allowed characters are: lowercase and uppercase letters,
       numbers, hyphen, single-quote, double-quote, space, and exclamation
-      point.  Example: <code>My Project</code>  Read-write.
+      point.  Example: <code>My Project</code> Read-write.
     parent: An optional reference to a parent Resource.  The only supported
       parent type is "organization". Once set, the parent cannot be modified.
-      Read-write.
+      The `parent` can be set on creation or using the `UpdateProject` method;
+      the end user must have the `resourcemanager.projects.create` permission
+      on the parent.  Read-write.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
       Trailing hyphens are prohibited.  Example: <code>tokyo-rain-123</code>
       Read-only after creation.
     projectNumber: The number uniquely identifying the project.  Example:
-      <code>415104041262</code>  Read-only.
+      <code>415104041262</code> Read-only.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -521,8 +596,7 @@ class Project(_messages.Message):
     expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.  No more than 256 labels
     can be associated with a given resource.  Clients should store labels in a
     representation such as JSON that does not depend on specific characters
-    being disallowed.  Example: <code>"environment" : "dev"</code>  Read-
-    write.
+    being disallowed.  Example: <code>"environment" : "dev"</code> Read-write.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

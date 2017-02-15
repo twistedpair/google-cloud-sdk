@@ -566,6 +566,18 @@ class IpMapping(_messages.Message):
   type = _messages.StringField(3)
 
 
+class Labels(_messages.Message):
+  """User defined labels for Cloud SQL instances.
+
+  Fields:
+    key: The key of the label.
+    value: The value of the label.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class LocationPreference(_messages.Message):
   """Preferred location. This specifies where a Cloud SQL instance should
   preferably be located, either in a specific Compute Engine zone, or co-
@@ -822,6 +834,7 @@ class Settings(_messages.Message):
       to the instance. The IPv4 address cannot be disabled for Second
       Generation instances.
     kind: This is always sql#settings.
+    labels: User defined labels.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or GCE zone for better performance. App Engine co-location is only
@@ -859,14 +872,15 @@ class Settings(_messages.Message):
   databaseReplicationEnabled = _messages.BooleanField(9)
   ipConfiguration = _messages.MessageField('IpConfiguration', 10)
   kind = _messages.StringField(11, default=u'sql#settings')
-  locationPreference = _messages.MessageField('LocationPreference', 12)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 13)
-  pricingPlan = _messages.StringField(14)
-  replicationType = _messages.StringField(15)
-  settingsVersion = _messages.IntegerField(16)
-  storageAutoResize = _messages.BooleanField(17)
-  storageAutoResizeLimit = _messages.IntegerField(18)
-  tier = _messages.StringField(19)
+  labels = _messages.MessageField('Labels', 12, repeated=True)
+  locationPreference = _messages.MessageField('LocationPreference', 13)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
+  pricingPlan = _messages.StringField(15)
+  replicationType = _messages.StringField(16)
+  settingsVersion = _messages.IntegerField(17)
+  storageAutoResize = _messages.BooleanField(18)
+  storageAutoResizeLimit = _messages.IntegerField(19)
+  tier = _messages.StringField(20)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):
@@ -1002,7 +1016,14 @@ class SqlDatabasesUpdateRequest(_messages.Message):
 
 
 class SqlFlagsListRequest(_messages.Message):
-  """A SqlFlagsListRequest object."""
+  """A SqlFlagsListRequest object.
+
+  Fields:
+    database_version: Database version for flag retrieval. Flags are specific
+      to the database version.
+  """
+
+  database_version = _messages.StringField(1)
 
 
 class SqlInstancesCloneRequest(_messages.Message):
@@ -1096,15 +1117,17 @@ class SqlInstancesListRequest(_messages.Message):
   """A SqlInstancesListRequest object.
 
   Fields:
+    filter: A filter expression for filtering listed instances.
     maxResults: The maximum number of results to return per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     project: Project ID of the project for which to list Cloud SQL instances.
   """
 
-  maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlInstancesPatchRequest(_messages.Message):

@@ -16,7 +16,6 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 
-
 STANDBY_NAME = 'standby'
 
 TARGET_SIZE_NAME = 'target-size'
@@ -137,19 +136,35 @@ def ParseVersion(flag_name, version_map, resources, messages):
     InstanceGroupManagerVersion message object.
   """
   if TEMPLATE_NAME not in version_map:
-    raise exceptions.InvalidArgumentException(
-        flag_name, 'template has to be specified.')
+    raise exceptions.InvalidArgumentException(flag_name,
+                                              'template has to be specified.')
 
   template_ref = resources.Parse(
-      version_map[TEMPLATE_NAME],
-      collection='compute.instanceTemplates')
+      version_map[TEMPLATE_NAME], collection='compute.instanceTemplates')
 
   if TARGET_SIZE_NAME in version_map:
-    target_size = ParseFixedOrPercent(
-        flag_name, TARGET_SIZE_NAME, version_map[TARGET_SIZE_NAME], messages)
+    target_size = ParseFixedOrPercent(flag_name, TARGET_SIZE_NAME,
+                                      version_map[TARGET_SIZE_NAME], messages)
   else:
     target_size = None
 
+  name = version_map.get('name')
+
   return messages.InstanceGroupManagerVersion(
       instanceTemplate=template_ref.SelfLink(),
-      targetSize=target_size)
+      targetSize=target_size,
+      name=name)
+
+
+def ValidateCanaryVersionFlag(flag_name, version_map):
+  """Retrieves canary version from input map.
+
+  Args:
+    flag_name: name of the flag associated with the parsed string.
+    version_map: map containing version data provided by the user.
+  """
+  if version_map and TARGET_SIZE_NAME not in version_map:
+    raise exceptions.RequiredArgumentException(
+        '{} {}={}'.format(flag_name, TARGET_SIZE_NAME,
+                          TARGET_SIZE_NAME.upper()),
+        'target size must be specified for canary version')

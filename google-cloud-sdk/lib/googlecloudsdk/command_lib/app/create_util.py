@@ -21,6 +21,13 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 
 
+APP_CREATE_WARNING = """\
+Creating an App Engine application for a project is irreversible and the region
+cannot be changed. More information about regions is at
+https://cloud.google.com/appengine/docs/locations.
+"""
+
+
 class UnspecifiedRegionError(exceptions.Error):
   """Region is not provided on the command line and running interactively."""
 
@@ -69,7 +76,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
   if not suppress_warning:
     log.status.Print('You are creating an app for project [{project}].'.format(
         project=project))
-    log.warn('Creating an app for a project is irreversible.\n')
+    log.warn(APP_CREATE_WARNING)
   message = ('Creating App Engine application in project [{project}] and '
              'region [{region}].'.format(project=project, region=region))
   with progress_tracker.ProgressTracker(message):
@@ -105,16 +112,14 @@ def CreateAppInteractively(api_client, project):
     AppAlreadyExistsError if app already exists
   """
   log.status.Print('You are creating an app for project [{}].'.format(project))
-  log.warn('Creating an app for a project is irreversible.\n')
+  log.warn(APP_CREATE_WARNING)
 
   all_regions = sorted(set(api_client.ListRegions()))
-  idx = console_io.PromptChoice(all_regions,
-                                message=('Please choose a region for your '
-                                         'application. After choosing a '
-                                         'region, you cannot change it. Which '
-                                         'region would you like to choose?'
-                                         '\n\n'),
-                                cancel_option=True)
+  idx = console_io.PromptChoice(
+      all_regions,
+      message=('Please choose the region where you want your App Engine '
+               'application located:\n\n'),
+      cancel_option=True)
   region = all_regions[idx]
   CreateApp(api_client, project, region.region, suppress_warning=True)
 

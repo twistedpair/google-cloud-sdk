@@ -85,6 +85,11 @@ def AddNextRotationTimeFlag(parser):
 
 
 # Parsing.
+def ParseLocationName(args):
+  return resources.REGISTRY.Parse(args.location,
+                                  collection=LOCATION_COLLECTION)
+
+
 def ParseKeyRingName(args):
   return resources.REGISTRY.Parse(args.keyring, collection=KEY_RING_COLLECTION)
 

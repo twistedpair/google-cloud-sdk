@@ -1436,6 +1436,7 @@ class BackendBucket(_messages.Message):
 
   Fields:
     bucketName: Cloud Storage bucket name.
+    cdnPolicy: Cloud CDN Coniguration for this BackendBucket.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional textual description of the resource; provided by
@@ -1455,13 +1456,33 @@ class BackendBucket(_messages.Message):
   """
 
   bucketName = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCdn = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#backendBucket')
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  cdnPolicy = _messages.MessageField('BackendBucketCdnPolicy', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCdn = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#backendBucket')
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+
+
+class BackendBucketCdnPolicy(_messages.Message):
+  """Message containing Cloud CDN configuration for a backend bucket.
+
+  Fields:
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend bucket.
+    signedUrlTtlSec: Number of seconds up to which the response to a signed
+      URL request will be cached in the CDN. After this time period, the
+      Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this bucket had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
+  """
+
+  signedUrlKeyNames = _messages.StringField(1, repeated=True)
+  signedUrlTtlSec = _messages.IntegerField(2)
 
 
 class BackendBucketList(_messages.Message):
@@ -1695,9 +1716,20 @@ class BackendServiceCdnPolicy(_messages.Message):
 
   Fields:
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend service.
+    signedUrlTtlSec: Number of seconds up to which the response to a signed
+      URL request will be cached in the CDN. After this time period, the
+      Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this backend had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
   """
 
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
+  signedUrlKeyNames = _messages.StringField(2, repeated=True)
+  signedUrlTtlSec = _messages.IntegerField(3)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -1714,7 +1746,7 @@ class BackendServiceGroupHealth(_messages.Message):
 
 
 class BackendServiceIAP(_messages.Message):
-  """Identity-Aware Proxy (Cloud Gatekeeper)
+  """Identity-Aware Proxy
 
   Fields:
     enabled: A boolean attribute.
@@ -2368,11 +2400,14 @@ class ComputeAddressesDeleteRequest(_messages.Message):
     address: Name of the address resource to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   address = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeAddressesGetRequest(_messages.Message):
@@ -2396,11 +2431,14 @@ class ComputeAddressesInsertRequest(_messages.Message):
     address: A Address resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   address = _messages.MessageField('Address', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeAddressesListRequest(_messages.Message):
@@ -2463,13 +2501,16 @@ class ComputeAddressesSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     resource: Name of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
-  resource = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeAddressesTestIamPermissionsRequest(_messages.Message):
@@ -2545,12 +2586,15 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
   Fields:
     autoscaler: Name of the autoscaler to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeAutoscalersGetRequest(_messages.Message):
@@ -2573,12 +2617,15 @@ class ComputeAutoscalersInsertRequest(_messages.Message):
   Fields:
     autoscaler: A Autoscaler resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.MessageField('Autoscaler', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeAutoscalersListRequest(_messages.Message):
@@ -2641,13 +2688,16 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1, required=True)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeAutoscalersTestIamPermissionsRequest(_messages.Message):
@@ -2675,13 +2725,16 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeBackendBucketsDeleteRequest(_messages.Message):
@@ -2690,10 +2743,13 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   Fields:
     backendBucket: Name of the BackendBucket resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendBucket = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
@@ -2726,10 +2782,13 @@ class ComputeBackendBucketsInsertRequest(_messages.Message):
   Fields:
     backendBucket: A BackendBucket resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendBucket = _messages.MessageField('BackendBucket', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeBackendBucketsListRequest(_messages.Message):
@@ -2786,15 +2845,18 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   """A ComputeBackendBucketsPatchRequest object.
 
   Fields:
-    backendBucket: Name of the BackendBucket resource to update.
+    backendBucket: Name of the BackendBucket resource to patch.
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendBucket = _messages.StringField(1, required=True)
   backendBucketResource = _messages.MessageField('BackendBucket', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendBucketsSetIamPolicyRequest(_messages.Message):
@@ -2834,11 +2896,14 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendBucket = _messages.StringField(1, required=True)
   backendBucketResource = _messages.MessageField('BackendBucket', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
@@ -2897,10 +2962,13 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
   Fields:
     backendService: Name of the BackendService resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeBackendServicesGetHealthRequest(_messages.Message):
@@ -2938,10 +3006,13 @@ class ComputeBackendServicesInsertRequest(_messages.Message):
     backendService: A BackendService resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.MessageField('BackendService', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeBackendServicesListRequest(_messages.Message):
@@ -3002,11 +3073,14 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -3032,11 +3106,14 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeClientSslPoliciesTestIamPermissionsRequest(_messages.Message):
@@ -3124,12 +3201,15 @@ class ComputeCommitmentsInsertRequest(_messages.Message):
   Fields:
     commitment: A Commitment resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: Name of the zone for this request.
   """
 
   commitment = _messages.MessageField('Commitment', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeCommitmentsListRequest(_messages.Message):
@@ -3515,6 +3595,8 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     resource: Name of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
@@ -3522,9 +3604,10 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 4)
+  requestId = _messages.StringField(2)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
 
 
 class ComputeDisksTestIamPermissionsRequest(_messages.Message):
@@ -3550,10 +3633,13 @@ class ComputeFirewallsDeleteRequest(_messages.Message):
   Fields:
     firewall: Name of the firewall rule to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   firewall = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeFirewallsGetRequest(_messages.Message):
@@ -3574,10 +3660,13 @@ class ComputeFirewallsInsertRequest(_messages.Message):
   Fields:
     firewall: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   firewall = _messages.MessageField('Firewall', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeFirewallsListRequest(_messages.Message):
@@ -3634,14 +3723,17 @@ class ComputeFirewallsPatchRequest(_messages.Message):
   """A ComputeFirewallsPatchRequest object.
 
   Fields:
-    firewall: Name of the firewall rule to update.
+    firewall: Name of the firewall rule to patch.
     firewallResource: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   firewall = _messages.StringField(1, required=True)
   firewallResource = _messages.MessageField('Firewall', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeFirewallsTestIamPermissionsRequest(_messages.Message):
@@ -3666,11 +3758,14 @@ class ComputeFirewallsUpdateRequest(_messages.Message):
     firewall: Name of the firewall rule to update.
     firewallResource: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   firewall = _messages.StringField(1, required=True)
   firewallResource = _messages.MessageField('Firewall', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
@@ -3730,11 +3825,14 @@ class ComputeForwardingRulesDeleteRequest(_messages.Message):
     forwardingRule: Name of the ForwardingRule resource to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeForwardingRulesGetRequest(_messages.Message):
@@ -3759,11 +3857,14 @@ class ComputeForwardingRulesInsertRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeForwardingRulesListRequest(_messages.Message):
@@ -3826,13 +3927,16 @@ class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     resource: Name of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
-  resource = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeForwardingRulesSetTargetRequest(_messages.Message):
@@ -3843,6 +3947,8 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
       be set.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -3850,7 +3956,8 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
-  targetReference = _messages.MessageField('TargetReference', 4)
+  requestId = _messages.StringField(4)
+  targetReference = _messages.MessageField('TargetReference', 5)
 
 
 class ComputeForwardingRulesTestIamPermissionsRequest(_messages.Message):
@@ -3876,10 +3983,13 @@ class ComputeGlobalAddressesDeleteRequest(_messages.Message):
   Fields:
     address: Name of the address resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   address = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeGlobalAddressesGetRequest(_messages.Message):
@@ -3900,10 +4010,13 @@ class ComputeGlobalAddressesInsertRequest(_messages.Message):
   Fields:
     address: A Address resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   address = _messages.MessageField('Address', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeGlobalAddressesListRequest(_messages.Message):
@@ -3992,10 +4105,13 @@ class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
   Fields:
     forwardingRule: Name of the ForwardingRule resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeGlobalForwardingRulesGetRequest(_messages.Message):
@@ -4017,10 +4133,13 @@ class ComputeGlobalForwardingRulesInsertRequest(_messages.Message):
     forwardingRule: A ForwardingRule resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeGlobalForwardingRulesListRequest(_messages.Message):
@@ -4095,13 +4214,16 @@ class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
     forwardingRule: Name of the ForwardingRule resource in which target is to
       be set.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  targetReference = _messages.MessageField('TargetReference', 3)
+  requestId = _messages.StringField(3)
+  targetReference = _messages.MessageField('TargetReference', 4)
 
 
 class ComputeGlobalForwardingRulesTestIamPermissionsRequest(_messages.Message):
@@ -4253,10 +4375,13 @@ class ComputeHealthChecksDeleteRequest(_messages.Message):
   Fields:
     healthCheck: Name of the HealthCheck resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   healthCheck = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHealthChecksGetRequest(_messages.Message):
@@ -4277,10 +4402,13 @@ class ComputeHealthChecksInsertRequest(_messages.Message):
   Fields:
     healthCheck: A HealthCheck resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   healthCheck = _messages.MessageField('HealthCheck', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHealthChecksListRequest(_messages.Message):
@@ -4337,15 +4465,18 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
   """A ComputeHealthChecksPatchRequest object.
 
   Fields:
-    healthCheck: Name of the HealthCheck resource to update.
+    healthCheck: Name of the HealthCheck resource to patch.
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   healthCheck = _messages.StringField(1, required=True)
   healthCheckResource = _messages.MessageField('HealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeHealthChecksTestIamPermissionsRequest(_messages.Message):
@@ -4371,11 +4502,14 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   healthCheck = _messages.StringField(1, required=True)
   healthCheckResource = _messages.MessageField('HealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeHostTypesAggregatedListRequest(_messages.Message):
@@ -4550,12 +4684,15 @@ class ComputeHostsDeleteRequest(_messages.Message):
   Fields:
     host: Name of the Host resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   host = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeHostsGetIamPolicyRequest(_messages.Message):
@@ -4592,12 +4729,15 @@ class ComputeHostsInsertRequest(_messages.Message):
   Fields:
     host: A Host resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   host = _messages.MessageField('Host', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeHostsListRequest(_messages.Message):
@@ -4691,10 +4831,13 @@ class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
   Fields:
     httpHealthCheck: Name of the HttpHealthCheck resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHttpHealthChecksGetRequest(_messages.Message):
@@ -4716,10 +4859,13 @@ class ComputeHttpHealthChecksInsertRequest(_messages.Message):
     httpHealthCheck: A HttpHealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpHealthCheck = _messages.MessageField('HttpHealthCheck', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHttpHealthChecksListRequest(_messages.Message):
@@ -4780,11 +4926,14 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
   httpHealthCheckResource = _messages.MessageField('HttpHealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeHttpHealthChecksTestIamPermissionsRequest(_messages.Message):
@@ -4810,11 +4959,14 @@ class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
   httpHealthCheckResource = _messages.MessageField('HttpHealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
@@ -4823,10 +4975,13 @@ class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
   Fields:
     httpsHealthCheck: Name of the HttpsHealthCheck resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHttpsHealthChecksGetRequest(_messages.Message):
@@ -4848,10 +5003,13 @@ class ComputeHttpsHealthChecksInsertRequest(_messages.Message):
     httpsHealthCheck: A HttpsHealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpsHealthCheck = _messages.MessageField('HttpsHealthCheck', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeHttpsHealthChecksListRequest(_messages.Message):
@@ -4908,15 +5066,18 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpsHealthChecksPatchRequest object.
 
   Fields:
-    httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to patch.
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
   httpsHealthCheckResource = _messages.MessageField('HttpsHealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeHttpsHealthChecksTestIamPermissionsRequest(_messages.Message):
@@ -4942,11 +5103,14 @@ class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
   httpsHealthCheckResource = _messages.MessageField('HttpsHealthCheck', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeImagesDeleteRequest(_messages.Message):
@@ -4955,10 +5119,13 @@ class ComputeImagesDeleteRequest(_messages.Message):
   Fields:
     image: Name of the image resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   image = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeImagesDeprecateRequest(_messages.Message):
@@ -4969,11 +5136,14 @@ class ComputeImagesDeprecateRequest(_messages.Message):
       request body.
     image: Image name.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   deprecationStatus = _messages.MessageField('DeprecationStatus', 1)
   image = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeImagesGetFromFamilyRequest(_messages.Message):
@@ -5007,11 +5177,14 @@ class ComputeImagesInsertRequest(_messages.Message):
     forceCreation: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   forceCreation = _messages.BooleanField(1)
   image = _messages.MessageField('Image', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeImagesListRequest(_messages.Message):
@@ -5103,13 +5276,16 @@ class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
       InstanceGroupManagersAbandonInstancesRequest resource to be passed as
       the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersAbandonInstancesRequest = _messages.MessageField('InstanceGroupManagersAbandonInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
@@ -5171,13 +5347,16 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
       InstanceGroupManagersDeleteInstancesRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersDeleteInstancesRequest = _messages.MessageField('InstanceGroupManagersDeleteInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
@@ -5186,12 +5365,15 @@ class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
   Fields:
     instanceGroupManager: The name of the managed instance group to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstanceGroupManagersGetRequest(_messages.Message):
@@ -5215,13 +5397,16 @@ class ComputeInstanceGroupManagersInsertRequest(_messages.Message):
     instanceGroupManager: A InstanceGroupManager resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
 
   instanceGroupManager = _messages.MessageField('InstanceGroupManager', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -5306,6 +5491,8 @@ class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
     instanceGroupManagerResource: A InstanceGroupManager resource to be passed
       as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5313,7 +5500,8 @@ class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
@@ -5325,13 +5513,16 @@ class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
       InstanceGroupManagersRecreateInstancesRequest resource to be passed as
       the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersRecreateInstancesRequest = _messages.MessageField('InstanceGroupManagersRecreateInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
@@ -5343,13 +5534,16 @@ class ComputeInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
       InstanceGroupManagersResizeAdvancedRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersResizeAdvancedRequest = _messages.MessageField('InstanceGroupManagersResizeAdvancedRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
@@ -5358,6 +5552,8 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
   Fields:
     instanceGroupManager: The name of the managed instance group.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     size: The number of running instances that the managed instance group
       should maintain at any given time. The group automatically adds or
       removes instances to maintain the number of instances specified by this
@@ -5367,8 +5563,9 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  size = _messages.IntegerField(3, required=True, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(3)
+  size = _messages.IntegerField(4, required=True, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
@@ -5380,13 +5577,16 @@ class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Messag
       InstanceGroupManagersSetAutoHealingRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetAutoHealingRequest = _messages.MessageField('InstanceGroupManagersSetAutoHealingRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
@@ -5398,13 +5598,16 @@ class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
       InstanceGroupManagersSetInstanceTemplateRequest resource to be passed as
       the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetInstanceTemplateRequest = _messages.MessageField('InstanceGroupManagersSetInstanceTemplateRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
@@ -5416,13 +5619,16 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
       InstanceGroupManagersSetTargetPoolsRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the managed instance group is located.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('InstanceGroupManagersSetTargetPoolsRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
@@ -5450,6 +5656,8 @@ class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
     instanceGroupManagerResource: A InstanceGroupManager resource to be passed
       as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5457,7 +5665,8 @@ class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
@@ -5469,13 +5678,16 @@ class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
     instanceGroupsAddInstancesRequest: A InstanceGroupsAddInstancesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the instance group is located.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
   instanceGroupsAddInstancesRequest = _messages.MessageField('InstanceGroupsAddInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
@@ -5534,12 +5746,15 @@ class ComputeInstanceGroupsDeleteRequest(_messages.Message):
   Fields:
     instanceGroup: The name of the instance group to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the instance group is located.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstanceGroupsGetRequest(_messages.Message):
@@ -5562,12 +5777,15 @@ class ComputeInstanceGroupsInsertRequest(_messages.Message):
   Fields:
     instanceGroup: A InstanceGroup resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where you want to create the instance group.
   """
 
   instanceGroup = _messages.MessageField('InstanceGroup', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
@@ -5690,13 +5908,16 @@ class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
       InstanceGroupsRemoveInstancesRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the instance group is located.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
   instanceGroupsRemoveInstancesRequest = _messages.MessageField('InstanceGroupsRemoveInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
@@ -5708,13 +5929,16 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
     instanceGroupsSetNamedPortsRequest: A InstanceGroupsSetNamedPortsRequest
       resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone where the instance group is located.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
   instanceGroupsSetNamedPortsRequest = _messages.MessageField('InstanceGroupsSetNamedPortsRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupsTestIamPermissionsRequest(_messages.Message):
@@ -5740,10 +5964,13 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   Fields:
     instanceTemplate: The name of the instance template to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceTemplate = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeInstanceTemplatesGetRequest(_messages.Message):
@@ -5765,10 +5992,13 @@ class ComputeInstanceTemplatesInsertRequest(_messages.Message):
     instanceTemplate: A InstanceTemplate resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeInstanceTemplatesListRequest(_messages.Message):
@@ -5845,6 +6075,8 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
     networkInterface: The name of the network interface to add to this
       instance.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
@@ -5852,7 +6084,8 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
   instance = _messages.StringField(2, required=True)
   networkInterface = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesAggregatedListRequest(_messages.Message):
@@ -5914,6 +6147,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
       attached to another instance. This is only available for regional disks.
     instance: The instance name for this request.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
@@ -5921,7 +6156,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   forceAttach = _messages.BooleanField(2)
   instance = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -5932,6 +6168,8 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
     instance: The instance name for this request.
     networkInterface: The name of the network interface.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
@@ -5939,7 +6177,8 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
   instance = _messages.StringField(2, required=True)
   networkInterface = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesDeleteRequest(_messages.Message):
@@ -5948,12 +6187,15 @@ class ComputeInstancesDeleteRequest(_messages.Message):
   Fields:
     instance: Name of the instance resource to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesDetachDiskRequest(_messages.Message):
@@ -5963,13 +6205,16 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
     deviceName: Disk device name to detach.
     instance: Instance name.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   deviceName = _messages.StringField(1, required=True)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesGetIamPolicyRequest(_messages.Message):
@@ -6007,9 +6252,11 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
     instance: Name of the instance scoping this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
-    start: For the initial request, leave this field unspecified. For
-      subsequent calls, this field should be set to the next value that was
-      returned in the previous call.
+    start: Returns output starting from a specific byte position. Use this to
+      page through output when the output is too large to return in a single
+      request. For the initial request, leave this field unspecified. For
+      subsequent calls, this field should be set to the next value returned in
+      the previous call.
     zone: The name of the zone for this request.
   """
 
@@ -6026,12 +6273,15 @@ class ComputeInstancesInsertRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.MessageField('Instance', 1)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesListRequest(_messages.Message):
@@ -6092,12 +6342,15 @@ class ComputeInstancesResetRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
@@ -6108,6 +6361,8 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
     deviceName: The device name of the disk to modify.
     instance: The instance name.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
@@ -6115,7 +6370,8 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   deviceName = _messages.StringField(2, required=True)
   instance = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesSetIamPolicyRequest(_messages.Message):
@@ -6142,13 +6398,16 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
     instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
       passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesSetLabelsRequest = _messages.MessageField('InstancesSetLabelsRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
@@ -6159,13 +6418,16 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
     instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesSetMachineResourcesRequest = _messages.MessageField('InstancesSetMachineResourcesRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetMachineTypeRequest(_messages.Message):
@@ -6176,13 +6438,16 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
     instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
       to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesSetMachineTypeRequest = _messages.MessageField('InstancesSetMachineTypeRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetMetadataRequest(_messages.Message):
@@ -6192,13 +6457,16 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
     instance: Name of the instance scoping this request.
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   metadata = _messages.MessageField('Metadata', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
@@ -6227,14 +6495,17 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   Fields:
     instance: Instance name.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     scheduling: A Scheduling resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  scheduling = _messages.MessageField('Scheduling', 3)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(3)
+  scheduling = _messages.MessageField('Scheduling', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetServiceAccountRequest(_messages.Message):
@@ -6245,13 +6516,16 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
     instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
       resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesSetServiceAccountRequest = _messages.MessageField('InstancesSetServiceAccountRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetTagsRequest(_messages.Message):
@@ -6260,14 +6534,17 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     tags: A Tags resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  tags = _messages.MessageField('Tags', 3)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(3)
+  tags = _messages.MessageField('Tags', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -6276,12 +6553,15 @@ class ComputeInstancesStartRequest(_messages.Message):
   Fields:
     instance: Name of the instance resource to start.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
@@ -6293,13 +6573,16 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
       InstancesStartWithEncryptionKeyRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesStartWithEncryptionKeyRequest = _messages.MessageField('InstancesStartWithEncryptionKeyRequest', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesStopRequest(_messages.Message):
@@ -6310,13 +6593,16 @@ class ComputeInstancesStopRequest(_messages.Message):
       partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   discardLocalSsd = _messages.BooleanField(1)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSuspendRequest(_messages.Message):
@@ -6327,13 +6613,16 @@ class ComputeInstancesSuspendRequest(_messages.Message):
       partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
   discardLocalSsd = _messages.BooleanField(1)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
@@ -6362,6 +6651,8 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
     networkInterface: The name of the network interface where the access
       config is attached.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     zone: The name of the zone for this request.
   """
 
@@ -6369,7 +6660,8 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
   instance = _messages.StringField(2, required=True)
   networkInterface = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  zone = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeLicensesGetRequest(_messages.Message):
@@ -6382,6 +6674,21 @@ class ComputeLicensesGetRequest(_messages.Message):
 
   license = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class ComputeLicensesInsertRequest(_messages.Message):
+  """A ComputeLicensesInsertRequest object.
+
+  Fields:
+    license: A License resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  license = _messages.MessageField('License', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeMachineTypesAggregatedListRequest(_messages.Message):
@@ -6508,11 +6815,14 @@ class ComputeNetworksAddPeeringRequest(_messages.Message):
     networksAddPeeringRequest: A NetworksAddPeeringRequest resource to be
       passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   network = _messages.StringField(1, required=True)
   networksAddPeeringRequest = _messages.MessageField('NetworksAddPeeringRequest', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeNetworksDeleteRequest(_messages.Message):
@@ -6521,10 +6831,13 @@ class ComputeNetworksDeleteRequest(_messages.Message):
   Fields:
     network: Name of the network to delete.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   network = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeNetworksGetRequest(_messages.Message):
@@ -6545,10 +6858,13 @@ class ComputeNetworksInsertRequest(_messages.Message):
   Fields:
     network: A Network resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   network = _messages.MessageField('Network', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeNetworksListRequest(_messages.Message):
@@ -6609,11 +6925,14 @@ class ComputeNetworksRemovePeeringRequest(_messages.Message):
     networksRemovePeeringRequest: A NetworksRemovePeeringRequest resource to
       be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   network = _messages.StringField(1, required=True)
   networksRemovePeeringRequest = _messages.MessageField('NetworksRemovePeeringRequest', 2)
   project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
@@ -6622,10 +6941,13 @@ class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
   Fields:
     network: Name of the network to be updated.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   network = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
@@ -6648,9 +6970,12 @@ class ComputeProjectsDisableXpnHostRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
@@ -6660,10 +6985,13 @@ class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
     project: Project ID for this request.
     projectsDisableXpnResourceRequest: A ProjectsDisableXpnResourceRequest
       resource to be passed as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   project = _messages.StringField(1, required=True)
   projectsDisableXpnResourceRequest = _messages.MessageField('ProjectsDisableXpnResourceRequest', 2)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsEnableXpnHostRequest(_messages.Message):
@@ -6671,9 +6999,12 @@ class ComputeProjectsEnableXpnHostRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
@@ -6683,10 +7014,13 @@ class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
     project: Project ID for this request.
     projectsEnableXpnResourceRequest: A ProjectsEnableXpnResourceRequest
       resource to be passed as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   project = _messages.StringField(1, required=True)
   projectsEnableXpnResourceRequest = _messages.MessageField('ProjectsEnableXpnResourceRequest', 2)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsGetRequest(_messages.Message):
@@ -6755,10 +7089,13 @@ class ComputeProjectsMoveDiskRequest(_messages.Message):
     diskMoveRequest: A DiskMoveRequest resource to be passed as the request
       body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   diskMoveRequest = _messages.MessageField('DiskMoveRequest', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsMoveInstanceRequest(_messages.Message):
@@ -6768,10 +7105,13 @@ class ComputeProjectsMoveInstanceRequest(_messages.Message):
     instanceMoveRequest: A InstanceMoveRequest resource to be passed as the
       request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceMoveRequest = _messages.MessageField('InstanceMoveRequest', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
@@ -6780,10 +7120,13 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
   Fields:
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   metadata = _messages.MessageField('Metadata', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsSetDefaultServiceAccountRequest(_messages.Message):
@@ -6794,10 +7137,13 @@ class ComputeProjectsSetDefaultServiceAccountRequest(_messages.Message):
     projectsSetDefaultServiceAccountRequest: A
       ProjectsSetDefaultServiceAccountRequest resource to be passed as the
       request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   project = _messages.StringField(1, required=True)
   projectsSetDefaultServiceAccountRequest = _messages.MessageField('ProjectsSetDefaultServiceAccountRequest', 2)
+  requestId = _messages.StringField(3)
 
 
 class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
@@ -6805,12 +7151,15 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     usageExportLocation: A UsageExportLocation resource to be passed as the
       request body.
   """
 
   project = _messages.StringField(1, required=True)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 2)
+  requestId = _messages.StringField(2)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 3)
 
 
 class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
@@ -6820,11 +7169,14 @@ class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
     autoscaler: Name of the autoscaler to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   autoscaler = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionAutoscalersGetRequest(_messages.Message):
@@ -6848,11 +7200,14 @@ class ComputeRegionAutoscalersInsertRequest(_messages.Message):
     autoscaler: A Autoscaler resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   autoscaler = _messages.MessageField('Autoscaler', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionAutoscalersListRequest(_messages.Message):
@@ -6916,12 +7271,15 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   autoscaler = _messages.StringField(1, required=True)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionAutoscalersTestIamPermissionsRequest(_messages.Message):
@@ -6950,12 +7308,15 @@ class ComputeRegionAutoscalersUpdateRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionBackendServicesDeleteRequest(_messages.Message):
@@ -6965,11 +7326,14 @@ class ComputeRegionBackendServicesDeleteRequest(_messages.Message):
     backendService: Name of the BackendService resource to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionBackendServicesGetHealthRequest(_messages.Message):
@@ -7012,11 +7376,14 @@ class ComputeRegionBackendServicesInsertRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.MessageField('BackendService', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionBackendServicesListRequest(_messages.Message):
@@ -7080,12 +7447,15 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -7114,12 +7484,15 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionDiskTypesGetRequest(_messages.Message):
@@ -7339,13 +7712,16 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     resource: Name of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
-  resource = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
@@ -7375,12 +7751,15 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
     regionInstanceGroupManagersAbandonInstancesRequest: A
       RegionInstanceGroupManagersAbandonInstancesRequest resource to be passed
       as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersAbandonInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersAbandonInstancesRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -7393,12 +7772,15 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
     regionInstanceGroupManagersDeleteInstancesRequest: A
       RegionInstanceGroupManagersDeleteInstancesRequest resource to be passed
       as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersDeleteInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersDeleteInstancesRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
@@ -7408,11 +7790,14 @@ class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
     instanceGroupManager: Name of the managed instance group to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionInstanceGroupManagersGetRequest(_messages.Message):
@@ -7437,11 +7822,14 @@ class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.MessageField('InstanceGroupManager', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -7527,12 +7915,15 @@ class ComputeRegionInstanceGroupManagersPatchRequest(_messages.Message):
       as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
@@ -7545,12 +7936,15 @@ class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Messa
     regionInstanceGroupManagersRecreateRequest: A
       RegionInstanceGroupManagersRecreateRequest resource to be passed as the
       request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersRecreateRequest = _messages.MessageField('RegionInstanceGroupManagersRecreateRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
@@ -7560,6 +7954,8 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
     instanceGroupManager: Name of the managed instance group.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     size: Number of instances that should exist in this instance group
       manager.
   """
@@ -7567,7 +7963,8 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
-  size = _messages.IntegerField(4, required=True, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(4)
+  size = _messages.IntegerField(5, required=True, variant=_messages.Variant.INT32)
 
 
 class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
@@ -7580,12 +7977,15 @@ class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.
     regionInstanceGroupManagersSetAutoHealingRequest: A
       RegionInstanceGroupManagersSetAutoHealingRequest resource to be passed
       as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetAutoHealingRequest = _messages.MessageField('RegionInstanceGroupManagersSetAutoHealingRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
@@ -7598,12 +7998,15 @@ class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Mes
     regionInstanceGroupManagersSetTemplateRequest: A
       RegionInstanceGroupManagersSetTemplateRequest resource to be passed as
       the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetTemplateRequest = _messages.MessageField('RegionInstanceGroupManagersSetTemplateRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
@@ -7616,12 +8019,15 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
     regionInstanceGroupManagersSetTargetPoolsRequest: A
       RegionInstanceGroupManagersSetTargetPoolsRequest resource to be passed
       as the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('RegionInstanceGroupManagersSetTargetPoolsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
@@ -7650,12 +8056,15 @@ class ComputeRegionInstanceGroupManagersUpdateRequest(_messages.Message):
       as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupsGetRequest(_messages.Message):
@@ -7794,12 +8203,15 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
     regionInstanceGroupsSetNamedPortsRequest: A
       RegionInstanceGroupsSetNamedPortsRequest resource to be passed as the
       request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupsSetNamedPortsRequest = _messages.MessageField('RegionInstanceGroupsSetNamedPortsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
@@ -8021,12 +8433,15 @@ class ComputeRoutersDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     router: Name of the Router resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  router = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  router = _messages.StringField(4, required=True)
 
 
 class ComputeRoutersGetRequest(_messages.Message):
@@ -8063,12 +8478,15 @@ class ComputeRoutersInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     router: A Router resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  router = _messages.MessageField('Router', 3)
+  requestId = _messages.StringField(3)
+  router = _messages.MessageField('Router', 4)
 
 
 class ComputeRoutersListRequest(_messages.Message):
@@ -8129,14 +8547,17 @@ class ComputeRoutersPatchRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     router: Name of the Router resource to update.
     routerResource: A Router resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  router = _messages.StringField(3, required=True)
-  routerResource = _messages.MessageField('Router', 4)
+  requestId = _messages.StringField(3)
+  router = _messages.StringField(4, required=True)
+  routerResource = _messages.MessageField('Router', 5)
 
 
 class ComputeRoutersPreviewRequest(_messages.Message):
@@ -8178,14 +8599,17 @@ class ComputeRoutersUpdateRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     router: Name of the Router resource to update.
     routerResource: A Router resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  router = _messages.StringField(3, required=True)
-  routerResource = _messages.MessageField('Router', 4)
+  requestId = _messages.StringField(3)
+  router = _messages.StringField(4, required=True)
+  routerResource = _messages.MessageField('Router', 5)
 
 
 class ComputeRoutesDeleteRequest(_messages.Message):
@@ -8193,11 +8617,14 @@ class ComputeRoutesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     route: Name of the Route resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  route = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  route = _messages.StringField(3, required=True)
 
 
 class ComputeRoutesGetRequest(_messages.Message):
@@ -8217,11 +8644,14 @@ class ComputeRoutesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     route: A Route resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
-  route = _messages.MessageField('Route', 2)
+  requestId = _messages.StringField(2)
+  route = _messages.MessageField('Route', 3)
 
 
 class ComputeRoutesListRequest(_messages.Message):
@@ -8294,11 +8724,14 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     snapshot: Name of the Snapshot resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  snapshot = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  snapshot = _messages.StringField(3, required=True)
 
 
 class ComputeSnapshotsGetRequest(_messages.Message):
@@ -8398,11 +8831,14 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  sslCertificate = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  sslCertificate = _messages.StringField(3, required=True)
 
 
 class ComputeSslCertificatesGetRequest(_messages.Message):
@@ -8422,12 +8858,15 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  sslCertificate = _messages.MessageField('SslCertificate', 2)
+  requestId = _messages.StringField(2)
+  sslCertificate = _messages.MessageField('SslCertificate', 3)
 
 
 class ComputeSslCertificatesListRequest(_messages.Message):
@@ -8551,12 +8990,15 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     subnetwork: Name of the Subnetwork resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  subnetwork = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  subnetwork = _messages.StringField(4, required=True)
 
 
 class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
@@ -8565,6 +9007,8 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     subnetwork: Name of the Subnetwork resource to update.
     subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
       resource to be passed as the request body.
@@ -8572,8 +9016,9 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  subnetwork = _messages.StringField(3, required=True)
-  subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 4)
+  requestId = _messages.StringField(3)
+  subnetwork = _messages.StringField(4, required=True)
+  subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 5)
 
 
 class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
@@ -8610,12 +9055,15 @@ class ComputeSubnetworksInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     subnetwork: A Subnetwork resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  subnetwork = _messages.MessageField('Subnetwork', 3)
+  requestId = _messages.StringField(3)
+  subnetwork = _messages.MessageField('Subnetwork', 4)
 
 
 class ComputeSubnetworksListRequest(_messages.Message):
@@ -8692,6 +9140,8 @@ class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     subnetwork: Name of the Subnetwork resource.
     subnetworksSetPrivateIpGoogleAccessRequest: A
       SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
@@ -8700,8 +9150,9 @@ class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  subnetwork = _messages.StringField(3, required=True)
-  subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 4)
+  requestId = _messages.StringField(3)
+  subnetwork = _messages.StringField(4, required=True)
+  subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 5)
 
 
 class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
@@ -8726,11 +9177,14 @@ class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpProxy: Name of the TargetHttpProxy resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpProxy = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpProxy = _messages.StringField(3, required=True)
 
 
 class ComputeTargetHttpProxiesGetRequest(_messages.Message):
@@ -8750,12 +9204,15 @@ class ComputeTargetHttpProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpProxy: A TargetHttpProxy resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpProxy = _messages.MessageField('TargetHttpProxy', 2)
+  requestId = _messages.StringField(2)
+  targetHttpProxy = _messages.MessageField('TargetHttpProxy', 3)
 
 
 class ComputeTargetHttpProxiesListRequest(_messages.Message):
@@ -8813,14 +9270,17 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpProxy: Name of the TargetHttpProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpProxy = _messages.StringField(2, required=True)
-  urlMapReference = _messages.MessageField('UrlMapReference', 3)
+  requestId = _messages.StringField(2)
+  targetHttpProxy = _messages.StringField(3, required=True)
+  urlMapReference = _messages.MessageField('UrlMapReference', 4)
 
 
 class ComputeTargetHttpProxiesTestIamPermissionsRequest(_messages.Message):
@@ -8843,11 +9303,14 @@ class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpsProxy = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxy = _messages.StringField(3, required=True)
 
 
 class ComputeTargetHttpsProxiesGetRequest(_messages.Message):
@@ -8867,12 +9330,15 @@ class ComputeTargetHttpsProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpsProxy = _messages.MessageField('TargetHttpsProxy', 2)
+  requestId = _messages.StringField(2)
+  targetHttpsProxy = _messages.MessageField('TargetHttpsProxy', 3)
 
 
 class ComputeTargetHttpsProxiesListRequest(_messages.Message):
@@ -8930,6 +9396,8 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpsProxiesSetSslCertificatesRequest: A
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -8938,8 +9406,9 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpsProxiesSetSslCertificatesRequest = _messages.MessageField('TargetHttpsProxiesSetSslCertificatesRequest', 2)
-  targetHttpsProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxiesSetSslCertificatesRequest = _messages.MessageField('TargetHttpsProxiesSetSslCertificatesRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
@@ -8947,6 +9416,8 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
       to be set.
     urlMapReference: A UrlMapReference resource to be passed as the request
@@ -8954,8 +9425,9 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetHttpsProxy = _messages.StringField(2, required=True)
-  urlMapReference = _messages.MessageField('UrlMapReference', 3)
+  requestId = _messages.StringField(2)
+  targetHttpsProxy = _messages.StringField(3, required=True)
+  urlMapReference = _messages.MessageField('UrlMapReference', 4)
 
 
 class ComputeTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message):
@@ -9028,13 +9500,16 @@ class ComputeTargetInstancesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetInstance: Name of the TargetInstance resource to delete.
     zone: Name of the zone scoping this request.
   """
 
   project = _messages.StringField(1, required=True)
-  targetInstance = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetInstance = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeTargetInstancesGetRequest(_messages.Message):
@@ -9056,14 +9531,17 @@ class ComputeTargetInstancesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetInstance: A TargetInstance resource to be passed as the request
       body.
     zone: Name of the zone scoping this request.
   """
 
   project = _messages.StringField(1, required=True)
-  targetInstance = _messages.MessageField('TargetInstance', 2)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetInstance = _messages.MessageField('TargetInstance', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeTargetInstancesListRequest(_messages.Message):
@@ -9141,6 +9619,8 @@ class ComputeTargetPoolsAddHealthCheckRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the target pool to add a health check to.
     targetPoolsAddHealthCheckRequest: A TargetPoolsAddHealthCheckRequest
       resource to be passed as the request body.
@@ -9148,8 +9628,9 @@ class ComputeTargetPoolsAddHealthCheckRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.StringField(3, required=True)
-  targetPoolsAddHealthCheckRequest = _messages.MessageField('TargetPoolsAddHealthCheckRequest', 4)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.StringField(4, required=True)
+  targetPoolsAddHealthCheckRequest = _messages.MessageField('TargetPoolsAddHealthCheckRequest', 5)
 
 
 class ComputeTargetPoolsAddInstanceRequest(_messages.Message):
@@ -9158,6 +9639,8 @@ class ComputeTargetPoolsAddInstanceRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the TargetPool resource to add instances to.
     targetPoolsAddInstanceRequest: A TargetPoolsAddInstanceRequest resource to
       be passed as the request body.
@@ -9165,8 +9648,9 @@ class ComputeTargetPoolsAddInstanceRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.StringField(3, required=True)
-  targetPoolsAddInstanceRequest = _messages.MessageField('TargetPoolsAddInstanceRequest', 4)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.StringField(4, required=True)
+  targetPoolsAddInstanceRequest = _messages.MessageField('TargetPoolsAddInstanceRequest', 5)
 
 
 class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
@@ -9225,12 +9709,15 @@ class ComputeTargetPoolsDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the TargetPool resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.StringField(4, required=True)
 
 
 class ComputeTargetPoolsGetHealthRequest(_messages.Message):
@@ -9271,12 +9758,15 @@ class ComputeTargetPoolsInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: A TargetPool resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.MessageField('TargetPool', 3)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.MessageField('TargetPool', 4)
 
 
 class ComputeTargetPoolsListRequest(_messages.Message):
@@ -9337,6 +9827,8 @@ class ComputeTargetPoolsRemoveHealthCheckRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the target pool to remove health checks from.
     targetPoolsRemoveHealthCheckRequest: A TargetPoolsRemoveHealthCheckRequest
       resource to be passed as the request body.
@@ -9344,8 +9836,9 @@ class ComputeTargetPoolsRemoveHealthCheckRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.StringField(3, required=True)
-  targetPoolsRemoveHealthCheckRequest = _messages.MessageField('TargetPoolsRemoveHealthCheckRequest', 4)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.StringField(4, required=True)
+  targetPoolsRemoveHealthCheckRequest = _messages.MessageField('TargetPoolsRemoveHealthCheckRequest', 5)
 
 
 class ComputeTargetPoolsRemoveInstanceRequest(_messages.Message):
@@ -9354,6 +9847,8 @@ class ComputeTargetPoolsRemoveInstanceRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the TargetPool resource to remove instances from.
     targetPoolsRemoveInstanceRequest: A TargetPoolsRemoveInstanceRequest
       resource to be passed as the request body.
@@ -9361,8 +9856,9 @@ class ComputeTargetPoolsRemoveInstanceRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetPool = _messages.StringField(3, required=True)
-  targetPoolsRemoveInstanceRequest = _messages.MessageField('TargetPoolsRemoveInstanceRequest', 4)
+  requestId = _messages.StringField(3)
+  targetPool = _messages.StringField(4, required=True)
+  targetPoolsRemoveInstanceRequest = _messages.MessageField('TargetPoolsRemoveInstanceRequest', 5)
 
 
 class ComputeTargetPoolsSetBackupRequest(_messages.Message):
@@ -9372,6 +9868,8 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
     failoverRatio: New failoverRatio value for the target pool.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetPool: Name of the TargetPool resource to set a backup pool for.
     targetReference: A TargetReference resource to be passed as the request
       body.
@@ -9380,8 +9878,9 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
   failoverRatio = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
-  targetPool = _messages.StringField(4, required=True)
-  targetReference = _messages.MessageField('TargetReference', 5)
+  requestId = _messages.StringField(4)
+  targetPool = _messages.StringField(5, required=True)
+  targetReference = _messages.MessageField('TargetReference', 6)
 
 
 class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
@@ -9406,11 +9905,14 @@ class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetSslProxy: Name of the TargetSslProxy resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  targetSslProxy = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxy = _messages.StringField(3, required=True)
 
 
 class ComputeTargetSslProxiesGetRequest(_messages.Message):
@@ -9430,12 +9932,15 @@ class ComputeTargetSslProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetSslProxy: A TargetSslProxy resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  targetSslProxy = _messages.MessageField('TargetSslProxy', 2)
+  requestId = _messages.StringField(2)
+  targetSslProxy = _messages.MessageField('TargetSslProxy', 3)
 
 
 class ComputeTargetSslProxiesListRequest(_messages.Message):
@@ -9493,6 +9998,8 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetSslProxiesSetBackendServiceRequest: A
       TargetSslProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -9501,8 +10008,9 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 2)
-  targetSslProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
@@ -9510,6 +10018,8 @@ class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetSslProxiesSetProxyHeaderRequest: A
       TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -9518,8 +10028,9 @@ class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetSslProxiesSetProxyHeaderRequest = _messages.MessageField('TargetSslProxiesSetProxyHeaderRequest', 2)
-  targetSslProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxiesSetProxyHeaderRequest = _messages.MessageField('TargetSslProxiesSetProxyHeaderRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
@@ -9527,6 +10038,8 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetSslProxiesSetSslCertificatesRequest: A
       TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -9535,8 +10048,9 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 2)
-  targetSslProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetSslProxiesTestIamPermissionsRequest(_messages.Message):
@@ -9559,11 +10073,14 @@ class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetTcpProxy: Name of the TargetTcpProxy resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  targetTcpProxy = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  targetTcpProxy = _messages.StringField(3, required=True)
 
 
 class ComputeTargetTcpProxiesGetRequest(_messages.Message):
@@ -9583,12 +10100,15 @@ class ComputeTargetTcpProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetTcpProxy: A TargetTcpProxy resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
-  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 2)
+  requestId = _messages.StringField(2)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 3)
 
 
 class ComputeTargetTcpProxiesListRequest(_messages.Message):
@@ -9646,6 +10166,8 @@ class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetTcpProxiesSetBackendServiceRequest: A
       TargetTcpProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -9654,8 +10176,9 @@ class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetTcpProxiesSetBackendServiceRequest = _messages.MessageField('TargetTcpProxiesSetBackendServiceRequest', 2)
-  targetTcpProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetTcpProxiesSetBackendServiceRequest = _messages.MessageField('TargetTcpProxiesSetBackendServiceRequest', 3)
+  targetTcpProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
@@ -9663,6 +10186,8 @@ class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetTcpProxiesSetProxyHeaderRequest: A
       TargetTcpProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -9671,8 +10196,9 @@ class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  targetTcpProxiesSetProxyHeaderRequest = _messages.MessageField('TargetTcpProxiesSetProxyHeaderRequest', 2)
-  targetTcpProxy = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(2)
+  targetTcpProxiesSetProxyHeaderRequest = _messages.MessageField('TargetTcpProxiesSetProxyHeaderRequest', 3)
+  targetTcpProxy = _messages.StringField(4, required=True)
 
 
 class ComputeTargetTcpProxiesTestIamPermissionsRequest(_messages.Message):
@@ -9746,12 +10272,15 @@ class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetVpnGateway: Name of the target VPN gateway to delete.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetVpnGateway = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  targetVpnGateway = _messages.StringField(4, required=True)
 
 
 class ComputeTargetVpnGatewaysGetRequest(_messages.Message):
@@ -9774,13 +10303,16 @@ class ComputeTargetVpnGatewaysInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     targetVpnGateway: A TargetVpnGateway resource to be passed as the request
       body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  targetVpnGateway = _messages.MessageField('TargetVpnGateway', 3)
+  requestId = _messages.StringField(3)
+  targetVpnGateway = _messages.MessageField('TargetVpnGateway', 4)
 
 
 class ComputeTargetVpnGatewaysListRequest(_messages.Message):
@@ -9857,11 +10389,14 @@ class ComputeUrlMapsDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     urlMap: Name of the UrlMap resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
-  urlMap = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(2)
+  urlMap = _messages.StringField(3, required=True)
 
 
 class ComputeUrlMapsGetRequest(_messages.Message):
@@ -9881,11 +10416,14 @@ class ComputeUrlMapsInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     urlMap: A UrlMap resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
-  urlMap = _messages.MessageField('UrlMap', 2)
+  requestId = _messages.StringField(2)
+  urlMap = _messages.MessageField('UrlMap', 3)
 
 
 class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
@@ -9895,12 +10433,15 @@ class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
     cacheInvalidationRule: A CacheInvalidationRule resource to be passed as
       the request body.
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     urlMap: Name of the UrlMap scoping this request.
   """
 
   cacheInvalidationRule = _messages.MessageField('CacheInvalidationRule', 1)
   project = _messages.StringField(2, required=True)
-  urlMap = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  urlMap = _messages.StringField(4, required=True)
 
 
 class ComputeUrlMapsListRequest(_messages.Message):
@@ -9958,13 +10499,16 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
-  urlMap = _messages.StringField(2, required=True)
-  urlMapResource = _messages.MessageField('UrlMap', 3)
+  requestId = _messages.StringField(2)
+  urlMap = _messages.StringField(3, required=True)
+  urlMapResource = _messages.MessageField('UrlMap', 4)
 
 
 class ComputeUrlMapsTestIamPermissionsRequest(_messages.Message):
@@ -9987,13 +10531,16 @@ class ComputeUrlMapsUpdateRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
-  urlMap = _messages.StringField(2, required=True)
-  urlMapResource = _messages.MessageField('UrlMap', 3)
+  requestId = _messages.StringField(2)
+  urlMap = _messages.StringField(3, required=True)
+  urlMapResource = _messages.MessageField('UrlMap', 4)
 
 
 class ComputeUrlMapsValidateRequest(_messages.Message):
@@ -10067,12 +10614,15 @@ class ComputeVpnTunnelsDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     vpnTunnel: Name of the VpnTunnel resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  vpnTunnel = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  vpnTunnel = _messages.StringField(4, required=True)
 
 
 class ComputeVpnTunnelsGetRequest(_messages.Message):
@@ -10095,12 +10645,15 @@ class ComputeVpnTunnelsInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     vpnTunnel: A VpnTunnel resource to be passed as the request body.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
-  vpnTunnel = _messages.MessageField('VpnTunnel', 3)
+  requestId = _messages.StringField(3)
+  vpnTunnel = _messages.MessageField('VpnTunnel', 4)
 
 
 class ComputeVpnTunnelsListRequest(_messages.Message):
@@ -10163,13 +10716,16 @@ class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
     resource: Name of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
-  resource = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
@@ -10528,8 +11084,7 @@ class Disk(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
-      the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      the setLabels method.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -10555,8 +11110,7 @@ class Disk(_messages.Message):
       labels.  To see the latest fingerprint, make a get() request to retrieve
       a disk.
     labels: Labels to apply to this disk. These can be later modified by the
-      setLabels method. Each label key/value pair must comply with RFC1035.
-      Label values may be empty.
+      setLabels method.
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
@@ -10653,8 +11207,7 @@ class Disk(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this disk. These can be later modified by the
-    setLabels method. Each label key/value pair must comply with RFC1035.
-    Label values may be empty.
+    setLabels method.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -11123,6 +11676,28 @@ class DisksScopedList(_messages.Message):
 
   disks = _messages.MessageField('Disk', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class DistributionPolicy(_messages.Message):
+  """A DistributionPolicy object.
+
+  Fields:
+    zones: A DistributionPolicyZoneConfiguration attribute.
+  """
+
+  zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 1, repeated=True)
+
+
+class DistributionPolicyZoneConfiguration(_messages.Message):
+  """A DistributionPolicyZoneConfiguration object.
+
+  Fields:
+    zone: URL of the zone where managed instance group is spawning instances
+      (for regional resources). Zone has to belong to the region where managed
+      instance group is located.
+  """
+
+  zone = _messages.StringField(1)
 
 
 class Firewall(_messages.Message):
@@ -11860,7 +12435,7 @@ class HTTP2HealthCheck(_messages.Message):
       left empty (default value), the IP on behalf of which this health check
       is performed will be used.
     port: The TCP port number for the health check request. The default value
-      is 443.
+      is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     proxyHeader: Specifies the type of proxy header to append before sending
@@ -11904,7 +12479,7 @@ class HTTPHealthCheck(_messages.Message):
       left empty (default value), the IP on behalf of which this health check
       is performed will be used.
     port: The TCP port number for the health check request. The default value
-      is 80.
+      is 80. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     proxyHeader: Specifies the type of proxy header to append before sending
@@ -11948,7 +12523,7 @@ class HTTPSHealthCheck(_messages.Message):
       left empty (default value), the IP on behalf of which this health check
       is performed will be used.
     port: The TCP port number for the health check request. The default value
-      is 443.
+      is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     proxyHeader: Specifies the type of proxy header to append before sending
@@ -12786,8 +13361,7 @@ class Image(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this image. These can be later modified by
-      the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      the setLabels method.
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
@@ -12832,8 +13406,7 @@ class Image(_messages.Message):
       labels.  To see the latest fingerprint, make a get() request to retrieve
       an image.
     labels: Labels to apply to this image. These can be later modified by the
-      setLabels method. Each label key/value pair must comply with RFC1035.
-      Label values may be empty.
+      setLabels method.
     licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -12891,8 +13464,7 @@ class Image(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this image. These can be later modified by the
-    setLabels method. Each label key/value pair must comply with RFC1035.
-    Label values may be empty.
+    setLabels method.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -13005,8 +13577,7 @@ class Instance(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
-      by the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      by the setLabels method.
 
   Fields:
     canIpForward: Allows this instance to send and receive packets with non-
@@ -13050,8 +13621,7 @@ class Instance(_messages.Message):
       up-to-date fingerprint hash in order to update or change metadata.  To
       see the latest fingerprint, make get() request to the instance.
     labels: Labels to apply to this instance. These can be later modified by
-      the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      the setLabels method.
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
@@ -13082,10 +13652,10 @@ class Instance(_messages.Message):
     scheduling: Scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
-      authorized for this instance. Service accounts generate access tokens
-      that can be accessed through the metadata server and used to
-      authenticate applications on the instance. See Service Accounts for more
-      information.
+      authorized for this instance. Only one service account per VM instance
+      is supported.  Service accounts generate access tokens that can be
+      accessed through the metadata server and used to authenticate
+      applications on the instance. See Service Accounts for more information.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
@@ -13125,8 +13695,7 @@ class Instance(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this instance. These can be later modified by the
-    setLabels method. Each label key/value pair must comply with RFC1035.
-    Label values may be empty.
+    setLabels method.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -13378,6 +13947,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    distributionPolicy: Policy valid only for regional managed instance
+      groups.
     failoverAction: The action to perform in case of zone failure. Only one
       value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: [Output Only] The fingerprint of the resource data. You can
@@ -13408,6 +13979,7 @@ class InstanceGroupManager(_messages.Message):
       When not specified, the service account
       {projectNumber}@cloudservices.gserviceaccount.com will be used.
     spreadingPolicy: Policy valid only for regional managed instance groups.
+      Deprecated in favor of distribution_policy.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -13444,24 +14016,25 @@ class InstanceGroupManager(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 4)
   description = _messages.StringField(5)
-  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 6)
-  fingerprint = _messages.BytesField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(9)
-  instanceTemplate = _messages.StringField(10)
-  kind = _messages.StringField(11, default=u'compute#instanceGroupManager')
-  name = _messages.StringField(12)
-  namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
-  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  serviceAccount = _messages.StringField(17)
-  spreadingPolicy = _messages.MessageField('SpreadingPolicy', 18)
-  targetPools = _messages.StringField(19, repeated=True)
-  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
-  zone = _messages.StringField(23)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 6)
+  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 7)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(10)
+  instanceTemplate = _messages.StringField(11)
+  kind = _messages.StringField(12, default=u'compute#instanceGroupManager')
+  name = _messages.StringField(13)
+  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
+  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  serviceAccount = _messages.StringField(18)
+  spreadingPolicy = _messages.MessageField('SpreadingPolicy', 19)
+  targetPools = _messages.StringField(20, repeated=True)
+  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -14186,8 +14759,7 @@ class InstanceProperties(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
-      template. Each label key/value pair must comply with RFC1035. Label
-      values may be empty.
+      template.
 
   Fields:
     canIpForward: Enables instances created based on this template to send
@@ -14202,8 +14774,6 @@ class InstanceProperties(_messages.Message):
     disks: An array of disks that are associated with the instances that are
       created from this template.
     labels: Labels to apply to instances that are created from this template.
-      Each label key/value pair must comply with RFC1035. Label values may be
-      empty.
     machineType: The machine type to use for instances that are created from
       this template.
     metadata: The metadata key/value pairs to assign to instances that are
@@ -14226,8 +14796,7 @@ class InstanceProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Labels to apply to instances that are created from this template. Each
-    label key/value pair must comply with RFC1035. Label values may be empty.
+    """Labels to apply to instances that are created from this template.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -14481,40 +15050,18 @@ class InstancesSetLabelsRequest(_messages.Message):
   """A InstancesSetLabelsRequest object.
 
   Messages:
-    LabelsValue: A list of labels to apply for this instance. Changing
-      instance labels will also change the instance tags.  Each label key &
-      value must comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash. For
-      example, "webserver-frontend": "images". A label value can also be empty
-      (e.g. "my-label": "").
+    LabelsValue: A LabelsValue object.
 
   Fields:
     labelFingerprint: Fingerprint of the previous set of labels for this
       resource, used to prevent conflicts. Provide the latest fingerprint
       value when making a request to add or change labels.
-    labels: A list of labels to apply for this instance. Changing instance
-      labels will also change the instance tags.  Each label key & value must
-      comply with RFC1035. Specifically, the name must be 1-63 characters long
-      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
-      the first character must be a lowercase letter, and all following
-      characters must be a dash, lowercase letter, or digit, except the last
-      character, which cannot be a dash. For example, "webserver-frontend":
-      "images". A label value can also be empty (e.g. "my-label": "").
+    labels: A LabelsValue attribute.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """A list of labels to apply for this instance. Changing instance labels
-    will also change the instance tags.  Each label key & value must comply
-    with RFC1035. Specifically, the name must be 1-63 characters long and
-    match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the
-    first character must be a lowercase letter, and all following characters
-    must be a dash, lowercase letter, or digit, except the last character,
-    which cannot be a dash. For example, "webserver-frontend": "images". A
-    label value can also be empty (e.g. "my-label": "").
+    """A LabelsValue object.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -14610,11 +15157,18 @@ class License(_messages.Message):
   Fields:
     chargesUseFee: [Output Only] If true, the customer will be charged license
       fee for running software that contains this license on an instance.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
     kind: [Output Only] Type of resource. Always compute#license for licenses.
     licenseCode: [Output Only] The unique code used to attach this license to
       images, snapshots, and disks.
     name: [Output Only] Name of the resource. The name is 1-63 characters long
       and complies with RFC1035.
+    resourceRequirements: A LicenseResourceRequirements attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
     transferable: If false, licenses will not be copied from the source
       resource when creating an image from a disk, disk from snapshot, or
@@ -14622,11 +15176,29 @@ class License(_messages.Message):
   """
 
   chargesUseFee = _messages.BooleanField(1)
-  kind = _messages.StringField(2, default=u'compute#license')
-  licenseCode = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  name = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  transferable = _messages.BooleanField(6)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#license')
+  licenseCode = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  name = _messages.StringField(7)
+  resourceRequirements = _messages.MessageField('LicenseResourceRequirements', 8)
+  selfLink = _messages.StringField(9)
+  transferable = _messages.BooleanField(10)
+
+
+class LicenseResourceRequirements(_messages.Message):
+  """A LicenseResourceRequirements object.
+
+  Fields:
+    minGuestCpuCount: Minimum number of guest cpus required to use the
+      Instance. Enforced at Instance creation and Instance start.
+    minMemoryMb: Minimum memory required to use the Instance. Enforced at
+      Instance creation and Instance start.
+  """
+
+  minGuestCpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class LogConfig(_messages.Message):
@@ -15985,7 +16557,6 @@ class Quota(_messages.Message):
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
-      GPUS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
       INSTANCES: <no description>
@@ -15995,6 +16566,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -16023,16 +16595,16 @@ class Quota(_messages.Message):
     DISKS_TOTAL_GB = 5
     FIREWALLS = 6
     FORWARDING_RULES = 7
-    GPUS = 8
-    HEALTH_CHECKS = 9
-    IMAGES = 10
-    INSTANCES = 11
-    INSTANCE_GROUPS = 12
-    INSTANCE_GROUP_MANAGERS = 13
-    INSTANCE_TEMPLATES = 14
-    IN_USE_ADDRESSES = 15
-    LOCAL_SSD_TOTAL_GB = 16
-    NETWORKS = 17
+    HEALTH_CHECKS = 8
+    IMAGES = 9
+    INSTANCES = 10
+    INSTANCE_GROUPS = 11
+    INSTANCE_GROUP_MANAGERS = 12
+    INSTANCE_TEMPLATES = 13
+    IN_USE_ADDRESSES = 14
+    LOCAL_SSD_TOTAL_GB = 15
+    NETWORKS = 16
+    NVIDIA_K80_GPUS = 17
     PREEMPTIBLE_CPUS = 18
     REGIONAL_AUTOSCALERS = 19
     REGIONAL_INSTANCE_GROUP_MANAGERS = 20
@@ -17077,7 +17649,7 @@ class SSLHealthCheck(_messages.Message):
 
   Fields:
     port: The TCP port number for the health check request. The default value
-      is 443.
+      is 443. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     proxyHeader: Specifies the type of proxy header to append before sending
@@ -17160,11 +17732,10 @@ class SerialPortOutput(_messages.Message):
       serial console output. Use this value in the next request as the start
       parameter.
     selfLink: [Output Only] Server-defined URL for this resource.
-    start: [Output Only] The starting byte position of the output that was
-      returned. This should match the start parameter sent with the request.
-      If the serial console output exceeds the size of the buffer, older
-      output will be overwritten by newer content and the start values will be
-      mismatched.
+    start: The starting byte position of the output that was returned. This
+      should match the start parameter sent with the request. If the serial
+      console output exceeds the size of the buffer, older output will be
+      overwritten by newer content and the start values will be mismatched.
   """
 
   contents = _messages.StringField(1)
@@ -17200,8 +17771,7 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this snapshot. These can be later modified
-      by the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      by the setLabels method. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -17221,8 +17791,7 @@ class Snapshot(_messages.Message):
       change labels.  To see the latest fingerprint, make a get() request to
       retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
-      the setLabels method. Each label key/value pair must comply with
-      RFC1035. Label values may be empty.
+      the setLabels method. Label values may be empty.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -17295,8 +17864,7 @@ class Snapshot(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this snapshot. These can be later modified by the
-    setLabels method. Each label key/value pair must comply with RFC1035.
-    Label values may be empty.
+    setLabels method. Label values may be empty.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -17361,7 +17929,7 @@ class SnapshotList(_messages.Message):
 
 
 class SpreadingPolicy(_messages.Message):
-  """A SpreadingPolicy object.
+  """Deprecated in favor of distribution policy.
 
   Fields:
     zones: A SpreadingPolicyZoneConfiguration attribute.
@@ -17766,7 +18334,7 @@ class TCPHealthCheck(_messages.Message):
 
   Fields:
     port: The TCP port number for the health check request. The default value
-      is 80.
+      is 80. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     proxyHeader: Specifies the type of proxy header to append before sending
@@ -19068,7 +19636,8 @@ class UDPHealthCheck(_messages.Message):
   """A UDPHealthCheck object.
 
   Fields:
-    port: The UDP port number for the health check request.
+    port: The UDP port number for the health check request. Valid values are 1
+      through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
     request: Raw data of request to send in payload of UDP packet. It is an

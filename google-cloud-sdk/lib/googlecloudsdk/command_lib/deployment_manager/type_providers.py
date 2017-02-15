@@ -68,8 +68,7 @@ def AddApiOptionsFileFlag(parser):
   """
   parser.add_argument('--api-options-file',
                       help=('YAML file with options for the API: e.g. '
-                            'options and collection overrides.'),
-                      required=True)
+                            'options and collection overrides.'))
 
 
 def _OptionsFrom(options_data):
@@ -117,6 +116,20 @@ def _InputMappingFrom(input_mapping_data):
       value=input_mapping_data.get('value', None))
 
 
+def _CredentialFrom(credential_data):
+  """Translate a dict of credential data into a message object.
+
+  Args:
+    credential_data: A dict containing credential data.
+  Returns:
+    An Credential message object derived from credential_data.
+  """
+  basic_auth = dm_beta_base.GetMessages().BasicAuth(
+      password=credential_data['basicAuth']['password'],
+      user=credential_data['basicAuth']['user'])
+  return dm_beta_base.GetMessages().Credential(basicAuth=basic_auth)
+
+
 def AddOptions(options_file, type_provider):
   """Parse api options from the file and add them to type_provider.
 
@@ -129,6 +142,9 @@ def AddOptions(options_file, type_provider):
   Raises:
     exceptions.ConfigError: the api options file couldn't be parsed as yaml
   """
+  if not options_file:
+    return type_provider
+
   file_contents = files.GetFileContents(options_file)
   yaml_content = None
   try:
@@ -153,6 +169,9 @@ def AddOptions(options_file, type_provider):
 
     if 'options' in yaml_content:
       type_provider.options = _OptionsFrom(yaml_content['options'])
+
+    if 'credential' in yaml_content:
+      type_provider.credential = _CredentialFrom(yaml_content['credential'])
 
   return type_provider
 

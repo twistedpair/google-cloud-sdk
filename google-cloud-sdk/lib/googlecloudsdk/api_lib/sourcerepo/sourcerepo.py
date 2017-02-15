@@ -174,9 +174,9 @@ class Source(object):
     Returns:
       (messages.Policy) The IAM policy.
     """
-    request = messages.SourcerepoIamProjectsReposGetRequest(
+    request = messages.SourcerepoProjectsReposGetIamPolicyRequest(
         resource=repo_resource.RelativeName())
-    return self._client.iam_projects_repos.Get(request)
+    return self._client.projects_repos.GetIamPolicy(request)
 
   def SetIamPolicy(self, repo_resource, policy):
     """Sets the IAM policy from a policy string.
@@ -189,9 +189,9 @@ class Source(object):
       (messages.Policy) The IAM policy.
     """
     req = messages.SetIamPolicyRequest(policy=policy)
-    request = messages.SourcerepoIamProjectsReposSetIamPolicyRequest(
+    request = messages.SourcerepoProjectsReposSetIamPolicyRequest(
         resource=repo_resource.RelativeName(), setIamPolicyRequest=req)
-    return self._client.iam_projects_repos.SetIamPolicy(request)
+    return self._client.projects_repos.SetIamPolicy(request)
 
   def ListRepos(self, project_resource):
     """Returns list of repos."""

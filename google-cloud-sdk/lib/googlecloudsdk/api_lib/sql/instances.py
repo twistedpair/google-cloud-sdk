@@ -15,10 +15,12 @@
 """Common utility functions for sql instances."""
 
 import argparse
+from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 
 
+# TODO(b/35104889): Migrate methods containing Namespace args to command_lib
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
 
@@ -113,14 +115,16 @@ class _BaseInstances(object):
       maintenance_window.hour = hour
     settings.maintenanceWindow = maintenance_window
 
-  @staticmethod
-  def _ConstructSettingsFromArgs(sql_messages, args):
+  @classmethod
+  def _ConstructSettingsFromArgs(cls, sql_messages, args, instance=None):
     """Constructs instance settings from the command line arguments.
 
     Args:
       sql_messages: module, The messages module that should be used.
       args: argparse.Namespace, The arguments that this command was invoked
           with.
+      instance: sql_messages.DatabaseInstance, The original instance, for
+          settings that depend on the previous state.
 
     Returns:
       A settings object representing the instance settings.
@@ -130,7 +134,7 @@ class _BaseInstances(object):
           command.
     """
     settings = sql_messages.Settings(
-        tier=args.tier,
+        tier=cls._MachineTypeFromArgs(args, instance),
         pricingPlan=args.pricing_plan,
         replicationType=args.replication,
         activationPolicy=args.activation_policy)
@@ -199,7 +203,7 @@ class _BaseInstances(object):
       ToolException: An error other than http error occured while executing the
           command.
     """
-    settings = cls._ConstructSettingsFromArgs(sql_messages, args)
+    settings = cls._ConstructSettingsFromArgs(sql_messages, args, original)
     cls._SetBackupConfiguration(sql_messages, settings, args, original)
     cls._SetDatabaseFlags(sql_messages, settings, args)
     cls._SetMaintenanceWindow(sql_messages, settings, args, original)
@@ -257,6 +261,78 @@ class _BaseInstances(object):
       instance_resource.settings.storageAutoResize = args.storage_auto_increase
 
     return instance_resource
+
+  @staticmethod
+  def _ConstructCustomMachineType(cpu, memory_mib):
+    """Creates a custom machine type from the CPU and memory specs.
+
+    Args:
+      cpu: the number of cpu desired for the custom machine type
+      memory_mib: the amount of ram desired in MiB for the custom machine
+          type instance
+
+    Returns:
+      The custom machine type name for the 'instance create' call
+    """
+    machine_type = 'db-custom-{0}-{1}'.format(cpu, memory_mib)
+    return machine_type
+
+  @classmethod
+  def _MachineTypeFromArgs(cls, args, instance=None):
+    """Constructs the machine type for the instance.  Adapted from compute.
+
+    Args:
+      args: Flags specified on the gcloud command; looking for
+          args.tier, args.memory, and args.cpu.
+      instance: sql_messages.DatabaseInstance, The original instance, if
+          it might be needed to generate the machine type.
+
+    Returns:
+      A string representing the URL naming a machine-type.
+
+    Raises:
+      exceptions.RequiredArgumentException when only one of the two custom
+          machine type flags are used, or when none of the flags are used.
+      exceptions.InvalidArgumentException when both the tier and
+          custom machine type flags are used to generate a new instance.
+    """
+    # Retrieving relevant flags.
+    tier = getattr(args, 'tier', None)
+    memory = getattr(args, 'memory', None)
+    cpu = getattr(args, 'cpu', None)
+
+    # Setting the machine type.
+    machine_type = None
+    if tier:
+      machine_type = tier
+
+    # Setting the specs for the custom machine.
+    if cpu or memory:
+      if not cpu:
+        raise exceptions.RequiredArgumentException(
+            '--cpu', 'Both [--cpu] and [--memory] must be '
+            'set to create a custom machine type instance.')
+      if not memory:
+        raise exceptions.RequiredArgumentException(
+            '--memory', 'Both [--cpu] and [--memory] must '
+            'be set to create a custom machine type instance.')
+      if tier:
+        raise exceptions.InvalidArgumentException(
+            '--tier', 'Cannot set both [--tier] and '
+            '[--cpu]/[--memory] for the same instance.')
+      custom_type_string = cls._ConstructCustomMachineType(
+          cpu,
+          # Converting from B to MiB.
+          int(memory / (2 ** 20)))
+
+      # Updating the machine type that is set for the URIs.
+      machine_type = custom_type_string
+
+    # Reverting to default if creating instance and no flags are set.
+    if not machine_type and not instance:
+      machine_type = constants.DEFAULT_MACHINE_TYPE
+
+    return machine_type
 
 
 class InstancesV1Beta3(_BaseInstances):

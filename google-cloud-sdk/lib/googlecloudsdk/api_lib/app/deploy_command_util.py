@@ -148,16 +148,23 @@ def _GetSourceContextsForUpload(source_dir):
     A dict of filename to (str) source context file contents.
   """
   source_contexts = {}
+  # Error message in case of failure.
+  m = ('Could not generate [{name}]: {error}\n'
+       'Stackdriver Debugger may not be configured or enabled on this '
+       'application. See https://cloud.google.com/debugger/ for more '
+       'information.')
   try:
     contexts = context_util.CalculateExtendedSourceContexts(source_dir)
     source_contexts[context_util.EXT_CONTEXT_FILENAME] = json.dumps(contexts)
+  except context_util.GenerateSourceContextError as e:
+    log.info(m.format(name=context_util.EXT_CONTEXT_FILENAME, error=e))
+    # It's OK if source contexts can't be found, we just stop looking.
+    return source_contexts
+  try:
     context = context_util.BestSourceContext(contexts)
     source_contexts[context_util.CONTEXT_FILENAME] = json.dumps(context)
-  # This error could either be raised by context_util.BestSourceContext or by
-  # context_util.CalculateExtendedSourceContexts (in which case stop looking)
-  except context_util.GenerateSourceContextError as e:
-    log.warn('Could not generate [{name}]: {error}'.format(
-        name=context_util.CONTEXT_FILENAME, error=e))
+  except KeyError as e:
+    log.info(m.format(name=context_util.CONTEXT_FILENAME, error=e))
   return source_contexts
 
 

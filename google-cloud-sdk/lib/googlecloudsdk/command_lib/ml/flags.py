@@ -63,12 +63,14 @@ OPERATION_NAME = base.Argument('operation', help='Name of the operation.')
 # TODO(user): move these into a class
 CONFIG = base.Argument(
     '--config',
-    help='Path to yaml configuration file.',
-    # TODO(b/33456372): add prediction and training config file examples.
+    help='Path to YAML or JSON configuration file.',
     detailed_help="""\
-Path to the job configuration file. The file should be a yaml document
-containing a Job resource as defined in the API:
-https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
+Path to the job configuration file. The file should be a YAML document (JSON
+also accepted) containing a Job resource as defined in the API (all fields are
+optional): https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
+
+If an option is specified both in the configuration file *and* via command line
+arguments, the command line arguments override the configuration file.
 """)
 JOB_NAME = base.Argument('job', help='Name of the job.')
 MODULE_NAME = base.Argument(

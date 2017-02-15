@@ -13,9 +13,7 @@
 # limitations under the License.
 """Code that's shared between multiple backend-services subcommands."""
 
-from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -30,45 +28,23 @@ class CacheKeyQueryStringException(core_exceptions.Error):
         'cache-key-include-query-string is enabled.')
 
 
-def IsRegionDefaultModeWarnOtherwise(print_warning=True):
-  """Returns the value of core/default_regional_backend_service."""
+# TODO(b/35086027) - Remove this
+def IsDefaultRegionalBackendServicePropertyNoneWarnOtherwise():
+  """Warns if core/default_regional_backend_service property is set."""
   default_regional = (
       properties.VALUES.core.default_regional_backend_service.GetBool())
-  if default_regional is None:
-    # Print a warning and use False if it isn't set.
-    if print_warning:
-      log.warn(
-          'This backend service is assumed to be global. To access a regional '
-          'backend service, provide the --region flag.\n'
-          'In the future, backend services will be regional by default unless '
-          'the --global flag is specified.')
-    return False
-
-  return default_regional
+  if default_regional is not None:
+    # Print a warning if it is set.
+    log.warn(
+        'core/default_regional_backend_service property is deprecated and '
+        'has no meaning.')
 
 
-def GetDefaultScope(args):
+# TODO(b/35086027) - Remove this
+def GetDefaultScope():
   """Gets the default compute flags scope enum value."""
-  if IsRegionDefaultModeWarnOtherwise(
-      print_warning=(
-          getattr(args, 'global', None) is None and
-          getattr(args, 'region', None) is None)):
-    return compute_scope.ScopeEnum.REGION
-  else:
-    return compute_scope.ScopeEnum.GLOBAL
-
-
-def IsRegionalRequest(args):
-  """Determines whether the args specify a regional or global request."""
-  if IsRegionDefaultModeWarnOtherwise(
-      print_warning=(
-          getattr(args, 'global', None) is None and
-          getattr(args, 'region', None) is None)):
-    # Return True (regional request) unless --global was specified.
-    return getattr(args, 'global', None) is None
-  else:
-    # Return False (global request) unless --region was specified.
-    return getattr(args, 'region', None) is not None
+  IsDefaultRegionalBackendServicePropertyNoneWarnOtherwise()
+  return None
 
 
 def GetHealthChecks(args, resource_parser):
@@ -165,38 +141,6 @@ def IapBestPracticesNotice():
 def IapHttpWarning():
   return ('IAP has been enabled for a backend service that does not use HTTPS. '
           'Data sent from the Load Balancer to your VM will not be encrypted.')
-
-
-class BackendServiceMutator(base_classes.BaseAsyncMutator):
-  """Makes mutator respect Regional/Global resources."""
-
-  @property
-  def service(self):
-    if self.global_request:
-      return self.compute.backendServices
-    else:
-      return self.compute.regionBackendServices
-
-  @property
-  def resource_type(self):
-    return 'backendServices'
-
-  def CreateGlobalRequests(self, args):
-    """Override to return a list of one of more globally-scoped request."""
-
-  def CreateRegionalRequests(self, args):
-    """Override to return a list of one of more regionally-scoped request."""
-
-  def CreateRequests(self, args):
-    self.global_request = not IsRegionalRequest(args)
-
-    if self.global_request:
-      return self.CreateGlobalRequests(args)
-    else:
-      return self.CreateRegionalRequests(args)
-
-  def Format(self, args):
-    return self.ListFormat(args)
 
 
 def ValidateBalancingModeArgs(messages, add_or_update_backend_args,

@@ -22,6 +22,12 @@ BASE_URL = 'https://cloudresourcemanager.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  LIENS = (
+      'liens',
+      'liens/{liensId}',
+      {},
+      ['liensId']
+  )
   OPERATIONS = (
       'operations',
       'operations/{operationsId}',

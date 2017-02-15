@@ -396,6 +396,14 @@ MAP = {
             default_version=True
         ),
     },
+    'spanner': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.spanner.v1',
+            client_classpath='spanner_v1_client.SpannerV1',
+            messages_modulepath='spanner_v1_messages',
+            default_version=True
+        ),
+    },
     'sqladmin': {
         'v1beta3': APIDef(
             class_path='googlecloudsdk.third_party.apis.sqladmin.v1beta3',

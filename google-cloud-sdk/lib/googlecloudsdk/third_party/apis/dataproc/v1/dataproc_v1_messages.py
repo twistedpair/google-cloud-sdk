@@ -201,21 +201,22 @@ class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
   Messages:
-    LabelsValue: Output-only labels associated with the operation
+    LabelsValue: Output-only Labels associated with the operation
 
   Fields:
     clusterName: Output-only Name of the cluster for the operation.
     clusterUuid: Output-only Cluster UUID for the operation.
     description: Output-only Short description of operation.
-    labels: Output-only labels associated with the operation
+    labels: Output-only Labels associated with the operation
     operationType: Output-only The operation type.
     status: Output-only Current operation status.
     statusHistory: Output-only The previous operation status.
+    warnings: Output-only Errors encountered during operation execution.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Output-only labels associated with the operation
+    """Output-only Labels associated with the operation
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -244,6 +245,7 @@ class ClusterOperationMetadata(_messages.Message):
   operationType = _messages.StringField(5)
   status = _messages.MessageField('ClusterOperationStatus', 6)
   statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
+  warnings = _messages.StringField(8, repeated=True)
 
 
 class ClusterOperationStatus(_messages.Message):
@@ -1017,6 +1019,7 @@ class Job(_messages.Message):
       used to obtain the equivalent REST path of the job resource. If this
       property is not specified when a job is created, the server generates a
       <code>job_id</code>.
+    scheduling: Optional Job scheduling configuration.
     sparkJob: Job is a Spark job.
     sparkSqlJob: Job is a SparkSql job.
     status: Output-only The job status. Additional application-specific status
@@ -1066,11 +1069,12 @@ class Job(_messages.Message):
   placement = _messages.MessageField('JobPlacement', 7)
   pysparkJob = _messages.MessageField('PySparkJob', 8)
   reference = _messages.MessageField('JobReference', 9)
-  sparkJob = _messages.MessageField('SparkJob', 10)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 11)
-  status = _messages.MessageField('JobStatus', 12)
-  statusHistory = _messages.MessageField('JobStatus', 13, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 14, repeated=True)
+  scheduling = _messages.MessageField('JobScheduling', 10)
+  sparkJob = _messages.MessageField('SparkJob', 11)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 12)
+  status = _messages.MessageField('JobStatus', 13)
+  statusHistory = _messages.MessageField('JobStatus', 14, repeated=True)
+  yarnApplications = _messages.MessageField('YarnApplication', 15, repeated=True)
 
 
 class JobPlacement(_messages.Message):
@@ -1104,6 +1108,18 @@ class JobReference(_messages.Message):
   projectId = _messages.StringField(2)
 
 
+class JobScheduling(_messages.Message):
+  """Job scheduling options.
+
+  Fields:
+    maxFailuresPerHour: Optional Maximum number of job restarts as result of
+      job terminating with non-zero code before job is reported failed.Maximum
+      value is 10.
+  """
+
+  maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class JobStatus(_messages.Message):
   """Cloud Dataproc job status.
 
@@ -1134,6 +1150,8 @@ class JobStatus(_messages.Message):
       CANCELLED: The job cancellation was successful.
       DONE: The job has completed successfully.
       ERROR: The job has completed, but encountered an error.
+      ATTEMPT_FAILURE: Job attempt has failed. The detail field contains
+        failure details for this attempt.Applies to restartable jobs only.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1144,6 +1162,7 @@ class JobStatus(_messages.Message):
     CANCELLED = 6
     DONE = 7
     ERROR = 8
+    ATTEMPT_FAILURE = 9
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -1420,6 +1439,7 @@ class OperationMetadata(_messages.Message):
     state: A message containing the operation state.
     status: Output-only Current operation status.
     statusHistory: Output-only Previous operation status.
+    warnings: Output-only Errors encountered during operation execution.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1448,6 +1468,7 @@ class OperationMetadata(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
   status = _messages.MessageField('OperationStatus', 11)
   statusHistory = _messages.MessageField('OperationStatus', 12, repeated=True)
+  warnings = _messages.StringField(13, repeated=True)
 
 
 class OperationStatus(_messages.Message):

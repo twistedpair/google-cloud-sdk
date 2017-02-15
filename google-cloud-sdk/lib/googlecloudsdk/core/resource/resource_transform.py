@@ -1268,10 +1268,8 @@ _API_TO_TRANSFORMS = {
     'debug': ('googlecloudsdk.command_lib.debug.transforms', 'GetTransforms'),
     'functions': ('googlecloudsdk.api_lib.functions.transforms',
                   'GetTransforms'),
-    'runtimeconfig': (
-        'googlecloudsdk.api_lib.deployment_manager.runtime_configs.transforms',
-        'GetTransforms'
-    ),
+    'runtimeconfig': ('googlecloudsdk.api_lib.runtime_configs.transforms',
+                      'GetTransforms'),
     'service_registry': ('googlecloudsdk.api_lib.service_registry.transforms',
                          'GetTransforms'),
 }

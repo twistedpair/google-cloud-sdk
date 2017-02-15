@@ -68,6 +68,12 @@ If you encounter any issues, please report using `gcloud feedback`.  To \
 revert temporarily, run `gcloud config set app/use_gsutil True`.
 """
 
+MANAGED_VMS_DEPRECATION_WARNING = """\
+Deployments using `vm: true` have been deprecated.  Please update your \
+app.yaml to use `env: flex`. To learn more, please visit \
+https://cloud.google.com/appengine/docs/flexible/migration.
+"""
+
 
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
@@ -232,6 +238,8 @@ class ServiceDeployer(object):
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
 
+    if service.env is util.Environment.MANAGED_VMS:
+      log.warning(MANAGED_VMS_DEPRECATION_WARNING)
     with self.stager.Stage(service.file, service.runtime,
                            service.env) as staging_dir:
       source_dir = staging_dir or os.path.dirname(service.file)

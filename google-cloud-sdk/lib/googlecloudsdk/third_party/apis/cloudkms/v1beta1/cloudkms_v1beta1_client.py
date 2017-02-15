@@ -68,12 +68,13 @@ ENABLED.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.create',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions',
+        relative_path=u'v1beta1/{+parent}/cryptoKeyVersions',
         request_field=u'cryptoKeyVersion',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest',
         response_type_name=u'CryptoKeyVersion',
@@ -105,12 +106,13 @@ RestoreCryptoKeyVersion may be called to reverse the process.
           config, request, global_params=global_params)
 
     Destroy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId', u'cryptoKeyVersionsId'],
-        path_params=[u'cryptoKeyVersionsId', u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy',
+        relative_path=u'v1beta1/{+name}:destroy',
         request_field=u'destroyCryptoKeyVersionRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest',
         response_type_name=u'CryptoKeyVersion',
@@ -131,12 +133,13 @@ RestoreCryptoKeyVersion may be called to reverse the process.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId', u'cryptoKeyVersionsId'],
-        path_params=[u'cryptoKeyVersionsId', u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest',
         response_type_name=u'CryptoKeyVersion',
@@ -157,12 +160,13 @@ RestoreCryptoKeyVersion may be called to reverse the process.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions',
+        relative_path=u'v1beta1/{+parent}/cryptoKeyVersions',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest',
         response_type_name=u'ListCryptoKeyVersionsResponse',
@@ -189,12 +193,13 @@ move between other states.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}',
         http_method=u'PATCH',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.patch',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId', u'cryptoKeyVersionsId'],
-        path_params=[u'cryptoKeyVersionsId', u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[u'updateMask'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field=u'cryptoKeyVersion',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest',
         response_type_name=u'CryptoKeyVersion',
@@ -221,12 +226,13 @@ and destroy_time will be cleared.
           config, request, global_params=global_params)
 
     Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId', u'cryptoKeyVersionsId'],
-        path_params=[u'cryptoKeyVersionsId', u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore',
+        relative_path=u'v1beta1/{+name}:restore',
         request_field=u'restoreCryptoKeyVersionRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest',
         response_type_name=u'CryptoKeyVersion',
@@ -259,12 +265,13 @@ CryptoKey.purpose is required.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.create',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'cryptoKeyId'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys',
+        relative_path=u'v1beta1/{+parent}/cryptoKeys',
         request_field=u'cryptoKey',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest',
         response_type_name=u'CryptoKey',
@@ -285,12 +292,13 @@ CryptoKey.purpose is required.
           config, request, global_params=global_params)
 
     Decrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.decrypt',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt',
+        relative_path=u'v1beta1/{+name}:decrypt',
         request_field=u'decryptRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest',
         response_type_name=u'DecryptResponse',
@@ -311,12 +319,13 @@ CryptoKey.purpose is required.
           config, request, global_params=global_params)
 
     Encrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.encrypt',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt',
+        relative_path=u'v1beta1/{+name}:encrypt',
         request_field=u'encryptRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest',
         response_type_name=u'EncryptResponse',
@@ -338,12 +347,13 @@ primary CryptoKeyVersion.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.get',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest',
         response_type_name=u'CryptoKey',
@@ -366,12 +376,13 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.getIamPolicy',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy',
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -392,12 +403,13 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.list',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys',
+        relative_path=u'v1beta1/{+parent}/cryptoKeys',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest',
         response_type_name=u'ListCryptoKeysResponse',
@@ -418,12 +430,13 @@ set.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}',
         http_method=u'PATCH',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.patch',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[u'updateMask'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}',
+        relative_path=u'v1beta1/{+name}',
         request_field=u'cryptoKey',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest',
         response_type_name=u'CryptoKey',
@@ -445,12 +458,13 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.setIamPolicy',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy',
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -473,12 +487,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.testIamPermissions',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -499,12 +514,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     UpdatePrimaryVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.updatePrimaryVersion',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId'],
-        path_params=[u'cryptoKeysId', u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion',
+        relative_path=u'v1beta1/{+name}:updatePrimaryVersion',
         request_field=u'updateCryptoKeyPrimaryVersionRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest',
         response_type_name=u'CryptoKey',
@@ -535,12 +551,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.create',
-        ordered_params=[u'projectsId', u'locationsId'],
-        path_params=[u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'keyRingId'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings',
+        relative_path=u'v1beta1/{+parent}/keyRings',
         request_field=u'keyRing',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCreateRequest',
         response_type_name=u'KeyRing',
@@ -561,12 +578,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.get',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsGetRequest',
         response_type_name=u'KeyRing',
@@ -589,12 +607,13 @@ set.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.getIamPolicy',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy',
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -615,12 +634,13 @@ set.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.keyRings.list',
-        ordered_params=[u'projectsId', u'locationsId'],
-        path_params=[u'locationsId', u'projectsId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings',
+        relative_path=u'v1beta1/{+parent}/keyRings',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsListRequest',
         response_type_name=u'ListKeyRingsResponse',
@@ -642,12 +662,13 @@ existing policy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.setIamPolicy',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy',
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest',
         response_type_name=u'Policy',
@@ -670,12 +691,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions',
         http_method=u'POST',
         method_id=u'cloudkms.projects.locations.keyRings.testIamPermissions',
-        ordered_params=[u'projectsId', u'locationsId', u'keyRingsId'],
-        path_params=[u'keyRingsId', u'locationsId', u'projectsId'],
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions',
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
@@ -706,12 +728,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.get',
-        ordered_params=[u'projectsId', u'locationsId'],
-        path_params=[u'locationsId', u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsGetRequest',
         response_type_name=u'Location',
@@ -732,12 +755,13 @@ permissions, not a NOT_FOUND error.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations',
         http_method=u'GET',
         method_id=u'cloudkms.projects.locations.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/projects/{projectsId}/locations',
+        relative_path=u'v1beta1/{+name}/locations',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsListRequest',
         response_type_name=u'ListLocationsResponse',

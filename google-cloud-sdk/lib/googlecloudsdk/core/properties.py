@@ -236,6 +236,7 @@ class _Sections(object):
     self.experimental = _SectionExperimental()
     self.metrics = _SectionMetrics()
     self.proxy = _SectionProxy()
+    self.spanner = _SectionSpanner()
     self.test = _SectionTest()
 
     self.__sections = dict(
@@ -243,7 +244,7 @@ class _Sections(object):
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.core, self.component_manager, self.compute,
          self.container, self.datastore_emulator, self.devshell,
-         self.experimental, self.metrics, self.proxy, self.test])
+         self.experimental, self.metrics, self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
 
   @property
@@ -501,6 +502,19 @@ class _Section(object):
       # Always include if value is set (even if hidden)
       result[prop.name] = value
     return result
+
+
+class _SectionSpanner(_Section):
+  """Contains the properties for the 'spanner' section."""
+
+  def __init__(self):
+    super(_SectionSpanner, self).__init__('spanner')
+    self.instance = self._Add(
+        'instance',
+        help_text='The default instance to use when working with Cloud Spanner '
+        'resources. When an `instance` is required but not provided by a flag, '
+        'the command will fall back to this value, if set.',
+        resource='spanner.instances')
 
 
 class _SectionCompute(_Section):
@@ -1014,6 +1028,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.serviceregistry = self._Add('serviceregistry')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
+    self.spanner = self._Add('spanner')
     self.sql = self._Add('sql')
     self.pubsub = self._Add('pubsub')
 

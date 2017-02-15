@@ -153,7 +153,7 @@ class ScopePrompter(object):
       try:
         resource_ref = self.resources.Parse(
             ambigous_name, params=new_params, collection=collection)
-      except (resources.UnknownFieldException,
+      except (resources.RequiredFieldOmittedException,
               properties.RequiredPropertyError):
         pass
       else:
@@ -237,7 +237,7 @@ class ScopePrompter(object):
               resource_name, collection=collection, params={})
         except resources.WrongResourceCollectionException:
           pass
-        except (resources.UnknownFieldException,
+        except (resources.RequiredFieldOmittedException,
                 properties.RequiredPropertyError):
           ambiguous_names.append((resource_name, {}, collection))
         else:
@@ -269,7 +269,7 @@ class ScopePrompter(object):
             resource_name,
             collection=collection,
             params=params)
-      except (resources.UnknownFieldException,
+      except (resources.RequiredFieldOmittedException,
               properties.RequiredPropertyError):
         ambiguous_names.append((resource_name, params, collection))
       else:

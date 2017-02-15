@@ -604,6 +604,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "scheduling": {
+          "description": "Optional Job scheduling configuration.",
+          "$ref": "JobScheduling"
         }
       }
     },
@@ -981,7 +985,8 @@
             "Transient in-flight resources have been canceled, and the request to cancel the running job has been issued to the cluster.",
             "The job cancellation was successful.",
             "The job has completed successfully.",
-            "The job has completed, but encountered an error."
+            "The job has completed, but encountered an error.",
+            "Job attempt has failed. The detail field contains failure details for this attempt.Applies to restartable jobs only."
           ],
           "type": "string",
           "enum": [
@@ -993,7 +998,8 @@
             "CANCEL_STARTED",
             "CANCELLED",
             "DONE",
-            "ERROR"
+            "ERROR",
+            "ATTEMPT_FAILURE"
           ]
         },
         "details": {
@@ -1050,6 +1056,18 @@
         "trackingUrl": {
           "description": "Optional The HTTP URL of the ApplicationMaster, HistoryServer, or TimelineServer that provides application-specific information. The URL uses the internal hostname, and requires a proxy server for resolution and, possibly, access.",
           "type": "string"
+        }
+      }
+    },
+    "JobScheduling": {
+      "id": "JobScheduling",
+      "description": "Job scheduling options.",
+      "type": "object",
+      "properties": {
+        "maxFailuresPerHour": {
+          "description": "Optional Maximum number of job restarts as result of job terminating with non-zero code before job is reported failed.Maximum value is 10.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1122,9 +1140,16 @@
           "type": "string"
         },
         "labels": {
-          "description": "Output-only labels associated with the operation",
+          "description": "Output-only Labels associated with the operation",
           "type": "object",
           "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "description": "Output-only Errors encountered during operation execution.",
+          "type": "array",
+          "items": {
             "type": "string"
           }
         }
@@ -1247,6 +1272,13 @@
         "description": {
           "description": "Output-only Short description of operation.",
           "type": "string"
+        },
+        "warnings": {
+          "description": "Output-only Errors encountered during operation execution.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

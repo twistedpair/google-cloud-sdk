@@ -14,6 +14,7 @@
 """Flags for commands that deal with the CRM API."""
 
 from googlecloudsdk.api_lib.resource_manager import folders
+from googlecloudsdk.api_lib.resource_manager import liens
 from googlecloudsdk.api_lib.resource_manager import operations
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -65,6 +66,14 @@ def OperationAsyncFlag():
       help=(
           'Whether to return an asynchronous long-running operation immediately'
           ' instead of waiting for the operation to finish'))
+
+
+def LienIdArg(use_description):
+  return base.Argument(
+      'id',
+      metavar='LIEN_ID',
+      completion_resource=liens.LIENS_COLLECTION,
+      help='ID for the lien {0}'.format(use_description))
 
 
 def AddParentFlagsToParser(parser):

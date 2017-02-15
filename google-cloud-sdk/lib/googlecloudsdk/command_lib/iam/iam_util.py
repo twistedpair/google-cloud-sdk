@@ -307,13 +307,17 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
   }
 
 
-def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
+def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
+                                          role='roles/editor'):
   """Returns a detailed_help for an add-iam-policy-binding command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
+    role: The sample role to use in the documentation. The default of
+        'roles/editor' is usually sufficient, but if your command group's
+        users would more likely use a different role, you can override it here.
   Returns:
     a dict with boilerplate help text for the add-iam-policy-binding command
   """
@@ -322,24 +326,28 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will add an IAM policy binding for the role
-          of 'roles/editor' for the user 'test-user@gmail.com' on a {0} with
-          identifier '{1}'
+          of '{role}' for the user 'test-user@gmail.com' on a {collection} with
+          identifier '{example_id}'
 
-            $ {{command}} {1} --member='user:test-user@gmail.com' --role='roles/editor'
+            $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
-          """.format(collection, example_id)
+          """.format(collection=collection, example_id=example_id, role=role)
   }
 
 
-def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
+def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
+                                             role='roles/editor'):
   """Returns a detailed_help for a remove-iam-policy-binding command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
+    role: The sample role to use in the documentation. The default of
+        'roles/editor' is usually sufficient, but if your command group's
+        users would more likely use a different role, you can override it here.
   Returns:
     a dict with boilerplate help text for the remove-iam-policy-binding command
   """
@@ -348,14 +356,14 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will remove a IAM policy binding for the role
-          of 'roles/editor' for the user 'test-user@gmail.com' on {0} with
-          identifier '{1}'
+          of '{role}' for the user 'test-user@gmail.com' on {collection} with
+          identifier '{example_id}'
 
-            $ {{command}} {1} --member='user:test-user@gmail.com' --role='roles/editor'
+            $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
-          """.format(collection, example_id)
+          """.format(collection=collection, example_id=example_id, role=role)
   }
 
 

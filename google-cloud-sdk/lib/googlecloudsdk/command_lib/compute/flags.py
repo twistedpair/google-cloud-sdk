@@ -394,7 +394,7 @@ class ResourceResolver(object):
                                            collection=collection,
                                            enforce_collection=False)]
       except (resources.UnknownCollectionException,
-              resources.UnknownFieldException,
+              resources.RequiredFieldOmittedException,
               properties.RequiredPropertyError):
         if scope_value:
           raise

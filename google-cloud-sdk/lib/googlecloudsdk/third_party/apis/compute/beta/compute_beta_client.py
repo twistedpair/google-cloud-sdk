@@ -3113,7 +3113,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -3323,7 +3323,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdateRequest) input message
@@ -4211,7 +4211,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def SetServiceAccount(self, request, global_params=None):
-      """Sets the service account on the instance.
+      """Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 
       Args:
         request: (ComputeInstancesSetServiceAccountRequest) input message
@@ -4500,6 +4500,32 @@ If you increase the size of the instance group, the group creates new instances 
       self._upload_configs = {
           }
 
+    def AddPeering(self, request, global_params=None):
+      """Adds a peering to the specified network.
+
+      Args:
+        request: (ComputeNetworksAddPeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddPeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddPeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networks.addPeering',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/networks/{network}/addPeering',
+        request_field=u'networksAddPeeringRequest',
+        request_type_name=u'ComputeNetworksAddPeeringRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified network.
 
@@ -4601,6 +4627,32 @@ If you increase the size of the instance group, the group creates new instances 
         request_field='',
         request_type_name=u'ComputeNetworksListRequest',
         response_type_name=u'NetworkList',
+        supports_download=False,
+    )
+
+    def RemovePeering(self, request, global_params=None):
+      """Removes a peering from the specified network.
+
+      Args:
+        request: (ComputeNetworksRemovePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemovePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemovePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networks.removePeering',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/networks/{network}/removePeering',
+        request_field=u'networksRemovePeeringRequest',
+        request_type_name=u'ComputeNetworksRemovePeeringRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

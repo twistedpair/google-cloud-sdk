@@ -188,9 +188,7 @@ class _MetricsCollector(object):
               Defaults to _GA_TID.
     """
     current_platform = platforms.Platform.Current()
-    self._user_agent = 'CloudSDK/{version} {fragment}'.format(
-        version=config.CLOUD_SDK_VERSION,
-        fragment=current_platform.UserAgentFragment())
+    self._user_agent = _MetricsCollector._GetUserAgent(current_platform)
     self._async_popen_args = current_platform.AsyncPopenArgs()
     self._project_ids = {}
 
@@ -257,6 +255,23 @@ class _MetricsCollector(object):
       f.write(cid)  # A random UUID
 
     return cid
+
+  @staticmethod
+  def _GetUserAgent(current_platform=None):
+    """Constructs a user agent string from config and platform fragments.
+
+    Args:
+      current_platform: Optional platforms.Platform for pulling
+        platform-specific user agent details.
+
+    Returns:
+      str, The user agent for the current client.
+    """
+    current_platform = current_platform or platforms.Platform.Current()
+
+    return 'CloudSDK/{version} {fragment}'.format(
+        version=config.CLOUD_SDK_VERSION,
+        fragment=current_platform.UserAgentFragment())
 
   def IncrementActionLevel(self):
     self._action_level += 1
@@ -446,6 +461,19 @@ def GetCIDIfMetricsEnabled():
     # function, and so return the empty string rather than None.
     return ''
   return _MetricsCollector._GetCID()
+  # pylint: enable=protected-access
+
+
+def GetUserAgentIfMetricsEnabled():
+  """Gets the user agent if metrics collection is enabled.
+
+  Returns:
+    The complete user agent string if metrics is enabled, else None.
+  """
+  # pylint: disable=protected-access
+  if not _MetricsCollector._IsDisabled():
+    return _MetricsCollector._GetUserAgent()
+  return None
   # pylint: enable=protected-access
 
 

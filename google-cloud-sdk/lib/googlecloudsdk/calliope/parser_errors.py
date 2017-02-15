@@ -17,61 +17,76 @@
 Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
-from googlecloudsdk.core import exceptions
+import argparse
 
 
-class ArgparseException(exceptions.Error):
-  """General base class for exceptions during parsing of commands or flags."""
+class ArgumentError(argparse.ArgumentError):
+  """Base class for argument errors with metrics.
+
+  ArgumentError instances are intercepted by
+  parser_extensions.ArgumentParser.error(), which
+    1. reports a failed command to metrics
+    2. prints a usage diagnostic to the standard error
+    3. exits with status 2, bypassing gcloud_main exception handling
+
+  Attributes:
+    argument: str, The argument name(s) causing the error.
+    error_extra_info: {str: str}, Extra info dict for error_format.
+    error_format: str, A .format() string for constructng the error message
+      from error_extra_info.
+    extra_path_arg: str, Dotted command path to append to the command path.
+    parser: ArgmentParser, Used to generate the usage string for the command.
+      This could be a different subparser than the command parser.
+  """
+
+  def __init__(self, error_format, argument=None, extra_path_arg=None,
+               parser=None, **kwargs):
+    self.error_format = error_format
+    self.argument = argument
+    self.extra_path_arg = extra_path_arg
+    self.parser = parser
+    self.error_extra_info = kwargs
+    super(ArgumentError, self).__init__(None, unicode(self))
+
+  def __str__(self):
+    message = self.error_format.format(**self.error_extra_info)
+    if self.argument:
+      message = u'argument {argument}: {message}'.format(
+          argument=self.argument, message=message)
+    return message
 
 
-class WrongTrackException(ArgparseException):
-  """WrongTrackException is for parsed commands in a different track."""
-
-
-class ParsingCommandException(ArgparseException):
-  """ParsingCommandException is for parsing problems with the command."""
-
-
-class TooFewArgumentsException(ArgparseException):
-  """Argparse didn't use all the Positional objects."""
-
-
-class RequiredArgumentException(ArgparseException):
+class RequiredArgumentError(ArgumentError):
   """Arparse required actions were not all present."""
 
 
-class RequiredArgumentGroupException(ArgparseException):
+class RequiredArgumentGroupError(ArgumentError):
   """Command has a group of arguments with none of the options present."""
 
 
-class UnrecognizedArguments(ArgparseException):
+class TooFewArgumentsError(ArgumentError):
+  """Argparse didn't use all the Positional objects."""
+
+
+class UnknownCommandError(ArgumentError):
+  """Unknown command error."""
+
+
+class UnrecognizedArgumentsError(ArgumentError):
   """User entered arguments that were not recognized by argparse."""
 
 
-class OtherParsingError(ArgparseException):
+class WrongTrackError(ArgumentError):
+  """For parsed commands in a different track."""
+
+
+class OtherParsingError(ArgumentError):
   """Some other parsing error that is not any of the above."""
 
 
 class ArgumentException(Exception):
-  """ArgumentException is for problems with the provided arguments."""
+  """ArgumentException is for problems with the declared arguments."""
 
 
-class UnknownDestination(Exception):
+class UnknownDestinationException(Exception):
   """Fatal error for an internal dest that has no associated arg."""
-
-
-class ArgumentParserError(object):
-  """Object to store the ArgumentParser error and extra information.
-
-    Args:
-      dotted_command_path: str, as much as we could parse from the path to the
-          command, separating elements by dots.
-      error: class, the class to the error we want to report
-      error_extra_info: str, json string for extra information that we want
-          recorded with the error.
-  """
-
-  def __init__(self, dotted_command_path, error, error_extra_info):
-    self.dotted_command_path = dotted_command_path
-    self.error = error
-    self.error_extra_info = error_extra_info

@@ -22,6 +22,7 @@ import StringIO
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_transform
 
 
@@ -167,6 +168,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           self._optional = True
         if col.attribute.wrap:
           self._wrap = True
+      defaults = resource_projection_spec.ProjectionSpec(
+          symbols=self.column_attributes.symbols)
       index = 0
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
@@ -175,7 +178,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           wrap = None
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr,
-                                 defaults=self.column_attributes)
+                                 defaults=defaults)
           self._has_subprinters = True
         else:
           out = None

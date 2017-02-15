@@ -15,6 +15,7 @@
 """Base command classes for shared logic between gcloud dataproc commands."""
 
 import abc
+import argparse
 import os
 import urlparse
 
@@ -175,12 +176,21 @@ class JobSubmitterBeta(JobSubmitter):
 
   @staticmethod
   def Args(parser):
+    parser.add_argument(
+        '--max-failures-per-hour',
+        type=int,
+        help=argparse.SUPPRESS)
+
     JobSubmitter.Args(parser)
     labels_util.AddCreateLabelsFlags(parser)
 
   def ConfigureJob(self, job, args):
     messages = self.context['dataproc_messages']
-
+    # Configure Restartable job.
+    if args.max_failures_per_hour:
+      scheduling = messages.JobScheduling(
+          maxFailuresPerHour=args.max_failures_per_hour)
+      job.scheduling = scheduling
     # Parse labels (if present)
     labels = labels_util.UpdateLabels(
         None,

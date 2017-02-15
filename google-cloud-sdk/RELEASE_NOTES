@@ -2,6 +2,92 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 144.0.0 (2017-02-15)
+
+### Breaking Changes
+
+* Many Cloud SQL commands now prompt for confirmation in more circumstances:
+  * `gcloud sql instances import`
+  * `gcloud beta sql instances import`
+  * `gcloud beta sql instances failover`
+  * `gcloud sql instances promote-replica`
+  * `gcloud beta sql instances promote-replica`
+  * `gcloud sql instances reset-ssl-config`
+  * `gcloud beta sql instances reset-ssl-config`
+  * `gcloud sql instances restart`
+  * `gcloud beta sql instances restart`
+  * `gcloud sql ssl-certs delete`
+  * `gcloud beta sql ssl-certs delete`
+  * `gcloud beta sql users delete`
+* `gcloud compute backend-services` now requires an explicit scope.
+  Pass `--global` to retain the old behavior.
+
+### Deployment Manager
+
+* `deployment-manager deployments {update,stop,cancel-preview}` can take
+  `--fingerprint` flag to ensure optimistic locking.
+* The `gcloud deployment-manager runtime-configs` command group is now available
+  as a top-level command group: `gcloud runtime-configs`.
+
+### Google App Engine
+
+* Fixed a bug in `gcloud app instances list` where instances were always listed
+  as NOT in debug mode.
+* Added `--container` flag to `gcloud beta app instances ssh`, which lets you
+  SSH straight into the app container within the instance VM.
+* Deployments using `vm: true` have been deprecated. Please update your app.yaml
+  to use `env: flex`. To learn more, please visit
+  <https://cloud.google.com/appengine/docs/flexible/migration>.
+* Added Google Analytics reporting to the dev_appserver.py binary. This is only
+  enabled for users who have opted in during installation.
+
+### Google Cloud Datalab
+
+* Update the datalab command line tool to the 20170208 build.
+  This update includes the following changes:
+  1. All subcommands of the `datalab` tool now support a `--quiet` flag for
+     disabling interactive prompts.
+  2. You can now configure the logging threshold for messages that Datalab
+     instances write to StackDriver logging. The default is `warn`, but
+     this can be overridden by passing in the `--log-level` flag.
+  3. The `datalab create` and `datalab connect` commands are more intelligent
+     about when they should open a browser. In particular, they detect if
+     the configured browser is a text-only browser or if the command is
+     being run from inside of Google Cloud Shell, and do not attempt to
+     launch the browser in those cases.
+  4. The tool will now detect and warn if two users try to share a single
+     Datalab instance, as that use case is not supported.
+  5. Newly created Datalab instances use the Container Optimized OS
+     rather than the older Container VM OS.
+
+### Google Cloud Functions
+
+* The `gcloud functions` commands are now available in the beta release track as
+  `gcloud beta functions`.
+
+### Google Cloud Spanner
+
+* Initial (beta track) release of the `gcloud beta spanner` command group.
+
+### Google Cloud SQL
+
+* `gcloud sql instances create` and `gcloud sql instances patch` now support
+  specifying custom machine types on psql instances by using the `--memory` and
+  `--cpu` flags.
+* Add ability to delete backups in SQL beta CLI
+  (`gcloud beta sql backups delete`).
+* If a user does not confirm a backup deletion, immediately cancel the
+  operation. Also bringing this function into line with others in the SQL CLI.
+  Affects one command:
+  * `gcloud beta sql backups delete`
+
+### Google Compute Engine
+
+* Accelerators (e.g. GPUs) can now be attached to instances by passing
+  `--accelerator` to `gcloud beta compute instances create`.
+* `gcloud beta compute accelerator-types` is now available in beta.
+
+
 ## 143.0.1 (2017/02/09)
 
 * Fixed issue in which some downloads of the Cloud SDK were missing critical

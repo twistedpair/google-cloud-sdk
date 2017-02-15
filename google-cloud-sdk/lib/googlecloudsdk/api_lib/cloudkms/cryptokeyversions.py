@@ -30,11 +30,7 @@ def SetState(version_ref, state):
   messages = cloudkms_base.GetMessagesModule()
 
   req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(  # pylint: disable=line-too-long
-      projectsId=version_ref.projectsId,
-      locationsId=version_ref.locationsId,
-      keyRingsId=version_ref.keyRingsId,
-      cryptoKeysId=version_ref.cryptoKeysId,
-      cryptoKeyVersionsId=version_ref.cryptoKeyVersionsId,
+      name=version_ref.RelativeName(),
       updateMask='state',
       cryptoKeyVersion=messages.CryptoKeyVersion(state=state))
 

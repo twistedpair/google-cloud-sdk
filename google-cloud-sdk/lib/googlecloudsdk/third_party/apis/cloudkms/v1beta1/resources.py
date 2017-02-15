@@ -24,29 +24,43 @@ class Collections(enum.Enum):
 
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      [u'projectsId', u'locationsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_KEYRINGS = (
       'projects.locations.keyRings',
-      'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}',
-      {},
-      [u'projectsId', u'locationsId', u'keyRingsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/keyRings/'
+              '{keyRingsId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
       'projects.locations.keyRings.cryptoKeys',
-      'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/'
-      'cryptoKeys/{cryptoKeysId}',
-      {},
-      [u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/keyRings/'
+              '{keyRingsId}/cryptoKeys/{cryptoKeysId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS_CRYPTOKEYVERSIONS = (
       'projects.locations.keyRings.cryptoKeys.cryptoKeyVersions',
-      'projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/'
-      'cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}',
-      {},
-      [u'projectsId', u'locationsId', u'keyRingsId', u'cryptoKeysId', u'cryptoKeyVersionsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/keyRings/'
+              '{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/'
+              '{cryptoKeyVersionsId}',
+      },
+      [u'name']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

@@ -121,6 +121,66 @@
     }
   },
   "schemas": {
+    "ListLiensResponse": {
+      "id": "ListLiensResponse",
+      "description": "The response message for Liens.ListLiens.",
+      "type": "object",
+      "properties": {
+        "liens": {
+          "description": "A list of Liens.",
+          "type": "array",
+          "items": {
+            "$ref": "Lien"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Lien": {
+      "id": "Lien",
+      "description": "A Lien represents an encumbrance on the actions that can be performed on a\nresource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A system-generated unique identifier for this Lien.\n\nExample: `liens\/1234abcd`",
+          "type": "string"
+        },
+        "parent": {
+          "description": "A reference to the resource this Lien is attached to. The server will\nvalidate the parent against those for which Liens are supported.\n\nExample: `projects\/1234`",
+          "type": "string"
+        },
+        "restrictions": {
+          "description": "The types of operations which should be blocked as a result of this Lien.\nEach value should correspond to an IAM permission. The server will\nvalidate the permissions against those for which Liens are supported.\n\nAn empty list is meaningless and will be rejected.\n\nExample: ['resourcemanager.projects.delete']",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "description": "Concise user-visible strings indicating why an action cannot be performed\non a resource. Maximum lenth of 200 characters.\n\nExample: 'Holds production API key'",
+          "type": "string"
+        },
+        "origin": {
+          "description": "A stable, user-visible\/meaningful string identifying the origin of the\nLien, intended to be inspected programmatically. Maximum length of 200\ncharacters.\n\nExample: 'compute.googleapis.com'",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The creation time of this Lien.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -143,7 +203,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "The error result of the operation in case of failure.",
+          "description": "The error result of the operation in case of failure or cancellation.",
           "$ref": "Status"
         },
         "response": {
@@ -315,7 +375,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -364,12 +424,12 @@
       "type": "object",
       "properties": {
         "projectNumber": {
-          "description": "The number uniquely identifying the project.\n\nExample: <code>415104041262<\/code>\n\nRead-only.",
+          "description": "The number uniquely identifying the project.\n\nExample: <code>415104041262<\/code>\nRead-only.",
           "type": "string",
           "format": "int64"
         },
         "projectId": {
-          "description": "The unique, user-assigned ID of the Project.\nIt must be 6 to 30 lowercase letters, digits, or hyphens.\nIt must start with a letter.\nTrailing hyphens are prohibited.\n\nExample: <code>tokyo-rain-123<\/code>\n\nRead-only after creation.",
+          "description": "The unique, user-assigned ID of the Project.\nIt must be 6 to 30 lowercase letters, digits, or hyphens.\nIt must start with a letter.\nTrailing hyphens are prohibited.\n\nExample: <code>tokyo-rain-123<\/code>\nRead-only after creation.",
           "type": "string"
         },
         "lifecycleState": {
@@ -389,7 +449,7 @@
           ]
         },
         "name": {
-          "description": "The user-assigned display name of the Project.\nIt must be 4 to 30 characters.\nAllowed characters are: lowercase and uppercase letters, numbers,\nhyphen, single-quote, double-quote, space, and exclamation point.\n\nExample: <code>My Project<\/code>\n\nRead-write.",
+          "description": "The user-assigned display name of the Project.\nIt must be 4 to 30 characters.\nAllowed characters are: lowercase and uppercase letters, numbers,\nhyphen, single-quote, double-quote, space, and exclamation point.\n\nExample: <code>My Project<\/code>\nRead-write.",
           "type": "string"
         },
         "createTime": {
@@ -398,14 +458,14 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "The labels associated with this Project.\n\nLabel keys must be between 1 and 63 characters long and must conform\nto the following regular expression: \\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?.\n\nLabel values must be between 0 and 63 characters long and must conform\nto the regular expression (\\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?)?.\n\nNo more than 256 labels can be associated with a given resource.\n\nClients should store labels in a representation such as JSON that does not\ndepend on specific characters being disallowed.\n\nExample: <code>\"environment\" : \"dev\"<\/code>\n\nRead-write.",
+          "description": "The labels associated with this Project.\n\nLabel keys must be between 1 and 63 characters long and must conform\nto the following regular expression: \\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?.\n\nLabel values must be between 0 and 63 characters long and must conform\nto the regular expression (\\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?)?.\n\nNo more than 256 labels can be associated with a given resource.\n\nClients should store labels in a representation such as JSON that does not\ndepend on specific characters being disallowed.\n\nExample: <code>\"environment\" : \"dev\"<\/code>\nRead-write.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "parent": {
-          "description": "An optional reference to a parent Resource.\n\nThe only supported parent type is \"organization\". Once set, the parent\ncannot be modified.\n\nRead-write.",
+          "description": "An optional reference to a parent Resource.\n\nThe only supported parent type is \"organization\". Once set, the parent\ncannot be modified. The `parent` can be set on creation or using the\n`UpdateProject` method; the end user must have the\n`resourcemanager.projects.create` permission on the parent.\n\nRead-write.",
           "$ref": "ResourceId"
         }
       }
@@ -443,13 +503,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "UndeleteProjectRequest": {
       "id": "UndeleteProjectRequest",
       "description": "The request sent to the UndeleteProject\nmethod.",
@@ -479,6 +532,90 @@
     }
   },
   "resources": {
+    "liens": {
+      "methods": {
+        "list": {
+          "id": "cloudresourcemanager.liens.list",
+          "path": "v1/liens",
+          "flatPath": "v1/liens",
+          "httpMethod": "GET",
+          "description": "List all Liens applied to the `parent` resource.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, a Lien with a `parent` of `projects\/1234` requires permission\n`resourcemanager.projects.get` or `resourcemanager.projects.updateLiens`.",
+          "parameters": {
+            "parent": {
+              "description": "The name of the resource to list all attached Liens.\nFor example, `projects\/1234`.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return. This is a suggestion for the server.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The `next_page_token` value returned from a previous List request, if any.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListLiensResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        },
+        "create": {
+          "id": "cloudresourcemanager.liens.create",
+          "path": "v1/liens",
+          "flatPath": "v1/liens",
+          "httpMethod": "POST",
+          "description": "Create a Lien which applies to the resource denoted by the `parent` field.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, applying to `projects\/1234` requires permission\n`resourcemanager.projects.updateLiens`.\n\nNOTE: Some resources may limit the number of Liens which may be applied.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "Lien"
+          },
+          "response": {
+            "$ref": "Lien"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        },
+        "delete": {
+          "id": "cloudresourcemanager.liens.delete",
+          "path": "v1/liens/{liensId}",
+          "flatPath": "v1/liens/{liensId}",
+          "httpMethod": "DELETE",
+          "description": "Delete a Lien by `name`.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, a Lien with a `parent` of `projects\/1234` requires permission\n`resourcemanager.projects.updateLiens`.",
+          "parameters": {
+            "liensId": {
+              "description": "Part of `name`. The name\/identifier of the Lien to delete.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "liensId"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        }
+      }
+    },
     "operations": {
       "methods": {
         "get": {

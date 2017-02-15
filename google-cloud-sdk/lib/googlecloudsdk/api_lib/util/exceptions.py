@@ -43,6 +43,7 @@ class HttpErrorPayload(string.Formatter):
     api_name: The url api name.
     api_version: The url version.
     content: The dumped JSON content.
+    details: A list of {'@type': TYPE, 'detail': STRING} typed details.
     error_info: content['error'].
     instance_name: The url instance name.
     message: The human readable error message.
@@ -63,7 +64,7 @@ class HttpErrorPayload(string.Formatter):
       https://dotcom/foo/bar
       <content.debugInfo in yaml print format>
 
-    'Error: {status_code} {details?\n\ndetails{?COLON?}\n${?}}}'
+    'Error: {status_code} {details?\n\ndetails{?COLON?}\n{?}}}'
 
       Error: 404
 
@@ -77,6 +78,7 @@ class HttpErrorPayload(string.Formatter):
     self.api_name = ''
     self.api_version = ''
     self.content = {}
+    self.details = []
     self.error_info = None
     self.instance_name = ''
     self.resource_item = ''
@@ -122,14 +124,24 @@ class HttpErrorPayload(string.Formatter):
     fmt = parts.pop(0) if parts else None
     if '.' in name:
       if name.startswith('.'):
+        # Only check self.content.
+        check_payload_attributes = False
         name = name[1:]
+      else:
+        # Check the payload attributes first, then self.content.
+        check_payload_attributes = True
       key = resource_lex.Lexer(name).Key()
-      value = resource_property.Get(self.content, key, '')
+      content = self.content
+      if check_payload_attributes and key:
+        value = self.__dict__.get(key[0], None)
+        if value:
+          content = {key[0]: value}
+      value = resource_property.Get(content, key, '')
     elif name:
       value = self.__dict__.get(name, '')
     else:
       value = ''
-    if value in ('', None):
+    if not value and not isinstance(value, (int, float)):
       return '', name
     if not isinstance(value, (basestring, int, float)):
       buf = StringIO.StringIO()
@@ -149,6 +161,7 @@ class HttpErrorPayload(string.Formatter):
           response.get('reason', ''))
     content = console_attr.DecodeFromInput(http_error.content)
     try:
+      # X-GOOG-API-FORMAT-VERSION: 2
       self.content = _JsonSortedDict(json.loads(content))
       self.error_info = _JsonSortedDict(self.content['error'])
       if not self.status_code:  # Could have been set above.
@@ -156,6 +169,7 @@ class HttpErrorPayload(string.Formatter):
       if not self.status_description:  # Could have been set above.
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
+      self.details = self.error_info.get('details', [])
     except (KeyError, TypeError, ValueError):
       self.status_message = content
     except AttributeError:
@@ -199,9 +213,9 @@ class HttpErrorPayload(string.Formatter):
     self.instance_name = instance_name.split('?')[0]
     if self.resource_name.endswith('s'):
       # Singular form for formatting message text. This will result in:
-      #   Project [foo] already exists.
+      #   Project [foo] not found.
       # instead of
-      #   Projects [foo] already exists.
+      #   Projects [foo] not found.
       self.resource_item = self.resource_name[:-1]
     else:
       self.resource_item = self.resource_name
@@ -224,7 +238,7 @@ class HttpErrorPayload(string.Formatter):
         return u'{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
-        return u'{0} [{1}] already exists'.format(
+        return u'{0} [{1}] is the subject of a conflict'.format(
             self.resource_item.capitalize(), self.instance_name)
 
     description = self.status_description

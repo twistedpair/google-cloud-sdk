@@ -30,6 +30,8 @@ LOG_FORMAT = ('value('
              )
 
 
+# TODO(user): Remove ml_job after transition from ml_job to cloudml_job is
+# done. See b/34459608.
 def LogFilters(job_id, task_name=None):
   """Returns filters for log fetcher to use.
 
@@ -40,10 +42,14 @@ def LogFilters(job_id, task_name=None):
   Returns:
     A list of filters to be passed to the logging API.
   """
-  filters = ['resource.type="ml_job"',
-             'resource.labels.job_id="{0}"'.format(job_id)]
+  filters = [
+      '(resource.type="ml_job" OR resource.type="cloudml_job")',
+      'resource.labels.job_id="{0}"'.format(job_id)
+  ]
   if task_name:
-    filters.append('resource.labels.task_name="{0}"'.format(task_name))
+    filters.append(
+        '(resource.labels.task_name="{0}" OR labels.task_name="{0}")'.format(
+            task_name))
   return filters
 
 
@@ -138,11 +144,18 @@ def _GetLabelAttributes(log_entry):
   label_attributes = {'task_name': 'unknown_task'}
   if not hasattr(log_entry, 'labels'):
     return label_attributes
+
   labels = _ToDict(log_entry.labels)
-  if labels.get('ml.googleapis.com/task_name') is not None:
+  if labels.get('task_name') is not None:
+    label_attributes['task_name'] = labels['task_name']
+  elif labels.get('ml.googleapis.com/task_name') is not None:
     label_attributes['task_name'] = labels['ml.googleapis.com/task_name']
-  if labels.get('ml.googleapis.com/trial_id') is not None:
+
+  if labels.get('trial_id') is not None:
+    label_attributes['trial_id'] = labels['trial_id']
+  elif labels.get('ml.googleapis.com/trial_id') is not None:
     label_attributes['trial_id'] = labels['ml.googleapis.com/trial_id']
+
   return label_attributes
 
 

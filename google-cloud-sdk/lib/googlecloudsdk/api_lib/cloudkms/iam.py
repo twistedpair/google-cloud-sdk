@@ -30,9 +30,7 @@ def GetKeyRingIamPolicy(key_ring_ref):
   messages = base.GetMessagesModule()
 
   req = messages.CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest(
-      projectsId=key_ring_ref.projectsId,
-      locationsId=key_ring_ref.locationsId,
-      keyRingsId=key_ring_ref.keyRingsId)
+      resource=key_ring_ref.RelativeName())
 
   return client.projects_locations_keyRings.GetIamPolicy(req)
 
@@ -53,9 +51,7 @@ def SetKeyRingIamPolicy(key_ring_ref, policy):
   messages = base.GetMessagesModule()
 
   req = messages.CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest(
-      projectsId=key_ring_ref.projectsId,
-      locationsId=key_ring_ref.locationsId,
-      keyRingsId=key_ring_ref.keyRingsId,
+      resource=key_ring_ref.RelativeName(),
       setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
 
   return client.projects_locations_keyRings.SetIamPolicy(req)
@@ -90,10 +86,7 @@ def GetCryptoKeyIamPolicy(crypto_key_ref):
   messages = base.GetMessagesModule()
 
   req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest(
-      projectsId=crypto_key_ref.projectsId,
-      locationsId=crypto_key_ref.locationsId,
-      keyRingsId=crypto_key_ref.keyRingsId,
-      cryptoKeysId=crypto_key_ref.cryptoKeysId)
+      resource=crypto_key_ref.RelativeName())
 
   return client.projects_locations_keyRings_cryptoKeys.GetIamPolicy(req)
 
@@ -114,10 +107,7 @@ def SetCryptoKeyIamPolicy(crypto_key_ref, policy):
   messages = base.GetMessagesModule()
 
   req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest(
-      projectsId=crypto_key_ref.projectsId,
-      locationsId=crypto_key_ref.locationsId,
-      keyRingsId=crypto_key_ref.keyRingsId,
-      cryptoKeysId=crypto_key_ref.cryptoKeysId,
+      resource=crypto_key_ref.RelativeName(),
       setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
 
   return client.projects_locations_keyRings_cryptoKeys.SetIamPolicy(req)

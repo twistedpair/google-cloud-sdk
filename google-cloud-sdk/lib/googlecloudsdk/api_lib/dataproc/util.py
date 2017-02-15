@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 
 
@@ -73,18 +74,32 @@ def WaitForOperation(
       name=operation.name)
   log.status.Print('Waiting on operation [{0}].'.format(operation.name))
   start_time = time.time()
+  warnings_so_far = 0
+  is_tty = console_io.IsInteractive(error=True)
+  tracker_separator = '\n' if is_tty else ''
+  def _LogWarnings(warnings):
+    new_warnings = warnings[warnings_so_far:]
+    if new_warnings:
+      # Drop a line to print nicely with the progress tracker.
+      log.err.write(tracker_separator)
+      for warning in new_warnings:
+        log.warn(warning)
+
   with progress_tracker.ProgressTracker(message, autotick=True):
     while timeout_s > (time.time() - start_time):
       try:
         operation = client.projects_regions_operations.Get(request)
+        metadata = ParseOperationMetadata(operation.metadata, messages)
+        _LogWarnings(metadata.warnings)
+        warnings_so_far = len(metadata.warnings)
         if operation.done:
           break
       except apitools_exceptions.HttpError:
         # Keep trying until we timeout in case error is transient.
         pass
       time.sleep(poll_period_s)
-  # TODO(user): Parse operation metadata.
-  log.debug('Operation:\n' + encoding.MessageToJson(operation))
+  metadata = ParseOperationMetadata(operation.metadata, messages)
+  _LogWarnings(metadata.warnings)
   if not operation.done:
     raise exceptions.OperationTimeoutError(
         'Operation [{0}] timed out.'.format(operation.name))
@@ -279,6 +294,14 @@ def GetJobId(job_id=None):
   if job_id:
     return job_id
   return str(uuid.uuid4())
+
+
+def ParseOperationMetadata(metadata_value, messages):
+  if not metadata_value:
+    return messages.ClusterOperationMetadata()
+  return encoding.JsonToMessage(
+      messages.ClusterOperationMetadata,
+      encoding.MessageToJson(metadata_value))
 
 
 class Bunch(object):

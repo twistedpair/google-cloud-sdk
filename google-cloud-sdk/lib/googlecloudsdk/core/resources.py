@@ -105,12 +105,13 @@ class WrongResourceCollectionException(UserError):
     self.path = path
 
 
-class UnknownFieldException(UserError):
+class RequiredFieldOmittedException(UserError):
   """A command line that was given did not specify a field."""
 
   def __init__(self, collection_name, expected):
-    super(UnknownFieldException, self).__init__(
-        'unknown field [{expected}] for [{collection_name}]'.format(
+    super(RequiredFieldOmittedException, self).__init__(
+        'value for field [{expected}] for in collection [{collection_name}] is '
+        'required but was not provided'.format(
             expected=expected, collection_name=collection_name))
 
 
@@ -198,8 +199,8 @@ class _ResourceParser(object):
       InvalidResourceException: If the provided collection-path is malformed.
       WrongResourceCollectionException: If the collection-path specified the
           wrong collection.
-      UnknownFieldException: If the collection-path's path did not provide
-          enough fields.
+      RequiredFieldOmittedException: If the collection-path's path did not
+          provide enough fields.
       GRIPathMismatchException: If the number of path segments in the GRI does
           not match the expected format of the URL for the given resource
           collection.
@@ -275,7 +276,7 @@ class Resource(object):
       endpoint_url: str, override service endpoint url for this resource. If
            None default base url of collection api will be used.
     Raises:
-      UnknownFieldException: if param_values have None value.
+      RequiredFieldOmittedException: if param_values have None value.
     """
     self._collection_info = collection_info
     self._endpoint_url = endpoint_url or collection_info.base_url
@@ -284,7 +285,7 @@ class Resource(object):
     self._params = collection_info.GetParams(subcollection)
     for param, value in param_values.iteritems():
       if value is None:
-        raise UnknownFieldException(collection_info.full_name, param)
+        raise RequiredFieldOmittedException(collection_info.full_name, param)
       setattr(self, param, value)
 
     self._self_link = '{0}{1}'.format(
@@ -1016,7 +1017,7 @@ class Registry(object):
 
     Raises:
       InvalidResourceException: If the line is invalid.
-      UnknownFieldException: If resource is underspecified.
+      RequiredFieldOmittedException: If resource is underspecified.
       UnknownCollectionException: If no collection is provided or can be
           inferred.
       WrongResourceCollectionException: If the provided URL points into a

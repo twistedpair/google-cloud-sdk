@@ -210,6 +210,21 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
+def FetchDeploymentFingerprint(client, messages, project, deployment_name):
+  """Returns the fingerprint of the deployment."""
+  try:
+    deployment_response = client.deployments.Get(
+        messages.DeploymentmanagerDeploymentsGetRequest(
+            project=project,
+            deployment=deployment_name,
+        )
+    )
+    fingerprint = deployment_response.fingerprint
+    return fingerprint
+  except apitools_exceptions.HttpError as error:
+    raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+
+
 class StringPropertyParser(object):
   """No-op string value parser, prints a deprecation warning on first call."""
 
