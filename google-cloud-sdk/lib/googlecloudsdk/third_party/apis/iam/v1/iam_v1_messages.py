@@ -494,7 +494,6 @@ class Role(_messages.Message):
   """A role in the Identity and Access Management API.
 
   Fields:
-    deleted: A boolean attribute.
     description: Optional.  A human-readable description for the role.
     name: The name of the role.  When Role is used in CreateRole, the role
       name must not be set.  When Role is used in output and other input such
@@ -503,14 +502,11 @@ class Role(_messages.Message):
       organizations/{ORGANIZATION_ID}/roles/logging.viewer for custom roles.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
-    trashed: A boolean attribute.
   """
 
-  deleted = _messages.BooleanField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  title = _messages.StringField(4)
-  trashed = _messages.BooleanField(5)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  title = _messages.StringField(3)
 
 
 class ServiceAccount(_messages.Message):

@@ -7495,6 +7495,106 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionCommitmentsGetRequest(_messages.Message):
+  """A ComputeRegionCommitmentsGetRequest object.
+
+  Fields:
+    commitment: Name of the commitment to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionCommitmentsInsertRequest(_messages.Message):
+  """A ComputeRegionCommitmentsInsertRequest object.
+
+  Fields:
+    commitment: A Commitment resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  commitment = _messages.MessageField('Commitment', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionCommitmentsListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionCommitmentsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionCommitmentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionDiskTypesGetRequest(_messages.Message):
   """A ComputeRegionDiskTypesGetRequest object.
 
@@ -10915,15 +11015,17 @@ class Condition(_messages.Message):
     """Trusted attributes supplied by the IAM system.
 
     Values:
+      APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
     """
-    ATTRIBUTION = 0
-    AUTHORITY = 1
-    NO_ATTR = 2
-    SECURITY_REALM = 3
+    APPROVER = 0
+    ATTRIBUTION = 1
+    AUTHORITY = 2
+    NO_ATTR = 3
+    SECURITY_REALM = 4
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -13429,6 +13531,10 @@ class Image(_messages.Message):
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
+    sourceImage: URL of the source image used to create this image. This can
+      be a full or valid partial URL. You must provide exactly one of:   -
+      this property, or   - the rawDisk.source property, or   - the sourceDisk
+      property   in order to create an image.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -13540,8 +13646,9 @@ class Image(_messages.Message):
   sourceDisk = _messages.StringField(17)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
   sourceDiskId = _messages.StringField(19)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 20, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  sourceImage = _messages.StringField(20)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 21, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
 
 
 class ImageList(_messages.Message):

@@ -16,7 +16,6 @@
 
 import abc
 import collections
-import copy
 import cStringIO
 import json
 import textwrap
@@ -36,12 +35,12 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
@@ -1361,7 +1360,7 @@ class BaseMetadataAdder(ReadWriteCommand):
     metadata_utils.AddMetadataArgs(parser, required=True)
 
   def Modify(self, args, existing):
-    new_object = copy.deepcopy(existing)
+    new_object = encoding.CopyProtoMessage(existing)
     existing_metadata = getattr(existing, self.metadata_field, None)
     setattr(
         new_object,
@@ -1406,7 +1405,7 @@ class BaseMetadataRemover(ReadWriteCommand):
         help='The keys of the entries to remove.')
 
   def Modify(self, args, existing):
-    new_object = copy.deepcopy(existing)
+    new_object = encoding.CopyProtoMessage(existing)
     existing_metadata = getattr(existing, self.metadata_field, None)
     setattr(new_object,
             self.metadata_field,

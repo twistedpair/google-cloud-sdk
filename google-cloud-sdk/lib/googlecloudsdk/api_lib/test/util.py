@@ -100,25 +100,6 @@ def GetAndroidCatalog(context):
   return _GetCatalog(context, env_type).androidDeviceCatalog
 
 
-def GetWebDriverCatalog(context):
-  """Gets the WebDriver catalog from the TestEnvironmentDiscoveryService.
-
-  Args:
-    context: {str:object}, The current context, which is a set of key-value
-      pairs that can be used for common initialization among commands.
-
-  Returns:
-    The WebDriver catalog.
-
-  Raises:
-    exceptions.HttpException: If it could not connect to the service.
-  """
-  env_type = (context['testing_messages']
-              .TestingTestEnvironmentCatalogGetRequest
-              .EnvironmentTypeValueValuesEnum.WEBDRIVER)
-  return _GetCatalog(context, env_type).webDriverCatalog
-
-
 def _GetCatalog(context, environment_type):
   """Gets a test environment catalog from the TestEnvironmentDiscoveryService.
 

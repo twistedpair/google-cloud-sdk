@@ -14,7 +14,7 @@
 """Utilities for dealing with ML versions API."""
 
 from apitools.base.py import list_pager
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 
 
 class VersionsClient(object):

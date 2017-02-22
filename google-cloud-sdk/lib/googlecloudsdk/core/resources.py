@@ -27,8 +27,8 @@ import re
 import types
 import urllib
 
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import resource as resource_util
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 

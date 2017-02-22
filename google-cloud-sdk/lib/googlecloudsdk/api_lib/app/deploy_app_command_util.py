@@ -224,8 +224,8 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
   Raises:
     MultiError: if one or more errors occurred during file upload.
   """
-  threads_per_proc = (properties.VALUES.app.num_file_upload_threads.GetInt() or
-                      storage_parallel.DEFAULT_NUM_THREADS)
+  num_threads = (properties.VALUES.app.num_file_upload_threads.GetInt() or
+                 storage_parallel.DEFAULT_NUM_THREADS)
   tasks = []
   # Have to sort files because the test framework requires a known order for
   # mocked API calls.
@@ -233,7 +233,7 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
     task = storage_parallel.FileUploadTask(path, bucket_ref.ToBucketUrl(),
                                            sha1_hash)
     tasks.append(task)
-  storage_parallel.UploadFiles(tasks, threads_per_process=threads_per_proc)
+  storage_parallel.UploadFiles(tasks, num_threads=num_threads)
 
 
 def _UploadFilesProcesses(files_to_upload, bucket_ref):
@@ -268,10 +268,9 @@ def _UploadFilesProcesses(files_to_upload, bucket_ref):
     # This is slightly confusing, but when we resolve the TODO in the below
     # branch of the if statement, this should get fixed.
     threads_per_proc = threads_per_proc or _DEFAULT_NUM_THREADS
-    with parallel.GetPool(1, threads_per_proc) as pool:
+    with parallel.GetPool(threads_per_proc) as pool:
       results = pool.Map(_UploadFile, tasks)
   elif num_procs > 1:
-    # TODO(b/32001924) switch all parallelism to use core.util.parallel
     pool = multiprocessing.Pool(num_procs)
     results = pool.map(_UploadFile, tasks)
     errors = filter(bool, results)

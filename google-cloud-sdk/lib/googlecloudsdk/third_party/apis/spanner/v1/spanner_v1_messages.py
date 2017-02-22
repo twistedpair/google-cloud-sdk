@@ -200,11 +200,19 @@ class Condition(_messages.Message):
         grant access based on the *absence* of a realm, so realm conditions
         can only be used in a "positive" context (e.g., ALLOW/IN or
         DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
+        dynamicauth.
     """
     NO_ATTR = 0
     AUTHORITY = 1
     ATTRIBUTION = 2
     SECURITY_REALM = 3
+    APPROVER = 4
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.

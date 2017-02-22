@@ -51,7 +51,8 @@ class _Table(persistent_cache_base.Table):
       self._cache._restricted.add(name)  # pylint: disable=protected-access
     self.deleted = False
     try:
-      with open(os.path.join(self._cache.name, name), 'r') as f:
+      with open(os.path.join(self._cache.name,
+                             self.EncodeName(name)), 'r') as f:
         contents = f.read()
     except IOError as e:
       if e.errno != errno.ENOENT:
@@ -78,7 +79,7 @@ class _Table(persistent_cache_base.Table):
     """Commits changed/deleted table data to the table file."""
     if self.changed:
       self.changed = False
-      path = os.path.join(self._cache.name, self.name)
+      path = os.path.join(self._cache.name, self.EncodeName(self.name))
       # pylint: disable=protected-access
       if self.deleted:
         self.deleted = False

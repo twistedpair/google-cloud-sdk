@@ -21,9 +21,9 @@ import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.error_reporting import util
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.command_lib import error_reporting_util
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log

@@ -270,3 +270,17 @@ def AddPortsAndPortRange(parser):
       Either an individual port (`--port-range 80`) or a range of ports
       (`--port-range 3000-3100`) may be specified.
       """
+
+
+def AddNetworkTier(parser, include_alpha):
+  """Adds network tier flag."""
+
+  if include_alpha:
+    parser.add_argument(
+        '--network-tier',
+        choices=['PREMIUM', 'SELECT'],
+        type=lambda x: x.upper(),
+        help='The network tier to assign to the forwarding rules. If left '
+        'empty, `PREMIUM` is used. Supported network tiers are: `PREMIUM`, '
+        '`SELECT`.')
+

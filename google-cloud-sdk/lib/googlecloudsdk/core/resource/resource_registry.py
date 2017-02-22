@@ -233,9 +233,8 @@ RESOURCE_REGISTRY = {
             owner.directoryCustomerId
           )
         """,),
-
-    'cloudresourcemanager.liens': resource_info.ResourceInfo(
-        list_format="""
+    'cloudresourcemanager.liens':
+        resource_info.ResourceInfo(list_format="""
           table(
             name.segment(),
             origin,
@@ -1544,6 +1543,15 @@ RESOURCE_REGISTRY = {
         """,),
 
     # sql
+    'sql.databases':
+        resource_info.ResourceInfo(
+            list_format="""
+          table(
+            name,
+            charset,
+            collation
+          )
+        """,),
     'sql.backupRuns':
         resource_info.ResourceInfo(
             list_format="""
@@ -1569,6 +1577,7 @@ RESOURCE_REGISTRY = {
           table(
             name,
             type,
+            appliesTo.list():label=DATABASE_VERSION,
             allowedStringValues.list():label=ALLOWED_VALUES
           )
         """,),

@@ -1019,11 +1019,11 @@ class SqlFlagsListRequest(_messages.Message):
   """A SqlFlagsListRequest object.
 
   Fields:
-    database_version: Database version for flag retrieval. Flags are specific
+    databaseVersion: Database version for flag retrieval. Flags are specific
       to the database version.
   """
 
-  database_version = _messages.StringField(1)
+  databaseVersion = _messages.StringField(1)
 
 
 class SqlInstancesCloneRequest(_messages.Message):

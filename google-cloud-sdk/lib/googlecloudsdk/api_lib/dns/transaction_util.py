@@ -18,8 +18,8 @@ import os
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import util
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import resource_printer
 import yaml

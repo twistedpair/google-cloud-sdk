@@ -439,8 +439,8 @@ class Organization(_messages.Message):
     creationTime: Timestamp when the Organization was created. Assigned by the
       server. @OutputOnly
     displayName: A friendly string to be used to refer to the Organization in
-      the UI. Assigned by the server, set to the firm name of the Google For
-      Work customer that owns this organization. @OutputOnly
+      the UI. Assigned by the server, set to the primary domain of the G Suite
+      customer that owns the organization. @OutputOnly
     lifecycleState: The organization's current lifecycle state. Assigned by
       the server. @OutputOnly
     name: Output Only. The resource name of the organization. This is the

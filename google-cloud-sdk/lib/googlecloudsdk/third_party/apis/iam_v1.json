@@ -479,14 +479,6 @@
         "description": {
           "description": "Optional.  A human-readable description for the role.",
           "type": "string"
-        },
-        "trashed": {
-
-          "type": "boolean"
-        },
-        "deleted": {
-
-          "type": "boolean"
         }
       }
     },

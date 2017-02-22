@@ -197,6 +197,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'region', u'backendService']
   )
+  REGIONCOMMITMENTS = (
+      'regionCommitments',
+      'projects/{project}/regions/{region}/commitments/{commitment}',
+      {},
+      [u'project', u'region', u'commitment']
+  )
   REGIONDISKTYPES = (
       'regionDiskTypes',
       'projects/{project}/regions/{region}/diskTypes/{diskType}',

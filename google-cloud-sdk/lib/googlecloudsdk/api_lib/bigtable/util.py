@@ -17,9 +17,9 @@
 import re
 import time
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as sdk_ex
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 

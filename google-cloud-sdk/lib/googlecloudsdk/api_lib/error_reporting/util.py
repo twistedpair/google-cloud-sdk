@@ -14,7 +14,7 @@
 
 """Crash Reporting for Cloud SDK."""
 
-from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 

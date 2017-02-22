@@ -36,6 +36,10 @@ _WARNING_RUNTIMES = {
 _YAML_FILE_EXTENSIONS = ('.yaml', '.yml')
 
 
+class MultipleAppYamlError(Exception):
+  """An application configuration has more than one valid app yaml files."""
+
+
 def GetRuntimes(args):
   """Gets a list of unique runtimes that the user is about to run.
 
@@ -44,13 +48,32 @@ def GetRuntimes(args):
 
   Returns:
     A set of runtime strings.
+
+  Raises:
+    MultipleAppYamlError: The supplied application configuration has duplicate
+      app yamls.
   """
   runtimes = set()
   for arg in args:
-    # Check all the arguments to see if they're application yaml files.
+    # Check all the arguments to see if they're application yaml files or
+    # directories that include yaml files.
+    yaml_candidate = None
     if (os.path.isfile(arg) and
         os.path.splitext(arg)[1] in _YAML_FILE_EXTENSIONS):
-      with open(arg) as f:
+      yaml_candidate = arg
+    elif os.path.isdir(arg):
+      for extension in _YAML_FILE_EXTENSIONS:
+        fullname = os.path.join(arg, 'app' + extension)
+        if os.path.isfile(fullname):
+          if yaml_candidate:
+            raise MultipleAppYamlError(
+                'Directory "{0}" contains conflicting files {1}'.format(
+                    arg, ' and '.join(yaml_candidate)))
+
+          yaml_candidate = fullname
+
+    if yaml_candidate:
+      with open(yaml_candidate) as f:
         try:
           info = yaml.safe_load(f)
           # safe_load can return arbitrary objects, we need a dict.

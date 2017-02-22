@@ -201,7 +201,7 @@ def MakeRequests(requests, http, batch_url, errors):
         resource_service=resource_service,
         http=http,
         batch_url=batch_url,
-        warnings=warnings or [],
+        warnings=warnings,
         errors=errors):
       yield response
 

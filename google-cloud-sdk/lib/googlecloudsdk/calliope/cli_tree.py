@@ -61,7 +61,7 @@ class Flag(object):
     self.type = 'string'
     self.name = name
     self.hidden = description == argparse.SUPPRESS
-    self.category = None
+    self.category = ''
     self.value = ''
     self.countmin = 0
     self.countmax = 0
@@ -69,7 +69,7 @@ class Flag(object):
     self.choices = []
     self.default = default
     self.description = _NormalizeDescription(description)
-    self.group = 0
+    self.group = ''
     self.resource = ''
 
 
@@ -177,7 +177,7 @@ class Command(object):
       if group_count[g] > 1:
         group_count[g] = 0  # Don't check this group again!
         group_id_count += 1
-        group_id[g] = group_id_count
+        group_id[g] = '{}.{}'.format(self.name, group_id_count)
 
     # Collect the flags.
     for arg in sorted(args.flag_args):
@@ -212,9 +212,12 @@ class Command(object):
                 flag.countmax = 1
               elif arg.nargs == '+':
                 flag.countmin = 1
-              elif type(arg.nargs) in (int, long):
+              elif isinstance(arg.nargs, (int, long)):
                 flag.countmin = arg.nargs
                 flag.countmax = arg.nargs
+              elif arg.required:
+                flag.countmin = 1
+                flag.countmax = 1
               if arg.metavar:
                 flag.value = arg.metavar
               else:
@@ -225,7 +228,7 @@ class Command(object):
                 flag.type = 'bool'
               else:
                 flag.choices = choices
-            flag.category = arg.category
+            flag.category = arg.category or ''
             if arg.required:
               flag.required = 1
             flag.resource = getattr(arg, 'completion_resource', '')
@@ -247,9 +250,12 @@ class Command(object):
           positional.countmax = 1
         elif arg.nargs == '+':
           positional.countmin = 1
-        elif type(arg.nargs) in (int, long):
+        elif isinstance(arg.nargs, (int, long)):
           positional.countmin = arg.nargs
           positional.countmax = arg.nargs
+        elif arg.required:
+          positional.countmin = 1
+          positional.countmax = 1
       positional.resource = getattr(arg, 'completion_resource', '')
       self.positionals.append(positional)
 

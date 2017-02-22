@@ -20,7 +20,7 @@ import os.path
 import tarfile
 
 from googlecloudsdk.api_lib.storage import storage_util
-from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 

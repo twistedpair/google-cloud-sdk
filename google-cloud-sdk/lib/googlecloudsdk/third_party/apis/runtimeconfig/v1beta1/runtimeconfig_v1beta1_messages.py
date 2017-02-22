@@ -156,11 +156,19 @@ class Condition(_messages.Message):
         grant access based on the *absence* of a realm, so realm conditions
         can only be used in a "positive" context (e.g., ALLOW/IN or
         DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
+        dynamicauth.
     """
     NO_ATTR = 0
     AUTHORITY = 1
     ATTRIBUTION = 2
     SECURITY_REALM = 3
+    APPROVER = 4
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -557,13 +565,12 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
     parent: The [project ID](https://support.google.com/cloud/answer/6158840?h
       l=en&ref_topic=6158848) for this request, in the format
       `projects/[PROJECT_ID]`.
-    requestId: An optional but recommended unique <code>request_id</code>. If
-      the server receives two <code>create()</code> requests  with the same
-      <code>request_id</code>, then the second request will be ignored and the
-      first resource created and stored in the backend is returned. Empty
-      <code>request_id</code> fields are ignored.  It is responsibility of the
-      client to ensure uniqueness of the <code>request_id</code> strings.
-      <code>request_id</code> strings are limited to 64 characters.
+    requestId: An optional but recommended unique `request_id`. If the server
+      receives two `create()` requests  with the same `request_id`, then the
+      second request will be ignored and the first resource created and stored
+      in the backend is returned. Empty `request_id` fields are ignored.  It
+      is responsibility of the client to ensure uniqueness of the `request_id`
+      strings.  `request_id` strings are limited to 64 characters.
     runtimeConfig: A RuntimeConfig resource to be passed as the request body.
   """
 
@@ -689,13 +696,12 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
     parent: The path to the RutimeConfig resource that this variable should
       belong to. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
-    requestId: An optional but recommended unique <code>request_id</code>. If
-      the server receives two <code>create()</code> requests  with the same
-      <code>request_id</code>, then the second request will be ignored and the
-      first resource created and stored in the backend is returned. Empty
-      <code>request_id</code> fields are ignored.  It is responsibility of the
-      client to ensure uniqueness of the <code>request_id</code> strings.
-      <code>request_id</code> strings are limited to 64 characters.
+    requestId: An optional but recommended unique `request_id`. If the server
+      receives two `create()` requests  with the same `request_id`, then the
+      second request will be ignored and the first resource created and stored
+      in the backend is returned. Empty `request_id` fields are ignored.  It
+      is responsibility of the client to ensure uniqueness of the `request_id`
+      strings.  `request_id` strings are limited to 64 characters.
     variable: A Variable resource to be passed as the request body.
   """
 
@@ -790,13 +796,12 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
     parent: The path to the configuration that will own the waiter. The
       configuration must exist beforehand; the path must by in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
-    requestId: An optional but recommended unique <code>request_id</code>. If
-      the server receives two <code>create()</code> requests  with the same
-      <code>request_id</code>, then the second request will be ignored and the
-      first resource created and stored in the backend is returned. Empty
-      <code>request_id</code> fields are ignored.  It is responsibility of the
-      client to ensure uniqueness of the <code>request_id</code> strings.
-      <code>request_id</code> strings are limited to 64 characters.
+    requestId: An optional but recommended unique `request_id`. If the server
+      receives two `create()` requests  with the same `request_id`, then the
+      second request will be ignored and the first resource created and stored
+      in the backend is returned. Empty `request_id` fields are ignored.  It
+      is responsibility of the client to ensure uniqueness of the `request_id`
+      strings.  `request_id` strings are limited to 64 characters.
     waiter: A Waiter resource to be passed as the request body.
   """
 
@@ -1081,7 +1086,7 @@ class Variable(_messages.Message):
       through the `get` and `list` calls.
     text: The string value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. For example,
-      <code>text: "my text value"</code>.
+      `text: "my text value"`. The string must be valid UTF-8.
     updateTime: [Output Only] The time of the last variable update.
     value: The binary value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. The value must be

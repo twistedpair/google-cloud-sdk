@@ -516,10 +516,12 @@ class ResultStorage(_messages.Message):
 
 class RoboDirective(_messages.Message):
   """Directs Robo to interact with a specific UI element if it is encountered
-  during the crawl. Currently, Robo can set text in text fields.
+  during the crawl. Currently, Robo can perform text entry or element click.
 
   Fields:
-    inputText: The text that Robo is directed to set. Required
+    inputText: The text that Robo is directed to set. If left empty, the
+      directive will be treated as a CLICK on the element matching the
+      resource_name.
     resourceName: The android resource name of the target UI element For
       example,    in Java: R.string.foo    in xml: @string/foo Only the \u201cfoo\u201d
       part is needed. Reference doc:
@@ -828,7 +830,8 @@ class TestSetup(_messages.Message):
     directoriesToPull: The directories on the device to upload to GCS at the
       end of the test; they must be absolute, whitelisted paths. Refer to
       RegularFile for whitelisted paths. Optional
-    environmentVariables: Environment variables to set for the test.
+    environmentVariables: Environment variables to set for the test (only
+      applicable for instrumentation tests).
     filesToPush: Optional
   """
 

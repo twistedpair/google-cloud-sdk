@@ -72,7 +72,8 @@ class ToolResultsHistoryPicker(object):
     Raises:
       HttpException if the Tool Results service reports a backend error.
     """
-    history = self._messages.History(name=history_name)
+    history = self._messages.History(name=history_name,
+                                     displayName=history_name)
     request = self._messages.ToolresultsProjectsHistoriesCreateRequest(
         projectId=self._project, history=history)
     try:

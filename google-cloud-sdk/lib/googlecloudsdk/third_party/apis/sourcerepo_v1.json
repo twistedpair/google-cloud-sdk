@@ -390,13 +390,15 @@
           "enumDescriptions": [
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
-            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization."
+            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).\nSee: go\/rpc-security-policy-dynamicauth."
           ],
           "type": "string",
           "enum": [
             "NO_ATTR",
             "AUTHORITY",
-            "ATTRIBUTION"
+            "ATTRIBUTION",
+            "APPROVER"
           ]
         },
         "sys": {

@@ -144,10 +144,12 @@ class Architecture(object):
   x86 = _ARCH('x86', 'x86', 'x86')
   x86_64 = _ARCH('x86_64', 'x86_64', 'x86_64')
   ppc = _ARCH('PPC', 'PPC', 'ppc')
-  _ALL = [x86, x86_64, ppc]
+  arm = _ARCH('arm', 'arm', 'arm')
+  _ALL = [x86, x86_64, ppc, arm]
   _MACHINE_TO_ARCHITECTURE = {'AMD64': x86_64, 'x86_64': x86_64,
                               'i386': x86, 'i686': x86, 'x86': x86,
-                              'Power Macintosh': ppc}
+                              'Power Macintosh': ppc,
+                              'arm6l': arm, 'arm64': arm, 'armv7': arm}
 
   @staticmethod
   def AllValues():

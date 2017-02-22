@@ -1109,12 +1109,15 @@ class JobReference(_messages.Message):
 
 
 class JobScheduling(_messages.Message):
-  """Job scheduling options.
+  """Job scheduling options.Beta Feature: These options are available for
+  testing purposes only. They may be changed before final release.
 
   Fields:
-    maxFailuresPerHour: Optional Maximum number of job restarts as result of
-      job terminating with non-zero code before job is reported failed.Maximum
-      value is 10.
+    maxFailuresPerHour: Optional Maximum number of times per hour a driver may
+      be restarted as a result of driver terminating with non-zero code before
+      job is reported failed.A job may be reported as thrashing if driver
+      exits with non-zero code 4 times within 10 minute window.Maximum value
+      is 10.
   """
 
   maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)

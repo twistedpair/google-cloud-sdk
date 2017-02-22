@@ -556,7 +556,8 @@ def ValidateCreateDiskFlags(args):
 
 def AddAddressArgs(parser, instances=True,
                    multiple_network_interface_cards=False,
-                   support_alias_ip_ranges=False):
+                   support_alias_ip_ranges=False,
+                   support_network_tier=False):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   addresses.add_argument(
@@ -587,6 +588,18 @@ def AddAddressArgs(parser, instances=True,
   }
   if instances:
     multiple_network_interface_cards_spec['private-network-ip'] = str
+
+  if support_network_tier:
+    def ValidateNetworkTier(network_tier_input):
+      network_tier = network_tier_input.upper()
+      if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
+        return network_tier
+      else:
+        raise exceptions.InvalidArgumentException(
+            'argument network-tier: invalid value')
+
+    multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
+
   if multiple_network_interface_cards:
     if support_alias_ip_ranges:
       multiple_network_interface_cards_spec['aliases'] = str
@@ -602,11 +615,12 @@ def AddAddressArgs(parser, instances=True,
 
     network_interface_detailed_help = """\
         Adds a network interface to the instance. Mutually exclusive with
-        --address, --network, --subnet, and --private-network-ip flags.
+        --address, --network, --network-tier, --subnet, and --private-network-ip
+        flags.
 
         The following keys are allowed:
         *address*::: Assigns the given external address to the instance that is
-        created. Specyfying an empty string will assign an ephemeral IP.
+        created. Specifying an empty string will assign an ephemeral IP.
         Mutually exclusive with no-address. If neither key is present the
         instance will get an ephemeral IP.
 
@@ -615,6 +629,12 @@ def AddAddressArgs(parser, instances=True,
         neither is specified, this defaults to the "default" network.
 
         *no-address*::: If specified the interface will have no external IP.
+        """
+    if support_network_tier:
+      network_interface_detailed_help += """
+        *network-tier*::: Specifies the network tier of the interface. It can
+        only take the following values: PREMIUM, SELECT. The default network
+        tier is PREMIUM.
         """
     if instances:
       network_interface_detailed_help += """
@@ -666,6 +686,22 @@ def AddMachineTypeArgs(parser, required=False):
       list of available machine types, run 'gcloud compute
       machine-types list'. If unspecified, the default type is n1-standard-1.
       """
+
+
+def AddMinCpuPlatformArgs(parser):
+  min_cpu_platform = parser.add_argument(
+      '--min-cpu-platform',
+      metavar='PLATFORM',
+      help='Minimum CPU platform for this virtual machine')
+  min_cpu_platform.detailed_help = """\
+    When specified the VM will be scheduled on host with specified CPU
+    architecture or a newer one. To list available CPU platforms in given
+    zone run
+
+        $ gcloud compute zones describe ZONE --format="value(availableCpuPlatforms)"
+
+    CPU platform selection is available only in selected zones.
+    """
 
 
 def AddPreemptibleVmArgs(parser):
@@ -846,6 +882,31 @@ def AddNetworkInterfaceArgs(parser):
       configuration. If this is not provided, then "nic0" is used
       as the default.
       """
+
+
+def AddNetworkTierArgs(parser, instance=True):
+  """Adds network tier flag to the argparse."""
+
+  choices = constants.NETWORK_TIER_CHOICES_FOR_INSTANCE
+  help_str = 'The type of network tier to use.'
+  network_tier = parser.add_argument(
+      '--network-tier',
+      choices=sorted(choices),
+      default=constants.DEFAULT_NETWORK_TIER,
+      type=lambda x: x.upper(),
+      help=help_str)
+  if instance:
+    network_tier.detailed_help = """\
+        Specifies the network tier that will be used to configure the instance.
+        It can only take the following values: PREMIUM, SELECT. The default
+        network tier is PREMIUM.
+        """
+  else:
+    network_tier.detailed_help = """\
+        Specifies the network tier of the access configuration. It can only take
+        the following values: PREMIUM, SELECT. The default network tier is
+        PREMIUM.
+        """
 
 
 def AddPublicDnsArgs(parser, instance=True):
@@ -1046,7 +1107,7 @@ def AddAcceleratorArgs(parser):
 
 
 def ValidateAcceleratorArgs(args):
-  """Valiadates flags specyfying accelerators (e.g. GPUs).
+  """Valiadates flags specifying accelerators (e.g. GPUs).
 
   Args:
     args: parsed comandline arguments.
@@ -1156,7 +1217,7 @@ def ValidateLocalSsdFlags(args):
 
 
 def ValidateNicFlags(args):
-  """Valiadates flags specyfying network interface cards.
+  """Valiadates flags specifying network interface cards.
 
   Args:
     args: parsed comandline arguments.

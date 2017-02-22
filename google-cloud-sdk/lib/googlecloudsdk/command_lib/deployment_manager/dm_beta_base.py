@@ -14,8 +14,8 @@
 
 """Base functions for DM commands targeting the v2beta API."""
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.deployment_manager import dm_base
-from googlecloudsdk.core import apis
 
 
 def GetClient():

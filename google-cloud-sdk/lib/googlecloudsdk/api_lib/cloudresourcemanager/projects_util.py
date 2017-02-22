@@ -16,7 +16,8 @@
 
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import log
 
 
@@ -72,4 +73,5 @@ def ConvertHttpError(error):
     project_id = error.url.split('/')[-1].split('?')[0].split(':')[0]
     if error.status_code == 403 or error.status_code == 404:
       return errors.ProjectAccessError(project_id)
+    return api_exceptions.HttpException(error, '{message}{details?\n{?}}')
   return error

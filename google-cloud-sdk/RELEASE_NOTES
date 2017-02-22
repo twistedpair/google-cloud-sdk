@@ -2,6 +2,57 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 145.0.0 (2017-02-22)
+
+### Breaking Changes
+
+*   The `gcloud beta runtime-configs` group has been renamed `gcloud beta
+    runtime-config`. All commands previously under `gcloud beta runtime-configs`
+    have been moved to the `gcloud beta runtime-config configs` command group.
+
+### Google App Engine
+
+*   `gcloud app deploy` now deploys Go apps for both Standard and Flexible
+    environments. All usage of `aedeploy` can now use `gcloud app deploy`
+    directly instead.
+*   When passing a directory to dev_appserver.py, dev_appserver.py searches for
+    yaml in the directory so that gcloud can check missing components and prompt
+    to install.
+*   Java SDK updated to 1.9.49. For more details, please see
+    *   https://cloud.google.com/appengine/docs/java/release-notes
+*   `gcloud app logs tail` is now available in GA.
+
+### Google Cloud Datalab
+
+*   Update the `datalab` command line tool to the 20170215 build. This
+    incorporates the following changes to the datalab tool:
+    1.  Allow specifying a service account when creating a Datalab instance.
+    2.  Move the `/tmp` directory outside of the VM's boot disk.
+
+### Google Cloud Dataproc
+
+*   Cluster and job labels support in `gcloud dataproc` is now available in GA.
+*   The `--network-tier` flag has been added to the following commands:
+    *   `gcloud alpha compute addresses create`
+    *   `gcloud alpha compute forwarding-rules create`
+    *   `gcloud alpha compute instance-templates create`
+    *   `gcloud alpha compute instances add-access-config`
+    *   `gcloud alpha compute instances create`
+    *   `gcloud alpha compute instances create-from-container`
+    *   `gcloud alpha compute instances update-access-config`
+
+### Google Cloud SQL
+
+*   A `--database-version` flag has been added to `gcloud sql flags list` and
+    `gcloud beta sql flags list` to allow filtering. An 'applies to' column has
+    been added to tabular output.
+*   Added the following commands:
+    *   `gcloud beta sql databases create`
+    *   `gcloud beta sql databases delete`
+    *   `gcloud beta sql databases describe`
+    *   `gcloud beta sql databases list`
+    *   `gcloud beta sql databases patch`
+
 ## 144.0.0 (2017-02-15)
 
 ### Breaking Changes
@@ -88,13 +139,13 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 * `gcloud beta compute accelerator-types` is now available in beta.
 
 
-## 143.0.1 (2017/02/09)
+## 143.0.1 (2017-02-09)
 
 * Fixed issue in which some downloads of the Cloud SDK were missing critical
   libraries.
   * https://code.google.com/p/google-cloud-sdk/issues/detail?id=1525
 
-## 143.0.0 (2017/02/08)
+## 143.0.0 (2017-02-08)
 
 ### Google App Engine
 
@@ -133,7 +184,7 @@ if a file upload is necessary.
 * `gcloud beta deployment-manager runtime-configs` is now available in beta.
 
 
-## 142.0.0 (2017/02/01)
+## 142.0.0 (2017-02-01)
 
 ### Breaking Changes
 
@@ -190,7 +241,7 @@ if a file upload is necessary.
   `--no-create-repository` flag to the `datalab create` command.
 
 
-## 141.0.0 (2017/01/25)
+## 141.0.0 (2017-01-25)
 
 ### Breaking Changes
 
@@ -243,7 +294,7 @@ if a file upload is necessary.
   `gcloud beta kms crytpokeys set-rotation-schedule`.
 
 
-## 140.0.0 (2017/01/18)
+## 140.0.0 (2017-01-18)
 
 ### Cloud SDK
 
@@ -279,13 +330,13 @@ if a file upload is necessary.
 * The pubsub emulator now accepts web-safe Base64 encoded data.
 
 
-## 139.0.1 (2017/01/12)
+## 139.0.1 (2017-01-12)
 
 *   Fixed crash in `gcloud dataproc clusters create`
     *   https://code.google.com/p/google-cloud-sdk/issues/detail?id=1464
 
 
-## 139.0.0 (2017/01/11)
+## 139.0.0 (2017-01-11)
 
 ### Breaking Changes
 
@@ -419,7 +470,7 @@ if a file upload is necessary.
   deprecated.
 
 
-## 138.0.0 (2016/12/14)
+## 138.0.0 (2016-12-14)
 
 ### Cloud SDK
 
@@ -492,7 +543,7 @@ if a file upload is necessary.
   --trigger-gs-uri from `gcloud alpha functions deploy` command.
 
 
-## 137.0.1 (2016/12/08)
+## 137.0.1 (2016-12-08)
 
 ### Google Cloud ML
 
@@ -500,7 +551,7 @@ if a file upload is necessary.
   specified.
 
 
-## 137.0.0 (2016/12/07)
+## 137.0.0 (2016-12-07)
 
 ### Google Cloud Functions
 
@@ -535,7 +586,7 @@ if a file upload is necessary.
   `gcloud beta service-management`.
 
 
-## 136.0.0 (2016/12/01)
+## 136.0.0 (2016-12-01)
 
 ### Cloud SDK
 
@@ -607,7 +658,7 @@ if a file upload is necessary.
 * Add `--service-account` flag to `gcloud dataproc clusters create`.
 
 
-## 135.0.0 (2016/11/16)
+## 135.0.0 (2016-11-16)
 
 ### Google Cloud Service Management
 
@@ -645,7 +696,7 @@ if a file upload is necessary.
   information about a given service.
 
 
-## 134.0.0 (2016/11/09)
+## 134.0.0 (2016-11-09)
 
 ### Cloud SDK
 
@@ -680,7 +731,7 @@ if a file upload is necessary.
   in the opensuse-cloud project.
 
 
-## 133.0.0 (2016/11/02)
+## 133.0.0 (2016-11-02)
 
 ### Google Cloud Container Builder
 
@@ -705,7 +756,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Update kubectl to version 1.4.4.
 
 
-## 132.0.0 (2016/10/26)
+## 132.0.0 (2016-10-26)
 
 ### Breaking Changes
 
@@ -751,7 +802,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Make `New-GcsObject` `-ObjectName` parameter optional when uploading a file.
 * Add ability to pipeline `GcsObject` to `Write-GcsObject` cmdlet.
 
-## 131.0.0 (2016/10/19)
+## 131.0.0 (2016-10-19)
 
 ### Cloud SDK
 
@@ -801,7 +852,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   Engine Instances and Instance Templates to read_only from full control.
 
 
-## 130.0.0 (2016/10/12)
+## 130.0.0 (2016-10-12)
 
 ### Breaking Changes
 
@@ -850,7 +901,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   `gcloud container nodepools create --help` for more details and
   examples.
 
-## 129.0.0 (2016/10/05)
+## 129.0.0 (2016-10-05)
 
 ### Google Cloud Bigtable
 
@@ -891,7 +942,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 * Added commands to manage logs-based metrics in Stackdriver Logging.
 
-## 128.0.0 (2016/09/28)
+## 128.0.0 (2016-09-28)
 
 ### Breaking Changes
 
@@ -952,7 +1003,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   `docker-credential-gcr config --help` for more details.
 
 
-## 127.0.0 (2016/09/21)
+## 127.0.0 (2016-09-21)
 
 ### Google BigQuery
 
@@ -989,7 +1040,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 
 
-## 126.0.0 (2016/09/14)
+## 126.0.0 (2016-09-14)
 
 ### Breaking changes
 
@@ -1032,7 +1083,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   This version of the emulator resolves the deserialization issues in 123.0.0.
 
 
-## 125.0.0 (2016/09/07)
+## 125.0.0 (2016-09-07)
 
 ### Google BigQuery
 
@@ -1079,7 +1130,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   emulator which supports Cloud Datastore API v1 and v1beta3 over gRPC,
   proto-over-HTTP, and JSON-over-HTTP.
 
-## 124.0.0 (2016/08/31)
+## 124.0.0 (2016-08-31)
 
 ### Breaking Changes
 
@@ -1164,7 +1215,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   * --no-storage-auto-increase
 
 
-## 123.0.0 (2016/08/24)
+## 123.0.0 (2016-08-24)
 
 ### Google App Engine
 
@@ -1210,7 +1261,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   been fixed.
 
 
-## 122.0.0 (2016/08/17)
+## 122.0.0 (2016-08-17)
 
 ### Google App Engine
 
@@ -1265,7 +1316,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Update kubectl to version 1.3.4.
 
 
-## 121.0.0 (2016/08/10)
+## 121.0.0 (2016-08-10)
 
 ### Google App Engine
 
@@ -1312,7 +1363,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   errors.
 
 
-## 120.0.0 (2016/08/03)
+## 120.0.0 (2016-08-03)
 
 ### Deployment Manager
 
@@ -1356,7 +1407,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Update kubectl to 1.3.3.
 
 
-## 119.0.0 (2016/07/27)
+## 119.0.0 (2016-07-27)
 
 ### Google BigQuery
 
@@ -1393,7 +1444,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   group.
 
 
-## 118.0.0 (2016/07/20)
+## 118.0.0 (2016-07-20)
 
 ### Emulators
 
@@ -1429,7 +1480,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   https://googlecloudplatform.github.io/google-cloud-powershell.
 
 
-## 117.0.0 (2016/07/13)
+## 117.0.0 (2016-07-13)
 
 ### Google Compute Engine
 
@@ -1458,7 +1509,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     JSON or YAML config files to configure builds, using the `--config` flag.
 
 
-## 116.0.0 (2016/06/29)
+## 116.0.0 (2016-06-29)
 
 ### Breaking Changes
 
@@ -1509,7 +1560,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 *   Known issue: `gcloud beta bigtable instances create` is an asynchronous
     operation by default and will not block with or without the `--async` flag.
 
-## 115.0.0 (2016/06/22)
+## 115.0.0 (2016-06-22)
 
 ### Breaking Changes
 
@@ -1566,7 +1617,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     the output of the `env-init` command.
 
 
-## 114.0.0 (2016/06/15)
+## 114.0.0 (2016-06-15)
 
 ### Breaking Changes
 
@@ -1630,7 +1681,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     respective topics are deleted. They should now be set to `_deleted-topic_`.
 
 
-## 113.0.0 (2016/06/08)
+## 113.0.0 (2016-06-08)
 
 ### Cloud SDK
 
@@ -1649,7 +1700,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   "outputs" as repeated parameters.
 
 
-## 112.0.0 (2016/06/01)
+## 112.0.0 (2016-06-01)
 
 ### Cloud SDK
 
@@ -1692,7 +1743,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   once, includes status for resources, and includes more useful fields.
 
 
-## 111.0.0 (2016/05/25)
+## 111.0.0 (2016-05-25)
 
 ### Google App Engine
 
@@ -1739,7 +1790,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 *   Launched `gcloud alpha orgranizations`. (alpha track)
 
-## 110.0.0 (2016/05/18)
+## 110.0.0 (2016-05-18)
 
 ### Google IAM
 
@@ -1798,7 +1849,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     executable is signed with both authenticode and RFC3161 signatures.
 *   The winkeygen.exe executable is also now dual signed, like above.
 
-## 109.0.0 (2016/05/11)
+## 109.0.0 (2016-05-11)
 
 ### Google App Engine
 
@@ -1831,7 +1882,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 *   Added the `gcloud beta error-reporting events delete` command to cleanup
     Stackdriver Error Reporting data.
 
-## 108.0.0 (2016/05/04)
+## 108.0.0 (2016-05-04)
 
 ### Breaking Changes
 
@@ -1872,7 +1923,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     non-integer variant IDs.
 
 
-## 107.0.0 (2016/04/27)
+## 107.0.0 (2016-04-27)
 
 ### Google Compute Engine
 
@@ -1906,7 +1957,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * BQ support for partitioned tables.
 
 
-## 106.0.0 (2016/04/20)
+## 106.0.0 (2016-04-20)
 
 ### Breaking Changes
 
@@ -1960,7 +2011,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 *   Update kubectl to v1.2.2
 
 
-## 105.0.0 (2016/04/13)
+## 105.0.0 (2016-04-13)
 
 ### Breaking Changes
 
@@ -1988,7 +2039,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   any trouble, you can revert to the old behavior with
   `gcloud config set app/use_gsutil true`.
 
-## 104.0.0 (2016/04/06)
+## 104.0.0 (2016-04-06)
 
 ### Cloud SDK
 
@@ -2022,7 +2073,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * `gcloud alpha genomics variants import` now supports configurable variant info
   field merging via the info_merge_config command line flag.
 
-## 103.0.0 (2016/03/30)
+## 103.0.0 (2016-03-30)
 
 ### Google Cloud Storage
 
@@ -2044,7 +2095,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
   * Enable support for: gcloud compute disks resize.
 
-## 102.0.0 (2016/03/22)
+## 102.0.0 (2016-03-22)
 
 ### Breaking Changes
 
@@ -2094,7 +2145,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 * Updated kubectl to version 1.2.0.
 
 
-## 101.0.0 (2016/03/16)
+## 101.0.0 (2016-03-16)
 
 ### Billing
 
@@ -2114,7 +2165,7 @@ command surface.
   <https://code.google.com/p/google-cloud-sdk/issues/detail?id=632>.
 
 
-## 100.0.0 (2016/03/09)
+## 100.0.0 (2016-03-09)
 
 ### Breaking Changes
 
@@ -2516,11 +2567,11 @@ command surface.
     Admin API.
 
 
-## 91.0.1 (2015/12/16)
+## 91.0.1 (2015-12-16)
 
 * The Cloud SDK has been rolled back to 90.0.0.
 
-## 91.0.0 (2015/12/16)
+## 91.0.0 (2015-12-16)
 
 ### Breaking Changes
 
@@ -2544,7 +2595,7 @@ command surface.
    delete, upgrade) now display progress details when available.
 
 
-## 90.0.0 (2015/12/09)
+## 90.0.0 (2015-12-09)
 
 * Cloud SDK release version scheme has changed. Patch version is now treated as
   a major release version which corresponds to SDK weekly releases.
@@ -2570,7 +2621,7 @@ command surface.
   see https://cloud.google.com/compute/docs/subnetworks.
 
 
-## 0.9.89 (2015/12/02)
+## 0.9.89 (2015-12-02)
 
 ### Breaking Changes
 
@@ -2626,7 +2677,7 @@ command surface.
     subnetwork (https://cloud.google.com/compute/docs/subnetworks).
 
 
-## 0.9.88 (2015/11/25)
+## 0.9.88 (2015-11-25)
 
 ### Breaking Changes
 
@@ -2661,7 +2712,7 @@ command surface.
 
 * Use zsh builtins in path.zsh.inc for faster/cleaner shell startup.
 
-## 0.9.87 (2015/11/18)
+## 0.9.87 (2015-11-18)
 
 ### Compute
 
@@ -2677,7 +2728,7 @@ command surface.
 
 * Updated kubectl to version 1.1.1.
 
-## 0.9.86 (2015/11/11)
+## 0.9.86 (2015-11-11)
 
 ### App Engine
 
@@ -2692,7 +2743,7 @@ command surface.
 * `gcloud beta compute instances set-machine-type` has been promoted from alpha
   to beta,
 
-## 0.9.85 (2015/11/04)
+## 0.9.85 (2015-11-04)
 
 ### Breaking Changes
 
@@ -2725,7 +2776,7 @@ command surface.
   metadata server. This fixes issue
   [#339](https://code.google.com/p/google-cloud-sdk/issues/detail?id=339).
 
-## 0.9.84 (2015/10/28)
+## 0.9.84 (2015-10-28)
 
 ### App Engine
 
@@ -2758,7 +2809,7 @@ command surface.
 * The [page=N] table format attribute prints one or more tables of at most N
   rows. Use this to view paged server data as it arrives at the client.
 
-## 0.9.83 (2015/10/21)
+## 0.9.83 (2015-10-21)
 
 ### App Engine
 
@@ -2796,7 +2847,7 @@ command surface.
   will work. Permissions can be changed with
   `"Set-ExecutionPolicy RemoteSigned"`.
 
-## 0.9.82 (2015/10/14)
+## 0.9.82 (2015-10-14)
 
 ### App Engine
 
@@ -2827,7 +2878,7 @@ command surface.
     `--bin-log-position` are set.
     (<https://code.google.com/p/google-cloud-sdk/issues/detail?id=201>).
 
-## 0.9.81 (2015/10/07)
+## 0.9.81 (2015-10-07)
 
 ### Breaking Changes
 
@@ -2862,7 +2913,7 @@ command surface.
 *   Windows Installer has an option to run `gcloud init` after the installation
   finishes.
 
-## 0.9.80 (2015/09/30)
+## 0.9.80 (2015-09-30)
 
 *   `gcloud app`
     *   Soon, deployments will set the deployed version to receive all traffic
@@ -2908,7 +2959,7 @@ command surface.
 *   Deployment-manager list commands now support pagination.
 *   Minor bug fixes.
 
-## 0.9.79 (2015/09/23)
+## 0.9.79 (2015-09-23)
 
 *   The following commands have been promoted from beta to GA:
     *   gcloud config configurations ...
@@ -2930,7 +2981,7 @@ command surface.
 *   Update gcloud's kubectl from 1.0.5 to 1.0.6.
 *   Deprecate `gcloud preview app get-resource-limits`.
 
-## 0.9.78 (2015/09/16)
+## 0.9.78 (2015-09-16)
 
 *   App Engine components updated to 1.9.26. Please visit
     <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for
@@ -2943,7 +2994,7 @@ command surface.
     `gcloud beta sql` surface.
 *   Usability enhancements for `gcloud beta init` and named configurations.
 
-## 0.9.77 (2015/09/09)
+## 0.9.77 (2015-09-09)
 
 *   gcloud preview logging is now gcloud beta logging.
 *   Update kubectl to version 1.0.5
@@ -2958,7 +3009,7 @@ command surface.
 *   Change in gcloud compute backend-services: introduce new flag
     --instance-group which takes advantage of new Instance Groups API.
 
-## 0.9.76 (2015/09/02)
+## 0.9.76 (2015-09-02)
 
 *   Update gsutil component to 4.14.
 *   Resource views commands have moved from preview to alpha. Please use `gcloud
@@ -2980,7 +3031,7 @@ command surface.
         improved gcloud performance
 *   `gcloud preview app deploy` won't update local images automatically anymore.
 
-## 0.9.75 (2015/08/26)
+## 0.9.75 (2015-08-26)
 
 *   Container Engine
     *   Container Engine GA commands available under `gcloud container`.
@@ -2998,7 +3049,7 @@ command surface.
 *   Improvements in error reporting and default output formatting.
 
 
-## 0.9.74 (2015/08/19)
+## 0.9.74 (2015-08-19)
 
 *   New list and import commands under `gcloud alpha genomics variants`.
 *   Removed `--remote` flag. Instead, please use the `--docker-build=remote`
@@ -3007,7 +3058,7 @@ command surface.
     behavior, please use the `--docker-build=local` flag.
 
 
-## 0.9.73 (2015/08/12)
+## 0.9.73 (2015-08-12)
 
 *   gcloud sql instances create default to MySQL 5.6
 *   gcloud beta container get-credentials renamed to gcloud beta container
@@ -3020,7 +3071,7 @@ command surface.
     *   gcloud alpha config configurations
 
 
-## 0.9.72 (2015/08/05)
+## 0.9.72 (2015-08-05)
 
 *   gcloud compute
     *   initial surface changes for the backend-bucket.
@@ -3035,7 +3086,7 @@ command surface.
 *   New gcloud alpha genomics operations {list, cancel, describe} commands
 
 
-## 0.9.71 (2015/07/29)
+## 0.9.71 (2015-07-29)
 
 *   Launching `gcloud alpha pubsub` commands.
 *   Moved `gcloud preview rolling-updates` to `gcloud alpha compute
@@ -3086,7 +3137,7 @@ command surface.
         prompting for target zone.
 
 
-## 0.9.70 (2015/07/22)
+## 0.9.70 (2015-07-22)
 
 *   Add `gcloud compute instance-groups` commands.
 *   Move `gcloud beta deployment-manager` commands to general availability as
@@ -3100,7 +3151,7 @@ command surface.
     with the --project-id flag.
 *   Fix hang on errors in `gcloud preview app deploy`.
 
-## 0.9.69 (2015/07/15)
+## 0.9.69 (2015-07-15)
 
 *   Update kubectl to 0.20.2.
 *   Fix an authentication issue with 'gcloud docker' affecting docker version
@@ -3112,7 +3163,7 @@ command surface.
     installation to an old version).
 *   Bug fixes.
 
-## 0.9.68 (2015/07/08)
+## 0.9.68 (2015-07-08)
 
 *   Deprecated gcutil tool is no longer distributed with Cloud SDK.
     It is still available via <https://cloud.google.com/compute/docs/gcutil>.
@@ -3130,7 +3181,7 @@ command surface.
          <https://cloud.google.com/appengine/downloads>
 *   Bug fixes.
 
-## 0.9.67 (2015/07/01)
+## 0.9.67 (2015-07-01)
 
 *   App Engine components updated to 1.9.23. Please visit
     <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for
@@ -3146,7 +3197,7 @@ command surface.
 *   Linux/Mac install script now properly detects zsh and ksh RC files.
 *   Bug fixes.
 
-## 0.9.66 (2015/06/24)
+## 0.9.66 (2015-06-24)
 
 
 *   New commands
@@ -3154,7 +3205,7 @@ command surface.
     *   `gcloud topic` for supplementary help topics.
 *   `gcloud deployment-manager deployments delete` prompt defaults to false.
 
-## 0.9.65 (2015/06/17)
+## 0.9.65 (2015-06-17)
 
 *   Fixes `reset-windows-password` on Windows if `openssl` is present on the
     path.
@@ -3164,7 +3215,7 @@ command surface.
 *   kubectl updated to 0.18.1.
 *   `gcloud preview docker` moved to `gcloud docker`.
 
-## 0.9.64 (2015/06/10)
+## 0.9.64 (2015-06-10)
 
 *   New commands
     *   `gcloud beta compute scp` for secure copy.
@@ -3175,17 +3226,17 @@ command surface.
 *   The help pager is $PAGER or less(1) if available, otherwise a builtin pager.
 *   Update of gsutil component to version 4.13.
 
-## 0.9.63 (2015/06/03)
+## 0.9.63 (2015-06-03)
 
 *   2x faster command load times.
 *   Fix to allow `preview app` to use oauth service accounts
     <https://code.google.com/p/google-cloud-sdk/issues/detail?id=133>
 
-## 0.9.62 (2015/05/27)
+## 0.9.62 (2015-05-27)
 
 *   Not released.
 
-## 0.9.61 (2015/05/20)
+## 0.9.61 (2015-05-20)
 
 *   New kubectl component (installed by default)
 *   Internal improvements to gcloud preview app deploy; includes changes to
@@ -3193,23 +3244,23 @@ command surface.
 *   `gcloud preview projects` moved to `gcloud alpha projects`
 *   Tab completion for `gcloud compute ssh`
 
-## 0.9.60 (2015/05/13)
+## 0.9.60 (2015-05-13)
 
 *   VPN moved to GA.
 *   Preemptible VM support.
 *   Bug fixes.
 
-## 0.9.59 (2015/05/06)
+## 0.9.59 (2015-05-06)
 
 *   Bug fixes.
 
-## 0.9.58 (2015/04/29)
+## 0.9.58 (2015-04-29)
 
 *   gcloud alpha bigquery launch.
 *   Better error reporting in Customer Supplied Encryption Key files.
 *   Bug fixes.
 
-## 0.9.57 (2015/04/22)
+## 0.9.57 (2015-04-22)
 
 *   gcloud beta deployment-manager launch.
 *   gcloud app new deployment behavior.
@@ -3219,7 +3270,7 @@ command surface.
     scheme on Windows guest agent versions 3.0.0.0 and later.
 *   Bug fixes.
 
-## 0.9.56 (2015/04/15)
+## 0.9.56 (2015-04-15)
 
 *   Bug fixes.
 
@@ -3232,15 +3283,15 @@ command surface.
 *   VPN commands surfaced under gcloud compute.
 *   Dataflow CLI commands launched under gcloud alpha!
 
-## 0.9.52 (2015/03/18)
+## 0.9.52 (2015-03-18)
 
 *   Bug Fixes.
 
-## 0.9.51 (2015/03/11)
+## 0.9.51 (2015-03-11)
 
 *   Bug Fixes.
 
-## 0.9.50 (2015/03/04)
+## 0.9.50 (2015-03-04)
 
 *   Introducing the `gcloud beta ...` command group
     *   Existing gcloud commands will be replicated under this new group, but
@@ -3255,7 +3306,7 @@ command surface.
     for details.
 *   Release of `gcloud compute instances move` and `gcloud compute disks move`.
 
-## 0.9.49 (2015/02/25)
+## 0.9.49 (2015-02-25)
 
 *   The Google Container Registry is now used by default for deployment of
     Managed VM applications. See here for more information:
@@ -3269,89 +3320,89 @@ command surface.
 *   We've fixed several bugs related to port forwarding in the local
     devappserver.
 
-## 0.9.48 (2015/02/18)
+## 0.9.48 (2015-02-18)
 
 *   A bug fix for running setup-managed-vms multiple times when using the Google
     Container Registry
 
-## 0.9.47 (2015/02/11)
+## 0.9.47 (2015-02-11)
 
 *   Bug fixes that allow tab completion to work for components in preview.
 *   GCloud now auto installs components based on command execution.
 
-## 0.9.46 (2015/02/04)
+## 0.9.46 (2015-02-04)
 
 *   We've made significant improvements to the stability and speed of deploying
     Managed VMs by leveraging the new Google Container Registry. See this post
     for details on how to try it out today:
     <https://groups.google.com/forum/#!topic/google-appengine/c543NHZGhKM>
 
-## 0.9.45 (2015/01/28)
+## 0.9.45 (2015-01-28)
 
 *   Several bug fixes in the Dockerfile generated for the 'go' runtime. Delete
     the Dockerfile in your application directory and the Cloud SDK will copy the
     updated Dockerfile on your next deployment.
 *   Several bug fixes related to flakiness in the setup-managed-vms command.
 
-## 0.9.44 (2015/01/21)
+## 0.9.44 (2015-01-21)
 
 *   Fixes applied to the google/appengine-gobase image for managed VMs.
 *   Tab completion for gcloud SQL commands.
 
-## 0.9.43 (2015/01/14)
+## 0.9.43 (2015-01-14)
 
 *   Support added for authenticating service accounts with JSON keys. If using
     JSON keys, PyOpenSSL is no longer a dependency. Refer to help docs here:
     <https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account>.
 
-## 0.9.42 (2015/01/08)
+## 0.9.42 (2015-01-08)
 
 *   Suport for local ssds in instance templates for gcloud compute.
 
-## 0.9.41 (2014/12/17)
+## 0.9.41 (2014-12-17)
 
 *   Progress Bars.
 *   Compute Instances start/ stop commands.
 
-## 0.9.40 (2014/12/09)
+## 0.9.40 (2014-12-09)
 
 *   Bug Fixes.
 
-## 0.9.39 (2014/12/03)
+## 0.9.39 (2014-12-03)
 
 *   Bug Fixes.
 
-## 0.9.37 (2014/11/19)
+## 0.9.37 (2014-11-19)
 
 *   Added support for local SSD.
 
-## 0.9.36 (2014/11/12)
+## 0.9.36 (2014-11-12)
 
 *   Bug Fixes.
 
-## 0.9.35 (2014/11/04)
+## 0.9.35 (2014-11-04)
 
 *   Added support for Google Container Engine. It is available under the
     'gcloud preview container' command group.
 
-## 0.9.34 (2014/10/14)
+## 0.9.34 (2014-10-14)
 
 *   Added support for Google Compute Engine Instance Templates in
     compute component.
 *   Launch of instance-groups and managed-instance-groups in
     preview component.
 
-## 0.9.33 (2014/09/30)
+## 0.9.33 (2014-09-30)
 
 *   Overhaul of 'gcloud sql'
     *   Updated the output for all commands.
     *   Updated usage for 'gcloud sql ssl-certs create'.
 
-## 0.9.32 (2014/09/16)
+## 0.9.32 (2014-09-16)
 
 *   Bug Fixes.
 
-## 0.9.31 (2014/09/02)
+## 0.9.31 (2014-09-02)
 
 *   Added support for creating and maintaining Cloud SQL read replica instances.
     *   Added --master-instance-name property that can be set during replica
@@ -3375,11 +3426,11 @@ command surface.
         image or a disk initializaed from a Windows image.
     *   Added a new scope alias for Cloud SQL administration: 'sql-admin'.
 
-## 0.9.30 (2014/08/19)
+## 0.9.30 (2014-08-19)
 
 *   Bug Fixes.
 
-## 0.9.29 (2014/08/11)
+## 0.9.29 (2014-08-11)
 
 *   The compute component is now in General Availability.
     *   Added new 'compute/zone' and 'compute/region' properties that
@@ -3398,7 +3449,7 @@ command surface.
     *   Added support to the 'addresses' collection for interacting with
         global addresses.
 
-## 0.9.28 (2014/07/18)
+## 0.9.28 (2014-07-18)
 
 *   Updated gcutil to 1.16.3 and various App Engine runtimes to 1.9.7 binaries.
 *   Support running several modules by gcloud app run and fixed output errors.
@@ -3414,7 +3465,7 @@ command surface.
 *   Added image alias support for the --image flag in the compute component.
 
 
-## 0.9.27 (2014/06/18)
+## 0.9.27 (2014-06-18)
 
 *   Added --shell mode to all gcloud commands
     *   Type a partial command followed by '--shell' to drop into a sub shell at
@@ -3428,7 +3479,7 @@ command surface.
     packages
 
 
-## 0.9.26 (2014/06/04)
+## 0.9.26 (2014-06-04)
 
 *   Windows support for SSH and SCP to Compute VMs
     *   The following will now work natively on Windows without the need for
@@ -3446,7 +3497,7 @@ command surface.
     *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 
 
-## 0.9.25 (2014/05/21)
+## 0.9.25 (2014-05-21)
 
 *   `gcloud preview app deploy` and `... run` argument updates.
 *   `gcloud config ...` argument updates.
@@ -3455,14 +3506,14 @@ command surface.
     *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
 
 
-## 0.9.24 (2014/05/07)
+## 0.9.24 (2014-05-07)
 
 *   gcloud now has App Engine and Cloud Datastore integration.
     *   Commands can be found under `gcloud preview app` and `gcloud preview
         datastore`
 
 
-## 0.9.23 (2014/05/01)
+## 0.9.23 (2014-05-01)
 
 *   New `gcloud compute` tool for working with compute engine (RC)
     *   Run `gcloud components update compute` to install
@@ -3474,7 +3525,7 @@ command surface.
     *   To disable, run `gcloud config set disable_color true`
 
 
-## 0.9.22 (2014/04/23)
+## 0.9.22 (2014-04-23)
 
 *   New 'gcloud help command'
     *   Displays man style extended help for commands (where available).
@@ -3484,22 +3535,22 @@ command surface.
 *   Bug fixes and improved error handling.
 
 
-## 0.9.21 (2014/04/09)
+## 0.9.21 (2014-04-09)
 
 *   Minor updates and bug fixes.
 
 
-## 0.9.20 (2014/03/24)
+## 0.9.20 (2014-03-24)
 
 *   Minor updates and bug fixes.
 
 
-## 0.9.19 (2014/03/19)
+## 0.9.19 (2014-03-19)
 
 *   Minor updates and bug fixes.
 
 
-## 0.9.18 (2014/03/05)
+## 0.9.18 (2014-03-05)
 
 *   New 'gcloud init' command
     *   Crpace for your project with a git clone of your Google
@@ -3507,7 +3558,7 @@ command surface.
 *   Updated gcutil to 1.14.0
 
 
-## 0.9.17 (2014/02/11)
+## 0.9.17 (2014-02-11)
 
 *   Updated all App Engine tools to 1.9.0
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3516,14 +3567,14 @@ command surface.
     for more information.
 
 
-## 0.9.16 (2014/01/28)
+## 0.9.16 (2014-01-28)
 
 *   Added Python2.6 compatibility.
 *   Added ability to symlink directly to scripts in the bin/ directory.
 *   Fixed bug in default setup of credentials when on a Compute Engine VM.
 
 
-## 0.9.15 (2014/01/15)
+## 0.9.15 (2014-01-15)
 
 *   Updated gsutil to 3.40
 *   Updated all App Engine tools to 1.8.9
@@ -3536,7 +3587,7 @@ command surface.
 *   Fixed issue with failing `goapp build`
 
 
-## 0.9.14 (2013/12/17)
+## 0.9.14 (2013-12-17)
 
 *   'gcloud sql' now available.
     *   Find out more: <https://developers.google.com/cloud-sql/docs/cloud-sdk>
@@ -3548,12 +3599,12 @@ command surface.
 *   Fix for environments with protobuf installed.
 
 
-## 0.9.13.1 (2013/12/04)
+## 0.9.13.1 (2013-12-04)
 
 *   Validate queries to metadata server.
 
 
-## 0.9.13 (2013/11/19)
+## 0.9.13 (2013-11-19)
 
 *   Updated all App Engine tools to 1.8.8
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3561,7 +3612,7 @@ command surface.
 *   Disabling site packages when running commands, to avoid library conflicts.
 
 
-## 0.9.12 (2013/11/06)
+## 0.9.12 (2013-11-06)
 
 *   Updated all App Engine tools to 1.8.7
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3570,7 +3621,7 @@ command surface.
 *   A few usability improvements in the component manager and install flow.
 
 
-## 0.9.11 (2013/10/28)
+## 0.9.11 (2013-10-28)
 
 *   The Cloud SDK is now distributed using a new component manager.
     *   Download a small initial zip file, then install the tools you want on
@@ -3588,7 +3639,7 @@ command surface.
     <https://developers.google.com/cloud/sdk/gettingstarted>
 
 
-## 0.9.10 (2013/10/20)
+## 0.9.10 (2013-10-20)
 
 *   Upgraded all App Engine tools to 1.8.6.
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3598,7 +3649,7 @@ command surface.
 *   A few improvements to the gauth web flow.
 
 
-## 0.9.9 (2013/09/26)
+## 0.9.9 (2013-09-26)
 
 *   Upgraded all App Engine tools to 1.8.5.
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3608,7 +3659,7 @@ command surface.
 *   Upgraded gsutil to 3.37.
 
 
-## 0.9.8 (2013/08/27)
+## 0.9.8 (2013-08-27)
 
 *   Upgraded all App Engine tools to 1.8.4.
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3617,7 +3668,7 @@ command surface.
 *   Upgraded gsutil to 3.35.
 
 
-## 0.9.7 (2013/08/06)
+## 0.9.7 (2013-08-06)
 
 *   Upgraded all App Engine tools to 1.8.3
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3625,7 +3676,7 @@ command surface.
 *   Upgraded gsutil to 3.34
 
 
-## 0.9.6 (2013/07/17)
+## 0.9.6 (2013-07-17)
 
 *   Upgraded all App Engine tools to 1.8.2
     *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
@@ -3635,12 +3686,12 @@ command surface.
 *   Upgraded gsutil to 3.33
 
 
-## 0.9.5 (2013/06/18)
+## 0.9.5 (2013-06-18)
 
 *   App Engine Hotfix
 
 
-## 0.9.4 (2013/06/12)
+## 0.9.4 (2013-06-12)
 
 *   archive file name changed to google-cloud-sdk
 *   Upgraded all App Engine tools to 1.8.1
@@ -3652,13 +3703,13 @@ command surface.
     *   Suppression of spurious error related to the Windows Registry
 
 
-## 0.9.3 (2013/05/24)
+## 0.9.3 (2013-05-24)
 
 *   Upgraded gcutil to 1.8.0
 *   Upgraded gsutil to 3.29
 
 
-## 0.9.2 (2013/05/07)
+## 0.9.2 (2013-05-07)
 
 *   Upgraded all App Engine tools to 1.8.0
 *   Upgraded gsutil to 3.27
@@ -3672,13 +3723,13 @@ command surface.
         your path.
 
 
-## 0.9.1 (2013/04/10)
+## 0.9.1 (2013-04-10)
 
 *   Fixed an issue with gauth that occurred when running a command before
     credentials were created.
 
 
-## 0.9.0 (2013/04/09)
+## 0.9.0 (2013-04-09)
 
 *   Developer preview release of the Cloud SDK
 *   Includes command line tools for:

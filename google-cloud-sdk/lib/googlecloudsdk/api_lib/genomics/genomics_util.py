@@ -23,8 +23,8 @@ from apitools.base.py import extra_types
 from apitools.base.py import transfer
 
 from googlecloudsdk.api_lib.genomics import exceptions as genomics_exceptions
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer

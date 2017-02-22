@@ -372,7 +372,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "A friendly string to be used to refer to the Organization in the UI.\nAssigned by the server, set to the firm name of the Google For Work\ncustomer that owns this organization.\n@OutputOnly",
+          "description": "A friendly string to be used to refer to the Organization in the UI.\nAssigned by the server, set to the primary domain of the G Suite\ncustomer that owns the organization.\n@OutputOnly",
           "type": "string"
         },
         "owner": {

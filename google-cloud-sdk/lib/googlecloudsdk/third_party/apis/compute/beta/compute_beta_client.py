@@ -74,6 +74,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.targetInstances = self.TargetInstancesService(self)
     self.targetPools = self.TargetPoolsService(self)
     self.targetSslProxies = self.TargetSslProxiesService(self)
+    self.targetTcpProxies = self.TargetTcpProxiesService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
     self.urlMaps = self.UrlMapsService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
@@ -4718,6 +4719,110 @@ If you increase the size of the instance group, the group creates new instances 
       self._upload_configs = {
           }
 
+    def DisableXpnHost(self, request, global_params=None):
+      """Disable this project as an XPN host project.
+
+      Args:
+        request: (ComputeProjectsDisableXpnHostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableXpnHost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.disableXpnHost',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/disableXpnHost',
+        request_field='',
+        request_type_name=u'ComputeProjectsDisableXpnHostRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DisableXpnResource(self, request, global_params=None):
+      """Disable an XPN resource associated with this host project.
+
+      Args:
+        request: (ComputeProjectsDisableXpnResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableXpnResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.disableXpnResource',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/disableXpnResource',
+        request_field=u'projectsDisableXpnResourceRequest',
+        request_type_name=u'ComputeProjectsDisableXpnResourceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def EnableXpnHost(self, request, global_params=None):
+      """Enable this project as an XPN host project.
+
+      Args:
+        request: (ComputeProjectsEnableXpnHostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableXpnHost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.enableXpnHost',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/enableXpnHost',
+        request_field='',
+        request_type_name=u'ComputeProjectsEnableXpnHostRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def EnableXpnResource(self, request, global_params=None):
+      """Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.
+
+      Args:
+        request: (ComputeProjectsEnableXpnResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableXpnResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.enableXpnResource',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/enableXpnResource',
+        request_field=u'projectsEnableXpnResourceRequest',
+        request_type_name=u'ComputeProjectsEnableXpnResourceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns the specified Project resource.
 
@@ -4767,6 +4872,32 @@ If you increase the size of the instance group, the group creates new instances 
         request_field='',
         request_type_name=u'ComputeProjectsGetXpnHostRequest',
         response_type_name=u'Project',
+        supports_download=False,
+    )
+
+    def GetXpnResources(self, request, global_params=None):
+      """Get XPN resources associated with this host project.
+
+      Args:
+        request: (ComputeProjectsGetXpnResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectsGetXpnResources) The response message.
+      """
+      config = self.GetMethodConfig('GetXpnResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetXpnResources.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.projects.getXpnResources',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
+        relative_path=u'projects/{project}/getXpnResources',
+        request_field='',
+        request_type_name=u'ComputeProjectsGetXpnResourcesRequest',
+        response_type_name=u'ProjectsGetXpnResources',
         supports_download=False,
     )
 
@@ -7997,6 +8128,172 @@ For more information, see Deleting snaphots.
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeTargetSslProxiesTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class TargetTcpProxiesService(base_api.BaseApiService):
+    """Service class for the targetTcpProxies resource."""
+
+    _NAME = u'targetTcpProxies'
+
+    def __init__(self, client):
+      super(ComputeBeta.TargetTcpProxiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified TargetTcpProxy resource.
+
+      Args:
+        request: (ComputeTargetTcpProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.targetTcpProxies.delete',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified TargetTcpProxy resource. Get a list of available target TCP proxies by making a list() request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.get',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesGetRequest',
+        response_type_name=u'TargetTcpProxy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a TargetTcpProxy resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field=u'targetTcpProxy',
+        request_type_name=u'ComputeTargetTcpProxiesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of TargetTcpProxy resources available to the specified project.
+
+      Args:
+        request: (ComputeTargetTcpProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesListRequest',
+        response_type_name=u'TargetTcpProxyList',
+        supports_download=False,
+    )
+
+    def SetBackendService(self, request, global_params=None):
+      """Changes the BackendService for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetBackendServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetBackendService')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetBackendService.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setBackendService',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService',
+        request_field=u'targetTcpProxiesSetBackendServiceRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetBackendServiceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetProxyHeader(self, request, global_params=None):
+      """Changes the ProxyHeaderType for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetProxyHeaderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetProxyHeader')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetProxyHeader.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setProxyHeader',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader',
+        request_field=u'targetTcpProxiesSetProxyHeaderRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetProxyHeaderRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

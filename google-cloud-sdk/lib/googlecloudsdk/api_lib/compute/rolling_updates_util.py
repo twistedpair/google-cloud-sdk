@@ -13,8 +13,8 @@
 # limitations under the License.
 """Common utility functions for Updater."""
 
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.util import time_util
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 

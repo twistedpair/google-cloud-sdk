@@ -19,6 +19,7 @@ tool. We use the command-line tool for syncing the contents of buckets as well
 as listing the contents. We use the API for checking ACLs.
 """
 
+import cStringIO
 import mimetypes
 import os
 
@@ -27,8 +28,8 @@ from apitools.base.py import list_pager
 from apitools.base.py import transfer
 
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -213,6 +214,35 @@ class StorageClient(object):
       raise exceptions.BadFileException(
           'Cloud Storage download failure. Downloaded file [{0}] does not '
           'match Cloud Storage object. Please retry.'.format(local_path))
+
+  def ReadObject(self, object_ref):
+    """Read a file from the given Cloud Storage bucket.
+
+    Args:
+      object_ref: storage_util.ObjectReference, The object to read from.
+
+    Raises:
+      BadFileException if the file read is not successful.
+
+    Returns:
+      file-like object containing the data read.
+    """
+    data = cStringIO.StringIO()
+    download = transfer.Download.FromStream(data)
+    get_req = self.messages.StorageObjectsGetRequest(
+        bucket=object_ref.bucket,
+        object=object_ref.name)
+
+    log.info('Reading [%s]', object_ref)
+    try:
+      self.client.objects.Get(get_req, download=download)
+    except api_exceptions.HttpError as err:
+      raise exceptions.BadFileException(
+          'Could not read [{object_}]: {err}. Please retry.'.format(
+              object_=object_ref, err=err))
+
+    data.seek(0)
+    return data
 
   def CreateBucketIfNotExists(self, bucket, project=None):
     """Create a bucket if it does not already exist.

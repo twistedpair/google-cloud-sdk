@@ -21,7 +21,7 @@ import urllib
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.debug import errors
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources

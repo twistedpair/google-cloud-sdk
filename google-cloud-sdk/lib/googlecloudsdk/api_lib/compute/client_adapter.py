@@ -20,8 +20,8 @@ from apitools.base.py import batch
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
 
 # Upper bound on batch size

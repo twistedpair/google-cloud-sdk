@@ -14,9 +14,9 @@
 
 """A module for Service Registry address parsing with argparse."""
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis
 
 COMPUTE_RESOURCE_URL = 'https://www.googleapis.com/compute/v1/projects/{0}/global/networks/{1}'
 

@@ -16,30 +16,36 @@ class CloudresourcesearchResourcesSearchRequest(_messages.Message):
   """A CloudresourcesearchResourcesSearchRequest object.
 
   Fields:
-    orderBy: Comma-separated list of string fields for sorting on the search
-      result, including fields from the resources and the built-in fields
-      (`resourceName` and `resourceType`). Strings are sorted as binary
-      strings based on their UTF-8 encoding.  The default sorting order is
-      ascending. To specify descending order for a field, a suffix `" desc"`
-      should be appended to the field name. For example: `orderBy="foo
-      desc,bar"`.
-    pageSize: The maximum number of search results to return per page.
-      Searches perform best when the `pageSize` is kept as small as possible.
-      If not specified, 20 results are returned per page. At most 1000 results
-      are returned per page.
-    pageToken: A `nextPageToken` returned from previous SearchResources call
-      as the starting point for this call.
-    query: The query string in search query syntax. If the query is missing or
-      empty, all resources are returned.  Any field in a supported resource
-      type's JSON schema may be specified in the query. Additionally, every
+    orderBy: Optional. A comma-separated list of string-valued fields for
+      sorting the results.  If this field is omitted, then the order of
+      results is not defined. You can use fields from the resource schemas as
+      well as the built-in fields `resourceName` and `resourceType`. Field
+      values are ordered by their UTF-8 encodings.  Fields are sorted in
+      ascending order by default. To sort a field in descending order, append
+      `" desc"` to the field name. For example, the `order_by` value
+      `"resource_type desc,resource_name"` sorts results by resource type in
+      descending order; resources with the same type are returned in ascending
+      order of their names.
+    pageSize: Optional. The maximum number of resources to return from this
+      request.  The presence of `next_page_token` in the response indicates
+      that more resources are available.  The default value of `page_size` is
+      20 and the maximum value is 1000.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `page_token` must be the value
+      of `next_page_token` from the previous response.  The values of other
+      method parameters, including the query and sort order, must be identical
+      to those in the previous call.
+    query: Optional. The query string. If the query is missing or empty, all
+      accessible resources are returned.  Any field in a supported resource
+      type's schema may be specified in the query. Additionally, every
       resource has a `@type` field whose value is the resource's type URL. See
       `SearchResult.resource_type` for more information.  Example: The
-      following query searches for all Google Compute Engine VM instances
-      accessible to the caller. The query is further restricted on the
-      `labels` and `machineType` fields of the resource. Only VM instances
-      with the label `env` set to "prod" and `machineType` including a token
-      phrase with the prefix "n1-stand" are matched.   @type:Instance
-      labels.env:prod machineType:n1-stand*
+      following query searches for accessible Compute Engine VM instances
+      (`@type:Instance`) that have an `env` label value of `prod` and that
+      have a machine type that starts with `"n1-stand"`:      @type:Instance
+      labels.env:prod machineType:n1-stand*  For more information, see [Search
+      Queries](/resource-search/docs/search-queries) and [Resource Types
+      ](/resource-search/docs/reference/Resource.Types).
   """
 
   orderBy = _messages.StringField(1)
@@ -49,15 +55,17 @@ class CloudresourcesearchResourcesSearchRequest(_messages.Message):
 
 
 class SearchResponse(_messages.Message):
-  """Response message for Search().
+  """Response message for `resources.search`.
 
   Fields:
-    matchedCount: The approximate number of documents that match the query. It
-      is greater than or equal to the number of documents actually returned.
-    nextPageToken: If there are more results, retrieve them by invoking search
-      call with the same arguments and this `nextPageToken`. If there are no
-      more results, this field is not set.
-    results: The list of resources that match the search query.
+    matchedCount: The approximate total number of resources that match the
+      query.  It will never be less than the number of resources returned so
+      far, but it can change as additional pages of results are returned.
+    nextPageToken: If there are more results than those appearing in this
+      response, then `next_page_token` is included.  To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    results: A list of resources that match the search query.
   """
 
   matchedCount = _messages.IntegerField(1)
@@ -66,30 +74,30 @@ class SearchResponse(_messages.Message):
 
 
 class SearchResult(_messages.Message):
-  """A single Google Cloud Platform resource returned in
-  SearchResourcesResponse.
+  """A single Google Cloud Platform resource.
 
   Messages:
     ResourceValue: The matched resource, expressed as a JSON object.
 
   Fields:
     discoveryType: The JSON schema name listed in the discovery document.
-      Example: Project
+      Example: `Project`.
     discoveryUrl: The URL of the discovery document containing the resource's
       JSON schema. Example:
-      https://cloudresourcemanager.googleapis.com/$discovery/rest
+      `https://cloudresourcemanager.googleapis.com/$discovery/rest`.
     resource: The matched resource, expressed as a JSON object.
-    resourceName: The RPC resource name. It is a scheme-less URI that includes
-      the DNS- compatible API service name. It does not include API version,
-      or support %-encoding. Example:
-      //cloudresourcemanager.googleapis.com/projects/my-project-123
+    resourceName: The RPC resource name: a scheme-less URI that includes the
+      DNS-compatible API service name. The URI does not include an API version
+      and does not support %-encoding. Example:
+      `//cloudresourcemanager.googleapis.com/projects/my-project-123`.
     resourceType: A domain-scoped name that describes the protocol buffer
       message type. Example:
-      type.googleapis.com/google.cloud.resourcemanager.v1.Project
-    resourceUrl: The REST URL for accessing the resource. HTTP GET on the
-      `resource_url` would return a JSON object equivalent to the `resource`
-      below. Example: https://cloudresourcemanager.googleapis.com/v1/projects
-      /my-project-123
+      `type.googleapis.com/google.cloud.resourcemanager.v1.Project`.
+    resourceUrl: The REST URL for accessing the resource. An HTTP GET
+      operation using this URL returns an object equivalent to the value in
+      the `resource` field. Example:
+      `https://cloudresourcemanager.googleapis.com/v1/projects/my-
+      project-123`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

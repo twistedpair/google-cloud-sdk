@@ -433,6 +433,7 @@ class Application(_messages.Message):
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
       dependent.@OutputOnly
+    iap: A IdentityAwareProxy attribute.
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
       deploy your application. Example: myapp.
@@ -451,9 +452,10 @@ class Application(_messages.Message):
   defaultCookieExpiration = _messages.StringField(4)
   defaultHostname = _messages.StringField(5)
   dispatchRules = _messages.MessageField('UrlDispatchRule', 6, repeated=True)
-  id = _messages.StringField(7)
-  locationId = _messages.StringField(8)
-  name = _messages.StringField(9)
+  iap = _messages.MessageField('IdentityAwareProxy', 7)
+  id = _messages.StringField(8)
+  locationId = _messages.StringField(9)
+  name = _messages.StringField(10)
 
 
 class AutomaticScaling(_messages.Message):
@@ -518,13 +520,14 @@ class BasicScaling(_messages.Message):
 
 
 class ContainerInfo(_messages.Message):
-  """Docker image that is used to start a VM container for the version you
-  deploy.
+  """Docker image that is used to create a container and start a VM instance
+  for the version that you deploy. Only applicable for instances running in
+  the App Engine flexible environment.
 
   Fields:
-    image: URI to the hosted container image in a Docker repository. The URI
-      must be fully qualified and include a tag or digest. Examples: "gcr.io
-      /my-project/image:tag" or "gcr.io/my-project/image@digest"
+    image: URI to the hosted container image in Google Container Registry. The
+      URI must be fully qualified and include a tag or digest. Examples:
+      "gcr.io/my-project/image:tag" or "gcr.io/my-project/image@digest"
   """
 
   image = _messages.StringField(1)
@@ -568,8 +571,8 @@ class Deployment(_messages.Message):
       credentials supplied with this call.
 
   Fields:
-    container: A Docker image that App Engine uses to run the version. Only
-      applicable for instances in App Engine flexible environment.
+    container: The Docker image for the container that runs the version. Only
+      applicable for instances running in the App Engine flexible environment.
     files: Manifest of the files stored in Google Cloud Storage that are
       included as part of this version. All files must be readable using the
       credentials supplied with this call.
@@ -723,6 +726,28 @@ class HealthCheck(_messages.Message):
   unhealthyThreshold = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
 
 
+class IdentityAwareProxy(_messages.Message):
+  """Identity-Aware Proxy
+
+  Fields:
+    enabled: Whether the serving infrastructure will authenticate and
+      authorize all incoming requests.If true, the oauth2_client_id and
+      oauth2_client_secret fields must be non-empty.
+    oauth2ClientId: OAuth2 client ID to use for the authentication flow.
+    oauth2ClientSecret: OAuth2 client secret to use for the authentication
+      flow.For security reasons, this value cannot be retrieved via the API.
+      Instead, the SHA-256 hash of the value is returned in the
+      oauth2_client_secret_sha256 field.@InputOnly
+    oauth2ClientSecretSha256: Hex-encoded SHA-256 hash of the client
+      secret.@OutputOnly
+  """
+
+  enabled = _messages.BooleanField(1)
+  oauth2ClientId = _messages.StringField(2)
+  oauth2ClientSecret = _messages.StringField(3)
+  oauth2ClientSecretSha256 = _messages.StringField(4)
+
+
 class Instance(_messages.Message):
   """An Instance resource is the computing unit that App Engine uses to
   automatically scale an application.
@@ -860,6 +885,32 @@ class ListVersionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   versions = _messages.MessageField('Version', 2, repeated=True)
+
+
+class LivenessCheck(_messages.Message):
+  """Health checking configuration for VM instances. Unhealthy instances are
+  killed and replaced with new instances.
+
+  Fields:
+    checkInterval: Interval between health checks.
+    healthyThreshold: Number of consecutive successful checks required before
+      considering the VM healthy.
+    host: Host header to send when performing a HTTP Liveness check. Example:
+      "myapp.appspot.com"
+    initialDelay: The initial delay before starting to execute the checks.
+    path: The request path.
+    timeout: Time before the check is considered failed.
+    unhealthyThreshold: Number of consecutive failed checks required before
+      considering the VM unhealthy.
+  """
+
+  checkInterval = _messages.StringField(1)
+  healthyThreshold = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  host = _messages.StringField(3)
+  initialDelay = _messages.StringField(4)
+  path = _messages.StringField(5)
+  timeout = _messages.StringField(6)
+  unhealthyThreshold = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
 
 
 class Location(_messages.Message):
@@ -1191,6 +1242,58 @@ class OperationMetadataV1(_messages.Message):
   warning = _messages.StringField(7, repeated=True)
 
 
+class OperationMetadataV1Alpha(_messages.Message):
+  """Metadata for the given google.longrunning.Operation.
+
+  Fields:
+    endTime: Time that this operation completed.@OutputOnly
+    ephemeralMessage: Ephemeral message that may change every time the
+      operation is polled. @OutputOnly
+    insertTime: Time that this operation was created.@OutputOnly
+    method: API method that initiated this operation. Example:
+      google.appengine.v1alpha.Versions.CreateVersion.@OutputOnly
+    target: Name of the resource that this operation is acting on. Example:
+      apps/myapp/services/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
+    warning: Durable messages that persist on every operation poll.
+      @OutputOnly
+  """
+
+  endTime = _messages.StringField(1)
+  ephemeralMessage = _messages.StringField(2)
+  insertTime = _messages.StringField(3)
+  method = _messages.StringField(4)
+  target = _messages.StringField(5)
+  user = _messages.StringField(6)
+  warning = _messages.StringField(7, repeated=True)
+
+
+class OperationMetadataV1Beta(_messages.Message):
+  """Metadata for the given google.longrunning.Operation.
+
+  Fields:
+    endTime: Time that this operation completed.@OutputOnly
+    ephemeralMessage: Ephemeral message that may change every time the
+      operation is polled. @OutputOnly
+    insertTime: Time that this operation was created.@OutputOnly
+    method: API method that initiated this operation. Example:
+      google.appengine.v1beta.Versions.CreateVersion.@OutputOnly
+    target: Name of the resource that this operation is acting on. Example:
+      apps/myapp/services/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
+    warning: Durable messages that persist on every operation poll.
+      @OutputOnly
+  """
+
+  endTime = _messages.StringField(1)
+  ephemeralMessage = _messages.StringField(2)
+  insertTime = _messages.StringField(3)
+  method = _messages.StringField(4)
+  target = _messages.StringField(5)
+  user = _messages.StringField(6)
+  warning = _messages.StringField(7, repeated=True)
+
+
 class OperationMetadataV1Beta5(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
@@ -1209,6 +1312,30 @@ class OperationMetadataV1Beta5(_messages.Message):
   method = _messages.StringField(3)
   target = _messages.StringField(4)
   user = _messages.StringField(5)
+
+
+class ReadinessCheck(_messages.Message):
+  """Readiness checking configuration for VM instances. Unhealthy instances
+  are removed from traffic rotation.
+
+  Fields:
+    checkInterval: Interval between health checks.
+    healthyThreshold: Number of consecutive successful checks required before
+      receiving traffic.
+    host: Host header to send when performing a HTTP Readiness check. Example:
+      "myapp.appspot.com"
+    path: The request path.
+    timeout: Time before the check is considered failed.
+    unhealthyThreshold: Number of consecutive failed checks required before
+      removing traffic.
+  """
+
+  checkInterval = _messages.StringField(1)
+  healthyThreshold = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  host = _messages.StringField(3)
+  path = _messages.StringField(4)
+  timeout = _messages.StringField(5)
+  unhealthyThreshold = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
 
 
 class RepairApplicationRequest(_messages.Message):
@@ -1775,6 +1902,9 @@ class Version(_messages.Message):
     libraries: Configuration for third-party Python runtime libraries that are
       required by the application.Only returned in GET requests if view=FULL
       is set.
+    livenessCheck: Configures liveness health checking for VM instances.
+      Unhealthy instances are stopped and replaced with new instancesOnly
+      returned in GET requests if view=FULL is set.
     manualScaling: A service with manual scaling runs continuously, allowing
       you to perform complex initialization and rely on the state of its
       memory over time.
@@ -1784,6 +1914,9 @@ class Version(_messages.Message):
     nobuildFilesRegex: Files that match this pattern will not be built into
       this version. Only applicable for Go runtimes.Only returned in GET
       requests if view=FULL is set.
+    readinessCheck: Configures readiness health checking for VM instances.
+      Unhealthy instances are not put into the backend traffic rotation.Only
+      returned in GET requests if view=FULL is set.
     resources: Machine resources for this version. Only applicable for VM
       runtimes.
     runtime: Desired runtime. Example: python27.
@@ -1910,16 +2043,18 @@ class Version(_messages.Message):
   inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 17, repeated=True)
   instanceClass = _messages.StringField(18)
   libraries = _messages.MessageField('Library', 19, repeated=True)
-  manualScaling = _messages.MessageField('ManualScaling', 20)
-  name = _messages.StringField(21)
-  network = _messages.MessageField('Network', 22)
-  nobuildFilesRegex = _messages.StringField(23)
-  resources = _messages.MessageField('Resources', 24)
-  runtime = _messages.StringField(25)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 26)
-  threadsafe = _messages.BooleanField(27)
-  versionUrl = _messages.StringField(28)
-  vm = _messages.BooleanField(29)
+  livenessCheck = _messages.MessageField('LivenessCheck', 20)
+  manualScaling = _messages.MessageField('ManualScaling', 21)
+  name = _messages.StringField(22)
+  network = _messages.MessageField('Network', 23)
+  nobuildFilesRegex = _messages.StringField(24)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 25)
+  resources = _messages.MessageField('Resources', 26)
+  runtime = _messages.StringField(27)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 28)
+  threadsafe = _messages.BooleanField(29)
+  versionUrl = _messages.StringField(30)
+  vm = _messages.BooleanField(31)
 
 
 class Volume(_messages.Message):

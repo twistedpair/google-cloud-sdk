@@ -59,8 +59,8 @@ and debug cache data without modifying the underlying persistent data.
 """
 
 import abc
-import re
 import time
+import urllib
 
 from googlecloudsdk.core.cache import exceptions
 
@@ -94,10 +94,6 @@ class Table(object):
 
   def __init__(self, cache, name, columns=1, keys=1, timeout=0, modified=0,
                restricted=False):
-    if not self.IsValidName(name):
-      raise exceptions.CacheTableNameInvalid(
-          'Invalid cache table name [{}] in cache [{}].'.format(
-              name, cache.name))
     self._cache = cache
     self.name = name
     self.restricted = restricted
@@ -127,20 +123,24 @@ class Table(object):
     return not self.modified
 
   @classmethod
-  def IsValidName(cls, name):
-    """Returns True if name is a valid user supplied table name.
+  def EncodeName(cls, name):
+    r"""Returns name encoded for file system path compatibility.
 
-    Valid table names:
-      * are not empty
-      * contain only alphanumeric or these characters {'-', '_', '.'}.
+    A table name may be a file name. alnum and '_.-' are not encoded.
 
     Args:
-      name: The table name string to check.
+      name: The cache name string to encode.
+
+    Raises:
+      CacheTableNameInvalid: For invalid table names.
 
     Returns:
-      True if name is a valid user supplied table name.
+      Name encoded for portability.
     """
-    return bool(re.match(r'^[-_.\w]+$', name))
+    if not name:
+      raise exceptions.CacheTableNameInvalid(
+          'Cache table name [{}] is invalid.'.format(name))
+    return urllib.quote(name, '!@+,')
 
   def _CheckRows(self, rows):
     """Raise an exception if the size of any row in rows is invalid.
@@ -253,8 +253,8 @@ class Cache(object):
       ...
 
   Attributes:
-    name: The persistent cache name. Created/removed by this object. Must
-      satisfy Cache.IsValidName().
+    name: The persistent cache name. Created/removed by this object. Internally
+      encoded by Cache.EncodeName().
     timeout: The default table timeout in seconds. 0 for no timeout.
     version: A caller defined version string that must match the version string
       stored when the persistent object was created.
@@ -263,10 +263,7 @@ class Cache(object):
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, name, create=True, timeout=None, version=None):
-    if not Cache.IsValidName(name):
-      raise exceptions.CacheNameInvalid(
-          '[{}] is not a valid persistent cache name.'.format(name))
-    self.name = name
+    self.name = Cache.EncodeName(name)
     del create  # Unused in __init__. Subclass constructors may use this.
     self.timeout = timeout
     self.version = version
@@ -278,22 +275,26 @@ class Cache(object):
     self.Close(commit=typ is None)
 
   @classmethod
-  def IsValidName(cls, name):
-    r"""Returns True if name is a valid user supplied cache name.
+  def EncodeName(cls, name):
+    r"""Returns name encoded for filesystem portability.
 
-    A cache name may be a file path. Characters after the rightmost of
-    ('/', '\\') must satisfy Table.IsValidName().
+    A cache name may be a file path. The part after the rightmost of
+    ('/', '\\') is encoded with Table.EncodeName().
 
     Args:
-      name: The table name string to check.
+      name: The cache name string to encode.
+
+    Raises:
+      CacheNameInvalid: For invalid cache names.
 
     Returns:
-      True if name is a valid user supplied cache name.
+      Name encoded for filesystem portability.
     """
     basename_index = max(name.rfind('/'), name.rfind('\\')) + 1
-    if basename_index:
-      name = name[basename_index:]
-    return bool(Table.IsValidName(name))
+    if not name[basename_index:]:
+      raise exceptions.CacheNameInvalid(
+          'Cache name [{}] is invalid.'.format(name))
+    return name[:basename_index] + Table.EncodeName(name[basename_index:])
 
   @abc.abstractmethod
   def Delete(self):

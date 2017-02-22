@@ -162,12 +162,12 @@ SCALE_TIER = base.Argument(
           'parameter servers.'),
     choices=_SCALE_TIER_CHOICES,
     default=None)
-# TODO(b/34626942) : Update runtime_version help string with link to runtime
-# version doc page once it exists.
 RUNTIME_VERSION = base.Argument(
     '--runtime-version',
     help=('The Google Cloud ML runtime version for this job. '
-          'Defaults to the latest stable version. For example: "0.11"'))
+          'Defaults to the latest stable version. See '
+          'https://cloud.google.com/ml/docs/concepts/runtime-version-list for '
+          'a list of accepted versions.'))
 
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',

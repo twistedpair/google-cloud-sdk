@@ -21,7 +21,7 @@ want to use os.path.join and friends):
 ...                    'path/to/remote1.txt'),
 ...     FileUploadTask('/tmp/file2.txt', 'gs://my-bucket', '/remote2.txt')
 ... ]
->>> UploadFiles(upload_tasks, num_processes=1, threads_per_process=16)
+>>> UploadFiles(upload_tasks, num_threads=16)
 
 This will block until all files are uploaded, using 16 threads (but just the
 current process). Afterwards, there will be objects at
@@ -31,7 +31,7 @@ current process). Afterwards, there will be objects at
 ...     ObjectDeleteTask('gs://my-bucket', 'path/to/remote1.txt'),
 ...     ObjectDeleteTask('gs://my-bucket', '/remote2.txt')
 ... ]
->>> DeleteObjects(delete_tasks, num_processes=1, threads_per_process=16)
+>>> DeleteObjects(delete_tasks, num_threads=16)
 
 This removes the objects uploaded in the last code snippet.
 """
@@ -42,9 +42,8 @@ from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import retry
 
 
-# These default values have been chosen after lots of experimentation.
+# This default value has been chosen after lots of experimentation.
 DEFAULT_NUM_THREADS = 16
-DEFAULT_NUM_PROCESSES = 1
 
 
 class FileUploadTask(object):
@@ -89,8 +88,7 @@ def _UploadFile(file_upload_task):
       args=(bucket_ref, local_path, file_upload_task.remote_path))
 
 
-def UploadFiles(files_to_upload, num_processes=DEFAULT_NUM_PROCESSES,
-                threads_per_process=DEFAULT_NUM_THREADS):
+def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS):
   """Upload the given files to the given Cloud Storage URLs.
 
   Uses the appropriate parallelism (multi-process, multi-thread, both, or
@@ -98,15 +96,12 @@ def UploadFiles(files_to_upload, num_processes=DEFAULT_NUM_PROCESSES,
 
   Args:
     files_to_upload: list of FileUploadTask
-    num_processes: int (optional), the number of processes to use
-    threads_per_process: int (optional), the number of threads to use per
-        process.
+    num_threads: int (optional), the number of threads to use.
   """
   log.debug(u'Uploading:\n' + u'\n'.join(map(str, files_to_upload)))
-  log.debug(u'Using [%d] processes, [%d] threads per process', num_processes,
-            threads_per_process)
+  log.debug(u'Using [%d] threads', num_threads)
 
-  with parallel.GetPool(num_processes, threads_per_process) as pool:
+  with parallel.GetPool(num_threads) as pool:
     pool.Map(_UploadFile, files_to_upload)
 
 
@@ -148,8 +143,7 @@ def _DeleteObject(object_delete_task):
       args=(bucket_ref, object_delete_task.remote_path))
 
 
-def DeleteObjects(objects_to_delete, num_processes=DEFAULT_NUM_PROCESSES,
-                  threads_per_process=DEFAULT_NUM_THREADS):
+def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS):
   """Delete the given Cloud Storage objects.
 
   Uses the appropriate parallelism (multi-process, multi-thread, both, or
@@ -157,13 +151,10 @@ def DeleteObjects(objects_to_delete, num_processes=DEFAULT_NUM_PROCESSES,
 
   Args:
     objects_to_delete: list of ObjectDeleteTask
-    num_processes: int (optional), the number of processes to use
-    threads_per_process: int (optional), the number of threads to use per
-        process.
+    num_threads: int (optional), the number of threads to use.
   """
   log.debug(u'Deleting:\n' + u'\n'.join(map(str, objects_to_delete)))
-  log.debug(u'Using [%d] processes, [%d] threads per process', num_processes,
-            threads_per_process)
+  log.debug(u'Using [%d] threads', num_threads)
 
-  with parallel.GetPool(num_processes, threads_per_process) as pool:
+  with parallel.GetPool(num_threads) as pool:
     pool.Map(_DeleteObject, objects_to_delete)

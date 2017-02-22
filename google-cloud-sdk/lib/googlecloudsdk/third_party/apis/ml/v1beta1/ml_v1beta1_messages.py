@@ -42,6 +42,86 @@ class GoogleApiHttpBody(_messages.Message):
   data = _messages.BytesField(2)
 
 
+class GoogleCloudMlV1OperationMetadata(_messages.Message):
+  """Represents the metadata of the long-running operation.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Fields:
+    createTime: The time the operation was submitted.
+    endTime: The time operation processing completed.
+    isCancellationRequested: Indicates whether a request to cancel this
+      operation has been made.
+    modelName: Contains the name of the model associated with the operation.
+    operationType: The operation type.
+    startTime: The time operation processing started.
+    version: Contains the version associated with the operation.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    """The operation type.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
+      CREATE_VERSION: An operation to create a new version.
+      DELETE_VERSION: An operation to delete an existing version.
+      DELETE_MODEL: An operation to delete an existing model.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE_VERSION = 1
+    DELETE_VERSION = 2
+    DELETE_MODEL = 3
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  isCancellationRequested = _messages.BooleanField(3)
+  modelName = _messages.StringField(4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  startTime = _messages.StringField(6)
+  version = _messages.MessageField('GoogleCloudMlV1Version', 7)
+
+
+class GoogleCloudMlV1Version(_messages.Message):
+  """Represents a version of the model.  Each version is a trained model
+  deployed in the cloud, ready to handle prediction requests. A model can have
+  multiple versions. You can get information about all of the versions of a
+  given model by calling [projects.models.versions.list](/ml/reference/rest/v1
+  /projects.models.versions/list).
+
+  Fields:
+    createTime: Output only. The time the version was created.
+    deploymentUri: Required. The Google Cloud Storage location of the trained
+      model used to create the version. See the [overview of model
+      deployment](/ml/docs/concepts/deployment-overview) for more informaiton.
+      When passing Version to [projects.models.versions.create](/ml/reference/
+      rest/v1/projects.models.versions/create) the model service uses the
+      specified location as the source of the model. Once deployed, the model
+      version is hosted by the prediction service, so this location is useful
+      only as a historical record.
+    description: Optional. The description specified for the version when it
+      was created.
+    isDefault: Output only. If true, this version will be used to handle
+      prediction requests that do not specify a version.  You can change the
+      default version by calling [projects.methods.versions.setDefault](/ml/re
+      ference/rest/v1/projects.models.versions/setDefault).
+    lastUseTime: Output only. The time the version was last used for
+      prediction.
+    name: Required.The name specified for the version when it was created.
+      The version name must be unique within the model it is created in.
+    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
+      this deployment. If not set, Google Cloud ML will choose a version.
+  """
+
+  createTime = _messages.StringField(1)
+  deploymentUri = _messages.StringField(2)
+  description = _messages.StringField(3)
+  isDefault = _messages.BooleanField(4)
+  lastUseTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  runtimeVersion = _messages.StringField(7)
+
+
 class GoogleCloudMlV1beta1CancelJobRequest(_messages.Message):
   """Request message for the CancelJob method."""
 

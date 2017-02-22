@@ -170,6 +170,10 @@
         "iosKeyDetails": {
           "description": "Key details that are specific to iOS keys.",
           "$ref": "IosKeyDetails"
+        },
+        "apiTargetKeyDetails": {
+          "description": "API Target key details. These restrict which API a key can be used on.",
+          "$ref": "ApiTargetKeyDetails"
         }
       }
     },
@@ -238,6 +242,34 @@
       "properties": {
         "allowedBundleIds": {
           "description": "A list of bundle IDs that are allowed when making API calls with this key.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ApiTargetKeyDetails": {
+      "id": "ApiTargetKeyDetails",
+      "description": "Key details that specify which APIs a key is allowed to be used on.",
+      "type": "object",
+      "properties": {
+        "apiTargets": {
+          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction\nExample: apikeys.googleapis.com",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ApiTarget"
+          }
+        }
+      }
+    },
+    "ApiTarget": {
+      "id": "ApiTarget",
+      "description": "A restriction for a specific service and optionally one or multiple\nspecific methods. Both fields are not case sensitive.",
+      "type": "object",
+      "properties": {
+        "methods": {
+          "description": "An optional list of one or more methods that can be called.\nIf empty, all methods for the service are allowed. A wildcard\n(*) can be used as the last symbol.\nExamples:\ngoogle.api.apikeys.v1.ApiKeys.ListApiKeys\ngoogle.api.apikeys.v1.ApiKeys.Get*\ngoogle.api.apikeys.v1.ApiKeys.Delete*",
           "type": "array",
           "items": {
             "type": "string"

@@ -110,7 +110,8 @@ def _GetIncludedPaths(source_dir, exclude, skip_files=None):
   Returns:
     Set of paths (relative to source_dir) to include.
   """
-  # See docker.utils.tar
+  # This code replicates how docker.utils.tar() finds the root
+  # and excluded paths.
   root = os.path.abspath(source_dir)
   # Get set of all paths other than exclusions from dockerignore.
   paths = docker.utils.exclude_paths(root, exclude)

@@ -346,7 +346,8 @@ class ServiceregistryEndpointsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -435,7 +436,8 @@ class ServiceregistryOperationsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp

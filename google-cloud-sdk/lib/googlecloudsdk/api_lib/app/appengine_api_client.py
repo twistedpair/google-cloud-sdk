@@ -24,7 +24,7 @@ from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import requests
-from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources

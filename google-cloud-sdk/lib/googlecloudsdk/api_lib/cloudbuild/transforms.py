@@ -42,7 +42,7 @@ Pythonicness of the Transform*() methods:
 """
 
 from apitools.base.py import encoding as apitools_encoding
-from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.api_lib.util import apis as core_apis
 
 
 def TransformBuildImages(r, undefined=''):

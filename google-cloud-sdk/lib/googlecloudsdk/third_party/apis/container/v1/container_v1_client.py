@@ -225,6 +225,33 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta
         supports_download=False,
     )
 
+    def Signcertificate(self, request, global_params=None):
+      """Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
+authority (CA).
+
+      Args:
+        request: (CertificateSigningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CertificateSigningRequest) The response message.
+      """
+      config = self.GetMethodConfig('Signcertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Signcertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.signcertificate',
+        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/signcertificate',
+        request_field='<request>',
+        request_type_name=u'CertificateSigningRequest',
+        response_type_name=u'CertificateSigningRequest',
+        supports_download=False,
+    )
+
   class MasterProjectsService(base_api.BaseApiService):
     """Service class for the masterProjects resource."""
 

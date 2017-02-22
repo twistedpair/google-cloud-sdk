@@ -14,7 +14,7 @@
 """Utilities for dealing with ML jobs API."""
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 import yaml

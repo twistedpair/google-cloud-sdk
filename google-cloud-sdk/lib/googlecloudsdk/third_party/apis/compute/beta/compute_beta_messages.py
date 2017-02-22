@@ -514,6 +514,25 @@ class AddressesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class AliasIpRange(_messages.Message):
+  """An alias IP range attached to an instance's network interface.
+
+  Fields:
+    ipCidrRange: The IP CIDR range represented by this alias IP range. This IP
+      CIDR range must belong to the specified subnetwork and cannot contain IP
+      addresses reserved by system or used by other network interfaces. This
+      range may be a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24)
+      or a CIDR format string (e.g. 10.1.2.0/24).
+    subnetworkRangeName: Optional subnetwork secondary range name specifying
+      the secondary range from which to allocate the IP CIDR range for this
+      alias IP range. If left unspecified, the primary range of the subnetwork
+      will be used.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  subnetworkRangeName = _messages.StringField(2)
+
+
 class AttachedDisk(_messages.Message):
   """An instance-attached disk resource.
 
@@ -707,14 +726,23 @@ class AttachedDiskInitializeParams(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. It consists of which
   permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.
+  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
+  AuditConfigs for both `allServices` and a specific service, the union of the
+  two AuditConfigs is used for that service: the log_types specified in each
+  AuditConfig are enabled, and the exempted_members in each AuditConfig are
+  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
+  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
+  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
+  }, { "log_type": "ADMIN_READ", } ] }, { "service":
+  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
+  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
+  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
+  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
+  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members. This field is deprecated in favor of
-      per-permission-type exemptions.
+    exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -5504,6 +5532,52 @@ class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeProjectsDisableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsDisableXpnResourceRequest: A ProjectsDisableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsDisableXpnResourceRequest = _messages.MessageField('ProjectsDisableXpnResourceRequest', 2)
+
+
+class ComputeProjectsEnableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsEnableXpnResourceRequest: A ProjectsEnableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsEnableXpnResourceRequest = _messages.MessageField('ProjectsEnableXpnResourceRequest', 2)
+
+
 class ComputeProjectsGetRequest(_messages.Message):
   """A ComputeProjectsGetRequest object.
 
@@ -5522,6 +5596,24 @@ class ComputeProjectsGetXpnHostRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
+  """A ComputeProjectsGetXpnResourcesRequest object.
+
+  Fields:
+    filter: A string attribute.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeProjectsListXpnHostsRequest(_messages.Message):
@@ -8076,6 +8168,127 @@ class ComputeTargetSslProxiesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetTcpProxiesGetRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetTcpProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: A TargetTcpProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 2)
+
+
+class ComputeTargetTcpProxiesListRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesSetBackendServiceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxiesSetBackendServiceRequest: A
+      TargetTcpProxiesSetBackendServiceRequest resource to be passed as the
+      request body.
+    targetTcpProxy: Name of the TargetTcpProxy resource whose BackendService
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxiesSetBackendServiceRequest = _messages.MessageField('TargetTcpProxiesSetBackendServiceRequest', 2)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesSetProxyHeaderRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxiesSetProxyHeaderRequest: A
+      TargetTcpProxiesSetProxyHeaderRequest resource to be passed as the
+      request body.
+    targetTcpProxy: Name of the TargetTcpProxy resource whose ProxyHeader is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxiesSetProxyHeaderRequest = _messages.MessageField('TargetTcpProxiesSetProxyHeaderRequest', 2)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -8728,15 +8941,17 @@ class Condition(_messages.Message):
     """Trusted attributes supplied by the IAM system.
 
     Values:
+      APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
     """
-    ATTRIBUTION = 0
-    AUTHORITY = 1
-    NO_ATTR = 2
-    SECURITY_REALM = 3
+    APPROVER = 0
+    ATTRIBUTION = 1
+    AUTHORITY = 2
+    NO_ATTR = 3
+    SECURITY_REALM = 4
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -12582,6 +12797,8 @@ class NetworkInterface(_messages.Message):
       only one access config, ONE_TO_ONE_NAT, is supported. If there are no
       accessConfigs specified, then this instance will have no external
       internet access.
+    aliasIpRanges: An array of alias IP ranges for this network interface. Can
+      only be specified for network interfaces on subnet-mode networks.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, generated by the
@@ -12611,11 +12828,12 @@ class NetworkInterface(_messages.Message):
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
-  kind = _messages.StringField(2, default=u'compute#networkInterface')
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  networkIP = _messages.StringField(5)
-  subnetwork = _messages.StringField(6)
+  aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#networkInterface')
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  networkIP = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
 
 
 class NetworkList(_messages.Message):
@@ -13253,6 +13471,45 @@ class Project(_messages.Message):
   selfLink = _messages.StringField(10)
   usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
   xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+
+
+class ProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsGetXpnResources(_messages.Message):
+  """A ProjectsGetXpnResources object.
+
+  Fields:
+    kind: [Output Only] Type of resource. Always
+      compute#projectsGetXpnResources for lists of XPN resources.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    resources: XPN resources attached to this project as their XPN host.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
+  nextPageToken = _messages.StringField(2)
+  resources = _messages.MessageField('XpnResourceId', 3, repeated=True)
 
 
 class ProjectsListXpnHostsRequest(_messages.Message):
@@ -14676,6 +14933,10 @@ class Subnetwork(_messages.Message):
     privateIpGoogleAccess: Whether the VMs in this subnet can access Google
       services without assigned external IP addresses.
     region: URL of the region where the Subnetwork resides.
+    secondaryIpRanges: An array of configurations for secondary IP ranges for
+      VM instances contained in this subnetwork. The primary IP of such VM
+      must belong to the primary ipCidrRange of the subnetwork. The alias IPs
+      may belong to either primary or secondary ranges.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -14689,7 +14950,8 @@ class Subnetwork(_messages.Message):
   network = _messages.StringField(8)
   privateIpGoogleAccess = _messages.BooleanField(9)
   region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 11, repeated=True)
+  selfLink = _messages.StringField(12)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -14766,6 +15028,24 @@ class SubnetworkList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#subnetworkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class SubnetworkSecondaryRange(_messages.Message):
+  """Represents a secondary IP range of a subnetwork.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range. Provide this property when you create the subnetwork.
+      Ranges must be unique and non-overlapping with all primary and secondary
+      IP ranges within a network. Only IPv4 is supported.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance. The name must be 1-63
+      characters long, and comply with RFC1035. The name must be unique within
+      the subnetwork.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
 
 
 class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
@@ -15794,6 +16074,117 @@ class TargetSslProxyList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class TargetTcpProxiesSetBackendServiceRequest(_messages.Message):
+  """A TargetTcpProxiesSetBackendServiceRequest object.
+
+  Fields:
+    service: The URL of the new BackendService resource for the
+      targetTcpProxy.
+  """
+
+  service = _messages.StringField(1)
+
+
+class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
+  """A TargetTcpProxiesSetProxyHeaderRequest object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: The new type of proxy header to append before
+      sending data to the backend. NONE or PROXY_V1 are allowed.
+
+  Fields:
+    proxyHeader: The new type of proxy header to append before sending data to
+      the backend. NONE or PROXY_V1 are allowed.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """The new type of proxy header to append before sending data to the
+    backend. NONE or PROXY_V1 are allowed.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 1)
+
+
+class TargetTcpProxy(_messages.Message):
+  """A TargetTcpProxy resource. This resource defines a TCP proxy.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#targetTcpProxy
+      for target TCP proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    service: URL to the BackendService resource.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetTcpProxy')
+  name = _messages.StringField(5)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  service = _messages.StringField(8)
+
+
+class TargetTcpProxyList(_messages.Message):
+  """Contains a list of TargetTcpProxy resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of TargetTcpProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetTcpProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetTcpProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class TargetVpnGateway(_messages.Message):
   """Represents a Target VPN gateway resource.
 
@@ -16546,6 +16937,32 @@ class XpnHostList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#xpnHostList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class XpnResourceId(_messages.Message):
+  """XpnResourceId
+
+  Enums:
+    TypeValueValuesEnum: The type of the XPN resource.
+
+  Fields:
+    id: The ID of the XPN resource. In the case of projects, this field
+      matches the project's name, not the canonical ID.
+    type: The type of the XPN resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of the XPN resource.
+
+    Values:
+      PROJECT: <no description>
+      XPN_RESOURCE_TYPE_UNSPECIFIED: <no description>
+    """
+    PROJECT = 0
+    XPN_RESOURCE_TYPE_UNSPECIFIED = 1
+
+  id = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Zone(_messages.Message):

@@ -14,8 +14,8 @@
 """Utilities for dealing with long-running operations (simple uri)."""
 from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import resources
 
 

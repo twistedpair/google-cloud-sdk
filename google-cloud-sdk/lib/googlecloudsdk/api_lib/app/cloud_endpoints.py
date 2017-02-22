@@ -19,7 +19,7 @@ import os.path
 
 from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.service_management import services_util
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 

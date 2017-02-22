@@ -11,21 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Parallel execution pools based on multithreading and multiprocessing.
+"""Parallel execution pools based on multithreading.
 
-This module provides 4 types of pools:
+This module provides 2 types of pools:
 - DummyPool: executes work synchronously, in the current process
 - ThreadPool: executes work across multiple threads
-- ProcessPool: executes work across multiple processes
-- HybridPool: executes work across a combination of threads and processes
 
 It also contains a convenience method GetPool to get the appropriate pool for
-the given number of threads/processes.
+the given number of threads.
 
 The general usage is as follows:
 
 >>> def identity(value): return value
->>> with parallel.GetPool(num_processes, num_threads) as pool:
+>>> with parallel.GetPool(num_threads) as pool:
 ...   future = pool.ApplyAsync(identity, (42,))
 ...   assert future.Get() == 42
 ...   assert pool.Apply(f, (42,)) == 42
@@ -37,8 +35,6 @@ Errors are raised at the time of the Get() call on the future (which is implicit
 for Apply() and Map()).
 """
 import abc
-import multiprocessing
-from multiprocessing import pool
 import pickle
 import Queue
 import sys
@@ -53,6 +49,10 @@ import time
 
 _STOP_WORKING = None  # sentinel value used to tell workers to clean up
 _POLL_INTERVAL = 0.01  # in seconds
+
+
+class UnsupportedPlatformException(Exception):
+  """Exception indicating that a pool was created on an unsupported platform."""
 
 
 class InvalidStateException(Exception):
@@ -287,50 +287,6 @@ class DummyPool(BasePool):
       raise InvalidStateException('DummyPool must be Start()ed before use.')
     # Do nothing, since there is nothing to clean up
 
-################################################################################
-# ProcessPool
-################################################################################
-
-
-class _PoolFutureWrapper(BaseFuture):
-  """Wrapper for multiprocessing.Pool.Result (their name for a future)."""
-
-  def __init__(self, result):
-    self.result = result
-
-  def GetResult(self):
-    try:
-      return _Result((self.result.get(),))
-    except:  # pylint: disable=bare-except
-      return _Result(exc_info=sys.exc_info())
-
-
-class ProcessPool(BasePool):
-  """Process-based parallel execution Pool.
-
-  This object is not thread-safe.
-  """
-
-  def __init__(self, num_processes):
-    self.num_processes = num_processes
-    self._pool = None
-
-  def Start(self):
-    if self._pool:
-      raise InvalidStateException('Can only start ProcessPool once.')
-    self._pool = pool.Pool(self.num_processes)
-
-  def ApplyAsync(self, func, args):
-    if not self._pool:
-      raise InvalidStateException('ProcessPool must be Start()ed before use.')
-    return _PoolFutureWrapper(self._pool.apply_async(func, args))
-
-  def Join(self):
-    if not self._pool:
-      raise InvalidStateException('ProcessPool must be Start()ed before use.')
-    self._pool.close()
-    self._pool.join()
-
 
 ################################################################################
 # ThreadPool
@@ -417,141 +373,24 @@ class ThreadPool(BasePool):
 
 
 ################################################################################
-# HybridPool
-################################################################################
-
-
-def _HybridResultHandler(results, work_queue, result_queue):
-  done = False
-  while not done or results:
-    if not results:
-      time.sleep(_POLL_INTERVAL)
-      continue
-    result = results.pop()
-    if result is _STOP_WORKING:
-      done = True
-      continue
-    task, future = result
-    result_queue.put((task, future.GetResult().ToPickleableResult()))
-    work_queue.task_done()
-
-
-def _HybridWorkerProcess(work_queue, result_queue, num_threads):
-  results = []
-  result_handler = threading.Thread(target=_HybridResultHandler,
-                                    args=(results, work_queue, result_queue))
-  result_handler.start()
-  with ThreadPool(num_threads) as thread_pool:
-    while True:
-      thread_task = work_queue.get()
-      if thread_task is _STOP_WORKING:
-        results.append(_STOP_WORKING)
-        result_handler.join()
-        thread_pool.Join()
-        work_queue.task_done()
-        return
-      task = thread_task.task
-      try:
-        results.append((task, thread_pool.ApplyAsync(task.func, task.args)))
-      except pickle.PicklingError:
-        results.append((task, _DummyFuture(_Result(exc_info=sys.exc_info()))))
-
-
-class HybridPool(BasePool):
-  """Parallelizes a task using a mix of processes and threads.
-
-  Attributes:
-    num_processes: int or None, the number of processes to use
-  """
-
-  def __init__(self, num_processes=None, num_threads=None):
-    self.num_processes = num_processes
-    self.num_threads = num_threads
-    self._task_queue = None
-    self._manager = None
-    self._result_queue = None
-    self._results_map = {}
-    self._pool = None
-
-  def Start(self):
-    if self._pool:
-      raise InvalidStateException('HybridPool must be started at most once.')
-    self._pool = ProcessPool(self.num_processes)
-    self._pool.Start()
-    self._manager = multiprocessing.Manager()
-    self._task_queue = self._manager.JoinableQueue()
-    self._result_queue = self._manager.Queue()
-    for _ in range(self.num_processes):
-      self._pool.ApplyAsync(
-          _HybridWorkerProcess,
-          (self._task_queue, self._result_queue, self.num_threads))
-
-    self.results_thread = threading.Thread(target=self._HandleResults)
-    self.results_thread.start()
-
-  def Join(self):
-    if not self._pool:
-      raise InvalidStateException('HybridPool must be Start()ed before use.')
-    for _ in range(self.num_processes):
-      self._task_queue.put(_STOP_WORKING)
-    self._result_queue.put(_STOP_WORKING)
-
-    self._pool.Join()
-    self._manager.shutdown()
-    self.results_thread.join()
-
-  def _HandleResults(self):
-    while True:
-      try:
-        result = self._result_queue.get()
-      except Queue.Empty:
-        time.sleep(self._RESULT_TIMEOUT)
-        continue
-      if result is _STOP_WORKING:
-        return
-      elif result:
-        task, value = result
-        self._results_map[task] = value
-
-  def ApplyAsync(self, func, args):
-    if not self._pool:
-      raise InvalidStateException('HybridPool must be Start()ed before use.')
-    task = _Task(func, args)
-    result = _ThreadFuture(task, self._results_map)
-    self._task_queue.put(_ThreadTask(task))
-    return result
-
-
-################################################################################
 # GetPool
 ################################################################################
 
 
-def GetPool(num_processes, num_threads):
-  """Returns a parallel execution pool for the given thread/process combination.
+def GetPool(num_threads):
+  """Returns a parallel execution pool for the given number of threads.
 
-  Can return any of:
-  - DummyPool: if num_processes and num_threads are both 1.
-  - ThreadPool: if num_processes is 1
-  - ProcessPool: if num_threads is 1.
-  - HybridPool: otherwise.
+  Can return either:
+  - DummyPool: if num_threads is 1.
+  - ThreadPool: if num_threads is greater than 1
 
   Args:
-    num_processes: int or None, the number of processes to use. If None, default
-      to the number of cores on the machine.
     num_threads: int, the number of threads to use.
 
   Returns:
     BasePool instance appropriate for the given type of parallelism.
   """
-  if num_processes is None:
-    num_processes = multiprocessing.cpu_count()
-
-  if num_processes == 1 and num_threads == 1:
+  if num_threads == 1:
     return DummyPool()
-  elif num_threads == 1:
-    return ProcessPool(num_processes)
-  elif num_processes == 1:
-    return ThreadPool(num_threads)
   else:
-    return HybridPool(num_processes, num_threads)
+    return ThreadPool(num_threads)

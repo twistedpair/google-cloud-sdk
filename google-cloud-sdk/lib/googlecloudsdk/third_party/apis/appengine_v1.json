@@ -248,6 +248,10 @@
         "defaultBucket": {
           "description": "Google Cloud Storage bucket that can be used by this application to store content.@OutputOnly",
           "type": "string"
+        },
+        "iap": {
+
+          "$ref": "IdentityAwareProxy"
         }
       }
     },
@@ -266,6 +270,29 @@
         },
         "service": {
           "description": "Resource ID of a service in this application that should serve the matched request. The service must already exist. Example: default.",
+          "type": "string"
+        }
+      }
+    },
+    "IdentityAwareProxy": {
+      "id": "IdentityAwareProxy",
+      "description": "Identity-Aware Proxy",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the serving infrastructure will authenticate and authorize all incoming requests.If true, the oauth2_client_id and oauth2_client_secret fields must be non-empty.",
+          "type": "boolean"
+        },
+        "oauth2ClientId": {
+          "description": "OAuth2 client ID to use for the authentication flow.",
+          "type": "string"
+        },
+        "oauth2ClientSecret": {
+          "description": "OAuth2 client secret to use for the authentication flow.For security reasons, this value cannot be retrieved via the API. Instead, the SHA-256 hash of the value is returned in the oauth2_client_secret_sha256 field.@InputOnly",
+          "type": "string"
+        },
+        "oauth2ClientSecretSha256": {
+          "description": "Hex-encoded SHA-256 hash of the client secret.@OutputOnly",
           "type": "string"
         }
       }
@@ -518,6 +545,14 @@
         "healthCheck": {
           "description": "Configures health checking for VM instances. Unhealthy instances are stopped and replaced with new instances. Only applicable for VM runtimes.Only returned in GET requests if view=FULL is set.",
           "$ref": "HealthCheck"
+        },
+        "readinessCheck": {
+          "description": "Configures readiness health checking for VM instances. Unhealthy instances are not put into the backend traffic rotation.Only returned in GET requests if view=FULL is set.",
+          "$ref": "ReadinessCheck"
+        },
+        "livenessCheck": {
+          "description": "Configures liveness health checking for VM instances. Unhealthy instances are stopped and replaced with new instancesOnly returned in GET requests if view=FULL is set.",
+          "$ref": "LivenessCheck"
         },
         "nobuildFilesRegex": {
           "description": "Files that match this pattern will not be built into this version. Only applicable for Go runtimes.Only returned in GET requests if view=FULL is set.",
@@ -1093,6 +1128,81 @@
         }
       }
     },
+    "ReadinessCheck": {
+      "id": "ReadinessCheck",
+      "description": "Readiness checking configuration for VM instances. Unhealthy instances are removed from traffic rotation.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The request path.",
+          "type": "string"
+        },
+        "host": {
+          "description": "Host header to send when performing a HTTP Readiness check. Example: \"myapp.appspot.com\"",
+          "type": "string"
+        },
+        "unhealthyThreshold": {
+          "description": "Number of consecutive failed checks required before removing traffic.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "healthyThreshold": {
+          "description": "Number of consecutive successful checks required before receiving traffic.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "checkInterval": {
+          "description": "Interval between health checks.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeout": {
+          "description": "Time before the check is considered failed.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "LivenessCheck": {
+      "id": "LivenessCheck",
+      "description": "Health checking configuration for VM instances. Unhealthy instances are killed and replaced with new instances.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The request path.",
+          "type": "string"
+        },
+        "host": {
+          "description": "Host header to send when performing a HTTP Liveness check. Example: \"myapp.appspot.com\"",
+          "type": "string"
+        },
+        "unhealthyThreshold": {
+          "description": "Number of consecutive failed checks required before considering the VM unhealthy.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "healthyThreshold": {
+          "description": "Number of consecutive successful checks required before considering the VM healthy.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "checkInterval": {
+          "description": "Interval between health checks.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "timeout": {
+          "description": "Time before the check is considered failed.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "initialDelay": {
+          "description": "The initial delay before starting to execute the checks.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
     "Deployment": {
       "id": "Deployment",
       "description": "Code and application artifacts used to deploy a version to App Engine.",
@@ -1106,7 +1216,7 @@
           }
         },
         "container": {
-          "description": "A Docker image that App Engine uses to run the version. Only applicable for instances in App Engine flexible environment.",
+          "description": "The Docker image for the container that runs the version. Only applicable for instances running in the App Engine flexible environment.",
           "$ref": "ContainerInfo"
         },
         "zip": {
@@ -1136,11 +1246,11 @@
     },
     "ContainerInfo": {
       "id": "ContainerInfo",
-      "description": "Docker image that is used to start a VM container for the version you deploy.",
+      "description": "Docker image that is used to create a container and start a VM instance for the version that you deploy. Only applicable for instances running in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "image": {
-          "description": "URI to the hosted container image in a Docker repository. The URI must be fully qualified and include a tag or digest. Examples: \"gcr.io\/my-project\/image:tag\" or \"gcr.io\/my-project\/image@digest\"",
+          "description": "URI to the hosted container image in Google Container Registry. The URI must be fully qualified and include a tag or digest. Examples: \"gcr.io\/my-project\/image:tag\" or \"gcr.io\/my-project\/image@digest\"",
           "type": "string"
         }
       }
@@ -1428,6 +1538,86 @@
         "target": {
           "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/services\/default.@OutputOnly",
           "type": "string"
+        }
+      }
+    },
+    "OperationMetadataV1Alpha": {
+      "id": "OperationMetadataV1Alpha",
+      "description": "Metadata for the given google.longrunning.Operation.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "API method that initiated this operation. Example: google.appengine.v1alpha.Versions.CreateVersion.@OutputOnly",
+          "type": "string"
+        },
+        "insertTime": {
+          "description": "Time that this operation was created.@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Time that this operation completed.@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "user": {
+          "description": "User who requested this operation.@OutputOnly",
+          "type": "string"
+        },
+        "target": {
+          "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/services\/default.@OutputOnly",
+          "type": "string"
+        },
+        "ephemeralMessage": {
+          "description": "Ephemeral message that may change every time the operation is polled. @OutputOnly",
+          "type": "string"
+        },
+        "warning": {
+          "description": "Durable messages that persist on every operation poll. @OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OperationMetadataV1Beta": {
+      "id": "OperationMetadataV1Beta",
+      "description": "Metadata for the given google.longrunning.Operation.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "API method that initiated this operation. Example: google.appengine.v1beta.Versions.CreateVersion.@OutputOnly",
+          "type": "string"
+        },
+        "insertTime": {
+          "description": "Time that this operation was created.@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Time that this operation completed.@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "user": {
+          "description": "User who requested this operation.@OutputOnly",
+          "type": "string"
+        },
+        "target": {
+          "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/services\/default.@OutputOnly",
+          "type": "string"
+        },
+        "ephemeralMessage": {
+          "description": "Ephemeral message that may change every time the operation is polled. @OutputOnly",
+          "type": "string"
+        },
+        "warning": {
+          "description": "Durable messages that persist on every operation poll. @OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

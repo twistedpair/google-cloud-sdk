@@ -22,7 +22,6 @@ import StringIO
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
@@ -192,23 +191,13 @@ class HttpErrorPayload(string.Formatter):
     if version:
       self.api_version = version
 
-    try:
-      ref = resources.REGISTRY.Parse(self.url)
-      instance_name = ref.Name()
-      # resource_name is the component just before the last occurrence of
-      # instance_name in the URL. Using string instead of list ops here because
-      # instance_name could contain '/'s.
-      resource_name_index = resource_path.rfind('/' + instance_name)
-      if resource_name_index < 0:
-        return
-      self.resource_name = resource_path[:resource_name_index].split('/')[-1]
-    except resources.Error:
-      # The uri parse failed. Do something sensible.
-      resource_parts = resource_path.split('/')
-      if not 1 < len(resource_parts) < 4:
-        return
-      self.resource_name = resource_parts[0]
-      instance_name = resource_parts[1]
+    # We do not attempt to parse this, as generally it doesn't represent a
+    # resource uri.
+    resource_parts = resource_path.split('/')
+    if not 1 < len(resource_parts) < 4:
+      return
+    self.resource_name = resource_parts[0]
+    instance_name = resource_parts[1]
 
     self.instance_name = instance_name.split('?')[0]
     if self.resource_name.endswith('s'):

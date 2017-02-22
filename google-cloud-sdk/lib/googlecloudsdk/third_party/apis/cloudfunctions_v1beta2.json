@@ -119,6 +119,24 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -183,7 +201,7 @@
     },
     "ListFunctionsResponse": {
       "id": "ListFunctionsResponse",
-      "description": "Response for the ListFunctions method.",
+      "description": "Response for the `ListFunctions` method.",
       "type": "object",
       "properties": {
         "functions": {
@@ -194,7 +212,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If not empty, indicates that there may be more functions that match\nthe request; this value should be passed in a new ListFunctionsRequest\nto get more functions.",
+          "description": "If not empty, indicates that there may be more functions that match\nthe request; this value should be passed in a new\ngoogle.cloud.functions.v1beta2.ListFunctionsRequest\nto get more functions.",
           "type": "string"
         }
       }
@@ -205,7 +223,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A user-defined name of the function. Function names must be unique\nglobally and match pattern: projects\/*\/locations\/*\/functions\/*",
+          "description": "A user-defined name of the function. Function names must be unique\nglobally and match pattern `projects\/*\/locations\/*\/functions\/*`",
           "type": "string"
         },
         "gcsUrl": {
@@ -221,15 +239,15 @@
           "$ref": "SourceRepository"
         },
         "pubsubTrigger": {
-          "description": "A pub\/sub type of source.",
+          "description": "A Google Cloud PubSub type of source.",
           "type": "string"
         },
         "gcsTrigger": {
-          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form gs:\/\/<bucket>\/ (that is, it must refer\nto a bucket, rather than an object).",
+          "description": "Google Cloud Storage resource whose changes trigger the events.\nCurrently, it must have the form `gs:\/\/<bucket>\/` (that is, it must\nrefer to a bucket, rather than an object).",
           "type": "string"
         },
         "httpsTrigger": {
-          "description": "A https endpoint type of source that can be trigger via URL.",
+          "description": "A https endpoint type of source that can be triggered via URL.",
           "$ref": "HTTPSTrigger"
         },
         "eventTrigger": {
@@ -255,11 +273,11 @@
           ]
         },
         "latestOperation": {
-          "description": "Name of the most recent operation modifying the function. If\nthe function status is DEPLOYING or DELETING, then it points to the active\noperation. Output only.",
+          "description": "Name of the most recent operation modifying the function. If\nthe function status is `DEPLOYING` or `DELETING`, then it points to the\nactive operation. Output only.",
           "type": "string"
         },
         "entryPoint": {
-          "description": "The name of the function (as defined in source code) that will be\nexecuted. Defaults to the resource name suffix, if not specified. For\nbackward compatibility, if function with given name is not found, then the\nsystem will try to use function named 'function'.\nFor Node.js this is name of a function exported by the module specified\nin source_location.",
+          "description": "The name of the function (as defined in source code) that will be\nexecuted. Defaults to the resource name suffix, if not specified. For\nbackward compatibility, if function with given name is not found, then the\nsystem will try to use function named \"function\".\nFor Node.js this is name of a function exported by the module specified\nin `source_location`.",
           "type": "string"
         },
         "timeout": {
@@ -293,7 +311,7 @@
           "type": "string"
         },
         "sourcePath": {
-          "description": "The path within the repository where the function is defined. The path\nshould point to the directory where cloud functions files are located. Use\n'\/' if the function is defined directly in the root directory of a\nrepository.",
+          "description": "The path within the repository where the function is defined. The path\nshould point to the directory where cloud functions files are located. Use\n\"\/\" if the function is defined directly in the root directory of a\nrepository.",
           "type": "string"
         },
         "branch": {
@@ -331,22 +349,22 @@
       "type": "object",
       "properties": {
         "eventType": {
-          "description": "event_type names contain the service that is sending an event and the kind\nof event that was fired. Must be of the form providers\/*\/eventTypes\/*\ne.g. Directly handle a Message published to Google Cloud PubSub\n     providers\/cloud.pubsub\/eventTypes\/topic.publish\n\n     Handle an object changing in Google Cloud Storage\n     providers\/cloud.storage\/eventTypes\/object.change\n\n     Handle a write to the Firebase Realtime Database\n     providers\/firebase.database\/eventTypes\/data.write",
+          "description": "`event_type` names contain the service that is sending an event and the\nkind of event that was fired. Must be of the form\n`providers\/*\/eventTypes\/*` e.g. Directly handle a Message published to\nGoogle Cloud PubSub `providers\/cloud.pubsub\/eventTypes\/topic.publish`\n\n     Handle an object changing in Google Cloud Storage\n     `providers\/cloud.storage\/eventTypes\/object.change`\n\n     Handle a write to the Firebase Realtime Database\n     `providers\/firebase.database\/eventTypes\/data.write`",
           "type": "string"
         },
         "resource": {
-          "description": "Which instance of the source's service should send events. E.g. for PubSub\nthis would be a PubSub topic at projects\/*\/topics\/*. For Google Cloud\nStorage this would be a bucket at projects\/*\/buckets\/*. For any source\nthat only supports one instance per-project, this should be the name of the\nproject (projects\/*)",
+          "description": "Which instance of the source's service should send events. E.g. for PubSub\nthis would be a PubSub topic at `projects\/*\/topics\/*`. For Google Cloud\nStorage this would be a bucket at `projects\/*\/buckets\/*`. For any source\nthat only supports one instance per-project, this should be the name of the\nproject (`projects\/*`)",
           "type": "string"
         },
         "path": {
-          "description": "Optional path within the resource that should be used to filter events.\nNamed wildcards may be written in curly brackets (e.g. {variable}). The\nvalue that matched this parameter will be included  in the event\nparameters. e.g. users\/{userId}\/profilePic\nPath is not supported for all actions.",
+          "description": "Optional path within the resource that should be used to filter events.\nNamed wildcards may be written in curly brackets (e.g. {variable}). The\nvalue that matched this parameter will be included  in the event\nparameters. e.g. `users\/{userId}\/profilePic`\nPath is not supported for all actions.",
           "type": "string"
         }
       }
     },
     "CallFunctionRequest": {
       "id": "CallFunctionRequest",
-      "description": "Request for the CallFunction method.",
+      "description": "Request for the `CallFunction` method.",
       "type": "object",
       "properties": {
         "data": {
@@ -357,7 +375,7 @@
     },
     "CallFunctionResponse": {
       "id": "CallFunctionResponse",
-      "description": "Response of CallFunction method.",
+      "description": "Response of `CallFunction` method.",
       "type": "object",
       "properties": {
         "executionId": {
@@ -461,6 +479,44 @@
   "resources": {
     "operations": {
       "methods": {
+        "list": {
+          "id": "cloudfunctions.operations.list",
+          "path": "v1beta2/operations",
+          "flatPath": "v1beta2/operations",
+          "httpMethod": "GET",
+          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation collection.",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The standard list filter.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The standard list page size.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The standard list page token.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
         "get": {
           "id": "cloudfunctions.operations.get",
           "path": "v1beta2/{+name}",
@@ -546,7 +602,7 @@
                   "description": "Returns a list of functions that belong to the requested project.",
                   "parameters": {
                     "location": {
-                      "description": "The project and location from which the function should be listed,\nspecified in the format: projects\/*\/locations\/*\nIf you want to list functions in all locations, use '-' in place of a\nlocation.",
+                      "description": "The project and location from which the function should be listed,\nspecified in the format `projects\/*\/locations\/*`\nIf you want to list functions in all locations, use \"-\" in place of a\nlocation.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -559,7 +615,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last ListFunctionsResponse; indicates that\nthis is a continuation of a prior ListFunctions call, and that the\nsystem should return the next page of data.",
+                      "description": "The value returned by the last\n`ListFunctionsResponse`; indicates that\nthis is a continuation of a prior `ListFunctions` call, and that the\nsystem should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     }
@@ -604,10 +660,10 @@
                   "path": "v1beta2/{+location}/functions",
                   "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/functions",
                   "httpMethod": "POST",
-                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\nALREADY_EXISTS error.",
+                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\n`ALREADY_EXISTS` error.",
                   "parameters": {
                     "location": {
-                      "description": "The project and location in which the function should be created, specified\nin the format: projects\/*\/locations\/*",
+                      "description": "The project and location in which the function should be created, specified\nin the format `projects\/*\/locations\/*`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",

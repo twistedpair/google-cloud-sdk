@@ -47,9 +47,9 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
           }
 
     def Search(self, request, global_params=None):
-      """Lists accessible Google Cloud Platform resources that match the query. A.
-resource is accessible to the caller if they have the IAM .get permission
-for it.
+      """Lists accessible Google Cloud Platform resources that match a query. A.
+resource is accessible to the caller if the caller has permission
+to perform a GET operation on the resource.
 
       Args:
         request: (CloudresourcesearchResourcesSearchRequest) input message

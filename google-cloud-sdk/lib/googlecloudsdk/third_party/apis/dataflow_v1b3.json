@@ -272,7 +272,7 @@
           ]
         },
         "executionInfo": {
-          "description": "Information about how the Cloud Dataflow service will run the job.",
+          "description": "Deprecated.",
           "$ref": "JobExecutionInfo"
         },
         "createTime": {
@@ -316,6 +316,10 @@
         "location": {
           "description": "The location that contains this job.",
           "type": "string"
+        },
+        "pipelineDescription": {
+          "description": "Preliminary field: The format of this data may change at any time.\nA description of the user pipeline and stages through which it is executed.\nCreated by Cloud Dataflow service.  Only retrieved with\nJOB_VIEW_DESCRIPTION or JOB_VIEW_ALL.",
+          "$ref": "PipelineDescription"
         }
       }
     },
@@ -721,7 +725,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "Named properties associated with the step. Each kind of\npredefined step has its own required set of properties.",
+          "description": "Named properties associated with the step. Each kind of\npredefined step has its own required set of properties.\nMust be provided on Create.  Only retrieved with JOB_VIEW_ALL.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -755,6 +759,287 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "PipelineDescription": {
+      "id": "PipelineDescription",
+      "description": "A descriptive representation of submitted pipeline as well as the executed\nform.  This data is provided by the Dataflow service for ease of visualizing\nthe pipeline and interpretting Dataflow provided metrics.",
+      "type": "object",
+      "properties": {
+        "originalPipelineTransform": {
+          "description": "Description of each transform in the pipeline and collections between them.",
+          "type": "array",
+          "items": {
+            "$ref": "TransformSummary"
+          }
+        },
+        "executionPipelineStage": {
+          "description": "Description of each stage of execution of the pipeline.",
+          "type": "array",
+          "items": {
+            "$ref": "ExecutionStageSummary"
+          }
+        },
+        "displayData": {
+          "description": "Pipeline level display data.",
+          "type": "array",
+          "items": {
+            "$ref": "DisplayData"
+          }
+        }
+      }
+    },
+    "TransformSummary": {
+      "id": "TransformSummary",
+      "description": "Description of the type, names\/ids, and input\/outputs for a transform.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Type of transform.",
+          "enumDescriptions": [
+            "Unrecognized transform type.",
+            "ParDo transform.",
+            "Group By Key transform.",
+            "Flatten transform.",
+            "Read transform.",
+            "Write transform.",
+            "Constructs from a constant value, such as with Create.of.",
+            "Creates a Singleton view of a collection.",
+            "Opening or closing a shuffle session, often as part of a GroupByKey."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN_KIND",
+            "PAR_DO_KIND",
+            "GROUP_BY_KEY_KIND",
+            "FLATTEN_KIND",
+            "READ_KIND",
+            "WRITE_KIND",
+            "CONSTANT_KIND",
+            "SINGLETON_KIND",
+            "SHUFFLE_KIND"
+          ]
+        },
+        "id": {
+          "description": "SDK generated id of this transform instance.",
+          "type": "string"
+        },
+        "name": {
+          "description": "User provided name for this transform instance.",
+          "type": "string"
+        },
+        "displayData": {
+          "description": "Transform-specific display data.",
+          "type": "array",
+          "items": {
+            "$ref": "DisplayData"
+          }
+        },
+        "outputCollectionName": {
+          "description": "User  names for all collection outputs to this transform.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inputCollectionName": {
+          "description": "User names for all collection inputs to this transform.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DisplayData": {
+      "id": "DisplayData",
+      "description": "Data provided with a pipeline or transform to provide descriptive info.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "The key identifying the display data.\nThis is intended to be used as a label for the display data\nwhen viewed in a dax monitoring system.",
+          "type": "string"
+        },
+        "namespace": {
+          "description": "The namespace for the key. This is usually a class name or programming\nlanguage namespace (i.e. python module) which defines the display data.\nThis allows a dax monitoring system to specially handle the data\nand perform custom rendering.",
+          "type": "string"
+        },
+        "strValue": {
+          "description": "Contains value if the data is of string type.",
+          "type": "string"
+        },
+        "int64Value": {
+          "description": "Contains value if the data is of int64 type.",
+          "type": "string",
+          "format": "int64"
+        },
+        "floatValue": {
+          "description": "Contains value if the data is of float type.",
+          "type": "number",
+          "format": "float"
+        },
+        "javaClassValue": {
+          "description": "Contains value if the data is of java class type.",
+          "type": "string"
+        },
+        "timestampValue": {
+          "description": "Contains value if the data is of timestamp type.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "durationValue": {
+          "description": "Contains value if the data is of duration type.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "boolValue": {
+          "description": "Contains value if the data is of a boolean type.",
+          "type": "boolean"
+        },
+        "shortStrValue": {
+          "description": "A possible additional shorter value to display.\nFor example a java_class_name_value of com.mypackage.MyDoFn\nwill be stored with MyDoFn as the short_str_value and\ncom.mypackage.MyDoFn as the java_class_name value.\nshort_str_value can be displayed and java_class_name_value\nwill be displayed as a tooltip.",
+          "type": "string"
+        },
+        "url": {
+          "description": "An optional full URL.",
+          "type": "string"
+        },
+        "label": {
+          "description": "An optional label to display in a dax UI for the element.",
+          "type": "string"
+        }
+      }
+    },
+    "ExecutionStageSummary": {
+      "id": "ExecutionStageSummary",
+      "description": "Description of the composing transforms, names\/ids, and input\/outputs of a\nstage of execution.  Some composing transforms and sources may have been\ngenerated by the Dataflow service during execution planning.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Dataflow service generated name for this stage.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Dataflow service generated id for this stage.",
+          "type": "string",
+          "format": "int64"
+        },
+        "kind": {
+          "description": "Type of tranform this stage is executing.",
+          "enumDescriptions": [
+            "Unrecognized transform type.",
+            "ParDo transform.",
+            "Group By Key transform.",
+            "Flatten transform.",
+            "Read transform.",
+            "Write transform.",
+            "Constructs from a constant value, such as with Create.of.",
+            "Creates a Singleton view of a collection.",
+            "Opening or closing a shuffle session, often as part of a GroupByKey."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN_KIND",
+            "PAR_DO_KIND",
+            "GROUP_BY_KEY_KIND",
+            "FLATTEN_KIND",
+            "READ_KIND",
+            "WRITE_KIND",
+            "CONSTANT_KIND",
+            "SINGLETON_KIND",
+            "SHUFFLE_KIND"
+          ]
+        },
+        "inputSource": {
+          "description": "Input sources for this stage.",
+          "type": "array",
+          "items": {
+            "$ref": "StageSource"
+          }
+        },
+        "outputSource": {
+          "description": "Output sources for this stage.",
+          "type": "array",
+          "items": {
+            "$ref": "StageSource"
+          }
+        },
+        "componentTransform": {
+          "description": "Transforms that comprise this execution stage.",
+          "type": "array",
+          "items": {
+            "$ref": "ComponentTransform"
+          }
+        },
+        "componentSource": {
+          "description": "Collections produced and consumed by component transforms of this stage.",
+          "type": "array",
+          "items": {
+            "$ref": "ComponentSource"
+          }
+        }
+      }
+    },
+    "StageSource": {
+      "id": "StageSource",
+      "description": "Description of an input or output of an execution stage.",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "description": "Human-readable name for this source; may be user or system generated.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Dataflow service generated name for this source.",
+          "type": "string"
+        },
+        "originalUserTransformOrCollection": {
+          "description": "User name for the original user transform or collection with which this\nsource is most closely associated.",
+          "type": "string"
+        },
+        "sizeBytes": {
+          "description": "Size of the source, if measurable.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ComponentTransform": {
+      "id": "ComponentTransform",
+      "description": "Description of a transform executed as part of an execution stage.",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "description": "Human-readable name for this transform; may be user or system generated.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Dataflow service generated name for this source.",
+          "type": "string"
+        },
+        "originalTransform": {
+          "description": "User name for the original user transform with which this transform is\nmost closely associated.",
+          "type": "string"
+        }
+      }
+    },
+    "ComponentSource": {
+      "id": "ComponentSource",
+      "description": "Description of an interstitial value between transforms in an execution\nstage.",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "description": "Human-readable name for this transform; may be user or system generated.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Dataflow service generated name for this source.",
+          "type": "string"
+        },
+        "originalTransformOrCollection": {
+          "description": "User name for the original user transform or collection with which this\nsource is most closely associated.",
+          "type": "string"
         }
       }
     },
@@ -2944,19 +3229,37 @@
     },
     "ResourceUtilizationReport": {
       "id": "ResourceUtilizationReport",
-      "description": "Worker metrics exported from workers. This contains resource utilization\nmetrics accumulated from a variety of sources. For more information, see\ngo\/df-resource-signals.\n\nNote that this proto closely follows the structure of its DFE siblings in its\ncontents.",
+      "description": "Worker metrics exported from workers. This contains resource utilization\nmetrics accumulated from a variety of sources. For more information, see\ngo\/df-resource-signals.",
       "type": "object",
       "properties": {
-        "metrics": {
-          "description": "Each Struct must parallel DFE worker metrics protos (eg., cpu_time metric\nwill have nested values \u201Ctimestamp_ms, total_ms, rate\u201D).",
+        "cpuTime": {
+          "description": "CPU utilization samples.",
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object."
-            }
+            "$ref": "CPUTime"
           }
+        }
+      }
+    },
+    "CPUTime": {
+      "id": "CPUTime",
+      "description": "Modeled after information exposed by \/proc\/stat.",
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "description": "Timestamp of the measurement.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "totalMs": {
+          "description": "Total active CPU time across all cores (ie., non-idle) in milliseconds\nsince start-up.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "rate": {
+          "description": "Average CPU utilization rate (% non-idle cpu \/ second) since previous\nsample.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -3065,7 +3368,8 @@
                   "enum": [
                     "JOB_VIEW_UNKNOWN",
                     "JOB_VIEW_SUMMARY",
-                    "JOB_VIEW_ALL"
+                    "JOB_VIEW_ALL",
+                    "JOB_VIEW_DESCRIPTION"
                   ]
                 },
                 "replaceJobId": {
@@ -3119,7 +3423,8 @@
                   "enum": [
                     "JOB_VIEW_UNKNOWN",
                     "JOB_VIEW_SUMMARY",
-                    "JOB_VIEW_ALL"
+                    "JOB_VIEW_ALL",
+                    "JOB_VIEW_DESCRIPTION"
                   ]
                 },
                 "location": {
@@ -3211,7 +3516,8 @@
                   "enum": [
                     "JOB_VIEW_UNKNOWN",
                     "JOB_VIEW_SUMMARY",
-                    "JOB_VIEW_ALL"
+                    "JOB_VIEW_ALL",
+                    "JOB_VIEW_DESCRIPTION"
                   ]
                 },
                 "pageSize": {
@@ -3545,7 +3851,8 @@
                       "enum": [
                         "JOB_VIEW_UNKNOWN",
                         "JOB_VIEW_SUMMARY",
-                        "JOB_VIEW_ALL"
+                        "JOB_VIEW_ALL",
+                        "JOB_VIEW_DESCRIPTION"
                       ]
                     },
                     "replaceJobId": {
@@ -3601,7 +3908,8 @@
                       "enum": [
                         "JOB_VIEW_UNKNOWN",
                         "JOB_VIEW_SUMMARY",
-                        "JOB_VIEW_ALL"
+                        "JOB_VIEW_ALL",
+                        "JOB_VIEW_DESCRIPTION"
                       ]
                     }
                   },
@@ -3697,7 +4005,8 @@
                       "enum": [
                         "JOB_VIEW_UNKNOWN",
                         "JOB_VIEW_SUMMARY",
-                        "JOB_VIEW_ALL"
+                        "JOB_VIEW_ALL",
+                        "JOB_VIEW_DESCRIPTION"
                       ]
                     },
                     "pageSize": {

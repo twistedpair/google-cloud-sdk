@@ -770,7 +770,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id=u'compute.disks.createSnapshot',
         ordered_params=[u'project', u'zone', u'disk'],
         path_params=[u'disk', u'project', u'zone'],
-        query_params=[],
+        query_params=[u'guestFlush'],
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/createSnapshot',
         request_field=u'snapshot',
         request_type_name=u'ComputeDisksCreateSnapshotRequest',
@@ -3355,7 +3355,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def SetServiceAccount(self, request, global_params=None):
-      """Sets the service account on the instance.
+      """Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 
       Args:
         request: (ComputeInstancesSetServiceAccountRequest) input message

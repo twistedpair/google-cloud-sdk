@@ -29,7 +29,10 @@ Dockerfile.
 Flex runtime builders are a per-runtime pipeline that covers the full journey
 from source directory to docker image. They are stored as templated .yaml files
 representing CloudBuild Build messages. These .yaml files contain a series of
-CloudBuild build steps.
+CloudBuild build steps. Additionally, the runtime root stores a
+`<runtime>.version` file which indicates the current default version. That is,
+if `python-v1.yaml` is the current active pipeline, `python.version` will
+contain `v1`.
 
 Such a builder will look something like this (note that <angle_brackets> denote
 values to be filled in by the builder author, and $DOLLAR_SIGNS denote a
@@ -45,7 +48,9 @@ To test this out in the context of a real deployment, do something like the
 following (ls/grep steps just for illustrating where files are):
 
     $ ls /tmp/runtime-root
-    python.yaml
+    python.version python-v1.yaml
+    $ cat /tmp/runtime-root
+    v1
     $ gcloud config set app/use_runtime_builders true
     $ gcloud config set app/runtime_builders_root file:///tmp/runtime-root
     $ cd $MY_APP_DIR
@@ -64,6 +69,7 @@ runtime_builders_root set up for development yet:
        --config=<(envsubst < /path/to/cloudbuild.yaml) .
    $ gcloud app deploy --image-url=$_OUTPUT_IMAGE
 """
+import contextlib
 import os
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -72,8 +78,8 @@ from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files as file_utils
 
 
 class CloudBuildLoadError(exceptions.Error):
@@ -83,8 +89,8 @@ class CloudBuildLoadError(exceptions.Error):
 class CloudBuildFileNotFound(CloudBuildLoadError):
   """Error indicating a missing Cloud Build file in a local path."""
 
-  def __init__(self, name, root, builder_version):
-    msg = ('Could not find file [{name}] in directory [{root}]. '
+  def __init__(self, path, builder_version):
+    msg = ('Could not find Cloud Build config [{path}]. '
            'Please ensure that your app/runtime_builders_root property is set '
            'correctly and that ')
     if builder_version.version:
@@ -94,25 +100,7 @@ class CloudBuildFileNotFound(CloudBuildLoadError):
       msg += 'runtime [{runtime}] is valid.'
 
     super(CloudBuildFileNotFound, self).__init__(
-        msg.format(name=name, root=root, runtime=builder_version.runtime,
-                   version=builder_version.version))
-
-
-class CloudBuildObjectNotFound(CloudBuildLoadError):
-  """Error indicating a missing object in a Cloud Storage path."""
-
-  def __init__(self, name, bucket, builder_version):
-    msg = ('Could not find object [{name}] in bucket [{bucket}]. '
-           'Please ensure that your app/runtime_builders_root property is set '
-           'correctly and that ')
-    if builder_version.version:
-      msg += ('[{version}] is a valid version of the builder for runtime '
-              '[{runtime}].')
-    else:
-      msg += 'runtime [{runtime}] is valid.'
-
-    super(CloudBuildObjectNotFound, self).__init__(
-        msg.format(name=name, bucket=bucket, runtime=builder_version.runtime,
+        msg.format(path=path, runtime=builder_version.runtime,
                    version=builder_version.version))
 
 
@@ -127,6 +115,47 @@ class InvalidRuntimeBuilderPath(CloudBuildLoadError):
         'protocol.'.format(path))
 
 
+def _Join(*args):
+  """Join parts of a Cloud Storage or local path."""
+  if args[0].startswith('gs://'):
+    # Cloud Storage always uses '/' as separator, regardless of local platform
+    return '/'.join([arg.strip('/') for arg in args])
+  else:
+    return os.path.join(*args)
+
+
+def _Read(path):
+  """Read a file/object (local or on Cloud Storage).
+
+  >>> with _Read('gs://builder/object.txt') as f:
+  ...   assert f.read() == 'foo'
+  >>> with _Read('file:///path/to/object.txt') as f:
+  ...   assert f.read() == 'bar'
+
+  Args:
+    path: str, the path to the file/object to read. Must begin with 'file://' or
+      'gs://'
+
+  Returns:
+    a file-like context manager.
+
+  Raises:
+    IOError: if the file is local and open()ing it raises this error.
+    OSError: if the file is local and open()ing it raises this error.
+    calliope_exceptions.BadFileException: if the remote file read failed.
+    InvalidRuntimeBuilderPath: if the path is invalid (doesn't begin with an
+        appropriate prefix.
+  """
+  if path.startswith('file://'):
+    return open(path[len('file://'):])
+  elif path.startswith('gs://'):
+    storage_client = storage_api.StorageClient()
+    object_ = storage_util.ObjectReference.FromUrl(path)
+    return contextlib.closing(storage_client.ReadObject(object_))
+  else:
+    raise InvalidRuntimeBuilderPath(path)
+
+
 class RuntimeBuilderVersion(object):
   """A runtime/version pair representing the runtime version to use."""
 
@@ -137,16 +166,35 @@ class RuntimeBuilderVersion(object):
   def ToYamlFileName(self):
     """Returns the YAML filename corresponding to this runtime version.
 
-    >>> RuntimeBuilderVersion('nodejs').ToYamlFileName()
-    'nodejs.yaml'
     >>> RuntimeBuilderVersion('nodejs', 'v1').ToYamlFileName()
     'nodejs-v1.yaml'
 
     Returns:
       str, the name of the YAML file within the runtime root corresponding to
       this version.
+
+    Raises:
+      ValueError: if this RuntimeBuilderVersion doesn't have an explicit
+          version.
     """
-    return '-'.join(filter(None, [self.runtime, self.version])) + '.yaml'
+    if not self.version:
+      raise ValueError('Only RuntimeBuilderVersions with explicit versions '
+                       'have a YAML filename.')
+    return '-'.join([self.runtime, self.version]) + '.yaml'
+
+  def ToVersionFileName(self):
+    """Returns name of the file containing the default version of the runtime.
+
+    >>> RuntimeBuilderVersion('nodejs').ToVersionFileName()
+    'nodejs.version'
+    >>> RuntimeBuilderVersion('nodejs', 'v1').ToYamlFileName()
+    'nodejs.version'
+
+    Returns:
+      str, the name of the YAML file within the runtime root corresponding to
+      this version.
+    """
+    return self.runtime + '.version'
 
   @classmethod
   def FromServiceInfo(cls, service):
@@ -184,34 +232,26 @@ class RuntimeBuilderVersion(object):
     """
     build_file_root = properties.VALUES.app.runtime_builders_root.Get(
         required=True)
+    log.debug('Using runtime builder root [%s]', build_file_root)
+
+    if self.version is None:
+      log.debug('Fetching version for runtime [%s]...', self.runtime)
+      version_file_path = _Join(build_file_root, self.ToVersionFileName())
+      try:
+        with _Read(version_file_path) as f:
+          version = f.read().strip()
+      except (IOError, OSError, calliope_exceptions.BadFileException):
+        raise CloudBuildFileNotFound(version_file_path, self)
+      log.info('Using version [%s] for runtime [%s].', version, self.runtime)
+      return RuntimeBuilderVersion(self.runtime, version).LoadCloudBuild(params)
+
     build_file_name = self.ToYamlFileName()
     messages = cloudbuild_util.GetMessagesModule()
 
-    if build_file_root.startswith('file://'):
-      build_file_path = os.path.join(build_file_root[len('file://'):],
-                                     build_file_name)
-      try:
-        return cloudbuild_config.LoadCloudbuildConfig(
-            build_file_path, messages=messages, params=params)
-      except cloudbuild_config.NotFoundException:
-        raise CloudBuildFileNotFound(build_file_name, build_file_root, self)
-    elif build_file_root.startswith('gs://'):
-      # Cloud Storage always uses '/' as separator, regardless of local platform
-      if not build_file_root.endswith('/'):
-        build_file_root += '/'
-      object_ = storage_util.ObjectReference.FromUrl(build_file_root +
-                                                     build_file_name)
-      storage_client = storage_api.StorageClient()
-      # TODO(b/34169164): keep this in-memory.
-      with file_utils.TemporaryDirectory() as temp_dir:
-        build_file_path = os.path.join(temp_dir, 'cloudbuild.yaml')
-        try:
-          storage_client.CopyFileFromGCS(object_.bucket_ref, object_.name,
-                                         build_file_path)
-        except calliope_exceptions.BadFileException:
-          raise CloudBuildObjectNotFound(object_.name,
-                                         object_.bucket_ref.ToBucketUrl(), self)
-        return cloudbuild_config.LoadCloudbuildConfig(
-            build_file_path, messages=messages, params=params)
-    else:
-      raise InvalidRuntimeBuilderPath(build_file_root)
+    build_file_path = _Join(build_file_root, build_file_name)
+    try:
+      with _Read(build_file_path) as data:
+        return cloudbuild_config.LoadCloudbuildConfigFromStream(
+            data, messages=messages, params=params)
+    except (IOError, OSError, calliope_exceptions.BadFileException):
+      raise CloudBuildFileNotFound(build_file_path, self)

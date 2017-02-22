@@ -26,7 +26,7 @@ import pdb
 # copyright notice, etc.).
 import site  # pylint: disable=unused-import
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.third_party.apis import apis_map
 
 

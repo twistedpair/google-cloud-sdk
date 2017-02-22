@@ -14,7 +14,7 @@
 """Constants for the dataproc tool."""
 
 # TODO(user): Move defaults to the server
-from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.api_lib.util import apis as core_apis
 
 messages = core_apis.GetMessagesModule('dataproc', 'v1')
 # Job Status states that do not change.

@@ -13,7 +13,7 @@
 # limitations under the License.
 """CRM API Liens utilities."""
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 LIENS_API_VERSION = 'v1'

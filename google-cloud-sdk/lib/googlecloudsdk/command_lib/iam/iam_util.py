@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
-import httplib
-import json
 
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -459,45 +457,6 @@ def KeyTypeFromCreateKeyType(key_type):
     return KEY_TYPES.TYPE_GOOGLE_CREDENTIALS_FILE
   else:
     return KEY_TYPES.TYPE_UNSPECIFIED
-
-
-class IAMServiceAccountException(core_exceptions.Error):
-  """An exception for IAM service account related errors."""
-
-  def __init__(self, status_msg, address, key_id=None):
-    error_msg = status_msg
-    if key_id:
-      error_msg = '{0}: key [{1}] for service account [{2}]'.format(
-          error_msg, key_id, address)
-    elif address:
-      error_msg = '{0}: service account [{1}]'.format(error_msg, address)
-    super(IAMServiceAccountException, self).__init__(error_msg)
-
-
-def ConvertToServiceAccountException(http_error, address, key_id=None):
-  """Convert HTTP error to IAM specific exception, based on the status code."""
-  error_msg = None
-  if http_error.status_code == httplib.NOT_FOUND:
-    error_msg = 'Not found'
-  elif http_error.status_code == httplib.FORBIDDEN:
-    error_msg = 'Permission denied'
-  elif http_error.status_code == httplib.BAD_REQUEST:
-    # If the request is not valid then simply report the error message.
-    # In this case, the service account email (the 'address' variable)
-    # should not be included in the error message.
-    content = json.loads(http_error.content)
-    # The variable 'error' is the content of the error message, as can be
-    # seen by using the --log-http flag, in JSON format.
-    error = content.get('error', {})
-    error_msg = error.get('message', 0)
-    address = None
-  elif http_error.status_code == httplib.CONFLICT:
-    return http_error  # Let it retry.
-
-  if error_msg:
-    return IAMServiceAccountException(error_msg, address, key_id)
-  # TODO(user): Add a test for this exception type.
-  return gcloud_exceptions.ToolException.FromCurrent()
 
 
 def AccountNameValidator():

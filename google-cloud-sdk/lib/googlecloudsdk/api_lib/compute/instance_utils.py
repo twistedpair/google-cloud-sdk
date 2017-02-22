@@ -273,6 +273,7 @@ def CreateNetworkInterfaceMessage(resources,
                                   address,
                                   instance_refs,
                                   alias_ip_ranges_string=None,
+                                  network_tier=None,
                                   no_public_dns=None,
                                   public_dns=None,
                                   no_public_ptr=None,
@@ -312,6 +313,9 @@ def CreateNetworkInterfaceMessage(resources,
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)
+    if network_tier is not None:
+      access_config.networkTier = (messages.AccessConfig.
+                                   NetworkTierValueValuesEnum(network_tier))
 
     # If the user provided an external IP, populate the access
     # config with it.
@@ -340,8 +344,9 @@ def CreateNetworkInterfaceMessage(resources,
   return network_interface
 
 
-def CreateNetworkInterfaceMessages(
-    resources, compute_client, network_interface_arg, instance_refs):
+def CreateNetworkInterfaceMessages(resources, compute_client,
+                                   network_interface_arg, instance_refs,
+                                   support_network_tier):
   """Create network interface messages.
 
   Args:
@@ -350,6 +355,7 @@ def CreateNetworkInterfaceMessages(
     network_interface_arg: CLI argument specyfying network interfaces.
     instance_refs: reference to instances that will own the generated
                    interfaces.
+    support_network_tier: indicates if network tier is supported.
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -358,12 +364,17 @@ def CreateNetworkInterfaceMessages(
     for interface in network_interface_arg:
       address = interface.get('address', None)
       no_address = 'no-address' in interface
+      if support_network_tier:
+        network_tier = interface.get('network-tier',
+                                     constants.DEFAULT_NETWORK_TIER)
+      else:
+        network_tier = None
 
       result.append(CreateNetworkInterfaceMessage(
           resources, compute_client, interface.get('network', None),
           interface.get('subnet', None),
           interface.get('private-network-ip', None), no_address,
-          address, instance_refs, interface.get('aliases', None)))
+          address, instance_refs, interface.get('aliases', None), network_tier))
   return result
 
 

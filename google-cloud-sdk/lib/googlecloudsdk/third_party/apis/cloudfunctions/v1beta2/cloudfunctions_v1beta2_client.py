@@ -78,6 +78,36 @@ service.
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      """Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding below allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`.
+
+      Args:
+        request: (CloudfunctionsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudfunctions.operations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta2/operations',
+        request_field='',
+        request_type_name=u'CloudfunctionsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFunctionsService(base_api.BaseApiService):
     """Service class for the projects_locations_functions resource."""
 
@@ -119,7 +149,7 @@ limited traffic allowed.
     def Create(self, request, global_params=None):
       """Creates a new function. If a function with the given name already exists in.
 the specified project, the long running operation will return
-ALREADY_EXISTS error.
+`ALREADY_EXISTS` error.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsCreateRequest) input message

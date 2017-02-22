@@ -16,8 +16,8 @@
 
 from apitools.base.py import exceptions as apitools_exceptions
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 
 DATAFLOW_API_NAME = 'dataflow'

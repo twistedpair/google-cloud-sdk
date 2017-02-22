@@ -14,7 +14,7 @@
 
 """Base functions for DM commands targeting the v2 API."""
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources

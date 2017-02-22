@@ -125,11 +125,7 @@ _GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot', 'bin')
 #               os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
 #               component='app-engine-intercal'),
 #     }
-_STAGING_REGISTRY = {}
-
-# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
-# same key is used.
-_STAGING_REGISTRY_BETA = {
+_STAGING_REGISTRY = {
     ('go', util.Environment.STANDARD):
         _Command(
             os.path.join(_GO_BIN_DIR, 'go-app-stager'),
@@ -146,6 +142,10 @@ _STAGING_REGISTRY_BETA = {
             os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
 }
+
+# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
+# same key is used.
+_STAGING_REGISTRY_BETA = {}
 
 
 _STAGING_COMMAND_OUTPUT_TEMPLATE = """\

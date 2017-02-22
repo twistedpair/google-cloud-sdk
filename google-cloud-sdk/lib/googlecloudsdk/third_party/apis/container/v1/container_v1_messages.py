@@ -42,10 +42,7 @@ class AuthenticateRequest(_messages.Message):
     kind: Fields from "pkg/apis/authentication.k8s.io/v1beta1".TokenReview:
       The "kind" of the TokenReview object.
     metadata: "pkg/api/types".ObjectMeta TODO (b/30563544): Remove these
-      unused fields. If cl/129007035 is rolled out to the prod envelope before
-      b/28297888 is fixed, we can change this to a google.protobuf.Any. Until
-      then, only the fields that are acutally populated by the Token Webhook
-      Authenticator
+      unused fields.
     spec: The information about the request being evaluated. It contains the
       token that the server should authenticate.
     status: The response for the provided request. (this won't be filled in
@@ -96,10 +93,7 @@ class AuthorizeRequest(_messages.Message):
     kind: Fields from "pkg/apis/authorization/v1beta1".SubjectAccessReview:
       The "kind" of the SubjectAccessReview object.
     metadata: Fields from "pkg/api/types".ObjectMeta TODO (b/30563544): Remove
-      these unused fields. If cl/129007035 is rolled out to the prod envelope
-      before b/28297888 is fixed, we can change this to a google.protobuf.Any.
-      Until then, only the fields that are acutally populated by the Token
-      Webhook Authenticator
+      these unused fields.
     spec: The information about the user action being evaluated.
     status: The response for the provided request (this won't be filled in for
       an AuthorizeRequest, but it is part of the struct, so we need it here to
@@ -155,6 +149,93 @@ class AutoUpgradeOptions(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   """CancelOperationRequest cancels a single operation."""
+
+
+class CertificateSigningRequest(_messages.Message):
+  """A request to sign a certificate. These fields must match the OSS
+  definition in "pkg/apis/certificates/v1beta1", with additional fields
+  prepending as part of the "SignCertificate" rpc definition.
+
+  Fields:
+    apiVersion: The api version of the CertificateSigningRequest object.
+    clusterId: The name of this master's cluster.
+    kind: The "kind" of the CertificateSigningRequest object.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    metadata: Additional metadata about the Kubernetes object.
+    projectNumber: The project number for which the certificate is being
+      signed. This is the project in which this master's cluster resides.
+      This is an int64, so it must be a project number, not a project ID.
+    spec: The specification holds information about the certificate requesting
+      to be signed.
+    status: The status is populated at response time, and holds information
+      about the success or failure of the operation along with the signed
+      certificate.
+    zone: The zone of this master's cluster.
+  """
+
+  apiVersion = _messages.StringField(1)
+  clusterId = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  masterProjectId = _messages.StringField(4)
+  metadata = _messages.MessageField('ObjectMeta', 5)
+  projectNumber = _messages.IntegerField(6)
+  spec = _messages.MessageField('CertificateSigningRequestSpec', 7)
+  status = _messages.MessageField('CertificateSigningRequestStatus', 8)
+  zone = _messages.StringField(9)
+
+
+class CertificateSigningRequestCondition(_messages.Message):
+  """A detailed condition of the state of the certificate signing request,
+  such as whether it has been approved or denied. This must match the OSS
+  definition in "pkg/apis/certificates/v1beta1".
+
+  Fields:
+    lastUpdateTime: The timestamp of the last update to this condition.
+    message: A human-readable message with details about the request state.
+    reason: A brief reason for the request state.
+    type: The request approval state, currently either Approved or Denied.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class CertificateSigningRequestSpec(_messages.Message):
+  """The specification for a certificate to be signed. This must match the OSS
+  definition in "pkg/apis/certificates/v1beta1".
+
+  Fields:
+    groups: An optional list of groups for this request.
+    request: The PEM-encoded body of the certificate.
+    uid: An optional UID for the CSR object.
+    usages: Allowed usages that the certificate will be valid for. See:
+      https://tools.ietf.org/html/rfc5280#section-4.2.1.3
+      https://tools.ietf.org/html/rfc5280#section-4.2.1.12
+    username: Information about the requesting user (if relevant).
+  """
+
+  groups = _messages.StringField(1, repeated=True)
+  request = _messages.BytesField(2)
+  uid = _messages.StringField(3)
+  usages = _messages.StringField(4, repeated=True)
+  username = _messages.StringField(5)
+
+
+class CertificateSigningRequestStatus(_messages.Message):
+  """The status of the certificate signing request, populated at response
+  time. This must match the OSS definition in "pkg/apis/certificates/v1beta1".
+
+  Fields:
+    certificate: The bytes of the signed certificate, on success.
+    conditions: Conditions applied to the request, such as approval or denial.
+  """
+
+  certificate = _messages.BytesField(1)
+  conditions = _messages.MessageField('CertificateSigningRequestCondition', 2, repeated=True)
 
 
 class Cluster(_messages.Message):
@@ -849,10 +930,7 @@ class ImageReviewRequest(_messages.Message):
     kind: Fields from "pkg/apis/authorization/v1beta1".SubjectAccessReview:
       The "kind" of the SubjectAccessReview object.
     metadata: Fields from "pkg/api/types".ObjectMeta TODO (b/30563544): Remove
-      these unused fields. If cl/129007035 is rolled out to the prod envelope
-      before b/28297888 is fixed, we can change this to a google.protobuf.Any.
-      Until then, only the fields that are acutally populated by the Token
-      Webhook Authenticator
+      these unused fields.
     spec: The information about the user action being evaluated.
     status: The response for the provided request (this won't be filled in for
       an AuthorizeRequest, but it is part of the struct, so we need it here to
@@ -1283,15 +1361,33 @@ class NonResourceAttributes(_messages.Message):
 
 
 class ObjectMeta(_messages.Message):
-  """The fields from "pkg/api/types".ObjectMeta that actually get filled in on
-  Authenticate/Authorize requests.
+  """This maps to the "apimachinery/pkg/apis/meta/v1".ObjectMeta type,
+  although not all fields are populated and represented here. TODO
+  (b/30563544, b/34947157): Remove unused fields.  Currently, if a request
+  includes metadata fields that aren't explicitly modeled here, the caller
+  will receive a 400 response instead of ignoring the unrecognized fields. We
+  should consider following b/28297888 to enable "ignore_unknown_fields" in
+  order to make this less brittle.
 
   Fields:
     creationTimestamp: Timestamp representing the server time when this object
       was created.
+    generateName: An optional prefix, used by the server, to generate a unique
+      name ONLY IF the name field has not been provided.
+    name: The name of the resource, unique within a namespace.
+    resourceVersion: An opaque value that represents the internal version of
+      this object that can be used by clients to determine when objects have
+      changed.
+    selfLink: A URL representing this object.
+    uid: A unique identifier in time and space for this object.
   """
 
-  creationTimestamp = _messages.BytesField(1)
+  creationTimestamp = _messages.StringField(1)
+  generateName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceVersion = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  uid = _messages.StringField(6)
 
 
 class Operation(_messages.Message):

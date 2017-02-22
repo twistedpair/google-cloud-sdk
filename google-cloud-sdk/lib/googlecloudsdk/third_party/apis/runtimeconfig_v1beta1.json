@@ -257,7 +257,7 @@
           "format": "byte"
         },
         "text": {
-          "description": "The string value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted. For example,\n<code>text: \"my text value\"<\/code>.",
+          "description": "The string value of the variable. The length of the value must be less\nthan 4096 bytes. Empty values are also accepted. For example,\n`text: \"my text value\"`. The string must be valid UTF-8.",
           "type": "string"
         },
         "updateTime": {
@@ -583,14 +583,16 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". It is not permitted to grant access based on\nthe *absence* of a realm, so realm conditions can only be used in\na \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN)."
+            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". It is not permitted to grant access based on\nthe *absence* of a realm, so realm conditions can only be used in\na \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).\nSee: go\/rpc-security-policy-dynamicauth."
           ],
           "type": "string",
           "enum": [
             "NO_ATTR",
             "AUTHORITY",
             "ATTRIBUTION",
-            "SECURITY_REALM"
+            "SECURITY_REALM",
+            "APPROVER"
           ]
         },
         "sys": {
@@ -808,7 +810,7 @@
                   "type": "string"
                 },
                 "requestId": {
-                  "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
+                  "description": "An optional but recommended unique `request_id`. If the server\nreceives two `create()` requests  with the same\n`request_id`, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty `request_id` fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n`request_id` strings.\n\n`request_id` strings are limited to 64 characters.",
                   "location": "query",
                   "type": "string"
                 }
@@ -942,7 +944,7 @@
               "path": "v1beta1/{+resource}:testIamPermissions",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
@@ -1002,7 +1004,7 @@
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions",
                   "httpMethod": "GET",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
@@ -1145,7 +1147,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
+                      "description": "An optional but recommended unique `request_id`. If the server\nreceives two `create()` requests  with the same\n`request_id`, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty `request_id` fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n`request_id` strings.\n\n`request_id` strings are limited to 64 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1229,7 +1231,7 @@
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions",
                   "httpMethod": "GET",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
@@ -1338,7 +1340,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional but recommended unique <code>request_id<\/code>. If the server\nreceives two <code>create()<\/code> requests  with the same\n<code>request_id<\/code>, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty <code>request_id<\/code> fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n<code>request_id<\/code> strings.\n\n<code>request_id<\/code> strings are limited to 64 characters.",
+                      "description": "An optional but recommended unique `request_id`. If the server\nreceives two `create()` requests  with the same\n`request_id`, then the second request will be ignored and the\nfirst resource created and stored in the backend is returned.\nEmpty `request_id` fields are ignored.\n\nIt is responsibility of the client to ensure uniqueness of the\n`request_id` strings.\n\n`request_id` strings are limited to 64 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1388,7 +1390,7 @@
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions",
                   "httpMethod": "GET",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",

@@ -133,10 +133,11 @@ class ListLogEntriesRequest(_messages.Message):
       Example: "my-project-1A". If present, these project identifiers are
       converted to resource name format and added to the list of resources in
       resource_names.
-    resourceNames: Required. Names of one or more resources from which to
-      retrieve log entries: "projects/[PROJECT_ID]"
-      "organizations/[ORGANIZATION_ID]" Projects listed in the project_ids
-      field are added to this list.
+    resourceNames: Required. Names of one or more parent resources from which
+      to retrieve log entries: "projects/[PROJECT_ID]"
+      "organizations/[ORGANIZATION_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]"
+      "folders/[FOLDER_ID]" Projects listed in the project_ids field are added
+      to this list.
   """
 
   filter = _messages.StringField(1)
@@ -258,16 +259,18 @@ class LogEntry(_messages.Message):
       additional information about the log entry.
     logName: Required. The resource name of the log to which this log entry
       belongs: "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded within log_name. Example: "organizations/1234567890/logs/cloudre
-      sourcemanager.googleapis.com%2Factivity". [LOG_ID] must be less than 512
-      characters long and can only include the following characters: upper and
-      lower case alphanumeric characters, forward-slash, underscore, hyphen,
-      and period.For backward compatibility, if log_name begins with a
-      forward-slash, such as /projects/..., then the log entry is ingested as
-      usual but the forward-slash is removed. Listing the log entry will not
-      show the leading slash and filtering for a log name with a leading slash
-      will never return any results.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded within
+      log_name. Example: "organizations/1234567890/logs/cloudresourcemanager.g
+      oogleapis.com%2Factivity". [LOG_ID] must be less than 512 characters
+      long and can only include the following characters: upper and lower case
+      alphanumeric characters, forward-slash, underscore, hyphen, and
+      period.For backward compatibility, if log_name begins with a forward-
+      slash, such as /projects/..., then the log entry is ingested as usual
+      but the forward-slash is removed. Listing the log entry will not show
+      the leading slash and filtering for a log name with a leading slash will
+      never return any results.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -553,7 +556,8 @@ class LogSink(_messages.Message):
   """Describes a sink used to export log entries to one of the following
   destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or
   a Cloud Pub/Sub topic. A logs filter controls which log entries are
-  exported. The sink must be created within a project or organization.
+  exported. The sink must be created within a project, organization, billing
+  account, or folder.
 
   Enums:
     OutputVersionFormatValueValuesEnum: Optional. The log entry format to use
@@ -634,10 +638,12 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
-      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
-      more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
+      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -656,6 +662,7 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -669,7 +676,8 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
       "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
@@ -695,9 +703,10 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
-      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
-      It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -707,10 +716,12 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
   """A LoggingBillingAccountsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The parent resource name of the sink:
+    sinkName: Required. The resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -727,8 +738,9 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The parent resource whose sinks are to be listed.
-      Examples: "projects/my-logging-project", "organizations/123456789".
+    parent: Required. The parent resource whose sinks are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -744,8 +756,10 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -767,10 +781,12 @@ class LoggingFoldersLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
-      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
-      more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
+      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -789,6 +805,7 @@ class LoggingFoldersLogsListRequest(_messages.Message):
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -802,7 +819,8 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
       "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
@@ -828,9 +846,10 @@ class LoggingFoldersSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
-      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
-      It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -840,10 +859,12 @@ class LoggingFoldersSinksGetRequest(_messages.Message):
   """A LoggingFoldersSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The parent resource name of the sink:
+    sinkName: Required. The resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -860,8 +881,9 @@ class LoggingFoldersSinksListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The parent resource whose sinks are to be listed.
-      Examples: "projects/my-logging-project", "organizations/123456789".
+    parent: Required. The parent resource whose sinks are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -877,8 +899,10 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -917,10 +941,12 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
-      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
-      more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
+      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -939,6 +965,7 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -952,7 +979,8 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
       "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
@@ -978,9 +1006,10 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
-      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
-      It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -990,10 +1019,12 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
   """A LoggingOrganizationsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The parent resource name of the sink:
+    sinkName: Required. The resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1010,8 +1041,9 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The parent resource whose sinks are to be listed.
-      Examples: "projects/my-logging-project", "organizations/123456789".
+    parent: Required. The parent resource whose sinks are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1027,8 +1059,10 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -1050,10 +1084,12 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
   Fields:
     logName: Required. The resource name of the log to delete:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded. For example, "projects/my-project-id/logs/syslog", "organizatio
-      ns/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity". For
-      more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
+      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -1072,6 +1108,7 @@ class LoggingProjectsLogsListRequest(_messages.Message):
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1156,7 +1193,8 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
   Fields:
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]" Examples:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
       "projects/my-logging-project", "organizations/123456789".
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
@@ -1182,9 +1220,10 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to delete,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" It is an error if the
-      sink does not exist. Example: "projects/my-project-id/sinks/my-sink-id".
-      It is an error if the sink does not exist.
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1194,10 +1233,12 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   """A LoggingProjectsSinksGetRequest object.
 
   Fields:
-    sinkName: Required. The parent resource name of the sink:
+    sinkName: Required. The resource name of the sink:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -1214,8 +1255,9 @@ class LoggingProjectsSinksListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The parent resource whose sinks are to be listed.
-      Examples: "projects/my-logging-project", "organizations/123456789".
+    parent: Required. The parent resource whose sinks are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1231,8 +1273,10 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
-      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]" Example: "projects/my-
-      project-id/sinks/my-sink-id".
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -1560,10 +1604,12 @@ class WriteLogEntriesRequest(_messages.Message):
     logName: Optional. A default log resource name that is assigned to all log
       entries in entries that do not specify a value for log_name:
       "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-
-      encoded. For example, "projects/my-project-id/logs/syslog" or "organizat
-      ions/1234567890/logs/cloudresourcemanager.googleapis.com%2Factivity".
-      For more information about log names, see LogEntry.
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog" or "organizations/12345678
+      90/logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the

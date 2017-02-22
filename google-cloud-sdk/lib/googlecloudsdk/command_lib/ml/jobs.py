@@ -18,6 +18,7 @@ from the command line arguments and returns a list of URLs to be given to the
 Cloud ML API. See its docstring for details.
 """
 import collections
+import contextlib
 import cStringIO
 import os
 import sys
@@ -89,13 +90,7 @@ class MissingInitError(UploadFailureError):
 
 
 class UncopyablePackageError(UploadFailureError):
-  """Error with copying: the source contains its destination."""
-
-  def __init__(self, source_dir, temp_dir):
-    super(UncopyablePackageError, self).__init__(textwrap.dedent("""\
-        Cannot copy directory since temporary directory [{}] is inside of
-        source directory [{}].
-        """.format(source_dir, temp_dir)))
+  """Error with copying the package."""
 
 
 class DuplicateEntriesError(UploadFailureError):
@@ -133,11 +128,17 @@ def _CopyIfNotWritable(source_dir, temp_dir):
     return source_dir
 
   if files.IsDirAncestorOf(source_dir, temp_dir):
-    raise UncopyablePackageError(source_dir, temp_dir)
+    raise UncopyablePackageError(
+        'Cannot copy directory since working directory [{}] is inside of '
+        'source directory [{}].'.format(temp_dir, source_dir))
 
   dest_dir = os.path.join(temp_dir, 'dest')
   log.debug('Copying local source tree from [%s] to [%s]', source_dir, dest_dir)
-  files.CopyTree(source_dir, dest_dir)
+  try:
+    files.CopyTree(source_dir, dest_dir)
+  except OSError:
+    raise UncopyablePackageError(
+        'Cannot write to working location [{}]'.format(dest_dir))
   return dest_dir
 
 
@@ -162,6 +163,29 @@ def _GenerateSetupPyIfNeeded(setup_py_path, package_name):
   with open(setup_py_path, 'w') as setup_file:
     setup_file.write(setup_contents)
   return True
+
+
+@contextlib.contextmanager
+def _TempDirOrBackup(default_dir):
+  """Yields a temporary directory or a backup temporary directory.
+
+  Prefers creating a temporary directory (which will be cleaned up when the
+  context manager is closed), but falls back to default_dir. There are systems
+  where users can't write to temp, but we still need to copy.
+
+  Args:
+    default_dir: str, the backup temporary directory.
+
+  Yields:
+    str, the temporary directory.
+  """
+
+  try:
+    with files.TemporaryDirectory() as temp_dir:
+      yield temp_dir
+  except OSError:
+    # Some systems don't allow access to '/tmp'
+    yield default_dir
 
 
 def _RunSetupTools(package_root, setup_py_path, output_dir):
@@ -199,15 +223,23 @@ def _RunSetupTools(package_root, setup_py_path, output_dir):
   # Unfortunately, there doesn't seem to be any easy way to move *all*
   # temporary files out of the current directory, so we'll fail here if we
   # can't write to it.
-  with files.TemporaryDirectory() as temp_dir:
+  with _TempDirOrBackup(package_root) as working_dir:
     args = [sys.executable, setup_py_path,
-            'egg_info', '--egg-base', temp_dir,
-            'build', '--build-base', temp_dir, '--build-temp', temp_dir,
+            'egg_info', '--egg-base', working_dir,
+            'build', '--build-base', working_dir, '--build-temp', working_dir,
             'sdist', '--dist-dir', output_dir]
     out = cStringIO.StringIO()
     if execution_utils.Exec(args, no_exit=True, out_func=out.write,
                             err_func=out.write, cwd=package_root):
-      raise RuntimeError(out.getvalue())
+      # If the first execution doesn't work, it might be because setup.py is
+      # using distutils. We still want to try it that way because it leaves
+      # fewer droppings (that is, leftover files) on disk.
+      args = [sys.executable, setup_py_path,
+              'sdist', '--dist-dir', output_dir]
+      out = cStringIO.StringIO()
+      if execution_utils.Exec(args, no_exit=True, out_func=out.write,
+                              err_func=out.write, cwd=package_root):
+        raise RuntimeError(out.getvalue())
 
   local_paths = [os.path.join(output_dir, rel_file)
                  for rel_file in os.listdir(output_dir)]
@@ -248,8 +280,9 @@ def BuildPackages(package_path, output_dir):
     MissingInitError: If the package doesn't contain an `__init__.py` file.
   """
   package_path = os.path.abspath(package_path)
-  with files.TemporaryDirectory() as temp_dir:
-    package_root = _CopyIfNotWritable(os.path.dirname(package_path), temp_dir)
+  package_root = os.path.dirname(package_path)
+  with _TempDirOrBackup(package_path) as working_dir:
+    package_root = _CopyIfNotWritable(package_root, working_dir)
     if not os.path.exists(os.path.join(package_path, '__init__.py')):
       # We could drop `__init__.py` in here, but it's pretty likely that this
       # indicates an incorrect directory or some bigger problem and we don't
@@ -359,9 +392,10 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
       local_paths.append(package)
 
   if package_path:
-    with files.TemporaryDirectory() as temp_dir:
+    package_root = os.path.dirname(os.path.abspath(package_path))
+    with _TempDirOrBackup(package_root) as working_dir:
       local_paths.extend(BuildPackages(package_path,
-                                       os.path.join(temp_dir, 'output')))
+                                       os.path.join(working_dir, 'output')))
       remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
   elif local_paths:
     # Can't combine this with above because above requires the temporary

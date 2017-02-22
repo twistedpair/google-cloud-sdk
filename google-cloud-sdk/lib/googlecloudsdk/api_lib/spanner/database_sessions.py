@@ -15,7 +15,7 @@
 
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 

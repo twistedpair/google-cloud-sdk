@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for the cloudbuild API."""
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 
 
 _API_NAME = 'cloudbuild'

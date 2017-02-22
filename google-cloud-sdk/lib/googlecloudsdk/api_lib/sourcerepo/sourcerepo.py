@@ -18,7 +18,7 @@ import os
 
 from apitools.base.py import exceptions
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 

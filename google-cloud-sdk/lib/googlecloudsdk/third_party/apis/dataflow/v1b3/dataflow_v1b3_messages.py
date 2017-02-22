@@ -111,6 +111,55 @@ class AutoscalingSettings(_messages.Message):
   maxNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class CPUTime(_messages.Message):
+  """Modeled after information exposed by /proc/stat.
+
+  Fields:
+    rate: Average CPU utilization rate (% non-idle cpu / second) since
+      previous sample.
+    timestamp: Timestamp of the measurement.
+    totalMs: Total active CPU time across all cores (ie., non-idle) in
+      milliseconds since start-up.
+  """
+
+  rate = _messages.FloatField(1)
+  timestamp = _messages.StringField(2)
+  totalMs = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+
+
+class ComponentSource(_messages.Message):
+  """Description of an interstitial value between transforms in an execution
+  stage.
+
+  Fields:
+    name: Dataflow service generated name for this source.
+    originalTransformOrCollection: User name for the original user transform
+      or collection with which this source is most closely associated.
+    userName: Human-readable name for this transform; may be user or system
+      generated.
+  """
+
+  name = _messages.StringField(1)
+  originalTransformOrCollection = _messages.StringField(2)
+  userName = _messages.StringField(3)
+
+
+class ComponentTransform(_messages.Message):
+  """Description of a transform executed as part of an execution stage.
+
+  Fields:
+    name: Dataflow service generated name for this source.
+    originalTransform: User name for the original user transform with which
+      this transform is most closely associated.
+    userName: Human-readable name for this transform; may be user or system
+      generated.
+  """
+
+  name = _messages.StringField(1)
+  originalTransform = _messages.StringField(2)
+  userName = _messages.StringField(3)
+
+
 class ComputationTopology(_messages.Message):
   """All configuration data for a particular Computation.
 
@@ -420,10 +469,12 @@ class DataflowProjectsJobsCreateRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   job = _messages.MessageField('Job', 1)
   location = _messages.StringField(2)
@@ -499,10 +550,12 @@ class DataflowProjectsJobsGetRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   jobId = _messages.StringField(1, required=True)
   location = _messages.StringField(2)
@@ -553,10 +606,12 @@ class DataflowProjectsJobsListRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
   location = _messages.StringField(2)
@@ -686,10 +741,12 @@ class DataflowProjectsLocationsJobsCreateRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   job = _messages.MessageField('Job', 1)
   location = _messages.StringField(2, required=True)
@@ -735,10 +792,12 @@ class DataflowProjectsLocationsJobsGetRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   jobId = _messages.StringField(1, required=True)
   location = _messages.StringField(2, required=True)
@@ -789,10 +848,12 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
       JOB_VIEW_UNKNOWN: <no description>
       JOB_VIEW_SUMMARY: <no description>
       JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
     """
     JOB_VIEW_UNKNOWN = 0
     JOB_VIEW_SUMMARY = 1
     JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
   location = _messages.StringField(2, required=True)
@@ -997,6 +1058,46 @@ class Disk(_messages.Message):
   sizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DisplayData(_messages.Message):
+  """Data provided with a pipeline or transform to provide descriptive info.
+
+  Fields:
+    boolValue: Contains value if the data is of a boolean type.
+    durationValue: Contains value if the data is of duration type.
+    floatValue: Contains value if the data is of float type.
+    int64Value: Contains value if the data is of int64 type.
+    javaClassValue: Contains value if the data is of java class type.
+    key: The key identifying the display data. This is intended to be used as
+      a label for the display data when viewed in a dax monitoring system.
+    label: An optional label to display in a dax UI for the element.
+    namespace: The namespace for the key. This is usually a class name or
+      programming language namespace (i.e. python module) which defines the
+      display data. This allows a dax monitoring system to specially handle
+      the data and perform custom rendering.
+    shortStrValue: A possible additional shorter value to display. For example
+      a java_class_name_value of com.mypackage.MyDoFn will be stored with
+      MyDoFn as the short_str_value and com.mypackage.MyDoFn as the
+      java_class_name value. short_str_value can be displayed and
+      java_class_name_value will be displayed as a tooltip.
+    strValue: Contains value if the data is of string type.
+    timestampValue: Contains value if the data is of timestamp type.
+    url: An optional full URL.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  durationValue = _messages.StringField(2)
+  floatValue = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  int64Value = _messages.IntegerField(4)
+  javaClassValue = _messages.StringField(5)
+  key = _messages.StringField(6)
+  label = _messages.StringField(7)
+  namespace = _messages.StringField(8)
+  shortStrValue = _messages.StringField(9)
+  strValue = _messages.StringField(10)
+  timestampValue = _messages.StringField(11)
+  url = _messages.StringField(12)
+
+
 class DistributionUpdate(_messages.Message):
   """A metric value representing a distribution.
 
@@ -1191,6 +1292,59 @@ class Environment(_messages.Message):
   userAgent = _messages.MessageField('UserAgentValue', 8)
   version = _messages.MessageField('VersionValue', 9)
   workerPools = _messages.MessageField('WorkerPool', 10, repeated=True)
+
+
+class ExecutionStageSummary(_messages.Message):
+  """Description of the composing transforms, names/ids, and input/outputs of
+  a stage of execution.  Some composing transforms and sources may have been
+  generated by the Dataflow service during execution planning.
+
+  Enums:
+    KindValueValuesEnum: Type of tranform this stage is executing.
+
+  Fields:
+    componentSource: Collections produced and consumed by component transforms
+      of this stage.
+    componentTransform: Transforms that comprise this execution stage.
+    id: Dataflow service generated id for this stage.
+    inputSource: Input sources for this stage.
+    kind: Type of tranform this stage is executing.
+    name: Dataflow service generated name for this stage.
+    outputSource: Output sources for this stage.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """Type of tranform this stage is executing.
+
+    Values:
+      UNKNOWN_KIND: Unrecognized transform type.
+      PAR_DO_KIND: ParDo transform.
+      GROUP_BY_KEY_KIND: Group By Key transform.
+      FLATTEN_KIND: Flatten transform.
+      READ_KIND: Read transform.
+      WRITE_KIND: Write transform.
+      CONSTANT_KIND: Constructs from a constant value, such as with Create.of.
+      SINGLETON_KIND: Creates a Singleton view of a collection.
+      SHUFFLE_KIND: Opening or closing a shuffle session, often as part of a
+        GroupByKey.
+    """
+    UNKNOWN_KIND = 0
+    PAR_DO_KIND = 1
+    GROUP_BY_KEY_KIND = 2
+    FLATTEN_KIND = 3
+    READ_KIND = 4
+    WRITE_KIND = 5
+    CONSTANT_KIND = 6
+    SINGLETON_KIND = 7
+    SHUFFLE_KIND = 8
+
+  componentSource = _messages.MessageField('ComponentSource', 1, repeated=True)
+  componentTransform = _messages.MessageField('ComponentTransform', 2, repeated=True)
+  id = _messages.IntegerField(3)
+  inputSource = _messages.MessageField('StageSource', 4, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  outputSource = _messages.MessageField('StageSource', 7, repeated=True)
 
 
 class FailedLocation(_messages.Message):
@@ -1395,8 +1549,7 @@ class Job(_messages.Message):
       callers cannot mutate it.
     currentStateTime: The timestamp associated with the current state.
     environment: The environment for the job.
-    executionInfo: Information about how the Cloud Dataflow service will run
-      the job.
+    executionInfo: Deprecated.
     id: The unique ID of this job.  This field is set by the Cloud Dataflow
       service when the Job is created, and is immutable for the life of the
       job.
@@ -1412,6 +1565,10 @@ class Job(_messages.Message):
       attempts to create a Job with the same name as an already-existing Job,
       the attempt returns the existing Job.  The name must match the regular
       expression `[a-z]([-a-z0-9]{0,38}[a-z0-9])?`
+    pipelineDescription: Preliminary field: The format of this data may change
+      at any time. A description of the user pipeline and stages through which
+      it is executed. Created by Cloud Dataflow service.  Only retrieved with
+      JOB_VIEW_DESCRIPTION or JOB_VIEW_ALL.
     projectId: The ID of the Cloud Platform project that the job belongs to.
     replaceJobId: If this job is an update of an existing job, this field is
       the job ID of the job it replaced.  When sending a `CreateJobRequest`,
@@ -1626,14 +1783,15 @@ class Job(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   location = _messages.StringField(9)
   name = _messages.StringField(10)
-  projectId = _messages.StringField(11)
-  replaceJobId = _messages.StringField(12)
-  replacedByJobId = _messages.StringField(13)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 14)
-  steps = _messages.MessageField('Step', 15, repeated=True)
-  tempFiles = _messages.StringField(16, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  pipelineDescription = _messages.MessageField('PipelineDescription', 11)
+  projectId = _messages.StringField(12)
+  replaceJobId = _messages.StringField(13)
+  replacedByJobId = _messages.StringField(14)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 15)
+  steps = _messages.MessageField('Step', 16, repeated=True)
+  tempFiles = _messages.StringField(17, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
 
 
 class JobExecutionInfo(_messages.Message):
@@ -2242,6 +2400,24 @@ class PartialGroupByKeyInstruction(_messages.Message):
   valueCombiningFn = _messages.MessageField('ValueCombiningFnValue', 6)
 
 
+class PipelineDescription(_messages.Message):
+  """A descriptive representation of submitted pipeline as well as the
+  executed form.  This data is provided by the Dataflow service for ease of
+  visualizing the pipeline and interpretting Dataflow provided metrics.
+
+  Fields:
+    displayData: Pipeline level display data.
+    executionPipelineStage: Description of each stage of execution of the
+      pipeline.
+    originalPipelineTransform: Description of each transform in the pipeline
+      and collections between them.
+  """
+
+  displayData = _messages.MessageField('DisplayData', 1, repeated=True)
+  executionPipelineStage = _messages.MessageField('ExecutionStageSummary', 2, repeated=True)
+  originalPipelineTransform = _messages.MessageField('TransformSummary', 3, repeated=True)
+
+
 class Position(_messages.Message):
   """Position defines a position within a collection of data.  The value can
   be either the end position, a key (used with ordered collections), a byte
@@ -2360,43 +2536,13 @@ class ReportedParallelism(_messages.Message):
 class ResourceUtilizationReport(_messages.Message):
   """Worker metrics exported from workers. This contains resource utilization
   metrics accumulated from a variety of sources. For more information, see go
-  /df-resource-signals.  Note that this proto closely follows the structure of
-  its DFE siblings in its contents.
-
-  Messages:
-    MetricsValueListEntry: A MetricsValueListEntry object.
+  /df-resource-signals.
 
   Fields:
-    metrics: Each Struct must parallel DFE worker metrics protos (eg.,
-      cpu_time metric will have nested values \u201ctimestamp_ms, total_ms, rate\u201d).
+    cpuTime: CPU utilization samples.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetricsValueListEntry(_messages.Message):
-    """A MetricsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetricsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a MetricsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  metrics = _messages.MessageField('MetricsValueListEntry', 1, repeated=True)
+  cpuTime = _messages.MessageField('CPUTime', 1, repeated=True)
 
 
 class ResourceUtilizationReportResponse(_messages.Message):
@@ -2979,6 +3125,25 @@ class SplitInt64(_messages.Message):
   lowBits = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
 
 
+class StageSource(_messages.Message):
+  """Description of an input or output of an execution stage.
+
+  Fields:
+    name: Dataflow service generated name for this source.
+    originalUserTransformOrCollection: User name for the original user
+      transform or collection with which this source is most closely
+      associated.
+    sizeBytes: Size of the source, if measurable.
+    userName: Human-readable name for this source; may be user or system
+      generated.
+  """
+
+  name = _messages.StringField(1)
+  originalUserTransformOrCollection = _messages.StringField(2)
+  sizeBytes = _messages.IntegerField(3)
+  userName = _messages.StringField(4)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -3152,20 +3317,23 @@ class Step(_messages.Message):
 
   Messages:
     PropertiesValue: Named properties associated with the step. Each kind of
-      predefined step has its own required set of properties.
+      predefined step has its own required set of properties. Must be provided
+      on Create.  Only retrieved with JOB_VIEW_ALL.
 
   Fields:
     kind: The kind of step in the Cloud Dataflow job.
     name: The name that identifies the step. This must be unique for each step
       with respect to all other steps in the Cloud Dataflow job.
     properties: Named properties associated with the step. Each kind of
-      predefined step has its own required set of properties.
+      predefined step has its own required set of properties. Must be provided
+      on Create.  Only retrieved with JOB_VIEW_ALL.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     """Named properties associated with the step. Each kind of predefined step
-    has its own required set of properties.
+    has its own required set of properties. Must be provided on Create.  Only
+    retrieved with JOB_VIEW_ALL.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -3483,6 +3651,56 @@ class TopologyConfig(_messages.Message):
   forwardingKeyBits = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   persistentStateVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   userStageToComputationNameMap = _messages.MessageField('UserStageToComputationNameMapValue', 5)
+
+
+class TransformSummary(_messages.Message):
+  """Description of the type, names/ids, and input/outputs for a transform.
+
+  Enums:
+    KindValueValuesEnum: Type of transform.
+
+  Fields:
+    displayData: Transform-specific display data.
+    id: SDK generated id of this transform instance.
+    inputCollectionName: User names for all collection inputs to this
+      transform.
+    kind: Type of transform.
+    name: User provided name for this transform instance.
+    outputCollectionName: User  names for all collection outputs to this
+      transform.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """Type of transform.
+
+    Values:
+      UNKNOWN_KIND: Unrecognized transform type.
+      PAR_DO_KIND: ParDo transform.
+      GROUP_BY_KEY_KIND: Group By Key transform.
+      FLATTEN_KIND: Flatten transform.
+      READ_KIND: Read transform.
+      WRITE_KIND: Write transform.
+      CONSTANT_KIND: Constructs from a constant value, such as with Create.of.
+      SINGLETON_KIND: Creates a Singleton view of a collection.
+      SHUFFLE_KIND: Opening or closing a shuffle session, often as part of a
+        GroupByKey.
+    """
+    UNKNOWN_KIND = 0
+    PAR_DO_KIND = 1
+    GROUP_BY_KEY_KIND = 2
+    FLATTEN_KIND = 3
+    READ_KIND = 4
+    WRITE_KIND = 5
+    CONSTANT_KIND = 6
+    SINGLETON_KIND = 7
+    SHUFFLE_KIND = 8
+
+  displayData = _messages.MessageField('DisplayData', 1, repeated=True)
+  id = _messages.StringField(2)
+  inputCollectionName = _messages.StringField(3, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  outputCollectionName = _messages.StringField(6, repeated=True)
 
 
 class WorkItem(_messages.Message):

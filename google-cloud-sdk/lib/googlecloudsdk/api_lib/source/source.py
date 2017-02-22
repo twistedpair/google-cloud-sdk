@@ -19,8 +19,8 @@ import sys
 
 from apitools.base.py import exceptions
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as base_exceptions
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 
 

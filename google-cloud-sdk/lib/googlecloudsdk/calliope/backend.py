@@ -156,7 +156,7 @@ class CommandCommon(object):
     self.short_help, self.long_help = usage_text.ExtractHelpStrings(docstring)
 
     if 'brief' in self.detailed_help:
-      self.short_help = self.detailed_help['brief']
+      self.short_help = re.sub(r'\s', ' ', self.detailed_help['brief']).strip()
     if self.short_help and not self.short_help.endswith('.'):
       self.short_help += '.'
 

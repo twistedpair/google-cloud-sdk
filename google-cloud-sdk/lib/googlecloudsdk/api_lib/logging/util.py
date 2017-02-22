@@ -17,8 +17,8 @@
 from apitools.base.py import extra_types
 
 from googlecloudsdk.api_lib.resource_manager import folders
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources

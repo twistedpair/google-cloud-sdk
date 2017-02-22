@@ -291,6 +291,8 @@ class DeploymentUpdate(_messages.Message):
   """DeploymentUpdate message type.
 
   Fields:
+    description: [Output Only] An optional user-provided description of the
+      deployment after the current update has been applied.
     labels: [Output Only] Map of labels; provided by the client when the
       resource is created or updated. Specifically: Label keys must be between
       1 and 63 characters long and must conform to the following regular
@@ -301,8 +303,9 @@ class DeploymentUpdate(_messages.Message):
       configuration of this deployment.
   """
 
-  labels = _messages.MessageField('DeploymentUpdateLabelEntry', 1, repeated=True)
-  manifest = _messages.StringField(2)
+  description = _messages.StringField(1)
+  labels = _messages.MessageField('DeploymentUpdateLabelEntry', 2, repeated=True)
+  manifest = _messages.StringField(3)
 
 
 class DeploymentUpdateLabelEntry(_messages.Message):
@@ -380,7 +383,8 @@ class DeploymentmanagerCompositeTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -547,7 +551,8 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -767,7 +772,8 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -829,7 +835,8 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -893,7 +900,8 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -993,7 +1001,8 @@ class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1042,7 +1051,8 @@ class DeploymentmanagerTypeProvidersListTypesRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1159,7 +1169,8 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp

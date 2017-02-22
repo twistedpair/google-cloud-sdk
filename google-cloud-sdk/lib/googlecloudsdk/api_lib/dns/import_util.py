@@ -18,8 +18,8 @@ import re
 
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 import yaml
 
 messages = core_apis.GetMessagesModule('dns', 'v1')

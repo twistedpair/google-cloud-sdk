@@ -13,7 +13,7 @@
 # limitations under the License.
 """Shared utilities for access the Cloud KMS API."""
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 

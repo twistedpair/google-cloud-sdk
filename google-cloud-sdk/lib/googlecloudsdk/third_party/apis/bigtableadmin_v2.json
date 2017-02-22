@@ -266,12 +266,14 @@
           "description": "The type of the instance. Defaults to `PRODUCTION`.",
           "enumDescriptions": [
             "The type of the instance is unspecified. If set when creating an\ninstance, a `PRODUCTION` instance will be created. If set when updating\nan instance, the type will be left unchanged.",
-            "An instance meant for production use. `serve_nodes` must be set\non the cluster."
+            "An instance meant for production use. `serve_nodes` must be set\non the cluster.",
+            "The instance is meant for development and testing purposes only; it has\nno performance or uptime guarantees and is not covered by SLA.\nAfter a development instance is created, it can be upgraded by\nupdating the instance to type `PRODUCTION`. An instance created\nas a production instance cannot be changed to a development instance.\nWhen creating a development instance, `serve_nodes` on the cluster must\nnot be set."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
-            "PRODUCTION"
+            "PRODUCTION",
+            "DEVELOPMENT"
           ]
         }
       }
@@ -898,7 +900,7 @@
                   "description": "Creates a cluster within an instance.",
                   "parameters": {
                     "parent": {
-                      "description": "The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
+                      "description": "The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",

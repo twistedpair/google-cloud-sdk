@@ -300,7 +300,7 @@
           "$ref": "Account"
         },
         "environmentVariables": {
-          "description": "Environment variables to set for the test.",
+          "description": "Environment variables to set for the test (only applicable for\ninstrumentation tests).",
           "type": "array",
           "items": {
             "$ref": "EnvironmentVariable"
@@ -450,7 +450,7 @@
     },
     "RoboDirective": {
       "id": "RoboDirective",
-      "description": "Directs Robo to interact with a specific UI element if it is encountered\nduring the crawl. Currently, Robo can set text in text fields.",
+      "description": "Directs Robo to interact with a specific UI element if it is encountered\nduring the crawl. Currently, Robo can perform text entry or element click.",
       "type": "object",
       "properties": {
         "resourceName": {
@@ -458,7 +458,7 @@
           "type": "string"
         },
         "inputText": {
-          "description": "The text that Robo is directed to set.\nRequired",
+          "description": "The text that Robo is directed to set. If left empty, the directive will be\ntreated as a CLICK on the element matching the resource_name.",
           "type": "string"
         }
       }

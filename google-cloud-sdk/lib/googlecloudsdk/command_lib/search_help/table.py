@@ -55,7 +55,8 @@ def Update(cli):
   # Overwrite the help search table file with updated content
   table_path = IndexPath()
   with open(table_path, 'w') as index_file:
-    json.dump(help_text, index_file, sort_keys=True)
+    json.dump(
+        help_text, index_file, sort_keys=True, indent=2, separators=(',', ':'))
     index_file.write('\n')
   log.warn('updated help index at {0}'.format(table_path))
 

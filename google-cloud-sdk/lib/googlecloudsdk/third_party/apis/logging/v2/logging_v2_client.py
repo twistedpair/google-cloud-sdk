@@ -61,7 +61,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -88,7 +88,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations. Only logs that have entries are listed.
+      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingBillingAccountsLogsListRequest) input message
@@ -342,7 +342,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingFoldersLogsDeleteRequest) input message
@@ -369,7 +369,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations. Only logs that have entries are listed.
+      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingFoldersLogsListRequest) input message
@@ -597,7 +597,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -624,7 +624,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations. Only logs that have entries are listed.
+      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingOrganizationsLogsListRequest) input message
@@ -816,7 +816,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries.
+      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message
@@ -843,7 +843,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects or organizations. Only logs that have entries are listed.
+      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingProjectsLogsListRequest) input message

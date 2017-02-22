@@ -28,6 +28,9 @@ class Build(_messages.Message):
   Enums:
     StatusValueValuesEnum: Status of the build. @OutputOnly
 
+  Messages:
+    SubstitutionsValue: Substitutions data for Build resource.
+
   Fields:
     buildTriggerId: The ID of the BuildTrigger that triggered this build, if
       it was triggered automatically. @OutputOnly
@@ -57,6 +60,7 @@ class Build(_messages.Message):
     statusDetail: Customer-readable message about the current status.
       @OutputOnly
     steps: Describes the operations to be performed on the workspace.
+    substitutions: Substitutions data for Build resource.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be TIMEOUT.  Default time is ten
@@ -85,6 +89,31 @@ class Build(_messages.Message):
     TIMEOUT = 6
     CANCELLED = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SubstitutionsValue(_messages.Message):
+    """Substitutions data for Build resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a SubstitutionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SubstitutionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a SubstitutionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   buildTriggerId = _messages.StringField(1)
   createTime = _messages.StringField(2)
   finishTime = _messages.StringField(3)
@@ -101,7 +130,8 @@ class Build(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 14)
   statusDetail = _messages.StringField(15)
   steps = _messages.MessageField('BuildStep', 16, repeated=True)
-  timeout = _messages.StringField(17)
+  substitutions = _messages.MessageField('SubstitutionsValue', 17)
+  timeout = _messages.StringField(18)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -200,6 +230,9 @@ class BuildTrigger(_messages.Message):
   """Configuration for an automated build in response to source repository
   changes.
 
+  Messages:
+    SubstitutionsValue: Substitutions data for Build resource.
+
   Fields:
     build: Contents of the build template.
     createTime: Time when the trigger was created.  @OutputOnly
@@ -208,11 +241,37 @@ class BuildTrigger(_messages.Message):
     filename: Path, from the source root, to a file whose contents is used for
       the template.
     id: Unique identifier of the trigger.  @OutputOnly
+    substitutions: Substitutions data for Build resource.
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
       interpreted as regular expressions. Any branch or tag change that
       matches that regular expression will trigger a build.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SubstitutionsValue(_messages.Message):
+    """Substitutions data for Build resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a SubstitutionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SubstitutionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a SubstitutionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   build = _messages.MessageField('Build', 1)
   createTime = _messages.StringField(2)
@@ -220,7 +279,8 @@ class BuildTrigger(_messages.Message):
   disabled = _messages.BooleanField(4)
   filename = _messages.StringField(5)
   id = _messages.StringField(6)
-  triggerTemplate = _messages.MessageField('RepoSource', 7)
+  substitutions = _messages.MessageField('SubstitutionsValue', 7)
+  triggerTemplate = _messages.MessageField('RepoSource', 8)
 
 
 class BuiltImage(_messages.Message):

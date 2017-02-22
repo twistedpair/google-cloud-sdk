@@ -642,7 +642,7 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
-# TODO(b/33467618): Possibly make private and change to verb
+# TODO(b/33467618): Remove in favor of Remote
 def UserHost(user, host):
   """Returns a string of the form user@host."""
   if user:
@@ -861,19 +861,74 @@ def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
     time_util.Sleep(5)
 
 
+class Remote(object):
+  """A reference to an SSH remote, consisting of a host and user.
+
+  Attributes:
+    user: str or None, SSH user name (optional).
+    host: str or None, Host name.
+  """
+
+  # A remote has two parts `[user@]host`, where `user` is optional.
+  #   A user:
+  #   - cannot contain ':', '@'
+  #   A host:
+  #   - cannot start with '.'
+  #   - cannot contain ':', '/', '\\', '@'
+  # This regular expression matches if and only if the above requirements are
+  # satisfied. The capture groups are (user, host) where `user` will be
+  # None if omitted.
+  _REMOTE_REGEX = re.compile(r'^(?:([^:@]+)@)?([^.:/\\@][^:/\\@]*)$')
+
+  def __init__(self, host, user=None):
+    """Constructor for FileReference.
+
+    Args:
+      host: str or None, Host name.
+      user: str or None, SSH user name.
+    """
+    self.host = host
+    self.user = user
+
+  def ToArg(self):
+    """Convert to a positional argument, in the form expected by `ssh`/`plink`.
+
+    Returns:
+      str, A string on the form `[user@]host`.
+    """
+    return self.user + '@' + self.host if self.user else self.host
+
+  @classmethod
+  def FromArg(cls, arg):
+    """Convert an SSH-style positional argument to a remote.
+
+    Args:
+      arg: str, A path on the canonical ssh form `[user@]host`.
+
+    Returns:
+      Remote, the constructed object or None if arg is malformed.
+    """
+    match = cls._REMOTE_REGEX.match(arg)
+    if match:
+      user, host = match.groups()
+      return cls(host, user=user)
+    else:
+      return None
+
+
 class SSHCommand(object):
   """Represents a platform independent SSH command.
 
   This class is intended to manage the most important suite- and platform
   specifics. We manage the following data:
   - The executable to call, either `ssh`, `putty` or `plink`.
-  - User and host, `user` and `host` arg.
+  - User and host, through the `remote` arg.
   - Potential remote command to execute, `remote_command` arg.
 
   In addition, it manages these flags:
   -t, -T      Pseudo-terminal allocation
-  -i          Identity file (private key)
   -p, -P      Port
+  -i          Identity file (private key)
   -o Key=Val  OpenSSH specific options that should be added, `options` arg.
 
   For flexibility, SSHCommand also accepts `extra_flags`. Always use these
@@ -881,7 +936,7 @@ class SSHCommand(object):
   validation. Specifically, do not add any of the above mentioned flags.
   """
 
-  def __init__(self, host, user=None, port=None, identity_file=None,
+  def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, remote_command=None, tty=None):
     """Construct a suite independent SSH command.
 
@@ -891,8 +946,7 @@ class SSHCommand(object):
     For the same reason, `extra_flags` should be passed like `['-k', 'v']`.
 
     Args:
-      host: str, hostname (or IP address).
-      user: str, username.
+      remote: Remote, the remote to connect to.
       port: int, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
@@ -902,8 +956,7 @@ class SSHCommand(object):
       tty: bool, launch a terminal. If None, determine automatically based on
         presence of remote command.
     """
-    self.user = user
-    self.host = host
+    self.remote = remote
     self.port = port
     self.identity_file = identity_file
     self.options = options or {}
@@ -945,7 +998,7 @@ class SSHCommand(object):
       for key, value in sorted(self.options.iteritems()):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
     args.extend(self.extra_flags)
-    args.append(UserHost(self.user, self.host))
+    args.append(self.remote.ToArg())
     if self.remote_command:
       if env.suite is Suite.OPENSSH:  # Putty doesn't like double dash
         args.append('--')
@@ -977,7 +1030,171 @@ class SSHCommand(object):
     return status
 
 
-# A remote path has three parts host[@user]:[path], where @user and path are
+class SCPCommand(object):
+  """Represents a platform independent SCP command.
+
+  This class is intended to manage the most important suite- and platform
+  specifics. We manage the following data:
+  - The executable to call, either `scp` or `pscp`.
+  - User and host, through either `sources` or `destination` arg. For
+    cross-suite compatibility, multiple remote sources are not allowed.
+    However, multiple local sources are always allowed.
+  - Potential remote command to execute, `remote_command` arg.
+
+  In addition, it manages these flags:
+  -r          Recursive copy
+  -P          Port
+  -i          Identity file (private key)
+  -o Key=Val  OpenSSH specific options that should be added, `options` arg.
+
+  For flexibility, SCPCommand also accepts `extra_flags`. Always use these
+  with caution -- they will be added as-is to the command invocation without
+  validation. Specifically, do not add any of the above mentioned flags.
+  """
+
+  def __init__(self, sources, destination, recursive=False, port=None,
+               identity_file=None, options=None, extra_flags=None):
+    """Construct a suite independent SCP command.
+
+    Args:
+      sources: [FileReference] or FileReference, the source(s) for this copy. If
+        local, at least one source is required. If remote source, exactly one
+        source must be provided.
+      destination: FileReference, the destination file or directory. If remote
+        source, this must be local, and vice versa.
+      recursive: bool, recursive directory copy.
+      port: int, port.
+      identity_file: str, path to private key file.
+      options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
+      extra_flags: [str], extra flags to append to scp invocation. Both binary
+        style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
+    """
+    self.sources = [sources] if isinstance(sources, FileReference) else sources
+    self.destination = destination
+    self.recursive = recursive
+    self.port = port
+    self.identity_file = identity_file
+    self.options = options or {}
+    self.extra_flags = extra_flags or []
+
+  def Build(self, env=None):
+    """Construct the actual command according to the given environment.
+
+    Args:
+      env: Environment, to construct the command for (or current if None).
+
+    Raises:
+      MissingCommandError: If SCP command(s) required were not found.
+
+    Returns:
+      [str], the command args (where the first arg is the command itself).
+    """
+    env = env or Environment.Current()
+    if not env.scp:
+      raise MissingCommandError('The current environment lacks SCP.')
+
+    args = [env.scp]
+
+    if self.recursive:
+      args.append('-r')
+
+    if self.port:
+      args.extend(['-P', self.port])
+
+    if self.identity_file:
+      identity_file = self.identity_file
+      if env.suite is Suite.PUTTY and not identity_file.endswith('.ppk'):
+        identity_file += '.ppk'
+      args.extend(['-i', identity_file])
+
+    # SSH config options
+    if env.suite is Suite.OPENSSH:
+      # Always, always deterministic order
+      for key, value in sorted(self.options.iteritems()):
+        args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
+
+    args.extend(self.extra_flags)
+
+    # Positionals
+    args.extend([source.ToArg() for source in self.sources])
+    args.append(self.destination.ToArg())
+    return args
+
+  def Run(self, env=None):
+    """Run the SCP command using the given environment.
+
+    Args:
+      env: Environment, environment to run in (or current if None).
+
+    Raises:
+      MissingCommandError: If SCP command(s) not found.
+      CommandError: SCP command failed to copy the file(s).
+    """
+    env = env or Environment.Current()
+    args = self.Build(env)
+    log.debug('Running command [{}].'.format(' '.join(args)))
+    # pscp asks on (1) first connection and (2) fingerprint mismatch.
+    # This ensures pscp will always allow the connection.
+    # TODO(b/35355795): Work out a better solution for PuTTY.
+    in_str = 'y\n' if env.suite is Suite.PUTTY else None
+    status = execution_utils.Exec(args, no_exit=True, in_str=in_str)
+    if status:
+      raise CommandError(args[0], return_code=status)
+
+
+class FileReference(object):
+  """A reference to a local or remote file (or directory) for SCP.
+
+  Attributes:
+    path: str, The path to the file.
+    remote: Remote or None, the remote referred or None if local.
+  """
+
+  def __init__(self, path, remote=None):
+    """Constructor for FileReference.
+
+    Args:
+      path: str, The path to the file.
+      remote: Remote or None, the remote referred or None if local.
+    """
+    self.path = path
+    self.remote = remote
+
+  def ToArg(self):
+    """Convert to a positional argument, in the form expected by `scp`/`pscp`.
+
+    Returns:
+      str, A string on the form `remote:path` if remote or `path` if local.
+    """
+    if not self.remote:
+      return self.path
+    return '{remote}:{path}'.format(remote=self.remote.ToArg(), path=self.path)
+
+  @classmethod
+  def FromPath(cls, path):
+    """Convert an SCP-style positional argument to a file reference.
+
+    Note that this method does not raise. No lookup of either local or remote
+    file presence exists.
+
+    Args:
+      path: str, A path on the canonical scp form `[remote:]path`. If
+        remote, `path` can be empty, e.g. `me@host:`.
+
+    Returns:
+      FileReference, the constructed object.
+    """
+    # If local drive given, it overrides a potential remote pattern match
+    local_drive = os.path.splitdrive(path)[0]
+    remote_arg, unused_sep, file_path = path.partition(':')
+    remote = Remote.FromArg(remote_arg)
+    if remote and not local_drive:
+      return cls(path=file_path, remote=remote)
+    else:
+      return cls(path=path)
+
+
+# A remote path has three parts [user@]host:path, where @user and path are
 # optional.
 #   A host:
 #   - cannot start with '.'
@@ -990,6 +1207,7 @@ class SSHCommand(object):
 _SSH_REMOTE_PATH_REGEX = r'[^.:/\\@][^:/\\@]*(@[^:]*)?:'
 
 
+# TODO(b/33467618): Remove in favor of FileReference.FromPath
 def IsScpLocalPath(path):
   """Checks if path is an scp local file path.
 

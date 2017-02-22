@@ -21,6 +21,7 @@ import os
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 from oauth2client import service_account
 
 
@@ -42,10 +43,10 @@ class BadCredentialJsonFileException(Error):
 
 def CredentialsFromAdcFile(filename):
   """Load credentials from given service account json file."""
+  content = files.GetFileContents(filename)
   try:
-    with open(filename) as f:
-      json_key = json.load(f)
-  except (EnvironmentError, ValueError) as e:
+    json_key = json.loads(content)
+  except ValueError as e:
     raise BadCredentialFileException('Could not read json file {0}: {1}'
                                      .format(filename, e))
 

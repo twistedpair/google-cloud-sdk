@@ -111,6 +111,24 @@ class ReleaseTrack(object):
         return track
     return None
 
+  @staticmethod
+  def FromId(id):  # pylint: disable=redefined-builtin
+    """Gets a ReleaseTrack from the given release track prefix.
+
+    Args:
+      id: str, The id string that must be a release track name.
+
+    Raises:
+      ValueError: For unknown release track ids.
+
+    Returns:
+      ReleaseTrack, The corresponding object.
+    """
+    for track in ReleaseTrack._ALL:
+      if track.id == id:
+        return track
+    raise ValueError('Unknown release track id [{}].'.format(id))
+
 
 class Argument(object):
   """A class that allows you to save an argument configuration for reuse."""

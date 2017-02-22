@@ -25,7 +25,7 @@ from containerregistry.client.v2 import util as v2_util
 from containerregistry.client.v2_2 import docker_image as v2_2_image
 from containerregistry.client.v2_2 import util as v2_2_util
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import resources

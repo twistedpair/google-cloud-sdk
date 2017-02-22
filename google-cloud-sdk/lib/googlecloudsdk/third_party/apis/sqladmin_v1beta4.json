@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20170208",
+ "revision": "20170213",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -1856,7 +1856,7 @@
      "httpMethod": "GET",
      "description": "List all available database flags for Google Cloud SQL instances.",
      "parameters": {
-      "database_version": {
+      "databaseVersion": {
        "type": "string",
        "description": "Database version for flag retrieval. Flags are specific to the database version.",
        "location": "query"

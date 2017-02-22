@@ -67,7 +67,7 @@ class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
       `projects/myproject/instances/myinstance/clusters/mycluster`.
     parent: The unique name of the instance in which to create the new
       cluster. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/a-z*`.
+      `projects/<project>/instances/<instance>`.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -540,9 +540,17 @@ class Instance(_messages.Message):
         when updating an instance, the type will be left unchanged.
       PRODUCTION: An instance meant for production use. `serve_nodes` must be
         set on the cluster.
+      DEVELOPMENT: The instance is meant for development and testing purposes
+        only; it has no performance or uptime guarantees and is not covered by
+        SLA. After a development instance is created, it can be upgraded by
+        updating the instance to type `PRODUCTION`. An instance created as a
+        production instance cannot be changed to a development instance. When
+        creating a development instance, `serve_nodes` on the cluster must not
+        be set.
     """
     TYPE_UNSPECIFIED = 0
     PRODUCTION = 1
+    DEVELOPMENT = 2
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)

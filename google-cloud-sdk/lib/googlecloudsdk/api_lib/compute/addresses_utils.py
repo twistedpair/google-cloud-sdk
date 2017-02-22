@@ -12,28 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common classes and functions for addresses."""
-import abc
 from googlecloudsdk.api_lib.compute import base_classes
-from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.api_lib.compute import name_generator
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 class AddressesMutator(base_classes.BaseAsyncMutator):
   """Base class for modifying addresses."""
-
-  @staticmethod
-  def Args(parser):
-    """Adds common flags for mutating addresses."""
-    scope = parser.add_mutually_exclusive_group()
-
-    flags.AddRegionFlag(
-        scope,
-        resource_type='address',
-        operation_type='operate on')
-
-    scope.add_argument(
-        '--global',
-        action='store_true',
-        help='If provided, it is assumed the addresses are global.')
 
   @property
   def service(self):
@@ -46,18 +32,67 @@ class AddressesMutator(base_classes.BaseAsyncMutator):
   def resource_type(self):
     return 'addresses'
 
-  @abc.abstractmethod
-  def CreateGlobalRequests(self, args):
-    """Return a list of one of more globally-scoped request."""
+  @property
+  def method(self):
+    return 'Insert'
 
-  @abc.abstractmethod
-  def CreateRegionalRequests(self, args):
-    """Return a list of one of more regionally-scoped request."""
+  def GetAddress(self, args, address, address_ref):
+    return self.messages.Address(
+        address=address,
+        description=args.description,
+        name=address_ref.Name())
 
   def CreateRequests(self, args):
-    self.global_request = getattr(args, 'global')
+    """Overrides."""
+    names, addresses = self._GetNamesAndAddresses(args)
+    if not args.name:
+      args.name = names
 
-    if self.global_request:
-      return self.CreateGlobalRequests(args)
+    address_refs = self.ADDRESSES_ARG.ResolveAsResource(
+        args, self.resources,
+        scope_lister=compute_flags.GetDefaultScopeLister(
+            self.compute_client, self.project))
+
+    self.global_request = getattr(address_refs[0], 'region', None) is None
+
+    requests = []
+    for address, address_ref in zip(addresses, address_refs):
+      address_msg = self.GetAddress(
+          args,
+          address,
+          address_ref)
+
+      if self.global_request:
+        requests.append(self.messages.ComputeGlobalAddressesInsertRequest(
+            address=address_msg, project=address_ref.project))
+      else:
+        requests.append(self.messages.ComputeAddressesInsertRequest(
+            address=address_msg,
+            region=address_ref.region,
+            project=address_ref.project))
+    return requests
+
+  def _GetNamesAndAddresses(self, args):
+    """Returns names and addresses provided in args."""
+    if not args.addresses and not args.name:
+      raise exceptions.ToolException(
+          'At least one name or address must be provided.')
+
+    if args.name:
+      names = args.name
     else:
-      return self.CreateRegionalRequests(args)
+      # If we dont have any names then we must some addresses.
+      names = [name_generator.GenerateRandomName() for _ in args.addresses]
+
+    if args.addresses:
+      addresses = args.addresses
+    else:
+      # If we dont have any addresses then we must some names.
+      addresses = [None] * len(args.name)
+
+    if len(addresses) != len(names):
+      raise exceptions.ToolException(
+          'If providing both, you must specify the same number of names as '
+          'addresses.')
+
+    return names, addresses

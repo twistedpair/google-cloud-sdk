@@ -264,6 +264,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'targetSslProxy']
   )
+  TARGETTCPPROXIES = (
+      'targetTcpProxies',
+      'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+      {},
+      [u'project', u'targetTcpProxy']
+  )
   TARGETVPNGATEWAYS = (
       'targetVpnGateways',
       'projects/{project}/regions/{region}/targetVpnGateways/'

@@ -474,8 +474,8 @@ def PrintPostDeployHints(new_versions, updated_configs):
     service = new_versions[0].service
     service_hint = ' -s {svc}'.format(svc=service)
   log.status.Print(
-      '\nYou can read logs from the command line by running:\n'
-      '  $ gcloud app logs read' + (service_hint or ' -s default'))
+      '\nYou can stream logs from the command line by running:\n'
+      '  $ gcloud app logs tail' + (service_hint or ' -s default'))
   log.status.Print(
       '\nTo view your application in the web browser run:\n'
       '  $ gcloud app browse' + service_hint)

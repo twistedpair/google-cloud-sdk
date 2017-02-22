@@ -14,7 +14,7 @@
 
 """Util for billing."""
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 ACCOUNT_ID_ARG_PARAMS = dict(

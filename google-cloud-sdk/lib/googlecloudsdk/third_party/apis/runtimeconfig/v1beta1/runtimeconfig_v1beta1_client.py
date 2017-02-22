@@ -84,6 +84,10 @@ service.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
       Args:
         request: (RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -242,6 +246,10 @@ This only lists variable names, not the values.
       """Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest) input message
@@ -460,6 +468,10 @@ still exist and must be deleted prior to subsequent creation attempts.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -664,6 +676,10 @@ existing policy.
       """Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsTestIamPermissionsRequest) input message

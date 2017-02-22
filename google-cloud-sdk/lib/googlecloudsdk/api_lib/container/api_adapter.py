@@ -21,8 +21,8 @@ from apitools.base.py import http_wrapper
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
+from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers

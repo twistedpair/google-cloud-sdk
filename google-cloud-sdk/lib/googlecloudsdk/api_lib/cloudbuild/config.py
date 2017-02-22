@@ -41,7 +41,7 @@ class NotFoundException(exceptions.Error):
 
   def __init__(self, path):
     msg = '{path} could not be found'.format(
-        path=path,
+        path=path or 'Cloud Build configuration',
     )
     super(NotFoundException, self).__init__(msg)
 
@@ -50,7 +50,7 @@ class FileReadException(exceptions.Error):
 
   def __init__(self, path):
     msg = '{path} could not be read'.format(
-        path=path,
+        path=path or 'Cloud Build configuration',
     )
     # TODO(user): Add a test to confirm that we get this exception when
     # expected.
@@ -61,7 +61,7 @@ class ParserError(exceptions.Error):
 
   def __init__(self, path, msg):
     msg = 'parsing {path}: {msg}'.format(
-        path=path,
+        path=path or 'Cloud Build configuration',
         msg=msg,
     )
     super(ParserError, self).__init__(msg)
@@ -71,7 +71,7 @@ class BadConfigException(exceptions.Error):
 
   def __init__(self, path, msg):
     msg = '{path}: {msg}'.format(
-        path=path,
+        path=path or 'Cloud Build configuration',
         msg=msg,
     )
     super(BadConfigException, self).__init__(msg)
@@ -79,6 +79,60 @@ class BadConfigException(exceptions.Error):
 
 class ParameterSubstitutionError(exceptions.Error):
   """Indicates user error in templating (either an invalid key or template)."""
+
+
+def _SnakeToCamelString(field_name):
+  """Change a snake_case string into a camelCase string.
+
+  Args:
+    field_name: str, the string to be transformed.
+
+  Returns:
+    str, the transformed string.
+  """
+  parts = field_name.split('_')
+  if not parts:
+    return field_name
+
+  # Handle field_name with leading '_'s by collapsing them into the next part.
+  # Legit field names will never look like this, but completeness of the
+  # function is important.
+  leading_blanks = 0
+  for p in parts:
+    if not p:
+      leading_blanks += 1
+    else:
+      break
+  if leading_blanks:
+    parts = parts[leading_blanks:]
+    if not parts:
+      # If they were all blanks, then we over-counted by one because of split
+      # behavior.
+      return '_'*(leading_blanks-1)
+    parts[0] = '_'*leading_blanks + parts[0]
+
+  return ''.join(parts[:1] + [s.capitalize() for s in parts[1:]])
+
+
+def _SnakeToCamel(msg):
+  """Transform all dict field names that are snake_case to camelCase.
+
+  Args:
+    msg: dict, list, or other. If 'other', the function returns immediately.
+
+  Returns:
+    Same type as message, except all field names that were snake_case are
+    now camelCase.
+  """
+  if isinstance(msg, dict):
+    return {
+        _SnakeToCamelString(key): _SnakeToCamel(val)
+        for key, val in msg.iteritems()
+    }
+  elif isinstance(msg, list):
+    return [_SnakeToCamel(elem) for elem in msg]
+  else:
+    return msg
 
 
 def _UnpackCheckUnused(obj, msg_type):
@@ -242,16 +296,17 @@ def _PerformParameterSubstitution(build, params):
     step.env = [_Substitute(e, params) for e in step.env]
 
 
-def LoadCloudbuildConfig(path, messages, params=None):
+def LoadCloudbuildConfigFromStream(stream, messages, params=None, path=None):
   """Load a cloudbuild config file into a Build message.
 
   Args:
-    path: str, The path to a JSON or YAML file to be decoded.
+    stream: file-like object containing the JSON or YAML data to be decoded
     messages: module, The messages module that has a Build type.
     params: dict, parameters to substitute into a templated YAML file. This
         feature should only be consumed internally and not exposed directly to
         users until the format is fully specced out. See docstring for
         _Substitute for details.
+    path: str or None. Optional path to be used in error messages.
 
   Raises:
     NotFoundException: If the file does not exist.
@@ -261,21 +316,16 @@ def LoadCloudbuildConfig(path, messages, params=None):
   Returns:
     Build message, The build that got decoded.
   """
-  if not os.path.exists(path):
-    raise NotFoundException(path)
-
   # Turn the data into a dict
   try:
-    with open(path) as f:
-      structured_data = yaml.safe_load(f)
+    structured_data = yaml.safe_load(stream)
     if not isinstance(structured_data, dict):
       raise ParserError(path, 'Could not parse into a message.')
   except yaml.parser.ParserError as pe:
     raise ParserError(path, pe)
-  except EnvironmentError:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise FileReadException(path)
+
+  # Transform snake_case into camelCase.
+  structured_data = _SnakeToCamel(structured_data)
 
   # Then, turn the dict into a proto message.
   try:
@@ -297,3 +347,34 @@ def LoadCloudbuildConfig(path, messages, params=None):
     raise BadConfigException(path, 'config must list at least one step')
 
   return build
+
+
+def LoadCloudbuildConfigFromPath(path, messages, params=None):
+  """Load a cloudbuild config file into a Build message.
+
+  Args:
+    path: str. Path to the JSON or YAML data to be decoded.
+    messages: module, The messages module that has a Build type.
+    params: dict, parameters to substitute into a templated YAML file. This
+        feature should only be consumed internally and not exposed directly to
+        users until the format is fully specced out. See docstring for
+        _Substitute for details.
+
+  Raises:
+    NotFoundException: If the file does not exist.
+    ParserError: If there was a problem parsing the file.
+    BadConfigException: If the config file has illegal values.
+
+  Returns:
+    Build message, The build that got decoded.
+  """
+  if not os.path.exists(path):
+    raise NotFoundException(path)
+
+  try:
+    with open(path) as f:
+      return LoadCloudbuildConfigFromStream(f, messages, params, path=path)
+  except EnvironmentError:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise FileReadException(path)

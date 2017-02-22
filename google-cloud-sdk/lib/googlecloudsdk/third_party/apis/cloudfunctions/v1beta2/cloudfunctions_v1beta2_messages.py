@@ -14,7 +14,7 @@ package = 'cloudfunctions'
 
 
 class CallFunctionRequest(_messages.Message):
-  """Request for the CallFunction method.
+  """Request for the `CallFunction` method.
 
   Fields:
     data: Input to be passed to the function.
@@ -24,7 +24,7 @@ class CallFunctionRequest(_messages.Message):
 
 
 class CallFunctionResponse(_messages.Message):
-  """Response of CallFunction method.
+  """Response of `CallFunction` method.
 
   Fields:
     error: Either system or user-function generated error. Set if execution
@@ -53,23 +53,24 @@ class CloudFunction(_messages.Message):
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
-      the system will try to use function named 'function'. For Node.js this
+      the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
-      source_location.
+      `source_location`.
     eventTrigger: A source that fires events in response to a condition in
       another service.
     gcsTrigger: Google Cloud Storage resource whose changes trigger the
-      events. Currently, it must have the form gs://<bucket>/ (that is, it
+      events. Currently, it must have the form `gs://<bucket>/` (that is, it
       must refer to a bucket, rather than an object).
     gcsUrl: Google Cloud Storage URL pointing to the zip archive which
       contains the function.
-    httpsTrigger: A https endpoint type of source that can be trigger via URL.
+    httpsTrigger: A https endpoint type of source that can be triggered via
+      URL.
     latestOperation: Name of the most recent operation modifying the function.
-      If the function status is DEPLOYING or DELETING, then it points to the
-      active operation. Output only.
+      If the function status is `DEPLOYING` or `DELETING`, then it points to
+      the active operation. Output only.
     name: A user-defined name of the function. Function names must be unique
-      globally and match pattern: projects/*/locations/*/functions/*
-    pubsubTrigger: A pub/sub type of source.
+      globally and match pattern `projects/*/locations/*/functions/*`
+    pubsubTrigger: A Google Cloud PubSub type of source.
     serviceAccount: The service account of the function. Output only.
     sourceArchiveUrl: The URL, starting with gs://, pointing to the zip
       archive which contains the function.
@@ -125,6 +126,22 @@ class CloudfunctionsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudfunctionsOperationsListRequest(_messages.Message):
+  """A CloudfunctionsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation collection.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class CloudfunctionsProjectsLocationsFunctionsCallRequest(_messages.Message):
   """A CloudfunctionsProjectsLocationsFunctionsCallRequest object.
 
@@ -144,7 +161,7 @@ class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
   Fields:
     cloudFunction: A CloudFunction resource to be passed as the request body.
     location: The project and location in which the function should be
-      created, specified in the format: projects/*/locations/*
+      created, specified in the format `projects/*/locations/*`
   """
 
   cloudFunction = _messages.MessageField('CloudFunction', 1)
@@ -176,12 +193,12 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
 
   Fields:
     location: The project and location from which the function should be
-      listed, specified in the format: projects/*/locations/* If you want to
-      list functions in all locations, use '-' in place of a location.
+      listed, specified in the format `projects/*/locations/*` If you want to
+      list functions in all locations, use "-" in place of a location.
     pageSize: Maximum number of functions to return per call.
-    pageToken: The value returned by the last ListFunctionsResponse; indicates
-      that this is a continuation of a prior ListFunctions call, and that the
-      system should return the next page of data.
+    pageToken: The value returned by the last `ListFunctionsResponse`;
+      indicates that this is a continuation of a prior `ListFunctions` call,
+      and that the system should return the next page of data.
   """
 
   location = _messages.StringField(1, required=True)
@@ -210,24 +227,24 @@ class EventTrigger(_messages.Message):
   service.
 
   Fields:
-    eventType: event_type names contain the service that is sending an event
+    eventType: `event_type` names contain the service that is sending an event
       and the kind of event that was fired. Must be of the form
-      providers/*/eventTypes/* e.g. Directly handle a Message published to
-      Google Cloud PubSub      providers/cloud.pubsub/eventTypes/topic.publish
+      `providers/*/eventTypes/*` e.g. Directly handle a Message published to
+      Google Cloud PubSub `providers/cloud.pubsub/eventTypes/topic.publish`
       Handle an object changing in Google Cloud Storage
-      providers/cloud.storage/eventTypes/object.change       Handle a write to
-      the Firebase Realtime Database
-      providers/firebase.database/eventTypes/data.write
+      `providers/cloud.storage/eventTypes/object.change`       Handle a write
+      to the Firebase Realtime Database
+      `providers/firebase.database/eventTypes/data.write`
     path: Optional path within the resource that should be used to filter
       events. Named wildcards may be written in curly brackets (e.g.
       {variable}). The value that matched this parameter will be included  in
-      the event parameters. e.g. users/{userId}/profilePic Path is not
+      the event parameters. e.g. `users/{userId}/profilePic` Path is not
       supported for all actions.
     resource: Which instance of the source's service should send events. E.g.
-      for PubSub this would be a PubSub topic at projects/*/topics/*. For
-      Google Cloud Storage this would be a bucket at projects/*/buckets/*. For
-      any source that only supports one instance per-project, this should be
-      the name of the project (projects/*)
+      for PubSub this would be a PubSub topic at `projects/*/topics/*`. For
+      Google Cloud Storage this would be a bucket at `projects/*/buckets/*`.
+      For any source that only supports one instance per-project, this should
+      be the name of the project (`projects/*`)
   """
 
   eventType = _messages.StringField(1)
@@ -246,13 +263,14 @@ class HTTPSTrigger(_messages.Message):
 
 
 class ListFunctionsResponse(_messages.Message):
-  """Response for the ListFunctions method.
+  """Response for the `ListFunctions` method.
 
   Fields:
     functions: The functions that match the request.
     nextPageToken: If not empty, indicates that there may be more functions
       that match the request; this value should be passed in a new
-      ListFunctionsRequest to get more functions.
+      google.cloud.functions.v1beta2.ListFunctionsRequest to get more
+      functions.
   """
 
   functions = _messages.MessageField('CloudFunction', 1, repeated=True)
@@ -270,6 +288,19 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListOperationsResponse(_messages.Message):
+  """The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -533,7 +564,7 @@ class SourceRepository(_messages.Message):
       from which the function should be fetched.
     sourcePath: The path within the repository where the function is defined.
       The path should point to the directory where cloud functions files are
-      located. Use '/' if the function is defined directly in the root
+      located. Use "/" if the function is defined directly in the root
       directory of a repository.
     tag: The name of the tag that captures the state of the repository from
       which the function should be fetched.

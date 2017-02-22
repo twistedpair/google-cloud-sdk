@@ -16,12 +16,13 @@
 
 import json
 import re
+import urllib2
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -544,3 +545,10 @@ def LoadJsonOrYaml(input_string):
 
   # First, try to decode JSON. If that fails, try to decode YAML.
   return TryJson() or TryYaml()
+
+
+def GenerateManagementUrl(service, project):
+  return ('https://console.cloud.google.com/endpoints/api/'
+          '{service}/overview?project={project}'.format(
+              service=urllib2.quote(service),
+              project=urllib2.quote(project)))

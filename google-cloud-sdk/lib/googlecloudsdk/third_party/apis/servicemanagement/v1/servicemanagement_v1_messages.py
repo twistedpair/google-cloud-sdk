@@ -245,6 +245,20 @@ class AuthenticationRule(_messages.Message):
   selector = _messages.StringField(4)
 
 
+class AuthorizationConfig(_messages.Message):
+  """Configuration of authorization.  This section determines the
+  authorization provider, if unspecified, then no authorization check will be
+  done.  Example:      experimental:       authorization:         provider:
+  firebaserules.googleapis.com
+
+  Fields:
+    provider: The name of the authorization provider, such as
+      firebaserules.googleapis.com.
+  """
+
+  provider = _messages.StringField(1)
+
+
 class Backend(_messages.Message):
   """`Backend` defines the backend configuration for a service.
 
@@ -434,10 +448,18 @@ class Condition(_messages.Message):
       AUTHORITY: Either principal or (if present) authority selector.
       ATTRIBUTION: The principal (even if an authority selector is present),
         which must only be used for attribution, not authorization.
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
+        dynamicauth.
     """
     NO_ATTR = 0
     AUTHORITY = 1
     ATTRIBUTION = 2
+    APPROVER = 3
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -1130,6 +1152,17 @@ class EnumValue(_messages.Message):
   name = _messages.StringField(1)
   number = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   options = _messages.MessageField('Option', 3, repeated=True)
+
+
+class Experimental(_messages.Message):
+  """Experimental service configuration. These configuration options can only
+  be used by whitelisted users.
+
+  Fields:
+    authorization: Authorization configuration.
+  """
+
+  authorization = _messages.MessageField('AuthorizationConfig', 1)
 
 
 class Field(_messages.Message):
@@ -2429,7 +2462,8 @@ class QuotaBucketId(_messages.Message):
 
 
 class QuotaGroup(_messages.Message):
-  """`QuotaGroup` defines a set of quota limits to enforce.
+  """`QuotaGroup` defines a set of quota limits to enforce.  Used by group-
+  based quotas only.
 
   Fields:
     billable: Indicates if the quota limits defined in this quota group apply
@@ -2483,7 +2517,30 @@ class QuotaLimit(_messages.Message):
       same client application project will get his/her own pool of tokens to
       consume, whereas for a limit that uses client project type, all users
       making requests through the same client application project share a
-      single pool of tokens.
+      single pool of tokens.  Used by group-based quotas only.
+
+  Messages:
+    ValuesValue: Tiered limit values. Also allows for regional or zone
+      overrides for these values if "/{region}" or "/{zone}" is specified in
+      the unit field.  Currently supported tiers from low to high: VERY_LOW,
+      LOW, STANDARD, HIGH, VERY_HIGH  To apply different limit values for
+      users according to their tiers, specify the values for the tiers you
+      want to differentiate. For example: {LOW:100, STANDARD:500, HIGH:1000,
+      VERY_HIGH:5000}  The limit value for each tier is optional except for
+      the tier STANDARD. The limit value for an unspecified tier falls to the
+      value of its next tier towards tier STANDARD. For the above example, the
+      limit value for tier STANDARD is 500.  To apply the same limit value for
+      all users, just specify limit value for tier STANDARD. For example:
+      {STANDARD:500}.  To apply a regional overide for a tier, add a map entry
+      with key "<TIER>/<region>", where <region> is a region name. Similarly,
+      for a zone override, add a map entry with key "<TIER>/{zone}". Further,
+      a wildcard can be used at the end of a zone name in order to specify
+      zone level overrides. For example: LOW: 10, STANDARD: 50, HIGH: 100, LOW
+      /us-central1: 20, STANDARD/us-central1: 60, HIGH/us-central1: 200, LOW
+      /us-central1-*: 10, STANDARD/us-central1-*: 20, HIGH/us-central1-*: 80
+      The regional overrides tier set for each region must be the same as the
+      tier set for default limit values. Same rule applies for zone overrides
+      tier as well.  Used by metric-based quotas only.
 
   Fields:
     defaultLimit: Default number of tokens that can be consumed during the
@@ -2492,7 +2549,7 @@ class QuotaLimit(_messages.Message):
       Specifying a value of 0 will block all requests. This can be used if you
       are provisioning quota to selected consumers and blocking others.
       Similarly, a value of -1 will indicate an unlimited quota. No other
-      negative values are allowed.
+      negative values are allowed.  Used by group-based quotas only.
     description: Optional. User-visible, extended description for this quota
       limit. Should be used only when more context is needed to understand
       this limit than provided by the limit's display name (see:
@@ -2504,35 +2561,95 @@ class QuotaLimit(_messages.Message):
     duration: Duration of this limit in textual notation. Example: "100s",
       "24h", "1d". For duration longer than a day, only multiple of days is
       supported. We support only "100s" and "1d" for now. Additional support
-      will be added in the future. "0" indicates indefinite duration.
+      will be added in the future. "0" indicates indefinite duration.  Used by
+      group-based quotas only.
     freeTier: Free tier value displayed in the Developers Console for this
       limit. The free tier is the number of tokens that will be subtracted
       from the billed amount when billing is enabled. This field can only be
       set on a limit with duration "1d", in a billable group; it is invalid on
       any other limit. If this field is not set, it defaults to 0, indicating
-      that there is no free tier for this service.
+      that there is no free tier for this service.  Used by group-based quotas
+      only.
+    isPrecise: Whether the quota limit needs to be enforced precisely.  Note
+      that precise quota limits are more expensive to enforce. Make a quota
+      limit precise only if it is necessary.  Precise rate quota is not
+      currently supported. An error will be raised if a rate quota is
+      specified to be precise. Imprecise allocation quota is not currently
+      supported.  Used by metric-based quotas only.
     limitBy: Limit type to use for enforcing this quota limit. Each unique
       value gets the defined number of tokens to consume from. For a quota
       limit that uses user type, each user making requests through the same
       client application project will get his/her own pool of tokens to
       consume, whereas for a limit that uses client project type, all users
       making requests through the same client application project share a
-      single pool of tokens.
+      single pool of tokens.  Used by group-based quotas only.
     maxLimit: Maximum number of tokens that can be consumed during the
       specified duration. Client application developers can override the
       default limit up to this maximum. If specified, this value cannot be set
       to a value less than the default limit. If not specified, it is set to
       the default limit.  To allow clients to apply overrides with no upper
-      bound, set this to -1, indicating unlimited maximum quota.
-    name: Name of the quota limit.  Must be unique within the quota group.
-      This name is used to refer to the limit when overriding the limit on a
-      per-project basis.  If a name is not provided, it will be generated from
-      the limit_by and duration fields.  The maximum length of the limit name
-      is 64 characters.  The name of a limit is used as a unique identifier
-      for this limit. Therefore, once a limit has been put into use, its name
-      should be immutable. You can use the display_name field to provide a
-      user-friendly name for the limit. The display name can be evolved over
-      time without affecting the identity of the limit.
+      bound, set this to -1, indicating unlimited maximum quota.  Used by
+      group-based quotas only.
+    metric: The name of the metric this quota limit applies to. The quota
+      limits with the same metric will be checked together during runtime. The
+      metric must be defined within the service config.  Used by metric-based
+      quotas only.
+    name: Name of the quota limit. The name is used to refer to the limit when
+      overriding the default limit on per-consumer basis.  For group-based
+      quota limits, the name must be unique within the quota group. If a name
+      is not provided, it will be generated from the limit_by and duration
+      fields.  For metric-based quota limits, the name must be provided, and
+      it must be unique within the service. The name can only include
+      alphanumeric characters as well as '-'.  The maximum length of the limit
+      name is 64 characters.  The name of a limit is used as a unique
+      identifier for this limit. Therefore, once a limit has been put into
+      use, its name should be immutable. You can use the display_name field to
+      provide a user-friendly name for the limit. The display name can be
+      evolved over time without affecting the identity of the limit.
+    unit: Specify the unit of the quota limit. It uses the same syntax as
+      Metric.unit. The supported unit kinds are determined by the quota
+      backend system.  The [Google Service Control](https://cloud.google.com
+      /service-control) supports the following unit components: * One of the
+      time intevals:   * "/min"  for quota every minute.   * "/d"  for quota
+      every 24 hours, starting 00:00 US Pacific Time.   * Otherwise the quota
+      won't be reset by time, such as storage limit. * One and only one of the
+      granted containers:   * "/{organization}" quota for an organization.   *
+      "/{project}" quota for a project.   * "/{folder}" quota for a folder.
+      * "/{resource}" quota for a universal resource. * Zero or more quota
+      segmentation dimension. Not all combos are valid.   * "/{user}" quota
+      for every user GAIA ID or client ip address.     User GAIA ID has
+      precedence over client ip address.   * "/{region}" quota for every
+      region. Not to be used with time intervals.   * Otherwise the resources
+      granted on the target is not segmented.   * "/{zone}" quota for every
+      zone. Not to be used with time intervals.   * Otherwise the resources
+      granted on the target is not segmented.   * "/{resource}" quota for a
+      resource associated with a project or org.  Here are some examples: *
+      "1/min/{project}" for quota per minute per project. * "1/min/{user}" for
+      quota per minute per user. * "1/min/{organization}" for quota per minute
+      per organization.  Note: the order of unit components is insignificant.
+      The "1" at the beginning is required to follow the metric unit syntax.
+      Used by metric-based quotas only.
+    values: Tiered limit values. Also allows for regional or zone overrides
+      for these values if "/{region}" or "/{zone}" is specified in the unit
+      field.  Currently supported tiers from low to high: VERY_LOW, LOW,
+      STANDARD, HIGH, VERY_HIGH  To apply different limit values for users
+      according to their tiers, specify the values for the tiers you want to
+      differentiate. For example: {LOW:100, STANDARD:500, HIGH:1000,
+      VERY_HIGH:5000}  The limit value for each tier is optional except for
+      the tier STANDARD. The limit value for an unspecified tier falls to the
+      value of its next tier towards tier STANDARD. For the above example, the
+      limit value for tier STANDARD is 500.  To apply the same limit value for
+      all users, just specify limit value for tier STANDARD. For example:
+      {STANDARD:500}.  To apply a regional overide for a tier, add a map entry
+      with key "<TIER>/<region>", where <region> is a region name. Similarly,
+      for a zone override, add a map entry with key "<TIER>/{zone}". Further,
+      a wildcard can be used at the end of a zone name in order to specify
+      zone level overrides. For example: LOW: 10, STANDARD: 50, HIGH: 100, LOW
+      /us-central1: 20, STANDARD/us-central1: 60, HIGH/us-central1: 200, LOW
+      /us-central1-*: 10, STANDARD/us-central1-*: 20, HIGH/us-central1-*: 80
+      The regional overrides tier set for each region must be the same as the
+      tier set for default limit values. Same rule applies for zone overrides
+      tier as well.  Used by metric-based quotas only.
   """
 
   class LimitByValueValuesEnum(_messages.Enum):
@@ -2542,7 +2659,7 @@ class QuotaLimit(_messages.Message):
     application project will get his/her own pool of tokens to consume,
     whereas for a limit that uses client project type, all users making
     requests through the same client application project share a single pool
-    of tokens.
+    of tokens.  Used by group-based quotas only.
 
     Values:
       CLIENT_PROJECT: ID of the project owned by the client application
@@ -2553,14 +2670,62 @@ class QuotaLimit(_messages.Message):
     CLIENT_PROJECT = 0
     USER = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValuesValue(_messages.Message):
+    """Tiered limit values. Also allows for regional or zone overrides for
+    these values if "/{region}" or "/{zone}" is specified in the unit field.
+    Currently supported tiers from low to high: VERY_LOW, LOW, STANDARD, HIGH,
+    VERY_HIGH  To apply different limit values for users according to their
+    tiers, specify the values for the tiers you want to differentiate. For
+    example: {LOW:100, STANDARD:500, HIGH:1000, VERY_HIGH:5000}  The limit
+    value for each tier is optional except for the tier STANDARD. The limit
+    value for an unspecified tier falls to the value of its next tier towards
+    tier STANDARD. For the above example, the limit value for tier STANDARD is
+    500.  To apply the same limit value for all users, just specify limit
+    value for tier STANDARD. For example: {STANDARD:500}.  To apply a regional
+    overide for a tier, add a map entry with key "<TIER>/<region>", where
+    <region> is a region name. Similarly, for a zone override, add a map entry
+    with key "<TIER>/{zone}". Further, a wildcard can be used at the end of a
+    zone name in order to specify zone level overrides. For example: LOW: 10,
+    STANDARD: 50, HIGH: 100, LOW/us-central1: 20, STANDARD/us-central1: 60,
+    HIGH/us-central1: 200, LOW/us-central1-*: 10, STANDARD/us-central1-*: 20,
+    HIGH/us-central1-*: 80  The regional overrides tier set for each region
+    must be the same as the tier set for default limit values. Same rule
+    applies for zone overrides tier as well.  Used by metric-based quotas
+    only.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValuesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   defaultLimit = _messages.IntegerField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   duration = _messages.StringField(4)
   freeTier = _messages.IntegerField(5)
-  limitBy = _messages.EnumField('LimitByValueValuesEnum', 6)
-  maxLimit = _messages.IntegerField(7)
-  name = _messages.StringField(8)
+  isPrecise = _messages.BooleanField(6)
+  limitBy = _messages.EnumField('LimitByValueValuesEnum', 7)
+  maxLimit = _messages.IntegerField(8)
+  metric = _messages.StringField(9)
+  name = _messages.StringField(10)
+  unit = _messages.StringField(11)
+  values = _messages.MessageField('ValuesValue', 12)
 
 
 class QuotaLimitOverride(_messages.Message):
@@ -2933,6 +3098,7 @@ class Service(_messages.Message):
       included.  Enums which are not referenced but shall be included should
       be listed here by name. Example:      enums:     - name:
       google.someapi.v1.SomeEnum
+    experimental: Experimental configuration.
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
       assigned by the client for tracking purpose. If empty, the server may
@@ -2975,21 +3141,22 @@ class Service(_messages.Message):
   documentation = _messages.MessageField('Documentation', 8)
   endpoints = _messages.MessageField('Endpoint', 9, repeated=True)
   enums = _messages.MessageField('Enum', 10, repeated=True)
-  http = _messages.MessageField('Http', 11)
-  id = _messages.StringField(12)
-  logging = _messages.MessageField('Logging', 13)
-  logs = _messages.MessageField('LogDescriptor', 14, repeated=True)
-  metrics = _messages.MessageField('MetricDescriptor', 15, repeated=True)
-  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 16, repeated=True)
-  monitoring = _messages.MessageField('Monitoring', 17)
-  name = _messages.StringField(18)
-  producerProjectId = _messages.StringField(19)
-  systemParameters = _messages.MessageField('SystemParameters', 20)
-  systemTypes = _messages.MessageField('Type', 21, repeated=True)
-  title = _messages.StringField(22)
-  types = _messages.MessageField('Type', 23, repeated=True)
-  usage = _messages.MessageField('Usage', 24)
-  visibility = _messages.MessageField('Visibility', 25)
+  experimental = _messages.MessageField('Experimental', 11)
+  http = _messages.MessageField('Http', 12)
+  id = _messages.StringField(13)
+  logging = _messages.MessageField('Logging', 14)
+  logs = _messages.MessageField('LogDescriptor', 15, repeated=True)
+  metrics = _messages.MessageField('MetricDescriptor', 16, repeated=True)
+  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 17, repeated=True)
+  monitoring = _messages.MessageField('Monitoring', 18)
+  name = _messages.StringField(19)
+  producerProjectId = _messages.StringField(20)
+  systemParameters = _messages.MessageField('SystemParameters', 21)
+  systemTypes = _messages.MessageField('Type', 22, repeated=True)
+  title = _messages.StringField(23)
+  types = _messages.MessageField('Type', 24, repeated=True)
+  usage = _messages.MessageField('Usage', 25)
+  visibility = _messages.MessageField('Visibility', 26)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):

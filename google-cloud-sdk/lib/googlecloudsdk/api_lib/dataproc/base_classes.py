@@ -33,6 +33,7 @@ from googlecloudsdk.core.util import files
 class JobSubmitter(base.Command):
   """Submit a job to a cluster."""
 
+  # TODO(user): much of this class should be moved to command_lib
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
@@ -44,6 +45,7 @@ class JobSubmitter(base.Command):
   @staticmethod
   def Args(parser):
     """Register flags for this command."""
+    labels_util.AddCreateLabelsFlags(parser)
     parser.add_argument(
         '--cluster',
         required=True,
@@ -162,7 +164,14 @@ class JobSubmitter(base.Command):
   @abc.abstractmethod
   def ConfigureJob(self, job, args):
     """Add type-specific job configuration to job message."""
-    pass
+    messages = self.context['dataproc_messages']
+    # Parse labels (if present)
+    labels = labels_util.UpdateLabels(
+        None,
+        messages.Job.LabelsValue,
+        labels_util.GetUpdateLabelsDictFromArgs(args),
+        None)
+    job.labels = labels
 
   @abc.abstractmethod
   def PopulateFilesByType(self, args):
@@ -182,7 +191,6 @@ class JobSubmitterBeta(JobSubmitter):
         help=argparse.SUPPRESS)
 
     JobSubmitter.Args(parser)
-    labels_util.AddCreateLabelsFlags(parser)
 
   def ConfigureJob(self, job, args):
     messages = self.context['dataproc_messages']
@@ -191,10 +199,3 @@ class JobSubmitterBeta(JobSubmitter):
       scheduling = messages.JobScheduling(
           maxFailuresPerHour=args.max_failures_per_hour)
       job.scheduling = scheduling
-    # Parse labels (if present)
-    labels = labels_util.UpdateLabels(
-        None,
-        messages.Job.LabelsValue,
-        labels_util.GetUpdateLabelsDictFromArgs(args),
-        None)
-    job.labels = labels

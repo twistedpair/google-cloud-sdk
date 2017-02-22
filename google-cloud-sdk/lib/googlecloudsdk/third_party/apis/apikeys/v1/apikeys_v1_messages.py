@@ -40,6 +40,8 @@ class ApiKey(_messages.Message):
 
   Fields:
     androidKeyDetails: Key details that are specific to android keys.
+    apiTargetKeyDetails: API Target key details. These restrict which API a
+      key can be used on.
     browserKeyDetails: Key details that are specific to browser keys.
     createTime: A timestamp identifying the time this API key was originally
       created. @OutputOnly
@@ -60,16 +62,81 @@ class ApiKey(_messages.Message):
   """
 
   androidKeyDetails = _messages.MessageField('AndroidKeyDetails', 1)
-  browserKeyDetails = _messages.MessageField('BrowserKeyDetails', 2)
-  createTime = _messages.StringField(3)
-  createdBy = _messages.StringField(4)
-  currentKey = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  iosKeyDetails = _messages.MessageField('IosKeyDetails', 7)
-  keyId = _messages.StringField(8)
-  previousKey = _messages.StringField(9)
-  previousKeyExpireTime = _messages.StringField(10)
-  serverKeyDetails = _messages.MessageField('ServerKeyDetails', 11)
+  apiTargetKeyDetails = _messages.MessageField('ApiTargetKeyDetails', 2)
+  browserKeyDetails = _messages.MessageField('BrowserKeyDetails', 3)
+  createTime = _messages.StringField(4)
+  createdBy = _messages.StringField(5)
+  currentKey = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  iosKeyDetails = _messages.MessageField('IosKeyDetails', 8)
+  keyId = _messages.StringField(9)
+  previousKey = _messages.StringField(10)
+  previousKeyExpireTime = _messages.StringField(11)
+  serverKeyDetails = _messages.MessageField('ServerKeyDetails', 12)
+
+
+class ApiTarget(_messages.Message):
+  """A restriction for a specific service and optionally one or multiple
+  specific methods. Both fields are not case sensitive.
+
+  Fields:
+    methods: An optional list of one or more methods that can be called. If
+      empty, all methods for the service are allowed. A wildcard (*) can be
+      used as the last symbol. Examples:
+      google.api.apikeys.v1.ApiKeys.ListApiKeys
+      google.api.apikeys.v1.ApiKeys.Get* google.api.apikeys.v1.ApiKeys.Delete*
+  """
+
+  methods = _messages.StringField(1, repeated=True)
+
+
+class ApiTargetKeyDetails(_messages.Message):
+  """Key details that specify which APIs a key is allowed to be used on.
+
+  Messages:
+    ApiTargetsValue: A restriction for a specific service and optionally one
+      or multiple specific methods. Requests will be allowed if they match any
+      of these restrictions. If no restrictions are specified, all targets are
+      allowed. Key is the service name for this restriction Example:
+      apikeys.googleapis.com
+
+  Fields:
+    apiTargets: A restriction for a specific service and optionally one or
+      multiple specific methods. Requests will be allowed if they match any of
+      these restrictions. If no restrictions are specified, all targets are
+      allowed. Key is the service name for this restriction Example:
+      apikeys.googleapis.com
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ApiTargetsValue(_messages.Message):
+    """A restriction for a specific service and optionally one or multiple
+    specific methods. Requests will be allowed if they match any of these
+    restrictions. If no restrictions are specified, all targets are allowed.
+    Key is the service name for this restriction Example:
+    apikeys.googleapis.com
+
+    Messages:
+      AdditionalProperty: An additional property for a ApiTargetsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ApiTargetsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ApiTargetsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ApiTarget attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ApiTarget', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  apiTargets = _messages.MessageField('ApiTargetsValue', 1)
 
 
 class ApikeysProjectsApiKeysBatchDeleteRequest(_messages.Message):
