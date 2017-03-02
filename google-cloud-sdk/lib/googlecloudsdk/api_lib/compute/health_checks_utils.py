@@ -28,51 +28,47 @@ CHECK_INTERVAL_LOWER_BOUND_SEC = 1
 def AddProtocolAgnosticCreationArgs(parser, protocol_string):
   """Adds parser arguments common to creation for all protocols."""
 
-  check_interval_sec = parser.add_argument(
+  parser.add_argument(
       '--check-interval',
-      help='How often to run the check. Default is 5s.',
       type=arg_parsers.Duration(),
-      default='5s')
-  check_interval_sec.detailed_help = """\
+      default='5s',
+      help="""\
       How often to perform a health check for an instance. For example,
       specifying ``10s'' will run the check every 10 seconds. Valid units
       for this flag are ``s'' for seconds and ``m'' for minutes.
       The default value is ``5s''.
-       """
+       """)
 
-  timeout_sec = parser.add_argument(
+  parser.add_argument(
       '--timeout',
-      help='How long to wait until check is a failure. Default is 5s.',
       type=arg_parsers.Duration(),
-      default='5s')
-  timeout_sec.detailed_help = """\
+      default='5s',
+      help="""\
       If Google Compute Engine doesn't receive a healthy response from the
       instance by the time specified by the value of this flag, the health
       check request is considered a failure. For example, specifying ``10s''
       will cause the check to wait for 10 seconds before considering the
       request a failure.  Valid units for this flag are ``s'' for seconds and
       ``m'' for minutes.  The default value is ``5s''.
-      """
+      """)
 
-  unhealthy_threshold = parser.add_argument(
+  parser.add_argument(
       '--unhealthy-threshold',
-      help='Consecutive failures to mark instance unhealthy. Default is 2.',
       type=int,
-      default=2)
-  unhealthy_threshold.detailed_help = """\
+      default=2,
+      help="""\
       The number of consecutive health check failures before a healthy
       instance is marked as unhealthy. The default is 2.
-      """
+      """)
 
-  healthy_threshold = parser.add_argument(
+  parser.add_argument(
       '--healthy-threshold',
-      help='Consecutive successes to mark instance healthy. Default is 2.',
       type=int,
-      default=2)
-  healthy_threshold.detailed_help = """\
+      default=2,
+      help="""\
       The number of consecutive successful health checks before an
       unhealthy instance is marked as healthy. The default is 2.
-      """
+      """)
 
   parser.add_argument(
       '--description',
@@ -87,46 +83,42 @@ def AddProtocolAgnosticCreationArgs(parser, protocol_string):
 def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
   """Adds parser arguments common to update subcommand for all protocols."""
 
-  check_interval_sec = parser.add_argument(
+  parser.add_argument(
       '--check-interval',
-      help='How often to run the check.',
-      type=arg_parsers.Duration())
-  check_interval_sec.detailed_help = """\
+      type=arg_parsers.Duration(),
+      help="""\
       How often to perform a health check for an instance. For example,
       specifying ``10s'' will run the check every 10 seconds. Valid units
       for this flag are ``s'' for seconds and ``m'' for minutes.
-      """
+      """)
 
-  timeout_sec = parser.add_argument(
+  parser.add_argument(
       '--timeout',
-      help='How long to wait until check is a failure.',
-      type=arg_parsers.Duration())
-  timeout_sec.detailed_help = """\
+      type=arg_parsers.Duration(),
+      help="""\
       If Google Compute Engine doesn't receive a healthy response from the
       instance by the time specified by the value of this flag, the health
       check request is considered a failure. For example, specifying ``10s''
       will cause the check to wait for 10 seconds before considering the
       request a failure.  Valid units for this flag are ``s'' for seconds and
       ``m'' for minutes.
-      """
+      """)
 
-  unhealthy_threshold = parser.add_argument(
+  parser.add_argument(
       '--unhealthy-threshold',
-      help='Consecutive failures to mark instance unhealthy.',
-      type=int)
-  unhealthy_threshold.detailed_help = """\
+      type=int,
+      help="""\
       The number of consecutive health check failures before a healthy
       instance is marked as unhealthy.
-      """
+      """)
 
-  healthy_threshold = parser.add_argument(
+  parser.add_argument(
       '--healthy-threshold',
-      help='Consecutive successes to mark instance healthy.',
-      type=int)
-  healthy_threshold.detailed_help = """\
+      type=int,
+      help="""\
       The number of consecutive successful health checks before an
       unhealthy instance is marked as healthy.
-      """
+      """)
 
   parser.add_argument(
       '--description',
@@ -144,37 +136,34 @@ def AddHttpRelatedCreationArgs(parser):
   _AddPortRelatedCreationArgs(parser)
   AddProxyHeaderRelatedCreateArgs(parser)
 
-  host = parser.add_argument(
+  parser.add_argument(
       '--host',
-      help='The value of the host header used by the HTTP health check.')
-  host.detailed_help = """\
+      help="""\
       The value of the host header used in this HTTP health check request.
       By default, this is empty and Google Compute Engine automatically sets
       the host header in health requests to the same external IP address as
       the forwarding rule associated with the target pool.
-      """
+      """)
 
-  request_path = parser.add_argument(
+  parser.add_argument(
       '--request-path',
-      help="The request path for the health check. Default is ``/''.",
-      default='/')
-  request_path.detailed_help = """\
+      default='/',
+      help="""\
       The request path that this health check monitors. For example,
       ``/healthcheck''. The default value is ``/''.
-      """
+      """)
 
 
 def AddHttpRelatedResponseArg(parser):
   """Adds parser argument for HTTP response field."""
 
-  response = parser.add_argument(
+  parser.add_argument(
       '--response',
-      help='The string to match anywhere in the first 1024 bytes of response.')
-  response.detailed_help = """\
+      help="""\
       When empty, status code of the response determines health. When not empty,
       presence of specified string in first 1024 characters of response body
       determines health. Only ASCII characters allowed.
-      """
+      """)
 
 
 def AddHttpRelatedUpdateArgs(parser):
@@ -183,24 +172,22 @@ def AddHttpRelatedUpdateArgs(parser):
   _AddPortRelatedUpdateArgs(parser)
   AddProxyHeaderRelatedUpdateArgs(parser)
 
-  host = parser.add_argument(
+  parser.add_argument(
       '--host',
-      help='The value of the host header used by the HTTP health check.')
-  host.detailed_help = """\
+      help="""\
       The value of the host header used in this HTTP health check request.
       By default, this is empty and Google Compute Engine automatically sets
       the host header in health requests to the same external IP address as
       the forwarding rule associated with the target pool. Setting this to
       an empty string will clear any existing host value.
-      """
+      """)
 
-  request_path = parser.add_argument(
+  parser.add_argument(
       '--request-path',
-      help='The request path for the health check.')
-  request_path.detailed_help = """\
+      help="""\
       The request path that this health check monitors. For example,
       ``/healthcheck''.
-      """
+      """)
 
 
 def AddTcpRelatedCreationArgs(parser):
@@ -222,121 +209,106 @@ def AddTcpRelatedUpdateArgs(parser):
 def AddUdpRelatedArgs(parser, request_and_response_required=True):
   """Adds parser arguments related to UDP."""
 
-  port = parser.add_argument(
+  parser.add_argument(
       '--port',
+      type=int,
       help="""\
-      The UDP port number for the health request. Default value is not set.
-      """,
-      type=int)
-  port.detailed_help = """\
       The UDP port number that this health check monitors. The default is not
       set.
-      """
+      """)
 
-  port_name = parser.add_argument(
+  parser.add_argument(
       '--port-name',
-      help='The port name for the health request. Default is empty.')
-  port_name.detailed_help = """\
+      help="""\
       The port name that this health check monitors. By default, this is
       empty. Setting this to an empty string will clear any existing
       port-name value.
-      """
+      """)
 
-  request = parser.add_argument(
+  parser.add_argument(
       '--request',
       required=request_and_response_required,
-      help='Application data to send in payload of an UDP packet.')
-  request.detailed_help = """\
+      help="""\
       Application data to send in payload of an UDP packet. It is an error if
       this is empty.
-      """
+      """)
 
-  response = parser.add_argument(
+  parser.add_argument(
       '--response',
       required=request_and_response_required,
-      help='The bytes to match against the beginning of the response data.')
-  response.detailed_help = """\
+      help="""\
       The bytes to match against the beginning of the response data.
       It is an error if this is empty.
-      """
+      """)
 
 
 def _AddPortRelatedCreationArgs(parser):
   """Adds parser create subcommand arguments --port and --port-name."""
 
-  port = parser.add_argument(
+  parser.add_argument(
       '--port',
-      help='The TCP port number for the health request. Default is 80.',
       type=int,
-      default=80)
-  port.detailed_help = """\
+      default=80,
+      help="""\
       The TCP port number that this health check monitors. The default value
       is 80.
-      """
+      """)
 
-  port_name = parser.add_argument(
+  parser.add_argument(
       '--port-name',
-      help='The port name for the health request. Default is empty.')
-  port_name.detailed_help = """\
+      help="""\
       The port name that this health check monitors. By default, this is
       empty.
-      """
+      """)
 
 
 def _AddPortRelatedUpdateArgs(parser):
   """Adds parser update subcommand arguments --port and --port-name."""
 
-  port = parser.add_argument(
+  parser.add_argument(
       '--port',
-      help='The TCP port number for the health request.',
-      type=int)
-  port.detailed_help = """\
-      The TCP port number that this health check monitors.
-      """
+      type=int,
+      help='The TCP port number that this health check monitors.')
 
-  port_name = parser.add_argument(
+  parser.add_argument(
       '--port-name',
-      help='The port name for the health request. Default is empty.')
-  port_name.detailed_help = """\
+      help="""\
       The port name that this health check monitors. By default, this is
       empty. Setting this to an empty string will clear any existing
       port-name value.
-      """
+      """)
 
 
 def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
   """Adds TCP-related subcommand parser arguments."""
 
-  request_detailed_help = """\
+  request_help = """\
       Application data to send once the TCP connection has been established. By
       default, this is empty. If both request and response are empty, the
       connection establishment alone will indicate health of the TCP connection.
       """
-  response_detailed_help = """\
+  response_help = """\
       The bytes to match against the beginning of the response data. By default,
       this is empty. If empty, any response will indicate health of the TCP
       connection.
       """
 
   if add_info_about_clearing:
-    request_detailed_help += """
+    request_help += """
       Setting this to an empty string will clear any existing request value.
       """
-    response_detailed_help += """\
+    response_help += """\
       Setting this to an empty string will clear any existing
       response value.
       """
 
-  request = parser.add_argument(
+  parser.add_argument(
       '--request',
-      help=('Application data to send once the TCP connection has been '
-            'established.'))
-  request.detailed_help = request_detailed_help
+      help=request_help)
 
-  response = parser.add_argument(
+  parser.add_argument(
       '--response',
-      help='The bytes to match against the beginning of the response data.')
-  response.detailed_help = response_detailed_help
+      help=response_help)
 
 
 def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):

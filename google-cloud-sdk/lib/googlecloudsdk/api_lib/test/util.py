@@ -18,7 +18,8 @@ import json
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.test import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -70,12 +71,12 @@ def GetProject():
     The id of the GCE project to use while running the test.
 
   Raises:
-    ToolException: if the user did not specify a project id via the
+    MissingProjectError: if the user did not specify a project id via the
       --project flag or via running "gcloud config set project PROJECT_ID".
   """
   project = properties.VALUES.core.project.Get()
   if not project:
-    raise exceptions.ToolException(
+    raise exceptions.MissingProjectError(
         'No project specified. Please add --project PROJECT_ID to the command'
         ' line or first run\n  $ gcloud config set project PROJECT_ID')
   return project
@@ -92,7 +93,7 @@ def GetAndroidCatalog(context):
     The android catalog.
 
   Raises:
-    exceptions.HttpException: If it could not connect to the service.
+    calliope_exceptions.HttpException: If it could not connect to the service.
   """
   env_type = (context['testing_messages']
               .TestingTestEnvironmentCatalogGetRequest
@@ -112,7 +113,7 @@ def _GetCatalog(context, environment_type):
     The test environment catalog.
 
   Raises:
-    exceptions.HttpException: If it could not connect to the service.
+    calliope_exceptions.HttpException: If it could not connect to the service.
   """
   client = context['testing_client']
   messages = context['testing_messages']
@@ -122,7 +123,7 @@ def _GetCatalog(context, environment_type):
   try:
     return client.testEnvironmentCatalog.Get(request)
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(
+    raise calliope_exceptions.HttpException(
         'Unable to access the test environment catalog: ' + GetError(error))
   except:
     # Give the user some explanation in case we get a vague/unexpected error,

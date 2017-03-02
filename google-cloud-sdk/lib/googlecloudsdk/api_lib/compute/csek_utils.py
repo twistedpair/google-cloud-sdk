@@ -215,35 +215,32 @@ class MissingCsekKeyException(exceptions.ToolException):
 
 def AddCsekKeyArgs(parser, flags_about_creation=True, resource_type='resource'):
   """Adds arguments related to csek keys."""
-  csek_key_file = parser.add_argument(
+  parser.add_argument(
       '--csek-key-file',
-      help='Path to a CSEK key file',
-      metavar='FILE')
-  csek_key_file.detailed_help = (
-      'Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping '
-      'Google Compute Engine {resource}s to user managed keys to be used when '
-      'creating, mounting, or snapshotting disks. '
-      'See {csek_help} for more details.').format(resource=resource_type,
-                                                  csek_help=CSEK_HELP_URL)
+      metavar='FILE',
+      help="""\
+      Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping
+      Google Compute Engine {resource}s to user managed keys to be used when
+      creating, mounting, or snapshotting disks.
+      See {csek_help} for more details.
+      """.format(resource=resource_type, csek_help=CSEK_HELP_URL))
   # TODO(user)
   # Argument - indicates the key file should be read from stdin.'
 
   if flags_about_creation:
-    require_csek_key_create = parser.add_argument(
+    parser.add_argument(
         '--require-csek-key-create',
         action='store_true',
         default=True,
-        help='Create {resource}s protected by csek key.'.format(
-            resource=resource_type))
-    require_csek_key_create.detailed_help = (
-        'Refuse to create {resource}s not protected by a user managed key in '
-        'the key file when --csek-key-file is given. This behavior is enabled '
-        'by default to prevent incorrect gcloud invocations from accidentally '
-        'creating {resource}s with no user managed key. Disabling the check '
-        'allows creation of some {resource}s without a matching '
-        'Customer-Supplied Encryption Key in the supplied --csek-key-file. '
-        'See {csek_help} for more details').format(resource=resource_type,
-                                                   csek_help=CSEK_HELP_URL)
+        help="""\
+        Refuse to create {resource}s not protected by a user managed key in
+        the key file when --csek-key-file is given. This behavior is enabled
+        by default to prevent incorrect gcloud invocations from accidentally
+        creating {resource}s with no user managed key. Disabling the check
+        allows creation of some {resource}s without a matching
+        Customer-Supplied Encryption Key in the supplied --csek-key-file.
+        See {csek_help} for more details.
+        """.format(resource=resource_type, csek_help=CSEK_HELP_URL))
 
 
 class UriPattern(object):
@@ -328,18 +325,18 @@ class CsekKeyStore(object):
       InvalidKeyFileException: if the input doesn't parse or is not well-formed.
     """
 
-    assert type(s) is str
+    assert isinstance(s, str)
     state = {}
 
     try:
       records = json.loads(s)
 
-      if type(records) is not list:
+      if not isinstance(records, list):
         raise InvalidKeyFileException(
             'Key file\'s top-level element must be a JSON list.')
 
       for key_record in records:
-        if type(key_record) is not dict:
+        if not isinstance(key_record, dict):
           raise InvalidKeyFileException(
               'Key file records must be JSON objects, but [{0}] found.'.format(
                   json.dumps(key_record)))
@@ -362,7 +359,7 @@ class CsekKeyStore(object):
     except ValueError as e:
       raise InvalidKeyFileException(*e.args)
 
-    assert type(state) is dict
+    assert isinstance(state, dict)
     return state
 
   def __len__(self):
@@ -384,7 +381,7 @@ class CsekKeyStore(object):
         for the provided resoure.
     """
 
-    assert type(self.state) is dict
+    assert isinstance(self.state, dict)
     search_state = (None, None)
 
     for pat, key in self.state.iteritems():

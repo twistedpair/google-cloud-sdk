@@ -118,7 +118,7 @@ class ToolResultsSummaryFetcher(object):
       A list of TestOutcome objects.
 
     Raises:
-      ToolException if the Tool Results service reports a back-end error.
+      HttpException if the Tool Results service reports a back-end error.
     """
     outcomes = []
     steps = self._ListAllSteps()

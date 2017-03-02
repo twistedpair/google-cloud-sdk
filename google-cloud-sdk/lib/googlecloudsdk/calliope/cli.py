@@ -435,17 +435,16 @@ class CLILoader(object):
           help='Print version information and exit. This flag is only available'
           ' at the global level.')
 
-    configuration_flag = top_element.ai.add_argument(
+    top_element.ai.add_argument(
         '--configuration',
         metavar='CONFIGURATION',
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help='The configuration to use for this command invocation.')
-    configuration_flag.detailed_help = (
-        'The configuration to use for this command invocation. For more '
-        'information on how to use configurations, run:  '
-        '`gcloud topic configurations`.  You can also use the [{0}] environment'
-        ' variable to set the equivalent of this flag for a terminal session.'
-        .format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))
+        help="""\
+        The configuration to use for this command invocation. For more
+        information on how to use configurations, run:
+        `gcloud topic configurations`.  You can also use the [{0}] environment
+        variable to set the equivalent of this flag for a terminal
+        session.""".format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))
 
     top_element.ai.add_argument(
         '--verbosity',
@@ -470,16 +469,13 @@ class CLILoader(object):
             properties.VALUES.core.user_output_enabled),
         help='Print user intended output to the console.')
 
-    flatten_flag = top_element.ai.add_argument(
+    top_element.ai.add_argument(
         '--flatten',
         metavar='KEY',
         default=None,
         type=arg_parsers.ArgList(),
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help=('Flatten _name_[] output resource slices in _KEY_ into separate '
-              'records for each item in each slice.'),
-    )
-    flatten_flag.detailed_help = """\
+        help="""\
         Flatten _name_[] output resource slices in _KEY_ into separate records
         for each item in each slice. Multiple keys and slices may be specified.
         This also flattens keys for *--format* and *--filter*. For example,
@@ -487,18 +483,17 @@ class CLILoader(object):
         *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
         will expand to N records in the flattened output. This flag interacts
         with other flags that are applied in this order: *--flatten*,
-        *--sort-by*, *--filter*, *--limit*."""
+        *--sort-by*, *--filter*, *--limit*.""")
 
-    format_flag = top_element.ai.add_argument(
+    top_element.ai.add_argument(
         '--format',
         default=None,
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help='The format for printing command output resources.')
-    format_flag.detailed_help = """\
+        help="""\
         Sets the format for printing command output resources. The default is a
         command-specific human-friendly output format. The supported formats
         are: `{0}`. For more details run $ gcloud topic formats.""".format(
-            '`, `'.join(resource_printer.SupportedFormats()))
+            '`, `'.join(resource_printer.SupportedFormats())))
 
     top_element.ai.add_argument(
         '--log-http',

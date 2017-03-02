@@ -82,7 +82,7 @@ class DiffAccumulator(object):
     return False
 
   # pylint: disable=unused-argument
-  def AddChange(self, op, relative_file):
+  def AddChange(self, op, relative_file, old_contents=None, new_contents=None):
     """Called for each file difference.
 
     AddChange() can construct the {'add', 'delete', 'edit'} file operations that
@@ -97,6 +97,8 @@ class DiffAccumulator(object):
         'edit'; relative_file is different in new_dir.
       relative_file: The old_dir and new_dir relative path name of a file that
         changed.
+      old_contents: The old file contents.
+      new_contents: The new file contents.
 
     Returns:
       A prune value. If non-zero then DirDiff() returns immediately with that
@@ -144,15 +146,17 @@ def DirDiff(old_dir, new_dir, diff):
     with open(new_file, 'r') as f:
       new_contents = f.read()
     diff.Validate(relative_file, new_contents)
+    old_contents = None
     old_file = os.path.normpath(os.path.join(old_dir, relative_file))
     if old_file in old_files:
       with open(old_file, 'r') as f:
-        if f.read() == new_contents:
-          continue
+        old_contents = f.read()
+      if old_contents == new_contents:
+        continue
       op = 'edit'
     else:
       op = 'add'
-    prune = diff.AddChange(op, relative_file)
+    prune = diff.AddChange(op, relative_file, old_contents, new_contents)
     if prune:
       return prune
   for old_file in old_files:
@@ -204,12 +208,14 @@ class HelpTextAccumulator(DiffAccumulator):
                                 ','.join(INVALID_BRAND_ABBREVIATIONS)))
       self._invalid_file_count += 1
 
-  def AddChange(self, op, relative_file):
+  def AddChange(self, op, relative_file, old_contents=None, new_contents=None):
     """Adds an DirDiff() difference tuple to the list of changes.
 
     Args:
       op: The difference operation, one of {'add', 'delete', 'edit'}.
       relative_file: The relative path of a file that has changed.
+      old_contents: The old file contents.
+      new_contents: The new file contents.
 
     Returns:
       None which signals DirDiff() to continue.

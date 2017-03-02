@@ -69,6 +69,9 @@ def StoreProperty(prop):
   class Action(argparse.Action):
     """The action created for StoreProperty."""
 
+    # store_property is referenced in calliope.parser_arguments.add_argument
+    store_property = (prop, None, None)
+
     def __init__(self, *args, **kwargs):
       super(Action, self).__init__(*args, **kwargs)
       option_strings = kwargs.get('option_strings')
@@ -107,9 +110,8 @@ def StoreBooleanProperty(prop):
   class Action(argparse.Action):
     """The action created for StoreBooleanProperty."""
 
-    # boolean_property is referenced in the Calliope Argparse.add_argument()
-    # intercept.
-    boolean_property = prop
+    # store_property is referenced in calliope.parser_arguments.add_argument
+    store_property = (prop, 'bool', None)
 
     def __init__(self, *args, **kwargs):
       kwargs = dict(kwargs)
@@ -167,6 +169,10 @@ def StoreConstProperty(prop, const):
   """
 
   class Action(argparse.Action):
+    """The action created for StoreConstProperty."""
+
+    # store_property is referenced in calliope.parser_arguments.add_argument
+    store_property = (prop, 'value', const)
 
     def __init__(self, *args, **kwargs):
       kwargs = dict(kwargs)

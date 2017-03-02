@@ -182,7 +182,7 @@ CreateServiceRollout.
         method_id=u'servicemanagement.services.configs.get',
         ordered_params=[u'serviceName', u'configId'],
         path_params=[u'configId', u'serviceName'],
-        query_params=[],
+        query_params=[u'view'],
         relative_path=u'v1/services/{serviceName}/configs/{configId}',
         request_field='',
         request_type_name=u'ServicemanagementServicesConfigsGetRequest',
@@ -792,7 +792,7 @@ public.
         method_id=u'servicemanagement.services.getConfig',
         ordered_params=[u'serviceName'],
         path_params=[u'serviceName'],
-        query_params=[u'configId'],
+        query_params=[u'configId', u'view'],
         relative_path=u'v1/services/{serviceName}/config',
         request_field='',
         request_type_name=u'ServicemanagementServicesGetConfigRequest',
@@ -831,9 +831,9 @@ set.
     def List(self, request, global_params=None):
       """Lists managed services.
 
-If called without any authentication, it returns only the public services.
-If called with authentication, it returns all services that the caller has
-"servicemanagement.services.get" permission for.
+Returns all public services. For authenticated users, also returns all
+services the calling user has "servicemanagement.services.get" permission
+for.
 
 **BETA:** If the caller specifies the `consumer_id`, it returns only the
 services enabled on the consumer. The `consumer_id` must have the format

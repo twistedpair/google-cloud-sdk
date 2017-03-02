@@ -270,13 +270,12 @@ def HasWindowsLicense(resource, resource_parser):
 
 def AddImageProjectFlag(parser):
   """Adds the --image flag to the given parser."""
-  image_project = parser.add_argument(
+  parser.add_argument(
       '--image-project',
-      help='The project against which all image references will be resolved.')
-  image_project.detailed_help = """\
+      help="""\
       The project against which all image and image family references will be
       resolved. See ``--image'' for more details.
-      """
+      """)
 
 
 def WarnAlias(alias):

@@ -30,8 +30,7 @@ UPDATE_LABELS_FLAG = base.Argument(
     metavar='KEY=VALUE',
     type=arg_parsers.ArgDict(),
     action=arg_parsers.UpdateAction,
-    help='A list of label KEY=VALUE pairs to update.',
-    detailed_help="""\
+    help="""\
     A list of label KEY=VALUE pairs to update. If a label exists its value
     is modified, otherwise a new label is created.""")
 
@@ -40,8 +39,7 @@ REMOVE_LABELS_FLAG = base.Argument(
     metavar='KEY',
     type=arg_parsers.ArgList(),
     action=arg_parsers.UpdateAction,
-    help='A list of label keys to remove.',
-    detailed_help="""\
+    help="""\
     A list of label keys to remove. If a label does not exist it is
     silently ignored.""")
 

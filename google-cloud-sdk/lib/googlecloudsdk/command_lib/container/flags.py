@@ -43,15 +43,16 @@ using the following command.
   parser.add_argument('--image-type', help=help_text)
 
 
-def AddClusterVersionFlag(parser, target, suppressed=False):
+def AddClusterVersionFlag(parser, suppressed=False, help=None):  # pylint: disable=redefined-builtin
   """Adds a --cluster-version flag to the given parser."""
-  help_text = argparse.SUPPRESS if suppressed else """\
-The Kubernetes version to use for the {target}. Defaults to server-specified.
+  help_text = argparse.SUPPRESS if suppressed else help or """\
+The Kubernetes version to use for the master and nodes. Defaults to
+server-specified.
 
 The default Kubernetes version are available using the following command.
 
   $ gcloud container get-server-config
-""".format(target=target)
+"""
 
   return parser.add_argument('--cluster-version', help=help_text)
 

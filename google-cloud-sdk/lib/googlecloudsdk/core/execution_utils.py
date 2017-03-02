@@ -320,21 +320,25 @@ def UninterruptibleSection(stream, message=None):
   return CtrlCSection(_Handler)
 
 
-def CtrlCSection(handler=None):
+def RaisesKeyboardInterrupt():
+  """Run a section of code where CTRL-C raises KeyboardInterrupt."""
+  def _Handler(signal, frame):  # pylint: disable=redefined-outer-name
+    del signal, frame  # Unused in _Handler
+    raise KeyboardInterrupt
+  return CtrlCSection(_Handler)
+
+
+def CtrlCSection(handler):
   """Run a section of code with CTRL-C redirected handler.
 
   Args:
-    handler: func(), handler to call if SIGINT is received. Default None, which
-        implies noop handler. In every case original Ctrl-C handler
-        is not invoked.
+    handler: func(), handler to call if SIGINT is received. In every case
+      original Ctrl-C handler is not invoked.
 
   Returns:
     Context manager that redirects ctrl-c handler during its lifetime.
   """
-
-  def _Handler(unused_signal, unused_frame):
-    pass
-  return _ReplaceSignal(signal.SIGINT, handler or _Handler)
+  return _ReplaceSignal(signal.SIGINT, handler)
 
 
 def KillSubprocess(p):

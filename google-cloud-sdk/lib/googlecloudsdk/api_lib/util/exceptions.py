@@ -63,7 +63,7 @@ class HttpErrorPayload(string.Formatter):
       https://dotcom/foo/bar
       <content.debugInfo in yaml print format>
 
-    'Error: {status_code} {details?\n\ndetails{?COLON?}\n{?}}}'
+    'Error: {status_code} {details?\n\ndetails{?COLON?}\n{?}}'
 
       Error: 404
 

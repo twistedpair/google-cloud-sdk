@@ -317,6 +317,15 @@ RESOURCE_REGISTRY = {
             healthChecks.map().basename().list()
           )
         """,),
+    'compute.commitments':
+        resource_info.ResourceInfo(
+            cache_command='compute commitments list',
+            list_format="""
+          table(name,
+                region.basename(),
+                endTimestamp,
+                status)
+                """,),
     'compute.disks':
         resource_info.ResourceInfo(
             cache_command='compute disks list',
@@ -573,7 +582,7 @@ RESOURCE_REGISTRY = {
         """,),
     'compute.peerings':
         resource_info.ResourceInfo(
-            cache_command='alpha compute networks peerings list',
+            cache_command='beta compute networks peerings list',
             list_format="""
           table(
             name,
@@ -1732,7 +1741,8 @@ RESOURCE_REGISTRY = {
 
     # special IAM roles completion case
     'iam.roles':
-        resource_info.ResourceInfo(bypass_cache=True,),
+        resource_info.ResourceInfo(
+            bypass_cache=True,),
 
     # generic
     'default':

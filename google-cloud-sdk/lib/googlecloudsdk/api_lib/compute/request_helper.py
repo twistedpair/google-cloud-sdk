@@ -191,9 +191,6 @@ def MakeRequests(requests, http, batch_url, errors):
 
   if operations:
     warnings = []
-    # TODO(user): Delete the waiters module and move the logic
-    # here. We can also get a rid of parameters like operation_service
-    # and project since they can be inferred from the other args.
     for response in waiters.WaitForOperations(
         operations=operations,
         project=project,

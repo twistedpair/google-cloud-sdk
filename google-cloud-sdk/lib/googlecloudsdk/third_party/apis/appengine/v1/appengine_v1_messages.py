@@ -417,6 +417,9 @@ class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
   Engine application.
 
+  Enums:
+    ServingStatusValueValuesEnum: Serving status of this application.
+
   Fields:
     authDomain: Google Apps authentication domain that controls which users
       can access this application.Defaults to open access for any Google
@@ -433,6 +436,8 @@ class Application(_messages.Message):
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
       dependent.@OutputOnly
+    gcrDomain: The Google Container Registry domain used for storing managed
+      build docker images for this application.
     iap: A IdentityAwareProxy attribute.
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
@@ -444,7 +449,22 @@ class Application(_messages.Message):
       Europeus-east1 - Eastern US
     name: Full path to the Application resource in the API. Example:
       apps/myapp.@OutputOnly
+    servingStatus: Serving status of this application.
   """
+
+  class ServingStatusValueValuesEnum(_messages.Enum):
+    """Serving status of this application.
+
+    Values:
+      UNSPECIFIED: Serving status is unspecified.
+      SERVING: Application is serving.
+      USER_DISABLED: Application has been disabled by the user.
+      SYSTEM_DISABLED: Application has been disabled by the system.
+    """
+    UNSPECIFIED = 0
+    SERVING = 1
+    USER_DISABLED = 2
+    SYSTEM_DISABLED = 3
 
   authDomain = _messages.StringField(1)
   codeBucket = _messages.StringField(2)
@@ -452,10 +472,12 @@ class Application(_messages.Message):
   defaultCookieExpiration = _messages.StringField(4)
   defaultHostname = _messages.StringField(5)
   dispatchRules = _messages.MessageField('UrlDispatchRule', 6, repeated=True)
-  iap = _messages.MessageField('IdentityAwareProxy', 7)
-  id = _messages.StringField(8)
-  locationId = _messages.StringField(9)
-  name = _messages.StringField(10)
+  gcrDomain = _messages.StringField(7)
+  iap = _messages.MessageField('IdentityAwareProxy', 8)
+  id = _messages.StringField(9)
+  locationId = _messages.StringField(10)
+  name = _messages.StringField(11)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 12)
 
 
 class AutomaticScaling(_messages.Message):

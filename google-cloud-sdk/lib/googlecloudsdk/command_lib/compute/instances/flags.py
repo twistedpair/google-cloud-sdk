@@ -115,23 +115,21 @@ def AddImageArgs(parser):
           """
 
   image_group = parser.add_mutually_exclusive_group()
-  image = image_group.add_argument(
+  image_group.add_argument(
       '--image',
-      help='The image that the boot disk will be initialized with.',
+      help=AddImageHelp,
       metavar='IMAGE')
-  image.detailed_help = AddImageHelp
   image_utils.AddImageProjectFlag(parser)
 
   image_group.add_argument(
       '--image-family',
-      help=("""\
-          The family of the image that the boot disk will be initialized
-          with. When a family is specified instead of an image, the latest
-          non-deprecated image associated with that family is used.
+      help="""\
+      The family of the image that the boot disk will be initialized
+      with. When a family is specified instead of an image, the latest
+      non-deprecated image associated with that family is used.
 
-          By default, ``{default_image_family}'' is assumed for this flag.
-          """.format(
-              default_image_family=constants.DEFAULT_IMAGE_FAMILY)))
+      By default, ``{default_image_family}'' is assumed for this flag.
+      """.format(default_image_family=constants.DEFAULT_IMAGE_FAMILY))
 
 
 def AddCanIpForwardArgs(parser):
@@ -145,15 +143,14 @@ def AddCanIpForwardArgs(parser):
 def AddLocalSsdArgs(parser):
   """Adds local SSD argument for instances and instance-templates."""
 
-  local_ssd = parser.add_argument(
+  parser.add_argument(
       '--local-ssd',
       type=arg_parsers.ArgDict(spec={
           'device-name': str,
           'interface': (lambda x: x.upper()),
       }),
       action='append',
-      help='(BETA) Specifies instances with attached local SSDs.')
-  local_ssd.detailed_help = """
+      help="""\
       Attaches a local SSD to the instances.
 
       This flag is currently in BETA and may change without notice.
@@ -166,25 +163,23 @@ def AddLocalSsdArgs(parser):
       for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
       the default and is supported by more guest operating systems.  NVME
       may provide higher performance.
-      """
+      """)
 
 
 def AddDiskArgs(parser, enable_regional_disks=False):
   """Adds arguments related to disks for instances and instance-templates."""
 
-  boot_disk_device_name = parser.add_argument(
+  parser.add_argument(
       '--boot-disk-device-name',
-      help='The name the guest operating system will see the boot disk as.')
-  boot_disk_device_name.detailed_help = """\
+      help="""\
       The name the guest operating system will see for the boot disk as.  This
       option can only be specified if a new boot disk is being created (as
       opposed to mounting an existing persistent disk).
-      """
-  boot_disk_size = parser.add_argument(
+      """)
+  parser.add_argument(
       '--boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
-      help='The size of the boot disk.')
-  boot_disk_size.detailed_help = """\
+      help="""\
       The size of the boot disk. This option can only be specified if a new
       boot disk is being created (as opposed to mounting an existing
       persistent disk). The value must be a whole number followed by a size
@@ -192,17 +187,16 @@ def AddDiskArgs(parser, enable_regional_disks=False):
       or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
       disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
       multiple of 1 GB.
-      """
+      """)
 
-  boot_disk_type = parser.add_argument(
+  parser.add_argument(
       '--boot-disk-type',
-      help='The type of the boot disk.')
-  boot_disk_type.detailed_help = """\
+      help="""\
       The type of the boot disk. This option can only be specified if a new boot
       disk is being created (as opposed to mounting an existing persistent
       disk). To get a list of available disk types, run
       `$ gcloud compute disk-types list`.
-      """
+      """)
 
   parser.add_argument(
       '--boot-disk-auto-delete',
@@ -221,13 +215,7 @@ def AddDiskArgs(parser, enable_regional_disks=False):
   if enable_regional_disks:
     disk_arg_spec['scope'] = str
 
-  disk = parser.add_argument(
-      '--disk',
-      type=arg_parsers.ArgDict(spec=disk_arg_spec),
-      action='append',
-      help='Attaches persistent disks to the instances.')
-
-  detailed_help = """
+  disk_help = """
       Attaches persistent disks to the instances. The disks
       specified must already exist.
 
@@ -255,20 +243,23 @@ def AddDiskArgs(parser, enable_regional_disks=False):
       won't apply. The default value for this is ``no''.
       """
   if enable_regional_disks:
-    detailed_help += """
+    disk_help += """
       *scope*::: Can be `zonal` or `regional`. If ``zonal'', the disk is
       interpreted as a zonal disk in the same zone as the instance (default).
       If ``regional'', the disk is interpreted as a regional disk in the same
       region as the instance. The default value for this is ``zonal''.
-
       """
-  disk.detailed_help = detailed_help
+  parser.add_argument(
+      '--disk',
+      type=arg_parsers.ArgDict(spec=disk_arg_spec),
+      action='append',
+      help=disk_help)
 
 
 def AddCreateDiskArgs(parser):
   """Adds create-disk argument for instances and instance-templates."""
 
-  create_disk = parser.add_argument(
+  parser.add_argument(
       '--create-disk',
       type=arg_parsers.ArgDict(spec={
           'name': str,
@@ -282,9 +273,8 @@ def AddCreateDiskArgs(parser):
           'auto-delete': str,
       }),
       action='append',
-      help='Creates and attaches persistent disks to the instances.',
-      metavar='PROPERTY=VALUE')
-  create_disk.detailed_help = """
+      metavar='PROPERTY=VALUE',
+      help="""\
       Creates and attaches persistent disks to the instances.
 
       *name*::: Specifies the name of the disk. This option cannot be
@@ -328,33 +318,30 @@ def AddCreateDiskArgs(parser):
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
-      """
+      """)
 
 
 def AddCustomMachineTypeArgs(parser):
   """Adds arguments related to custom machine types for instances."""
-  custom_cpu = parser.add_argument(
+  parser.add_argument(
       '--custom-cpu',
       type=int,
-      help='Number of CPUs desired in the instance for a custom machine type.')
-  custom_cpu.detailed_help = """\
+      help="""\
       A whole number value indicating how many cores are desired in the custom
       machine type. Both --custom-cpu and --custom-memory must be specified if
       a custom machine type is desired, and the --machine-type flag must be
       omitted.
-      """
-  custom_memory = parser.add_argument(
+      """)
+  parser.add_argument(
       '--custom-memory',
       type=arg_parsers.BinarySize(),
-      help='Amount of memory desired in the instance for a custom machine type '
-      '(set units, default GiB).')
-  custom_memory.detailed_help = """\
+      help="""\
       A whole number value indicating how much memory is desired in the custom
       machine type. A size unit should be provided (eg. 3072MiB or 9GiB) - if
       no units are specified, GiB is assumed. Both --custom-cpu and
       --custom-memory must be specified if a custom machine type is desired,
       and the --machine-type flag must be omitted.
-      """
+      """)
 
 
 def AddExtendedMachineTypeArgs(parser):
@@ -565,21 +552,20 @@ def AddAddressArgs(parser, instances=True,
       action='store_true',
       help=('If provided, the instances will not be assigned external IP '
             'addresses.'))
-  address = addresses.add_argument(
-      '--address',
-      help='Assigns the given external address to the instance that is '
-      'created.')
   if instances:
-    address.detailed_help = """\
+    address_help = """\
         Assigns the given external address to the instance that is created.
         The address may be an IP address or the name or URI of an address
         resource. This option can only be used when creating a single instance.
         """
   else:
-    address.detailed_help = """\
+    address_help = """\
         Assigns the given external IP address to the instance that is created.
         This option can only be used when creating a single instance.
         """
+  addresses.add_argument(
+      '--address',
+      help=address_help)
   multiple_network_interface_cards_spec = {
       'address': str,
       'network': str,
@@ -603,17 +589,7 @@ def AddAddressArgs(parser, instances=True,
   if multiple_network_interface_cards:
     if support_alias_ip_ranges:
       multiple_network_interface_cards_spec['aliases'] = str
-    network_interface = parser.add_argument(
-        '--network-interface',
-        type=arg_parsers.ArgDict(
-            spec=multiple_network_interface_cards_spec,
-            allow_key_only=True,
-        ),
-        action='append',  # pylint:disable=protected-access
-        help='Adds a network interface to the instance.',
-    )
-
-    network_interface_detailed_help = """\
+    network_interface_help = """\
         Adds a network interface to the instance. Mutually exclusive with
         --address, --network, --network-tier, --subnet, and --private-network-ip
         flags.
@@ -629,28 +605,32 @@ def AddAddressArgs(parser, instances=True,
         neither is specified, this defaults to the "default" network.
 
         *no-address*::: If specified the interface will have no external IP.
+        Mutually exclusive with address. If neither key is present the
+        instance will get an ephemeral IP.
         """
     if support_network_tier:
-      network_interface_detailed_help += """
+      network_interface_help += """
         *network-tier*::: Specifies the network tier of the interface. It can
         only take the following values: PREMIUM, SELECT. The default network
         tier is PREMIUM.
         """
     if instances:
-      network_interface_detailed_help += """
+      network_interface_help += """
         *private-network-ip*::: Assigns the given RFC1918 IP address to the
-        interface. """
-    network_interface_detailed_help += """
+        interface.
+        """
+    network_interface_help += """
         *subnet*::: Specifies the subnet that the interface will be part of.
         If network key is also specified this must be a subnetwork of the
-        specified network."""
+        specified network.
+        """
     if support_alias_ip_ranges:
-      network_interface_detailed_help += """
+      network_interface_help += """
         *aliases*::: Specifies the IP aliase ranges to allocate for this
         interface.  If there are multiple IP aliase ranges, they are seperated
         by semicolons. Currently, only one IP alias range is supported."""
       if instances:
-        network_interface_detailed_help += """
+        network_interface_help += """
           Each IP alias range consists of a range name and an IP range
           separated by a colon, or just the IP range.
           The range name is the name of the range within the network
@@ -664,7 +644,7 @@ def AddAddressArgs(parser, instances=True,
           IP allocator will pick an available range with the specified netmask
           and allocate it to this network interface."""
       else:
-        network_interface_detailed_help += """
+        network_interface_help += """
           Each IP alias range consists of a range name and an CIDR net mask
           (e.g. /24) separated by a colon, or just the net mask.
           The range name is the name of the range within the network
@@ -672,84 +652,86 @@ def AddAddressArgs(parser, instances=True,
           unspecified, it defaults to the primary IP range of the subnet.
           IP allocator will pick an available range with the specified netmask
           and allocate it to this network interface."""
-    network_interface.detailed_help = network_interface_detailed_help
+    parser.add_argument(
+        '--network-interface',
+        type=arg_parsers.ArgDict(
+            spec=multiple_network_interface_cards_spec,
+            allow_key_only=True,
+        ),
+        action='append',  # pylint:disable=protected-access
+        metavar='PROPERTY=VALUE',
+        help=network_interface_help
+    )
 
 
 def AddMachineTypeArgs(parser, required=False):
-  machine_type = parser.add_argument(
+  parser.add_argument(
       '--machine-type',
       completion_resource='compute.machineTypes',
-      help='Specifies the machine type used for the instances.',
-      required=required)
-  machine_type.detailed_help = """\
+      required=required,
+      help="""\
       Specifies the machine type used for the instances. To get a
       list of available machine types, run 'gcloud compute
       machine-types list'. If unspecified, the default type is n1-standard-1.
-      """
+      """)
 
 
 def AddMinCpuPlatformArgs(parser):
-  min_cpu_platform = parser.add_argument(
+  parser.add_argument(
       '--min-cpu-platform',
       metavar='PLATFORM',
-      help='Minimum CPU platform for this virtual machine')
-  min_cpu_platform.detailed_help = """\
-    When specified the VM will be scheduled on host with specified CPU
-    architecture or a newer one. To list available CPU platforms in given
-    zone run
+      help="""\
+      When specified the VM will be scheduled on host with specified CPU
+      architecture or a newer one. To list available CPU platforms in given
+      zone run
 
-        $ gcloud compute zones describe ZONE --format="value(availableCpuPlatforms)"
+          $ gcloud compute zones describe ZONE --format="value(availableCpuPlatforms)"
 
-    CPU platform selection is available only in selected zones.
-    """
+      CPU platform selection is available only in selected zones.
+      """)
 
 
 def AddPreemptibleVmArgs(parser):
-  preemptible = parser.add_argument(
+  parser.add_argument(
       '--preemptible',
       action='store_true',
-      help='If provided, instances will be preemptible and time-limited.',
-      default=False)
-  preemptible.detailed_help = """\
+      default=False,
+      help="""\
       If provided, instances will be preemptible and time-limited.
       Instances may be preempted to free up resources for standard VM instances,
       and will only be able to run for a limited amount of time. Preemptible
       instances can not be restarted and will not migrate.
-      """
+      """)
 
 
 def AddNetworkArgs(parser):
   """Set arguments for choosing the network/subnetwork."""
-  network = parser.add_argument(
+  parser.add_argument(
       '--network',
-      help='Specifies the network that the instances will be part of.')
-
-  network.detailed_help = """\
+      help="""\
       Specifies the network that the instances will be part of. If --subnet is
       also specified subnet must be a subnetwork of network specified by
       --network. If neither is specified, this defaults to the "default"
       network.
-      """
+      """)
 
-  subnet = parser.add_argument(
+  parser.add_argument(
       '--subnet',
-      help='Specifies the subnet that the instances will be part of.')
-  subnet.detailed_help = """\
+      help="""\
       Specifies the subnet that the instances will be part of. If --network is
       also specified subnet must be a subnetwork of network specified by
       --network.
-      """
+      """)
 
 
 def AddPrivateNetworkIpArgs(parser):
   """Set arguments for choosing the network IP address."""
-  private_network_ip = parser.add_argument(
+  parser.add_argument(
       '--private-network-ip',
-      help='Assigns the given RFC1918 IP address to the instance.')
-  private_network_ip.detailed_help = """\
+      help="""\
       Specifies the RFC1918 IP to assign to the instance. The IP should be in
       the subnet or legacy network IP range.
-      """
+      """)
 
 
 def AddServiceAccountAndScopeArgs(parser, instance_exists):
@@ -767,12 +749,9 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
       help='Remove service account from the instance' if instance_exists
       else 'Create instance without service account')
 
-  service_account = service_account_group.add_argument(
-      '--service-account',
-      help='Service account and scopes for the instances')
   sa_exists = 'keep the service account it currently has'
   sa_not_exists = 'get project\'s default service account'
-  service_account.detailed_help = """\
+  service_account_help = """\
   A service account is an identity attached to the instance. Its access tokens
   can be accessed through the instance metadata server and are used to
   authenticate applications on the instance. The account can be either an email
@@ -781,20 +760,18 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
 
   If not provided, the instance will {0}.
   """.format(sa_exists if instance_exists else sa_not_exists)
+  service_account_group.add_argument(
+      '--service-account',
+      help=service_account_help)
 
   scopes_group = parser.add_mutually_exclusive_group()
   scopes_group.add_argument(
       '--no-scopes', action='store_true',
       help='Remove all scopes from the instance' if instance_exists
       else 'Create instance without scopes')
-  scopes = scopes_group.add_argument(
-      '--scopes',
-      type=arg_parsers.ArgList(),
-      metavar='SCOPE',
-      help='Comma separated list of scopes for the instance')
   scopes_exists = 'keep the scopes it currently has'
   scopes_not_exists = 'be assigned the default scopes, described below'
-  scopes.detailed_help = """\
+  scopes_help = """\
   If not provided, the instance will {0}.
 
   SCOPE can be either the full URI of the scope or an alias. Available
@@ -866,152 +843,146 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
     userinfo-email
       - https://www.googleapis.com/auth/userinfo.email
     """.format(scopes_exists if instance_exists else scopes_not_exists)
+  scopes_group.add_argument(
+      '--scopes',
+      type=arg_parsers.ArgList(),
+      metavar='SCOPE',
+      help=scopes_help)
 
 
 def AddNetworkInterfaceArgs(parser):
   """Adds network interface flag to the argparse."""
 
-  network_interface = parser.add_argument(
+  parser.add_argument(
       '--network-interface',
       default=constants.DEFAULT_NETWORK_INTERFACE,
       action=arg_parsers.StoreOnceAction,
-      help=('Specifies the name of the network interface which contains the'
-            'access configuration.'))
-  network_interface.detailed_help = """\
+      help="""\
       Specifies the name of the network interface which contains the access
       configuration. If this is not provided, then "nic0" is used
       as the default.
-      """
+      """)
 
 
 def AddNetworkTierArgs(parser, instance=True):
   """Adds network tier flag to the argparse."""
 
   choices = constants.NETWORK_TIER_CHOICES_FOR_INSTANCE
-  help_str = 'The type of network tier to use.'
-  network_tier = parser.add_argument(
-      '--network-tier',
-      choices=sorted(choices),
-      default=constants.DEFAULT_NETWORK_TIER,
-      type=lambda x: x.upper(),
-      help=help_str)
   if instance:
-    network_tier.detailed_help = """\
+    network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
         It can only take the following values: PREMIUM, SELECT. The default
         network tier is PREMIUM.
         """
   else:
-    network_tier.detailed_help = """\
+    network_tier_help = """\
         Specifies the network tier of the access configuration. It can only take
         the following values: PREMIUM, SELECT. The default network tier is
         PREMIUM.
         """
+  parser.add_argument(
+      '--network-tier',
+      choices=sorted(choices),
+      default=constants.DEFAULT_NETWORK_TIER,
+      type=lambda x: x.upper(),
+      help=network_tier_help)
 
 
 def AddPublicDnsArgs(parser, instance=True):
   """Adds public DNS arguments for instance or access configuration."""
 
   public_dns_args = parser.add_mutually_exclusive_group()
-  no_public_dns = public_dns_args.add_argument(
-      '--no-public-dns',
-      action='store_true',
-      help=(
-          'If provided, the instance will not be assigned a public DNS name.'))
   if instance:
-    no_public_dns.detailed_help = """\
+    public_dns_args_help = """\
         If provided, the instance will not be assigned a public DNS name.
         """
   else:
-    no_public_dns.detailed_help = """\
+    public_dns_args_help = """\
         If provided, the external IP in the access configuration will not be
         assigned a public DNS name.
         """
-
-  public_dns = public_dns_args.add_argument(
-      '--public-dns',
+  public_dns_args.add_argument(
+      '--no-public-dns',
       action='store_true',
-      help='Assigns a public DNS name to the instance.')
+      help=public_dns_args_help)
+
   if instance:
-    public_dns.detailed_help = """\
+    public_dns_help = """\
         Assigns a public DNS name to the instance.
         """
   else:
-    public_dns.detailed_help = """\
+    public_dns_help = """\
         Assigns a public DNS name to the external IP in the access
         configuration. This option can only be specified for the default
         network-interface, "nic0".
         """
+  public_dns_args.add_argument(
+      '--public-dns',
+      action='store_true',
+      help=public_dns_help)
 
   public_ptr_args = parser.add_mutually_exclusive_group()
-  no_public_ptr = public_ptr_args.add_argument(
-      '--no-public-ptr',
-      action='store_true',
-      help=(
-          'If provided, no DNS PTR record is created. Mutually exclusive with '
-          'public-ptr-domain.'))
   if instance:
-    no_public_ptr.detailed_help = """\
+    no_public_ptr_help = """\
         If provided, no DNS PTR record is created for the external IP of the
         instance. Mutually exclusive with public-ptr-domain.
         """
   else:
-    no_public_ptr.detailed_help = """\
+    no_public_ptr_help = """\
         If provided, no DNS PTR record is created for the external IP in the
         access configuration. Mutually exclusive with public-ptr-domain.
         """
-
-  public_ptr = public_ptr_args.add_argument(
-      '--public-ptr',
+  public_ptr_args.add_argument(
+      '--no-public-ptr',
       action='store_true',
-      help='Creates a DNS PTR record for the external IP of the instance.')
+      help=no_public_ptr_help)
+
   if instance:
-    public_ptr.detailed_help = """\
+    public_ptr_help = """\
         Creates a DNS PTR record for the external IP of the instance.
         """
   else:
-    public_ptr.detailed_help = """\
+    public_ptr_help = """\
         Creates a DNS PTR record for the external IP in the access
         configuration. This option can only be specified for the default
-        network-interface, "nic0".
-        """
+        network-interface, "nic0"."""
+  public_ptr_args.add_argument(
+      '--public-ptr',
+      action='store_true',
+      help=public_ptr_help)
 
   public_ptr_domain_args = parser.add_mutually_exclusive_group()
-  no_public_ptr_domain = public_ptr_domain_args.add_argument(
-      '--no-public-ptr-domain',
-      action='store_true',
-      help=(
-          'If both this flag and --public-ptr are specified, creates a DNS PTR '
-          'record for the external IP of the instance with the PTR domain name '
-          'being the DNS name of the instance.'))
   if instance:
-    no_public_ptr_domain.detailed_help = """\
+    no_public_ptr_domain_help = """\
         If both this flag and --public-ptr are specified, creates a DNS PTR
         record for the external IP of the instance with the PTR domain name
         being the DNS name of the instance.
         """
   else:
-    no_public_ptr_domain.detailed_help = """\
+    no_public_ptr_domain_help = """\
         If both this flag and --public-ptr are specified, creates a DNS PTR
         record for the external IP in the access configuration with the PTR
         domain name being the DNS name of the instance.
         """
+  public_ptr_domain_args.add_argument(
+      '--no-public-ptr-domain',
+      action='store_true',
+      help=no_public_ptr_domain_help)
 
-  public_ptr_domain = public_ptr_domain_args.add_argument(
-      '--public-ptr-domain',
-      help='Assigns a custom PTR domain for the external IP of the instance. '
-      'Mutually exclusive with no-public-ptr.')
   if instance:
-    public_ptr_domain.detailed_help = """\
+    public_ptr_domain_help = """\
         Assigns a custom PTR domain for the external IP of the instance.
         Mutually exclusive with no-public-ptr.
         """
   else:
-    public_ptr_domain.detailed_help = """\
+    public_ptr_domain_help = """\
         Assigns a custom PTR domain for the external IP in the access
         configuration. Mutually exclusive with no-public-ptr. This option can
         only be specified for the default network-interface, "nic0".
         """
+  public_ptr_domain_args.add_argument(
+      '--public-ptr-domain',
+      help=public_ptr_domain_help)
 
 
 def ValidatePublicDnsFlags(args):
@@ -1046,29 +1017,27 @@ def ValidateServiceAccountAndScopeArgs(args):
 
 
 def AddTagsArgs(parser):
-  tags = parser.add_argument(
+  parser.add_argument(
       '--tags',
       type=arg_parsers.ArgList(min_length=1),
-      help='A list of tags to apply to the instances.',
-      metavar='TAG')
-  tags.detailed_help = """\
+      metavar='TAG',
+      help="""\
       Specifies a list of tags to apply to the instances for
       identifying the instances to which network firewall rules will
       apply. See gcloud_compute_firewall-rules_create(1) for more
       details.
-      """
+      """)
 
 
 def AddNoRestartOnFailureArgs(parser):
-  restart_on_failure = parser.add_argument(
+  parser.add_argument(
       '--restart-on-failure',
       action='store_true',
       default=True,
-      help='Restart instances if they are terminated by Compute Engine.')
-  restart_on_failure.detailed_help = """\
+      help="""\
       The instances will be restarted if they are terminated by Compute Engine.
       This does not affect terminations performed by the user.
-      """
+      """)
 
 
 def AddMaintenancePolicyArgs(parser):
@@ -1086,15 +1055,14 @@ def AddAcceleratorArgs(parser):
   # type=nvidia-tesla-k80,count=4
   # TODO(b/34676942): METAVAR should be synthesized or it should not be needed
   # for ArgDict type of argument.
-  accelerator = parser.add_argument(
+  parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(spec={
           'type': str,
           'count': int,
       }),
       metavar='type=TYPE,[count=COUNT]',
-      help='Attaches accelerators (e.g. GPUs) to the instances.')
-  accelerator.detailed_help = """
+      help="""\
       Attaches accelerators (e.g. GPUs) to the instances.
 
       *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
@@ -1103,7 +1071,7 @@ def AddAcceleratorArgs(parser):
 
       *count*::: The number of pieces of the accelerator to attach to the
       instances. The default value is 1.
-      """
+      """)
 
 
 def ValidateAcceleratorArgs(args):
@@ -1126,51 +1094,46 @@ def ValidateAcceleratorArgs(args):
 
 def AddDockerArgs(parser):
   """Adds Docker-related args."""
-  docker_image = parser.add_argument(
+  parser.add_argument(
       '--docker-image',
-      help=('Docker image URL to run on VM.'))
-  docker_image.detailed_help = """\
-  The URL to a Docker image to run on this instance. For example:
-      gcr.io/google-containers/busybox
-  """
+      help="""\
+      The URL to a Docker image to run on this instance. For example:
+          gcr.io/google-containers/busybox""")
 
   parser.add_argument('--container-manifest', help=argparse.SUPPRESS)
 
-  run_command = parser.add_argument(
+  parser.add_argument(
       '--run-command',
-      help=('Run command for given Docker image.'))
-  run_command.detailed_help = """\
-  Command to be executed when running the Docker image. The command is
-  specified in shell form:
+      help="""\
+      Command to be executed when running the Docker image. The command is
+      specified in shell form:
 
-    command param1 param2 ...
+        command param1 param2 ...
 
-  It is possible to quote and escape params, for example:
+      It is possible to quote and escape params, for example:
 
-    $ {command} --run-command='echo "Hello world"'
+        $ {command} --run-command='echo "Hello world"'
 
-  Command will result in error on wrong syntax for this parameter.
-  """
+      Command will result in error on wrong syntax for this parameter.
+      """)
 
-  run_as_privileged = parser.add_argument(
+  parser.add_argument(
       '--run-as-privileged',
       action='store_true',
-      help=('Whether container should be run in privileged mode.'))
-  run_as_privileged.detailed_help = """\
+      help="""\
   Privileged mode is useful for containers that want to use linux capabilities
   like manipulating the network stack and accessing devices.
   With this argument specified Docker will enable to access to all devices on
   the host as well as set some configuration in AppArmor or SELinux
   to allow the container nearly all the same access to the host as processes
   running outside containers on the host.
-  """
+  """)
 
-  port_mappings = parser.add_argument(
+  parser.add_argument(
       '--port-mappings',
       type=arg_parsers.ArgList(),
       metavar='PORT:TARGET_PORT:PROTOCOL',
-      help=('Port mapping for container.'))
-  port_mappings.detailed_help = """\
+      help="""\
   Configure bindings of container ports to the host ports.
   Value of this parameter should be comma-separated list of
   port1:port2:protocol triads representing host port, container port and
@@ -1182,7 +1145,7 @@ def AddDockerArgs(parser):
 
   will expose container port 8888 on port 80 of VM. This binding will serve TCP
   traffic.
-  """.format(', '.join(containers_utils.ALLOWED_PROTOCOLS))
+  """.format(', '.join(containers_utils.ALLOWED_PROTOCOLS)))
 
 
 def ValidateDockerArgs(args):

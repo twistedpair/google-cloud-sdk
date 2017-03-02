@@ -14,14 +14,23 @@ package = 'deploymentmanager'
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. It consists of which
   permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.
+  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
+  AuditConfigs for both `allServices` and a specific service, the union of the
+  two AuditConfigs is used for that service: the log_types specified in each
+  AuditConfig are enabled, and the exempted_members in each AuditConfig are
+  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
+  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
+  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
+  }, { "log_type": "ADMIN_READ", } ] }, { "service":
+  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
+  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
+  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
+  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
+  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members. This field is deprecated in favor of
-      per-permission-type exemptions.
+    exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -1106,42 +1115,6 @@ class DeploymentmanagerTypeProvidersUpdateRequest(_messages.Message):
   typeProviderResource = _messages.MessageField('TypeProvider', 3)
 
 
-class DeploymentmanagerTypesDeleteRequest(_messages.Message):
-  """A DeploymentmanagerTypesDeleteRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-
-
-class DeploymentmanagerTypesGetRequest(_messages.Message):
-  """A DeploymentmanagerTypesGetRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-
-
-class DeploymentmanagerTypesInsertRequest(_messages.Message):
-  """A DeploymentmanagerTypesInsertRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.MessageField('Type', 2)
-
-
 class DeploymentmanagerTypesListRequest(_messages.Message):
   """A DeploymentmanagerTypesListRequest object.
 
@@ -1190,34 +1163,6 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class DeploymentmanagerTypesPatchRequest(_messages.Message):
-  """A DeploymentmanagerTypesPatchRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-    typeResource: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-  typeResource = _messages.MessageField('Type', 3)
-
-
-class DeploymentmanagerTypesUpdateRequest(_messages.Message):
-  """A DeploymentmanagerTypesUpdateRequest object.
-
-  Fields:
-    project: The project ID for this request.
-    type: The name of the type for this request.
-    typeResource: A Type resource to be passed as the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  type = _messages.StringField(2, required=True)
-  typeResource = _messages.MessageField('Type', 3)
 
 
 class DeploymentsCancelPreviewRequest(_messages.Message):
@@ -1360,17 +1305,6 @@ class ManifestsListResponse(_messages.Message):
 
   manifests = _messages.MessageField('Manifest', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class OldCompositeType(_messages.Message):
-  """This proto was from the alpha, and is now DEPRECATED. Contents of a
-  composite type.
-
-  Fields:
-    files: Files for the template type.
-  """
-
-  files = _messages.MessageField('TemplateContents', 1)
 
 
 class Operation(_messages.Message):
@@ -1935,8 +1869,6 @@ class Type(_messages.Message):
 
   Fields:
     base: Base Type (configurable service) that backs this Type.
-    composite: If this is set, then the type is a composite type instead of a
-      base type. Only one of the base and composite fields should be set.
     description: An optional textual description of the resource; provided by
       the client when the resource is created.
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1956,14 +1888,13 @@ class Type(_messages.Message):
   """
 
   base = _messages.MessageField('BaseType', 1)
-  composite = _messages.MessageField('OldCompositeType', 2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(5)
-  labels = _messages.MessageField('TypeLabelEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  operation = _messages.MessageField('Operation', 8)
-  selfLink = _messages.StringField(9)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(4)
+  labels = _messages.MessageField('TypeLabelEntry', 5, repeated=True)
+  name = _messages.StringField(6)
+  operation = _messages.MessageField('Operation', 7)
+  selfLink = _messages.StringField(8)
 
 
 class TypeInfo(_messages.Message):

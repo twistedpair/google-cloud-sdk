@@ -42,10 +42,10 @@ class ShellCliCompleter(Completer):
     tokens = lexer.GetShellTokens(doc.text_before_cursor)
     if not tokens:
       return
-    # TODO(user): rewrite without virtual "gcloud" token
-    gcloud_token = lexer.ShellToken(
-        'gcloud', lex=lexer.ShellTokenType.ARG, start=0, end=0)
-    tokens = ([gcloud_token] + tokens)
+    if tokens[0].value != 'gcloud':
+      gcloud_token = lexer.ShellToken(
+          'gcloud', lex=lexer.ShellTokenType.ARG, start=0, end=0)
+      tokens = ([gcloud_token] + tokens)
     node = self.root
     info = None
     last = ''
@@ -58,6 +58,11 @@ class ShellCliCompleter(Completer):
         yield Completion(completion)
       return
 
+    # If there is a terminator, do not complete.
+    for token in tokens:
+      if token.lex == lexer.ShellTokenType.TERMINATOR:
+        return
+
     # Traverse the cli tree.
     while i < len(tokens):
       token = tokens[i]
@@ -69,28 +74,20 @@ class ShellCliCompleter(Completer):
         path.append(info)
         node = info.get('commands', {})
       else:
-        while (i < len(tokens) and
-               tokens[i].lex != lexer.ShellTokenType.TERMINATOR):
-          i += 1
-        if i >= len(tokens):
-          last = token.value
-          break
-        node = self.root
-        info = None
-        path = []
+        break
       i += 1
 
-    # Bail if no completions.
-    if i < len(tokens) or not last:
-      return
+    last = tokens[-1].value
 
     offset = -len(last)
 
     # Check for flags.
     if last.startswith('-') and info:
-      node = info.get('flags', {})
+      # Collect all flags of current command and parents into node.
+      node = info.get('flags', {}).copy()
       for info in path:
         node.update(info.get('flags', {}))
+
       value = last.find('=')
       if value > 0:
         if doc.text_before_cursor[-1].isspace():

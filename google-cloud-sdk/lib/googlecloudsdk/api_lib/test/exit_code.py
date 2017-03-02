@@ -19,7 +19,7 @@ bad filename, etc. Gcloud command surfaces are free to use exit codes 10..20.
 Gaps in exit_code numbering are left in case future expansion is needed.
 """
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 
 
@@ -29,6 +29,13 @@ INCONCLUSIVE = 15        # The test pass/fail status was not determined.
 UNSUPPORTED_ENV = 18     # The specified test environment is not supported.
 MATRIX_CANCELLED = 19    # The matrix execution was cancelled by the user.
 INFRASTRUCTURE_ERR = 20  # An infrastructure error occurred.
+
+
+class TestOutcomeError(core_exceptions.Error):
+  """The Tool Results backend did not return a valid test outcome."""
+
+  def __init__(self, msg):
+    super(TestOutcomeError, self).__init__(msg, exit_code=INFRASTRUCTURE_ERR)
 
 
 def ExitCodeFromRollupOutcome(outcome, summary_enum):
@@ -42,7 +49,7 @@ def ExitCodeFromRollupOutcome(outcome, summary_enum):
     The exit_code which corresponds to the test execution's rolled-up outcome.
 
   Raises:
-    ToolException: If the Tool Results service returns an invalid outcome value.
+    TestOutcomeError: If Tool Results service returns an invalid outcome value.
   """
   if not outcome or not outcome.summary:
     log.warning('Tool Results service did not provide a roll-up test outcome.')
@@ -55,5 +62,5 @@ def ExitCodeFromRollupOutcome(outcome, summary_enum):
     return UNSUPPORTED_ENV
   if outcome.summary == summary_enum.inconclusive:
     return INCONCLUSIVE
-  msg = "Unknown test outcome summary value '{0}'".format(outcome.summary)
-  raise exceptions.ToolException(msg, INFRASTRUCTURE_ERR)
+  raise TestOutcomeError(
+      "Unknown test outcome summary value '{0}'".format(outcome.summary))

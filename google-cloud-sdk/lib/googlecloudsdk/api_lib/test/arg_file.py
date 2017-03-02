@@ -77,7 +77,8 @@
 import re
 
 from googlecloudsdk.api_lib.test import arg_validate
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.test import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 
 import yaml
@@ -104,7 +105,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
   Raises:
     BadFileException: the YAML parser encountered an I/O error or syntax error
       while reading the arg-file.
-    ToolException: an argument name was not a valid gcloud test arg.
+    InvalidTestArgError: an argument name was not a valid gcloud test arg.
     InvalidArgException: an argument has an invalid value or no value.
   """
   if argspec is None:
@@ -114,7 +115,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
   try:
     all_arg_groups = _ReadArgGroupsFromFile(arg_file)
   except IOError as err:
-    raise exceptions.BadFileException(
+    raise calliope_exceptions.BadFileException(
         'Error reading argument file [{f}]: {e}'.format(f=arg_file, e=err))
   _ValidateArgGroupNames(all_arg_groups.keys())
 
@@ -164,7 +165,7 @@ def _ReadArgGroupsFromFile(arg_file):
           raise yaml.scanner.ScannerError(
               '[{0}] is not a valid argument group.'.format(str(d)))
     except yaml.scanner.ScannerError as error:
-      raise exceptions.BadFileException(
+      raise calliope_exceptions.BadFileException(
           'Error parsing YAML file [{0}]: {1}'.format(arg_file, str(error)))
   return all_groups
 
@@ -172,7 +173,7 @@ def _ReadArgGroupsFromFile(arg_file):
 def _ValidateArgGroupNames(group_names):
   for group_name in group_names:
     if not _ARG_GROUP_PATTERN.match(group_name):
-      raise exceptions.BadFileException(
+      raise calliope_exceptions.BadFileException(
           'Invalid argument group name [{0}]. Names may only use a-zA-Z0-9._-'
           .format(group_name))
 
@@ -194,7 +195,7 @@ def _MergeArgGroupIntoArgs(
     BadFileException: an undefined arg-group name was encountered.
     InvalidArgException: a valid argument name has an invalid value, or
       use of include: led to cyclic references.
-    ToolException: an undefined argument name was encountered.
+    InvalidTestArgError: an undefined argument name was encountered.
   """
   if already_included_set is None:
     already_included_set = set()
@@ -203,7 +204,7 @@ def _MergeArgGroupIntoArgs(
         _INCLUDE,
         'Detected cyclic reference to arg group [{g}]'.format(g=group_name))
   if group_name not in all_arg_groups:
-    raise exceptions.BadFileException(
+    raise calliope_exceptions.BadFileException(
         'Could not find argument group [{g}] in argument file.'
         .format(g=group_name))
 
@@ -219,9 +220,7 @@ def _MergeArgGroupIntoArgs(
       continue
 
     if arg not in all_test_args_set:
-      raise exceptions.ToolException(
-          '[{0}] is not a valid argument name for: gcloud test run.'
-          .format(arg_name))
+      raise exceptions.InvalidTestArgError(arg_name)
     if arg in args_from_file:
       log.info(
           'Skipping include: of arg [{0}] because it already had value [{1}].'

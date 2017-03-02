@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.app import metric_names
+from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
@@ -86,21 +87,22 @@ class DeployOptions(object):
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     upload_strategy: deploy_app_command_util.UploadStrategy, the file upload
        strategy to be used for this deployment.
-    use_runtime_builders: bool, whether to use the new CloudBuild-based
-      runtime builders (alternative is old externalized runtimes).
+    runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
+      use the new CloudBuild-based runtime builders (alternative is old
+      externalized runtimes).
   """
 
   def __init__(self, promote, stop_previous_version, enable_endpoints,
-               upload_strategy, use_runtime_builders):
+               upload_strategy, runtime_builder_strategy):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
     self.upload_strategy = upload_strategy
-    self.use_runtime_builders = use_runtime_builders
+    self.runtime_builder_strategy = runtime_builder_strategy
 
   @classmethod
   def FromProperties(cls, enable_endpoints, upload_strategy,
-                     use_runtime_builders):
+                     runtime_builder_strategy):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
@@ -110,7 +112,7 @@ class DeployOptions(object):
       log.warning(GSUTIL_DEPRECATION_WARNING)
       upload_strategy = deploy_app_command_util.UploadStrategy.GSUTIL
     return cls(promote, stop_previous_version, enable_endpoints,
-               upload_strategy, use_runtime_builders)
+               upload_strategy, runtime_builder_strategy)
 
 
 class ServiceDeployer(object):
@@ -173,13 +175,10 @@ class ServiceDeployer(object):
         service does not require an image.
     """
     if service.RequiresImage():
-      if service.env in [util.Environment.FLEX, util.Environment.MANAGED_VMS]:
-        log.warning('Deployment of App Engine Flexible Environment apps is '
-                    'currently in Beta')
       if not image:
         image = deploy_command_util.BuildAndPushDockerImage(
             new_version.project, service, source_dir, new_version.id,
-            code_bucket_ref, self.deploy_options.use_runtime_builders)
+            code_bucket_ref, self.deploy_options.runtime_builder_strategy)
       elif service.parsed.skip_files.regex:
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
@@ -285,15 +284,13 @@ def ArgsDeploy(parser):
       help=("The Google Cloud Storage bucket used to stage files associated "
             "with the deployment. If this argument is not specified, the "
             "application's default code bucket is used."))
-  deployables = parser.add_argument(
+  parser.add_argument(
       'deployables', nargs='*',
-      help='The yaml files for the services or configurations you want to '
-      'deploy.')
-  deployables.detailed_help = (
-      'The yaml files for the services or configurations you want to deploy. '
-      'If not given, defaults to `app.yaml` in the current directory. '
-      'If that is not found, attempts to automatically generate necessary '
-      'configuration files (such as app.yaml) in the current directory.')
+      help="""\
+      The yaml files for the services or configurations you want to deploy.
+      If not given, defaults to `app.yaml` in the current directory.
+      If that is not found, attempts to automatically generate necessary
+      configuration files (such as app.yaml) in the current directory.""")
   parser.add_argument(
       '--stop-previous-version',
       action=actions.StoreBooleanProperty(
@@ -304,16 +301,17 @@ def ArgsDeploy(parser):
       '--image-url',
       help='Deploy with a specific Docker image.  Docker url must be from one '
       'of the valid gcr hostnames.')
-  promote = parser.add_argument(
+  parser.add_argument(
       '--promote',
       action=actions.StoreBooleanProperty(
           properties.VALUES.app.promote_by_default),
-      help='Promote the deployed version to receive all traffic.')
-  promote.detailed_help = (
-      'Promote the deployed version to receive all traffic.\n\n'
-      'True by default. To change the default behavior for your current '
-      'environment, run:\n\n'
-      '    $ gcloud config set app/promote_by_default false')
+      help="""\
+      Promote the deployed version to receive all traffic.
+
+      True by default. To change the default behavior for your current
+      environment, run:
+
+          $ gcloud config set app/promote_by_default false""")
   parser.add_argument(
       '--skip-staging',
       action='store_true',
@@ -327,8 +325,9 @@ def ArgsDeploy(parser):
       help=argparse.SUPPRESS)
 
 
-def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
-              upload_strategy=None, use_runtime_builders=False):
+def RunDeploy(
+    args, enable_endpoints=False, use_beta_stager=False, upload_strategy=None,
+    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
   """Perform a deployment based on the given args.
 
   Args:
@@ -339,8 +338,9 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
         than the default stager registry.
     upload_strategy: deploy_app_command_util.UploadStrategy, the parallelism
       straetgy to use for uploading files, or None to use the default.
-    use_runtime_builders: bool, whether to use the new CloudBuild-based
-      runtime builders (alternative is old externalized runtimes).
+    runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
+      use the new CloudBuild-based runtime builders (alternative is old
+      externalized runtimes).
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -350,7 +350,7 @@ def RunDeploy(args, enable_endpoints=False, use_beta_stager=False,
   project = properties.VALUES.core.project.Get(required=True)
   deploy_options = DeployOptions.FromProperties(
       enable_endpoints, upload_strategy=upload_strategy,
-      use_runtime_builders=use_runtime_builders)
+      runtime_builder_strategy=runtime_builder_strategy)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.

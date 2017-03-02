@@ -19,7 +19,12 @@ import types
 from googlecloudsdk.api_lib.test import arg_file
 from googlecloudsdk.api_lib.test import arg_validate
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
+
+
+ANDROID_INSTRUMENTATION_TEST = 'ANDROID INSTRUMENTATION TEST'
+ANDROID_ROBO_TEST = 'ANDROID ROBO TEST'
 
 
 def AddCommonTestRunArgs(parser):
@@ -39,10 +44,11 @@ def AddCommonTestRunArgs(parser):
   argspec_arg.completer = arg_file.ArgSpecCompleter
 
   parser.add_argument(
-      '--type', choices=['instrumentation', 'robo'],
+      '--type', category=base.COMMONLY_USED_FLAGS,
+      choices=['instrumentation', 'robo'],
       help='The type of test to run.')
   parser.add_argument(
-      '--app',
+      '--app', category=base.COMMONLY_USED_FLAGS,
       help='The path to the application binary file. The path may be in the '
       'local filesystem or in Google Cloud Storage using gs:// notation.')
   parser.add_argument(
@@ -50,21 +56,23 @@ def AddCommonTestRunArgs(parser):
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
       '--results-bucket',
-      help='The name of a Google Cloud Storage bucket where test results will '
-      'be stored (default: "test-lab-<random-UUID>").')
+      help='The name of a Google Cloud Storage bucket where raw test results '
+      'will be stored (default: "test-lab-<random-UUID>"). Note that using a '
+      'non-default bucket will result in billing charges for the storage used.')
   parser.add_argument(
       '--results-history-name',
       help='The history name for your test results (an arbitrary string label; '
       'default: the application\'s label from the APK manifest). All tests '
       'which use the same history name will have their results grouped '
-      'together in the Google Developers Console in a time-ordered test '
-      'history list.')
+      'together in the Firebase console in a time-ordered test history list.')
   parser.add_argument(
-      '--timeout', type=arg_validate.TIMEOUT_PARSER,
+      '--timeout', category=base.COMMONLY_USED_FLAGS,
+      type=arg_validate.TIMEOUT_PARSER,
       help='The max time this test execution can run before it is cancelled '
       '(default: 15m). It does not include any time necessary to prepare and '
-      'clean up the target device. The _TIMEOUT_ units can be h, m, or s. If '
-      'no unit is given, seconds are assumed. Examples:\n'
+      'clean up the target device. The maximum possible testing time is 30m '
+      'on physical devices and 60m on virtual devices. The _TIMEOUT_ units can '
+      'be h, m, or s. If no unit is given, seconds are assumed. Examples:\n'
       '- *--timeout 1h* is 1 hour\n'
       '- *--timeout 5m* is 5 minutes\n'
       '- *--timeout 200s* is 200 seconds\n'
@@ -117,24 +125,25 @@ def AddAndroidTestArgs(parser):
   # The following args are specific to Android instrumentation tests.
 
   parser.add_argument(
-      '--test',
-      help='The path to the test binary file. The given path may be in the '
-      'local filesystem or in Google Cloud Storage using gs:// notation.')
+      '--test', category=base.COMMONLY_USED_FLAGS,
+      help='The path to the binary file containing instrumentation tests. The '
+      'given path may be in the local filesystem or in Google Cloud Storage '
+      'using gs:// notation.')
   parser.add_argument(
-      '--test-package',
-      help='The Java package name of the test (default: extracted from the '
-      'APK manifest).')
+      '--test-package', category=ANDROID_INSTRUMENTATION_TEST,
+      help='The Java package name of the instrumentation test (default: '
+      'extracted from the APK manifest).')
   parser.add_argument(
-      '--test-runner-class',
+      '--test-runner-class', category=ANDROID_INSTRUMENTATION_TEST,
       help='The fully-qualified Java class name of the instrumentation test '
       'runner (default: the last name extracted from the APK manifest).')
   parser.add_argument(
-      '--test-targets',
+      '--test-targets', category=ANDROID_INSTRUMENTATION_TEST,
       type=arg_parsers.ArgList(min_length=1),
       metavar='TEST_TARGET',
-      help='A list of one or more test targets to be run (default: all '
-      'targets). Each target must be fully qualified with the package name or '
-      'class name, in one of these formats:\n'
+      help='A list of one or more instrumentation test targets to be run '
+      '(default: all targets). Each target must be fully qualified with the '
+      'package name or class name, in one of these formats:\n'
       '* "package package_name"\n'
       '* "class package_name.class_name"\n'
       '* "class package_name.class_name#method_name".')
@@ -142,20 +151,22 @@ def AddAndroidTestArgs(parser):
   # The following args are specific to Android Robo tests.
 
   parser.add_argument(
-      '--max-steps', metavar='int', type=arg_validate.NONNEGATIVE_INT_PARSER,
+      '--max-steps', metavar='int', category=ANDROID_ROBO_TEST,
+      type=arg_validate.NONNEGATIVE_INT_PARSER,
       help='The maximum number of steps/actions a robo test can execute '
       '(default: no limit).')
   parser.add_argument(
-      '--max-depth', metavar='int', type=arg_validate.POSITIVE_INT_PARSER,
+      '--max-depth', metavar='int', category=ANDROID_ROBO_TEST,
+      type=arg_validate.POSITIVE_INT_PARSER,
       help='The maximum depth of the traversal stack a robo test can explore. '
       'Needs to be at least 2 to make Robo explore the app beyond the first '
       'activity (default: 50).')
   parser.add_argument(
-      '--app-initial-activity',
+      '--app-initial-activity', category=ANDROID_ROBO_TEST,
       help='The initial activity used to start the app during a robo test.')
   # TODO(user): Add link for example doc once b/30894775 is resolved.
   parser.add_argument(
-      '--robo-directives',
+      '--robo-directives', category=ANDROID_ROBO_TEST,
       type=arg_parsers.ArgDict(),
       help='A comma-separated, key=value, map of robo_directives for use by '
       'Robo test. Each key should be the Android resource name of a target '
@@ -175,6 +186,7 @@ def AddMatrixArgs(parser):
   """
   parser.add_argument(
       '--device-ids', '-d',
+      category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='DEVICE_ID',
       help='The list of DEVICE_IDs to test against (default: one device '
@@ -182,21 +194,24 @@ def AddMatrixArgs(parser):
       'by the *$ {parent_command} devices list* command).')
   parser.add_argument(
       '--os-version-ids', '-v',
+      category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='OS_VERSION_ID',
       help='The list of OS_VERSION_IDs to test against (default: a version ID '
       'determined by the Firebase Test Lab device catalog).')
   parser.add_argument(
       '--locales', '-l',
+      category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='LOCALE',
       help='The list of LOCALEs to test against (default: a single locale '
       'determined by the Firebase Test Lab device catalog).')
   orientation = parser.add_argument(
       '--orientations', '-o',
-      metavar='ORIENTATION',
+      category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1, max_length=2,
                                choices=arg_validate.ORIENTATION_LIST),
+      metavar='ORIENTATION',
       default='portrait',
       help='The device orientation(s) to test against.')
   orientation.completer = arg_parsers.GetMultiCompleter(OrientationsCompleter)

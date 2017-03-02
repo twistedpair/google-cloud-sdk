@@ -226,12 +226,7 @@ def _AddFlagToSummary(command, summary, length_per_snippet, location, terms):
 
     # Add subsections of flag if given.
     if len(location) > 2:
-      if location[2] == lookup.CHOICES:
-        choices = flags.get(location[1], {}).get(lookup.CHOICES, [])
-        if choices:
-          lines.append(line)
-          line = 'Choices: {}.'.format(', '.join(sorted(choices)))
-      elif location[2] == lookup.DEFAULT:
+      if location[2] == lookup.DEFAULT:
         default = flags.get(location[1]).get(lookup.DEFAULT)
         if default:
           lines.append(line)

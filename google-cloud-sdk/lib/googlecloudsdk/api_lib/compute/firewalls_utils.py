@@ -55,13 +55,12 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
   if with_egress_support:
     ruleset_parser = parser.add_mutually_exclusive_group(
         required=not for_update)
-  allow = ruleset_parser.add_argument(
+  ruleset_parser.add_argument(
       '--allow',
       metavar=ALLOWED_METAVAR,
       type=arg_parsers.ArgList(min_length=min_length),
-      help='The list of IP protocols and ports which will be allowed.',
-      required=(not for_update) and (not with_egress_support))
-  allow.detailed_help = """\
+      required=(not for_update) and (not with_egress_support),
+      help="""\
       A list of protocols and ports whose traffic will be allowed.
 
       PROTOCOL is the IP protocol whose traffic will be allowed.
@@ -79,25 +78,16 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
         $ {command} MY-RULE --allow tcp:80,icmp
 
       TCP and UDP rules must include a port or port range.
-      """
-  if for_update:
-    allow.detailed_help += """
+      """ + ("""
       Setting this will override the current values.
-      """
+      """ if for_update else ''))
 
   parser.add_argument(
       '--description',
       help='A textual description for the firewall rule.{0}'.format(
           ' Set to an empty string to clear existing.' if for_update else ''))
 
-  source_ranges = parser.add_argument(
-      '--source-ranges',
-      default=None if for_update else [],
-      metavar='CIDR_RANGE',
-      type=arg_parsers.ArgList(min_length=min_length),
-      help=('A list of IP address blocks that may make inbound connections '
-            'in CIDR format.'))
-  source_ranges.detailed_help = """\
+  source_ranges_help = """\
       A list of IP address blocks that are allowed to make inbound
       connections that match the firewall rule to the instances on
       the network. The IP address blocks must be specified in CIDR
@@ -105,28 +95,26 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       link:http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing[].
       """
   if for_update:
-    source_ranges.detailed_help += """
+    source_ranges_help += """
       Setting this will override the existing source ranges for the firewall.
       The following will clear the existing source ranges:
 
         $ {command} MY-RULE --source-ranges
       """
   else:
-    source_ranges.detailed_help += """
+    source_ranges_help += """
       If neither --source-ranges nor --source-tags is provided, then this
       flag will default to 0.0.0.0/0, allowing all sources. Multiple IP
       address blocks can be specified if they are separated by commas.
       """
-
-  source_tags = parser.add_argument(
-      '--source-tags',
+  parser.add_argument(
+      '--source-ranges',
       default=None if for_update else [],
-      metavar='TAG',
+      metavar='CIDR_RANGE',
       type=arg_parsers.ArgList(min_length=min_length),
-      help=('A list of instance tags indicating the set of instances on the '
-            'network which may make network connections that match the '
-            'firewall rule.'))
-  source_tags.detailed_help = """\
+      help=source_ranges_help)
+
+  source_tags_help = """\
       A list of instance tags indicating the set of instances on the
       network which may make network connections that match the
       firewall rule. If omitted, all instances on the network can
@@ -135,22 +123,20 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       Tags can be assigned to instances during instance creation.
       """
   if for_update:
-    source_tags.detailed_help += """
+    source_tags_help += """
       Setting this will override the existing source tags for the firewall.
       The following will clear the existing source tags:
 
         $ {command} MY-RULE --source-tags
       """
-
-  target_tags = parser.add_argument(
-      '--target-tags',
+  parser.add_argument(
+      '--source-tags',
       default=None if for_update else [],
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=min_length),
-      help=('A list of instance tags indicating the set of instances on the '
-            'network which may accept inbound connections that match the '
-            'firewall rule.'))
-  target_tags.detailed_help = """\
+      help=source_tags_help)
+
+  target_tags_help = """\
       A list of instance tags indicating the set of instances on the
       network which may accept inbound connections that match the
       firewall rule. If omitted, all instances on the network can
@@ -159,12 +145,18 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       Tags can be assigned to instances during instance creation.
       """
   if for_update:
-    target_tags.detailed_help += """
+    target_tags_help += """
       Setting this will override the existing target tags for the firewall.
       The following will clear the existing target tags:
 
         $ {command} MY-RULE --target-tags
       """
+  parser.add_argument(
+      '--target-tags',
+      default=None if for_update else [],
+      metavar='TAG',
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=target_tags_help)
 
   # Add egress deny firewall cli support.
   if with_egress_support:
@@ -185,16 +177,7 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
         traffic. If specified, the flag `--rules` must also be specified.
         """)
 
-  rules = parser.add_argument(
-      '--rules',
-      metavar=ALLOWED_METAVAR,
-      type=arg_parsers.ArgList(min_length=min_length),
-      help="""\
-        The list of IP protocols and ports which will be taken action
-        according to --action parameter.
-        """,
-      required=False)
-  rules.detailed_help = """\
+  rules_help = """\
       A list of protocols and ports to which the firewall rule will apply.
 
       PROTOCOL is the IP protocol whose traffic will be checked.
@@ -214,62 +197,68 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       TCP and UDP rules must include a port or port range.
       """
   if for_update:
-    rules.detailed_help += """
+    rules_help += """
       Setting this will override the current values.
       """
   else:
-    rules.detailed_help += """
+    rules_help += """
       If specified, the flag --action must also be specified.
       """
+  parser.add_argument(
+      '--rules',
+      metavar=ALLOWED_METAVAR,
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=rules_help,
+      required=False)
+
   # Do NOT allow change direction in update case.
   if not for_update:
-    direction = parser.add_argument(
+    parser.add_argument(
         '--direction',
         choices=['INGRESS', 'EGRESS', 'IN', 'OUT'],
         type=lambda x: x.upper(),
-        help='Direction of traffic to which this firewall applies.')
-    direction.detailed_help = """\
-      If direction is NOT specified, then default is to apply on incoming
-      traffic. For incoming traffic, it is NOT supported to specify
-      destination-ranges; For outbound traffic, it is NOT supported to specify
-      source-ranges or source-tags.
-      """
+        help="""\
+        If direction is NOT specified, then default is to apply on incoming
+        traffic. For incoming traffic, it is NOT supported to specify
+        destination-ranges; For outbound traffic, it is NOT supported to specify
+        source-ranges or source-tags.
+        """)
 
-  priority = parser.add_argument(
-      '--priority', type=int, help='Priority for the firewall rule.')
-  priority.detailed_help = """\
+  parser.add_argument(
+      '--priority', type=int,
+      help="""\
       This is an integer between 0 and 65535, both inclusive. When NOT
       specified, the value assumed is 1000. Relative priority determines
-      precedence of conflicting rules: lower priority values imply
-      higher precedence. DENY rules take precedence over ALLOW rules
-      having equal priority.
-      """
+      precedence of conflicting rules: lower priority values imply higher
+      precedence. DENY rules take precedence over ALLOW rules having equal
+      priority.
+      """)
 
-  destination_ranges = parser.add_argument(
-      '--destination-ranges',
-      default=None if for_update else [],
-      metavar='CIDR_RANGE',
-      type=arg_parsers.ArgList(min_length=min_length),
-      help=('A list of destination IP address blocks in CIDR format.'))
-  destination_ranges.detailed_help = """\
+  destination_ranges_help = """\
       The firewall rule will apply to traffic that has destination IP address
       in these IP address block list. The IP address blocks must be specified
       in CIDR format:
       link:http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing[].
       """
   if for_update:
-    destination_ranges.detailed_help += """
+    destination_ranges_help += """
       Setting this will override the existing destination ranges for the
       firewall. The following will clear the existing destination ranges:
 
         $ {command} MY-RULE --destination-ranges
       """
   else:
-    destination_ranges.detailed_help += """
+    destination_ranges_help += """
       If --destination-ranges is NOT provided, then this
       flag will default to 0.0.0.0/0, allowing all destinations. Multiple IP
       address blocks can be specified if they are separated by commas.
       """
+  parser.add_argument(
+      '--destination-ranges',
+      default=None if for_update else [],
+      metavar='CIDR_RANGE',
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=destination_ranges_help)
 
 
 def ParseRules(rules, message_classes, action=ActionType.ALLOW):

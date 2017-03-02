@@ -629,6 +629,60 @@ class DataflowV1b3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      """Get the template metadata associated with a template.
+
+      Args:
+        request: (DataflowProjectsTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateMetadata) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.templates.get',
+        ordered_params=[u'projectId', u'gcsPath'],
+        path_params=[u'gcsPath', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/templates/{gcsPath}',
+        request_field='',
+        request_type_name=u'DataflowProjectsTemplatesGetRequest',
+        response_type_name=u'TemplateMetadata',
+        supports_download=False,
+    )
+
+    def Validate(self, request, global_params=None):
+      """Validates the parameters set in create job request. The response.
+includes details about any problematic parameters, and also descriptions of
+how parameters have been filled in.
+
+      Args:
+        request: (DataflowProjectsTemplatesValidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TemplateValidationResult) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.templates.validate',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/templates/validate',
+        request_field=u'createJobFromTemplateRequest',
+        request_type_name=u'DataflowProjectsTemplatesValidateRequest',
+        response_type_name=u'TemplateValidationResult',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 

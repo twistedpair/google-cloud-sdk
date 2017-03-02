@@ -932,11 +932,11 @@
           "type": "string"
         },
         "mediaUpload": {
-          "description": "Do not use this. For media support, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration.",
+          "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration for Bytestream methods.",
           "$ref": "MediaUpload"
         },
         "mediaDownload": {
-          "description": "Do not use this. For media support, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration.",
+          "description": "Use this only for Scotty Requests. Do not use this for bytestream methods.\nFor media support, add instead [][google.bytestream.RestByteStream] as an\nAPI to your configuration.",
           "$ref": "MediaDownload"
         },
         "additionalBindings": {
@@ -965,23 +965,31 @@
     },
     "MediaUpload": {
       "id": "MediaUpload",
-      "description": "Do not use this. For media support, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration.",
+      "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
       "type": "object",
       "properties": {
         "enabled": {
           "description": "Whether upload is enabled.",
           "type": "boolean"
+        },
+        "uploadService": {
+          "description": "DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the upload service if one is used for upload.",
+          "type": "string"
         }
       }
     },
     "MediaDownload": {
       "id": "MediaDownload",
-      "description": "Do not use this. For media support, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration.",
+      "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
       "type": "object",
       "properties": {
         "enabled": {
           "description": "Whether download is enabled.",
           "type": "boolean"
+        },
+        "downloadService": {
+          "description": "DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the download service if one is used for download.",
+          "type": "string"
         }
       }
     },
@@ -2587,7 +2595,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nIt consists of which permission types are logged, and what identities, if\nany, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.",
+      "description": "Specifies the audit configuration for a service.\nIt consists of which permission types are logged, and what identities, if\nany, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -2595,7 +2603,7 @@
           "type": "string"
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that are exempted from \"data access\" audit\nlogging for the `service` specified above.\nFollows the same format of Binding.members.\nThis field is deprecated in favor of per-permission-type exemptions.",
+
           "type": "array",
           "items": {
             "type": "string"
@@ -3039,7 +3047,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists managed services.\n\nIf called without any authentication, it returns only the public services.\nIf called with authentication, it returns all services that the caller has\n\"servicemanagement.services.get\" permission for.\n\n**BETA:** If the caller specifies the `consumer_id`, it returns only the\nservices enabled on the consumer. The `consumer_id` must have the format\nof \"project:{PROJECT-ID}\".",
+          "description": "Lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has \"servicemanagement.services.get\" permission\nfor.\n\n**BETA:** If the caller specifies the `consumer_id`, it returns only the\nservices enabled on the consumer. The `consumer_id` must have the format\nof \"project:{PROJECT-ID}\".",
           "parameters": {
             "producerProjectId": {
               "description": "Include services produced by the specified project.",
@@ -3228,6 +3236,15 @@
               "description": "The id of the service configuration resource.",
               "location": "query",
               "type": "string"
+            },
+            "view": {
+              "description": "Specifies which parts of the Service Config should be returned in the\nresponse.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "BASIC",
+                "FULL"
+              ]
             }
           },
           "parameterOrder": [
@@ -3554,6 +3571,15 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "view": {
+                  "description": "Specifies which parts of the Service Config should be returned in the\nresponse.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "BASIC",
+                    "FULL"
+                  ]
                 }
               },
               "parameterOrder": [

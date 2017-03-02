@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20170210",
+ "revision": "20170217",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Cloud Test Lab.",
  "ownerDomain": "google.com",
@@ -1533,7 +1533,10 @@
            ],
            "response": {
             "$ref": "PerfMetricsSummary"
-           }
+           },
+           "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+           ]
           },
           "list": {
            "id": "toolresults.projects.histories.executions.steps.list",

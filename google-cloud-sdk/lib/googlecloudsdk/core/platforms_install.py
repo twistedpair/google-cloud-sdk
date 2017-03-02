@@ -193,14 +193,14 @@ class _RcUpdater(object):
           'Start a new shell for the changes to take effect.'))
 
     if not self.completion_update:
-      _TraceAction(console_io.FormatRequiredUserAction(
-          'Source [{rc}]in your profile to enable shell command completion for '
-          'gcloud.'.format(rc=self.completion)))
+      _TraceAction(
+          '==> Source [{rc}]in your profile to enable shell command '
+          'completion for gcloud.'.format(rc=self.completion))
 
     if not self.path_update:
-      _TraceAction(console_io.FormatRequiredUserAction(
-          'Source [{rc}] in your profile to add the Google Cloud SDK command '
-          'line tools to your $PATH.'.format(rc=self.path)))
+      _TraceAction(
+          '==> Source [{rc}] in your profile to add the Google Cloud SDK '
+          'command line tools to your $PATH.'.format(rc=self.path))
 
 
 def _GetPreferredShell(path, default='bash'):

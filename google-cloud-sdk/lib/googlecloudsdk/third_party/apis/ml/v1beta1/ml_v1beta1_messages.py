@@ -576,7 +576,8 @@ class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
       version used during the CreateVersion request for this model version, or
       choose the latest stable version when model version information is not
       available such as when the model is specified by uri.
-    uri: Use this field if you want to specify a GCS path to the model to use.
+    uri: Use this field if you want to specify a Google Cloud Storage path for
+      the model to use.
     versionName: Use this field if you want to specify a version of the model
       to use. The string is formatted the same way as `model_version`, with
       the addition of the version information:  `"projects/<var>[YOUR_PROJECT]
@@ -640,10 +641,11 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
   Fields:
     args: Optional. Command line arguments to pass to the program.
     hyperparameters: Optional. The set of Hyperparameters to tune.
-    jobDir: Optional. A GCS path in which to store training outputs and other
-      data needed for training. This path will be passed to your TensorFlow
-      program as the 'job_dir' command-line arg. The benefit of specifying
-      this field is that Cloud ML will validate the path for use in training.
+    jobDir: Optional. A Google Cloud Storage path in which to store training
+      outputs and other data needed for training. This path is passed to your
+      TensorFlow program as the 'job_dir' command-line argument. The benefit
+      of specifying this field is that Cloud ML validates the path for use in
+      training.
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker.  The following types are supported:
       <dl>   <dt>standard</dt>   <dd>   A basic machine configuration suitable
@@ -659,8 +661,14 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       suppresswarning="true">complex_model_s</code>.   </dd>
       <dt>complex_model_l</dt>   <dd>   A machine with roughly twice the
       number of cores and roughly double the   memory of <code
-      suppresswarning="true">complex_model_m</code>.   </dd> </dl>  You must
-      set this value when `scaleTier` is set to `CUSTOM`.
+      suppresswarning="true">complex_model_m</code>.   </dd>
+      <dt>standard_gpu</dt>   <dd>   A machine equivalent to <code
+      suppresswarning="true">standard</code> that   also includes a   <a
+      href="ml/docs/how-tos/using-gpus">   GPU that you can use in your
+      trainer</a>.   </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine
+      equivalent to   <code suppresswarning="true">coplex_model_m</code> that
+      also includes   four GPUs.   </dd> </dl>  You must set this value when
+      `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies.
     parameterServerCount: Optional. The number of parameter server replicas to
@@ -703,7 +711,8 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
         datasets.
       STANDARD_1: Many workers and a few parameter servers.
       PREMIUM_1: A large number of workers with many parameter servers.
-      BASIC_GPU: A single worker instance with a GPU.
+      BASIC_GPU: A single worker instance [with a GPU](ml/docs/how-tos/using-
+        gpus).
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *

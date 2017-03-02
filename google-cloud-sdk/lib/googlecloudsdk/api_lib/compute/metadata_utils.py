@@ -121,15 +121,7 @@ def RemoveEntries(message_classes, existing_metadata,
 
 def AddMetadataArgs(parser, required=False):
   """Adds --metadata and --metadata-from-file flags."""
-  metadata = parser.add_argument(
-      '--metadata',
-      type=arg_parsers.ArgDict(min_length=1),
-      default={},
-      help=('Metadata to be made available to the guest operating system '
-            'running on the instances'),
-      metavar='KEY=VALUE',
-      action=arg_parsers.StoreOnceAction)
-  metadata.detailed_help = """\
+  metadata_help = """\
       Metadata to be made available to the guest operating system
       running on the instances. Each metadata entry is a key/value
       pair separated by an equals sign. Metadata keys must be unique
@@ -153,23 +145,29 @@ def AddMetadataArgs(parser, required=False):
       location on the web.
       """
   if required:
-    metadata.detailed_help += """\n
+    metadata_help += """\n
       At least one of [--metadata] or [--metadata-from-file] is required.
       """
-
-  metadata_from_file = parser.add_argument(
-      '--metadata-from-file',
+  parser.add_argument(
+      '--metadata',
       type=arg_parsers.ArgDict(min_length=1),
       default={},
-      help=('Same as ``--metadata'' except that the value for the entry '
-            'will be read from a local file.'),
-      metavar='KEY=LOCAL_FILE_PATH')
-  metadata_from_file.detailed_help = """\
+      help=metadata_help,
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction)
+
+  metadata_from_file_help = """\
       Same as ``--metadata'' except that the value for the entry will
       be read from a local file. This is useful for values that are
       too large such as ``startup-script'' contents.
       """
   if required:
-    metadata_from_file.detailed_help += """\n
+    metadata_from_file_help += """\n
       At least one of [--metadata] or [--metadata-from-file] is required.
       """
+  parser.add_argument(
+      '--metadata-from-file',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      help=metadata_from_file_help,
+      metavar='KEY=LOCAL_FILE_PATH')

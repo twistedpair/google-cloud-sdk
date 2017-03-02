@@ -43,6 +43,10 @@ class InvalidImageNameError(UtilError):
   """Raised when the user supplies an invalid image name."""
 
 
+class UserRecoverableV2Error(UtilError):
+  """Raised when a user-recoverable V2 API error is encountered."""
+
+
 def IsFullySpecified(image_name):
   return ':' in image_name or '@' in image_name
 
@@ -349,3 +353,10 @@ def GetDockerDigestFromPrefix(digest):
           '{0} is not a unique digest prefix. Options are {1}.]'
           .format(prefix, ', '.join(map(str, matches))))
     return digest
+
+
+def GcloudifyRecoverableV2Errors(err, err_str_for_status):
+  err_str = err_str_for_status.get(err.http_status_code, None)
+  if err_str:
+    return UserRecoverableV2Error(err_str)
+  return err

@@ -16,15 +16,27 @@ package = 'runtimeconfig'
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. It consists of which
   permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.
+  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
+  AuditConfigs for both `allServices` and a specific service, the union of the
+  two AuditConfigs is used for that service: the log_types specified in each
+  AuditConfig are enabled, and the exempted_members in each AuditConfig are
+  exempted. Example Policy with multiple AuditConfigs: {   "audit_configs": [
+  {       "service": "allServices"       "audit_log_configs": [         {
+  "log_type": "DATA_READ",           "exempted_members": [
+  "user:foo@gmail.com"           ]         },         {           "log_type":
+  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
+  }       ]     },     {       "service": "fooservice@googleapis.com"
+  "audit_log_configs": [         {           "log_type": "DATA_READ",
+  },         {           "log_type": "DATA_WRITE",
+  "exempted_members": [             "user:bar@gmail.com"           ]         }
+  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
       Next ID: 4
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members. This field is deprecated in favor of
-      per-permission-type exemptions.
+    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -750,12 +762,16 @@ class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
     parent: The path to the RuntimeConfig resource for which you want to list
       variables. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
+    returnValues: The flag indicates whether the user wants to return values
+      of variables. If true, then only those variables that user has IAM
+      GetVariable permission will be returned along with their values.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  returnValues = _messages.BooleanField(5)
 
 
 class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.Message):

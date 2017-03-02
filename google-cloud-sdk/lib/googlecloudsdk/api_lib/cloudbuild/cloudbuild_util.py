@@ -29,3 +29,16 @@ def GetClientClass():
 
 def GetClientInstance(use_http=True):
   return apis.GetClientInstance(_API_NAME, _API_VERSION, no_http=(not use_http))
+
+
+def EncodeSubstitutions(substitutions, messages):
+  if not substitutions:
+    return None
+  substition_properties = []
+  # TODO(b/35470611): Use map encoder function instead when implemented
+  for key, value in sorted(substitutions.iteritems()):  # Sort for tests
+    substition_properties.append(
+        messages.Build.SubstitutionsValue.AdditionalProperty(key=key,
+                                                             value=value))
+  return messages.Build.SubstitutionsValue(
+      additionalProperties=substition_properties)

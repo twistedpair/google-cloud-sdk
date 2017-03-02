@@ -2,6 +2,69 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 146.0.0 (2017-03-02)
+
+### Google Cloud ML
+
+*   `gcloud ml` has been promoted to GA and renamed `gcloud ml-engine`
+*   Add `--max-worker-count` to `gcloud ml-engine jobs submit prediction` to
+    specify maximum number of workers to use.
+*   Add `--model-dir` in `gcloud ml-engine jobs submit prediction` to use model
+    files saved in Google Cloud Storage.
+
+### Google Cloud Source Repositories
+
+*   `gcloud source repos set-iam-policy` and `gcloud source repos
+    get-iam-policy` commands now available on alpha release track.
+
+### Google Cloud Datalab
+
+*   Add a `--verbosity` flag to `gcloud datalab` command
+*   Change `gcloud datalab` to use the `latest` Docker image by default, rather
+    than the `local` image.
+*   Fix bug where `gcloud datalab connect` would seemingly hang until `ENTER`
+    was pressed.
+
+### Google Cloud Bigtable
+
+*   Add support for development instances that can be upgraded to production
+    instances later.
+
+### Google Compute Engine/Networking
+
+*   `gcloud compute xpn` commands now available in the beta release track. These
+    commands configure cross-project networking.
+*   `gcloud compute disks snapshot` --guest-flush flag now generally available
+    for creating application-consistent snapshots. Currently only supported on
+    Windows instances using the Volume Shadow Copy Service (VSS)
+*   Add `gcloud compute networks subnets list-usable` to alpha release track for
+    listing subnetworks that the user has compute.subnetworks.use permission on.
+*   Add support for multiple network interface cards in `gcloud compute
+    instances create` and `gcloud compute instance-templates create` command on
+    the beta release track.
+
+### Google Container Engine
+
+*   Updated Google Container Engine's `kubectl` from version 1.5.2 to 1.5.3.
+
+### Google Cloud Container Builder
+
+*   `gcloud container builds submit` now takes a `--substitutions` flag for
+    user-defined templating; see
+    <https://cloud.google.com/container-builder/docs/api/build-requests#substitutions>
+    for more details.
+
+### Google Cloud SQL
+
+*   `gcloud sql instances create` now shows a clear error message if user tries
+    to exceed instance limit.
+
+### Firebase Test Lab
+
+*   `gcloud test android run` now directs the user to the test results page
+    within the Firebase console instead of the deprecated Test Lab section of
+    the Google Developer's Console.
+
 ## 145.0.0 (2017-02-22)
 
 ### Breaking Changes
@@ -443,6 +506,7 @@ if a file upload is necessary.
 * Update Google Container Engine's kubectl from version 1.4.6 to 1.5.1.
 
 ### Google Cloud Bigtable
+
 * The `cbt` command line tool component is now available. See:
   https://cloud.google.com/bigtable/docs/go/cbt-reference
 

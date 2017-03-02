@@ -36,6 +36,7 @@ class ComputeV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.addresses = self.AddressesService(self)
     self.autoscalers = self.AutoscalersService(self)
+    self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
@@ -406,6 +407,172 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path=u'projects/{project}/zones/{zone}/autoscalers',
         request_field=u'autoscalerResource',
         request_type_name=u'ComputeAutoscalersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class BackendBucketsService(base_api.BaseApiService):
+    """Service class for the backendBuckets resource."""
+
+    _NAME = u'backendBuckets'
+
+    def __init__(self, client):
+      super(ComputeV1.BackendBucketsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified BackendBucket resource.
+
+      Args:
+        request: (ComputeBackendBucketsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.backendBuckets.delete',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field='',
+        request_type_name=u'ComputeBackendBucketsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified BackendBucket resource. Get a list of available backend buckets by making a list() request.
+
+      Args:
+        request: (ComputeBackendBucketsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendBucket) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.backendBuckets.get',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field='',
+        request_type_name=u'ComputeBackendBucketsGetRequest',
+        response_type_name=u'BackendBucket',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a BackendBucket resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeBackendBucketsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendBuckets.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/backendBuckets',
+        request_field=u'backendBucket',
+        request_type_name=u'ComputeBackendBucketsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of BackendBucket resources available to the specified project.
+
+      Args:
+        request: (ComputeBackendBucketsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendBucketList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.backendBuckets.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/backendBuckets',
+        request_field='',
+        request_type_name=u'ComputeBackendBucketsListRequest',
+        response_type_name=u'BackendBucketList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified BackendBucket resource with the data included in the request. This method supports patch semantics.
+
+      Args:
+        request: (ComputeBackendBucketsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.backendBuckets.patch',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field=u'backendBucketResource',
+        request_type_name=u'ComputeBackendBucketsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the specified BackendBucket resource with the data included in the request.
+
+      Args:
+        request: (ComputeBackendBucketsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'compute.backendBuckets.update',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
+        request_field=u'backendBucketResource',
+        request_type_name=u'ComputeBackendBucketsUpdateRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

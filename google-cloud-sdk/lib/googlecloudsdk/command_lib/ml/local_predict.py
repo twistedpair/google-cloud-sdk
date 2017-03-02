@@ -102,7 +102,7 @@ def _import_prediction_lib():
     # PYTHONPATH.
     return imp.load_source(
         'predict_lib_beta',
-        os.path.join(os.path.dirname(__file__), 'predict_lib_beta.py'))
+        os.path.join(os.path.dirname(__file__), 'prediction_lib_beta.py'))
   except ImportError:
     # This shouldn't happen; we should always have predict_lib.py available.
     # But if it does happen, an installed Cloud ML SDK will always work.

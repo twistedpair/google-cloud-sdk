@@ -20,9 +20,9 @@ import time
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.test import exit_code
+from googlecloudsdk.api_lib.test import exceptions
 from googlecloudsdk.api_lib.test import util
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -152,9 +152,8 @@ class MatrixMonitor(object):
     for test in matrix.testExecutions:
       if test.id == test_id:
         return test
-    raise exceptions.ToolException(   # We should never get here.
-        'Error: test [{0}] not found in matrix [{1}].'.format(
-            test_id, self.matrix_id))
+    # We should never get here.
+    raise exceptions.TestExecutionNotFoundError(test_id, self.matrix_id)
 
   def MonitorTestExecutionProgress(self, test_id):
     """Monitor and report the progress of a single running test.
@@ -166,7 +165,8 @@ class MatrixMonitor(object):
       test_id: str, the unique id of the single supported test in the matrix.
 
     Raises:
-      ToolException if the Test service reports a backend error.
+      TestLabInfrastructureError if the Test service reports a backend error.
+
     """
     states = self._messages.TestExecution.StateValueValuesEnum
     last_state = ''
@@ -189,16 +189,14 @@ class MatrixMonitor(object):
       last_progress_len = len(progress)
 
       if status.state == states.ERROR:
-        raise exceptions.ToolException(
-            'Firebase Test Lab infrastructure failure: {e}'.format(e=error),
-            exit_code=exit_code.INFRASTRUCTURE_ERR)
+        raise exceptions.TestLabInfrastructureError(error)
 
       if status.state == states.UNSUPPORTED_ENVIRONMENT:
-        msg = ('Device dimensions are not compatible: {d}. '
-               'Please use "gcloud beta test android devices list" to '
-               'determine which device dimensions are compatible.'
-               .format(d=_FormatInvalidDimension(status.environment)))
-        raise exceptions.ToolException(msg, exit_code=exit_code.UNSUPPORTED_ENV)
+        raise exceptions.AllDimensionsIncompatibleError(
+            'Device dimensions are not compatible: {d}. '
+            'Please use "gcloud beta test android models list" to '
+            'determine which device dimensions are compatible.'
+            .format(d=_FormatInvalidDimension(status.environment)))
 
       # Inform user of test progress, typically PENDING -> RUNNING -> FINISHED
       if status.state != last_state:
@@ -235,9 +233,11 @@ class MatrixMonitor(object):
         testMatrixId=self.matrix_id)
     try:
       return self._client.projects_testMatrices.Get(request)
-    except apitools_exceptions.HttpError as error:
-      msg = 'Http error while monitoring test run: ' + util.GetError(error)
-      raise exceptions.HttpException(msg)
+    except apitools_exceptions.HttpError as e:
+      exc = calliope_exceptions.HttpException(e)
+      exc.error_format = (
+          'Http error {status_code} while monitoring test run: {message}')
+      raise exc
 
   def MonitorTestMatrixProgress(self):
     """Monitor and report the progress of multiple running tests in a matrix."""
@@ -296,9 +296,10 @@ class MatrixMonitor(object):
         testMatrixId=self.matrix_id)
     try:
       self._client.projects_testMatrices.Cancel(request)
-    except apitools_exceptions.HttpError as error:
-      msg = 'Http error from CancelTestMatrix: ' + util.GetError(error)
-      raise exceptions.HttpException(msg)
+    except apitools_exceptions.HttpError as e:
+      exc = calliope_exceptions.HttpException(e)
+      exc.error_format = 'CancelTestMatrix: {message}'
+      raise exc
 
 
 def _FormatInvalidDimension(environment):

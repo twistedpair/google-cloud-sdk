@@ -15,7 +15,6 @@
 """Base command classes for shared logic between gcloud dataproc commands."""
 
 import abc
-import argparse
 import os
 import urlparse
 
@@ -188,7 +187,8 @@ class JobSubmitterBeta(JobSubmitter):
     parser.add_argument(
         '--max-failures-per-hour',
         type=int,
-        help=argparse.SUPPRESS)
+        help=('Specifies maximum number of times a job can be restarted in '
+              'event of failure. Expressed as a per-hour rate.'))
 
     JobSubmitter.Args(parser)
 

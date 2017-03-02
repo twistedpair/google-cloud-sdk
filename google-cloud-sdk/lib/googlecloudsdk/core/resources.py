@@ -376,7 +376,7 @@ class Resource(object):
 
 
 def _CopyNestedDictSpine(maybe_dictionary):
-  if type(maybe_dictionary) is types.DictType:
+  if isinstance(maybe_dictionary, types.DictType):
     result = {}
     for key, val in maybe_dictionary.iteritems():
       result[key] = _CopyNestedDictSpine(val)
@@ -646,7 +646,7 @@ class Registry(object):
               parser.collection_info.name)
 
     def _UpdateParser(dict_or_parser):
-      if type(dict_or_parser) is types.DictType:
+      if isinstance(dict_or_parser, types.DictType):
         for _, val in dict_or_parser.iteritems():
           _UpdateParser(val)
       else:

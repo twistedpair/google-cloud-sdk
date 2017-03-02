@@ -682,8 +682,8 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
-      the same identity used before the addition of writer identities to this
+      returned as writer_identity is the same group or service account used by
+      Stackdriver Logging before the addition of writer identities to this
       API. The sink's destination must be in the same project as the sink
       itself.If this field is set to true, or if the sink is owned by a non-
       project resource such as an organization, then the value of
@@ -765,9 +765,9 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       writer_identity in the updated sink depends on both the old and new
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
-      writer_identity. If the old value was false and the new value is true,
+      writer_identity. If the old value is false and the new value is true,
       then writer_identity is changed to a unique service account. It is an
-      error if the old value was true and the new value is false.
+      error if the old value is true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -825,8 +825,8 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
-      the same identity used before the addition of writer identities to this
+      returned as writer_identity is the same group or service account used by
+      Stackdriver Logging before the addition of writer identities to this
       API. The sink's destination must be in the same project as the sink
       itself.If this field is set to true, or if the sink is owned by a non-
       project resource such as an organization, then the value of
@@ -908,9 +908,9 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       writer_identity in the updated sink depends on both the old and new
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
-      writer_identity. If the old value was false and the new value is true,
+      writer_identity. If the old value is false and the new value is true,
       then writer_identity is changed to a unique service account. It is an
-      error if the old value was true and the new value is false.
+      error if the old value is true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -985,8 +985,8 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
-      the same identity used before the addition of writer identities to this
+      returned as writer_identity is the same group or service account used by
+      Stackdriver Logging before the addition of writer identities to this
       API. The sink's destination must be in the same project as the sink
       itself.If this field is set to true, or if the sink is owned by a non-
       project resource such as an organization, then the value of
@@ -1068,9 +1068,9 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       writer_identity in the updated sink depends on both the old and new
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
-      writer_identity. If the old value was false and the new value is true,
+      writer_identity. If the old value is false and the new value is true,
       then writer_identity is changed to a unique service account. It is an
-      error if the old value was true and the new value is false.
+      error if the old value is true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1199,8 +1199,8 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
-      returned as writer_identity is cloud-logs@system.gserviceaccount.com,
-      the same identity used before the addition of writer identities to this
+      returned as writer_identity is the same group or service account used by
+      Stackdriver Logging before the addition of writer identities to this
       API. The sink's destination must be in the same project as the sink
       itself.If this field is set to true, or if the sink is owned by a non-
       project resource such as an organization, then the value of
@@ -1282,9 +1282,9 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       writer_identity in the updated sink depends on both the old and new
       values of this field: If the old and new values of this field are both
       false or both true, then there is no change to the sink's
-      writer_identity. If the old value was false and the new value is true,
+      writer_identity. If the old value is false and the new value is true,
       then writer_identity is changed to a unique service account. It is an
-      error if the old value was true and the new value is false.
+      error if the old value is true and the new value is false.
   """
 
   logSink = _messages.MessageField('LogSink', 1)

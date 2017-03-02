@@ -17,6 +17,7 @@
 A detailed description of auth.
 """
 
+import abc
 import datetime
 import json
 import os
@@ -146,51 +147,94 @@ class RevokeError(Error):
   """Exception for when there was a problem revoking."""
 
 
-def _StorageForAccount(account):
-  """Get the oauth2client.multistore_file storage.
+class CredentialStore(object):
+  """Abstract definition of credential store."""
+  __metaclass__ = abc.ABCMeta
 
-  Args:
-    account: str, The account tied to the storage being fetched.
+  @abc.abstractmethod
+  def GetAccounts(self):
+    """Get all accounts that have credentials stored for the CloudSDK.
 
-  Returns:
-    oauth2client.client.Storage, A credentials store.
-  """
-  storage_path = config.Paths().credentials_path
-  parent_dir, unused_name = os.path.split(storage_path)
-  files.MakeDir(parent_dir)
+    Returns:
+      {str}, Set of accounts.
+    """
+    return NotImplemented
 
-  # We only care about account value of the key, yet store 'type' for backwards
-  # compatibility. There should be no more than one key in this list.
-  keys = [k for k in
-          multistore_file.get_all_credential_keys(filename=storage_path)
-          if k['account'] == account]
-  if not keys:  # New key.
+  @abc.abstractmethod
+  def Load(self, account_id):
+    return NotImplemented
+
+  @abc.abstractmethod
+  def Store(self, account_id, credentials):
+    return NotImplemented
+
+  @abc.abstractmethod
+  def Remove(self, account_id):
+    return NotImplemented
+
+
+class Oauth2ClientCredentialStore(CredentialStore):
+  """Implementation of credential sotore over oauth2client.multistore_file."""
+
+  def __init__(self, store_file=None):
+    self._store_file = store_file or config.Paths().credentials_path
+
+  def GetAccounts(self):
+    """Overrides."""
+    all_keys = multistore_file.get_all_credential_keys(
+        filename=self._store_file)
+
+    return {self._StorageKey2AccountId(key) for key in all_keys}
+
+  def Load(self, account_id):
+    credential_store = self._GetStorageByAccountId(account_id)
+    return credential_store.get()
+
+  def Store(self, account_id, credentials):
+    credential_store = self._GetStorageByAccountId(account_id)
+    credential_store.put(credentials)
+    credentials.set_store(credential_store)
+
+  def Remove(self, account_id):
+    credential_store = self._GetStorageByAccountId(account_id)
+    credential_store.delete()
+
+  def _GetStorageByAccountId(self, account_id):
+    storage_key = self._AcctountId2StorageKey(account_id)
     return multistore_file.get_credential_storage_custom_key(
-        filename=storage_path,
-        key_dict={'type': 'google-cloud-sdk', 'account': account})
+        filename=self._store_file, key_dict=storage_key)
 
-  # We do not expect any other type keys in the credential store. Just in case
-  # somehow they occur:
-  #  1. prefer key with no type
-  #  2. use google-cloud-sdk type
-  #  3. use any other
-  # Also log all cases where type was present but was not google-cloud-sdk.
-  right_key = keys[0]
-  for key in keys:
-    if 'type' in key:
-      if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
-        right_key = key
+  def _AcctountId2StorageKey(self, account_id):
+    """Converts account id into storage key."""
+    all_storage_keys = multistore_file.get_all_credential_keys(
+        filename=self._store_file)
+    matching_keys = [k for k in all_storage_keys if k['account'] == account_id]
+    if not matching_keys:
+      return {'type': 'google-cloud-sdk', 'account': account_id}
+
+    # We do not expect any other type keys in the credential store. Just in case
+    # somehow they occur:
+    #  1. prefer key with no type
+    #  2. use google-cloud-sdk type
+    #  3. use any other
+    # Also log all cases where type was present but was not google-cloud-sdk.
+    right_key = matching_keys[0]
+    for key in matching_keys:
+      if 'type' in key:
+        if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
+          right_key = key
+        else:
+          log.file_only_logger.warn(
+              'Credential store has unknown type [{0}] key for account [{1}]'
+              .format(key['type'], key['account']))
       else:
-        log.file_only_logger.warn(
-            'Credential store has unknown type [{0}] key for account [{1}]'
-            .format(key['type'], key['account']))
-    else:
-      right_key = key
-  if 'type' in right_key:
-    right_key['type'] = 'google-cloud-sdk'
+        right_key = key
+    if 'type' in right_key:
+      right_key['type'] = 'google-cloud-sdk'
+    return right_key
 
-  return multistore_file.get_credential_storage_custom_key(
-      filename=storage_path, key_dict=right_key)
+  def _StorageKey2AccountId(self, storage_key):
+    return storage_key['account']
 
 
 def AvailableAccounts():
@@ -203,20 +247,14 @@ def AvailableAccounts():
     [str], List of the accounts.
 
   """
-  all_keys = multistore_file.get_all_credential_keys(
-      filename=config.Paths().credentials_path)
-
-  accounts = sorted(set([key['account'] for key in all_keys]))
-
-  accounts.extend(c_gce.Metadata().Accounts())
+  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  accounts = store.GetAccounts() | set(c_gce.Metadata().Accounts())
 
   devshell_creds = c_devshell.LoadDevshellCredentials()
   if devshell_creds:
-    accounts.append(devshell_creds.devshell_response.user_email)
+    accounts.add(devshell_creds.devshell_response.user_email)
 
-  accounts.sort()
-
-  return accounts
+  return sorted(accounts)
 
 
 def LoadIfValid(account=None, scopes=None):
@@ -303,10 +341,8 @@ def Load(account=None, scopes=None, prevent_refresh=False):
   if account in c_gce.Metadata().Accounts():
     return AcquireFromGCE(account)
 
-  store = _StorageForAccount(account)
-  if not store:
-    raise NoCredentialsForAccountException(account)
-  cred = store.get()
+  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  cred = store.Load(account)
   if not cred:
     raise NoCredentialsForAccountException(account)
 
@@ -365,9 +401,8 @@ def Store(creds, account=None, scopes=None):
   if not account:
     raise NoActiveAccountException()
 
-  store = _StorageForAccount(account)
-  store.put(creds)
-  creds.set_store(store)
+  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  store.Store(account, creds)
   _LegacyGenerator(account, creds, scopes).WriteTemplate()
 
 
@@ -428,9 +463,8 @@ def Revoke(account=None):
     else:
       raise
 
-  store = _StorageForAccount(account)
-  if store:
-    store.delete()
+  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  store.Remove(account)
 
   _LegacyGenerator(account, creds).Clean()
   files.RmTree(config.Paths().LegacyCredentialsDir(account))

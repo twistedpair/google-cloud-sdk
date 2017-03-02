@@ -529,7 +529,7 @@ class Policy(_messages.Message):
 
 class Project(_messages.Message):
   """A Project is a high-level Google Cloud Platform entity.  It is a
-  container for ACLs, APIs, AppEngine Apps, VMs, and other Google Cloud
+  container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud
   Platform resources.
 
   Enums:
@@ -654,8 +654,8 @@ class ProjectCreationStatus(_messages.Message):
 class ResourceId(_messages.Message):
   """A container to reference an id for any resource type. A `resource` in
   Google Cloud Platform is a generic term for something you (a developer) may
-  want to interact with through one of our API's. Some examples are an
-  AppEngine app, a Compute Engine instance, a Cloud SQL database, and so on.
+  want to interact with through one of our API's. Some examples are an App
+  Engine app, a Compute Engine instance, a Cloud SQL database, and so on.
 
   Fields:
     id: Required field for the type-specific id. This should correspond to the

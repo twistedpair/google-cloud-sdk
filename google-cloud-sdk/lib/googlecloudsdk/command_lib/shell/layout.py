@@ -18,6 +18,7 @@
   positioning and layout of the prompt, toolbars, autocomplete, etc.
 """
 
+from googlecloudsdk.command_lib.shell import help_window
 from prompt_toolkit import enums
 from prompt_toolkit import filters
 from prompt_toolkit import layout
@@ -46,7 +47,7 @@ def UserTypingFilter(cli):
 def CreatePromptLayout(message='',
                        lexer=None,
                        is_password=False,
-                       reserve_space_for_menu=5,
+                       reserve_space_for_menu=6,
                        get_prompt_tokens=None,
                        get_continuation_tokens=None,
                        get_bottom_toolbar_tokens=None,
@@ -114,10 +115,11 @@ def CreatePromptLayout(message='',
                     controls.FillControl(char=Char('-', Token.HSep)),
                     height=LayoutDimension.exact(1)),
                 layout.Window(
-                    controls.TokenListControl(
-                        get_help_tokens,
+                    help_window.HelpWindowControl(
                         default_char=Char(' ', Token.Toolbar)),
-                    height=LayoutDimension(preferred=10, max=10)),
+                    height=LayoutDimension(
+                        preferred=help_window.HELP_WINDOW_HEIGHT,
+                        max=help_window.HELP_WINDOW_HEIGHT)),
             ]),
             filter=(show_help & UserTypingFilter & ~filters.IsDone() &
                     filters.RendererHeightIsKnown())))

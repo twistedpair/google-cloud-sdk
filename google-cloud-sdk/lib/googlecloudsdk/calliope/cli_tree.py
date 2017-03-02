@@ -17,7 +17,17 @@
 import argparse
 import textwrap
 
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import backend
+from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core.console import console_io
+
+
+def _GetDescription(arg):
+  """Returns the most detailed description from arg."""
+  if arg.help == argparse.SUPPRESS:
+    return ''
+  return usage_text.GetArgDetails(arg)
 
 
 def _NormalizeDescription(description):
@@ -31,6 +41,8 @@ def _NormalizeDescription(description):
   Returns:
     str, The normalized text.
   """
+  if callable(description):
+    description = description()
   if description == argparse.SUPPRESS:
     description = None
   elif description:
@@ -38,87 +50,155 @@ def _NormalizeDescription(description):
   return description or ''
 
 
-class Flag(object):
+def _GetModulePath(typ, default=''):
+  """Returns the module path name for typ if not builtin else default.
+
+  Args:
+    typ: type, The type to get the module path from.
+    default: str, The string to return if the module path is builtin or
+      not in googlecloudsdk.
+
+  Returns:
+    The module path name for typ if not builtin else default.
+  """
+  path = typ.__class__.__module__
+  if path.startswith('googlecloudsdk'):
+    return '.'.join([path.split('.', 1)[1], typ.__class__.__name__])
+  return default
+
+
+class Argument(object):
+  """Positional or flag argument.
+
+  Attributes:
+    completer: str, Resource completer name.
+    default: (self.type), The default flag value or None if no default.
+    description: str, The help text.
+    name: str, The normalized name ('_' => '-').
+    nargs: {0, 1, '?', '*', '+'}
+    required: bool, The argument must be specified.
+    value: str, The argument value documentation name.
+  """
+
+  def __init__(self, arg, name):
+
+    completer = getattr(arg, 'completer', None)
+    self.completer = _GetModulePath(completer, '')
+    self.default = arg.default
+    self.description = _NormalizeDescription(_GetDescription(arg))
+    self.name = name
+    self.nargs = str(arg.nargs or 0)
+    self.required = False
+    if arg.metavar:
+      self.value = arg.metavar
+    else:
+      self.value = name.lstrip('-').replace('-', '_').upper()
+
+
+class Flag(Argument):
   """Flag info.
 
   Attributes:
-    type: str, The flag value type name {'bool', 'int', 'float', 'string'}.
-    name: str, The normalized flag name ('_' => '-').
-    hidden: bool, True if the flag is hidden.
+    attr: dict, Miscellaneous attributes.
     category: str, Category for help doc flag groupings.
-    value: str, The flag value documentation name.
-    countmin: int, The minimum number of flag values.
-    countmax: int, The maximum number of flag values, 0 for unlimited.
-    required: int, 1 if the flag must be specified, 0 otherwise.
+    choices: list|dict, The list of static choices.
     description: str, The help text.
-    choices: list, The list of static choices.
-    default: (self.type), The default flag value or None if no default.
-    group: int, Mutually exclusive flag group id counting from 1, 0 if none.
-    resource: str, Flag value resource identifier.
+    group: str, Mutually exclusive flag group id, unique across all flags.
+    hidden: bool, True if the flag is hidden.
+    type: str, The flag value type name.
   """
 
-  def __init__(self, name, description='', default=None):
-    self.type = 'string'
-    self.name = name
-    self.hidden = description == argparse.SUPPRESS
+  def __init__(self, flag, name):
+
+    super(Flag, self).__init__(flag, name)
+    self.attr = {}
     self.category = ''
-    self.value = ''
-    self.countmin = 0
-    self.countmax = 0
-    self.required = 0
     self.choices = []
-    self.default = default
-    self.description = _NormalizeDescription(description)
     self.group = ''
-    self.resource = ''
+    self.hidden = flag.help == argparse.SUPPRESS
+    # ArgParse does not have an explicit Boolean flag type. By
+    # convention a flag with arg.nargs=0 and action='store_true' or
+    # action='store_false' is a Boolean flag. arg.type gives no hint
+    # (arg.type=bool would have been so easy) and we don't have access
+    # to args.action here. Even then the flag can take on non-Boolean
+    # values. If arg.default is not specified then it will be None, but
+    # it can be set to anything. So we do a conservative 'truthiness'
+    # test here.
+    if flag.nargs == 0:
+      self.type = 'bool'
+      self.default = bool(flag.default)
+    else:
+      if (isinstance(flag.type, (int, long)) or
+          isinstance(flag.default, (int, long))):
+        self.type = 'int'
+      elif isinstance(flag.type, float) or isinstance(flag.default, float):
+        self.type = 'float'
+      elif isinstance(flag.type, arg_parsers.ArgDict):
+        self.type = 'dict'
+      elif isinstance(flag.type, arg_parsers.ArgList):
+        self.type = 'list'
+      else:
+        self.type = _GetModulePath(flag.type, 'string')
+    if flag.choices:
+      choices = sorted(flag.choices)
+      if choices == ['false', 'true']:
+        self.type = 'bool'
+      else:
+        self.choices = flag.choices
+    self.category = flag.category or ''
+    self.required = flag.required
+
+    if getattr(flag, 'inverted_synopsis', False):
+      self.attr['inverted_synopsis'] = True
+    prop, kind, value = getattr(flag, 'store_property', (None, None, None))
+    if prop:
+      # This allows actions.Store*Property() to be reconstituted.
+      attr = {'name': str(prop)}
+      if kind == 'bool':
+        flag.type = 'bool'
+      if value:
+        attr['value'] = value
+      self.attr['property'] = attr
 
 
-class Positional(object):
-  """Positional info.
+class Positional(Argument):
+  """Positional info."""
 
-  Attributes:
-    name: str, The normalized name ('_' => '-').
-    value: str, The positional value documentation name.
-    countmin: int, The minimum number of positional values.
-    countmax: int, The maximum number of positional values.
-    required: int, 1 if the positional must be specified, 0 otherwise.
-    description: str, The help text.
-    resource: str, Positional value resource identifier.
-  """
+  def __init__(self, positional, name):
 
-  def __init__(self, name, description):
-    self.name = name
-    self.value = ''
-    self.countmin = 0
-    self.countmax = 0
-    self.capsule = ''
-    self.description = description
-    self.resource = ''
+    super(Positional, self).__init__(positional, name)
+    try:
+      self.required = bool(int(positional.nargs))
+    except (TypeError, ValueError):
+      self.required = False
 
 
 class Command(object):
   """Command and group info.
 
   Attributes:
-    release: str, The command release name {'internal', 'alpha', 'beta', 'ga',
-      'preview'}.
-    name: str, The normalized name ('_' => '-').
-    hidden: bool, True if the command is hidden.
     capsule: str, The first line of the command docstring.
-    description: str, The second and following lines of the command docstring.
-    flags: {str:str}, Command flag dict, indexed by normalized flag name.
-    positionals: [str], Command positionals list.
-    sections: {str:str}, Optional section help dict, indexed by section name.
+    flags: {str:dict}, Command flag dict, indexed by normalized flag name.
+    groups: {str:{str:...}}, Flag group attributes.
+    hidden: bool, True if the command is hidden.
+    name: str, The normalized name ('_' => '-').
+    positionals: [dict], Command positionals list.
+    release: str, The command release name {'internal', 'alpha', 'beta', 'ga'}.
+    sections: {str:str}, Section help dict, indexed by section name. At minimum
+      contains the DESCRIPTION section.
   """
 
   def __init__(self, command, parent, include_hidden_flags=True):
 
-    self.release = command.ReleaseTrack().id
-    self.path = command.GetPath()
-    self.name = command.name.replace('_', '-')
-    self.hidden = command.IsHidden()
+    self.group = isinstance(command, backend.CommandGroup)
+    self.commands = {}
     self.flags = {}
+    self.groups = {}
+    self.hidden = command.IsHidden()
+    self.name = command.name.replace('_', '-')
+    self.path = command.GetPath()
     self.positionals = []
+    self.release = command.ReleaseTrack().id
     self.sections = {}
     parent_command = parent.name.replace('_', '-') if parent else ''
     self.release, capsule = self.__Release(
@@ -129,7 +209,7 @@ class Command(object):
         parent_command=parent_command)
     self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
-    self.description = console_io.LazyFormat(
+    description = console_io.LazyFormat(
         _NormalizeDescription(description),
         command=self.name,
         index=self.capsule,
@@ -137,17 +217,17 @@ class Command(object):
     sections = getattr(command, 'detailed_help', None)
     if sections:
       for s in sections:
-        if s == 'brief':
-          self.release, self.capsule = self.__Release(
-              command, self.release, sections[s])
-        else:
+        # islower() section names were used to convert markdown in command
+        # docstrings into the static self.section[] entries seen here.
+        if s.isupper():
           self.sections[s] = console_io.LazyFormat(
               _NormalizeDescription(sections[s]),
               command=self.name,
               index=self.capsule,
-              description=self.description,
+              description=description,
               parent_command=parent_command)
-    self.commands = {}
+    if 'DESCRIPTION' not in self.sections:
+      self.sections['DESCRIPTION'] = description
     # _parent is explicitly private so it won't appear in serialized output.
     self._parent = parent
     if parent:
@@ -178,6 +258,7 @@ class Command(object):
         group_count[g] = 0  # Don't check this group again!
         group_id_count += 1
         group_id[g] = '{}.{}'.format(self.name, group_id_count)
+        self.groups[group_id[g]] = command.ai.group_attr[g]
 
     # Collect the flags.
     for arg in sorted(args.flag_args):
@@ -186,77 +267,16 @@ class Command(object):
           name = name.replace('_', '-')
           # Don't include ancestor flags.
           if not self.__Ancestor(name):
-            flag = Flag(
-                name,
-                description=arg.help,
-                default=arg.default)
-            # ArgParse does not have an explicit Boolean flag type. By
-            # convention a flag with arg.nargs=0 and action='store_true' or
-            # action='store_false' is a Boolean flag. arg.type gives no hint
-            # (arg.type=bool would have been so easy) and we don't have access
-            # to args.action here. Even then the flag can take on non-Boolean
-            # values. If arg.default is not specified then it will be None, but
-            # it can be set to anything. So we do a conservative 'truthiness'
-            # test here.
-            if arg.nargs == 0:
-              flag.type = 'bool'
-              flag.default = True if arg.default else False
-            else:
-              if arg.type == int:
-                flag.type = 'int'
-              elif arg.type == float:
-                flag.type = 'float'
-              if arg.nargs == '*':
-                pass
-              elif arg.nargs == '?':
-                flag.countmax = 1
-              elif arg.nargs == '+':
-                flag.countmin = 1
-              elif isinstance(arg.nargs, (int, long)):
-                flag.countmin = arg.nargs
-                flag.countmax = arg.nargs
-              elif arg.required:
-                flag.countmin = 1
-                flag.countmax = 1
-              if arg.metavar:
-                flag.value = arg.metavar
-              else:
-                flag.value = name[2:].upper()
-            if arg.choices:
-              choices = sorted(arg.choices)
-              if choices == ['false', 'true']:
-                flag.type = 'bool'
-              else:
-                flag.choices = choices
-            flag.category = arg.category or ''
-            if arg.required:
-              flag.required = 1
-            flag.resource = getattr(arg, 'completion_resource', '')
-            if name in group_name and group_name[name] in group_id:
-              flag.group = group_id[group_name[name]]
+            flag = Flag(arg, name)
+            if flag.name in group_name and group_name[flag.name] in group_id:
+              flag.group = group_id[group_name[flag.name]]
             if include_hidden_flags or not flag.hidden:
               self.flags[flag.name] = flag
 
     # Collect the positionals.
     for arg in args.positional_args:
       name = arg.dest.replace('_', '-')
-      positional = Positional(name, description=_NormalizeDescription(arg.help))
-      if arg.metavar:
-        positional.value = arg.metavar
-      if arg.nargs != 0:
-        if arg.nargs == '*':
-          pass
-        elif arg.nargs == '?':
-          positional.countmax = 1
-        elif arg.nargs == '+':
-          positional.countmin = 1
-        elif isinstance(arg.nargs, (int, long)):
-          positional.countmin = arg.nargs
-          positional.countmax = arg.nargs
-        elif arg.required:
-          positional.countmin = 1
-          positional.countmax = 1
-      positional.resource = getattr(arg, 'completion_resource', '')
+      positional = Positional(arg, name)
       self.positionals.append(positional)
 
   def __Ancestor(self, flag):

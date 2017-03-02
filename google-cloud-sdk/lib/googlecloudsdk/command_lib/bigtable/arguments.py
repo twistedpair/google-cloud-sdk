@@ -36,11 +36,11 @@ class ArgAdder(object):
     return self
 
   def AddClusterNodes(self, in_instance=False):
-    self.parser.add_argument('--cluster-num-nodes' if in_instance else
-                             '--num-nodes',
-                             help='Number of nodes to serve.',
-                             required=True,
-                             type=int)
+    self.parser.add_argument(
+        '--cluster-num-nodes' if in_instance else '--num-nodes',
+        help='Number of nodes to serve.',
+        required=not in_instance,
+        type=int)
     return self
 
   def AddClusterStorage(self, in_instance=False):
@@ -65,18 +65,41 @@ class ArgAdder(object):
     """Add argument for instance ID to parser."""
     help_text = 'ID of the instance.'
     if positional:
-      self.parser.add_argument('instance',
-                               help=help_text,
-                               nargs='+' if multiple else None)
+      self.parser.add_argument(
+          'instance', help=help_text, nargs='+' if multiple else None)
     else:
-      self.parser.add_argument('--instances' if multiple else '--instance',
-                               help=help_text,
-                               required=required,
-                               nargs='+' if multiple else None)
+      self.parser.add_argument(
+          '--instances' if multiple else '--instance',
+          help=help_text,
+          required=required,
+          nargs='+' if multiple else None)
     return self
 
   def AddInstanceDescription(self, required=False):
-    self.parser.add_argument('--description',
-                             help='Friendly name of the instance.',
-                             required=required)
+    self.parser.add_argument(
+        '--description',
+        help='Friendly name of the instance.',
+        required=required)
+    return self
+
+  def AddInstanceType(self, additional_choices=None, default=None,
+                      help_text=None):
+    """Add default instance type choices to parser."""
+    choices = {
+        'PRODUCTION':
+            'Production instances have a minimum of '
+            'three nodes, provide high availability, and are suitable for '
+            'applications in production.'
+    }
+
+    if additional_choices:
+      choices.update(additional_choices)
+
+    self.parser.add_argument(
+        '--instance-type',
+        default=default,
+        type=str.upper,
+        choices=choices,
+        help=help_text)
+
     return self

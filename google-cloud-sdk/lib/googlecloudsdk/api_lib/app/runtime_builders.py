@@ -72,6 +72,7 @@ runtime_builders_root set up for development yet:
 import contextlib
 import os
 
+import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config as cloudbuild_config
 from googlecloudsdk.api_lib.storage import storage_api
@@ -80,6 +81,9 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+
+
+WHITELISTED_RUNTIMES = ['aspnetcore']
 
 
 class CloudBuildLoadError(exceptions.Error):
@@ -113,6 +117,33 @@ class InvalidRuntimeBuilderPath(CloudBuildLoadError):
         'Please set the app/runtime_builders_root property to a URL with '
         'either the Google Cloud Storage (`gs://`) or local file (`file://`) '
         'protocol.'.format(path))
+
+
+class RuntimeBuilderStrategy(enum.Enum):
+  """Enum indicating when to use runtime builders."""
+  NEVER = 1
+  WHITELIST = 2  # That is, turned on for a whitelisted set of runtimes
+  ALWAYS = 3
+
+  def ShouldUseRuntimeBuilders(self, runtime):
+    """Returns True if runtime should use runtime builders under this strategy.
+
+    Args:
+      runtime: str, the runtime being built.
+
+    Returns:
+      bool, whether to use the runtime builders.
+    Raises:
+      ValueError: if an unrecognized runtime_builder_strategy is given
+    """
+    if self is RuntimeBuilderStrategy.WHITELIST:
+      return runtime in WHITELISTED_RUNTIMES
+    elif self is RuntimeBuilderStrategy.ALWAYS:
+      return True
+    elif self is RuntimeBuilderStrategy.NEVER:
+      return False
+    else:
+      raise ValueError('Invalid runtime builder strategy [{}].'.format(self))
 
 
 def _Join(*args):

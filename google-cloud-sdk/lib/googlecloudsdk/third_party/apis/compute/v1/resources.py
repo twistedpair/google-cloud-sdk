@@ -34,6 +34,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'autoscaler']
   )
+  BACKENDBUCKETS = (
+      'backendBuckets',
+      'projects/{project}/global/backendBuckets/{backendBucket}',
+      {},
+      [u'project', u'backendBucket']
+  )
   BACKENDSERVICES = (
       'backendServices',
       'projects/{project}/global/backendServices/{backendService}',

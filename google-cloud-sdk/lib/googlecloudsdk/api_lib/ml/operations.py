@@ -19,17 +19,17 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
 
-def GetMessagesModule():
-  return apis.GetMessagesModule('ml', 'v1beta1')
+def GetMessagesModule(version='v1beta1'):
+  return apis.GetMessagesModule('ml', version)
 
 
-def GetClientInstance(no_http=False):
-  return apis.GetClientInstance('ml', 'v1beta1', no_http=no_http)
+def GetClientInstance(version='v1beta1', no_http=False):
+  return apis.GetClientInstance('ml', version, no_http=no_http)
 
 
 # TODO(b/30137432): Remove this and use api_lib.app.api.operations directly
 class CloudMlOperationPoller(waiter.CloudOperationPoller):
-  """Poller for Cloud ML operations API.
+  """Poller for Cloud ML Engine operations API.
 
   This is necessary because the core operations library doesn't directly support
   simple_uri.
@@ -49,11 +49,11 @@ class CloudMlOperationPoller(waiter.CloudOperationPoller):
 
 
 class OperationsClient(object):
-  """Client for operations service in the Cloud ML API."""
+  """Client for operations service in the Cloud ML Engine API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule()
+  def __init__(self, version='v1beta1'):
+    self.client = GetClientInstance(version)
+    self.messages = self.client.MESSAGES_MODULE
 
   def List(self, project_ref):
     return list_pager.YieldFromList(

@@ -60,12 +60,6 @@ class Collections(enum.Enum):
       {},
       [u'project', u'typeProvider']
   )
-  TYPES = (
-      'types',
-      'projects/{project}/global/types/{type}',
-      {},
-      [u'project', u'type']
-  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

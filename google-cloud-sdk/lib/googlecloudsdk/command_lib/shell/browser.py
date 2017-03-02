@@ -20,6 +20,7 @@ import subprocess
 import webbrowser
 
 from googlecloudsdk.command_lib.shell import gcloud_parser
+from googlecloudsdk.core import log
 
 
 # TODO(b/35395811): Remove subprocess monkeypatch.
@@ -31,13 +32,17 @@ class FakeSubprocessModule(object):
     return subprocess.Popen(args, **kwargs)
 
 
-def OpenReferencePage(line, pos):
+def OpenReferencePage(cli, line, pos):
   tokens = gcloud_parser.ParseLine(line)
   tokens = [x for x in tokens if x.start < pos]
   url = _GetReferenceURL(tokens)
-  browser = webbrowser.get()
   webbrowser.subprocess = FakeSubprocessModule()
-  browser.open_new_tab(url)
+  try:
+    browser = webbrowser.get()
+    browser.open_new_tab(url)
+  except webbrowser.Error as e:
+    cli.run_in_terminal(
+        lambda: log.error('failed to open browser: %s', e))
 
 
 def _GetReferenceURL(tokens):

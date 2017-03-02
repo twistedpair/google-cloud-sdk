@@ -63,6 +63,13 @@ def UpdateCheck(command_path, **unused_kwargs):
     log.debug('Failed to perform update check.', exc_info=True)
 
 
+def IssueMlWarning(command_path=None):
+  del command_path  # Unused in _IssueMlWarning
+  log.warn(
+      'The `gcloud beta ml` commands have been renamed and will soon be '
+      'removed. Please use `gcloud ml-engine` instead.')
+
+
 def CreateCLI(surfaces):
   """Generates the gcloud CLI from 'surface' folder with extra surfaces.
 
@@ -91,6 +98,12 @@ def CreateCLI(surfaces):
 
   for dot_path, dir_path in surfaces:
     loader.AddModule(dot_path, dir_path, component=None)
+
+  if os.path.exists(os.path.join(pkg_root, 'surface', 'beta')):
+    loader.AddModule('beta.ml',
+                     os.path.join(pkg_root, 'surface', 'ml_engine'))
+    loader.RegisterPreRunHook(IssueMlWarning,
+                              include_commands=r'gcloud\.beta\.ml\..*')
 
   # Check for updates on shutdown but not for any of the updater commands.
   loader.RegisterPostRunHook(UpdateCheck,

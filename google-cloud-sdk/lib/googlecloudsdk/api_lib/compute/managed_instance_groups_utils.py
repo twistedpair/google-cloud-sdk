@@ -76,7 +76,7 @@ def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
                       type=arg_parsers.BoundedFloat(0.0, None),
                       help='Autoscaler will aim to maintain the load balancing '
                       'utilization level (greater than 0.0).')
-  custom_metric_utilization = parser.add_argument(
+  parser.add_argument(
       '--custom-metric-utilization',
       type=arg_parsers.ArgDict(
           spec={
@@ -86,22 +86,20 @@ def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
           },
       ),
       action='append',
-      help=('Autoscaler will maintain the target value of a Google Cloud '
-            'Monitoring metric.'),
+      help="""\
+      Adds a target metric value for the to the Autoscaler.
+
+      *metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
+
+      *utilization-target*::: Value of the metric Autoscaler will aim to
+      maintain (greater than 0.0).
+
+      *utilization-target-type*::: How target is expressed. Valid values: {0}.
+      """.format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
   )
-  custom_metric_utilization.detailed_help = """
-   Adds a target metric value for the to the Autoscaler.
-
-   *metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
-
-   *utilization-target*::: Value of the metric Autoscaler will aim to maintain
-   (greater than 0.0).
-
-   *utilization-target-type*::: How target is expressed. Valid values: {0}.
-  """.format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
 
   if queue_scaling_enabled:
-    cloud_pub_sub_spec = parser.add_argument(
+    parser.add_argument(
         '--queue-scaling-cloud-pub-sub',
         type=arg_parsers.ArgDict(
             spec={
@@ -109,20 +107,20 @@ def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
                 'subscription': str,
             },
         ),
-        help='Scaling based on Cloud Pub/Sub queuing system.',
+        help="""\
+        Specifies queue-based scaling based on a Cloud Pub/Sub queuing system.
+        Both topic and subscription are required.
+
+        *topic*::: Topic specification. Can be just a name or a partial URL
+        (starting with "projects/..."). Topic must belong to the same project as
+        Autoscaler.
+
+        *subscription*::: Subscription specification. Can be just a name or a
+        partial URL (starting with "projects/..."). Subscription must belong to
+        the same project as Autoscaler and must be connected to the specified
+        topic.
+        """
     )
-    cloud_pub_sub_spec.detailed_help = """
-     Specifies queue-based scaling based on a Cloud Pub/Sub queuing system.
-     Both topic and subscription are required.
-
-     *topic*::: Topic specification. Can be just a name or a partial URL
-     (starting with "projects/..."). Topic must belong to the same project as
-     Autoscaler.
-
-     *subscription*::: Subscription specification. Can be just a name or a
-     partial URL (starting with "projects/..."). Subscription must belong to the
-     same project as Autoscaler and must be connected to the specified topic.
-    """
     parser.add_argument('--queue-scaling-acceptable-backlog-per-instance',
                         type=arg_parsers.BoundedFloat(0.0, None),
                         help='Queue-based scaling target: autoscaler will aim '
@@ -559,19 +557,16 @@ def AddAutohealingArgs(parser):
       '--https-health-check',
       help=('Specifies the HTTPS health check object used for autohealing '
             'instances in this group.'))
-  initial_delay = parser.add_argument(
+  parser.add_argument(
       '--initial-delay',
       type=arg_parsers.Duration(),
-      help=('Specifies the length of the period during which the instance '
-            'is known to be initializing and should not be autohealed even '
-            'if unhealthy.'))
-  initial_delay.detailed_help = """\
+      help="""\
       Specifies the length of the period during which the instance is known to
       be initializing and should not be autohealed even if unhealthy.
       Valid units for this flag are ``s'' for seconds, ``m'' for minutes and
       ``h'' for hours. If no unit is specified, seconds is assumed. This value
       cannot be greater than 1 hour.
-      """
+      """)
 
 
 def CreateAutohealingPolicies(resources, messages, args):

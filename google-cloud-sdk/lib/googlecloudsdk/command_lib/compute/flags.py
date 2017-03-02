@@ -115,14 +115,12 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
   flag_name = 'zone'
   if flag_prefix is not None:
     flag_name = flag_prefix + '-' + flag_name
-  zone = parser.add_argument(
+  parser.add_argument(
       '--' + flag_name,
-      help=short_help,
       hidden=hidden,
       completion_resource='compute.zones',
-      action=actions.StoreProperty(properties.VALUES.compute.zone))
-  zone.detailed_help = '{0} {1}'.format(
-      short_help, explanation)
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
+      help='{0} {1}'.format(short_help, explanation))
 
 
 def AddRegionFlag(parser, resource_type, operation_type,
@@ -146,14 +144,12 @@ def AddRegionFlag(parser, resource_type, operation_type,
   flag_name = 'region'
   if flag_prefix is not None:
     flag_name = flag_prefix + '-' + flag_name
-  region = parser.add_argument(
+  parser.add_argument(
       '--' + flag_name,
-      help=short_help,
-      hidden=hidden,
       completion_resource='compute.regions',
-      action=actions.StoreProperty(properties.VALUES.compute.region))
-  region.detailed_help = '{0} {1}'.format(
-      short_help, explanation)
+      action=actions.StoreProperty(properties.VALUES.compute.region),
+      hidden=hidden,
+      help='{0} {1}'.format(short_help, explanation))
 
 
 class UnderSpecifiedResourceError(exceptions.Error):
@@ -560,7 +556,9 @@ class ResourceArgument(object):
         completion_resource=self.completion_resource_id,
     )
 
-    if self._short_help:
+    if self._detailed_help:
+      params['help'] = self._detailed_help
+    elif self._short_help:
       params['help'] = self._short_help
     else:
       params['help'] = 'The name{0} of the {1}{0}.'.format(
@@ -577,10 +575,7 @@ class ResourceArgument(object):
       else:
         params['nargs'] = '*' if self.plural else '?'
 
-    argument = (mutex_group or parser).add_argument(self.name_arg, **params)
-
-    if self._detailed_help:
-      argument.detailed_help = self._detailed_help
+    (mutex_group or parser).add_argument(self.name_arg, **params)
 
     if len(self.scopes) > 1:
       scope = parser.add_mutually_exclusive_group()
@@ -666,10 +661,9 @@ class ResourceArgument(object):
 
 
 def AddRegexArg(parser):
-  regexp = parser.add_argument(
+  parser.add_argument(
       '--regexp', '-r',
-      help='A regular expression to filter the names of the results on.')
-  regexp.detailed_help = """\
+      help="""\
       A regular expression to filter the names of the results on. Any names
       that do not match the entire regular expression will be filtered out.
-      """
+      """)

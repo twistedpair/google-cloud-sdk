@@ -177,6 +177,11 @@ apis:
       discovery_doc: ml_v1beta1.json
       resources:
         projects: "projects/{projectsId}"
+      default: true
+    v1:
+      discovery_doc: ml_v1.json
+      resources:
+        projects: "projects/{projectsId}"
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

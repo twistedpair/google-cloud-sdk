@@ -333,6 +333,12 @@ MAP = {
         ),
     },
     'ml': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.ml.v1',
+            client_classpath='ml_v1_client.MlV1',
+            messages_modulepath='ml_v1_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.ml.v1beta1',
             client_classpath='ml_v1beta1_client.MlV1beta1',

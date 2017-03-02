@@ -37,11 +37,6 @@ from prompt_toolkit import shortcuts
 from prompt_toolkit.key_binding import manager
 from prompt_toolkit.token import Token
 
-try:
-  from prompt_toolkit.terminal import win32_input as terminal_input  # pylint: disable=g-import-not-at-top
-except ImportError:
-  from prompt_toolkit.terminal import vt100_input as terminal_input  # pylint: disable=g-import-not-at-top
-
 
 # TODO(b/35347247): deglobalize ShowHelpWindow
 # This variable is changed at runtime and determines whether or not the help bar
@@ -54,13 +49,13 @@ def CreateKeyBindingRegistry():
   def _HandleCtrlQ(event):
     event.cli.set_return_value(None)
 
-  def _HandleCtrlH(_):
+  def _HandleCtrlT(_):
     global SHOW_HELP_WINDOW
     SHOW_HELP_WINDOW = not SHOW_HELP_WINDOW
 
-  def _HandleCtrlV(event):
+  def _HandleCtrlW(event):
     doc = event.cli.current_buffer.document
-    browser.OpenReferencePage(doc.text, doc.cursor_position)
+    browser.OpenReferencePage(event.cli, doc.text, doc.cursor_position)
 
   m = manager.KeyBindingManager(
       enable_abort_and_exit_bindings=True,
@@ -68,39 +63,11 @@ def CreateKeyBindingRegistry():
       enable_search=True,
       enable_auto_suggest_bindings=True,)
 
-  ControlHHack(m.registry)
   m.registry.add_binding(keys.Keys.ControlQ, eager=True)(_HandleCtrlQ)
-  m.registry.add_binding(keys.Keys.ControlH, eager=True)(_HandleCtrlH)
-  m.registry.add_binding(keys.Keys.ControlV, eager=True)(_HandleCtrlV)
+  m.registry.add_binding(keys.Keys.ControlT, eager=True)(_HandleCtrlT)
+  m.registry.add_binding(keys.Keys.ControlW, eager=True)(_HandleCtrlW)
 
   return m.registry
-
-
-# TODO(b/35347443): update prompt toolkit to make this unnecessary.
-def ControlHHack(registry):
-  """A bad hack to make ctrl+h work.
-
-  This code is based on the fix for
-  https://github.com/jonathanslenders/pymux/issues/50. Control H and backspace
-  are considered the same key. This means that if you bind Control H, backspace
-  will cease to function. This function monkey patches prompt toolkit to
-  consider '<Backspace>' separate from Control H and then adds a binding on
-  backspace so it deletes the previous character in the current buffer.
-
-  Args:
-    registry: a prompt_toolkit key binding Registry
-  """
-  terminal_input.ANSI_SEQUENCES['\x7f'] = '<Backspace>'
-
-  insert_mode = filters.ViInsertMode() | filters.EmacsInsertMode()
-  @registry.add_binding('<Backspace>', filter=insert_mode)
-  def _HandleBackspace(event):
-    """Backspace: delete before cursor."""
-    deleted = event.current_buffer.delete_before_cursor(count=event.arg)
-    if not deleted:
-      event.cli.output.bell()
-
-    registry.add_binding('<Backspace>', filter=insert_mode)(_HandleBackspace)
 
 
 def GetBottomToolbarTokens(_):
@@ -109,6 +76,9 @@ def GetBottomToolbarTokens(_):
   named_configs.ActivePropertiesFile().Invalidate()
   project = properties.VALUES.core.project.Get() or '<NO PROJECT SET>'
   account = properties.VALUES.core.account.Get() or '<NO ACCOUNT SET>'
+
+  help_status = 'ON' if SHOW_HELP_WINDOW else 'OFF'
+
   return [
       (Token.Toolbar.Account, account),
       (Token.Toolbar.Separator, ' | '),
@@ -116,7 +86,8 @@ def GetBottomToolbarTokens(_):
       (Token.Toolbar.Separator, ' | '),
       (Token.Toolbar.Help, 'ctrl-q: Quit'),
       (Token.Toolbar.Separator, ' | '),
-      (Token.Toolbar.Help, 'ctrl-h: Toggle Help'),
+      (Token.Toolbar.Help, 'ctrl-t: Help '),
+      (Token.Toolbar.Help, help_status),
   ]
 
 
@@ -309,7 +280,10 @@ def main():
         text = Prompt(hist)
         if text is None or text.strip() == 'exit':
           sys.exit(0)
-        subprocess.call('gcloud ' + text, shell=True)
+        text = text.strip()
+        if not text.startswith('gcloud'):
+          text = 'gcloud ' + text
+        subprocess.call(text, shell=True)
       except EOFError:
         # on ctrl-d, exit loop
         break

@@ -3,10 +3,10 @@
   "discoveryVersion": "v1",
   "id": "ml:v1beta1",
   "name": "ml",
-  "canonicalName": "Cloud Machine Learning",
+  "canonicalName": "Cloud Machine Learning Engine",
   "version": "v1beta1",
   "revision": "0",
-  "title": "Google Cloud Machine Learning",
+  "title": "Google Cloud Machine Learning Engine",
   "description": "An API to enable creating and using machine learning models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -287,7 +287,7 @@
             "A single worker instance. This tier is suitable for learning how to use\nCloud ML, and for experimenting with new models using small datasets.",
             "Many workers and a few parameter servers.",
             "A large number of workers with many parameter servers.",
-            "A single worker instance with a GPU.",
+            "A single worker instance [with a GPU](ml\/docs\/how-tos\/using-gpus).",
             "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
@@ -300,7 +300,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a\n  <a href=\"ml\/docs\/how-tos\/using-gpus\">\n  GPU that you can use in your trainer<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">coplex_model_m<\/code> that also includes\n  four GPUs.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "workerType": {
@@ -348,7 +348,7 @@
           "type": "string"
         },
         "jobDir": {
-          "description": "Optional. A GCS path in which to store training outputs and other data\nneeded for training. This path will be passed to your TensorFlow program as\nthe 'job_dir' command-line arg. The benefit of specifying this field is that\nCloud ML will validate the path for use in training.",
+          "description": "Optional. A Google Cloud Storage path in which to store training outputs\nand other data needed for training. This path is passed to your TensorFlow\nprogram as the 'job_dir' command-line argument. The benefit of specifying\nthis field is that Cloud ML validates the path for use in training.",
           "type": "string"
         },
         "runtimeVersion": {
@@ -483,7 +483,7 @@
           "type": "string"
         },
         "uri": {
-          "description": "Use this field if you want to specify a GCS path to the model to use.",
+          "description": "Use this field if you want to specify a Google Cloud Storage path for\nthe model to use.",
           "type": "string"
         },
         "dataFormat": {

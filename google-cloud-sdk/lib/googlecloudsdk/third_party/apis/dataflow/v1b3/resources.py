@@ -34,6 +34,12 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'location', u'jobId']
   )
+  PROJECTS_TEMPLATES = (
+      'projects.templates',
+      'projects/{projectId}/templates/{gcsPath}',
+      {},
+      [u'projectId', u'gcsPath']
+  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

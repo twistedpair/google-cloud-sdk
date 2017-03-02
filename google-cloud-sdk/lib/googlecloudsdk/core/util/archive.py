@@ -30,26 +30,59 @@ except ImportError:
 def MakeZipFromDir(dest_zip_file, src_dir, skip_file_regex=None):
   """Similar to shutil.make_archive (which is available in python >=2.7).
 
+  Examples:
+    Filesystem:
+    /tmp/a/
+    /tmp/b/B
+
+    >>> MakeZipFromDir('my.zip', '/tmp')
+    Creates zip with content:
+    a/
+    b/B
+
+    >>> MakeZipFromDir('my.zip', '/tmp', 'b.*')
+    Creates zip with content:
+    a/
+
+    >>> MakeZipFromDir('my.zip', '/tmp', 'b/.*')
+    Creates zip with content:
+    a/
+    b/
+
+  Note this is caller responsibility to use appropriate platform-dependent
+  path separator.
+
+  Note filenames containing path separator are supported, but specifying
+  skip_file_regex might be slightly more tricky.
+
   Args:
     dest_zip_file: str, filesystem path to the zip file to be created. Note that
       directory should already exist for destination zip file.
     src_dir: str, filesystem path to the directory to zip up
-    skip_file_regex: regex, files with names matching this pattern will be
-                     excluded from the archive.
+    skip_file_regex: regex, files and directories with names relative to src_dir
+      matching this pattern will be excluded from the archive.
   """
+  def IsSkipped(relative_name):
+    """Decides if given file or directory should be skipped."""
+    if skip_file_regex is None:
+      return False
+    return re.match(skip_file_regex, relative_name) is not None
+
   zip_file = zipfile.ZipFile(dest_zip_file, 'w', _ZIP_COMPRESSION)
   try:
     for root, _, filelist in os.walk(src_dir):
       # In case this is empty directory.
       path = os.path.normpath(os.path.relpath(root, src_dir))
+      if IsSkipped(path):
+        continue
       if path and path != os.curdir:
         zip_file.write(root, path)
       for f in filelist:
         filename = os.path.normpath(os.path.join(root, f))
-        skip = (skip_file_regex is not None and
-                re.match(skip_file_regex, filename) is not None)
-        if os.path.isfile(filename) and not skip:
-          arcname = os.path.join(os.path.relpath(root, src_dir), f)
-          zip_file.write(filename, arcname)
+        relpath = os.path.relpath(filename, src_dir)
+        if IsSkipped(relpath):
+          continue
+        if os.path.isfile(filename):
+          zip_file.write(filename, relpath)
   finally:
     zip_file.close()

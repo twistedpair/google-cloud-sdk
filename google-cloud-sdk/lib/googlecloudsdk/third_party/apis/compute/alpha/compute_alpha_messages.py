@@ -842,14 +842,23 @@ class AttachedDiskInitializeParams(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. It consists of which
   permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.
+  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
+  AuditConfigs for both `allServices` and a specific service, the union of the
+  two AuditConfigs is used for that service: the log_types specified in each
+  AuditConfig are enabled, and the exempted_members in each AuditConfig are
+  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
+  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
+  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
+  }, { "log_type": "ADMIN_READ", } ] }, { "service":
+  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
+  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
+  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
+  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
+  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members. This field is deprecated in favor of
-      per-permission-type exemptions.
+    exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -3069,7 +3078,7 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   """A ComputeBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -3485,6 +3494,20 @@ class ComputeDisksDeleteRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeDisksGetIamPolicyRequest(_messages.Message):
+  """A ComputeDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeDisksGetRequest(_messages.Message):
   """A ComputeDisksGetRequest object.
 
@@ -3588,6 +3611,22 @@ class ComputeDisksResizeRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeDisksSetIamPolicyRequest(_messages.Message):
+  """A ComputeDisksSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeDisksSetLabelsRequest(_messages.Message):
@@ -5158,6 +5197,18 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeImagesGetIamPolicyRequest(_messages.Message):
+  """A ComputeImagesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeImagesGetRequest(_messages.Message):
   """A ComputeImagesGetRequest object.
 
@@ -5235,6 +5286,20 @@ class ComputeImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeImagesSetIamPolicyRequest(_messages.Message):
+  """A ComputeImagesSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeImagesSetLabelsRequest(_messages.Message):
@@ -6547,6 +6612,20 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
+  """A ComputeInstancesSimulateMaintenanceEventRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesStartRequest(_messages.Message):
   """A ComputeInstancesStartRequest object.
 
@@ -7442,7 +7521,7 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
   """A ComputeRegionBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -8649,7 +8728,7 @@ class ComputeRoutersPatchRequest(_messages.Message):
     region: Name of the region for this request.
     requestId: begin_interface: MixerMutationRequestBuilder Request ID to
       support idempotency.
-    router: Name of the Router resource to update.
+    router: Name of the Router resource to patch.
     routerResource: A Router resource to be passed as the request body.
   """
 
@@ -8834,6 +8913,18 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
   snapshot = _messages.StringField(3, required=True)
 
 
+class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
+  """A ComputeSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeSnapshotsGetRequest(_messages.Message):
   """A ComputeSnapshotsGetRequest object.
 
@@ -8894,6 +8985,20 @@ class ComputeSnapshotsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
+  """A ComputeSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeSnapshotsSetLabelsRequest(_messages.Message):
@@ -12817,6 +12922,9 @@ class Host(_messages.Message):
     StatusValueValuesEnum: [Output Only] The status of the host. One of the
       following values: CREATING, READY, REPAIR, and DELETING.
 
+  Messages:
+    LabelsValue: Labels to apply to this host.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -12834,6 +12942,13 @@ class Host(_messages.Message):
       host.
     kind: [Output Only] The type of the resource. Always compute#host for
       host.
+    labelFingerprint: A fingerprint for this request, which is essentially a
+      hash of the metadata's contents and used for optimistic locking. The
+      fingerprint is initially generated by Compute Engine and changes after
+      every request to modify or update metadata. You must always provide an
+      up-to-date fingerprint hash in order to update or change metadata.  To
+      see the latest fingerprint, make get() request to the host.
+    labels: Labels to apply to this host.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -12867,17 +12982,43 @@ class Host(_messages.Message):
     READY = 3
     REPAIR = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this host.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   hostType = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   instances = _messages.StringField(5, repeated=True)
   kind = _messages.StringField(6, default=u'compute#host')
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  zone = _messages.StringField(11)
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  statusMessage = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class HostAggregatedList(_messages.Message):

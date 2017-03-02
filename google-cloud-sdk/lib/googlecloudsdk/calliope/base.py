@@ -140,7 +140,6 @@ class Argument(object):
       *args: The positional args to parser.add_argument.
       **kwargs: The keyword args to parser.add_argument.
     """
-    self.__detailed_help = kwargs.pop('detailed_help', None)
     self.__args = args
     self.__kwargs = kwargs
 
@@ -161,10 +160,7 @@ class Argument(object):
     Returns:
       The result of parser.add_argument().
     """
-    arg = parser.add_argument(*self.__args, **self.__kwargs)
-    if self.__detailed_help:
-      arg.detailed_help = self.__detailed_help
-    return arg
+    return parser.add_argument(*self.__args, **self.__kwargs)
 
   def RemoveFromParser(self, parser):
     """Removes this flag from the given parser.
@@ -211,8 +207,7 @@ LIST_COMMAND_FLAGS = 'LIST COMMAND'
 ASYNC_FLAG = Argument(
     '--async',
     action='store_true',
-    help="Don't wait for the operation to complete.",
-    detailed_help="""\
+    help="""\
     Display information about the operation in progress and don't wait for
     the operation to complete.""")
 
@@ -220,8 +215,7 @@ FILTER_FLAG = Argument(
     '--filter',
     metavar='EXPRESSION',
     category=LIST_COMMAND_FLAGS,
-    help='Apply _EXPRESSION_ to select resource items to list.',
-    detailed_help="""\
+    help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
     If the expression evaluates True then that item is listed. For more
     details and examples of filter expressions run $ gcloud topic filters. This
@@ -232,8 +226,7 @@ LIMIT_FLAG = Argument(
     '--limit',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
     category=LIST_COMMAND_FLAGS,
-    help='The maximum number of resources to list.',
-    detailed_help="""\
+    help="""\
     The maximum number of resources to list. The default is *unlimited*.
     This flag interacts with other flags that are applied in this order:
     *--flatten*, *--sort-by*, *--filter*, *--limit*.
@@ -243,8 +236,7 @@ PAGE_SIZE_FLAG = Argument(
     '--page-size',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
     category=LIST_COMMAND_FLAGS,
-    help='The service resource list page size.',
-    detailed_help="""\
+    help="""\
     Some services group resource list output into pages. This flag specifies
     the maximum number of resources per page. The default is determined by the
     service if it supports paging, otherwise it is *unlimited* (no paging).
@@ -257,8 +249,7 @@ SORT_BY_FLAG = Argument(
     metavar='FIELD',
     type=arg_parsers.ArgList(),
     category=LIST_COMMAND_FLAGS,
-    help='A comma-separated list of field key names to sort by.',
-    detailed_help="""\
+    help="""\
     A comma-separated list of resource field key names to sort by. The
     default order is ascending. Prefix a field with ``~'' for descending
     order on that field. This flag interacts with other flags that are applied

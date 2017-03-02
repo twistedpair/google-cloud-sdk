@@ -88,14 +88,14 @@ class CreateServiceAccountKeyRequest(_messages.Message):
 
   Enums:
     KeyAlgorithmValueValuesEnum: Which type of key and algorithm to use for
-      the key. The default is currently a 4K RSA key.  However this may change
+      the key. The default is currently a 2K RSA key.  However this may change
       in the future.
     PrivateKeyTypeValueValuesEnum: The output format of the private key.
       `GOOGLE_CREDENTIALS_FILE` is the default output format.
 
   Fields:
     keyAlgorithm: Which type of key and algorithm to use for the key. The
-      default is currently a 4K RSA key.  However this may change in the
+      default is currently a 2K RSA key.  However this may change in the
       future.
     privateKeyType: The output format of the private key.
       `GOOGLE_CREDENTIALS_FILE` is the default output format.
@@ -103,7 +103,7 @@ class CreateServiceAccountKeyRequest(_messages.Message):
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
     """Which type of key and algorithm to use for the key. The default is
-    currently a 4K RSA key.  However this may change in the future.
+    currently a 2K RSA key.  However this may change in the future.
 
     Values:
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.

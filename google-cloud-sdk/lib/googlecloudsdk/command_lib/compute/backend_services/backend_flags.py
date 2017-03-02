@@ -90,34 +90,29 @@ def _GetBalancingModes():
 
 def AddBalancingMode(parser):
   """Add balancing mode arguments."""
-  balancing_mode = parser.add_argument(
+  parser.add_argument(
       '--balancing-mode',
       choices=_GetBalancingModes(),
       type=lambda x: x.upper(),
-      help='Defines the strategy for balancing load.')
-  balancing_mode.detailed_help = """\
-    Defines the strategy for balancing load.
+      help="""\
+      Defines the strategy for balancing load.
 
-    *RATE* and the max rate arguments are available only
-    in backend services with HTTP based protocols.
+      *RATE* and the max rate arguments are available only
+      in backend services with HTTP based protocols.
 
-    For backend services with TCP/SSL protocol either *UTILIZATION* or
-    *CONNECTION* are available.
-
-      """
+      For backend services with TCP/SSL protocol either *UTILIZATION* or
+      *CONNECTION* are available.""")
 
 
 def AddMaxUtilization(parser):
-  max_utilization = parser.add_argument(
+  parser.add_argument(
       '--max-utilization',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
-      help=('The target CPU utilization of the group as a '
-            'float in the range [0.0, 1.0].'))
-  max_utilization.detailed_help = """\
+      help="""\
       The target CPU utilization for the group as a float in the range
       [0.0, 1.0]. This flag can only be provided when the balancing
       mode is *UTILIZATION*.
-      """
+      """)
 
 
 def AddCapacityLimits(parser):
@@ -147,14 +142,11 @@ def AddCapacityLimits(parser):
 
 
 def AddCapacityScalar(parser):
-  capacity_scaler = parser.add_argument(
+  parser.add_argument(
       '--capacity-scaler',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
-      help=('A float in the range [0.0, 1.0] that scales the maximum '
-            'parameters for the group (e.g., max rate). The default is 1.0.'))
-  capacity_scaler.detailed_help = """\
+      help="""\
       A float in the range [0.0, 1.0] that scales the maximum
       parameters for the group (e.g., max rate). A value of 0.0 will
       cause no requests to be sent to the group (i.e., it adds the
-      group in a ``drained'' state).
-      """
+      group in a ``drained'' state).""")

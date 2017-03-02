@@ -18,12 +18,12 @@ This module marshals markdown renderers to convert Cloud SDK markdown to text,
 HTML and manpage documents. The renderers are self-contained, allowing the
 Cloud SDK runtime to generate documents on the fly for all target architectures.
 
-The _MarkdownConverter class parses markdown from an input stream and renders it
+The MarkdownRenderer class parses markdown from an input stream and renders it
 using the Renderer class. The Renderer member functions provide an abstract
 document model that matches markdown entities to the output document, e.g., font
 embellishment, section headings, lists, hanging indents, text margins, tables.
 There is a Renderer derived class for each output style that writes the result
-on an output stream.
+on an output stream returns Rendere.Finish().
 """
 
 import argparse
@@ -104,7 +104,7 @@ class _ListElementState(object):
     self.level = 0
 
 
-class _MarkdownConverter(object):
+class MarkdownRenderer(object):
   """Reads markdown and renders to a document.
 
   Attributes:
@@ -126,7 +126,7 @@ class _MarkdownConverter(object):
   _EMPHASIS = {'*': renderer.BOLD, '_': renderer.ITALIC, '`': renderer.CODE}
 
   def __init__(self, style_renderer, fin=sys.stdin, notes=None):
-    """Initializes the converter.
+    """Initializes the renderer.
 
     Args:
       style_renderer: The document_renderer.Renderer subclass.
@@ -683,6 +683,9 @@ class _MarkdownConverter(object):
 
     A previous _ConvertHeading() will have cleared self._notes if a NOTES
     section has already been seen.
+
+    Returns:
+      The renderer Finish() value.
     """
     self._Fill()
     if self._notes:
@@ -690,10 +693,10 @@ class _MarkdownConverter(object):
       self._renderer.Heading(2, 'NOTES')
       self._buf += self._notes
       self._Fill()
-    self._renderer.Finish()
+    return self._renderer.Finish()
 
   def Run(self):
-    """Renders the markdown from fin to out."""
+    """Renders the markdown from fin to out and returns renderer.Finish()."""
     if isinstance(self._renderer, markdown_renderer.MarkdownRenderer):
       self._ConvertMarkdownToMarkdown()
       return
@@ -727,7 +730,7 @@ class _MarkdownConverter(object):
         i = detect_and_convert(i)
         if i < 0:
           break
-    self._Finish()
+    return self._Finish()
 
 
 def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
@@ -749,7 +752,7 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
     raise DocumentStyleError(style)
   style_renderer = STYLES[style](out=out or sys.stdout, title=title,
                                  width=width)
-  _MarkdownConverter(style_renderer, fin=fin or sys.stdin, notes=notes).Run()
+  MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes).Run()
 
 
 def main(argv):

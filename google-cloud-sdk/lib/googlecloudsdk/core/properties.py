@@ -627,11 +627,11 @@ class _SectionApp(_Section):
         hidden=True)
     # The Cloud Storage path prefix for the Flex Runtime Builder configuration
     # files. The configuration files will live at
-    # "<PREFIX>/<runtime>-<version>.yaml" or "<PREFIX>/<runtime>.yaml" for the
-    # latest version.
+    # "<PREFIX>/<runtime>-<version>.yaml", with an additional
+    # "<PREFIX>/runtime.version" indicating the latest version.
     self.runtime_builders_root = self._Add(
         'runtime_builders_root',
-        default='gs://google_appengine/flex_builders/',
+        default='gs://runtime-builders/',
         hidden=True)
 
 

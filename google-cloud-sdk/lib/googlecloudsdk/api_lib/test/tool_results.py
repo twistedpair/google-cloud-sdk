@@ -16,19 +16,16 @@
 
 import collections
 import time
-import urllib
 import urlparse
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.test import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 
+import uritemplate
+
 
 _STATUS_INTERVAL_SECS = 3
-
-
-class BadMatrixException(exceptions.ToolException):
-  """BadMatrixException is for test matrices that fail prematurely."""
 
 
 class ToolResultsIds(
@@ -42,7 +39,7 @@ class ToolResultsIds(
 
 
 def CreateToolResultsUiUrl(project_id, tool_results_ids):
-  """Create a URL to the Tool Results UI for a test.
+  """Create the URL for a test's Tool Results UI in the Firebase App Manager.
 
   Args:
     project_id: string containing the user's GCE project ID.
@@ -53,12 +50,13 @@ def CreateToolResultsUiUrl(project_id, tool_results_ids):
   """
   url_base = properties.VALUES.test.results_base_url.Get()
   if not url_base:
-    url_base = 'https://console.developers.google.com'
-  url_end = (
-      'project/{p}/testlab/mobile/histories/{h}/executions/{e}'.format(
-          p=urllib.quote(project_id),
-          h=urllib.quote(tool_results_ids.history_id),
-          e=urllib.quote(tool_results_ids.execution_id)))
+    url_base = 'https://console.firebase.google.com'
+
+  url_end = uritemplate.expand(
+      'project/{project}/testlab/histories/{history}/matrices/{execution}',
+      {'project': project_id,
+       'history': tool_results_ids.history_id,
+       'execution': tool_results_ids.execution_id})
   return urlparse.urljoin(url_base, url_end)
 
 
@@ -81,7 +79,7 @@ def GetToolResultsIds(matrix, matrix_monitor,
     are shared by all TestExecutions in the TestMatrix.
 
   Raises:
-    BadMatrixException: if the matrix finishes without both ToolResults IDs.
+    BadMatrixError: if the matrix finishes without both ToolResults IDs.
   """
   history_id = None
   execution_id = None
@@ -95,9 +93,9 @@ def GetToolResultsIds(matrix, matrix_monitor,
           break
 
       if matrix.state in matrix_monitor.completed_matrix_states:
-        raise BadMatrixException(
+        raise exceptions.BadMatrixError(
             '\nMatrix [{m}] unexpectedly reached final status {s} without '
-            'returning a URL to any test results in the Developers Console. '
+            'returning a URL to any test results in the Firebase console. '
             'Please re-check the validity of your APK file(s) and test '
             'parameters and try again.'
             .format(m=matrix.testMatrixId, s=matrix.state))

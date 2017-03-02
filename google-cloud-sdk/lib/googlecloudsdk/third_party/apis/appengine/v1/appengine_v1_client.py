@@ -261,7 +261,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the instances of a version.
+      """Lists the instances of a version.Tip: To aggregate details about instances over time, see the Stackdriver Monitoring API (https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesListRequest) input message

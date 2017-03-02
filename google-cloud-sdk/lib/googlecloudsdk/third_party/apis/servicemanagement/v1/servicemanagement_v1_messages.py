@@ -80,15 +80,27 @@ class Api(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. It consists of which
   permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.
+  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
+  AuditConfigs for both `allServices` and a specific service, the union of the
+  two AuditConfigs is used for that service: the log_types specified in each
+  AuditConfig are enabled, and the exempted_members in each AuditConfig are
+  exempted. Example Policy with multiple AuditConfigs: {   "audit_configs": [
+  {       "service": "allServices"       "audit_log_configs": [         {
+  "log_type": "DATA_READ",           "exempted_members": [
+  "user:foo@gmail.com"           ]         },         {           "log_type":
+  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
+  }       ]     },     {       "service": "fooservice@googleapis.com"
+  "audit_log_configs": [         {           "log_type": "DATA_READ",
+  },         {           "log_type": "DATA_WRITE",
+  "exempted_members": [             "user:bar@gmail.com"           ]         }
+  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
       Next ID: 4
-    exemptedMembers: Specifies the identities that are exempted from "data
-      access" audit logging for the `service` specified above. Follows the
-      same format of Binding.members. This field is deprecated in favor of
-      per-permission-type exemptions.
+    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `resourcemanager`, `storage`, `compute`. `allServices` is a
       special value that covers all services.
@@ -1504,10 +1516,13 @@ class HttpRule(_messages.Message):
     custom: Custom pattern is used for defining custom verbs.
     delete: Used for deleting a resource.
     get: Used for listing and getting information about resources.
-    mediaDownload: Do not use this. For media support, add instead
+    mediaDownload: Use this only for Scotty Requests. Do not use this for
+      bytestream methods. For media support, add instead
       [][google.bytestream.RestByteStream] as an API to your configuration.
-    mediaUpload: Do not use this. For media support, add instead
-      [][google.bytestream.RestByteStream] as an API to your configuration.
+    mediaUpload: Use this only for Scotty Requests. Do not use this for media
+      support using Bytestream, add instead
+      [][google.bytestream.RestByteStream] as an API to your configuration for
+      Bytestream methods.
     patch: Used for updating a resource.
     post: Used for creating a resource.
     put: Used for updating a resource.
@@ -1745,25 +1760,33 @@ class ManagedService(_messages.Message):
 
 
 class MediaDownload(_messages.Message):
-  """Do not use this. For media support, add instead
-  [][google.bytestream.RestByteStream] as an API to your configuration.
+  """Use this only for Scotty Requests. Do not use this for media support
+  using Bytestream, add instead [][google.bytestream.RestByteStream] as an API
+  to your configuration for Bytestream methods.
 
   Fields:
+    downloadService: DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.
+      Specify name of the download service if one is used for download.
     enabled: Whether download is enabled.
   """
 
-  enabled = _messages.BooleanField(1)
+  downloadService = _messages.StringField(1)
+  enabled = _messages.BooleanField(2)
 
 
 class MediaUpload(_messages.Message):
-  """Do not use this. For media support, add instead
-  [][google.bytestream.RestByteStream] as an API to your configuration.
+  """Use this only for Scotty Requests. Do not use this for media support
+  using Bytestream, add instead [][google.bytestream.RestByteStream] as an API
+  to your configuration for Bytestream methods.
 
   Fields:
     enabled: Whether upload is enabled.
+    uploadService: DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.
+      Specify name of the upload service if one is used for upload.
   """
 
   enabled = _messages.BooleanField(1)
+  uploadService = _messages.StringField(2)
 
 
 class Method(_messages.Message):
@@ -3198,15 +3221,33 @@ class ServicemanagementServicesConfigsCreateRequest(_messages.Message):
 class ServicemanagementServicesConfigsGetRequest(_messages.Message):
   """A ServicemanagementServicesConfigsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Specifies which parts of the Service Config should be
+      returned in the response.
+
   Fields:
     configId: The id of the service configuration resource.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
+    view: Specifies which parts of the Service Config should be returned in
+      the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Specifies which parts of the Service Config should be returned in the
+    response.
+
+    Values:
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    BASIC = 0
+    FULL = 1
 
   configId = _messages.StringField(1, required=True)
   serviceName = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class ServicemanagementServicesConfigsListRequest(_messages.Message):
@@ -3368,15 +3409,33 @@ class ServicemanagementServicesEnableRequest(_messages.Message):
 class ServicemanagementServicesGetConfigRequest(_messages.Message):
   """A ServicemanagementServicesGetConfigRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Specifies which parts of the Service Config should be
+      returned in the response.
+
   Fields:
     configId: The id of the service configuration resource.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
+    view: Specifies which parts of the Service Config should be returned in
+      the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Specifies which parts of the Service Config should be returned in the
+    response.
+
+    Values:
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    BASIC = 0
+    FULL = 1
 
   configId = _messages.StringField(1)
   serviceName = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class ServicemanagementServicesGetIamPolicyRequest(_messages.Message):

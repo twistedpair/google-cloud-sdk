@@ -1082,9 +1082,9 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     ).format(metavar=kwargs['metavar'],
              deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
     if 'help' in kwargs:
-      self.detailed_help = kwargs['help'] + '\n\n' + self.explanation
+      kwargs['help'] += '\n\n' + self.explanation
       if example:
-        self.detailed_help += ' Example:\n\n' + example
+        kwargs['help'] += ' Example:\n\n' + example
     super(RemainderAction, self).__init__(*args, **kwargs)
 
   def _SplitOnDash(self, args):
@@ -1094,7 +1094,9 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
 
   def ParseKnownArgs(self, args, namespace):
     """Binds all args after -- to the namespace."""
-    remainder_args = []
+    # Not [], so that we can distinguish between empty remainder args and
+    # absent remainder args.
+    remainder_args = None
     if '--' in args:
       args, remainder_args = self._SplitOnDash(args)
     self(None, namespace, remainder_args)

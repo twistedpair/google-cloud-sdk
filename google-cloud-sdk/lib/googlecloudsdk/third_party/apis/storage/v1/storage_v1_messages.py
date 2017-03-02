@@ -1076,7 +1076,8 @@ class StorageBucketsListRequest(_messages.Message):
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
 
   Fields:
-    maxResults: Maximum number of buckets to return.
+    maxResults: Maximum number of buckets to return in a single response. The
+      service will use this parameter or 1,000 items, whichever is smaller.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     prefix: Filter results to buckets whose names begin with this prefix.
@@ -1094,7 +1095,7 @@ class StorageBucketsListRequest(_messages.Message):
     full = 0
     noAcl = 1
 
-  maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32, default=1000)
   pageToken = _messages.StringField(2)
   prefix = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
@@ -1864,9 +1865,10 @@ class StorageObjectsListRequest(_messages.Message):
       delimiter. Objects whose names, aside from the prefix, contain delimiter
       will have their name, truncated after the delimiter, returned in
       prefixes. Duplicate prefixes are omitted.
-    maxResults: Maximum number of items plus prefixes to return. As duplicate
-      prefixes are omitted, fewer total results may be returned than
-      requested. The default value of this parameter is 1,000 items.
+    maxResults: Maximum number of items plus prefixes to return in a single
+      page of responses. As duplicate prefixes are omitted, fewer total
+      results may be returned than requested. The service will use this
+      parameter or 1,000 items, whichever is smaller.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     prefix: Filter results to objects whose names begin with this prefix.
@@ -1887,7 +1889,7 @@ class StorageObjectsListRequest(_messages.Message):
 
   bucket = _messages.StringField(1, required=True)
   delimiter = _messages.StringField(2)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=1000)
   pageToken = _messages.StringField(4)
   prefix = _messages.StringField(5)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 6)
@@ -2202,9 +2204,10 @@ class StorageObjectsWatchAllRequest(_messages.Message):
       delimiter. Objects whose names, aside from the prefix, contain delimiter
       will have their name, truncated after the delimiter, returned in
       prefixes. Duplicate prefixes are omitted.
-    maxResults: Maximum number of items plus prefixes to return. As duplicate
-      prefixes are omitted, fewer total results may be returned than
-      requested. The default value of this parameter is 1,000 items.
+    maxResults: Maximum number of items plus prefixes to return in a single
+      page of responses. As duplicate prefixes are omitted, fewer total
+      results may be returned than requested. The service will use this
+      parameter or 1,000 items, whichever is smaller.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     prefix: Filter results to objects whose names begin with this prefix.
@@ -2226,7 +2229,7 @@ class StorageObjectsWatchAllRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   channel = _messages.MessageField('Channel', 2)
   delimiter = _messages.StringField(3)
-  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32, default=1000)
   pageToken = _messages.StringField(5)
   prefix = _messages.StringField(6)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 7)

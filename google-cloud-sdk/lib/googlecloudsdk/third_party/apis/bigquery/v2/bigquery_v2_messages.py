@@ -2141,6 +2141,7 @@ class TableList(_messages.Message):
     Messages:
       LabelsValue: [Experimental] The labels associated with this table. You
         can use these to organize and group your tables.
+      ViewValue: Additional details for a view.
 
     Fields:
       friendlyName: The user-friendly name for this table.
@@ -2150,6 +2151,7 @@ class TableList(_messages.Message):
         use these to organize and group your tables.
       tableReference: A reference uniquely identifying the table.
       type: The type of table. Possible values are: TABLE, VIEW.
+      view: Additional details for a view.
     """
 
     @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2177,12 +2179,23 @@ class TableList(_messages.Message):
 
       additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+    class ViewValue(_messages.Message):
+      """Additional details for a view.
+
+      Fields:
+        useLegacySql: True if view is defined in legacy SQL dialect, false if
+          in standard SQL.
+      """
+
+      useLegacySql = _messages.BooleanField(1)
+
     friendlyName = _messages.StringField(1)
     id = _messages.StringField(2)
     kind = _messages.StringField(3, default=u'bigquery#table')
     labels = _messages.MessageField('LabelsValue', 4)
     tableReference = _messages.MessageField('TableReference', 5)
     type = _messages.StringField(6)
+    view = _messages.MessageField('ViewValue', 7)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'bigquery#tableList')

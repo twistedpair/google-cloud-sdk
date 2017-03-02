@@ -197,8 +197,7 @@ class ArgumentInterceptor(object):
     # Callback function that receives the currently entered args at the time of
     # remote completion processing, and returns the command to run.
     list_command_callback_fn = kwargs.pop('list_command_callback_fn', None)
-    # hidden=True => help=argparse.SUPPRESS, but retains help and detailed_help
-    # in the source.
+    # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
     if kwargs.pop('hidden', False):
       kwargs['help'] = argparse.SUPPRESS
 
@@ -371,31 +370,18 @@ class ArgumentInterceptor(object):
     if not should_invert:
       return
 
-    default = original_kwargs.get('default', False)
-    help_str = original_kwargs.get('help')
-
     # Add hidden --no-foo for the --foo Boolean flag. The inverted flag will
     # have the same dest and mutually exclusive group as the original flag.
-    inverted_name = '--no-' + name[2:]
     # Explicit default=None yields the 'Use to disable.' text.
-    show_inverted = False
-    if prop or (default in (True, None) and help_str != argparse.SUPPRESS):
-      if prop:
-        if prop.default:
-          show_inverted = True
-        inverted_help = (' Overrides the default *{0}* property value'
-                         ' for this command invocation. Use *{1}* to'
-                         ' disable.'.format(prop.name, inverted_name))
-      elif default:
-        inverted_help = ' Enabled by default, use *{0}* to disable.'.format(
-            inverted_name)
-        show_inverted = True
-      else:
-        inverted_help = ' Use *{0}* to disable.'.format(inverted_name)
-      # calliope.markdown.MarkdownGenerator._Details() checks and appends
-      # arg.inverted_help to the detailed help markdown.  We can't do that
-      # here because detailed_help may not have been set yet.
-      setattr(added_argument, 'inverted_help', inverted_help)
+    default = original_kwargs.get('default', False)
+    if prop:
+      inverted_synopsis = bool(prop.default)
+    elif default not in (True, None):
+      inverted_synopsis = False
+    elif default:
+      inverted_synopsis = bool(default)
+    else:
+      inverted_synopsis = False
 
     kwargs = dict(original_kwargs)
     if action == 'store_true':
@@ -407,10 +393,11 @@ class ArgumentInterceptor(object):
       kwargs['dest'] = dest
     kwargs['help'] = argparse.SUPPRESS
 
-    inverted_argument = self.parser.add_argument(inverted_name, **kwargs)
-    if show_inverted:
-      # flag.show_inverted means display inverted_argument in the SYNOPSIS.
-      setattr(added_argument, 'show_inverted', inverted_argument)
+    inverted_argument = self.parser.add_argument(
+        name.replace('--', '--no-', 1), **kwargs)
+    if inverted_synopsis:
+      # flag.inverted_synopsis means display the inverted flag in the SYNOPSIS.
+      setattr(added_argument, 'inverted_synopsis', True)
     return inverted_argument
 
   def _ShouldInvertBooleanFlag(self, name, action):
@@ -423,6 +410,7 @@ class ArgumentInterceptor(object):
     Returns:
       (False, None) if flag is not a Boolean flag or should not be inverted,
       (True, property) if flag is a Boolean flag associated with a property,
+      (False, property) if flag is a non-Boolean flag associated with a property
       otherwise (True, None) if flag is a pure Boolean flag.
     """
     if not name.startswith('--'):
@@ -438,9 +426,9 @@ class ArgumentInterceptor(object):
       return False, None
     if action in ('store_true', 'store_false'):
       return True, None
-    prop = getattr(action, 'boolean_property', None)
+    prop, kind, _ = getattr(action, 'store_property', (None, None, None))
     if prop:
-      return True, prop
+      return kind == 'bool', prop
     # Not a Boolean flag.
     return False, None
 

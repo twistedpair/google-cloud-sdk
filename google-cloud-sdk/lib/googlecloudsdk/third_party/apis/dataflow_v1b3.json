@@ -922,8 +922,7 @@
         },
         "id": {
           "description": "Dataflow service generated id for this stage.",
-          "type": "string",
-          "format": "int64"
+          "type": "string"
         },
         "kind": {
           "description": "Type of tranform this stage is executing.",
@@ -994,7 +993,7 @@
           "description": "Dataflow service generated name for this source.",
           "type": "string"
         },
-        "originalUserTransformOrCollection": {
+        "originalTransformOrCollection": {
           "description": "User name for the original user transform or collection with which this\nsource is most closely associated.",
           "type": "string"
         },
@@ -1276,6 +1275,100 @@
         }
       }
     },
+    "TemplateValidationResult": {
+      "id": "TemplateValidationResult",
+      "description": "The result of validating a CretaeJobFromTemplateRequest.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The status of the creation request. Any problems with the request\nwill be indicated in the error_details.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "TemplateMetadata": {
+      "id": "TemplateMetadata",
+      "description": "Metadata describing a template.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the template.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A description of the template.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The parameters for the template.",
+          "type": "array",
+          "items": {
+            "$ref": "ParameterMetadata"
+          }
+        },
+        "bypassTempDirValidation": {
+          "description": "If true, will bypass the validation that the temp directory is\nwritable. This should only be used with templates for pipelines\nthat are guaranteed not to need to write to the temp directory,\nwhich is subject to change based on the optimizer.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ParameterMetadata": {
+      "id": "ParameterMetadata",
+      "description": "Metadata for a specific parameter.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the parameter.",
+          "type": "string"
+        },
+        "label": {
+          "description": "Required. The label to display for the parameter.",
+          "type": "string"
+        },
+        "helpText": {
+          "description": "Required. The help text to display for the parameter.",
+          "type": "string"
+        },
+        "isOptional": {
+          "description": "Optional. Whether the parameter is optional. Defaults to false.",
+          "type": "boolean"
+        },
+        "regexes": {
+          "description": "Optional. Regexes that the parameter must match.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ReportWorkItemStatusRequest": {
       "id": "ReportWorkItemStatusRequest",
       "description": "Request to report the status of WorkItems.",
@@ -1370,33 +1463,6 @@
         "progress": {
           "description": "DEPRECATED in favor of reported_progress.",
           "$ref": "ApproximateProgress"
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
         }
       }
     },
@@ -4276,6 +4342,66 @@
               },
               "response": {
                 "$ref": "Job"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "validate": {
+              "id": "dataflow.projects.templates.validate",
+              "path": "v1b3/projects/{projectId}/templates/validate",
+              "flatPath": "v1b3/projects/{projectId}/templates/validate",
+              "httpMethod": "POST",
+              "description": "Validates the parameters set in create job request. The response\nincludes details about any problematic parameters, and also descriptions of\nhow parameters have been filled in.",
+              "parameters": {
+                "projectId": {
+                  "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "CreateJobFromTemplateRequest"
+              },
+              "response": {
+                "$ref": "TemplateValidationResult"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "get": {
+              "id": "dataflow.projects.templates.get",
+              "path": "v1b3/projects/{projectId}/templates/{gcsPath}",
+              "flatPath": "v1b3/projects/{projectId}/templates/{gcsPath}",
+              "httpMethod": "GET",
+              "description": "Get the template metadata associated with a template.",
+              "parameters": {
+                "projectId": {
+                  "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "gcsPath": {
+                  "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "gcsPath"
+              ],
+              "response": {
+                "$ref": "TemplateMetadata"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",

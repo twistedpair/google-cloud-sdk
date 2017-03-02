@@ -20,16 +20,14 @@ def AddUserArgument(parser, operation_type, custom_help=None):
   help_text = custom_help or ('If provided, the name of the user to {0}. Else, '
                               'the default user will be {0}d.').format(
                                   operation_type)
-  name = parser.add_argument(
+  parser.add_argument(
       'name',
       nargs='?',
-      help=help_text)
-  name.detailed_help = """\
+      help="""\
       {0} The default username is mapped from the email address of the
       authenticated account.
       Please run:
 
         $ gcloud config set account ACCOUNT
 
-      to change the authenticated account.""".format(help_text)
-
+      to change the authenticated account.""".format(help_text))

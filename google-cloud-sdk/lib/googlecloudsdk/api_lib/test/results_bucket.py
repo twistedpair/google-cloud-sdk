@@ -39,7 +39,7 @@ class ResultsBucketOps(object):
     """Construct a ResultsBucketOps object to be used with a single matrix run.
 
     Args:
-      project: string containing the Google Developers Console project id.
+      project: string containing the Google Cloud Platform project id.
       bucket_name: string with the user-supplied name of a GCS bucket, or None.
       unique_obj_name: the name of a unique GCS object to hold the raw test
         results within the supplied bucket_name.

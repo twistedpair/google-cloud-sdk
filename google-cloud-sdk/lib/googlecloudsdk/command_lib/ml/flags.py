@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Provides common arguments for the ML command surface."""
+"""Provides common arguments for the ML Engine command surface."""
 import argparse
 import itertools
 import sys
@@ -48,8 +48,7 @@ START_PORT = base.Argument(
     '--start-port',
     type=int,
     default=27182,
-    help='Start of the range of ports reserved by the local cluster.',
-    detailed_help="""\
+    help="""\
 Start of the range of ports reserved by the local cluster. This command will use
 a contiguous block of ports equal to parameter-server-count + worker-count + 1.
 
@@ -63,11 +62,10 @@ OPERATION_NAME = base.Argument('operation', help='Name of the operation.')
 # TODO(user): move these into a class
 CONFIG = base.Argument(
     '--config',
-    help='Path to YAML or JSON configuration file.',
-    detailed_help="""\
+    help="""\
 Path to the job configuration file. The file should be a YAML document (JSON
 also accepted) containing a Job resource as defined in the API (all fields are
-optional): https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
+optional): https://cloud.google.com/ml/reference/rest/v1/projects.jobs
 
 If an option is specified both in the configuration file *and* via command line
 arguments, the command line arguments override the configuration file.
@@ -79,8 +77,7 @@ MODULE_NAME = base.Argument(
     help='Name of the module to run')
 PACKAGE_PATH = base.Argument(
     '--package-path',
-    help='Path to a Python package to build',
-    detailed_help="""\
+    help="""\
 Path to a Python package to build. This should point to a directory containing
 the Python source for the job. It will be built using setuptools (which must be
 installed) using its *parent* directory as context. If the parent directory
@@ -92,8 +89,7 @@ PACKAGES = base.Argument(
     default=[],
     type=arg_parsers.ArgList(),
     metavar='PACKAGE',
-    help='Path to Python archives used for training',
-    detailed_help="""\
+    help="""\
 Path to Python archives used for training. These can be local paths
 (absolute or relative), in which case they will be uploaded to the Cloud
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
@@ -102,15 +98,13 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 
 
 def GetUserArgs(local=False):
-  # TODO(b/31400045): Move the details to detailed_help. Right now if we do that
-  # it clobbers the argparse.REMAINDER help text.
   if local:
     help_text = """\
-Additional user arguments to be fowarded to user code. Any relative paths will
+Additional user arguments to be forwarded to user code. Any relative paths will
 be relative to the *parent* directory of `--package-path`.
 """
   else:
-    help_text = 'Additional user arguments to be fowarded to user code'
+    help_text = 'Additional user arguments to be forwarded to user code'
   return base.Argument(
       'user_args',
       nargs=argparse.REMAINDER,
@@ -121,8 +115,7 @@ VERSION_NAME = base.Argument('version', help='Name of the model version.')
 VERSION_DATA = base.Argument(
     '--origin',
     required=True,
-    help='Location containing the model graph.',
-    detailed_help="""\
+    help="""\
 Location of ```model/``` "directory" (as output by
 https://www.tensorflow.org/versions/r0.12/api_docs/python/state_ops.html#Saver).
 
@@ -132,8 +125,8 @@ the latter case the files will be uploaded to Google Cloud Storage and a
 """)
 _SCALE_TIER_CHOICES = {
     'BASIC': ('A single worker instance. This tier is suitable for learning '
-              'how to use Cloud ML, and for experimenting with new models '
-              'using small datasets.'),
+              'how to use Cloud ML Engine, and for experimenting with new '
+              'models using small datasets.'),
     'STANDARD_1': 'Many workers and a few parameter servers.',
     'PREMIUM_1': 'A large number of workers with many parameter servers.',
     'BASIC_GPU': 'A single worker instance with a GPU.',
@@ -164,7 +157,7 @@ SCALE_TIER = base.Argument(
     default=None)
 RUNTIME_VERSION = base.Argument(
     '--runtime-version',
-    help=('The Google Cloud ML runtime version for this job. '
+    help=('The Google Cloud ML Engine runtime version for this job. '
           'Defaults to the latest stable version. See '
           'https://cloud.google.com/ml/docs/concepts/runtime-version-list for '
           'a list of accepted versions.'))

@@ -113,12 +113,13 @@ def _LocateTerm(command, term):
     return lookup.CAPSULE
 
   # Look in detailed help sections
-  for section_name, section_desc in command[lookup.SECTIONS].iteritems():
+  for section_name, section_desc in sorted(
+      command[lookup.SECTIONS].iteritems()):
     if regexp.search(section_desc):
       return DOT.join([lookup.SECTIONS, section_name])
 
   # Look in flags
-  for flag_name, flag in command[lookup.FLAGS].iteritems():
+  for flag_name, flag in sorted(command[lookup.FLAGS].iteritems()):
     if (regexp.search(flag[lookup.NAME])
         or regexp.search(flag[lookup.DESCRIPTION])):
       return DOT.join([lookup.FLAGS, flag_name])

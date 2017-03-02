@@ -127,11 +127,10 @@ def AddLoadBalancingScheme(parser):
 
 
 def AddConnectionDrainingTimeout(parser):
-  connection_draining_timeout = parser.add_argument(
+  parser.add_argument(
       '--connection-draining-timeout',
       type=arg_parsers.Duration(upper_bound='1h'),
-      help='Connection draining timeout.')
-  connection_draining_timeout.detailed_help = """\
+      help="""\
       Connection draining timeout to be used during removal of VMs from
       instance groups. This guarantees that for the specified time all existing
       connections to a VM will remain untouched, but no new connections will be
@@ -140,58 +139,50 @@ def AddConnectionDrainingTimeout(parser):
       If the flag is omitted API default value (0s) will be used.
       Valid units for this flag are `s` for seconds, `m` for minutes, and
       `h` for hours.
-      """
+      """)
 
 
 def AddEnableCdn(parser, default):
-  enable_cdn = parser.add_argument('--enable-cdn',
-                                   action='store_true',
-                                   default=default,
-                                   help='Enable Cloud CDN.')
-  enable_cdn.detailed_help = """\
+  parser.add_argument(
+      '--enable-cdn',
+      action='store_true',
+      default=default,
+      help="""\
       Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
       responses from a backend service at the edge of the network, close to
       users. Cloud CDN is disabled by default.
-      """
+      """)
 
 
 def AddCacheKeyIncludeProtocol(parser, default):
   """Adds cache key include/exclude protocol flag to the argparse."""
-  cache_key_include_protocol = parser.add_argument(
+  parser.add_argument(
       '--cache-key-include-protocol',
       action='store_true',
       default=default,
-      help='Enable including protocol in cache key.')
-  cache_key_include_protocol.detailed_help = """\
+      help="""\
       Enable including protocol in cache key. If enabled, http and https
       requests will be cached separately. Can only be applied for global
-      resources.
-      """
+      resources.""")
 
 
 def AddCacheKeyIncludeHost(parser, default):
   """Adds cache key include/exclude host flag to the argparse."""
-  cache_key_include_host = parser.add_argument(
+  parser.add_argument(
       '--cache-key-include-host',
       action='store_true',
       default=default,
-      help='Enable including host in cache key.')
-  cache_key_include_host.detailed_help = """\
+      help="""\
       Enable including host in cache key. If enabled, requests to different
       hosts will be cached separately. Can only be applied for global resources.
-      """
+      """)
 
 
 def AddCacheKeyIncludeQueryString(parser, default):
   """Adds cache key include/exclude query string flag to the argparse."""
-  cache_key_include_query_string = parser.add_argument(
-      '--cache-key-include-query-string',
-      action='store_true',
-      default=default,
-      help='Enable including query string in cache key.')
   update_command = default is None
   if update_command:
-    cache_key_include_query_string.detailed_help = """\
+    update_command_help = """\
         Enable including query string in cache key. If enabled, the query string
         parameters will be included according to
         --cache-key-query-string-whitelist and
@@ -201,7 +192,7 @@ def AddCacheKeyIncludeQueryString(parser, default):
         only be applied for global resources.
         """
   else:  # create command
-    cache_key_include_query_string.detailed_help = """\
+    update_command_help = """\
         Enable including query string in cache key. If enabled, the query string
         parameters will be included according to
         --cache-key-query-string-whitelist and
@@ -209,81 +200,77 @@ def AddCacheKeyIncludeQueryString(parser, default):
         string will be included. If disabled, then the entire query string will
         be excluded. Can only be applied for global resources.
         """
+  parser.add_argument(
+      '--cache-key-include-query-string',
+      action='store_true',
+      default=default,
+      help=update_command_help)
 
 
 def AddCacheKeyQueryStringList(parser):
+  """Adds cache key include/exclude query string flags to the argparse."""
   cache_key_query_string_list = parser.add_mutually_exclusive_group()
-  cache_key_query_string_whitelist = cache_key_query_string_list.add_argument(
+  cache_key_query_string_list.add_argument(
       '--cache-key-query-string-whitelist',
       type=arg_parsers.ArgList(min_length=1),
       metavar='QUERY_STRING',
       default=None,
-      help=('Specifies a comma separated list of query string parameters'
-            'to include in cache keys.'))
-  cache_key_query_string_whitelist.detailed_help = """\
+      help="""\
       Specifies a comma separated list of query string parameters to include
       in cache keys. All other parameters will be excluded. Either specify
       --cache-key-query-string-whitelist or --cache-key-query-string-blacklist,
       not both. '&' and '=' will be percent encoded and not treated as
       delimiters. Can only be applied for global resources.
-      """
-  cache_key_query_string_blacklist = cache_key_query_string_list.add_argument(
+      """)
+  cache_key_query_string_list.add_argument(
       '--cache-key-query-string-blacklist',
       type=arg_parsers.ArgList(),
       metavar='QUERY_STRING',
       default=None,
-      help=('Specifies a comma separated list of query string parameters'
-            'to exclude in cache keys.'))
-  cache_key_query_string_blacklist.detailed_help = """\
+      help="""\
       Specifies a comma separated list of query string parameters to exclude
       in cache keys. All other parameters will be included. Either specify
       --cache-key-query-string-whitelist or --cache-key-query-string-blacklist,
       not both. '&' and '=' will be percent encoded and not treated as
       delimiters. Can only be applied for global resources.
-      """
+      """)
 
 
 def AddHealthChecks(parser):
-  health_checks = parser.add_argument(
+  parser.add_argument(
       '--health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HEALTH_CHECK',
-      help=('Specifies a list of health check objects for checking the '
-            'health of the backend service.'))
-  health_checks.detailed_help = """\
+      help="""\
       Specifies a list of health check objects for checking the health of
       the backend service. Health checks need not be for the same protocol
       as that of the backend service.
-      """
+      """)
 
 
 def AddHttpHealthChecks(parser):
-  http_health_checks = parser.add_argument(
+  parser.add_argument(
       '--http-health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HTTP_HEALTH_CHECK',
-      help=('Specifies a list of HTTP health check objects for checking the '
-            'health of the backend service.'))
-  http_health_checks.detailed_help = """\
+      help="""\
       Specifies a list of HTTP health check objects for checking the health
       of the backend service.
-      """
+      """)
 
 
 def AddHttpsHealthChecks(parser):
-  https_health_checks = parser.add_argument(
+  parser.add_argument(
       '--https-health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HTTPS_HEALTH_CHECK',
-      help=('Specifies a list of HTTPS health check objects for checking the '
-            'health of the backend service.'))
-  https_health_checks.detailed_help = """\
+      help="""\
       Specifies a list of HTTPS health check objects for checking the health
       of the backend service.
-      """
+      """)
 
 
-def AddIap(parser):
+def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
   """Add support for --iap flag."""
   # We set this to str, but it's really an ArgDict.  See
   # backend_services_utils.GetIAP for the re-parse and rationale.
@@ -292,7 +279,7 @@ def AddIap(parser):
       metavar=('disabled|enabled,['
                'oauth2-client-id=OAUTH2-CLIENT-ID,'
                'oauth2-client-secret=OAUTH2-CLIENT-SECRET]'),
-      help='Specifies a list of settings for IAP service.')
+      help=help or 'Specifies a list of settings for IAP service.')
 
 
 def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
@@ -337,21 +324,19 @@ def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
 def AddAffinityCookieTtl(parser, hidden=False):
   """Adds affinity cookie Ttl flag to the argparse."""
   if hidden:
-    help_str = argparse.SUPPRESS
+    affinity_cookie_ttl_help = argparse.SUPPRESS
   else:
-    help_str = """If session-affinity is set to "generated_cookie", this flag
-            sets the TTL, in seconds, of the resulting cookie."""
-  affinity_cookie_ttl = parser.add_argument(
+    affinity_cookie_ttl_help = """\
+        If session-affinity is set to "generated_cookie", this flag sets
+        the TTL, in seconds, of the resulting cookie.  A setting of 0
+        indicates that the cookie should be transient.
+        """
+  parser.add_argument(
       '--affinity-cookie-ttl',
       type=arg_parsers.Duration(),
       default=None,  # Tri-valued, None => don't include property.
-      help=help_str)
-  if not hidden:
-    affinity_cookie_ttl.detailed_help = """\
-      If session-affinity is set to "generated_cookie", this flag sets
-      the TTL, in seconds, of the resulting cookie.  A setting of 0
-      indicates that the cookie should be transient.
-  """
+      help=affinity_cookie_ttl_help
+  )
 
 
 def AddDescription(parser):
@@ -361,19 +346,17 @@ def AddDescription(parser):
 
 
 def AddTimeout(parser, default='30s'):
-  timeout = parser.add_argument(
+  parser.add_argument(
       '--timeout',
       default=default,
       type=arg_parsers.Duration(),
-      help=('The amount of time to wait for a backend to respond to a '
-            'request before considering the request failed.'))
-  timeout.detailed_help = """\
+      help="""\
       The amount of time to wait for a backend to respond to a request
       before considering the request failed. For example, specifying
       ``10s'' will give backends 10 seconds to respond to
       requests. Valid units for this flag are ``s'' for seconds, ``m''
       for minutes, and ``h'' for hours.
-      """
+      """)
 
 
 def AddPortName(parser):
@@ -385,11 +368,9 @@ def AddPortName(parser):
       help=('The TCP port to use when connecting to the backend. '
             '--port is being deprecated in favor of --port-name.'))
 
-  port_name = parser.add_argument(
+  parser.add_argument(
       '--port-name',
-      help=('A user-defined port name used to resolve which port to use on '
-            'each backend.'))
-  port_name.detailed_help = """\
+      help="""\
       The name of a service that has been added to an instance group
       in this backend. Instance group services map a name to a port
       number which is used by the load balancing service.
@@ -400,7 +381,7 @@ def AddPortName(parser):
       this flag, your instance groups must have a service named ``http''
       configured. See also
       `gcloud compute instance-groups set-named-ports --help`.
-      """
+      """)
 
 
 def AddProtocol(parser, default='HTTP'):

@@ -22,8 +22,7 @@ INSTALLATION_FLAG = base.Argument(
     '--installation',
     required=False,
     action='store_true',
-    help='Update the property in the gcloud installation.',
-    detailed_help="""\
+    help="""\
         Typically properties are updated only in the currently active
         configuration, but when `--installation` is given the property is
         updated for the entire gcloud installation."""

@@ -211,13 +211,12 @@ class BaseLister(base.ListCommand, BaseCommand):
         help=('If provided, show details for the specified names and/or URIs '
               'of resources.'))
 
-    regexp = parser.add_argument(
+    parser.add_argument(
         '--regexp', '-r',
-        help='A regular expression to filter the names of the results on.')
-    regexp.detailed_help = """\
+        help="""\
         A regular expression to filter the names of the results on. Any names
         that do not match the entire regular expression will be filtered out.
-        """
+        """)
 
   @property
   def allowed_filtering_types(self):
@@ -514,7 +513,10 @@ class MultiScopeLister(BaseLister):
 
     requests = []
     filter_expr = self.GetFilterExpr(args)
-    max_results = constants.MAX_RESULTS_PER_PAGE
+    if args.page_size is not None:
+      max_results = min(args.page_size, constants.MAX_RESULTS_PER_PAGE)
+    else:
+      max_results = constants.MAX_RESULTS_PER_PAGE
     project = self.project
 
     # If --regions is present with no arguments OR no scope flags are present

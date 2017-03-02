@@ -216,7 +216,9 @@ variables by prefix.
 
     def List(self, request, global_params=None):
       """Lists variables within given a configuration, matching any provided filters.
-This only lists variable names, not the values.
+This only lists variable names, not the values, unless `return_values` is
+true, in which case only variables that user has IAM permission to GetVariable
+will be returned.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesListRequest) input message
@@ -234,7 +236,7 @@ This only lists variable names, not the values.
         method_id=u'runtimeconfig.projects.configs.variables.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken', u'returnValues'],
         relative_path=u'v1beta1/{+parent}/variables',
         request_field='',
         request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',

@@ -53,16 +53,17 @@ def LogFilters(job_id, task_name=None):
   return filters
 
 
-def MakeContinueFunction(job_id):
+def MakeContinueFunction(job_id, version='v1beta1'):
   """Returns a function to decide if log fetcher should continue polling.
 
   Args:
     job_id: String id of job.
+    version: str, the API version on which to check the status of the job
 
   Returns:
     A one-argument function decides if log fetcher should continue.
   """
-  jobs_client = jobs.JobsClient()
+  jobs_client = jobs.JobsClient(version)
   project_id = properties.VALUES.core.project.Get(required=True)
   job_ref = resources.REGISTRY.Create(
       'ml.projects.jobs', jobsId=job_id, projectsId=project_id)

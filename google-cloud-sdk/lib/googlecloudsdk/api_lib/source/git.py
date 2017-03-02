@@ -161,7 +161,6 @@ def _GetGcloudScript():
     raise GcloudIsNotInPath(
         'Could not verify that gcloud is in the PATH. '
         'Please make sure the Cloud SDK bin folder is in PATH.')
-
   return gcloud_name + gcloud_ext
 
 
@@ -477,9 +476,13 @@ class Git(object):
     # Make a brand new repository if directory does not exist or
     # clone if directory exists and is empty
     try:
-      if (self._uri.startswith('https://code.google.com') or
-          self._uri.startswith('https://source.developers.google.com')):
-
+      credentialed_hosts = ['source.developers.google.com']
+      extra = properties.VALUES.core.credentialed_hosted_repo_domains.Get()
+      if extra:
+        credentialed_hosts.extend(extra.split(','))
+      if any(
+          self._uri.startswith('https://' + host)
+          for host in credentialed_hosts):
         # If this is a Google-hosted repo, clone with the cred helper.
         try:
           CheckGitVersion(_HELPER_MIN)

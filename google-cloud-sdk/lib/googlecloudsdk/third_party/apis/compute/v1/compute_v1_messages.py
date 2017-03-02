@@ -883,6 +883,59 @@ class Backend(_messages.Message):
   maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
+class BackendBucket(_messages.Message):
+  """A BackendBucket resource. This resource defines a Cloud Storage bucket.
+
+  Fields:
+    bucketName: Cloud Storage bucket name.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    enableCdn: If true, enable Cloud CDN for this BackendBucket.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  bucketName = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  enableCdn = _messages.BooleanField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#backendBucket')
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+
+
+class BackendBucketList(_messages.Message):
+  """Contains a list of BackendBucket resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of BackendBucket resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('BackendBucket', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#backendBucketList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class BackendService(_messages.Message):
   """A BackendService resource. This resource defines a group of backend
   virtual machines and their serving capacity.
@@ -1549,6 +1602,122 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeBackendBucketsDeleteRequest(_messages.Message):
+  """A ComputeBackendBucketsDeleteRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to delete.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsGetRequest(_messages.Message):
+  """A ComputeBackendBucketsGetRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to return.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsInsertRequest(_messages.Message):
+  """A ComputeBackendBucketsInsertRequest object.
+
+  Fields:
+    backendBucket: A BackendBucket resource to be passed as the request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.MessageField('BackendBucket', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeBackendBucketsListRequest(_messages.Message):
+  """A ComputeBackendBucketsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeBackendBucketsPatchRequest(_messages.Message):
+  """A ComputeBackendBucketsPatchRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to update.
+    backendBucketResource: A BackendBucket resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  backendBucketResource = _messages.MessageField('BackendBucket', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsUpdateRequest(_messages.Message):
+  """A ComputeBackendBucketsUpdateRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to update.
+    backendBucketResource: A BackendBucket resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  backendBucketResource = _messages.MessageField('BackendBucket', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
@@ -11093,6 +11262,7 @@ class Quota(_messages.Message):
 
     Values:
       AUTOSCALERS: <no description>
+      BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
@@ -11128,39 +11298,40 @@ class Quota(_messages.Message):
       VPN_TUNNELS: <no description>
     """
     AUTOSCALERS = 0
-    BACKEND_SERVICES = 1
-    CPUS = 2
-    CPUS_ALL_REGIONS = 3
-    DISKS_TOTAL_GB = 4
-    FIREWALLS = 5
-    FORWARDING_RULES = 6
-    HEALTH_CHECKS = 7
-    IMAGES = 8
-    INSTANCES = 9
-    INSTANCE_GROUPS = 10
-    INSTANCE_GROUP_MANAGERS = 11
-    INSTANCE_TEMPLATES = 12
-    IN_USE_ADDRESSES = 13
-    LOCAL_SSD_TOTAL_GB = 14
-    NETWORKS = 15
-    PREEMPTIBLE_CPUS = 16
-    REGIONAL_AUTOSCALERS = 17
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 18
-    ROUTERS = 19
-    ROUTES = 20
-    SNAPSHOTS = 21
-    SSD_TOTAL_GB = 22
-    SSL_CERTIFICATES = 23
-    STATIC_ADDRESSES = 24
-    SUBNETWORKS = 25
-    TARGET_HTTPS_PROXIES = 26
-    TARGET_HTTP_PROXIES = 27
-    TARGET_INSTANCES = 28
-    TARGET_POOLS = 29
-    TARGET_SSL_PROXIES = 30
-    TARGET_VPN_GATEWAYS = 31
-    URL_MAPS = 32
-    VPN_TUNNELS = 33
+    BACKEND_BUCKETS = 1
+    BACKEND_SERVICES = 2
+    CPUS = 3
+    CPUS_ALL_REGIONS = 4
+    DISKS_TOTAL_GB = 5
+    FIREWALLS = 6
+    FORWARDING_RULES = 7
+    HEALTH_CHECKS = 8
+    IMAGES = 9
+    INSTANCES = 10
+    INSTANCE_GROUPS = 11
+    INSTANCE_GROUP_MANAGERS = 12
+    INSTANCE_TEMPLATES = 13
+    IN_USE_ADDRESSES = 14
+    LOCAL_SSD_TOTAL_GB = 15
+    NETWORKS = 16
+    PREEMPTIBLE_CPUS = 17
+    REGIONAL_AUTOSCALERS = 18
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 19
+    ROUTERS = 20
+    ROUTES = 21
+    SNAPSHOTS = 22
+    SSD_TOTAL_GB = 23
+    SSL_CERTIFICATES = 24
+    STATIC_ADDRESSES = 25
+    SUBNETWORKS = 26
+    TARGET_HTTPS_PROXIES = 27
+    TARGET_HTTP_PROXIES = 28
+    TARGET_INSTANCES = 29
+    TARGET_POOLS = 30
+    TARGET_SSL_PROXIES = 31
+    TARGET_VPN_GATEWAYS = 32
+    URL_MAPS = 33
+    VPN_TUNNELS = 34
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

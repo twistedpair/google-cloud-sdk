@@ -225,6 +225,22 @@ def AddIPProtocols(parser):
       help='The IP protocol that the rule will serve. The default is TCP.')
 
 
+def AddIpVersionGroup(parser):
+  """Adds IP versions flag in a mutually exclusive group."""
+  parser.add_argument(
+      '--ip-version',
+      choices=['IPV4', 'IPV6'],
+      type=lambda x: x.upper(),
+      help='The IP version that the rule will serve. The default is IPv4.')
+
+
+def AddAddressesAndIPVersions(parser, required=True):
+  """Adds Addresses and IP versions flag."""
+  group = parser.add_mutually_exclusive_group(required=required)
+  AddIpVersionGroup(group)
+  ADDRESS_ARG.AddArgument(parser, mutex_group=group)
+
+
 def AddDescription(parser):
   """Adds description flag."""
 
@@ -237,31 +253,27 @@ def AddPortsAndPortRange(parser):
   """Adds ports and port range flags."""
 
   ports_scope = parser.add_mutually_exclusive_group()
-  ports = ports_scope.add_argument(
+  ports_scope.add_argument(
       '--ports',
       metavar='[PORT | PORT-PORT]',
-      help=('If specified, only packets addressed to the ports or '
-            'port ranges will be forwarded.'),
       type=arg_parsers.ArgList(
           min_length=1, element_type=arg_parsers.Range.Parse),
-      default=[])
-  ports.detailed_help = """\
-          If specified, only packets addressed to ports in the specified
-          list will be forwarded. If not specified for regional forwarding
-          rules, all ports are matched. This flag is required for global
-          forwarding rules and accepts a single continuous set of ports.
+      default=[],
+      help="""\
+      If specified, only packets addressed to ports in the specified
+      list will be forwarded. If not specified for regional forwarding
+      rules, all ports are matched. This flag is required for global
+      forwarding rules and accepts a single continuous set of ports.
 
-          Individual ports and ranges can be specified,
-          for example (`--ports 8000-8004` or `--ports 80`).
-          """
+      Individual ports and ranges can be specified,
+      for example (`--ports 8000-8004` or `--ports 80`).
+      """)
 
-  port_range = ports_scope.add_argument(
+  ports_scope.add_argument(
       '--port-range',
       type=arg_parsers.Range.Parse,
-      help='DEPRECATED, use --ports. If specified, only packets addressed to '
-           'the port or ports in the specified range will be forwarded.',
-      metavar='[PORT | PORT-PORT]')
-  port_range.detailed_help = """\
+      metavar='[PORT | PORT-PORT]',
+      help="""\
       DEPRECATED, use --ports. If specified, only packets addressed to ports in
       the specified range will be forwarded. If not specified for regional
       forwarding rules, all ports are matched. This flag is required for global
@@ -269,7 +281,7 @@ def AddPortsAndPortRange(parser):
 
       Either an individual port (`--port-range 80`) or a range of ports
       (`--port-range 3000-3100`) may be specified.
-      """
+      """)
 
 
 def AddNetworkTier(parser, include_alpha):
@@ -283,4 +295,3 @@ def AddNetworkTier(parser, include_alpha):
         help='The network tier to assign to the forwarding rules. If left '
         'empty, `PREMIUM` is used. Supported network tiers are: `PREMIUM`, '
         '`SELECT`.')
-

@@ -241,6 +241,22 @@
           "type": "string",
           "format": "google-duration"
         },
+        "servingStatus": {
+          "description": "Serving status of this application.",
+          "enumDescriptions": [
+            "Serving status is unspecified.",
+            "Application is serving.",
+            "Application has been disabled by the user.",
+            "Application has been disabled by the system."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "SERVING",
+            "USER_DISABLED",
+            "SYSTEM_DISABLED"
+          ]
+        },
         "defaultHostname": {
           "description": "Hostname used to reach this application, as resolved by App Engine.@OutputOnly",
           "type": "string"
@@ -252,6 +268,10 @@
         "iap": {
 
           "$ref": "IdentityAwareProxy"
+        },
+        "gcrDomain": {
+          "description": "The Google Container Registry domain used for storing managed build docker images for this application.",
+          "type": "string"
         }
       }
     },
@@ -2182,7 +2202,7 @@
                       "path": "v1/{+parent}/instances",
                       "flatPath": "v1/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances",
                       "httpMethod": "GET",
-                      "description": "Lists the instances of a version.",
+                      "description": "Lists the instances of a version.Tip: To aggregate details about instances over time, see the Stackdriver Monitoring API (https:\/\/cloud.google.com\/monitoring\/api\/ref_v3\/rest\/v3\/projects.timeSeries\/list).",
                       "parameters": {
                         "parent": {
                           "description": "Name of the parent Version resource. Example: apps\/myapp\/services\/default\/versions\/v1.",

@@ -980,6 +980,35 @@ class DataflowProjectsTemplatesCreateRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
 
 
+class DataflowProjectsTemplatesGetRequest(_messages.Message):
+  """A DataflowProjectsTemplatesGetRequest object.
+
+  Fields:
+    gcsPath: Required. A Cloud Storage path to the template from which to
+      create the job. Must be a valid Cloud Storage URL, beginning with
+      `gs://`.
+    projectId: Required. The ID of the Cloud Platform project that the job
+      belongs to.
+  """
+
+  gcsPath = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DataflowProjectsTemplatesValidateRequest(_messages.Message):
+  """A DataflowProjectsTemplatesValidateRequest object.
+
+  Fields:
+    createJobFromTemplateRequest: A CreateJobFromTemplateRequest resource to
+      be passed as the request body.
+    projectId: Required. The ID of the Cloud Platform project that the job
+      belongs to.
+  """
+
+  createJobFromTemplateRequest = _messages.MessageField('CreateJobFromTemplateRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
 class DataflowProjectsWorkerMessagesRequest(_messages.Message):
   """A DataflowProjectsWorkerMessagesRequest object.
 
@@ -1340,7 +1369,7 @@ class ExecutionStageSummary(_messages.Message):
 
   componentSource = _messages.MessageField('ComponentSource', 1, repeated=True)
   componentTransform = _messages.MessageField('ComponentTransform', 2, repeated=True)
-  id = _messages.IntegerField(3)
+  id = _messages.StringField(3)
   inputSource = _messages.MessageField('StageSource', 4, repeated=True)
   kind = _messages.EnumField('KindValueValuesEnum', 5)
   name = _messages.StringField(6)
@@ -2319,6 +2348,25 @@ class ParallelInstruction(_messages.Message):
   write = _messages.MessageField('WriteInstruction', 9)
 
 
+class ParameterMetadata(_messages.Message):
+  """Metadata for a specific parameter.
+
+  Fields:
+    helpText: Required. The help text to display for the parameter.
+    isOptional: Optional. Whether the parameter is optional. Defaults to
+      false.
+    label: Required. The label to display for the parameter.
+    name: Required. The name of the parameter.
+    regexes: Optional. Regexes that the parameter must match.
+  """
+
+  helpText = _messages.StringField(1)
+  isOptional = _messages.BooleanField(2)
+  label = _messages.StringField(3)
+  name = _messages.StringField(4)
+  regexes = _messages.StringField(5, repeated=True)
+
+
 class PartialGroupByKeyInstruction(_messages.Message):
   """An instruction that does a partial group-by-key. One input and one
   output.
@@ -3130,16 +3178,15 @@ class StageSource(_messages.Message):
 
   Fields:
     name: Dataflow service generated name for this source.
-    originalUserTransformOrCollection: User name for the original user
-      transform or collection with which this source is most closely
-      associated.
+    originalTransformOrCollection: User name for the original user transform
+      or collection with which this source is most closely associated.
     sizeBytes: Size of the source, if measurable.
     userName: Human-readable name for this source; may be user or system
       generated.
   """
 
   name = _messages.StringField(1)
-  originalUserTransformOrCollection = _messages.StringField(2)
+  originalTransformOrCollection = _messages.StringField(2)
   sizeBytes = _messages.IntegerField(3)
   userName = _messages.StringField(4)
 
@@ -3599,6 +3646,36 @@ class TaskRunnerSettings(_messages.Message):
   tempStoragePrefix = _messages.StringField(17)
   vmId = _messages.StringField(18)
   workflowFileName = _messages.StringField(19)
+
+
+class TemplateMetadata(_messages.Message):
+  """Metadata describing a template.
+
+  Fields:
+    bypassTempDirValidation: If true, will bypass the validation that the temp
+      directory is writable. This should only be used with templates for
+      pipelines that are guaranteed not to need to write to the temp
+      directory, which is subject to change based on the optimizer.
+    description: Optional. A description of the template.
+    name: Required. The name of the template.
+    parameters: The parameters for the template.
+  """
+
+  bypassTempDirValidation = _messages.BooleanField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  parameters = _messages.MessageField('ParameterMetadata', 4, repeated=True)
+
+
+class TemplateValidationResult(_messages.Message):
+  """The result of validating a CretaeJobFromTemplateRequest.
+
+  Fields:
+    status: The status of the creation request. Any problems with the request
+      will be indicated in the error_details.
+  """
+
+  status = _messages.MessageField('Status', 1)
 
 
 class TopologyConfig(_messages.Message):

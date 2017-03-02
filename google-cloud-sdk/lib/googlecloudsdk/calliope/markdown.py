@@ -334,6 +334,8 @@ class MarkdownGenerator(object):
     categorized_groups = {}
     attrs = {}
     for group_id, group in groups.iteritems():
+      if groups and not group_id:
+        continue
       flags = self._FilterOutHidden(group)
       if not flags:
         continue
@@ -493,10 +495,10 @@ class MarkdownGenerator(object):
           groups.iteritems(), key=lambda x: self.FlagGroupSortKey(x[1])):
         flag = group[0]
         if len(group) == 1:
-          show_inverted = getattr(flag, 'show_inverted', None)
-          if show_inverted:
-            flag = show_inverted
-          msg = usage_text.FlagDisplayString(flag, markdown=True)
+          msg = usage_text.FlagDisplayString(
+              flag,
+              markdown=True,
+              inverted=getattr(flag, 'inverted_synopsis', False))
           if not msg:
             continue
           if flag.required:
@@ -529,6 +531,11 @@ class MarkdownGenerator(object):
 
     self._out('\n')
 
+  def PrintPositionalDefinition(self, arg):
+    self._out('\n{0}::\n'.format(
+        usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
+    self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
+
   def PrintFlagDefinition(self, flag, disable_header=False):
     """Prints a flags definition list item.
 
@@ -555,7 +562,7 @@ class MarkdownGenerator(object):
       self.PrintSectionHeader(heading, sep=False)
     for group_id, group in sorted(
         groups.iteritems(), key=lambda x: self.FlagGroupSortKey(x[1])):
-      if len(group) == 1 or any([getattr(f, 'show_inverted', None)
+      if len(group) == 1 or any([getattr(f, 'inverted_synopsis', None)
                                  for f in group]):
         self.PrintFlagDefinition(group[0], disable_header=disable_header)
       else:
@@ -580,9 +587,7 @@ class MarkdownGenerator(object):
       if not disable_header:
         self.PrintSectionHeader('POSITIONAL ARGUMENTS', sep=False)
       for arg in visible_positionals:
-        self._out('\n{0}::\n'.format(
-            usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
-        self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
+        self.PrintPositionalDefinition(arg)
 
     # List the sections in order.
     for heading, _, groups, attrs in self._flag_sections:
@@ -712,61 +717,11 @@ class MarkdownGenerator(object):
 
   def GetArgDetails(self, arg):
     """Returns the detailed help message for the given arg."""
-    help_stuff = getattr(arg, 'detailed_help', (arg.help or '') + '\n')
-    help_message = help_stuff() if callable(help_stuff) else help_stuff
-    help_message = textwrap.dedent(help_message)
-    if (not arg.option_strings or
-        not arg.option_strings[0].startswith('-') or
-        arg.metavar == ' '):
-      choices = None
-    elif arg.choices:
-      choices = arg.choices
-    else:
-      try:
-        choices = arg.type.choices
-      except AttributeError:
-        choices = None
-    if choices:
-      metavar = arg.metavar or arg.dest.upper()
-      choices = getattr(arg, 'choices_help', choices)
-      if len(choices) > 1:
-        one_of = 'one of'
-      else:
-        # TBD I guess?
-        one_of = '(currenly only one value is supported)'
-      if isinstance(choices, dict):
-        extra_help = ' _{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
-            metavar=metavar,
-            one_of=one_of,
-            choices='\n'.join(
-                ['*{name}*::: {desc}'.format(name=name, desc=desc)
-                 for name, desc in sorted(choices.iteritems())]))
-      else:
-        extra_help = ' _{metavar}_ must be {one_of}: {choices}.'.format(
-            metavar=metavar,
-            one_of=one_of,
-            choices=', '.join(['*{0}*'.format(x) for x in choices]))
-    else:
-      # calliope.backend.ArgumentInterceptor.add_argument() sets
-      # arg.inverted_help for Boolean flags with auto-generated --no-FLAG
-      # inverted counterparts.
-      extra_help = getattr(arg, 'inverted_help', None)
-    if extra_help:
-      help_message = help_message.rstrip()
-      if help_message:
-        newline_index = help_message.rfind('\n')
-        if newline_index >= 0 and help_message[newline_index + 1] == ' ':
-          # Preserve example markdown at end of help_message.
-          help_message += '\n\n' + extra_help.strip() + '\n'
-        else:
-          if not help_message.endswith('.'):
-            help_message += '.'
-          if help_message.rfind('\n\n') > 0:
-            # help_message has multiple paragraphs. Put extra_help in a new
-            # paragraph.
-            help_message += '\n\n\n'
-          help_message += extra_help + '\n'
-    return help_message.replace('\n\n', '\n+\n').strip()
+    if getattr(arg, 'detailed_help', None):
+      raise ValueError(
+          '{}: Use add_argument(help=...) instead of detailed_help="""{}""".'
+          .format(self._command_name, getattr(arg, 'detailed_help')))
+    return usage_text.GetArgDetails(arg)
 
   def _ExpandFormatReferences(self, doc):
     """Expand {...} references in doc."""

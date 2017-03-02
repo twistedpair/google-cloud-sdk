@@ -1762,6 +1762,276 @@ class CacheKeyPolicy(_messages.Message):
   queryStringWhitelist = _messages.StringField(5, repeated=True)
 
 
+class Commitment(_messages.Message):
+  """A usage-commitment with a start / end time. Users create commitments for
+  particular resources (e.g. memory). Actual usage is first deducted from
+  available commitments made prior, perhaps at a reduced price (as laid out in
+  the commitment).
+
+  Enums:
+    PlanValueValuesEnum: The plan for this commitment, which determines
+      duration and discount rate. The currently supported plans are
+      TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
+    StatusValueValuesEnum: [Output Only] Status of the commitment with regards
+      to eventual expiration (each commitment has an end-date defined). One of
+      the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    endTimestamp: [Output Only] Commitment end time in RFC3339 text format.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#commitment for
+      commitments.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    plan: The plan for this commitment, which determines duration and discount
+      rate. The currently supported plans are TWELVE_MONTH (1 year), and
+      THIRTY_SIX_MONTH (3 years).
+    region: [Output Only] URL of the region where this commitment may be used.
+    resources: List of commitment amounts for particular resources. Note that
+      VCPU and MEMORY resource commitments must occur together.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    startTimestamp: [Output Only] Commitment start time in RFC3339 text
+      format.
+    status: [Output Only] Status of the commitment with regards to eventual
+      expiration (each commitment has an end-date defined). One of the
+      following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+    statusMessage: [Output Only] An optional, human-readable explanation of
+      the status.
+  """
+
+  class PlanValueValuesEnum(_messages.Enum):
+    """The plan for this commitment, which determines duration and discount
+    rate. The currently supported plans are TWELVE_MONTH (1 year), and
+    THIRTY_SIX_MONTH (3 years).
+
+    Values:
+      INVALID: <no description>
+      THIRTY_SIX_MONTH: <no description>
+      TWELVE_MONTH: <no description>
+    """
+    INVALID = 0
+    THIRTY_SIX_MONTH = 1
+    TWELVE_MONTH = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output Only] Status of the commitment with regards to eventual
+    expiration (each commitment has an end-date defined). One of the following
+    values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+
+    Values:
+      ACTIVE: <no description>
+      CREATING: <no description>
+      EXPIRED: <no description>
+      NOT_YET_ACTIVE: <no description>
+    """
+    ACTIVE = 0
+    CREATING = 1
+    EXPIRED = 2
+    NOT_YET_ACTIVE = 3
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endTimestamp = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#commitment')
+  name = _messages.StringField(6)
+  plan = _messages.EnumField('PlanValueValuesEnum', 7)
+  region = _messages.StringField(8)
+  resources = _messages.MessageField('ResourceCommitment', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  startTimestamp = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+
+
+class CommitmentAggregatedList(_messages.Message):
+  """A CommitmentAggregatedList object.
+
+  Messages:
+    ItemsValue: Commitments by scope.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: Commitments by scope.
+    kind: [Output Only] Type of resource. Always
+      compute#commitmentAggregatedList for aggregated lists of commitments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """Commitments by scope.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of commitments.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CommitmentsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CommitmentsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#commitmentAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class CommitmentList(_messages.Message):
+  """Contains a list of Commitment resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of Commitment resources.
+    kind: [Output Only] Type of resource. Always compute#commitmentList for
+      lists of commitments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Commitment', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#commitmentList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class CommitmentsScopedList(_messages.Message):
+  """A CommitmentsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of commitments when the list is empty.
+
+  Fields:
+    commitments: [Output Only] List of commitments contained in this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      commitments when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning which replaces the list of
+    commitments when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  commitments = _messages.MessageField('Commitment', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
   """A ComputeAcceleratorTypesAggregatedListRequest object.
 
@@ -2548,6 +2818,56 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class ComputeCommitmentsAggregatedListRequest(_messages.Message):
+  """A ComputeCommitmentsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
 class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   """A ComputeDiskTypesAggregatedListRequest object.
 
@@ -2969,7 +3289,7 @@ class ComputeFirewallsPatchRequest(_messages.Message):
   """A ComputeFirewallsPatchRequest object.
 
   Fields:
-    firewall: Name of the firewall rule to update.
+    firewall: Name of the firewall rule to patch.
     firewallResource: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
   """
@@ -5997,6 +6317,86 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
   region = _messages.StringField(4, required=True)
 
 
+class ComputeRegionCommitmentsGetRequest(_messages.Message):
+  """A ComputeRegionCommitmentsGetRequest object.
+
+  Fields:
+    commitment: Name of the commitment to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionCommitmentsInsertRequest(_messages.Message):
+  """A ComputeRegionCommitmentsInsertRequest object.
+
+  Fields:
+    commitment: A Commitment resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  commitment = _messages.MessageField('Commitment', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionCommitmentsListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
 class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A ComputeRegionInstanceGroupManagersAbandonInstancesRequest object.
 
@@ -7316,6 +7716,24 @@ class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   resource = _messages.StringField(4, required=True)
+
+
+class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A ComputeSubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource.
+    subnetworksSetPrivateIpGoogleAccessRequest: A
+      SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 4)
 
 
 class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
@@ -8944,14 +9362,16 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
     """
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    NO_ATTR = 3
-    SECURITY_REALM = 4
+    JUSTIFICATION_TYPE = 3
+    NO_ATTR = 4
+    SECURITY_REALM = 5
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -9703,8 +10123,15 @@ class DisksScopedList(_messages.Message):
 class Firewall(_messages.Message):
   """Represents a Firewall resource.
 
+  Enums:
+    DirectionValueValuesEnum: Direction of traffic to which this firewall
+      applies; default is INGRESS. Note: For INGRESS traffic, it is NOT
+      supported to specify destinationRanges; For EGRESS traffic, it is NOT
+      supported to specify sourceRanges OR sourceTags.
+
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
+    DeniedValueListEntry: A DeniedValueListEntry object.
 
   Fields:
     allowed: The list of ALLOW rules specified by this firewall. Each rule
@@ -9712,8 +10139,18 @@ class Firewall(_messages.Message):
       connection.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    denied: The list of DENY rules specified by this firewall. Each rule
+      specifies a protocol and port-range tuple that describes a permitted
+      connection.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    destinationRanges: If destination ranges are specified, the firewall will
+      apply only to traffic that has destination IP address in these ranges.
+      These ranges must be expressed in CIDR format. Only IPv4 is supported.
+    direction: Direction of traffic to which this firewall applies; default is
+      INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
+      destinationRanges; For EGRESS traffic, it is NOT supported to specify
+      sourceRanges OR sourceTags.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Ony] Type of the resource. Always compute#firewall for
@@ -9733,6 +10170,12 @@ class Firewall(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/myproject/global/networks
       /my-network  - projects/myproject/global/networks/my-network  -
       global/networks/default
+    priority: Priority for this rule. This is an integer between 0 and 65535,
+      both inclusive. When not specified, the value assumed is 1000. Relative
+      priorities determine precedence of conflicting rules. Lower value of
+      priority implies higher precedence (eg, a rule with priority 0 has
+      higher precedence than a rule with priority 1). DENY rules take
+      precedence over ALLOW rules having equal priority.
     selfLink: [Output Only] Server-defined URL for the resource.
     sourceRanges: If source ranges are specified, the firewall will apply only
       to traffic that has source IP address in these ranges. These ranges must
@@ -9757,6 +10200,19 @@ class Firewall(_messages.Message):
       all instances on the specified network.
   """
 
+  class DirectionValueValuesEnum(_messages.Enum):
+    """Direction of traffic to which this firewall applies; default is
+    INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
+    destinationRanges; For EGRESS traffic, it is NOT supported to specify
+    sourceRanges OR sourceTags.
+
+    Values:
+      EGRESS: <no description>
+      INGRESS: <no description>
+    """
+    EGRESS = 0
+    INGRESS = 1
+
   class AllowedValueListEntry(_messages.Message):
     """A AllowedValueListEntry object.
 
@@ -9775,17 +10231,39 @@ class Firewall(_messages.Message):
     IPProtocol = _messages.StringField(1)
     ports = _messages.StringField(2, repeated=True)
 
+  class DeniedValueListEntry(_messages.Message):
+    """A DeniedValueListEntry object.
+
+    Fields:
+      IPProtocol: The IP protocol to which this rule applies. The protocol
+        type is required when creating a firewall rule. This value can either
+        be one of the following well known protocol strings (tcp, udp, icmp,
+        esp, ah, sctp), or the IP protocol number.
+      ports: An optional list of ports to which this rule applies. This field
+        is only applicable for UDP or TCP protocol. Each entry must be either
+        an integer or a range. If not specified, this rule applies to
+        connections through any port.  Example inputs include: ["22"],
+        ["80","443"], and ["12345-12349"].
+    """
+
+    IPProtocol = _messages.StringField(1)
+    ports = _messages.StringField(2, repeated=True)
+
   allowed = _messages.MessageField('AllowedValueListEntry', 1, repeated=True)
   creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#firewall')
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  sourceRanges = _messages.StringField(9, repeated=True)
-  sourceTags = _messages.StringField(10, repeated=True)
-  targetTags = _messages.StringField(11, repeated=True)
+  denied = _messages.MessageField('DeniedValueListEntry', 3, repeated=True)
+  description = _messages.StringField(4)
+  destinationRanges = _messages.StringField(5, repeated=True)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#firewall')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(12)
+  sourceRanges = _messages.StringField(13, repeated=True)
+  sourceTags = _messages.StringField(14, repeated=True)
+  targetTags = _messages.StringField(15, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -12570,6 +13048,7 @@ class ManagedInstance(_messages.Message):
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    version: [Output Only] Intended version of this instance.
   """
 
   class CurrentActionValueValuesEnum(_messages.Enum):
@@ -12639,6 +13118,7 @@ class ManagedInstance(_messages.Message):
   instance = _messages.StringField(3)
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
+  version = _messages.MessageField('ManagedInstanceVersion', 6)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -12682,6 +13162,20 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstanceVersion(_messages.Message):
+  """A ManagedInstanceVersion object.
+
+  Fields:
+    instanceTemplate: [Output Only] The intended template of the instance.
+      This field is empty when current_action is one of { DELETING, ABANDONING
+      }.
+    name: [Output Only] Name of the version.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class Metadata(_messages.Message):
@@ -13903,6 +14397,35 @@ class RegionList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#regionList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class ResourceCommitment(_messages.Message):
+  """Commitment for a particular resource (a Commitment is composed of one or
+  more of these).
+
+  Enums:
+    TypeValueValuesEnum: Type of resource for which this commitment applies.
+
+  Fields:
+    amount: The amount of the resource purchased (in a type-dependent unit,
+      such as bytes).
+    type: Type of resource for which this commitment applies.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type of resource for which this commitment applies.
+
+    Values:
+      MEMORY: <no description>
+      UNSPECIFIED: <no description>
+      VCPU: <no description>
+    """
+    MEMORY = 0
+    UNSPECIFIED = 1
+    VCPU = 2
+
+  amount = _messages.IntegerField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class ResourceGroupReference(_messages.Message):
@@ -15161,6 +15684,16 @@ class SubnetworksScopedList(_messages.Message):
 
   subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A SubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    privateIpGoogleAccess: A boolean attribute.
+  """
+
+  privateIpGoogleAccess = _messages.BooleanField(1)
 
 
 class TCPHealthCheck(_messages.Message):

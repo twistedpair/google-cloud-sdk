@@ -123,7 +123,7 @@
   "schemas": {
     "Project": {
       "id": "Project",
-      "description": "A Project is a high-level Google Cloud Platform entity.  It is a\ncontainer for ACLs, APIs, AppEngine Apps, VMs, and other\nGoogle Cloud Platform resources.",
+      "description": "A Project is a high-level Google Cloud Platform entity.  It is a\ncontainer for ACLs, APIs, App Engine Apps, VMs, and other\nGoogle Cloud Platform resources.",
       "type": "object",
       "properties": {
         "projectNumber": {
@@ -175,7 +175,7 @@
     },
     "ResourceId": {
       "id": "ResourceId",
-      "description": "A container to reference an id for any resource type. A `resource` in Google\nCloud Platform is a generic term for something you (a developer) may want to\ninteract with through one of our API's. Some examples are an AppEngine app,\na Compute Engine instance, a Cloud SQL database, and so on.",
+      "description": "A container to reference an id for any resource type. A `resource` in Google\nCloud Platform is a generic term for something you (a developer) may want to\ninteract with through one of our API's. Some examples are an App Engine app,\na Compute Engine instance, a Cloud SQL database, and so on.",
       "type": "object",
       "properties": {
         "type": {

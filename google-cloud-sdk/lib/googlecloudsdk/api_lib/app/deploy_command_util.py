@@ -184,8 +184,9 @@ def _GetImageName(project, service, version):
               display=display, domain=domain, service=service, version=version)
 
 
-def BuildAndPushDockerImage(project, service, source_dir, version_id,
-                            code_bucket_ref, use_runtime_builders=False):
+def BuildAndPushDockerImage(
+    project, service, source_dir, version_id, code_bucket_ref,
+    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -195,12 +196,16 @@ def BuildAndPushDockerImage(project, service, source_dir, version_id,
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
-    use_runtime_builders: bool, whether to use the new CloudBuild-based runtime
-      builders (alternative is old externalized runtimes).
+    runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, whether
+      to use the new CloudBuild-based runtime builders (alternative is old
+      externalized runtimes).
 
   Returns:
     str, The name of the pushed container image.
   """
+  use_runtime_builders = runtime_builder_strategy.ShouldUseRuntimeBuilders(
+      service.runtime)
+
   # Nothing to do if this is not an image-based deployment.
   if not service.RequiresImage():
     return None

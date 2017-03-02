@@ -221,30 +221,26 @@ class BaseSSHCommand(base_classes.BaseCommand):
           on the command line after this command. Positional arguments are
           allowed.
     """
-    force_key_file_overwrite = parser.add_argument(
+    parser.add_argument(
         '--force-key-file-overwrite',
         action='store_true',
         default=None,
-        help=('Force overwrite the files associated with a broken SSH key.')
-    )
-    force_key_file_overwrite.detailed_help = """\
+        help="""\
         If enabled gcloud will regenerate and overwrite the files associated
         with a broken SSH key without asking for confirmation in both
         interactive and non-interactive environment.
 
         If disabled gcloud will not attempt to regenerate the files associated
         with a broken SSH key and fail in both interactive and non-interactive
-        environment.
+        environment.""")
 
-    """
     # Last line empty to preserve spacing between last paragraph and calliope
     # attachment "Use --no-force-key-file-overwrite to disable."
-    ssh_key_file = parser.add_argument(
+    parser.add_argument(
         '--ssh-key-file',
-        help='The path to the SSH key file.')
-    ssh_key_file.detailed_help = """\
+        help="""\
         The path to the SSH key file. By default, this is ``{0}''.
-        """.format(ssh.Keys.DEFAULT_KEY_FILE)
+        """.format(ssh.Keys.DEFAULT_KEY_FILE))
 
   def Run(self, args):
     """Sets up resources to be used by concrete subclasses.
@@ -450,26 +446,24 @@ class BaseSSHCLICommand(BaseSSHCommand):
         help=('If provided, prints the command that would be run to standard '
               'out instead of executing it.'))
 
-    plain = parser.add_argument(
+    parser.add_argument(
         '--plain',
         action='store_true',
-        help='Suppresses the automatic addition of ssh/scp flags.')
-    plain.detailed_help = """\
+        help="""\
         Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
         is useful if you want to take care of authentication yourself or
         use specific ssh/scp features.
-        """
+        """)
 
-    strict_host_key = parser.add_argument(
+    parser.add_argument(
         '--strict-host-key-checking',
         choices=['yes', 'no', 'ask'],
-        help='Override the default behavior for ssh/scp StrictHostKeyChecking')
-    strict_host_key.detailed_help = """\
+        help="""\
         Override the default behavior of StrictHostKeyChecking. By default,
         StrictHostKeyChecking is set to 'no' the first time you connect to an
         instance and will be set to 'yes' for all subsequent connections. Use
         this flag to specify a value for the connection.
-        """
+        """)
 
   def Run(self, args):
     super(BaseSSHCLICommand, self).Run(args)

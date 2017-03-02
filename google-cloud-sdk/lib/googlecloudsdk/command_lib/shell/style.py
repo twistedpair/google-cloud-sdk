@@ -23,14 +23,20 @@ GREEN = '#008000'
 GRAY = '#666666'
 DARK_GRAY = '#333333'
 BLACK = '#000000'
+PURPLE = '#FF00FF'
+
+BOLD = 'bold'
+ITALIC = 'underline'  # there is no italic
 
 
-def Color(foreground=None, background=None):
+def Color(foreground=None, background=None, bold=False):
   components = []
   if foreground:
     components.append(foreground)
   if background:
     components.append('bg:' + background)
+  if bold:
+    components.append('bold')
   return ' '.join(components)
 
 
@@ -40,14 +46,17 @@ def GetDocumentStyle():
   prompt_styles.update({
       Token.Menu.Completions.Completion.Current: Color(BLUE, GRAY),
       Token.Menu.Completions.Completion: Color(BLUE, DARK_GRAY),
-      Token.Toolbar: Color(BLUE),
-      Token.Toolbar.Account: Color(),
-      Token.Toolbar.Separator: Color(),
-      Token.Toolbar.Project: Color(),
-      Token.Toolbar.Help: Color(),
-      Token.Prompt: Color(),
+      Token.Toolbar: BOLD,
+      Token.Toolbar.Account: BOLD,
+      Token.Toolbar.Separator: BOLD,
+      Token.Toolbar.Project: BOLD,
+      Token.Toolbar.Help: BOLD,
+      Token.Prompt: BOLD,
       Token.HSep: Color(GREEN),
-      Token.HelpToolbar.SectionName: Color(BLUE),
-      Token.HelpToolbar.SectionValue: Color(GREEN),
+      Token.Markdown.Section: BOLD,
+      Token.Markdown.Definition: BOLD,
+      Token.Markdown.Value: ITALIC,
+      Token.Markdown.Truncated: Color(background=DARK_GRAY),
+      Token.Purple: BOLD,
   })
   return styles.PygmentsStyle.from_defaults(style_dict=prompt_styles)

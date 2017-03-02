@@ -49,3 +49,5 @@ ADDITIONAL_DEFAULT_SCOPE_URIS = [
 
 # The default page size for list pagination.
 DEFAULT_PAGE_SIZE = 100
+
+ALLOW_ZERO_WORKERS_PROPERTY = 'dataproc:dataproc.allow.zero.workers'

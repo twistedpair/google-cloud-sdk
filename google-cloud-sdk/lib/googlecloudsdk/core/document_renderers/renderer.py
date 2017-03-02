@@ -74,7 +74,7 @@ class Renderer(object):
 
   def Finish(self):
     """Finishes all output document rendering."""
-    pass
+    return None
 
   def Font(self, unused_attr, unused_out=None):
     """Returns the font embellishment string for attr.
