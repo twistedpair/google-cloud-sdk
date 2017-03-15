@@ -203,7 +203,7 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
     config_contents: the contents of the Google Service Config file.
 
   Returns:
-    Config Id assigned by the server which is the service configuration Id
+    Result of the ServicesConfigsCreate request (a Service object)
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -215,8 +215,7 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
           serviceName=service_name,
           service=service_config,
       ))
-  service_resource = client.services_configs.Create(create_request)
-  return service_resource.id
+  return client.services_configs.Create(create_request)
 
 
 def GetServiceConfigIdFromSubmitConfigSourceResponse(response):

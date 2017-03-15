@@ -26,7 +26,7 @@ NAME = 'Python Compat'
 ALLOWED_RUNTIME_NAMES = ('python27', 'python-compat')
 PYTHON_RUNTIME_NAME = 'python27'
 
-# TODO(mmuller): this generated app.yaml doesn't work because the compat
+# TODO(b/36055866): this generated app.yaml doesn't work because the compat
 # runtimes need a "handlers" section.  Query the user for this information.
 PYTHON_APP_YAML = textwrap.dedent("""\
     env: flex
@@ -53,7 +53,7 @@ PYTHON27_DOCKERFILE_PREAMBLE = 'FROM gcr.io/google_appengine/python-compat\n'
 
 DOCKERFILE_INSTALL_APP = 'ADD . /app/\n'
 
-# TODO(mmuller): Do the check for requirements.txt in the source inspection
+# TODO(b/36057458): Do the check for requirements.txt in the source inspection
 # and don't generate the pip install if it doesn't exist.
 DOCKERFILE_INSTALL_REQUIREMENTS_TXT = (
     'RUN if [ -s requirements.txt ]; then pip install -r requirements.txt; '

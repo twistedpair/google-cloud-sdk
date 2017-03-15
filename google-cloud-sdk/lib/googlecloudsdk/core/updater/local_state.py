@@ -23,6 +23,7 @@ import compileall
 import errno
 import logging
 import os
+import re
 import shutil
 import sys
 
@@ -601,7 +602,9 @@ class InstallationState(object):
       ]
       for d in to_compile:
         d = console_attr.DecodeFromInput(d)
-        compileall.compile_dir(d, quiet=True)
+        # Using rx to skip unused Python3 directory vendored with gsutil's copy
+        # of httplib2.
+        compileall.compile_dir(d, rx=re.compile('python3'), quiet=True)
 
 
 class InstallationManifest(object):

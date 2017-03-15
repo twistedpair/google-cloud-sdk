@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20170217",
+ "revision": "20170227",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -188,10 +188,12 @@
       "APPROVER",
       "ATTRIBUTION",
       "AUTHORITY",
+      "JUSTIFICATION_TYPE",
       "NO_ATTR",
       "SECURITY_REALM"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

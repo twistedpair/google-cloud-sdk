@@ -380,20 +380,6 @@
         }
       }
     },
-    "ListTestMatricesResponse": {
-      "id": "ListTestMatricesResponse",
-      "description": "Response contain a list of Test Matrices.",
-      "type": "object",
-      "properties": {
-        "testMatrices": {
-          "description": "The set of test matrices.",
-          "type": "array",
-          "items": {
-            "$ref": "TestMatrix"
-          }
-        }
-      }
-    },
     "TestMatrix": {
       "id": "TestMatrix",
       "description": "A group of one or more TestExecutions, built by taking a\nproduct of values over a pre-defined set of axes.",
@@ -978,13 +964,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "CancelTestMatrixResponse": {
       "id": "CancelTestMatrixResponse",
       "description": "Response containing the current state of the specified test matrix.",
@@ -1061,31 +1040,6 @@
       "resources": {
         "testMatrices": {
           "methods": {
-            "list": {
-              "id": "testing.projects.testMatrices.list",
-              "path": "v1/projects/{projectId}/testMatrices",
-              "flatPath": "v1/projects/{projectId}/testMatrices",
-              "httpMethod": "GET",
-              "description": "List test matrices.\nThe matrices are returned in the order of newest first by submit time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the tests.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId"
-              ],
-              "response": {
-                "$ref": "ListTestMatricesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only"
-              ]
-            },
             "create": {
               "id": "testing.projects.testMatrices.create",
               "path": "v1/projects/{projectId}/testMatrices",
@@ -1148,37 +1102,6 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
-              ]
-            },
-            "delete": {
-              "id": "testing.projects.testMatrices.delete",
-              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
-              "httpMethod": "DELETE",
-              "description": "Delete all record of a test matrix plus any associated test executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
-              "parameters": {
-                "projectId": {
-                  "description": "Cloud project that owns the test.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "testMatrixId": {
-                  "description": "Test matrix that will be canceled.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId",
-                "testMatrixId"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
             "cancel": {

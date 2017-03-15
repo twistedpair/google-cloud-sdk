@@ -21,11 +21,20 @@ import StringIO
 import sys
 
 from googlecloudsdk.calliope import markdown
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.document_renderers import render_document
+
+
+class _AdditionalHelp(object):
+  """Simple class for passing additional help messages to Actions."""
+
+  def __init__(self, label, message):
+    self.label = label
+    self.message = message
 
 
 def FunctionExitAction(func):
@@ -414,3 +423,105 @@ def RenderDocumentAction(command, default_style=None):
       sys.exit(0)
 
   return Action
+
+
+def _PreActionHook(action_cls, func, additional_help=None):
+  """Allows an function hook to be injected before an Action executes.
+
+  Wraps an Action in another action that can execute an arbitrary function on
+  the argument value before passing invocation to underlying action.
+  This is useful for:
+  - Chaining actions together at runtime.
+  - Adding additional pre-processing or logging to an argument/flag
+  - Adding instrumentation to runtime execution of an flag without changing the
+  underlying intended behavior of the flag itself
+
+  Args:
+    action_cls: type object (must be subclass of argparse.Action) to be wrapped.
+        If None, argparse._StoreAction type is used as default.
+    func: callable, function to be executed before invoking the __call__ method
+        of the wrapped action. Takes value from command line.
+    additional_help: _AdditionalHelp, Additional help (label, message) to be
+        added to action help
+
+  Returns:
+    argparse.Action, wrapper action to use.
+
+  Raises:
+    ValueError: If action_cls or func are invalid types.
+  """
+  if not issubclass(action_cls, argparse.Action):
+    raise TypeError('action_cls should be subclass of argparse.Action')
+
+  if not callable(func):
+    raise TypeError('func should be a callable of the form func(value)')
+
+  class Action(argparse.Action):
+    """Action Wrapper Class."""
+
+    def __init__(self, *args, **kwargs):
+      if additional_help:
+        kwargs['help'] = '{0} {1} \n\n{2}'.format(
+            additional_help.label,
+            kwargs.pop('detailed_help', '') or kwargs.get('help', ''),
+            additional_help.message)
+
+      super(Action, self).__init__(*args, **kwargs)
+      self.wrapped_action = action_cls(*args, **kwargs)
+      self.func = func
+
+    def __call__(self, parser, namespace, value, option_string=None):
+      self.func(value)
+      self.wrapped_action(parser, namespace, value, option_string)
+
+  return Action
+
+
+def DeprecationAction(flag_name,
+                      show_message=lambda _: True,
+                      warn='Flag {flag_name} is deprecated.',
+                      error='Flag {flag_name} has been removed.',
+                      removed=False,
+                      action=None):
+  """Prints a warning or error message for a flag that is being deprecated.
+
+  Uses a _PreActionHook to wraps any existing Action on the flag and
+  also adds deprecation messaging to flag help.
+
+  Args:
+    flag_name: string, name of flag to be deprecated
+    show_message: callable, boolean function that takes the argument value
+        as input, validates it against some criteria and returns a boolean.
+        If true deprecation message is shown at runtime. Deprecation message
+        will always be appended to flag help.
+    warn: string, warning message, 'flag_name' template will be replaced with
+        value of flag_name parameter
+    error: string, error message, 'flag_name' template will be replaced with
+        value of flag_name parameter
+    removed: boolean, if True warning message will be printed when show_message
+        fails, if False error message will be printed
+    action: argparse.Action, action to be wrapped by this action
+
+  Returns:
+    argparse.Action, deprecation action to use.
+  """
+  if removed:
+    add_help = _AdditionalHelp('(REMOVED)', error.format(flag_name=flag_name))
+  else:
+    add_help = _AdditionalHelp('(DEPRECATED)', warn.format(flag_name=flag_name))
+
+  if not action:  # Default Action
+    action = argparse._StoreAction  # pylint:disable=protected-access
+
+  def DeprecationFunc(value):
+    if show_message(value):
+      if removed:
+        raise parser_errors.ArgumentException(add_help.message)
+      else:
+        log.warn(add_help.message)
+
+  return _PreActionHook(action, DeprecationFunc, add_help)
+
+
+
+

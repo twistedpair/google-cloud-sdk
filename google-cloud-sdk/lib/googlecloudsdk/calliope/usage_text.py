@@ -281,7 +281,7 @@ def PositionalDisplayString(arg, markdown=False):
   msg = arg.metavar or arg.dest.upper()
   if markdown:
     msg = _ApplyMarkdownItalic(msg)
-  return ' ' + WrapMessageInNargs(msg, arg.nargs)
+  return WrapMessageInNargs(msg, arg.nargs)
 
 
 def FlagDisplayString(arg, brief=False, markdown=False, inverted=False):
@@ -469,7 +469,7 @@ def GetUsage(command, argument_interceptor):
 
   command_path = ' '.join(command.GetPath())
   command_id = 'topic' if topic else 'command'
-  usage_parts = []
+  usage_parts = [command_path]
   optional_flags = []
 
   if not topic:
@@ -524,11 +524,7 @@ def GetUsage(command, argument_interceptor):
     usage_parts.append('<%s>' % ' | '.join(all_subtypes))
     optional_flags = None
 
-  usage_msg = ' '.join(usage_parts)
-
-  non_option = '{command} '.format(command=command_path)
-
-  buf.write(non_option + usage_msg + '\n')
+  buf.write(' '.join(usage_parts) + '\n')
 
   if groups:
     WrapWithPrefix('group may be', ' | '.join(groups),

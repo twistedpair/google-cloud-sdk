@@ -161,6 +161,7 @@ RESOURCE_REGISTRY = {
     # cloud key management system
     'cloudkms.projects.locations':
         resource_info.ResourceInfo(
+            bypass_cache=True,
             list_format="""
           table(
             locationId
@@ -510,6 +511,7 @@ RESOURCE_REGISTRY = {
         """,),
     'compute.instances':
         resource_info.ResourceInfo(
+            async_collection='compute.operations',
             cache_command='compute instances list',
             list_format="""
           table(
@@ -810,11 +812,11 @@ RESOURCE_REGISTRY = {
           table(
             digest.slice(7:19).join(''),
             tags.list(),
-            timestamp.date(),
-            BUILD_DETAILS.buildDetails.provenance.sourceProvenance.sourceContext.context.cloudRepo.revisionId.notnull().list().slice(:8).join(''):label=GIT_SHA,
-            PACKAGE_VULNERABILITY.vulnerabilityDetails.severity.notnull().count().list():label=VULNERABILITIES,
-            IMAGE_BASIS.derivedImage.sort(distance).map().extract(baseResourceUrl).slice(:1).map().list().list().split('//').slice(1:).list().split('@').slice(:1).list():label=FROM,
-            BUILD_DETAILS.buildDetails.provenance.id.notnull().list():label=BUILD
+            timestamp.date():optional,
+            BUILD_DETAILS.buildDetails.provenance.sourceProvenance.sourceContext.context.cloudRepo.revisionId.notnull().list().slice(:8).join(''):optional:label=GIT_SHA,
+            PACKAGE_VULNERABILITY.vulnerabilityDetails.severity.notnull().count().list():optional:label=VULNERABILITIES,
+            IMAGE_BASIS.derivedImage.sort(distance).map().extract(baseResourceUrl).slice(:1).map().list().list().split('//').slice(1:).list().split('@').slice(:1).list():optional:label=FROM,
+            BUILD_DETAILS.buildDetails.provenance.id.notnull().list():optional:label=BUILD
           )
         """,),
     'container.projects.zones.clusters':

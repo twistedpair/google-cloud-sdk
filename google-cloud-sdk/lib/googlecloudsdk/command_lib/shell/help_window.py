@@ -80,6 +80,8 @@ def GenerateHelpContent(cli, width):
     return GenerateHelpForCommand(tok, width)
   elif tok.token_type == gcloud_parser.ArgTokenType.FLAG:
     return GenerateHelpForFlag(tok, width)
+  elif tok.token_type == gcloud_parser.ArgTokenType.FLAG_ARG:
+    return GenerateHelpForFlag(tok, width)
   elif tok.token_type == gcloud_parser.ArgTokenType.POSITIONAL:
     return GenerateHelpForPositional(tok, width)
 
@@ -139,13 +141,3 @@ def GenerateHelpForPositional(token, width):
   return render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
           width=width, height=HELP_WINDOW_HEIGHT), fin=fin).Run()
-
-
-def GetHelpTokens(cli):
-  doc = cli.current_buffer.document
-  tok = GetCurrentToken(gcloud_parser.ParseLine(doc.text), doc.cursor_position)
-  if tok is None:
-    return []
-
-  return [(Token.HelpToolbar.SectionName, 'Description: '),
-          (Token.HelpToolbar.SectionValue, tok.tree['description'])]

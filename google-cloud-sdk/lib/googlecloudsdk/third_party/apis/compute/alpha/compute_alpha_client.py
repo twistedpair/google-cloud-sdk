@@ -3889,7 +3889,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -7011,7 +7011,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -10085,7 +10085,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message

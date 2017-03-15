@@ -20,7 +20,7 @@ changes here.  See ./ext_runtimes/runtime_defs/nodejs instead.
 import textwrap
 
 
-# TODO(mmuller): move these into the node_app directory.
+# TODO(b/36050883): move these into the node_app directory.
 NODEJS_APP_YAML = textwrap.dedent("""\
     env: flex
     runtime: {runtime}

@@ -188,7 +188,7 @@ def _CheckTriggerProviderArgs(args):
   if args.trigger_topic:
     return _TopicTrigger(args.trigger_topic)
 
-  # TODO(user): move validation to a separate function.
+  # TODO(b/36020181): move validation to a separate function.
   trigger_provider = args.trigger_provider
   trigger_event = args.trigger_event
   trigger_resource = args.trigger_resource

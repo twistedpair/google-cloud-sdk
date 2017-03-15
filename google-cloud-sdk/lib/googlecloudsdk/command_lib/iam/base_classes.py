@@ -47,7 +47,7 @@ class BaseIamCommand(base.Command):
     """Specifies the iam messages namespace."""
     return self.context['iam-messages']
 
-  # TODO(user): b/25212870
+  # TODO(b/36051090): b/25212870
   # We don't yet have support for atomic names in gcloud resources. When we
   # do, this is the code we'll need to invoke.
   def ParseServiceAccount(self, email):

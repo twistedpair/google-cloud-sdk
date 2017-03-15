@@ -238,6 +238,8 @@ BETA_SETTINGS = 'beta_settings'
 VM_HEALTH_CHECK = 'vm_health_check'
 HEALTH_CHECK = 'health_check'
 RESOURCES = 'resources'
+LIVENESS_CHECK = 'liveness_check'
+READINESS_CHECK = 'readiness_check'
 NETWORK = 'network'
 VERSION = 'version'
 MAJOR_VERSION = 'major_version'
@@ -344,7 +346,9 @@ TIMEOUT_SEC = 'timeout_sec'
 UNHEALTHY_THRESHOLD = 'unhealthy_threshold'
 HEALTHY_THRESHOLD = 'healthy_threshold'
 RESTART_THRESHOLD = 'restart_threshold'
+INITIAL_DELAY_SEC = 'initial_delay_sec'
 HOST = 'host'
+PATH = 'path'
 
 # Attributes for Resources.
 CPU = 'cpu'
@@ -1704,6 +1708,29 @@ class HealthCheck(validation.Validated):
       HOST: validation.Optional(validation.TYPE_STR)}
 
 
+class LivenessCheck(validation.Validated):
+  """Class representing the liveness check configuration."""
+  ATTRIBUTES = {
+      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      INITIAL_DELAY_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      PATH: validation.Optional(validation.TYPE_STR),
+      HOST: validation.Optional(validation.TYPE_STR)}
+
+
+class ReadinessCheck(validation.Validated):
+  """Class representing the readiness check configuration."""
+  ATTRIBUTES = {
+      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      PATH: validation.Optional(validation.TYPE_STR),
+      HOST: validation.Optional(validation.TYPE_STR)}
+
+
 class VmHealthCheck(HealthCheck):
   """Class representing the configuration of the VM health check.
 
@@ -2005,7 +2032,10 @@ class AppInfoExternal(validation.Validated):
       ENV: validation.Optional(ENV_RE_STRING),
       ENDPOINTS_API_SERVICE: validation.Optional(EndpointsApiService),
       # The SDK will use this for generated Dockerfiles
-      ENTRYPOINT: validation.Optional(validation.Type(str)),
+      # hasattr guard the new Exec() validator temporarily
+      ENTRYPOINT: validation.Optional(
+          validation.Exec() if hasattr(
+              validation, 'Exec') else validation.Type(str)),
       RUNTIME_CONFIG: validation.Optional(RuntimeConfig),
       INSTANCE_CLASS: validation.Optional(validation.Type(str)),
       SOURCE_LANGUAGE: validation.Optional(
@@ -2019,6 +2049,8 @@ class AppInfoExternal(validation.Validated):
       VM_HEALTH_CHECK: validation.Optional(VmHealthCheck),  # Deprecated
       HEALTH_CHECK: validation.Optional(HealthCheck),
       RESOURCES: validation.Optional(Resources),
+      LIVENESS_CHECK: validation.Optional(LivenessCheck),
+      READINESS_CHECK: validation.Optional(ReadinessCheck),
       NETWORK: validation.Optional(Network),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),

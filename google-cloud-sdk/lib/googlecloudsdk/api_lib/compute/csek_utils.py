@@ -35,7 +35,7 @@ class InvalidKeyFileException(core_exceptions.Error):
   def __init__(self, base_message):
     super(InvalidKeyFileException, self).__init__(
         '{0}'.format(base_message))
-    # TODO(user) Update this message to include
+    # TODO(b/36050347) Update this message to include
     # a lint to friendly documentation.
 
 
@@ -224,7 +224,7 @@ def AddCsekKeyArgs(parser, flags_about_creation=True, resource_type='resource'):
       creating, mounting, or snapshotting disks.
       See {csek_help} for more details.
       """.format(resource=resource_type, csek_help=CSEK_HELP_URL))
-  # TODO(user)
+  # TODO(b/36057457)
   # Argument - indicates the key file should be read from stdin.'
 
   if flags_about_creation:
@@ -386,7 +386,7 @@ class CsekKeyStore(object):
 
     for pat, key in self.state.iteritems():
       if pat.Matches(resource):
-        # TODO(user) what's the best thing to do if there are multiple
+        # TODO(b/36050486) what's the best thing to do if there are multiple
         # matches?
         if search_state[0]:
           raise InvalidKeyFileException(

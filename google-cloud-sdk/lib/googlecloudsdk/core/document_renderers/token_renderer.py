@@ -14,7 +14,7 @@
 
 """Cloud SDK markdown document token renderer.
 
-This is different from the other renders:
+This is different from the other renderers:
 
 (1) The output is a list of (token, text) tuples returned by
     TokenRenderer.Finish().
@@ -123,13 +123,61 @@ class TokenRenderer(renderer.Renderer):
     self._tokens = []
     self._truncated = False
 
+  def _Truncate(self, tokens, overflow):
+    """Injects a truncation indicator token and rejects subsequent tokens.
+
+    Args:
+      tokens: The last line of tokens at the output height. The part of the
+        line within the output width will be visible, modulo the trailing
+        truncation marker token added here.
+      overflow: If not None then this is a (word, available) tuple from Fill()
+        where word caused the line width overflow and available is the number of
+        characters available in the current line before ' '+word would be
+        appended.
+
+    Returns:
+      A possibly altered list of tokens that form the last output line.
+    """
+    self._truncated = True
+    marker_string = '...'
+    marker_width = len(marker_string)
+    marker_token = (Token.Markdown.Truncated, marker_string)
+    if tokens and overflow:
+      word, available = overflow  # pylint: disable=unpacking-non-sequence
+      if marker_width == available:
+        # Exactly enough space for the marker.
+        pass
+      elif (marker_width + 1) <= available:
+        # The marker can replace the trailing characters in the overflow word.
+        word = ' ' + self._UnFormat(word)[:available-marker_width-1]
+        tokens.append((self._current_token_type, word))
+      else:
+        # Truncate the token list so the marker token can fit.
+        truncated_tokens = []
+        available = self._width
+        for token in tokens:
+          word = token[self.TOKEN_TEXT_INDEX]
+          width = self._attr.DisplayWidth(word)
+          available -= width
+          if available <= marker_width:
+            trim = marker_width - available
+            if trim:
+              word = word[:-trim]
+            truncated_tokens.append((token[self.TOKEN_TYPE_INDEX], word))
+            break
+          truncated_tokens.append(token)
+        tokens = truncated_tokens
+    tokens.append(marker_token)
+    return tokens
+
   def _NewLine(self, overflow=None):
     """Adds the current token list to the line list.
 
     Args:
-      overflow: If not None then this is a (word, width, available) tuple
-        from Fill() where word with width caused the overflow and available is
-        the number of characters available in the current line.
+      overflow: If not None then this is a (word, available) tuple from Fill()
+        where word caused the line width overflow and available is the number of
+        characters available in the current line before ' '+word would be
+        appended.
     """
     tokens = self._tokens
     self._tokens = []
@@ -140,35 +188,9 @@ class TokenRenderer(renderer.Renderer):
       while (self._lines[-1] and
              self._lines[-1][-1][self.TOKEN_TEXT_INDEX].isspace()):
         self._lines[-1] = self._lines[-1][:-1]
-    if self._height and len(self._lines) >= self._height:
-      # Out of real estate. Inject a truncation indicator token and reject
-      # subsequent tokens.
-      self._truncated = True
-      marker_string = '...'
-      marker_width = len(marker_string)
-      marker_token = (Token.Markdown.Truncated, marker_string)
-      if not self._lines[-1]:
-        self._lines[-1] = [marker_token]
-      else:
-        if False and overflow:
-          word, _, available = overflow  # pylint: disable=unpacking-non-sequence
-          if marker_width == available:
-            self._lines[-1].append(marker_token)
-            return
-          if (marker_width + 1) <= available:
-            word = ' ' + self._UnFormat(word)[:-marker_width]
-            self._lines[-1].append((self._current_token_type, word))
-            self._lines[-1].append(marker_token)
-            return
-        text = self._lines[-1][-1][self.TOKEN_TEXT_INDEX]
-        if len(text) >= marker_width:
-          self._lines[-1][-1] = (tokens[-1][self.TOKEN_TYPE_INDEX],
-                                 text[:-marker_width])
-          self._lines[-1].append(marker_token)
-        else:
-          self._lines[-1][-1] = marker_token
-    else:
-      self._lines.append(tokens)
+    if self._height and (len(self._lines) + int(bool(tokens))) >= self._height:
+      tokens = self._Truncate(tokens, overflow)
+    self._lines.append(tokens)
 
   def _MergeOrAddToken(self, text, token_type):
     """Merges text if the previous token_type matches or appends a new token."""
@@ -236,10 +258,7 @@ class TokenRenderer(renderer.Renderer):
     if len(parts) > 1:
       self._AddToken('=', Token.Markdown.Normal)
       self._AddToken(parts[1], Token.Markdown.Value)
-    if False and self._compact:  # TODO(user): drop with UX reviewers OK
-      self._fill += self._attr.DisplayWidth(text)
-    else:
-      self._NewLine()
+    self._NewLine()
 
   def _Flush(self):
     """Flushes the current collection of Fill() lines."""
@@ -323,7 +342,7 @@ class TokenRenderer(renderer.Renderer):
       width = self._attr.DisplayWidth(word)
       available = self._width - self._fill
       if (width + 1) >= available and not self._ignore_width:
-        self._NewLine(overflow=(word, width, available))
+        self._NewLine(overflow=(word, available))
         self._fill = self._indent[self._level].indent
         self._AddToken(' ' * self._fill)
       else:

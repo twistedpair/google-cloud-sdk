@@ -983,30 +983,50 @@ class DataflowProjectsTemplatesCreateRequest(_messages.Message):
 class DataflowProjectsTemplatesGetRequest(_messages.Message):
   """A DataflowProjectsTemplatesGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The view to retrieve. Defaults to METADATA_ONLY.
+
   Fields:
     gcsPath: Required. A Cloud Storage path to the template from which to
       create the job. Must be a valid Cloud Storage URL, beginning with
       `gs://`.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
+    view: The view to retrieve. Defaults to METADATA_ONLY.
   """
 
-  gcsPath = _messages.StringField(1, required=True)
+  class ViewValueValuesEnum(_messages.Enum):
+    """The view to retrieve. Defaults to METADATA_ONLY.
+
+    Values:
+      METADATA_ONLY: <no description>
+    """
+    METADATA_ONLY = 0
+
+  gcsPath = _messages.StringField(1)
   projectId = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
-class DataflowProjectsTemplatesValidateRequest(_messages.Message):
-  """A DataflowProjectsTemplatesValidateRequest object.
+class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
+  """A DataflowProjectsTemplatesLaunchRequest object.
 
   Fields:
-    createJobFromTemplateRequest: A CreateJobFromTemplateRequest resource to
-      be passed as the request body.
+    dryRun: Whether or not the job should actually be executed after
+      validating parameters. Defaults to false. Validation errors do not cause
+      the HTTP request to fail if true.
+    gcsPath: Required. A Cloud Storage path to the template from which to
+      create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    launchTemplateParameters: A LaunchTemplateParameters resource to be passed
+      as the request body.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
   """
 
-  createJobFromTemplateRequest = _messages.MessageField('CreateJobFromTemplateRequest', 1)
-  projectId = _messages.StringField(2, required=True)
+  dryRun = _messages.BooleanField(1)
+  gcsPath = _messages.StringField(2)
+  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 3)
+  projectId = _messages.StringField(4, required=True)
 
 
 class DataflowProjectsWorkerMessagesRequest(_messages.Message):
@@ -1440,6 +1460,20 @@ class GetDebugConfigResponse(_messages.Message):
   """
 
   config = _messages.StringField(1)
+
+
+class GetTemplateResponse(_messages.Message):
+  """The response to a GetTemplate request.
+
+  Fields:
+    metadata: The template metadata describing the template name, available
+      parameters, etc.
+    status: The status of the get template request. Any problems with the
+      request will be indicated in the error_details.
+  """
+
+  metadata = _messages.MessageField('TemplateMetadata', 1)
+  status = _messages.MessageField('Status', 2)
 
 
 class InstructionInput(_messages.Message):
@@ -1989,6 +2023,61 @@ class KeyRangeLocation(_messages.Message):
   end = _messages.StringField(3)
   persistentDirectory = _messages.StringField(4)
   start = _messages.StringField(5)
+
+
+class LaunchTemplateParameters(_messages.Message):
+  """Parameters to provide to the template being launched.
+
+  Messages:
+    ParametersValue: The runtime parameters to pass to the job.
+
+  Fields:
+    environment: The runtime environment for the job.
+    jobName: Required. The job name to use for the created job.
+    parameters: The runtime parameters to pass to the job.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    """The runtime parameters to pass to the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  environment = _messages.MessageField('RuntimeEnvironment', 1)
+  jobName = _messages.StringField(2)
+  parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class LaunchTemplateResponse(_messages.Message):
+  """Response to the request to launch a template.
+
+  Fields:
+    job: The job that was launched, if the request was not a dry run and the
+      job was successfully launched.
+    status: The status of the launch template request. Any problems with the
+      request will be indicated in the error_details.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  status = _messages.MessageField('Status', 2)
 
 
 class LeaseWorkItemRequest(_messages.Message):
@@ -3665,17 +3754,6 @@ class TemplateMetadata(_messages.Message):
   description = _messages.StringField(2)
   name = _messages.StringField(3)
   parameters = _messages.MessageField('ParameterMetadata', 4, repeated=True)
-
-
-class TemplateValidationResult(_messages.Message):
-  """The result of validating a CretaeJobFromTemplateRequest.
-
-  Fields:
-    status: The status of the creation request. Any problems with the request
-      will be indicated in the error_details.
-  """
-
-  status = _messages.MessageField('Status', 1)
 
 
 class TopologyConfig(_messages.Message):

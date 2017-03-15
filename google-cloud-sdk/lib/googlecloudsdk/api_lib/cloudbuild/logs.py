@@ -158,7 +158,12 @@ class CloudBuildClient(object):
     if not build.logsBucket:
       raise NoLogsBucketException()
 
-    log_stripped = build.logsBucket.lstrip('gs://')
+    # remove gs:// prefix from bucket
+    log_stripped = build.logsBucket
+    gcs_prefix = 'gs://'
+    if log_stripped.startswith(gcs_prefix):
+      log_stripped = log_stripped[len(gcs_prefix):]
+
     if '/' not in log_stripped:
       log_bucket = log_stripped
       log_object_dir = ''

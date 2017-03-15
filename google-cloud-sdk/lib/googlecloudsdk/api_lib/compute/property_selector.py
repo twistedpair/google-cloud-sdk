@@ -212,7 +212,7 @@ def _Filter(obj, properties):
       else:
         head_to_tail[head] = [tail]
 
-  # TODO(user): Whenever head_to_tail is constructed, ensure that
+  # TODO(b/36057456): Whenever head_to_tail is constructed, ensure that
   # all keys are either of type _Key or of type _Index|_Slice. On
   # failure, raise an exception saying that "property x conflicts with
   # property y".

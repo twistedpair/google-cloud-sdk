@@ -27,7 +27,8 @@ import re
 import types
 import urllib
 
-from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -677,9 +678,11 @@ class Registry(object):
       if registered_versions:
         # Use last registered api version as default.
         return registered_versions[-1]
-      api_version = core_apis.GetDefaultVersion(api_name)
+      # pylint:disable=protected-access
+      api_version = apis_internal._GetDefaultVersion(api_name)
 
-    for collection in core_apis.GetApiCollections(api_name, api_version):
+    # pylint:disable=protected-access
+    for collection in apis_internal._GetApiCollections(api_name, api_version):
       self._RegisterCollection(collection)
 
     self.registered_apis[api_name].append(api_version)
@@ -838,7 +841,7 @@ class Registry(object):
     if properties.VALUES.core.enable_gri.GetBool():
       # If collection is set already, it will be validated in the split method.
       # If it is unknown, it will come back with the parsed collection or None.
-      # TODO(user): Ideally we would pass the parsed GRI to the parser
+      # TODO(b/35869924): Ideally we would pass the parsed GRI to the parser
       # instead of reparsing it there, but this library would need some
       # refactoring to make that clean.
       collection = _GRI.FromString(
@@ -900,7 +903,8 @@ class Registry(object):
     if not match:
       raise InvalidResourceException('unknown API host: [{0}]'.format(url))
 
-    default_enpoint_url = core_apis.GetDefaultEndpointUrl(url)
+    # pylint:disable=protected-access
+    default_enpoint_url = apis_internal._GetDefaultEndpointUrl(url)
     api_name, api_version, resource_path = (
         resource_util.SplitDefaultEndpointUrl(default_enpoint_url))
     if not url.startswith(default_enpoint_url):
@@ -908,8 +912,8 @@ class Registry(object):
       api_version = self.registered_apis.get(api_name, [api_version])[-1]
 
     try:
-      versions = core_apis.GetVersions(api_name)
-    except core_apis.UnknownAPIError:
+      versions = apis_internal._GetVersions(api_name)
+    except apis_util.UnknownAPIError:
       raise InvalidResourceException(url)
     if api_version not in versions:
       raise InvalidResourceException(url)
@@ -920,7 +924,7 @@ class Registry(object):
     # Register relevant API if necessary and possible
     try:
       self.RegisterApiByName(api_name, api_version=api_version)
-    except (core_apis.UnknownAPIError, core_apis.UnknownVersionError):
+    except (apis_util.UnknownAPIError, apis_util.UnknownVersionError):
       # The caught InvalidResourceException has a less detailed message.
       raise InvalidResourceException(url)
 
@@ -1053,7 +1057,7 @@ class Registry(object):
                 resource_id=None,
                 kwargs={'bucket': bucket, 'object': objectpath})
           raise
-        # TODO(user): consider not doing this here.
+        # TODO(b/35870652): consider not doing this here.
         # Validation of the argument is a distict concern.
         if (enforce_collection and collection and
             ref.Collection() != collection):
@@ -1089,7 +1093,8 @@ class Registry(object):
     self.registered_apis = collections.defaultdict(list)
 
 
-# TODO(user): Deglobalize this object, force gcloud to manage it on its own.
+# TODO(b/35870654): Deglobalize this object, force gcloud to manage it on its
+# own.
 REGISTRY = Registry()
 
 
@@ -1104,7 +1109,8 @@ def _GetApiBaseUrl(api_name, api_version):
     if base_url is not None:
       # Check base url style. If it includes api version then override
       # also replaces the version, otherwise it only overrides the domain.
-      client_class = core_apis.GetClientClass(api_name, api_version)
+      # pylint:disable=protected-access
+      client_class = apis_internal._GetClientClass(api_name, api_version)
       _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
           client_class.BASE_URL)
       if url_version is None:

@@ -679,7 +679,7 @@ def RunExecutable(cmd_args, strict_error_checking=True,
       stdout, stderr = output_file, output_file
     if (platforms.OperatingSystem.IsWindows() and
         not cmd_args[0].endswith('winkeygen.exe')):
-      # TODO(user): b/25126583 will drop StrictHostKeyChecking=no and 'y'.
+      # TODO(b/25126583): Drop StrictHostKeyChecking=no and 'y'.
       # PuTTY and friends always prompt on fingerprint mismatch. A 'y' response
       # adds/updates the fingerprint registry entry and proceeds. The prompt
       # will appear once for each new/changed host. Redirecting stdin is not a

@@ -46,7 +46,7 @@ def IsExpired(timestamp_rfc3993_str):
   return False
 
 # Parsing code for rfc3339 timestamps, taken from Google's rfc3339.py.
-# TODO(user): Investigate opensourcing rfc3999.py
+# TODO(b/36050348): Investigate opensourcing rfc3999.py
 
 
 def Strptime(rfc3339_str):

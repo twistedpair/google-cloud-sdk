@@ -33,7 +33,8 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
         'Invalid value for flag_name: ' + flag_name +
         '. Must be either autorepair or autoupgrade')
   plural = flag_name + 's'
+  link = 'node-management' if flag_name == 'autoupgrade' else 'node-auto-repair'
   return ('This will {0} the {1} feature for nodes. Please see\n'
           'https://cloud.google.com/container-engine/docs/'
-          'node-management for more\n'
-          'information on node {2}.\n').format(action, flag_name, plural)
+          '{2} for more\n'
+          'information on node {3}.\n').format(action, flag_name, link, plural)

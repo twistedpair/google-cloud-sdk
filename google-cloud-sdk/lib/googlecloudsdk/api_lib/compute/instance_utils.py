@@ -421,7 +421,7 @@ def CreatePersistentAttachedDiskMessages(
     if boot:
       boot_disk_ref = disk_ref
 
-    # TODO(user) drop test after CSEK goes GA
+    # TODO(b/36051031) drop test after CSEK goes GA
     if csek_keys:
       disk_key_or_none = csek_utils.MaybeLookupKeyMessage(
           csek_keys, disk_ref, compute)

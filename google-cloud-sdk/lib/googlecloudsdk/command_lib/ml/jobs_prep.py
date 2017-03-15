@@ -17,6 +17,7 @@ The main entry point is UploadPythonPackages, which takes in parameters derived
 from the command line arguments and returns a list of URLs to be given to the
 Cloud ML Engine API. See its docstring for details.
 """
+import abc
 import collections
 import contextlib
 import cStringIO
@@ -188,6 +189,93 @@ def _TempDirOrBackup(default_dir):
     yield default_dir
 
 
+class _SetupPyCommand(object):
+  """A command to run setup.py in a given environment.
+
+  Includes the Python version to use and the arguments with which to run
+  setup.py.
+
+  Attributes:
+    setup_py_path: str, the path to the setup.py file
+    setup_py_args: list of str, the arguments with which to call setup.py
+    package_root: str, path to the directory containing the package to build
+      (must be writable, or setuptools will fail)
+  """
+
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, setup_py_path, setup_py_args, package_root):
+    self.setup_py_path = setup_py_path
+    self.setup_py_args = setup_py_args
+    self.package_root = package_root
+
+  @abc.abstractmethod
+  def GetArgs(self):
+    """Returns arguments to use for execution (including Python executable)."""
+    raise NotImplementedError()
+
+  @abc.abstractmethod
+  def GetEnv(self):
+    """Returns the environment dictionary to use for Python execution."""
+    raise NotImplementedError()
+
+  def Execute(self, out):
+    """Run the configured setup.py command.
+
+    Args:
+      out: a stream to which the command output should be written.
+
+    Returns:
+      int, the return code of the command.
+    """
+    return execution_utils.Exec(
+        self.GetArgs(),
+        no_exit=True, out_func=out.write, err_func=out.write,
+        cwd=self.package_root, env=self.GetEnv())
+
+
+class _CloudSdkPythonSetupPyCommand(_SetupPyCommand):
+  """A command that uses the Cloud SDK Python environment.
+
+  It uses the same OS environment, plus the same PYTHONPATH.
+
+  This is preferred, since it's more controlled.
+  """
+
+  def GetArgs(self):
+    try:
+      return execution_utils.ArgsForPythonTool(self.setup_py_path,
+                                               *self.setup_py_args)
+    except ValueError:
+      # The most common cause of ValueError for ArgsForPythonTool is a missing
+      # executable; we want to display a more specific error in this case.
+      if not sys.executable:
+        raise SysExecutableMissingError()
+    raise
+
+  def GetEnv(self):
+    exec_env = os.environ.copy()
+    exec_env['PYTHONPATH'] = os.pathsep.join(sys.path)
+    return exec_env
+
+
+class _SystemPythonSetupPyCommand(_SetupPyCommand):
+  """A command that uses the system Python environment.
+
+  Uses the same executable as the Cloud SDK.
+
+  Important in case of e.g. a setup.py file that has non-stdlib dependencies.
+  """
+
+  def GetArgs(self):
+    if not sys.executable:
+      raise SysExecutableMissingError()
+    return [sys.executable, self.setup_py_path] + self.setup_py_args
+
+  def GetEnv(self):
+    return None
+
+
 def _RunSetupTools(package_root, setup_py_path, output_dir):
   """Executes the setuptools `sdist` command.
 
@@ -195,6 +283,28 @@ def _RunSetupTools(package_root, setup_py_path, output_dir):
   given by setup_py_path) with arguments to put the final output in output_dir
   and all possible temporary files in a temporary directory. package_root is
   used as the working directory.
+
+  May attempt to run setup.py multiple times with different
+  environments/commands if any execution fails:
+
+  1. Using the Cloud SDK Python environment, with a full setuptools invocation
+     (`egg_info`, `build`, and `sdist`).
+  2. Using the system Python environment, with a full setuptools invocation
+     (`egg_info`, `build`, and `sdist`).
+  3. Using the Cloud SDK Python environment, with an intermediate setuptools
+     invocation (`build` and `sdist`).
+  4. Using the system Python environment, with an intermediate setuptools
+     invocation (`build` and `sdist`).
+  5. Using the Cloud SDK Python environment, with a simple setuptools
+     invocation which will also work for plain distutils-based setup.py (just
+     `sdist`).
+  6. Using the system Python environment, with a simple setuptools
+     invocation which will also work for plain distutils-based setup.py (just
+     `sdist`).
+
+  The reason for this order is that it prefers first the setup.py invocations
+  which leave the fewest files on disk. Then, we prefer the Cloud SDK execution
+  environment as it will be the most stable.
 
   package_root must be writable, or setuptools will fail (there are
   temporary files from setuptools that get put in the CWD).
@@ -213,33 +323,41 @@ def _RunSetupTools(package_root, setup_py_path, output_dir):
     SysExecutableMissingError: if sys.executable is None
     RuntimeError: if the execution of setuptools exited non-zero.
   """
-  if not sys.executable:
-    raise SysExecutableMissingError()
-
-  # We could just include the 'sdist' command and its flags here, but we want
-  # to avoid leaving artifacts in the setup directory. That's what the
-  # 'egg_info' and 'build' options do (these are both invoked as subcommands
-  # of 'sdist').
   # Unfortunately, there doesn't seem to be any easy way to move *all*
   # temporary files out of the current directory, so we'll fail here if we
   # can't write to it.
   with _TempDirOrBackup(package_root) as working_dir:
-    args = [sys.executable, setup_py_path,
-            'egg_info', '--egg-base', working_dir,
-            'build', '--build-base', working_dir, '--build-temp', working_dir,
-            'sdist', '--dist-dir', output_dir]
-    out = cStringIO.StringIO()
-    if execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                            err_func=out.write, cwd=package_root):
-      # If the first execution doesn't work, it might be because setup.py is
-      # using distutils. We still want to try it that way because it leaves
-      # fewer droppings (that is, leftover files) on disk.
-      args = [sys.executable, setup_py_path,
-              'sdist', '--dist-dir', output_dir]
+    # Simpler, but more messy (leaves artifacts on disk) command. This will work
+    # for both distutils- and setuputils-based setup.py files.
+    sdist_args = ['sdist', '--dist-dir', output_dir]
+    # The 'build' and 'egg_info commands (which are invoked anyways as a
+    # subcommands of 'sdist') are included to ensure that the fewest possible
+    # artifacts are left on disk.
+    build_args = [
+        'build', '--build-base', working_dir, '--build-temp', working_dir]
+    # Some setuptools versions don't support directly running the egg_info
+    # command
+    egg_info_args = ['egg_info', '--egg-base', working_dir]
+    setup_py_arg_sets = (
+        egg_info_args + build_args + sdist_args,
+        build_args + sdist_args,
+        sdist_args)
+
+    # See docstring for the reasoning behind this order.
+    setup_py_commands = []
+    for setup_py_args in setup_py_arg_sets:
+      setup_py_commands.append(_CloudSdkPythonSetupPyCommand(
+          setup_py_path, setup_py_args, package_root))
+      setup_py_commands.append(_SystemPythonSetupPyCommand(
+          setup_py_path, setup_py_args, package_root))
+
+    for setup_py_command in setup_py_commands:
       out = cStringIO.StringIO()
-      if execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                              err_func=out.write, cwd=package_root):
-        raise RuntimeError(out.getvalue())
+      return_code = setup_py_command.Execute(out)
+      if not return_code:
+        break
+    else:
+      raise RuntimeError(out.getvalue())
 
   local_paths = [os.path.join(output_dir, rel_file)
                  for rel_file in os.listdir(output_dir)]

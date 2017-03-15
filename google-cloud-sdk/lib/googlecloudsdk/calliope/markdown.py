@@ -301,9 +301,9 @@ class MarkdownGenerator(object):
         text or '',
         command=self._command_name,
         man_name=self._file_name,
-        top_command=self._command_path[0],
+        top_command=self._command_path[0] if self._command_path else '',
         parent_command=' '.join(self._command_path[:-1]),
-        index=self._capsule,  # TODO(user): This should be capsule=...
+        index=self._capsule,
         description=description,
         **details
     )
@@ -480,7 +480,7 @@ class MarkdownGenerator(object):
       if arg.nargs == argparse.REMAINDER or arg.metavar.startswith('-- '):
         break
       positional_args.pop(0)
-      self._out(usage_text.PositionalDisplayString(arg, markdown=True))
+      self._out(' ' + usage_text.PositionalDisplayString(arg, markdown=True))
 
     if self._subcommands and self._subgroups:
       self._out(' ' + em + 'GROUP' + em + ' | ' + em + 'COMMAND' + em)
@@ -527,13 +527,13 @@ class MarkdownGenerator(object):
 
     # positional_args will only be non-empty if we had -- ... or REMAINDER left.
     for arg in self._FilterOutHidden(positional_args):
-      self._out(usage_text.PositionalDisplayString(arg, markdown=True))
+      self._out(' ' + usage_text.PositionalDisplayString(arg, markdown=True))
 
     self._out('\n')
 
   def PrintPositionalDefinition(self, arg):
     self._out('\n{0}::\n'.format(
-        usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
+        usage_text.PositionalDisplayString(arg, markdown=True)))
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
 
   def PrintFlagDefinition(self, flag, disable_header=False):
@@ -745,6 +745,8 @@ class MarkdownGenerator(object):
 
   def _AddCommandLinkMarkdown(self, doc):
     r"""Add ([`*])command ...\1 link markdown to doc."""
+    if not self._command_path:
+      return doc
     top = self._command_path[0]
     # This pattern matches "([`*]){top} {arg}*\1" where {top}...{arg} is a
     # known command. The negative lookbehind prefix prevents hyperlinks in
@@ -774,6 +776,8 @@ class MarkdownGenerator(object):
 
   def _AddCommandLineLinkMarkdown(self, doc):
     """Add $ command ... link markdown to doc."""
+    if not self._command_path:
+      return doc
     top = self._command_path[0]
     # This pattern matches "$ {top} {arg}*" where each arg is lower case and
     # does not start with example-, my-, or sample-. This follows the style
@@ -802,6 +806,8 @@ class MarkdownGenerator(object):
 
   def _AddManPageLinkMarkdown(self, doc):
     """Add gcloud ...(1) man page link markdown to doc."""
+    if not self._command_path:
+      return doc
     top = self._command_path[0]
     pat = re.compile(r'(\*?(' + top + r'(?:[-_ a-z])*)\*?)\(1\)')
     pos = 0

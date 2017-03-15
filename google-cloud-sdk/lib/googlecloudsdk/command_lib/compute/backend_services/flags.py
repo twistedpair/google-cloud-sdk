@@ -361,7 +361,7 @@ def AddTimeout(parser, default='30s'):
 
 def AddPortName(parser):
   """Add port and port-name flags."""
-  # TODO(user): Remove port once port_name is in use. b/16486110
+  # TODO(b/36051036): Remove port once port_name is in use. b/16486110
   parser.add_argument(
       '--port',
       type=int,

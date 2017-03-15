@@ -59,13 +59,12 @@ If --distributed is not specified, this flag is ignored.
 OPERATION_NAME = base.Argument('operation', help='Name of the operation.')
 
 
-# TODO(user): move these into a class
 CONFIG = base.Argument(
     '--config',
     help="""\
 Path to the job configuration file. The file should be a YAML document (JSON
 also accepted) containing a Job resource as defined in the API (all fields are
-optional): https://cloud.google.com/ml/reference/rest/v1/projects.jobs
+optional): https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
 
 If an option is specified both in the configuration file *and* via command line
 arguments, the command line arguments override the configuration file.
@@ -95,6 +94,28 @@ Path to Python archives used for training. These can be local paths
 Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 (`gs://bucket-name/path/to/package.tar.gz`).
 """)
+
+
+def GetJobDirFlag(upload_help=True):
+  """Get base.Argument() for `--job-dir`."""
+  help_ = """\
+A Google Cloud Storage path in which to store training outputs and other data
+needed for training.
+
+This path will be passed to your TensorFlow program as `--job_dir` command-line
+arg. The benefit of specifying this field is that Cloud ML Engine will validate
+the path for use in training.
+"""
+  if upload_help:
+    help_ += """\
+
+If packages must be uploaded and `--staging-bucket` is not provided, this path
+will be used instead.
+"""
+  return base.Argument(
+      '--job-dir',
+      type=storage_util.ObjectReference.FromUrl,
+      help=help_)
 
 
 def GetUserArgs(local=False):

@@ -23,7 +23,7 @@ from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_
 EPHEMERAL_ADDRESS = object()
 
 
-# TODO(user): Add unit tests for utilities
+# TODO(b/36056459): Add unit tests for utilities
 def CreateNetworkInterfaceMessage(
     resources, scope_lister, messages, network, region, subnet, address,
     alias_ip_ranges_string=None):

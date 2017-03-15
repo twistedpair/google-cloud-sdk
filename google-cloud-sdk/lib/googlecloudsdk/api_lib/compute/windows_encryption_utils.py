@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for encryption functions on Windows."""
-# TODO(user) Create unittests for this module (which only run on Windows).
+# TODO(b/36051032) Create unittests for this module (which only run on Windows).
 import base64
 import ctypes
 from ctypes import windll

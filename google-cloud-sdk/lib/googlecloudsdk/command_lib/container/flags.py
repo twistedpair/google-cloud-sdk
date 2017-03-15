@@ -311,7 +311,7 @@ Sets autorepair feature for a cluster's default node-pool(s).
   $ {command} example-cluster --enable-autorepair
 """
     help_text += """
-See https://cloud.google.com/container-engine/docs/node-managament for \
+See https://cloud.google.com/container-engine/docs/node-auto-repair for \
 more info."""
 
   parser.add_argument(

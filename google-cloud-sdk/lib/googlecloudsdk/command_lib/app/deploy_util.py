@@ -107,7 +107,7 @@ class DeployOptions(object):
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
     if upload_strategy is None:
-      upload_strategy = deploy_app_command_util.UploadStrategy.PROCESSES
+      upload_strategy = deploy_app_command_util.UploadStrategy.THREADS
     if properties.VALUES.app.use_gsutil.GetBool():
       log.warning(GSUTIL_DEPRECATION_WARNING)
       upload_strategy = deploy_app_command_util.UploadStrategy.GSUTIL

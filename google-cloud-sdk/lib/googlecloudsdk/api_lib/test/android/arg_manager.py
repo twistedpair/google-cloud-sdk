@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A shared library for processing and validating Android test arguments."""
 
 from googlecloudsdk.api_lib.test import arg_file
@@ -38,8 +37,10 @@ def TypedArgRules():
       },
       'robo': {
           'required': [],
-          'optional': ['app_initial_activity', 'max_depth', 'max_steps',
-                       'robo_directives'],
+          'optional': [
+              'app_initial_activity', 'max_depth', 'max_steps',
+              'robo_directives'
+          ],
           'defaults': {
               'max_depth': 50,
               'max_steps': -1,  # interpreted as 'no limit'
@@ -63,12 +64,12 @@ def SharedArgRules():
       'optional': [
           'device_ids', 'os_version_ids', 'locales', 'orientations',
           'app_package', 'async', 'auto_google_login', 'obb_files',
-          'results_bucket', 'results_history_name', 'timeout',
+          'results_bucket', 'results_dir', 'results_history_name', 'timeout',
           'environment_variables', 'directories_to_pull'
       ],
       'defaults': {
           'async': False,
-          'auto_google_login': False,
+          'auto_google_login': True,
           'timeout': 900,  # 15 minutes
       }
   }
@@ -129,13 +130,12 @@ class AndroidArgsManager(object):
     arg_util.ApplyLowerPriorityArgs(args, shared_arg_defaults)
     arg_util.ApplyLowerPriorityArgs(args, dimension_defaults)
 
-    arg_validate.ValidateArgsForTestType(args,
-                                         test_type,
-                                         self._typed_arg_rules,
+    arg_validate.ValidateArgsForTestType(args, test_type, self._typed_arg_rules,
                                          self._shared_arg_rules,
                                          all_test_args_set)
     arg_validate.ValidateOsVersions(args, self._device_catalog)
     arg_validate.ValidateResultsBucket(args)
+    arg_validate.ValidateResultsDir(args)
     arg_validate.ValidateObbFileNames(args.obb_files)
     arg_validate.ValidateRoboDirectivesList(args)
     arg_validate.ValidateEnvironmentVariablesList(args)

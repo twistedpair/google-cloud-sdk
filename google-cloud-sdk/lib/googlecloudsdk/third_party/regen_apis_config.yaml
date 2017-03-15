@@ -231,3 +231,6 @@ apis:
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
+  vision:
+    v1:
+      discovery_doc: vision_v1.json

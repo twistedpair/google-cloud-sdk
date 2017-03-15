@@ -30,6 +30,7 @@ _CONSOLE_URL = ('https://console.cloud.google.com/ml/jobs/{job_id}?'
 _LOGS_URL = ('https://console.cloud.google.com/logs?'
              'resource=ml.googleapis.com%2Fjob_id%2F{job_id}'
              '&project={project}')
+JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
 
 
 def Cancel(jobs_client, job):
@@ -81,6 +82,12 @@ or continue streaming the logs with the command
 """
 
 
+def PrintSubmitFollowUp(job_id, print_follow_up_message=True):
+  log.status.Print('Job [{}] submitted successfully.'.format(job_id))
+  if print_follow_up_message:
+    log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job_id))
+
+
 def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
@@ -118,10 +125,11 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       properties.VALUES.core.project.Get(required=True),
       collection='ml.projects')
   job = jobs_client.Create(project_ref, job)
-  log.status.Print('Job [{}] submitted successfully.'.format(job.jobId))
   if async_:
-    log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId))
+    PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
     return job
+  else:
+    PrintSubmitFollowUp(job.jobId, print_follow_up_message=False)
 
   log_fetcher = stream.LogFetcher(
       filters=log_utils.LogFilters(job.jobId),
@@ -173,4 +181,5 @@ def SubmitPrediction(jobs_client, job,
       region=region,
       runtime_version=runtime_version,
       max_worker_count=max_worker_count)
+  PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
   return jobs_client.Create(project_ref, job)

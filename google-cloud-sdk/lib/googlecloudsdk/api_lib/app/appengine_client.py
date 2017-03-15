@@ -91,7 +91,7 @@ class AppengineClient(object):
       self.client_id = credentials.client_id
       self.client_secret = credentials.client_secret
     elif isinstance(credentials, c_devshell.DevshellCredentials):
-      # TODO(user): This passes the access token to use for API calls to
+      # TODO(b/36057357): This passes the access token to use for API calls to
       # appcfg which means that commands that are longer than the lifetime
       # of the access token may fail - e.g. some long deployments.  The proper
       # solution is to integrate appcfg closer with the Cloud SDK libraries,
@@ -420,7 +420,8 @@ class AppengineClient(object):
         secure=True,
         ignore_certs=self.ignore_bad_certs,
         http_object=http.Http())
-    # TODO(user) Hack to avoid failure due to missing cacerts.txt resource.
+    # TODO(b/36050949) Hack to avoid failure due to missing cacerts.txt
+    # resource.
     server.certpath = None
     # Don't use a cert file if the user passed ignore-bad-certs.
     server.cert_file_available = not self.ignore_bad_certs

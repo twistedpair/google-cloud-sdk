@@ -152,10 +152,14 @@ class BatchPoller(waiter.OperationPoller):
     errors_to_collect = []
     responses = self._compute_adapter.BatchRequests(
         requests, errors_to_collect)
-    if errors_to_collect:
-      raise core_exceptions.MultiError(errors_to_collect)
     for response, operation_ref in zip(responses, not_done):
       operation_batch.SetResponse(operation_ref, response)
+      if response.error:
+        errors_to_collect.append(OperationErrors(response.error.errors))
+
+    if errors_to_collect:
+      raise core_exceptions.MultiError(errors_to_collect)
+
     return operation_batch
 
   def GetResult(self, operation_batch):

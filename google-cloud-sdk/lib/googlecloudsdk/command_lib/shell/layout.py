@@ -55,7 +55,6 @@ def CreatePromptLayout(message='',
                        extra_input_processors=None,
                        multiline=False,
                        wrap_lines=True,
-                       get_help_tokens=None,
                        show_help=True):
   """Create a container instance for the prompt."""
   assert isinstance(message, unicode), 'Please provide a unicode string.'
@@ -107,22 +106,21 @@ def CreatePromptLayout(message='',
 
   # Create toolbars
   toolbars = []
-  if get_help_tokens:
-    toolbars.append(
-        containers.ConditionalContainer(
-            layout.HSplit([
-                layout.Window(
-                    controls.FillControl(char=Char('-', Token.HSep)),
-                    height=LayoutDimension.exact(1)),
-                layout.Window(
-                    help_window.HelpWindowControl(
-                        default_char=Char(' ', Token.Toolbar)),
-                    height=LayoutDimension(
-                        preferred=help_window.HELP_WINDOW_HEIGHT,
-                        max=help_window.HELP_WINDOW_HEIGHT)),
-            ]),
-            filter=(show_help & UserTypingFilter & ~filters.IsDone() &
-                    filters.RendererHeightIsKnown())))
+  toolbars.append(
+      containers.ConditionalContainer(
+          layout.HSplit([
+              layout.Window(
+                  controls.FillControl(char=Char('-', Token.HSep)),
+                  height=LayoutDimension.exact(1)),
+              layout.Window(
+                  help_window.HelpWindowControl(
+                      default_char=Char(' ', Token.Toolbar)),
+                  height=LayoutDimension(
+                      preferred=help_window.HELP_WINDOW_HEIGHT,
+                      max=help_window.HELP_WINDOW_HEIGHT)),
+          ]),
+          filter=(show_help & UserTypingFilter & ~filters.IsDone() &
+                  filters.RendererHeightIsKnown())))
   if get_bottom_toolbar_tokens:
     toolbars.append(
         containers.ConditionalContainer(

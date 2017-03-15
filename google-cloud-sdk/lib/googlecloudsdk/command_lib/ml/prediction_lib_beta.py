@@ -18,7 +18,6 @@ Includes (from the Cloud ML SDK):
 - session_bundle
 
 Important changes:
-- Replace shutil.rmtree with core.util.files.RmTree.
 - _file utilities have been inlined. We use tensorflow's file_io instead of
   Apache Beam's. We use a more primitive version of globbing (using fnmatch)
   instead of the Apache Beam Cloud Storage globbing (which file_io doesn't
@@ -33,9 +32,9 @@ import fnmatch
 import json
 import logging
 import os
+import shutil
 import tempfile
 import timeit
-from googlecloudsdk.core.util import files
 
 import numpy as np
 import tensorflow as tf
@@ -200,8 +199,8 @@ def load_session_bundle_from_path(export_dir, target="", config=None):
       # Replace the graph def in meta graph proto.
       meta_graph_def.graph_def.CopyFrom(graph_def)
 
-      # TODO(user): If we don't clear the collections then import_meta_graph
-      # fails.
+      # TODO(b/36055868): If we don't clear the collections then
+      # import_meta_graph fails.
       #
       # We can't delete all the collections because some of them are used
       # by prediction to get the names of the input/output tensors.
@@ -220,7 +219,7 @@ def load_session_bundle_from_path(export_dir, target="", config=None):
   # Restore the session.
   if variables_filename_list[0].startswith("gs://"):
     # Make copy from GCS files.
-    # TODO(user): Retire this once tensorflow can access GCS.
+    # TODO(b/36052034): Retire this once tensorflow can access GCS.
     try:
       temp_dir_path = tempfile.mkdtemp("local_variable_files")
       for f in variables_filename_list + additional_files_to_copy:
@@ -229,7 +228,7 @@ def load_session_bundle_from_path(export_dir, target="", config=None):
       saver.restore(sess, os.path.join(temp_dir_path, restore_files))
     finally:
       try:
-        files.RmTree(temp_dir_path)
+        shutil.rmtree(temp_dir_path)
       except OSError as e:
         if e.message == "Cannot call rmtree on a symbolic link":
           # Interesting synthetic exception made up by shutil.rmtree.

@@ -107,7 +107,7 @@ class InstallationInfo(object):
       this_path = os.path.realpath(
           os.path.join(self.sdk_root,
                        update_manager.UpdateManager.BIN_DIR_NAME))
-      # TODO(user): Validate symlinks in /usr/local/bin when we start
+      # TODO(b/36055867): Validate symlinks in /usr/local/bin when we start
       # creating them.
       self.on_path = this_path in paths
     else:

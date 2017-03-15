@@ -160,17 +160,18 @@ class InstallationConfig(object):
 INSTALLATION_CONFIG = InstallationConfig.Load()
 
 CLOUD_SDK_VERSION = INSTALLATION_CONFIG.version
-# TODO(user): Distribute a clientsecrets.json to avoid putting this in code.
+# TODO(b/35848109): Distribute a clientsecrets.json to avoid putting it in code.
 CLOUDSDK_CLIENT_ID = '32555940559.apps.googleusercontent.com'
 CLOUDSDK_CLIENT_NOTSOSECRET = 'ZmssLNjJy2998hD4CTg2ejr2'
 
 CLOUDSDK_USER_AGENT = INSTALLATION_CONFIG.user_agent
 
-# Do not add more scopes here, see http://b/19019218.
+# Do not add more scopes here.
 CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',
-    # TODO(user): remove the following once 'cloud-platform' is sufficient.
+    # TODO(b/19019218): remove the following now that 'cloud-platform'
+    # is sufficient.
     'https://www.googleapis.com/auth/appengine.admin',
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
@@ -399,15 +400,14 @@ class Paths(object):
       account = 'default'
     return os.path.join(self.global_config_dir, 'legacy_credentials', account)
 
-  # This is only used by bq. Do not use for any other purpose.
-  def LegacyCredentialsSingleStorePath(self, account):
-    """Gets the path to store legacy JSON credentials in.
+  def LegacyCredentialsBqPath(self, account):
+    """Gets the path to store legacy bq credentials in.
 
     Args:
       account: str, Email account tied to the authorizing credentials.
 
     Returns:
-      str, The path to the JSON credentials file.
+      str, The path to the bq credentials file.
     """
     return os.path.join(self.LegacyCredentialsDir(account),
                         'singlestore_bq.json')

@@ -15,6 +15,7 @@
 """A module for the Cloud SDK CLI tree external representation."""
 
 import argparse
+import re
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
@@ -93,6 +94,29 @@ class Argument(object):
       self.value = arg.metavar
     else:
       self.value = name.lstrip('-').replace('-', '_').upper()
+    self._Scrub()
+
+  def _Scrub(self):
+    """Scrubs private paths in the default value and description.
+
+    Argument default values and "The default is ..." description text are the
+    only places where dynamic private file paths can leak into the cli_tree.
+    This method is called on all args.
+
+    The test is rudimentary but effective. Any default value that looks like an
+    absolute path on unix or windows is scrubbed. The default value is set to
+    None and the trailing "The default ... is ..." sentence in the description,
+    if any, is deleted. It's OK to be conservative here and match aggressively.
+    """
+    if not isinstance(self.default, basestring):
+      return
+    if not re.match(r'/|[A-Za-z]:\\', self.default):
+      return
+    self.default = None
+    match = re.match(
+        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
+    if match:
+      self.description = match.group(1)
 
 
 class Flag(Argument):
@@ -112,7 +136,7 @@ class Flag(Argument):
 
     super(Flag, self).__init__(flag, name)
     self.attr = {}
-    self.category = ''
+    self.category = flag.category or ''
     self.choices = []
     self.group = ''
     self.hidden = flag.help == argparse.SUPPRESS
@@ -145,7 +169,6 @@ class Flag(Argument):
         self.type = 'bool'
       else:
         self.choices = flag.choices
-    self.category = flag.category or ''
     self.required = flag.required
 
     if getattr(flag, 'inverted_synopsis', False):
@@ -200,20 +223,21 @@ class Command(object):
     self.positionals = []
     self.release = command.ReleaseTrack().id
     self.sections = {}
-    parent_command = parent.name.replace('_', '-') if parent else ''
+    command_path_string = ' '.join(self.path)
+    parent_path_string = ' '.join(parent.path) if parent else ''
     self.release, capsule = self.__Release(
         command, self.release, getattr(command, 'short_help', ''))
     self.capsule = console_io.LazyFormat(
         _NormalizeDescription(capsule),
-        command=self.name,
-        parent_command=parent_command)
+        command=command_path_string,
+        parent_command=parent_path_string)
     self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
     description = console_io.LazyFormat(
         _NormalizeDescription(description),
-        command=self.name,
+        command=command_path_string,
         index=self.capsule,
-        parent_command=parent_command)
+        parent_command=parent_path_string)
     sections = getattr(command, 'detailed_help', None)
     if sections:
       for s in sections:
@@ -222,10 +246,10 @@ class Command(object):
         if s.isupper():
           self.sections[s] = console_io.LazyFormat(
               _NormalizeDescription(sections[s]),
-              command=self.name,
+              command=command_path_string,
               index=self.capsule,
               description=description,
-              parent_command=parent_command)
+              parent_command=parent_path_string)
     if 'DESCRIPTION' not in self.sections:
       self.sections['DESCRIPTION'] = description
     # _parent is explicitly private so it won't appear in serialized output.

@@ -457,7 +457,7 @@ class CLILoader(object):
     # This should be a pure Boolean flag, but the alternate true/false explicit
     # value form is preserved for backwards compatibility. This flag and
     # is the only Cloud SDK outlier.
-    # TODO(user): b/24095744: Add true/false deprecation message.
+    # TODO(b/24095744): Add true/false deprecation message.
     top_element.ai.add_argument(
         '--user-output-enabled',
         metavar=' ',  # Help text will look like the flag does not have a value.

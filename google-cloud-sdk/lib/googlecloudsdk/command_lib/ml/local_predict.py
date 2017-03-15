@@ -76,7 +76,7 @@ def _import_prediction_lib():
   Returns:
     a Python module with the Cloud ML predictions library.
   """
-  # TODO(user): Don't try to import the Cloud ML SDK at all.
+  # TODO(b/36049795): Don't try to import the Cloud ML SDK at all.
   # pylint: disable=g-import-not-at-top
   try:
     import google.cloud.ml as cloudml

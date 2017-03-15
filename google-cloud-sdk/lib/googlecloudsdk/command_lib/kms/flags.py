@@ -28,9 +28,13 @@ CRYPTO_KEY_VERSION_COLLECTION = (
 
 # Flags.
 def AddLocationFlag(parser):
+  def _CompletionCallback(parser):
+    del parser  # Unused by Callback.
+    return ['beta', 'kms', 'locations', 'list', '--format=value(locationId)']
   parser.add_argument(
       '--location',
       completion_resource=LOCATION_COLLECTION,
+      list_command_callback_fn=_CompletionCallback,
       help='The location of the requested resource.')
 
 
@@ -38,14 +42,14 @@ def AddKeyRingFlag(parser):
   parser.add_argument(
       '--keyring',
       completion_resource=KEY_RING_COLLECTION,
-      help='The containing KeyRing.')
+      help='The containing keyring.')
 
 
 def AddCryptoKeyFlag(parser):
   parser.add_argument(
-      '--cryptokey',
+      '--key',
       completion_resource=CRYPTO_KEY_COLLECTION,
-      help='The containing CryptoKey.')
+      help='The containing key.')
 
 
 # Arguments
@@ -53,35 +57,35 @@ def AddKeyRingArgument(parser, help_action):
   parser.add_argument(
       'keyring',
       completion_resource=KEY_RING_COLLECTION,
-      help='Name of the KeyRing %s.' % help_action)
+      help='Name of the keyring %s.' % help_action)
 
 
 def AddCryptoKeyArgument(parser, help_action):
   parser.add_argument(
-      'cryptokey',
+      'key',
       completion_resource=CRYPTO_KEY_COLLECTION,
-      help='Name of the CryptoKey %s.' % help_action)
+      help='Name of the key %s.' % help_action)
 
 
 def AddCryptoKeyVersionArgument(parser, help_action):
   parser.add_argument(
       'version',
       completion_resource=CRYPTO_KEY_VERSION_COLLECTION,
-      help='Name of the CryptoKeyVersion %s.' % help_action)
+      help='Name of the version %s.' % help_action)
 
 
 def AddRotationPeriodFlag(parser):
   parser.add_argument(
       '--rotation-period',
       type=arg_parsers.Duration(lower_bound='1d'),
-      help='Automatic rotation period of the CryptoKey.')
+      help='Automatic rotation period of the key.')
 
 
 def AddNextRotationTimeFlag(parser):
   parser.add_argument(
       '--next-rotation-time',
       type=arg_parsers.Datetime.Parse,
-      help='Next automatic rotation time of the CryptoKey.')
+      help='Next automatic rotation time of the key.')
 
 
 # Parsing.
@@ -96,7 +100,7 @@ def ParseKeyRingName(args):
 
 def ParseCryptoKeyName(args):
   return resources.REGISTRY.Parse(
-      args.cryptokey, collection=CRYPTO_KEY_COLLECTION)
+      args.key, collection=CRYPTO_KEY_COLLECTION)
 
 
 def ParseCryptoKeyVersionName(args):

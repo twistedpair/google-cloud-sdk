@@ -82,7 +82,7 @@ def _UnwrapResponse(responses, attr_name):
 class InstanceGroupListInstancesBase(base_classes.BaseLister):
   """Base class for listing instances present in instance group."""
 
-  # TODO(user): add support for --names parameter as in all List verbs
+  # TODO(b/36057058): add support for --names parameter as in all List verbs
 
   @staticmethod
   def ListInstancesArgs(parser, multizonal=False):

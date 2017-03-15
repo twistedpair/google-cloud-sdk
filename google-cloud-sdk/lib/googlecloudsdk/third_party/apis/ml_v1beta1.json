@@ -717,6 +717,22 @@
         "runtimeVersion": {
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
+        },
+        "manualScaling": {
+          "description": "Optional. Manually select the number of nodes to use for serving the\nmodel. If unset (i.e., by default), the number of nodes used to serve\nthe model automatically scales with traffic. However, care should be\ntaken to ramp up traffic according to the model's ability to scale. If\nyour model needs to handle bursts of traffic beyond it's ability to\nscale, it is recommended you set this field appropriately.",
+          "$ref": "GoogleCloudMlV1beta1__ManualScaling"
+        }
+      }
+    },
+    "GoogleCloudMlV1beta1__ManualScaling": {
+      "id": "GoogleCloudMlV1beta1__ManualScaling",
+      "description": "Options for manually scaling a model.",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to nodes * number of hours since\ndeployment.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -940,6 +956,22 @@
         "runtimeVersion": {
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
+        },
+        "manualScaling": {
+          "description": "Optional. Manually select the number of nodes to use for serving the\nmodel. If unset (i.e., by default), the number of nodes used to serve\nthe model automatically scales with traffic. However, care should be\ntaken to ramp up traffic according to the model's ability to scale. If\nyour model needs to handle bursts of traffic beyond it's ability to\nscale, it is recommended you set this field appropriately.",
+          "$ref": "GoogleCloudMlV1__ManualScaling"
+        }
+      }
+    },
+    "GoogleCloudMlV1__ManualScaling": {
+      "id": "GoogleCloudMlV1__ManualScaling",
+      "description": "Options for manually scaling a model.",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to nodes * number of hours since\ndeployment.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     }

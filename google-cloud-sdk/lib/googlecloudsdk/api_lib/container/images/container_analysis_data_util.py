@@ -109,7 +109,7 @@ class PackageVulnerability(object):
           affected=pkg_vuln.affected_package))
       repr_str.append('Fixed Package: {fixed}'.format(
           fixed=pkg_vuln.fixed_package))
-    # TODO(user) Display related url after b/32774264 is fixed.
+    # TODO(b/36050346) Display related url after b/32774264 is fixed.
     return ('\n' + _INDENT + _INDENT).join(repr_str)
 
 

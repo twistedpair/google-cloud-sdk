@@ -14,7 +14,10 @@
 
 """A shared library to validate 'gcloud test' CLI argument values."""
 
+import datetime
+import random
 import re
+import string
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
@@ -31,8 +34,8 @@ class InvalidArgException(exceptions.InvalidArgumentException):
   """
 
   def __init__(self, param_name, message):
-    super(InvalidArgException, self).__init__(ExternalArgNameFrom(param_name),
-                                              message)
+    super(InvalidArgException, self).__init__(
+        ExternalArgNameFrom(param_name), message)
 
 
 def ValidateArgFromFile(arg_internal_name, arg_value):
@@ -228,8 +231,8 @@ def ExternalArgNameFrom(arg_internal_name):
 # performed by the argparse package (which only works with CLI args).
 
 
-def ValidateArgsForTestType(
-    args, test_type, type_rules, shared_rules, all_test_args_set):
+def ValidateArgsForTestType(args, test_type, type_rules, shared_rules,
+                            all_test_args_set):
   """Raise errors if required args are missing or invalid args are present.
 
   Args:
@@ -267,16 +270,61 @@ def ValidateArgsForTestType(
 
 
 def ValidateResultsBucket(args):
-  """Do some basic sanity checks on the format of the results-bucket arg."""
+  """Do some basic sanity checks on the format of the results-bucket arg.
+
+  Args:
+    args: the argparse.Namespace containing all the args for the command.
+
+  Raises:
+    InvalidArgumentException: the bucket name is not valid or includes objects.
+  """
   if args.results_bucket is None:
     return
-  # TODO(user): use the resources module here once it understands gs:// links
+  # TODO(b/35922895): migrate to resource.ParseStorageURL when it works here.
   if args.results_bucket.startswith('gs://'):
     args.results_bucket = args.results_bucket[5:]
   args.results_bucket = args.results_bucket.rstrip('/')
   if '/' in args.results_bucket:
     raise exceptions.InvalidArgumentException(
         'results-bucket', 'Results bucket name is not valid')
+
+
+def ValidateResultsDir(args):
+  """Sanity checks the results-dir arg and apply a default value if needed.
+
+  Args:
+    args: the argparse.Namespace containing all the args for the command.
+
+  Raises:
+    InvalidArgumentException: the arg value is not a valid cloud storage name.
+  """
+  if not args.results_dir:
+    args.results_dir = _GenerateUniqueGcsObjectName()
+    return
+
+  args.results_dir = args.results_dir.rstrip('/')
+  # See https://cloud.google.com/storage/docs/naming#objectnames for details.
+  if '\n' in args.results_dir or '\r' in args.results_dir:
+    raise exceptions.InvalidArgumentException(
+        'results-dir', 'Name may not contain newline or linefeed characters')
+  # Leave half of the max GCS object name length of 1024 for the backend to use.
+  if len(args.results_dir) > 512:
+    raise exceptions.InvalidArgumentException('results-dir', 'Name is too long')
+
+
+def _GenerateUniqueGcsObjectName():
+  """Create a unique GCS object name to hold test results in the results bucket.
+
+  The Testing back-end needs a unique GCS object name within the results bucket
+  to prevent race conditions while processing test results. By default, the
+  gcloud client uses the current time down to the microsecond in ISO format plus
+  a random 4-letter suffix. The format is: "YYYY-MM-DD_hh:mm:ss.ssssss_rrrr".
+
+  Returns:
+    A string with the unique GCS object name.
+  """
+  return '{0}_{1}'.format(datetime.datetime.now().isoformat('_'),
+                          ''.join(random.sample(string.letters, 4)))
 
 
 def ValidateOsVersions(args, catalog):
@@ -294,9 +342,7 @@ def ValidateOsVersions(args, catalog):
   """
   validated_versions = set()  # Using a set will remove duplicates
   version_ids = [v.id for v in catalog.versions]
-  # TODO(user): use dict comprehensions if py2.6 compatibility is dropped.
-  # version_to_id_map = {v.versionString: v.id for v in catalog.versions}
-  version_to_id_map = dict((v.versionString, v.id) for v in catalog.versions)
+  version_to_id_map = {v.versionString: v.id for v in catalog.versions}
 
   for vers in args.os_version_ids:
     if vers in version_ids:

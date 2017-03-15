@@ -384,7 +384,7 @@ class RunDeepVariantV1alphaRequest(_messages.Message):
       'lane3_2.fastq']
     options: Common pipeline options.
     outputPath: Required. The Google Cloud Storage path for copying the final
-      output files. For example, 'gs://<user_bucket>/<sample_name>/'.
+      output files. For example, 'gs://<user_bucket>/<sample_name>'.
     sampleName: Required. Sample name.
   """
 

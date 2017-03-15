@@ -32,7 +32,7 @@ from googlecloudsdk.core.util import files
 class JobSubmitter(base.Command):
   """Submit a job to a cluster."""
 
-  # TODO(user): much of this class should be moved to command_lib
+  # TODO(b/36051033): much of this class should be moved to command_lib
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
@@ -110,7 +110,7 @@ class JobSubmitter(base.Command):
     is_local = drive or not uri.scheme
     if not is_local:
       # Non-local files are already staged.
-      # TODO(user): Validate scheme.
+      # TODO(b/36057257): Validate scheme.
       return file_str
 
     if not os.path.exists(file_str):
@@ -123,7 +123,7 @@ class JobSubmitter(base.Command):
   def ValidateAndStageFiles(self):
     """Validate file URIs and upload them if they are local."""
     for file_type, file_or_files in self.files_by_type.iteritems():
-      # TODO(user): Validate file suffixes.
+      # TODO(b/36049793): Validate file suffixes.
       if not file_or_files:
         continue
       elif isinstance(file_or_files, str):

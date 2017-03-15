@@ -182,7 +182,7 @@ class CommandCommon(object):
         self.index_help = self.index_help[:-1]
 
     # Add an annotation to the help strings to mark the release stage.
-    # TODO(user):b/32361958: Clean Up ReleaseTracks to Leverage Notices().
+    # TODO(b/32361958): Clean Up ReleaseTracks to Leverage Notices().
     tag = self.ReleaseTrack().help_tag
     if self.Notices():
       notice_tags = ' '.join(sorted(self.Notices().keys()))
@@ -191,12 +191,11 @@ class CommandCommon(object):
     if tag:
       self.short_help = tag + self.short_help
       self.long_help = tag + self.long_help
-      # TODO(user): Work around related to b/32361958 to avoid overwriting
-      # all help files
+      # TODO(b/32361958): Work around to avoid overwriting all help files
       if 'DESCRIPTION' in self.detailed_help and self.Notices():
         self.detailed_help['DESCRIPTION'] = (tag +
                                              self.detailed_help['DESCRIPTION'])
-      # TODO(user):b/21208128: Drop these 4 lines.
+      # TODO(b/21208128): Drop these 4 lines.
       prefix = self.ReleaseTrack().prefix
       if len(self._path) < 2 or self._path[1] != prefix:
         self.index_help = tag + self.index_help
@@ -399,13 +398,24 @@ class CommandCommon(object):
       self.ai.display_info.AddLowerDisplayInfo(
           self._parent_group.ai.display_info)
 
-  def GetAllAvailableFlags(self):
-    return self.ai.flag_args + self.ai.ancestor_flag_args
+  def GetAllAvailableFlags(self, include_global=True, include_hidden=True):
+    flags = self.ai.flag_args + self.ai.ancestor_flag_args
+    # TODO(b/35983142): Use mutant disable decorator when its available.
+    # This if statement triggers a mutant. Currently there are no Python comment
+    # decorators to disable individual mutants. This statement is a semantic
+    # mutant space/time optimization (if the list in hand is OK then use it),
+    # and the mutant scanner can't detect those in a reasonable amount of time.
+    if include_global and include_hidden:
+      return flags
+    return [f for f in flags if
+            (include_global or not f.is_global) and
+            (include_hidden or f.help != argparse.SUPPRESS)]
 
   def GetSpecificFlags(self, include_hidden=True):
+    flags = self.ai.flag_args
     if include_hidden:
-      return self.ai.flag_args
-    return [f for f in self.ai.flag_args if f.help != argparse.SUPPRESS]
+      return flags
+    return [f for f in flags if f.help != argparse.SUPPRESS]
 
 
 class CommandGroup(CommandCommon):

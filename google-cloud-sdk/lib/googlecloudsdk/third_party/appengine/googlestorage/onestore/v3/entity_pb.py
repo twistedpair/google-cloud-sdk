@@ -3140,6 +3140,8 @@ class Index(ProtocolBuffer.ProtocolMessage):
   entity_type_ = ""
   has_ancestor_ = 0
   ancestor_ = 0
+  has_parent_ = 0
+  parent_ = 0
 
   def __init__(self, contents=None):
     self.property_ = []
@@ -3171,6 +3173,19 @@ class Index(ProtocolBuffer.ProtocolMessage):
 
   def has_ancestor(self): return self.has_ancestor_
 
+  def parent(self): return self.parent_
+
+  def set_parent(self, x):
+    self.has_parent_ = 1
+    self.parent_ = x
+
+  def clear_parent(self):
+    if self.has_parent_:
+      self.has_parent_ = 0
+      self.parent_ = 0
+
+  def has_parent(self): return self.has_parent_
+
   def property_size(self): return len(self.property_)
   def property_list(self): return self.property_
 
@@ -3192,6 +3207,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
     assert x is not self
     if (x.has_entity_type()): self.set_entity_type(x.entity_type())
     if (x.has_ancestor()): self.set_ancestor(x.ancestor())
+    if (x.has_parent()): self.set_parent(x.parent())
     for i in xrange(x.property_size()): self.add_property().CopyFrom(x.property(i))
 
   def Equals(self, x):
@@ -3200,6 +3216,8 @@ class Index(ProtocolBuffer.ProtocolMessage):
     if self.has_entity_type_ and self.entity_type_ != x.entity_type_: return 0
     if self.has_ancestor_ != x.has_ancestor_: return 0
     if self.has_ancestor_ and self.ancestor_ != x.ancestor_: return 0
+    if self.has_parent_ != x.has_parent_: return 0
+    if self.has_parent_ and self.parent_ != x.parent_: return 0
     if len(self.property_) != len(x.property_): return 0
     for e1, e2 in zip(self.property_, x.property_):
       if e1 != e2: return 0
@@ -3222,6 +3240,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     n = 0
     n += self.lengthString(len(self.entity_type_))
+    if (self.has_parent_): n += 2
     n += 2 * len(self.property_)
     for i in xrange(len(self.property_)): n += self.property_[i].ByteSize()
     return n + 3
@@ -3233,6 +3252,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
       n += self.lengthString(len(self.entity_type_))
     if (self.has_ancestor_):
       n += 2
+    if (self.has_parent_): n += 2
     n += 2 * len(self.property_)
     for i in xrange(len(self.property_)): n += self.property_[i].ByteSizePartial()
     return n
@@ -3240,6 +3260,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
   def Clear(self):
     self.clear_entity_type()
     self.clear_ancestor()
+    self.clear_parent()
     self.clear_property()
 
   def OutputUnchecked(self, out):
@@ -3251,6 +3272,9 @@ class Index(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(20)
     out.putVarInt32(40)
     out.putBoolean(self.ancestor_)
+    if (self.has_parent_):
+      out.putVarInt32(56)
+      out.putBoolean(self.parent_)
 
   def OutputPartial(self, out):
     if (self.has_entity_type_):
@@ -3263,6 +3287,9 @@ class Index(ProtocolBuffer.ProtocolMessage):
     if (self.has_ancestor_):
       out.putVarInt32(40)
       out.putBoolean(self.ancestor_)
+    if (self.has_parent_):
+      out.putVarInt32(56)
+      out.putBoolean(self.parent_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -3276,6 +3303,9 @@ class Index(ProtocolBuffer.ProtocolMessage):
       if tt == 40:
         self.set_ancestor(d.getBoolean())
         continue
+      if tt == 56:
+        self.set_parent(d.getBoolean())
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
@@ -3286,6 +3316,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
     res=""
     if self.has_entity_type_: res+=prefix+("entity_type: %s\n" % self.DebugFormatString(self.entity_type_))
     if self.has_ancestor_: res+=prefix+("ancestor: %s\n" % self.DebugFormatBool(self.ancestor_))
+    if self.has_parent_: res+=prefix+("parent: %s\n" % self.DebugFormatBool(self.parent_))
     cnt=0
     for e in self.property_:
       elm=""
@@ -3302,6 +3333,7 @@ class Index(ProtocolBuffer.ProtocolMessage):
 
   kentity_type = 1
   kancestor = 5
+  kparent = 7
   kPropertyGroup = 2
   kPropertyname = 3
   kPropertydirection = 4
@@ -3315,7 +3347,8 @@ class Index(ProtocolBuffer.ProtocolMessage):
     4: "direction",
     5: "ancestor",
     6: "mode",
-  }, 6)
+    7: "parent",
+  }, 7)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -3325,7 +3358,8 @@ class Index(ProtocolBuffer.ProtocolMessage):
     4: ProtocolBuffer.Encoder.NUMERIC,
     5: ProtocolBuffer.Encoder.NUMERIC,
     6: ProtocolBuffer.Encoder.NUMERIC,
-  }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
+    7: ProtocolBuffer.Encoder.NUMERIC,
+  }, 7, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \

@@ -155,7 +155,7 @@ class ComponentSnapshot(object):
           current_function_name, unexpected_args.pop()))
     command_path = kwargs.get('command_path', 'unknown')
 
-    # TODO(user) Handle a json parse error here.
+    # TODO(b/36039276) Handle a json parse error here.
     first = urls[0]
     data = [
         (ComponentSnapshot._DictFromURL(url,

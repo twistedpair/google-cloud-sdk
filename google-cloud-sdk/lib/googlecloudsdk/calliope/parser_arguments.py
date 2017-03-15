@@ -160,7 +160,7 @@ class ArgumentInterceptor(object):
   # pylint: disable=g-bad-name
   def add_argument(self, *args, **kwargs):
     """add_argument intercepts calls to the parser to track arguments."""
-    # TODO(user): do not allow short-options without long-options.
+    # TODO(b/36050238): do not allow short-options without long-options.
 
     # we will choose the first option as the name
     name = args[0]
@@ -204,8 +204,8 @@ class ArgumentInterceptor(object):
     positional = not name.startswith('-')
     if positional:
       if not self.allow_positional:
-        # TODO(user): More informative error message here about which group
-        # the problem is in.
+        # TODO(b/36054662): More informative error message here about which
+        # group the problem is in.
         raise parser_errors.ArgumentException(
             'Illegal positional argument [{0}] for command [{1}]'.format(
                 name, self.data.command_name))

@@ -362,16 +362,6 @@ class Distribution(_messages.Message):
   measurementTime = _messages.StringField(2)
 
 
-class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
 class Environment(_messages.Message):
   """The environment in which the test is run.
 
@@ -436,16 +426,6 @@ class GoogleCloudStorage(_messages.Message):
   """
 
   gcsPath = _messages.StringField(1)
-
-
-class ListTestMatricesResponse(_messages.Message):
-  """Response contain a list of Test Matrices.
-
-  Fields:
-    testMatrices: The set of test matrices.
-  """
-
-  testMatrices = _messages.MessageField('TestMatrix', 1, repeated=True)
 
 
 class Locale(_messages.Message):
@@ -896,18 +876,6 @@ class TestingProjectsTestMatricesCreateRequest(_messages.Message):
   testMatrix = _messages.MessageField('TestMatrix', 3)
 
 
-class TestingProjectsTestMatricesDeleteRequest(_messages.Message):
-  """A TestingProjectsTestMatricesDeleteRequest object.
-
-  Fields:
-    projectId: Cloud project that owns the test.
-    testMatrixId: Test matrix that will be canceled.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  testMatrixId = _messages.StringField(2, required=True)
-
-
 class TestingProjectsTestMatricesGetRequest(_messages.Message):
   """A TestingProjectsTestMatricesGetRequest object.
 
@@ -918,16 +886,6 @@ class TestingProjectsTestMatricesGetRequest(_messages.Message):
 
   projectId = _messages.StringField(1, required=True)
   testMatrixId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsTestMatricesListRequest(_messages.Message):
-  """A TestingProjectsTestMatricesListRequest object.
-
-  Fields:
-    projectId: Cloud project that owns the tests.
-  """
-
-  projectId = _messages.StringField(1, required=True)
 
 
 class TestingTestEnvironmentCatalogGetRequest(_messages.Message):

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170217",
+ "revision": "20170227",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2036,10 +2036,12 @@
       "APPROVER",
       "ATTRIBUTION",
       "AUTHORITY",
+      "JUSTIFICATION_TYPE",
       "NO_ATTR",
       "SECURITY_REALM"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -16797,7 +16799,7 @@
      "id": "compute.instanceGroupManagers.patch",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "PATCH",
-     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -16837,8 +16839,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "recreateInstances": {
@@ -22059,7 +22060,7 @@
      "id": "compute.regionInstanceGroupManagers.patch",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "PATCH",
-     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -22099,8 +22100,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "recreateInstances": {
@@ -26977,7 +26977,7 @@
      "id": "compute.urlMaps.patch",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
+     "description": "Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
      "parameters": {
       "project": {
        "type": "string",
@@ -26993,7 +26993,7 @@
       },
       "urlMap": {
        "type": "string",
-       "description": "Name of the UrlMap resource to update.",
+       "description": "Name of the UrlMap resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -27011,7 +27011,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {

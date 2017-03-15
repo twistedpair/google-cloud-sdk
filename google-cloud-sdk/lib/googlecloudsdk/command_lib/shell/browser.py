@@ -33,9 +33,7 @@ class FakeSubprocessModule(object):
 
 
 def OpenReferencePage(cli, line, pos):
-  tokens = gcloud_parser.ParseLine(line)
-  tokens = [x for x in tokens if x.start < pos]
-  url = _GetReferenceURL(tokens)
+  url = _GetReferenceURL(line, pos)
   webbrowser.subprocess = FakeSubprocessModule()
   try:
     browser = webbrowser.get()
@@ -45,9 +43,25 @@ def OpenReferencePage(cli, line, pos):
         lambda: log.error('failed to open browser: %s', e))
 
 
-def _GetReferenceURL(tokens):
-  prefix = 'https://cloud.google.com/sdk/gcloud/reference/'
+# TODO(b/35420203): get reference page for flag, not just command/group.
+def _GetReferenceURL(line, pos=None):
+  """Determine the reference url of the command/group preceeding the pos.
+
+  Args:
+    line: a string with the current string directly from the shell.
+    pos: the position of the cursor on the line.
+
+  Returns:
+    A string containing the URL of the reference page.
+  """
+  if pos is None:
+    pos = len(line)
+
+  tokens = gcloud_parser.ParseLine(line)
+  tokens = [x for x in tokens if x.start < pos]
   invocation = gcloud_parser.GcloudInvocation(tokens)
+
+  prefix = u'https://cloud.google.com/sdk/gcloud/reference/'
   cmd = invocation.GetCommandOrGroup()
   if not cmd:
     return prefix

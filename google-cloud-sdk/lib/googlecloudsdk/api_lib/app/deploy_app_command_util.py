@@ -16,9 +16,7 @@
 """Utility methods used by the deploy_app command."""
 
 import json
-import multiprocessing
 import os
-import platform
 import shutil
 
 import enum
@@ -27,15 +25,12 @@ from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.storage import storage_api
-from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.storage import storage_parallel
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
-from googlecloudsdk.core.util import parallel
-from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
 
@@ -167,35 +162,6 @@ class FileUploadTask(object):
     self.bucket_url = bucket_url
 
 
-def _UploadFile(file_upload_task):
-  """Uploads a single file to Google Cloud Storage.
-
-  Args:
-    file_upload_task: FileUploadTask describing the file to upload
-
-  Returns:
-    None if the file was uploaded successfully or a stringified Exception if one
-    was raised
-  """
-  storage_client = storage_api.StorageClient()
-  bucket_ref = storage_util.BucketReference.FromBucketUrl(
-      file_upload_task.bucket_url)
-  retryer = retry.Retryer(max_retrials=3)
-
-  path = file_upload_task.path
-  sha1_hash = file_upload_task.sha1_hash
-  log.debug('Uploading [{f}] to [{gcs}]'.format(f=path, gcs=sha1_hash))
-  try:
-    retryer.RetryOnException(
-        storage_client.CopyFileToGCS,
-        args=(bucket_ref, path, sha1_hash)
-    )
-  except Exception as err:  # pylint: disable=broad-except
-    # pass all errors through as strings (not all exceptions can be serialized)
-    return str(err)
-  return None
-
-
 class UploadStrategy(enum.Enum):
   """The file upload parallelism strategy to use.
 
@@ -208,9 +174,8 @@ class UploadStrategy(enum.Enum):
 
   The old old method of parallelism involved shelling out to gsutil.
   """
-  PROCESSES = 1
-  THREADS = 2
-  GSUTIL = 3
+  THREADS = 1
+  GSUTIL = 2
 
 
 def _UploadFilesThreads(files_to_upload, bucket_ref):
@@ -234,55 +199,6 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
                                            sha1_hash)
     tasks.append(task)
   storage_parallel.UploadFiles(tasks, num_threads=num_threads)
-
-
-def _UploadFilesProcesses(files_to_upload, bucket_ref):
-  """Uploads files to App Engine Cloud Storage bucket using processes.
-
-  Args:
-    files_to_upload: dict {str: str}, map of checksum to local path
-    bucket_ref: storage_api.BucketReference, the reference to the bucket files
-      will be placed in.
-
-  Raises:
-    MultiError: if one or more errors occurred during file upload.
-  """
-  tasks = []
-  # Have to sort files because the test framework requires a known order for
-  # mocked API calls.
-  for sha1_hash, path in sorted(files_to_upload.iteritems()):
-    tasks.append(FileUploadTask(sha1_hash, path, bucket_ref.ToBucketUrl()))
-
-  num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
-  threads_per_proc = properties.VALUES.app.num_file_upload_threads.GetInt()
-  if (platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
-      and platform.mac_ver()[0].startswith('10.12')):  # Sierra is version 10.12
-    # OS X Sierra has issues with spawning processes in this manner
-    if num_procs == 1:
-      # num_procs set explicitly to 1 indicates that a user tried to turn off
-      # parallelism, so we respect that.
-      threads_per_proc = 1
-    # Note: OS X (especially Sierra) has issues with multi-process file upload
-    # as we had it implemented, so we just *ignore* the number of processes
-    # requested and just use threads.
-    # This is slightly confusing, but when we resolve the TODO in the below
-    # branch of the if statement, this should get fixed.
-    threads_per_proc = threads_per_proc or _DEFAULT_NUM_THREADS
-    with parallel.GetPool(threads_per_proc) as pool:
-      results = pool.Map(_UploadFile, tasks)
-  elif num_procs > 1:
-    pool = multiprocessing.Pool(num_procs)
-    results = pool.map(_UploadFile, tasks)
-    errors = filter(bool, results)
-    pool.close()
-    pool.join()
-    if errors:
-      raise MultiError('during file upload', errors)
-  else:
-    for task in tasks:
-      error = _UploadFile(task)
-      if error:
-        raise MultiError('during file upload', [error])
 
 
 def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
@@ -334,7 +250,7 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
   if upload_strategy is UploadStrategy.GSUTIL:
     manifest = CopyFilesToCodeBucketGsutil(service, source_dir, bucket_ref)
     metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
-  else:
+  elif upload_strategy is UploadStrategy.THREADS:
     # Collect a list of files to upload, indexed by the SHA so uploads are
     # deduplicated.
     with file_utils.TemporaryDirectory() as tmp_dir:
@@ -342,15 +258,12 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
                                           tmp_dir)
       files_to_upload = _BuildFileUploadMap(
           manifest, source_dir, bucket_ref, tmp_dir)
-      if upload_strategy is UploadStrategy.THREADS:
-        _UploadFilesThreads(files_to_upload, bucket_ref)
-      elif upload_strategy is UploadStrategy.PROCESSES:
-        _UploadFilesProcesses(files_to_upload, bucket_ref)
-      else:
-        raise ValueError('Invalid upload strategy ' + str(upload_strategy))
-    log.status.Print('File upload done.')
-    log.info('Manifest: [{0}]'.format(manifest))
-    metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
+      _UploadFilesThreads(files_to_upload, bucket_ref)
+  else:
+    raise ValueError('Invalid upload strategy ' + str(upload_strategy))
+  log.status.Print('File upload done.')
+  log.info('Manifest: [{0}]'.format(manifest))
+  metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
   return manifest
 
 

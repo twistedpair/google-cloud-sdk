@@ -13,7 +13,7 @@
 # limitations under the License.
 """Constants for the dataproc tool."""
 
-# TODO(user): Move defaults to the server
+# TODO(b/36055865): Move defaults to the server
 from googlecloudsdk.api_lib.util import apis as core_apis
 
 messages = core_apis.GetMessagesModule('dataproc', 'v1')

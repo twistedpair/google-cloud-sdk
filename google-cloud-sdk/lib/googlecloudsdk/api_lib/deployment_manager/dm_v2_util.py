@@ -204,7 +204,7 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
       )
       outputs = FlattenLayoutOutputs(manifest_response.layout)
 
-    # TODO(user): Pagination b/28298504
+    # TODO(b/36049939): Pagination b/28298504
     return ResourcesAndOutputs(resources, outputs)
   except apitools_exceptions.HttpError as error:
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)

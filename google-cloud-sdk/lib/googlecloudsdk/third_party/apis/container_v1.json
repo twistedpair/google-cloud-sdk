@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Container Engine API",
-  "description": "Builds and manages clusters that run container-based applications, powered by open source Kubernetes technology.",
+  "description": "The Google Container Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -208,6 +208,10 @@
         "enableKubernetesAlpha": {
           "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after\ncreation.",
           "type": "boolean"
+        },
+        "resourceLabels": {
+          "description": "The resource labels for the cluster to use to annotate any related GCE\nresources.",
+          "$ref": "ResourceLabels"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -537,6 +541,35 @@
         },
         "requestedUpgradeStartTime": {
           "description": "User requested start time, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        }
+      }
+    },
+    "ResourceLabels": {
+      "id": "ResourceLabels",
+      "description": "The set of Google Compute Engine labels that will be applied to any\nunderlying resources that the Google Container Cluster creates or uses.\nThese are merely metadata on the resources, and do not change the behavior\nof the cluster.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "The list of labels.",
+          "type": "array",
+          "items": {
+            "$ref": "Item"
+          }
+        }
+      }
+    },
+    "Item": {
+      "id": "Item",
+      "description": "A label to be applied to Google Compute Engine resources. It must comply\nwith RFC1035 for each key and value.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "The Key for this label.",
+          "type": "string"
+        },
+        "value": {
+          "description": "The Value for this label.",
           "type": "string"
         }
       }

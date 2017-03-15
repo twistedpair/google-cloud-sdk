@@ -50,7 +50,7 @@ def _GetGsutilPath():
   """Determines the path to the gsutil binary."""
   sdk_bin_path = config.Paths().sdk_bin_path
   if not sdk_bin_path:
-    # TODO(user): check if gsutil component is installed and offer user
+    # TODO(b/36051088): check if gsutil component is installed and offer user
     # to install it if it is not.
     raise exceptions.ToolException(('A SDK root could not be found. Please '
                                     'check your installation.'))
@@ -114,7 +114,7 @@ def GetObjectRef(path, messages):
 class StorageClient(object):
   """Micro-client for accessing GCS."""
 
-  # TODO(user): Add application-id.
+  # TODO(b/36050236): Add application-id.
 
   def __init__(self):
     self.client = core_apis.GetClientInstance('storage', 'v1')
@@ -126,7 +126,7 @@ class StorageClient(object):
     try:
       return self.client.objects.Get(request=request, download=download)
     except apitools_exceptions.HttpError as error:
-      # TODO(user): Clean up error handling. Handle 403s.
+      # TODO(b/36052479): Clean up error handling. Handle 403s.
       if error.status_code == 404:
         return None
       raise error

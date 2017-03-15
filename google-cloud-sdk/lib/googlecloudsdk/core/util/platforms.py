@@ -119,9 +119,9 @@ class OperatingSystem(object):
       return OperatingSystem.MACOSX
     elif 'cygwin' in sys.platform:
       return OperatingSystem.CYGWIN
-    # TODO(user): More reliable handling of OS types
-    # TODO(user): What happens when we use jython, does it actually use the
-    # 'java' os name?
+    # TODO(b/36035294): More reliable handling of OS types
+    # TODO(b/36039277): What happens when we use jython, does it actually use
+    # the 'java' os name?
     return None
 
   @staticmethod

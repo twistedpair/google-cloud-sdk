@@ -197,7 +197,7 @@ _MARKER = '^ invalid character'
 
 # pylint: disable=g-doc-bad-indent
 def _FormatNonAsciiMarkerString(args):
-  u"""Format a string that will mark the first non-ASCII character it contains.
+  r"""Format a string that will mark the first non-ASCII character it contains.
 
 
   Example:
@@ -293,7 +293,7 @@ class InvalidCharacterInArgException(ToolException):
             _FormatNonAsciiMarkerString(args)))
 
 
-# TODO(user): Eventually use api_exceptions.HttpException exclusively.
+# TODO(b/35938745): Eventually use api_exceptions.HttpException exclusively.
 class HttpException(api_exceptions.HttpException):
   """HttpException is raised whenever the Http response status code != 200.
 

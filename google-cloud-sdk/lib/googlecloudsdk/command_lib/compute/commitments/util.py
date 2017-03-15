@@ -52,3 +52,6 @@ class ServiceComposer(object):
 
   def List(self, *args, **kwargs):
     return self.regional_service.List(*args, **kwargs)
+
+  def ProcessHttpResponse(self, *args, **kwargs):
+    return self.regional_service.ProcessHttpResponse(*args, **kwargs)

@@ -175,7 +175,6 @@ class ResourceStub(object):
 
 def GetDefaultScopeLister(compute_client, project=None):
   """Constructs default zone/region lister."""
-  # TODO(user): Zones can be extracted from regions.
   scope_func = {
       compute_scope.ScopeEnum.ZONE:
           functools.partial(zones_service.List, compute_client),
@@ -472,7 +471,6 @@ class ResourceArgument(object):
     and zonal qualifiers (or any combination of) for each resource.
   """
 
-  # TODO(user): replace collection arguments with single map argument.
   def __init__(self, name=None,
                resource_name=None,
                completion_resource_id=None,

@@ -142,7 +142,7 @@ class CaptureManager(object):
       # capture a bunch of local files if necessary.
       pass
 
-    # TODO(user) Once "wsync capture" is available, use that instead of
+    # TODO(b/36057057) Once "wsync capture" is available, use that instead of
     # explicitly modifying the workspace as we do here.
 
     paths = [os.path.relpath(f, src_path)

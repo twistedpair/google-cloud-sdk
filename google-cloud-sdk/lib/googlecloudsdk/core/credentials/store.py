@@ -17,26 +17,23 @@
 A detailed description of auth.
 """
 
-import abc
 import datetime
 import json
 import os
 import textwrap
-import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
 import httplib2
 from oauth2client import client
-from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
-from oauth2client.contrib import multistore_file
 from oauth2client.contrib import reauth_errors
 
 
@@ -134,107 +131,12 @@ class CredentialFileSaveError(Error):
   pass
 
 
-class UnknownCredentialsType(Error):
-  """An error for when we fail to determine the type of the credentials."""
-  pass
-
-
 class FlowError(Error):
   """Exception for when something goes wrong with a web flow."""
 
 
 class RevokeError(Error):
   """Exception for when there was a problem revoking."""
-
-
-class CredentialStore(object):
-  """Abstract definition of credential store."""
-  __metaclass__ = abc.ABCMeta
-
-  @abc.abstractmethod
-  def GetAccounts(self):
-    """Get all accounts that have credentials stored for the CloudSDK.
-
-    Returns:
-      {str}, Set of accounts.
-    """
-    return NotImplemented
-
-  @abc.abstractmethod
-  def Load(self, account_id):
-    return NotImplemented
-
-  @abc.abstractmethod
-  def Store(self, account_id, credentials):
-    return NotImplemented
-
-  @abc.abstractmethod
-  def Remove(self, account_id):
-    return NotImplemented
-
-
-class Oauth2ClientCredentialStore(CredentialStore):
-  """Implementation of credential sotore over oauth2client.multistore_file."""
-
-  def __init__(self, store_file=None):
-    self._store_file = store_file or config.Paths().credentials_path
-
-  def GetAccounts(self):
-    """Overrides."""
-    all_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-
-    return {self._StorageKey2AccountId(key) for key in all_keys}
-
-  def Load(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    return credential_store.get()
-
-  def Store(self, account_id, credentials):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.put(credentials)
-    credentials.set_store(credential_store)
-
-  def Remove(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.delete()
-
-  def _GetStorageByAccountId(self, account_id):
-    storage_key = self._AcctountId2StorageKey(account_id)
-    return multistore_file.get_credential_storage_custom_key(
-        filename=self._store_file, key_dict=storage_key)
-
-  def _AcctountId2StorageKey(self, account_id):
-    """Converts account id into storage key."""
-    all_storage_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-    matching_keys = [k for k in all_storage_keys if k['account'] == account_id]
-    if not matching_keys:
-      return {'type': 'google-cloud-sdk', 'account': account_id}
-
-    # We do not expect any other type keys in the credential store. Just in case
-    # somehow they occur:
-    #  1. prefer key with no type
-    #  2. use google-cloud-sdk type
-    #  3. use any other
-    # Also log all cases where type was present but was not google-cloud-sdk.
-    right_key = matching_keys[0]
-    for key in matching_keys:
-      if 'type' in key:
-        if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
-          right_key = key
-        else:
-          log.file_only_logger.warn(
-              'Credential store has unknown type [{0}] key for account [{1}]'
-              .format(key['type'], key['account']))
-      else:
-        right_key = key
-    if 'type' in right_key:
-      right_key['type'] = 'google-cloud-sdk'
-    return right_key
-
-  def _StorageKey2AccountId(self, storage_key):
-    return storage_key['account']
 
 
 def AvailableAccounts():
@@ -247,7 +149,7 @@ def AvailableAccounts():
     [str], List of the accounts.
 
   """
-  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  store = creds.GetCredentialStore()
   accounts = store.GetAccounts() | set(c_gce.Metadata().Accounts())
 
   devshell_creds = c_devshell.LoadDevshellCredentials()
@@ -321,9 +223,9 @@ def Load(account=None, scopes=None, prevent_refresh=False):
     # preserved when scopes are applied.
     token_uri_override = properties.VALUES.auth.token_host.Get()
     if token_uri_override:
-      cred_type = CredentialType.FromCredentials(cred)
-      if cred_type in (CredentialType.SERVICE_ACCOUNT,
-                       CredentialType.P12_SERVICE_ACCOUNT):
+      cred_type = creds.CredentialType.FromCredentials(cred)
+      if cred_type in (creds.CredentialType.SERVICE_ACCOUNT,
+                       creds.CredentialType.P12_SERVICE_ACCOUNT):
         cred.token_uri = token_uri_override
     return cred
 
@@ -341,7 +243,7 @@ def Load(account=None, scopes=None, prevent_refresh=False):
   if account in c_gce.Metadata().Accounts():
     return AcquireFromGCE(account)
 
-  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  store = creds.GetCredentialStore()
   cred = store.Load(account)
   if not cred:
     raise NoCredentialsForAccountException(account)
@@ -355,13 +257,13 @@ def Load(account=None, scopes=None, prevent_refresh=False):
   return cred
 
 
-def Refresh(creds, http_client=None):
+def Refresh(credentials, http_client=None):
   """Refresh credentials.
 
-  Calls creds.refresh(), unless they're SignedJwtAssertionCredentials.
+  Calls credentials.refresh(), unless they're SignedJwtAssertionCredentials.
 
   Args:
-    creds: oauth2client.client.Credentials, The credentials to refresh.
+    credentials: oauth2client.client.Credentials, The credentials to refresh.
     http_client: httplib2.Http, The http transport to refresh with.
 
   Raises:
@@ -369,18 +271,18 @@ def Refresh(creds, http_client=None):
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
   try:
-    creds.refresh(http_client or http.Http())
+    credentials.refresh(http_client or http.Http())
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     raise TokenRefreshError(e.message)
   except reauth_errors.ReauthError as e:
     raise TokenRefreshReauthError(e.message)
 
 
-def Store(creds, account=None, scopes=None):
+def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
   Args:
-    creds: oauth2client.client.Credentials, The credentials to be stored.
+    credentials: oauth2client.client.Credentials, The credentials to be stored.
     account: str, The account address of the account they're being stored for.
         If None, the account stored in the core.account property is used.
     scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
@@ -391,9 +293,8 @@ def Store(creds, account=None, scopes=None):
         active account.
   """
 
-  cred_type = CredentialType.FromCredentials(creds)
-  if cred_type in (CredentialType.DEVSHELL, CredentialType.GCE):
-    # We never serialize devshell or GCE credentials.
+  cred_type = creds.CredentialType.FromCredentials(credentials)
+  if not cred_type.is_serializable:
     return
 
   if not account:
@@ -401,21 +302,21 @@ def Store(creds, account=None, scopes=None):
   if not account:
     raise NoActiveAccountException()
 
-  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
-  store.Store(account, creds)
-  _LegacyGenerator(account, creds, scopes).WriteTemplate()
+  store = creds.GetCredentialStore()
+  store.Store(account, credentials)
+  _LegacyGenerator(account, credentials, scopes).WriteTemplate()
 
 
-def ActivateCredentials(account, creds):
+def ActivateCredentials(account, credentials):
   """Validates, stores and activates credentials with given account."""
-  Refresh(creds)
-  Store(creds, account)
+  Refresh(credentials)
+  Store(credentials, account)
 
   properties.PersistProperty(properties.VALUES.core.account, account)
 
 
-def RevokeCredentials(creds):
-  creds.revoke(http.Http())
+def RevokeCredentials(credentials):
+  credentials.revoke(http.Http())
 
 
 def Revoke(account=None):
@@ -444,11 +345,11 @@ def Revoke(account=None):
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
-  creds = Load(account, prevent_refresh=True)
-  if not creds:
+  credentials = Load(account, prevent_refresh=True)
+  if not credentials:
     raise NoCredentialsForAccountException(account)
 
-  if isinstance(creds, c_devshell.DevshellCredentials):
+  if isinstance(credentials, c_devshell.DevshellCredentials):
     raise RevokeError(
         'Cannot revoke the automatically provisioned Cloud Shell credential.'
         'This comes from your browser session and will not persist outside'
@@ -456,17 +357,17 @@ def Revoke(account=None):
 
   rv = True
   try:
-    RevokeCredentials(creds)
+    RevokeCredentials(credentials)
   except client.TokenRevokeError as e:
     if e.args[0] == 'invalid_token':
       rv = False
     else:
       raise
 
-  store = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+  store = creds.GetCredentialStore()
   store.Remove(account)
 
-  _LegacyGenerator(account, creds).Clean()
+  _LegacyGenerator(account, credentials).Clean()
   files.RmTree(config.Paths().LegacyCredentialsDir(account))
   return rv
 
@@ -587,43 +488,46 @@ def AcquireFromGCE(account=None):
     account = default_account
   if account != default_account:
     raise Error('Unable to use non-default GCE service accounts.')
-  # TODO(user): Update oauth2client to fetch alternate credentials. This
-  # inability is not currently a problem, because the metadata server does not
-  # yet provide multiple service accounts.
+  # Metadata server does not yet provide multiple service accounts.
 
-  creds = oauth2client_gce.AppAssertionCredentials()
-  Refresh(creds)
-  return creds
+  credentials = oauth2client_gce.AppAssertionCredentials()
+  Refresh(credentials)
+  return credentials
 
 
-def SaveCredentialsAsADC(creds, file_path):
+def SaveCredentialsAsADC(credentials, file_path):
   """Saves the credentials to the given file.
 
   This file can be read back via
     cred = client.GoogleCredentials.from_stream(file_path)
 
   Args:
-    creds: client.OAuth2Credentials, obtained from a web flow
+    credentials: client.OAuth2Credentials, obtained from a web flow
         or service account.
     file_path: str, file path to store credentials to. The file will be created.
 
   Raises:
     CredentialFileSaveError: on file io errors.
   """
-  creds_type = CredentialType.FromCredentials(creds)
-  if creds_type == CredentialType.P12_SERVICE_ACCOUNT:
+  creds_type = creds.CredentialType.FromCredentials(credentials)
+  if creds_type == creds.CredentialType.P12_SERVICE_ACCOUNT:
     raise CredentialFileSaveError(
         'Error saving Application Default Credentials: p12 keys are not'
         'supported in this format')
 
-  if creds_type == CredentialType.USER_ACCOUNT:
-    creds = client.GoogleCredentials(
-        creds.access_token, creds.client_id, creds.client_secret,
-        creds.refresh_token, creds.token_expiry, creds.token_uri,
-        creds.user_agent, creds.revoke_uri)
+  if creds_type == creds.CredentialType.USER_ACCOUNT:
+    credentials = client.GoogleCredentials(
+        credentials.access_token,
+        credentials.client_id,
+        credentials.client_secret,
+        credentials.refresh_token,
+        credentials.token_expiry,
+        credentials.token_uri,
+        credentials.user_agent,
+        credentials.revoke_uri)
   try:
     with files.OpenForWritingPrivate(file_path) as f:
-      json.dump(creds.serialization_data, f, sort_keys=True,
+      json.dump(credentials.serialization_data, f, sort_keys=True,
                 indent=2, separators=(',', ': '))
   except IOError as e:
     log.debug(e, exc_info=True)
@@ -631,46 +535,23 @@ def SaveCredentialsAsADC(creds, file_path):
         'Error saving Application Default Credentials: ' + str(e))
 
 
-class CredentialType(enum.Enum):
-  UNKNOWN = 0
-  USER_ACCOUNT = 1
-  SERVICE_ACCOUNT = 2
-  P12_SERVICE_ACCOUNT = 3
-  DEVSHELL = 4
-  GCE = 5
-
-  @staticmethod
-  def FromCredentials(creds):
-    if isinstance(creds, c_devshell.DevshellCredentials):
-      return CredentialType.DEVSHELL
-    if isinstance(creds, oauth2client_gce.AppAssertionCredentials):
-      return CredentialType.GCE
-    if isinstance(creds, service_account.ServiceAccountCredentials):
-      if getattr(creds, '_private_key_pkcs12', None) is not None:
-        return CredentialType.P12_SERVICE_ACCOUNT
-      return CredentialType.SERVICE_ACCOUNT
-    if getattr(creds, 'refresh_token', None) is not None:
-      return CredentialType.USER_ACCOUNT
-    return CredentialType.UNKNOWN
-
-
 class _LegacyGenerator(object):
   """A class to generate the credential file for legacy tools."""
 
   def __init__(self, account, credentials, scopes=None):
     self.credentials = credentials
-    self.credentials_type = CredentialType.FromCredentials(credentials)
-    if self.credentials_type == CredentialType.UNKNOWN:
-      raise UnknownCredentialsType('Unknown credentials type.')
+    self.credentials_type = creds.CredentialType.FromCredentials(credentials)
+    if self.credentials_type == creds.CredentialType.UNKNOWN:
+      raise creds.UnknownCredentialsType('Unknown credentials type.')
     if scopes is None:
       self.scopes = config.CLOUDSDK_SCOPES
     else:
       self.scopes = scopes
 
     paths = config.Paths()
-    # Single store file while not generated here can be created for caching
-    # credentials by legacy tools, register so it is cleaned up.
-    self._single_store = paths.LegacyCredentialsSingleStorePath(account)
+    # Bq file while not generated here is created for caching
+    # credentials, register so it is cleaned up.
+    self._bq_path = paths.LegacyCredentialsBqPath(account)
     self._gsutil_path = paths.LegacyCredentialsGSUtilPath(account)
     self._p12_key_path = paths.LegacyCredentialsP12KeyPath(account)
     self._adc_path = paths.LegacyCredentialsAdcPath(account)
@@ -679,7 +560,7 @@ class _LegacyGenerator(object):
     """Remove the credential file."""
 
     paths = [
-        self._single_store,
+        self._bq_path,
         self._gsutil_path,
         self._p12_key_path,
         self._adc_path,
@@ -695,16 +576,16 @@ class _LegacyGenerator(object):
     """Write the credential file."""
 
     # General credentials used by bq and gsutil.
-    if self.credentials_type != CredentialType.P12_SERVICE_ACCOUNT:
+    if self.credentials_type != creds.CredentialType.P12_SERVICE_ACCOUNT:
       SaveCredentialsAsADC(self.credentials, self._adc_path)
 
-      if self.credentials_type == CredentialType.USER_ACCOUNT:
+      if self.credentials_type == creds.CredentialType.USER_ACCOUNT:
         # we create a small .boto file for gsutil, to be put in BOTO_PATH
         self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
             [Credentials]
             gs_oauth2_refresh_token = {token}
             """).format(token=self.credentials.refresh_token))
-      elif self.credentials_type == CredentialType.SERVICE_ACCOUNT:
+      elif self.credentials_type == creds.CredentialType.SERVICE_ACCOUNT:
         self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
             [Credentials]
             gs_service_key_file = {key_file}
@@ -743,5 +624,5 @@ class _LegacyGenerator(object):
     try:
       with files.OpenForWritingPrivate(full_path) as cred_file:
         cred_file.write(contents)
-    except (OSError, IOError), e:
+    except (OSError, IOError) as e:
       raise Exception('Failed to open %s for writing: %s' % (filepath, e))

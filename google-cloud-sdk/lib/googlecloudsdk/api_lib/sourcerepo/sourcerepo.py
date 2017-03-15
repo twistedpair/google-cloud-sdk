@@ -43,7 +43,7 @@ class RepoNoExistError(exceptions.Error):
     super(RepoNoExistError, self).__init__(message)
 
 
-# TODO(user): Avoid initializing this at import time.
+# TODO(b/36052525): Avoid initializing this at import time.
 messages = apis.GetMessagesModule('sourcerepo', 'v1')
 
 
@@ -56,7 +56,7 @@ def _NormalizeToSourceAPIPath(path):
   Returns:
     (string) The path converted to Unix/Source API style. '\' characters will
     be converted to '/' on Windows.
-    TODO(user) Consider whether it makes sense to strip drive letters.
+    TODO(b/36051030) Consider whether it makes sense to strip drive letters.
   """
 
   return path.replace(os.sep, '/')

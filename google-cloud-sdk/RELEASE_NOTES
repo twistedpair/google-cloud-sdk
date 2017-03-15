@@ -2,6 +2,116 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 147.0.0 (2017-03-15)
+
+### Breaking Changes
+
+*   Modified argument parsing for commands that pass arguments through to
+    another program.
+    The `--` argument must be specified between gcloud specific args on the
+    left and the rest of the command on the right.
+    Commands will no longer allow the omission of the `--`, and unparsed
+    arguments will not be treated as implementation args.
+*   Made the `--config-name` flag mandatory for
+    `runtime-config configs variables` and `runtime-config configs waiters`
+    commands.
+*   Renamed `gcloud kms cryptokeys` as `gcloud kms keys`.
+    Renamed the `--cryptokey` flag as `--key`.
+    Deprecated the `cryptokey` variants.
+*   Modified `alpha source repos clone` to produce an error message if the
+    repository being cloned is a mirror. The command no longer asks to create
+    the repo if it does not exist.
+
+### Cloud SDK
+
+*   The gcloud interactive shell auto completes gcloud commands and flags, and
+    displays help, as command lines are typed into the shell.
+    Run `gcloud alpha shell` to launch the shell.
+
+### Google Compute Engine
+
+*   Promoted custom cache keys to beta.
+*   Promoted `gcloud compute networks subnets` to beta.
+
+### Google App Engine
+
+*   Modified Google App Engine Flexible Environment runtimes that
+    require `entrypoint:` to automatically prepend `exec` to
+    entrypoints, to ensure signals are passed through to the application
+    process.
+*   Java SDK updated to 1.9.50. For more details, please see
+    *   https://cloud.google.com/appengine/docs/java/release-notes
+
+### Google Cloud Bigtable
+
+*   Updated binaries for the `cbt` commandline tool to allow for creation of
+    tables with initial splits.
+
+### Google Cloud Datalab
+
+*   Updateed the datalab component to the 20170309 build. This is a small update
+    that only updates the name of the project from which we fetch the
+    Container OS images to the new `cos-cloud` project.
+
+### Google Container Engine
+
+*   Added `--enable-autorepair` flag to
+    `gcloud beta container clusters create` and
+    `gcloud beta container node-pools create`.
+
+### Google Cloud Resource Manager
+
+*   Promoted the `gcloud projects create` command to GA.
+
+### Google Cloud Vision
+
+*   The `gcloud beta ml vision` command group is now available. These commands
+    allow you to analyze images with Google Cloud Vision:
+
+    * `gcloud beta ml vision detect-documents`
+    * `gcloud beta ml vision detect-faces`
+    * `gcloud beta ml vision detect-image-properties`
+    * `gcloud beta ml vision detect-labels`
+    * `gcloud beta ml vision detect-landmarks`
+    * `gcloud beta ml vision detect-logos`
+    * `gcloud beta ml vision detect-safe-search`
+    * `gcloud beta ml vision detect-text`
+    * `gcloud beta ml vision detect-web`
+
+### Google Service Management
+
+*   Modified `--format` flag for `gcloud service-management deploy` to make
+    the new service configuration available for formatting with `--format`
+
+### Google Cloud Source Repositories
+
+*   Mirrored respositories now display the url of the repository being mirrored.
+
+### Cloud Tools for PowerShell
+
+*   Added beta cmdlets for managing access control and visibility of
+    Google Cloud IAM bindings. For more information, see
+    https://googlecloudplatform.github.io/google-cloud-powershell/#/google-cloud-iam
+
+### Google Container Registry
+
+*   Updated `docker-credential-gcr` to support the Docker client's
+    new chronological version numbering during `configure-docker` for Docker
+    client versions of 17.03.xx and above.
+
+### Firebase Test Lab
+
+*   Added new `--results-dir` flag for the `gcloud test android run` command
+    to specify a predetermined storage location for test results. The value
+    must be unique per each test matrix created. This avoids the need to parse
+    stderr to find the path to the raw test results.
+*   Added new commands `beta test android versions describe` and
+    `beta test android locales describe`.
+
+### Google Cloud Key Management Service (Beta)
+
+*   Tab completion for the Cloud KMS --location flag is now supported.
+
 ## 146.0.0 (2017-03-02)
 
 ### Google Cloud ML
@@ -115,6 +225,17 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     *   `gcloud beta sql databases describe`
     *   `gcloud beta sql databases list`
     *   `gcloud beta sql databases patch`
+
+### Google Compute Engine
+
+*   The `--network-tier` flag has been added to the following commands:
+    *   `gcloud alpha compute addresses create`
+    *   `gcloud alpha compute forwarding-rules create`
+    *   `gcloud alpha compute instance-templates create`
+    *   `gcloud alpha compute instances add-access-config`
+    *   `gcloud alpha compute instances create`
+    *   `gcloud alpha compute instances create-from-container`
+    *   `gcloud alpha compute instances update-access-config`
 
 ## 144.0.0 (2017-02-15)
 
@@ -396,7 +517,7 @@ if a file upload is necessary.
 ## 139.0.1 (2017-01-12)
 
 *   Fixed crash in `gcloud dataproc clusters create`
-    *   https://code.google.com/p/google-cloud-sdk/issues/detail?id=1464
+    *   https://issuetracker.google.com/issues/35907682
 
 
 ## 139.0.0 (2017-01-11)
@@ -1020,7 +1141,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   WEB-INF/appengine-web.xml file when launching the dev_appserver.
 
 * Fixed timestamp processing issue
-  (https://code.google.com/p/google-cloud-sdk/issues/detail?id=1121) in
+  (https://issuetracker.google.com/issues/35907291) in
   `gcloud app logs read`.
 
 ### Google Cloud Functions
@@ -1362,7 +1483,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 ### Google Cloud Pub/Sub
 
 * Fixed error handling bug in `gcloud beta pubsub subscriptions create`
-  (https://code.google.com/p/google-cloud-sdk/issues/detail?id=1017).
+  (https://issuetracker.google.com/issues/35907190).
 
 ### Google Compute Engine
 
@@ -1479,7 +1600,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   <https://cloud.google.com/bigquery/docs/labeling-datasets> for more details.
 
 * Now sending progress output to stderr and query output to stdout. This fixes
-  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=780>.
+  <https://issuetracker.google.com/issues/35906906>.
 
 ### Google Cloud SDK
 
@@ -1723,7 +1844,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     increased speed. To revert to the old behavior in event of a problem, please
     run `gcloud config set app/num_file_upload_processes 1`
     and report an issue here:
-    https://code.google.com/p/google-cloud-sdk/issues/list
+    https://issuetracker.google.com/issues/new?component=187143
 
 *   Google App Engine components updated to 1.9.38.
     Please visit the following release notes for details:
@@ -1867,7 +1988,7 @@ The alpha commands will remain, as is, until at least March of 2017.
     deploy` command with docker version 1.10+. Note that local Docker builds
     with Docker version 1.11 will still fail when using the new Docker external
     credentials; please downgrade to the plain credential store.
-    https://code.google.com/p/google-cloud-sdk/issues/detail?id=802
+    https://issuetracker.google.com/issues/35906927
 
 ### Google Container Engine
 
@@ -1922,7 +2043,7 @@ The alpha commands will remain, as is, until at least March of 2017.
       * Python - https://cloud.google.com/appengine/docs/python/release-notes
       * Java - https://cloud.google.com/appengine/docs/java/release-notes
 *   Fixed issue with failed uploads in gcloud preview app-deploy
-    (https://code.google.com/p/google-cloud-sdk/issues/detail?id=784).
+    (https://issuetracker.google.com/issues/35906909).
 *   Deprecated --server flag for app commands; its use is unsupported.
 
 ### Google Compute Engine
@@ -2057,7 +2178,7 @@ The alpha commands will remain, as is, until at least March of 2017.
         use 'service' instead.
 *   Fixed `MaxRetrialsException` for `gcloud preview app deploy` of standard
     (not MVM or flexible) App Engine apps with `.git` directory present
-    (<https://code.google.com/p/google-cloud-sdk/issues/detail?id=727>).
+    (<https://issuetracker.google.com/issues/35906804>).
 *   Fixed bug in `gcloud preview app deploy` where `--docker-build=local` did
     not work when `app/use_cloud_build` was enabled.
 
@@ -2226,7 +2347,7 @@ command surface.
 ### Google BigQuery
 
 * Updated the `bq` tool to version v2.0.24. Also includes fix for
-  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=632>.
+  <https://issuetracker.google.com/issues/35906711>.
 
 
 ## 100.0.0 (2016-03-09)
@@ -2256,8 +2377,7 @@ command surface.
 ### Google App Engine
 
 * Fixed `WindowsError: [Error 32]` in the `gcloud preview app deploy` command
-  on Windows. Fixes
-  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=554>.
+  on Windows. Fixes <https://issuetracker.google.com/issues/35906633>.
 
 ### Google Container Engine
 
@@ -2278,7 +2398,7 @@ command surface.
 * Enable gcloud to run in Cygwin 64 bit environments.
 
 * Fail gracefully on unreadable Google Compute Engine credential file. Fixes
-  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=460>.
+  <https://issuetracker.google.com/issues/35906539>.
 
 ### Google App Engine
 
@@ -2294,7 +2414,7 @@ command surface.
   VM applications.
 
 * Fixed a TLS-related error during gcloud preview app deploy. Alleviates the
-  problem in <https://code.google.com/p/google-cloud-sdk/issues/detail?id=559>.
+  problem in <https://issuetracker.google.com/issues/35906638>.
 
 ### Google Compute Engine
 
@@ -2324,7 +2444,7 @@ command surface.
   * Fix the winkeygen Windows key generator.
   * Recognize corrupt Windows keys and automatically regenerate them.
 
-* Fixed [#538](https://code.google.com/p/google-cloud-sdk/issues/detail?id=538).
+* Fixed [#538](https://issuetracker.google.com/issues/35906617).
   Users should no longer get "gsutil ImportError: No module named google"
   errors.
 
@@ -2571,7 +2691,7 @@ command surface.
 *   Changed `--password-file` option for `sql instances set-root-password`;
     password now does not include trailing newline from password file. This
     matches the documented behavior, but not the previous behavior.
-    (Fixes https://code.google.com/p/google-cloud-sdk/issues/detail?id=419)
+    (Fixes https://issuetracker.google.com/issues/35906498)
 
 *   Removed `meta/active_configuration` from the results of `gcloud config list`
     since it is not a property that can be set. You can continue to use the
@@ -2758,11 +2878,11 @@ command surface.
 ### App Engine
 
 * Don't do runtime identification for custom runtimes during deploy. This fixes
-  issue [#387](https://code.google.com/p/google-cloud-sdk/issues/detail?id=387).
+  issue [#387](https://issuetracker.google.com/issues/35906466).
 
 * The `dev_appserver.py` script no longer requires the installation of all App
   Engine components. It will install only the necessary ones at run time.
-  Fixes [#273](https://code.google.com/p/google-cloud-sdk/issues/detail?id=273)
+  Fixes [#273](https://issuetracker.google.com/issues/35906352)
 
 ### Core
 
@@ -2771,8 +2891,8 @@ command surface.
   update your SDK installation).  `gcloud components update` should now only be
   used to update your SDK to the latest version.
 
-* Fixes [#293](https://code.google.com/p/google-cloud-sdk/issues/detail?id=293)
-  related SSL certificate validation issues.
+* Fixes [#293](https://issuetracker.google.com/issues/35906372) related SSL
+  certificate validation issues.
 
 * Use zsh builtins in path.zsh.inc for faster/cleaner shell startup.
 
@@ -2831,14 +2951,13 @@ command surface.
 * New flag --ike-networks in `gcloud alpha compute vpn-tunnels create`.
 
 * `gcloud compute ssh` now passes through the exit code of the ssh command. This
-  fixes issue
-  [#146 ](https://code.google.com/p/google-cloud-sdk/issues/detail?id=146).
+  fixes issue [#146](https://issuetracker.google.com/issues/35906227).
 
 ### Misc. Changes
 
 * Gracefully handle socket timeouts while checking for Google Compute Engine
   metadata server. This fixes issue
-  [#339](https://code.google.com/p/google-cloud-sdk/issues/detail?id=339).
+  [#339](https://issuetracker.google.com/issues/35906418).
 
 ## 0.9.84 (2015-10-28)
 
@@ -2884,8 +3003,7 @@ command surface.
 
 * Ubuntu 14.10 is end of life: https://wiki.ubuntu.com/Releases
 
-* Fixed external issue
-  [#291](https://code.google.com/p/google-cloud-sdk/issues/detail?id=291),
+* Fixed external issue [#291](https://issuetracker.google.com/issues/35906370),
   related to handling network addresses on Windows.
 
 ### Container Engine
@@ -2940,7 +3058,7 @@ command surface.
 
 *   Fixed issue with `gcloud sql instances clone` when `--bin-log-file-name` and
     `--bin-log-position` are set.
-    (<https://code.google.com/p/google-cloud-sdk/issues/detail?id=201>).
+    (<https://issuetracker.google.com/issues/35906280>).
 
 ## 0.9.81 (2015-10-07)
 
@@ -3294,7 +3412,7 @@ command surface.
 
 *   2x faster command load times.
 *   Fix to allow `preview app` to use oauth service accounts
-    <https://code.google.com/p/google-cloud-sdk/issues/detail?id=133>
+    <https://issuetracker.google.com/issues/35906214>
 
 ## 0.9.62 (2015-05-27)
 

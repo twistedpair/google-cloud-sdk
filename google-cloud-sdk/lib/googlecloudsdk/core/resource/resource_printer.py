@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Methods for formatting and printing Python objects.
+r"""Methods for formatting and printing Python objects.
 
 Each printer has three main attributes, all accessible as strings in the
 --format='NAME[ATTRIBUTES](PROJECTION)' option:
@@ -29,7 +29,7 @@ Each printer has three main attributes, all accessible as strings in the
 
 Example:
 
-  gcloud compute instances list \\
+  gcloud compute instances list \
       --format='table[box](name, networkInterfaces[0].networkIP)'
 """
 
@@ -149,7 +149,7 @@ _FORMATTERS = {
     'none': NonePrinter,
     'object': object_printer.ObjectPrinter,
     'table': table_printer.TablePrinter,
-    'text': TextPrinter,  # TODO(user): Drop this in the cleanup.
+    'text': TextPrinter,
     'value': csv_printer.ValuePrinter,
     'yaml': yaml_printer.YamlPrinter,
 }

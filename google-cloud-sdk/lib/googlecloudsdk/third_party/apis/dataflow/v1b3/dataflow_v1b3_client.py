@@ -630,13 +630,13 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Get the template metadata associated with a template.
+      """Get the template associated with a template.
 
       Args:
         request: (DataflowProjectsTemplatesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TemplateMetadata) The response message.
+        (GetTemplateResponse) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -645,41 +645,39 @@ class DataflowV1b3(base_api.BaseApiClient):
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'GET',
         method_id=u'dataflow.projects.templates.get',
-        ordered_params=[u'projectId', u'gcsPath'],
-        path_params=[u'gcsPath', u'projectId'],
-        query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/templates/{gcsPath}',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'gcsPath', u'view'],
+        relative_path=u'v1b3/projects/{projectId}/templates:get',
         request_field='',
         request_type_name=u'DataflowProjectsTemplatesGetRequest',
-        response_type_name=u'TemplateMetadata',
+        response_type_name=u'GetTemplateResponse',
         supports_download=False,
     )
 
-    def Validate(self, request, global_params=None):
-      """Validates the parameters set in create job request. The response.
-includes details about any problematic parameters, and also descriptions of
-how parameters have been filled in.
+    def Launch(self, request, global_params=None):
+      """Launch a template.
 
       Args:
-        request: (DataflowProjectsTemplatesValidateRequest) input message
+        request: (DataflowProjectsTemplatesLaunchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TemplateValidationResult) The response message.
+        (LaunchTemplateResponse) The response message.
       """
-      config = self.GetMethodConfig('Validate')
+      config = self.GetMethodConfig('Launch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Validate.method_config = lambda: base_api.ApiMethodInfo(
+    Launch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
-        method_id=u'dataflow.projects.templates.validate',
+        method_id=u'dataflow.projects.templates.launch',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[],
-        relative_path=u'v1b3/projects/{projectId}/templates/validate',
-        request_field=u'createJobFromTemplateRequest',
-        request_type_name=u'DataflowProjectsTemplatesValidateRequest',
-        response_type_name=u'TemplateValidationResult',
+        query_params=[u'dryRun', u'gcsPath'],
+        relative_path=u'v1b3/projects/{projectId}/templates:launch',
+        request_field=u'launchTemplateParameters',
+        request_type_name=u'DataflowProjectsTemplatesLaunchRequest',
+        response_type_name=u'LaunchTemplateResponse',
         supports_download=False,
     )
 

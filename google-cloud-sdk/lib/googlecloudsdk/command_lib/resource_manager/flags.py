@@ -82,7 +82,7 @@ def AddParentFlagsToParser(parser):
 
 
 def GetParentFromFlags(args):
-  if args.folder:
+  if getattr(args, 'folder', None):
     return 'folders/{0}'.format(args.folder)
   elif args.organization:
     return 'organizations/{0}'.format(args.organization)
@@ -91,8 +91,21 @@ def GetParentFromFlags(args):
 
 
 def CheckParentFlags(args, parent_required=True):
-  if args.folder and args.organization:
+  """Assert that there are no conflicts with parent flags.
+
+  Ensure that both the organization flag and folder flag are not set at the
+  same time. This is a little tricky since the folder flag doesn't exist for
+  all commands which accept a parent specification.
+
+  Args:
+    args: The argument object
+    parent_required: True to assert that a parent flag was set
+  """
+  if getattr(args, 'folder', None) and args.organization:
     raise exceptions.ConflictingArgumentsException('--folder', '--organization')
-  if parent_required and not args.folder and not args.organization:
-    raise exceptions.ToolException(
-        'Neither --folder nor --organization provided, exactly one required')
+  if parent_required:
+    if 'folder' in args and not args.folder and not args.organization:
+      raise exceptions.ToolException(
+          'Neither --folder nor --organization provided, exactly one required')
+    elif 'folder' not in args and not args.organization:
+      raise exceptions.ToolException('--organization is required')

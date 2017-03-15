@@ -448,4 +448,12 @@ MAP = {
             default_version=True
         ),
     },
+    'vision': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.vision.v1',
+            client_classpath='vision_v1_client.VisionV1',
+            messages_modulepath='vision_v1_messages',
+            default_version=True
+        ),
+    },
 }

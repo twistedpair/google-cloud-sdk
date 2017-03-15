@@ -193,8 +193,8 @@ class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -339,8 +339,8 @@ class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -388,8 +388,8 @@ class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

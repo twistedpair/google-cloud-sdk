@@ -216,7 +216,7 @@
           "type": "string"
         },
         "outputPath": {
-          "description": "Required. The Google Cloud Storage path for copying the final output files.\nFor example, 'gs:\/\/<user_bucket>\/<sample_name>\/'.",
+          "description": "Required. The Google Cloud Storage path for copying the final output files.\nFor example, 'gs:\/\/<user_bucket>\/<sample_name>'.",
           "type": "string"
         },
         "inputFastq1": {

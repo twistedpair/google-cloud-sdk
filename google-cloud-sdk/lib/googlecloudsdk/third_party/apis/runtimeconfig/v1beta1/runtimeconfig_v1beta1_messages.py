@@ -175,12 +175,20 @@ class Condition(_messages.Message):
         grant additional access, and are thus only used in a strictly positive
         context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
         dynamicauth.
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
+        to grant access based on the *absence* of a justification, so
+        justification conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
+        Buganizer ID and a manually-entered reason, are normal and supported.
     """
     NO_ATTR = 0
     AUTHORITY = 1
     ATTRIBUTION = 2
     SECURITY_REALM = 3
     APPROVER = 4
+    JUSTIFICATION_TYPE = 5
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -189,8 +197,10 @@ class Condition(_messages.Message):
       NO_OP: Default no-op.
       EQUALS: DEPRECATED. Use IN instead.
       NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: Set-inclusion check.
-      NOT_IN: Set-exclusion check.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
       DISCHARGED: Subject is discharged
     """
     NO_OP = 0
@@ -607,8 +617,8 @@ class RuntimeconfigProjectsConfigsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -663,8 +673,8 @@ class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
   """
 
   permissions = _messages.StringField(1, repeated=True)
@@ -676,8 +686,8 @@ class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -691,8 +701,8 @@ class RuntimeconfigProjectsConfigsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -783,8 +793,8 @@ class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.M
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
   """
 
   permissions = _messages.StringField(1, repeated=True)
@@ -877,8 +887,8 @@ class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Mes
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
   """
 
   permissions = _messages.StringField(1, repeated=True)

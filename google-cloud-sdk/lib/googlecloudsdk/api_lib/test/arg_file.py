@@ -150,8 +150,7 @@ def _ReadArgGroupsFromFile(arg_file):
   Raises:
     BadFileException: the yaml package encountered a ScannerError.
   """
-  # TODO(user): add support for reading arg files in GCS.
-  # TODO(user): add support for reading from stdin.
+  # TODO(b/35890786): add support for reading arg files from GCS or stdin.
   with open(arg_file, 'r') as data:
     yaml_generator = yaml.safe_load_all(data)
     all_groups = {}

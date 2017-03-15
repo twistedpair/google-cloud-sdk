@@ -21,7 +21,6 @@ import sys
 
 from googlecloudsdk.command_lib.shell import browser
 from googlecloudsdk.command_lib.shell import completer as shell_completer
-from googlecloudsdk.command_lib.shell import gcloud_parser
 from googlecloudsdk.command_lib.shell import layout
 from googlecloudsdk.command_lib.shell import style as shell_style
 from googlecloudsdk.core import properties
@@ -91,37 +90,6 @@ def GetBottomToolbarTokens(_):
   ]
 
 
-def GetCurrentToken(tokens, pos):
-  """Determine the current token given a cursor position.
-
-  Args:
-    tokens: a list of gcloud_parser.ArgTokens
-    pos: an int giving the current cursor position
-
-  Returns:
-    The gcloud_parser.ArgToken at that position or None.
-  """
-  i = 0
-  while i < len(tokens):
-    if pos > tokens[i].start and pos < tokens[i].end:
-      return tokens[i]
-    if pos < tokens[i].start:
-      return tokens[i-1] if i > 0 else None
-    i += 1
-
-  return tokens[len(tokens)-1] if tokens else None
-
-
-def GetHelpTokens(cli):
-  doc = cli.current_buffer.document
-  tok = GetCurrentToken(gcloud_parser.ParseLine(doc.text), doc.cursor_position)
-  if tok is None:
-    return []
-
-  return [(Token.HelpToolbar.SectionName, 'Description: '),
-          (Token.HelpToolbar.SectionValue, tok.tree['description'])]
-
-
 def Prompt(history):
   """Show the shell prompt to the user."""
   app = CreatePromptApplication(
@@ -129,7 +97,6 @@ def Prompt(history):
       get_bottom_toolbar_tokens=GetBottomToolbarTokens,
       style=shell_style.GetDocumentStyle(),
       key_bindings_registry=CreateKeyBindingRegistry(),
-      get_help_tokens=GetHelpTokens,
       completer=shell_completer.ShellCliCompleter(),
       history=history)
 
@@ -188,8 +155,7 @@ def CreatePromptApplication(
     on_exit=application.AbortAction.RAISE_EXCEPTION,
     accept_action=pt_buffer.AcceptAction.RETURN_DOCUMENT,
     erase_when_done=False,
-    default='',
-    get_help_tokens=None):
+    default=''):
   """Create the shell prompt Application."""
   if key_bindings_registry is None:
     key_bindings_registry = manager.KeyBindingManager.for_prompt(
@@ -220,7 +186,6 @@ def CreatePromptApplication(
           display_completions_in_columns=display_completions_in_columns,
           extra_input_processors=extra_input_processors,
           wrap_lines=wrap_lines,
-          get_help_tokens=get_help_tokens,
           show_help=filters.Condition(lambda _: SHOW_HELP_WINDOW)),
       buffer=pt_buffer.Buffer(
           enable_history_search=enable_history_search,

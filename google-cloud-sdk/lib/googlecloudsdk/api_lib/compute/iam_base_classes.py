@@ -20,7 +20,7 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-# TODO(user): Investigate sharing more code with BaseDescriber command.
+# TODO(b/36055863): Investigate sharing more code with BaseDescriber command.
 class BaseGetIamPolicy(base_classes.BaseCommand):
   """Base class for getting the Iam Policy for a resource."""
 
@@ -80,7 +80,7 @@ class BaseGetIamPolicy(base_classes.BaseCommand):
           errors,
           error_message='Could not fetch resource:')
 
-    # TODO(user): determine how this output should look when empty.
+    # TODO(b/36051087): determine how this output should look when empty.
 
     # GetIamPolicy always returns either an error or a valid policy.
     # If no policy has been set it returns a valid empty policy (just an etag.)
@@ -166,7 +166,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
         help="""\
         Path to a local JSON or YAML formatted file containing a valid policy.
         """)
-    # TODO(user): fill in detailed help.
+    # TODO(b/36050881): fill in detailed help.
 
   @property
   def method(self):
@@ -210,7 +210,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
           errors,
           error_message='Could not fetch resource:')
 
-    # TODO(user): determine how this output should look when empty.
+    # TODO(b/36053578): determine how this output should look when empty.
 
     # SetIamPolicy always returns either an error or the newly set policy.
     # If the policy was just set to the empty policy it returns a valid empty

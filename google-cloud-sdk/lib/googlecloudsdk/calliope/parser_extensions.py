@@ -47,7 +47,6 @@ import re
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import config
@@ -132,10 +131,6 @@ class ArgumentParser(argparse.ArgumentParser):
     This argument is bound to the parser, so the parser can use it's helper
     methods to parse.
 
-    GA track methods are made non-strict for backwards compatibility. If a BETA
-    track alternate exists, it is used as the suggested strict alternate. See
-    arg_parsers.RemainderAction for more information.
-
     Args:
       *args: The arguments for the action.
       **kwargs: They keyword arguments for the action.
@@ -151,18 +146,8 @@ class ArgumentParser(argparse.ArgumentParser):
       raise parser_errors.ArgumentException(
           'There can only be one pass through argument.')
     kwargs['action'] = arg_parsers.RemainderAction
-    track = self._calliope_command.ReleaseTrack()
     # pylint:disable=protected-access
-    cli_generator = self._calliope_command._cli_generator
-    alternates = cli_generator.ReplicateCommandPathForAllOtherTracks(
-        self._calliope_command.GetPath())
-    # Assume GA has backwards compatability otherwise assume strict.
-    is_strict = track is not base.ReleaseTrack.GA
-    strict_alternate = None
-    if not is_strict and base.ReleaseTrack.BETA in alternates:
-      strict_alternate = ' '.join(alternates[base.ReleaseTrack.BETA])
-    self._remainder_action = self.add_argument(
-        is_strict=is_strict, strict_alternate=strict_alternate, *args, **kwargs)
+    self._remainder_action = self.add_argument(*args, **kwargs)
     return self._remainder_action
 
   def GetSpecifiedArgNames(self):

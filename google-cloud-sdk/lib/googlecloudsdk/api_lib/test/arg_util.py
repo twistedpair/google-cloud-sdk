@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A shared library for processing and validating test arguments."""
 
 import types
@@ -21,7 +20,6 @@ from googlecloudsdk.api_lib.test import arg_validate
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-
 
 ANDROID_INSTRUMENTATION_TEST = 'ANDROID INSTRUMENTATION TEST'
 ANDROID_ROBO_TEST = 'ANDROID ROBO TEST'
@@ -35,7 +33,8 @@ def AddCommonTestRunArgs(parser):
         in the CLI.
   """
   argspec_arg = parser.add_argument(
-      'argspec', nargs='?',
+      'argspec',
+      nargs='?',
       help='An ARG_FILE:ARG_GROUP_NAME pair, where ARG_FILE is the path to a '
       'file containing groups of test arguments in yaml format, and '
       'ARG_GROUP_NAME is the particular yaml object holding a group of '
@@ -44,15 +43,18 @@ def AddCommonTestRunArgs(parser):
   argspec_arg.completer = arg_file.ArgSpecCompleter
 
   parser.add_argument(
-      '--type', category=base.COMMONLY_USED_FLAGS,
+      '--type',
+      category=base.COMMONLY_USED_FLAGS,
       choices=['instrumentation', 'robo'],
       help='The type of test to run.')
   parser.add_argument(
-      '--app', category=base.COMMONLY_USED_FLAGS,
+      '--app',
+      category=base.COMMONLY_USED_FLAGS,
       help='The path to the application binary file. The path may be in the '
       'local filesystem or in Google Cloud Storage using gs:// notation.')
   parser.add_argument(
-      '--async', action='store_true',
+      '--async',
+      action='store_true',
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
       '--results-bucket',
@@ -60,13 +62,21 @@ def AddCommonTestRunArgs(parser):
       'will be stored (default: "test-lab-<random-UUID>"). Note that using a '
       'non-default bucket will result in billing charges for the storage used.')
   parser.add_argument(
+      '--results-dir',
+      help='The name of a *unique* Google Cloud Storage object within the '
+      'results bucket where raw test results will be stored (default: a '
+      'timestamp with a random suffix). Caution: if specified, this argument '
+      '*must be unique* for each test matrix you create, otherwise results '
+      'from multiple test matrices will be overwritten or intermingled.')
+  parser.add_argument(
       '--results-history-name',
       help='The history name for your test results (an arbitrary string label; '
       'default: the application\'s label from the APK manifest). All tests '
       'which use the same history name will have their results grouped '
       'together in the Firebase console in a time-ordered test history list.')
   parser.add_argument(
-      '--timeout', category=base.COMMONLY_USED_FLAGS,
+      '--timeout',
+      category=base.COMMONLY_USED_FLAGS,
       type=arg_validate.TIMEOUT_PARSER,
       help='The max time this test execution can run before it is cancelled '
       '(default: 15m). It does not include any time necessary to prepare and '
@@ -91,7 +101,9 @@ def AddAndroidTestArgs(parser):
       help='The Java package of the application under test (default: extracted '
       'from the APK manifest).')
   parser.add_argument(
-      '--auto-google-login', action='store_true', default=True,
+      '--auto-google-login',
+      action='store_true',
+      default=True,
       help='Automatically log into the test device using a preconfigured '
       'Google account before beginning the test.')
   parser.add_argument(
@@ -113,8 +125,7 @@ def AddAndroidTestArgs(parser):
       'coverage and provide a file path to store the coverage results.')
   parser.add_argument(
       '--obb-files',
-      type=arg_parsers.ArgList(
-          min_length=1, max_length=2),
+      type=arg_parsers.ArgList(min_length=1, max_length=2),
       metavar='OBB_FILE',
       help='A list of one or two Android OBB file names which will be copied '
       'to each test device before the tests will run (default: None). Each '
@@ -125,20 +136,24 @@ def AddAndroidTestArgs(parser):
   # The following args are specific to Android instrumentation tests.
 
   parser.add_argument(
-      '--test', category=base.COMMONLY_USED_FLAGS,
+      '--test',
+      category=base.COMMONLY_USED_FLAGS,
       help='The path to the binary file containing instrumentation tests. The '
       'given path may be in the local filesystem or in Google Cloud Storage '
       'using gs:// notation.')
   parser.add_argument(
-      '--test-package', category=ANDROID_INSTRUMENTATION_TEST,
+      '--test-package',
+      category=ANDROID_INSTRUMENTATION_TEST,
       help='The Java package name of the instrumentation test (default: '
       'extracted from the APK manifest).')
   parser.add_argument(
-      '--test-runner-class', category=ANDROID_INSTRUMENTATION_TEST,
+      '--test-runner-class',
+      category=ANDROID_INSTRUMENTATION_TEST,
       help='The fully-qualified Java class name of the instrumentation test '
       'runner (default: the last name extracted from the APK manifest).')
   parser.add_argument(
-      '--test-targets', category=ANDROID_INSTRUMENTATION_TEST,
+      '--test-targets',
+      category=ANDROID_INSTRUMENTATION_TEST,
       type=arg_parsers.ArgList(min_length=1),
       metavar='TEST_TARGET',
       help='A list of one or more instrumentation test targets to be run '
@@ -151,22 +166,27 @@ def AddAndroidTestArgs(parser):
   # The following args are specific to Android Robo tests.
 
   parser.add_argument(
-      '--max-steps', metavar='int', category=ANDROID_ROBO_TEST,
+      '--max-steps',
+      metavar='int',
+      category=ANDROID_ROBO_TEST,
       type=arg_validate.NONNEGATIVE_INT_PARSER,
       help='The maximum number of steps/actions a robo test can execute '
       '(default: no limit).')
   parser.add_argument(
-      '--max-depth', metavar='int', category=ANDROID_ROBO_TEST,
+      '--max-depth',
+      metavar='int',
+      category=ANDROID_ROBO_TEST,
       type=arg_validate.POSITIVE_INT_PARSER,
       help='The maximum depth of the traversal stack a robo test can explore. '
       'Needs to be at least 2 to make Robo explore the app beyond the first '
       'activity (default: 50).')
   parser.add_argument(
-      '--app-initial-activity', category=ANDROID_ROBO_TEST,
+      '--app-initial-activity',
+      category=ANDROID_ROBO_TEST,
       help='The initial activity used to start the app during a robo test.')
-  # TODO(user): Add link for example doc once b/30894775 is resolved.
   parser.add_argument(
-      '--robo-directives', category=ANDROID_ROBO_TEST,
+      '--robo-directives',
+      category=ANDROID_ROBO_TEST,
       type=arg_parsers.ArgDict(),
       help='A comma-separated, key=value, map of robo_directives for use by '
       'Robo test. Each key should be the Android resource name of a target '
@@ -174,7 +194,9 @@ def AddAndroidTestArgs(parser):
       'For example, specify "--robo-directives username_resource=username,'
       'password_resource=password" to provide custom login credentials for '
       'your app. Caution: You should only use credentials for test accounts '
-      'that are not associated with real users.')
+      'that are not associated with real users. For more information, see '
+      # pylint: disable=line-too-long
+      'https://firebase.google.com/docs/test-lab/command-line#custom_login_and_text_input_with_robo_test.')
 
 
 def AddMatrixArgs(parser):
@@ -185,7 +207,8 @@ def AddMatrixArgs(parser):
         in the CLI.
   """
   parser.add_argument(
-      '--device-ids', '-d',
+      '--device-ids',
+      '-d',
       category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='DEVICE_ID',
@@ -193,24 +216,27 @@ def AddMatrixArgs(parser):
       'determined by the Firebase Test Lab device catalog; see TAGS listed '
       'by the *$ {parent_command} devices list* command).')
   parser.add_argument(
-      '--os-version-ids', '-v',
+      '--os-version-ids',
+      '-v',
       category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='OS_VERSION_ID',
       help='The list of OS_VERSION_IDs to test against (default: a version ID '
       'determined by the Firebase Test Lab device catalog).')
   parser.add_argument(
-      '--locales', '-l',
+      '--locales',
+      '-l',
       category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgList(min_length=1),
       metavar='LOCALE',
       help='The list of LOCALEs to test against (default: a single locale '
       'determined by the Firebase Test Lab device catalog).')
   orientation = parser.add_argument(
-      '--orientations', '-o',
+      '--orientations',
+      '-o',
       category=base.COMMONLY_USED_FLAGS,
-      type=arg_parsers.ArgList(min_length=1, max_length=2,
-                               choices=arg_validate.ORIENTATION_LIST),
+      type=arg_parsers.ArgList(
+          min_length=1, max_length=2, choices=arg_validate.ORIENTATION_LIST),
       metavar='ORIENTATION',
       default='portrait',
       help='The device orientation(s) to test against.')
@@ -271,8 +297,9 @@ def ApplyLowerPriorityArgs(args, lower_pri_args, issue_cli_warning=False):
       ext_name = arg_validate.ExternalArgNameFrom(arg)
       log.warning(
           'Command-line argument "--{0} {1}" overrides file argument "{2}: {3}"'
-          .format(ext_name, _FormatArgValue(getattr(args, arg)),
-                  ext_name, _FormatArgValue(lower_pri_args[arg])))
+          .format(ext_name,
+                  _FormatArgValue(getattr(args, arg)), ext_name,
+                  _FormatArgValue(lower_pri_args[arg])))
 
 
 def _FormatArgValue(value):

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A module for console attributes, special characters and functions.
+r"""A module for console attributes, special characters and functions.
 
 The target architectures {linux, macos, windows} support inline encoding for
 all attributes except color. Windows requires win32 calls to manipulate the
@@ -270,7 +270,7 @@ class ConsoleAttr(object):
           color_code=self._ANSI_COLOR[color],
           reset_code=self._ANSI_COLOR_RESET,
           string=string))
-      # TODO(user): Add elif self._encoding == 'cp437': code here.
+      # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
     else:
       self._out.write(string)
 

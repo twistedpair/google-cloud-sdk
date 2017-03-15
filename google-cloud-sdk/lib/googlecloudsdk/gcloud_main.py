@@ -100,10 +100,14 @@ def CreateCLI(surfaces):
     loader.AddModule(dot_path, dir_path, component=None)
 
   if os.path.exists(os.path.join(pkg_root, 'surface', 'beta')):
-    loader.AddModule('beta.ml',
-                     os.path.join(pkg_root, 'surface', 'ml_engine'))
+    for mod in ['jobs', 'local', 'models', 'operations', 'versions',
+                'init_project.py', 'predict.py']:
+      loader.AddModule(
+          'beta.ml.{}'.format(mod.replace('.py', '')),
+          os.path.join(pkg_root, 'surface', 'ml_engine', mod))
     loader.RegisterPreRunHook(IssueMlWarning,
-                              include_commands=r'gcloud\.beta\.ml\..*')
+                              include_commands=r'gcloud\.beta\.ml\..*',
+                              exclude_commands=r'gcloud\.beta\.ml\.vision\..*')
 
   # Check for updates on shutdown but not for any of the updater commands.
   loader.RegisterPostRunHook(UpdateCheck,
@@ -114,7 +118,7 @@ def CreateCLI(surfaces):
 
 def main(gcloud_cli=None):
   metrics.Started(START_TIME)
-  # TODO(user): Put a real version number here
+  # TODO(b/36049857): Put a real version number here
   metrics.Executions(
       'gcloud',
       local_state.InstallationState.VersionForInstalledComponent('core'))

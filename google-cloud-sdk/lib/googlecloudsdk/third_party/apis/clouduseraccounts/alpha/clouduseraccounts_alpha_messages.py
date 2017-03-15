@@ -607,14 +607,16 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
     """
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    NO_ATTR = 3
-    SECURITY_REALM = 4
+    JUSTIFICATION_TYPE = 3
+    NO_ATTR = 4
+    SECURITY_REALM = 5
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.

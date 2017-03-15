@@ -26,12 +26,11 @@ SHELL_REDIRECTION_CHARS = ('<', '>')
 
 class ShellTokenType(enum.Enum):
   ARG = 1
-  FLAG = 2
-  TERMINATOR = 3
-  IO = 4
-  REDIRECTION = 5
-  FILE = 6
-  TRAILING_BACKSLASH = 7  # backslash at end of line
+  TERMINATOR = 2
+  IO = 3
+  REDIRECTION = 4
+  FILE = 5
+  TRAILING_BACKSLASH = 6  # backslash at end of line
 
 
 def UnquoteShell(s):
@@ -66,7 +65,7 @@ class ShellToken(object):
     self.end = end
 
   def UnquotedValue(self):
-    if self.lex is ShellTokenType.ARG or self.lex is ShellTokenType.FLAG:
+    if self.lex is ShellTokenType.ARG:
       return UnquoteShell(self.value)
     else:
       return self.value
@@ -151,8 +150,7 @@ def GetShellToken(i, s):
       elif c in SHELL_TERMINATOR_CHARS:
         break
     i += 1
-  lex = ShellTokenType.FLAG if s[index] == '-' else ShellTokenType.ARG
-  return ShellToken(s[index:i], lex, start=index, end=i)
+  return ShellToken(s[index:i], ShellTokenType.ARG, start=index, end=i)
 
 
 def GetShellTokens(s):

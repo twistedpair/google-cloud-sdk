@@ -1281,7 +1281,7 @@ class ReadWriteCommand(BaseCommand):
   def service(self):
     pass
 
-  # TODO(user): Make this an abstractproperty once all
+  # TODO(b/36051986): Make this an abstractproperty once all
   # ReadWriteCommands support URIs and prompting.
   def CreateReference(self, args):
     """Returns a resources.Resource object for the object being mutated."""

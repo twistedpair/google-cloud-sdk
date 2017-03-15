@@ -13,7 +13,9 @@
 # limitations under the License.
 """Flags and helpers for the compute instance groups commands."""
 
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 
 ZONAL_INSTANCE_GROUP_ARG = flags.ResourceArgument(
@@ -106,3 +108,40 @@ def AddScopeArgs(parser, multizonal):
         parser,
         resource_type='instance group',
         operation_type='set named ports for')
+
+
+def AddZonesFlag(parser):
+  """Add flags for choosing zones for regional managed instance group."""
+  parser.add_argument(
+      '--zones',
+      metavar='ZONE',
+      help="""\
+          If this flag is specified a regional managed instance group will be
+          created. The managed instance group will be in the same region as
+          specified zones and will spread instances in it between specified
+          zones.
+
+          All zones must belong to the same region. You may specify --region
+          flag but it must be the region to which zones belong. This flag is
+          mutually exclusive with --zone flag.""",
+      type=arg_parsers.ArgList(min_length=1),
+      completion_resource='compute.zones',
+      default=[])
+
+
+def ValidateManagedInstanceGroupScopeArgs(args, resources):
+  """Validate arguments specifying scope of the managed instance group."""
+  if args.zones and args.zone:
+    raise exceptions.ConflictingArgumentsException('--zone', '--zones')
+  zone_names = [resources.Parse(z, collection='compute.zones').Name()
+                for z in args.zones]
+  zone_regions = set([utils.ZoneNameToRegionName(z) for z in zone_names])
+  if len(zone_regions) > 1:
+    raise exceptions.InvalidArgumentException(
+        '--zones', 'All zones must be in the same region.')
+  elif len(zone_regions) == 1 and args.region:
+    zone_region = zone_regions.pop()
+    region = resources.Parse(args.region, collection='compute.regions').Name()
+    if zone_region != region:
+      raise exceptions.InvalidArgumentException(
+          '--zones', 'Specified zones not in specified region.')

@@ -135,7 +135,7 @@ def _BuildExcerpt(text, snips):
       snippet = '...' + snippet
     if snips[-1].end != len(text):
       snippet += '...'
-  # TODO(user): bold terms
+  # TODO(b/35918584): highlight appearance of terms
   return snippet
 
 

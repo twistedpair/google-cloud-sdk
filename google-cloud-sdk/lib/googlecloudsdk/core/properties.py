@@ -584,18 +584,6 @@ class _SectionApp(_Section):
         'use_appengine_api',
         default=True,
         hidden=True)
-    # This is the number of processes to use for uploading application files.
-    # The default is somewhat arbitrary, but gives good performance on the
-    # machines tested (there's a benefit to exceeding the number of cores
-    # available, since the task is bound by network/API latency among other
-    # factors).
-    # This property is currently ignored on OS X Sierra (except if it's 1, in
-    # which case it makes the upload synchronous, since that's what that switch
-    # did historically).
-    self.num_file_upload_processes = self._Add(
-        'num_file_upload_processes',
-        default='32',
-        hidden=True)
     # This property is currently ignored except on OS X Sierra or beta
     # deployments.
     # There's a theoretical benefit to exceeding the number of cores available,
@@ -936,7 +924,6 @@ class _SectionTest(_Section):
   def __init__(self):
     super(_SectionTest, self).__init__('test')
     self.results_base_url = self._Add('results_base_url', hidden=True)
-    # TODO(user): remove this when API provides an alternative to polling.
     self.matrix_status_interval = self._Add('matrix_status_interval',
                                             hidden=True)
 

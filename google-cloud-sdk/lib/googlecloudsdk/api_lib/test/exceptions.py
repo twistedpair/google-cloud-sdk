@@ -38,6 +38,22 @@ class ModelNotFoundError(TestingError):
         "Could not find model ID '{id}'".format(id=model_id))
 
 
+class VersionNotFoundError(TestingError):
+  """Failed to find an OS version in the test environment catalog."""
+
+  def __init__(self, version):
+    super(VersionNotFoundError, self).__init__(
+        "Could not find OS version ID '{v}'".format(v=version))
+
+
+class LocaleNotFoundError(TestingError):
+  """Failed to find a locale in the test environment catalog."""
+
+  def __init__(self, locale):
+    super(LocaleNotFoundError, self).__init__(
+        "Could not find locale '{l}'".format(l=locale))
+
+
 class TestExecutionNotFoundError(TestingError):
   """A test execution ID was not found within a test matrix."""
 

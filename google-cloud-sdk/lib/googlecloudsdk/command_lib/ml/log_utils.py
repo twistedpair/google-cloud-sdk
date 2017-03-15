@@ -30,7 +30,7 @@ LOG_FORMAT = ('value('
              )
 
 
-# TODO(user): Remove ml_job after transition from ml_job to cloudml_job is
+# TODO(b/36057459): Remove ml_job after transition from ml_job to cloudml_job is
 # done. See b/34459608.
 def LogFilters(job_id, task_name=None):
   """Returns filters for log fetcher to use.

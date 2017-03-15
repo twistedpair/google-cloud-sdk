@@ -261,6 +261,19 @@ class GoogleCloudMlV1ListVersionsResponse(_messages.Message):
   versions = _messages.MessageField('GoogleCloudMlV1Version', 2, repeated=True)
 
 
+class GoogleCloudMlV1ManualScaling(_messages.Message):
+  """Options for manually scaling a model.
+
+  Fields:
+    nodes: The number of nodes to allocate for this model. These nodes are
+      always up, starting from the time the model is deployed, so the cost of
+      operating this model will be proportional to nodes * number of hours
+      since deployment.
+  """
+
+  nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1Model(_messages.Message):
   """Represents a machine learning solution.  A model can have multiple
   versions, each of which is a deployed, trained model ready to receive
@@ -716,6 +729,12 @@ class GoogleCloudMlV1Version(_messages.Message):
       ference/rest/v1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
+    manualScaling: Optional. Manually select the number of nodes to use for
+      serving the model. If unset (i.e., by default), the number of nodes used
+      to serve the model automatically scales with traffic. However, care
+      should be taken to ramp up traffic according to the model's ability to
+      scale. If your model needs to handle bursts of traffic beyond it's
+      ability to scale, it is recommended you set this field appropriately.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
@@ -727,8 +746,22 @@ class GoogleCloudMlV1Version(_messages.Message):
   description = _messages.StringField(3)
   isDefault = _messages.BooleanField(4)
   lastUseTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  runtimeVersion = _messages.StringField(7)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 6)
+  name = _messages.StringField(7)
+  runtimeVersion = _messages.StringField(8)
+
+
+class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
+  """Options for manually scaling a model.
+
+  Fields:
+    nodes: The number of nodes to allocate for this model. These nodes are
+      always up, starting from the time the model is deployed, so the cost of
+      operating this model will be proportional to nodes * number of hours
+      since deployment.
+  """
+
+  nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
@@ -796,6 +829,12 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       ference/rest/v1beta1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
+    manualScaling: Optional. Manually select the number of nodes to use for
+      serving the model. If unset (i.e., by default), the number of nodes used
+      to serve the model automatically scales with traffic. However, care
+      should be taken to ramp up traffic according to the model's ability to
+      scale. If your model needs to handle bursts of traffic beyond it's
+      ability to scale, it is recommended you set this field appropriately.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
@@ -807,8 +846,9 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   description = _messages.StringField(3)
   isDefault = _messages.BooleanField(4)
   lastUseTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  runtimeVersion = _messages.StringField(7)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 6)
+  name = _messages.StringField(7)
+  runtimeVersion = _messages.StringField(8)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

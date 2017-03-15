@@ -14,9 +14,9 @@
 
 """Credentials for use with the developer shell."""
 
+import datetime
 import json
 import os
-import threading
 
 from apitools.base.protorpclite import messages
 
@@ -117,6 +117,7 @@ class CredentialInfoResponse(messages.Message):
   user_email = messages.StringField(1, required=True)
   project_id = messages.StringField(2)
   access_token = messages.StringField(3)
+  expires_in = messages.FloatField(4)
 
 
 def _SendRecv(request):
@@ -127,34 +128,6 @@ def _SendRecv(request):
   return _SendRecvPort(request, port)
 
 
-def _Memoize(func):
-  """Simple thread-safe memoization decorator.
-
-  Uses a repr() of the params. This will be ok unless there is a custom __repr__
-  that obscures important information.
-
-  Args:
-    func: The function to be memoized.
-
-  Returns:
-    A memoized version of func.
-
-  """
-  l = threading.Lock()
-  cache = {}
-  def _Caller(*args, **kwargs):
-    with l:
-      params = repr((args, kwargs))
-      try:
-        return cache[params]
-      except KeyError:
-        result = func(*args, **kwargs)
-        cache[params] = result
-        return result
-  return _Caller
-
-
-@_Memoize
 def _SendRecvPort(request, port):
   """Communicate with the devshell access token service."""
 
@@ -228,6 +201,10 @@ class DevshellCredentials(client.OAuth2Credentials):
     request = CredentialInfoRequest()
     self.devshell_response = _SendRecv(request)
     self.access_token = self.devshell_response.access_token
+    if self.devshell_response.expires_in is not None:
+      self.token_expiry = (datetime.datetime.now() +
+                           datetime.timedelta(
+                               seconds=self.devshell_response.expires_in))
 
 
 def LoadDevshellCredentials():

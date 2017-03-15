@@ -180,6 +180,8 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
       if the forwarding rule is being configured to point to a
       target pool or target instance. If this flag is omitted, an
       ephemeral IP address is assigned.
+
+      Note: --address only accepts IPv4 addresses in the format of 1.2.3.4.
       """)
 
 

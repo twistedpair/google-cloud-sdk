@@ -33,7 +33,7 @@ from googlecloudsdk.core.util import retry
 TIMEOUT_ERR_TEXT = 'read operation timed out'
 
 # The maximum number of seconds that a waiter timeout value can be set to.
-# TODO(user): figure out proper maximum value
+# TODO(b/36050879): figure out proper maximum value
 MAX_WAITER_TIMEOUT = 60 * 60 * 12  # 12 hours
 
 # Default number of seconds to sleep between checking waiter status.
@@ -57,7 +57,7 @@ def WaiterPath(project, config, waiter):
   return '/'.join([ConfigPath(project, config), 'waiters', waiter])
 
 
-# TODO(user): these parse functions should live in command_lib.
+# TODO(b/36050485): these parse functions should live in command_lib.
 def ParseConfigName(config_name):
   """Parse a config name or URL, and return a resource.
 

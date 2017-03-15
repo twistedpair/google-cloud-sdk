@@ -66,7 +66,7 @@ class ShellCliCompleter(Completer):
     # Traverse the cli tree.
     while i < len(tokens):
       token = tokens[i]
-      if token.lex == lexer.ShellTokenType.FLAG:
+      if token.lex == lexer.ShellTokenType.ARG and token.value.startswith('-'):
         if i == len(tokens) - 1:
           last = token.value
       elif token.value in node:

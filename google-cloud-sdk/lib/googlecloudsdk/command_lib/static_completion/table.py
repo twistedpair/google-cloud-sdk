@@ -119,7 +119,9 @@ class CompletionTableGenerator(walker.Walker):
 
     # Populate flags
     command[lookup.FLAGS_KEY] = self._VisitFlags(
-        node.GetSpecificFlags(include_hidden=False), parent is None)
+        node.GetAllAvailableFlags(include_global=parent is None,
+                                  include_hidden=False),
+        parent is None)
 
     # Populate positionals
     command[lookup.POSITIONALS_KEY] = self._VisitPositionals(

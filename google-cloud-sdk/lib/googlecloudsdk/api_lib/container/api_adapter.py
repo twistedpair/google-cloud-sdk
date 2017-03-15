@@ -318,7 +318,7 @@ class APIAdapter(object):
         except apitools_exceptions.HttpError as error:
           log.debug('GetOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
-          # TODO(user): add additional backoff if server is returning 500s
+          # TODO(b/36050880): add additional backoff if server is returning 500s
         time.sleep(poll_period_s)
     if not self.IsOperationFinished(operation):
       log.err.Print('Timed out waiting for operation {0}'.format(operation))
@@ -386,7 +386,7 @@ class APIAdapter(object):
         except apitools_exceptions.HttpError as error:
           log.debug('GetComputeOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
-          # TODO(user): add additional backoff if server is returning 500s
+          # TODO(b/36050235): add additional backoff if server is returning 500s
         if not operation_ids and ops_to_retry:
           operation_ids = deque(ops_to_retry)
           ops_to_retry = []

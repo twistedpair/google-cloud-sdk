@@ -225,11 +225,11 @@ class ClusterConfig(object):
       if auth.clientCertificate and auth.clientKey:
         kwargs['client_key_data'] = auth.clientKey
         kwargs['client_cert_data'] = auth.clientCertificate
-      # TODO(user): these are not needed if cluster has certs, though they
+      # TODO(b/36051984): these are not needed if cluster has certs, though they
       # are useful for testing, e.g. with curl. Consider removing if/when the
       # apiserver no longer supports insecure (no certs) requests.
-      # TODO(user): use api_adapter instead of getattr, or remove bearerToken
-      # support
+      # TODO(b/36049791): use api_adapter instead of getattr, or remove
+      # bearerToken support
       if getattr(auth, 'bearerToken', None):
         kwargs['token'] = auth.bearerToken
       else:

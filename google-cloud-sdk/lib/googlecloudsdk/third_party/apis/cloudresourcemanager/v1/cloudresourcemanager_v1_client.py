@@ -116,7 +116,7 @@ For example, a Lien with a `parent` of `projects/1234` requires permission
 
 Callers of this method will require permission on the `parent` resource.
 For example, a Lien with a `parent` of `projects/1234` requires permission
-`resourcemanager.projects.get` or `resourcemanager.projects.updateLiens`.
+`resourcemanager.projects.get`.
 
       Args:
         request: (CloudresourcemanagerLiensListRequest) input message
@@ -189,6 +189,32 @@ service.
       self._upload_configs = {
           }
 
+    def ClearOrgPolicy(self, request, global_params=None):
+      """Clears a `Policy` from a resource.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsClearOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ClearOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.clearOrgPolicy',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:clearOrgPolicy',
+        request_field=u'clearOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsClearOrgPolicyRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Fetches an Organization resource identified by the specified resource name.
 
@@ -212,6 +238,34 @@ service.
         request_field='',
         request_type_name=u'CloudresourcemanagerOrganizationsGetRequest',
         response_type_name=u'Organization',
+        supports_download=False,
+    )
+
+    def GetEffectiveOrgPolicy(self, request, global_params=None):
+      """Gets the effective `Policy` on a resource. This is the result of merging.
+`Policies` in the resource hierarchy. The returned `Policy` will not have
+an `etag`set because it is a computed `Policy` across multiple resources.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.getEffectiveOrgPolicy',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:getEffectiveOrgPolicy',
+        request_field=u'getEffectiveOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
         supports_download=False,
     )
 
@@ -240,6 +294,89 @@ organization's resource name, e.g. "organizations/123".
         request_field=u'getIamPolicyRequest',
         request_type_name=u'CloudresourcemanagerOrganizationsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def GetOrgPolicy(self, request, global_params=None):
+      """Gets a `Policy` on a resource.
+
+If no `Policy` is set on the resource, a `Policy` is returned with default
+values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
+`etag` value can be used with `SetOrgPolicy()` to create or update a
+`Policy` during read-modify-write.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsGetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.getOrgPolicy',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:getOrgPolicy',
+        request_field=u'getOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsGetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
+
+    def ListAvailableOrgPolicyConstraints(self, request, global_params=None):
+      """Lists `Constraints` that could be applied on the specified resource.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAvailableOrgPolicyConstraintsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableOrgPolicyConstraints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.listAvailableOrgPolicyConstraints',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:listAvailableOrgPolicyConstraints',
+        request_field=u'listAvailableOrgPolicyConstraintsRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest',
+        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        supports_download=False,
+    )
+
+    def ListOrgPolicies(self, request, global_params=None):
+      """Lists all the `Policies` set for a particular resource.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsListOrgPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOrgPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOrgPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.listOrgPolicies',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:listOrgPolicies',
+        request_field=u'listOrgPoliciesRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsListOrgPoliciesRequest',
+        response_type_name=u'ListOrgPoliciesResponse',
         supports_download=False,
     )
 
@@ -300,6 +437,36 @@ name, e.g. "organizations/123".
         supports_download=False,
     )
 
+    def SetOrgPolicy(self, request, global_params=None):
+      """Updates the specified `Policy` on the resource. Creates a new `Policy` for.
+that `Constraint` on the resource if one does not exist.
+
+Not supplying an `etag` on the request `Policy` results in an unconditional
+write of the `Policy`.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsSetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('SetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.organizations.setOrgPolicy',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[],
+        relative_path=u'v1/organizations/{organizationsId}:setOrgPolicy',
+        request_field=u'setOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerOrganizationsSetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified Organization.
 The `resource` field should be the organization's resource name,
@@ -337,6 +504,32 @@ e.g. "organizations/123".
       super(CloudresourcemanagerV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ClearOrgPolicy(self, request, global_params=None):
+      """Clears a `Policy` from a resource.
+
+      Args:
+        request: (CloudresourcemanagerProjectsClearOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ClearOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.clearOrgPolicy',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:clearOrgPolicy',
+        request_field=u'clearOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerProjectsClearOrgPolicyRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       """Request that a new Project be created. The result is an Operation which.
@@ -449,6 +642,34 @@ The caller must have read permissions for this Project.
         supports_download=False,
     )
 
+    def GetEffectiveOrgPolicy(self, request, global_params=None):
+      """Gets the effective `Policy` on a resource. This is the result of merging.
+`Policies` in the resource hierarchy. The returned `Policy` will not have
+an `etag`set because it is a computed `Policy` across multiple resources.
+
+      Args:
+        request: (CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.getEffectiveOrgPolicy',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:getEffectiveOrgPolicy',
+        request_field=u'getEffectiveOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Returns the IAM access control policy for the specified Project.
 Permission is denied if the policy or the resource does not exist.
@@ -473,6 +694,37 @@ Permission is denied if the policy or the resource does not exist.
         request_field=u'getIamPolicyRequest',
         request_type_name=u'CloudresourcemanagerProjectsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def GetOrgPolicy(self, request, global_params=None):
+      """Gets a `Policy` on a resource.
+
+If no `Policy` is set on the resource, a `Policy` is returned with default
+values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
+`etag` value can be used with `SetOrgPolicy()` to create or update a
+`Policy` during read-modify-write.
+
+      Args:
+        request: (CloudresourcemanagerProjectsGetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.getOrgPolicy',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:getOrgPolicy',
+        request_field=u'getOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerProjectsGetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
         supports_download=False,
     )
 
@@ -501,6 +753,58 @@ New Projects do not necessarily appear at the end of the list.
         request_field='',
         request_type_name=u'CloudresourcemanagerProjectsListRequest',
         response_type_name=u'ListProjectsResponse',
+        supports_download=False,
+    )
+
+    def ListAvailableOrgPolicyConstraints(self, request, global_params=None):
+      """Lists `Constraints` that could be applied on the specified resource.
+
+      Args:
+        request: (CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAvailableOrgPolicyConstraintsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableOrgPolicyConstraints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.listAvailableOrgPolicyConstraints',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:listAvailableOrgPolicyConstraints',
+        request_field=u'listAvailableOrgPolicyConstraintsRequest',
+        request_type_name=u'CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest',
+        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        supports_download=False,
+    )
+
+    def ListOrgPolicies(self, request, global_params=None):
+      """Lists all the `Policies` set for a particular resource.
+
+      Args:
+        request: (CloudresourcemanagerProjectsListOrgPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOrgPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOrgPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.listOrgPolicies',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:listOrgPolicies',
+        request_field=u'listOrgPoliciesRequest',
+        request_type_name=u'CloudresourcemanagerProjectsListOrgPoliciesRequest',
+        response_type_name=u'ListOrgPoliciesResponse',
         supports_download=False,
     )
 
@@ -564,6 +868,36 @@ roles.
         request_field=u'setIamPolicyRequest',
         request_type_name=u'CloudresourcemanagerProjectsSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetOrgPolicy(self, request, global_params=None):
+      """Updates the specified `Policy` on the resource. Creates a new `Policy` for.
+that `Constraint` on the resource if one does not exist.
+
+Not supplying an `etag` on the request `Policy` results in an unconditional
+write of the `Policy`.
+
+      Args:
+        request: (CloudresourcemanagerProjectsSetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('SetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.setOrgPolicy',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectsId}:setOrgPolicy',
+        request_field=u'setOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerProjectsSetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
         supports_download=False,
     )
 

@@ -58,7 +58,6 @@ def TransformTrigger(r, undefined=''):
   if 'pubsubTrigger' in r:
     return 'topic: ' + r['pubsubTrigger'].split('/')[-1]
   if 'eventTrigger' in r:
-    # TODO(user): support triggers specified in eventTrigger field.
     return 'Event Trigger'
   return undefined
 

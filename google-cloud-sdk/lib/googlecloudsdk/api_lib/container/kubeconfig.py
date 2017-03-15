@@ -33,7 +33,7 @@ class MissingEnvVarError(Error):
   """An exception raised when required environment variables are missing."""
 
 
-# TODO(user): marshal yaml directly into a type with a
+# TODO(b/36052478): marshal yaml directly into a type with a
 # matching structure.
 class Kubeconfig(object):
   """Interface for interacting with a kubeconfig file."""
@@ -122,7 +122,7 @@ class Kubeconfig(object):
       return os.environ['KUBECONFIG']
     # kubectl doesn't do windows-compatible homedir detection, it
     # expects HOME to be set.
-    # TODO(user): remove this once
+    # TODO(b/36050345): remove this once
     # https://github.com/kubernetes/kubernetes/issues/23199
     if not os.environ.get('HOME'):
       raise MissingEnvVarError(

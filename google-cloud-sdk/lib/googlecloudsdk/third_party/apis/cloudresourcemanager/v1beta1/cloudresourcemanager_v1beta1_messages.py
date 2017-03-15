@@ -54,8 +54,8 @@ class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+      policy is being requested. See the operation documentation for the
+      appropriate value for this field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -106,8 +106,8 @@ class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+      policy is being specified. See the operation documentation for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -121,9 +121,8 @@ class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Messa
 
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
-      policy detail is being requested. `resource` is usually specified as a
-      path. For example, a Project resource is specified as
-      `projects/{project}`.
+      policy detail is being requested. See the operation documentation for
+      the appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -190,8 +189,8 @@ class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -241,8 +240,8 @@ class CloudresourcemanagerProjectsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path. For example, a Project
-      resource is specified as `projects/{project}`.
+      See the operation documentation for the appropriate value for this
+      field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -256,8 +255,8 @@ class CloudresourcemanagerProjectsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path. For example, a
-      Project resource is specified as `projects/{project}`.
+      requested. See the operation documentation for the appropriate value for
+      this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

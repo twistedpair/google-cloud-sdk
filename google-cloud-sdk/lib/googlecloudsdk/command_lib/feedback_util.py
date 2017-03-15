@@ -21,12 +21,13 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 
 
-ISSUE_TRACKER_URL = 'https://code.google.com/p/google-cloud-sdk/issues'
-NEW_ISSUE_URL = 'https://code.google.com/p/google-cloud-sdk/issues/entry'
+NEW_ISSUE_URL = 'https://issuetracker.google.com/issues/new'
+ISSUE_TRACKER_URL = 'https://issuetracker.google.com/issues?q=componentid:187143%2B'
+ISSUE_TRACKER_COMPONENT = 187143
 
 # The new issue URL has a maximum length, so we need to limit the length of
 # pre-filled form fields
-MAX_URL_LENGTH = 2106
+MAX_URL_LENGTH = 8208
 
 
 COMMENT_PRE_STACKTRACE_TEMPLATE = """\
@@ -66,7 +67,7 @@ TRACEBACK_ENTRY_REGEXP = (
     r'File "(?P<file>.*)", line (?P<line>\d+), in (?P<function>.+)\n'
     r'(?P<code_snippet>.+)\n')
 
-MAX_CODE_SNIPPET_LENGTH = 40
+MAX_CODE_SNIPPET_LENGTH = 80
 
 
 class CommentHolder(object):
@@ -78,11 +79,10 @@ class CommentHolder(object):
     self.exception = exception
 
 
-def _FormatNewIssueUrl(comment, status='New', summary=''):
+def _FormatNewIssueUrl(comment):
   params = {
-      'status': status,
-      'summary': summary,
-      'comment': comment,
+      'description': comment,
+      'component': str(ISSUE_TRACKER_COMPONENT)
   }
   return NEW_ISSUE_URL + '?' + urllib.urlencode(params)
 

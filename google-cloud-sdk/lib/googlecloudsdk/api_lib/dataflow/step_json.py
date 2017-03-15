@@ -45,7 +45,7 @@ def _ExtractStep(step_msg):
       if prop.key not in _BLACKLISTED_PROPERTIES:
         properties[prop.key] = _ExtractValue(prop.value)
 
-  # TODO(user): Would it make sense to collapse properties into the
+  # TODO(b/36051985): Would it make sense to collapse properties into the
   # top-level and assume there isn't a property with 'kind' or 'name' as the
   # key?
   return {

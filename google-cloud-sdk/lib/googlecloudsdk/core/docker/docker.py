@@ -26,6 +26,7 @@ import sys
 import tempfile
 import urlparse
 
+from distutils import version as distutils_version
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
@@ -35,6 +36,7 @@ from googlecloudsdk.core.util import platforms
 
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
+_EMAIL_FLAG_DEPRECATED_VERSION = distutils_version.LooseVersion('1.11.0')
 _DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
 _CREDENTIAL_STORE_KEY = 'credsStore'
 
@@ -262,8 +264,6 @@ def UpdateDockerCredentials(server, refresh=True):
 
       # Fall back to the previous manual .dockercfg manipulation
       # in order to support gcloud app's docker-binaryless use case.
-      # TODO(user) when app deploy is using Argo to take over builds,
-      # remove this.
       _UpdateDockerConfig(server, _USERNAME, cred.access_token)
       log.warn("'docker' was not discovered on the path. Credentials have been "
                'stored, but are not guaranteed to work with the Docker client '
@@ -285,8 +285,6 @@ def _DockerLogin(server, email, username, access_token):
 
   # 'docker login' must be used due to the change introduced in
   # https://github.com/docker/docker/pull/20107 .
-  # TODO(user) leverage https://github.com/docker/docker-py/issues/1023 when
-  # Docker-py 1.9 is released.
   docker_args = ['login']
   if not _EmailFlagDeprecatedForDockerVersion():
     docker_args.append('--email=' + email)
@@ -322,27 +320,21 @@ def _EmailFlagDeprecatedForDockerVersion():
     --email flag during 'docker login,' False otherwise.
   """
   try:
-    version = _GetDockerVersionString()
+    version = _GetDockerVersion()
+
   except exceptions.Error:
     # Docker doesn't exist or doesn't like the modern version query format.
     # Assume that --email is not deprecated, return False.
     return False
 
-  version_split = version.split('.')
-  major_version = int(version_split[0])
-  minor_version = int(version_split[1])
-  if major_version == 1 and minor_version >= 11:
-    return True
-
-  return False
+  return version >= _EMAIL_FLAG_DEPRECATED_VERSION
 
 
-def _GetDockerVersionString():
-  """Returns the installed Docker client version string.
+def _GetDockerVersion():
+  """Returns the installed Docker client version.
 
   Returns:
-    The installed Docker client version string of the form '1.11.2' or
-    '1.12.0-dev'.
+    The installed Docker client version.
 
   Raises:
     DockerError: Docker cannot be run or does not accept 'docker version
@@ -363,7 +355,7 @@ def _GetDockerVersionString():
     raise DockerError('could not retrieve Docker client version')
 
   # Remove ' from beginning and end of line.
-  return stdoutdata.strip("'")
+  return distutils_version.LooseVersion(stdoutdata.strip("'"))
 
 
 def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):

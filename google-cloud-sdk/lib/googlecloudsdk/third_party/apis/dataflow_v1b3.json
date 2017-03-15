@@ -1275,14 +1275,40 @@
         }
       }
     },
-    "TemplateValidationResult": {
-      "id": "TemplateValidationResult",
-      "description": "The result of validating a CretaeJobFromTemplateRequest.",
+    "LaunchTemplateParameters": {
+      "id": "LaunchTemplateParameters",
+      "description": "Parameters to provide to the template being launched.",
+      "type": "object",
+      "properties": {
+        "jobName": {
+          "description": "Required. The job name to use for the created job.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The runtime parameters to pass to the job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "The runtime environment for the job.",
+          "$ref": "RuntimeEnvironment"
+        }
+      }
+    },
+    "LaunchTemplateResponse": {
+      "id": "LaunchTemplateResponse",
+      "description": "Response to the request to launch a template.",
       "type": "object",
       "properties": {
         "status": {
-          "description": "The status of the creation request. Any problems with the request\nwill be indicated in the error_details.",
+          "description": "The status of the launch template request. Any problems with the request\nwill be indicated in the error_details.",
           "$ref": "Status"
+        },
+        "job": {
+          "description": "The job that was launched, if the request was not a dry run and\nthe job was successfully launched.",
+          "$ref": "Job"
         }
       }
     },
@@ -1310,6 +1336,21 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "GetTemplateResponse": {
+      "id": "GetTemplateResponse",
+      "description": "The response to a GetTemplate request.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The status of the get template request. Any problems with the\nrequest will be indicated in the error_details.",
+          "$ref": "Status"
+        },
+        "metadata": {
+          "description": "The template metadata describing the template name, available\nparameters, etc.",
+          "$ref": "TemplateMetadata"
         }
       }
     },
@@ -4348,17 +4389,27 @@
                 "https://www.googleapis.com/auth/userinfo.email"
               ]
             },
-            "validate": {
-              "id": "dataflow.projects.templates.validate",
-              "path": "v1b3/projects/{projectId}/templates/validate",
-              "flatPath": "v1b3/projects/{projectId}/templates/validate",
+            "launch": {
+              "id": "dataflow.projects.templates.launch",
+              "path": "v1b3/projects/{projectId}/templates:launch",
+              "flatPath": "v1b3/projects/{projectId}/templates:launch",
               "httpMethod": "POST",
-              "description": "Validates the parameters set in create job request. The response\nincludes details about any problematic parameters, and also descriptions of\nhow parameters have been filled in.",
+              "description": "Launch a template.",
               "parameters": {
                 "projectId": {
                   "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
                   "location": "path",
                   "required": true,
+                  "type": "string"
+                },
+                "dryRun": {
+                  "description": "Whether or not the job should actually be executed after\nvalidating parameters. Defaults to false. Validation errors do\nnot cause the HTTP request to fail if true.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "gcsPath": {
+                  "description": "Required. A Cloud Storage path to the template from which to create\nthe job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+                  "location": "query",
                   "type": "string"
                 }
               },
@@ -4366,10 +4417,10 @@
                 "projectId"
               ],
               "request": {
-                "$ref": "CreateJobFromTemplateRequest"
+                "$ref": "LaunchTemplateParameters"
               },
               "response": {
-                "$ref": "TemplateValidationResult"
+                "$ref": "LaunchTemplateResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
@@ -4378,10 +4429,10 @@
             },
             "get": {
               "id": "dataflow.projects.templates.get",
-              "path": "v1b3/projects/{projectId}/templates/{gcsPath}",
-              "flatPath": "v1b3/projects/{projectId}/templates/{gcsPath}",
+              "path": "v1b3/projects/{projectId}/templates:get",
+              "flatPath": "v1b3/projects/{projectId}/templates:get",
               "httpMethod": "GET",
-              "description": "Get the template metadata associated with a template.",
+              "description": "Get the template associated with a template.",
               "parameters": {
                 "projectId": {
                   "description": "Required. The ID of the Cloud Platform project that the job belongs to.",
@@ -4391,17 +4442,23 @@
                 },
                 "gcsPath": {
                   "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
-                  "location": "path",
-                  "required": true,
+                  "location": "query",
                   "type": "string"
+                },
+                "view": {
+                  "description": "The view to retrieve. Defaults to METADATA_ONLY.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "METADATA_ONLY"
+                  ]
                 }
               },
               "parameterOrder": [
-                "projectId",
-                "gcsPath"
+                "projectId"
               ],
               "response": {
-                "$ref": "TemplateMetadata"
+                "$ref": "GetTemplateResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",

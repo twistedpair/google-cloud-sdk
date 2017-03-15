@@ -351,7 +351,6 @@ class _MetricsCollector(object):
       pickle.dump(self._metrics, temp_metrics_file)
       self._metrics = []
 
-    # TODO(user): make this not depend on the file.
     this_file = console_attr.DecodeFromInput(__file__)
     reporting_script_path = os.path.realpath(
         os.path.join(os.path.dirname(this_file), 'metrics_reporter.py'))

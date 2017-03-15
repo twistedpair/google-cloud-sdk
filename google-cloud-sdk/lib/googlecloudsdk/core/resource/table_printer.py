@@ -19,7 +19,6 @@ import operator
 import re
 import StringIO
 
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_spec
@@ -124,13 +123,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     _optional: True if at least one column is optional. An optional
       column is not displayed if it contains no data.
     _page_count: The output page count, incremented before each page.
-    _rows_per_page: The number of rows in each resource page. 0 for no paging.
     _rows: The list of all resource columns indexed by row.
     _visible: Ordered list of visible column indexes.
     _wrap: True if at least one column can be text wrapped.
   """
-
-  # TODO(user): Drop TablePrinter._rows_per_page 3Q2016.
 
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
@@ -146,10 +142,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     if not self._console_attr:
       self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
                                                        out=self._out)
-    self._rows_per_page = self.attributes.get('page', 0)
-    if self._rows_per_page:
-      log.warn('The [page=N] printer attribute is deprecated. '
-               'Use the --page-size=N flag instead.')
     self._page_count = 0
 
     # Check for subformat columns.
@@ -204,8 +196,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
-    if self._rows_per_page and len(self._rows) >= self._rows_per_page:
-      self.Page()
     self._rows.append(record)
 
   def _Visible(self, row):

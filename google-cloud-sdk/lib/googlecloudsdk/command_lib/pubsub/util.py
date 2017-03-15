@@ -24,7 +24,7 @@ from googlecloudsdk.core.resource import resource_projector
 MAX_LIST_RESULTS = 10000
 
 # Regular expression to match full paths for Cloud Pub/Sub resource identifiers.
-# TODO(user): These are going away, since we are moving to
+# TODO(b/36051089): These are going away, since we are moving to
 # collection paths in CL/125390647.
 PROJECT_PATH_RE = re.compile(r'^projects/(?P<Project>[^/]+)$')
 SNAPSHOTS_PATH_RE = re.compile(

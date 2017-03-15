@@ -39,7 +39,7 @@ def AddClusterIdArgs(parser):
   parser.add_argument(
       '--zone',
       help='ID of the zone where the cluster is located.',
-      # TODO(user): specify list of zones or not? eg...
+      # TODO(b/36049937): specify list of zones or not? eg...
       # choices=['europe-west1-c', 'us-central1-b'],
       required=True)
   parser.add_argument(
@@ -73,7 +73,7 @@ def ZoneUrl(args):
 
 
 def LocationUrl(location):
-  # TODO(user): deprecate when a location resource is available in the API
+  # TODO(b/36049938): deprecate when a location resource is available in the API
   return '/'.join([ProjectUrl(), 'locations', location])
 
 
@@ -103,7 +103,7 @@ def WaitForOp(context, op_id, text):
       name=op_id)
   with progress_tracker.ProgressTracker(text, autotick=False) as pt:
     while True:
-      # TODO(user): set reasonable timeout with input from API team
+      # TODO(b/36049792): set reasonable timeout with input from API team
       resp = cli.operations.Get(msg)
       if resp.error:
         raise sdk_ex.HttpException(resp.error.message)

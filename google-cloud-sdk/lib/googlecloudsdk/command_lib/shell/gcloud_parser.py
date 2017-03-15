@@ -70,7 +70,8 @@ class ArgTokenType(enum.Enum):
   GROUP = 1
   COMMAND = 2
   FLAG = 3
-  POSITIONAL = 4
+  FLAG_ARG = 4
+  POSITIONAL = 5
 
 
 class ArgToken(object):
@@ -103,6 +104,30 @@ class ArgToken(object):
                                              self.start, self.end)
 
 
+def TokenIsArgument(token):
+  """Checks whether a given token is an argument.
+
+  Args:
+    token: a lexer.ShellToken
+
+  Returns:
+    True if the token is of type lexer.ShellTokenType.ARG, False otherwise.
+  """
+  return token.lex == lexer.ShellTokenType.ARG
+
+
+def TokenIsFlag(token):
+  """Checks whether a given token is a flag.
+
+  Args:
+    token: a lexer.ShellToken
+
+  Returns:
+    True if the token is a flag, False otherwise.
+  """
+  return TokenIsArgument(token) and token.value.startswith('-')
+
+
 def ParseLine(line):
   """Parse a gcloud command line.
 
@@ -119,8 +144,7 @@ def ParseLine(line):
   # Cut off at first non-arg token
   i = 0
   while i < len(sh_tokens):
-    if sh_tokens[i].lex not in [
-        lexer.ShellTokenType.ARG, lexer.ShellTokenType.FLAG]:
+    if not TokenIsArgument(sh_tokens[i]):
       break
     i += 1
   sh_tokens = sh_tokens[:i]
@@ -132,10 +156,13 @@ def ParseArgs(ts):
   """Parse a list of lexer.ShellTokens as a gcloud command.
 
   Args:
-    ts: list of lexer.ShellTokens of type ARG or FLAG.
+    ts: list of lexer.ShellTokens of type ARG.
 
   Returns:
     A list of ArgTokens.
+
+  Raises:
+    ValueError: if not all lexer.ShellTokens in ts are of type ARG.
   """
   if not ts:
     return []
@@ -148,8 +175,19 @@ def ParseArgs(ts):
 
   i = 0
   while i < len(ts):
-    value = ts[i].UnquotedValue()
-    if ts[i].lex == lexer.ShellTokenType.ARG:
+    current_token = ts[i]
+    if not TokenIsArgument(current_token):
+      raise ValueError(
+          ('Lexer tokens passed to this function should only be of type ARG: '
+           '{}').format(current_token))
+
+    if TokenIsFlag(current_token):
+      used, tokens = ParseFlag(cur, expected_flags, ts[i:])
+      ret.extend(tokens)
+      i += used
+      continue
+    else:
+      value = current_token.UnquotedValue()
       if value in cur['commands']:
         cur = cur['commands'][value]
         expected_flags.update(cur['flags'])
@@ -159,31 +197,27 @@ def ParseArgs(ts):
         else:
           token_type = ArgTokenType.COMMAND
 
-        ret.append(ArgToken(value, token_type, cur, ts[i].start, ts[i].end))
+        ret.append(ArgToken(value, token_type, cur, current_token.start,
+                            current_token.end))
 
       elif len(cur['positionals']) > positionals_seen:
         tree = cur['positionals'][positionals_seen]
         ret.append(ArgToken(
-            value, ArgTokenType.POSITIONAL, tree, ts[i].start, ts[i].end))
+            value, ArgTokenType.POSITIONAL, tree, current_token.start,
+            current_token.end))
         positionals_seen += 1
 
       else:
         ret.append(ArgToken(
-            value, ArgTokenType.UNKNOWN, cur, ts[i].start, ts[i].end))
-
-    elif ts[i].lex == lexer.ShellTokenType.FLAG:
-      used, tokens = ParseFlag(cur, expected_flags, ts[i:])
-      ret.extend(tokens)
-      i += used
-      continue
-
+            value, ArgTokenType.UNKNOWN, cur, current_token.start,
+            current_token.end))
     i += 1
 
   return ret
 
 
 def ParseFlag(cur, expected_flags, ts):
-  """Parse a list of lexer.ShellTokens as a gcloud command.
+  """Parse a gcloud flag.
 
   Args:
     cur: the current location in the gcloud_tree
@@ -199,8 +233,16 @@ def ParseFlag(cur, expected_flags, ts):
   flag = tok_str
   value = None
 
+  name_start = ts[0].start
+  name_end = ts[0].end
+  value_start = None
+  value_end = None
+
   if '=' in flag:
     flag, value = tok_str.split('=', 1)
+    name_end = name_start + len(flag)
+    value_start = name_end + 1
+    value_end = value_start + len(value)
 
   if flag not in expected_flags:
     return 1, [ArgToken(
@@ -208,12 +250,18 @@ def ParseFlag(cur, expected_flags, ts):
 
   flag_def = expected_flags[flag]
 
-  start = ts[0].start
-  end = ts[0].end
   if flag_def['type'] != 'bool' and value is None and len(ts) >= 2:
     # next arg is the flag value
-    end = ts[1].end
     tokens_used = 2
+    value = ts[1].UnquotedValue()
+    value_start = ts[1].start
+    value_end = ts[1].end
 
-  return tokens_used, [
-      ArgToken(tok_str, ArgTokenType.FLAG, flag_def, start, end)]
+  token_list = [
+      ArgToken(flag, ArgTokenType.FLAG, flag_def, name_start, name_end)]
+
+  if value is not None:
+    token_list.append(ArgToken(
+        value, ArgTokenType.FLAG_ARG, flag_def, value_start, value_end))
+
+  return tokens_used, token_list

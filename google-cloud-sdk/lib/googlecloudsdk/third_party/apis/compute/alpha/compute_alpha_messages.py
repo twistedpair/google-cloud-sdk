@@ -10706,7 +10706,7 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
     project: Project ID for this request.
     requestId: begin_interface: MixerMutationRequestBuilder Request ID to
       support idempotency.
-    urlMap: Name of the UrlMap resource to update.
+    urlMap: Name of the UrlMap resource to patch.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
 
@@ -11123,14 +11123,16 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
     """
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    NO_ATTR = 3
-    SECURITY_REALM = 4
+    JUSTIFICATION_TYPE = 3
+    NO_ATTR = 4
+    SECURITY_REALM = 5
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.

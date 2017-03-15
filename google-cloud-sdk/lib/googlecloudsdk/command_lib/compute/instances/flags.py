@@ -626,9 +626,15 @@ def AddAddressArgs(parser, instances=True,
         """
     if support_alias_ip_ranges:
       network_interface_help += """
-        *aliases*::: Specifies the IP aliase ranges to allocate for this
-        interface.  If there are multiple IP aliase ranges, they are seperated
-        by semicolons. Currently, only one IP alias range is supported."""
+        *aliases*::: Specifies the IP alias ranges to allocate for this
+        interface.  If there are multiple IP alias ranges, they are separated
+        by semicolons.
+
+        For example:
+
+            --aliases="10.128.1.0/24;range1:/32"
+
+        """
       if instances:
         network_interface_help += """
           Each IP alias range consists of a range name and an IP range
@@ -636,22 +642,22 @@ def AddAddressArgs(parser, instances=True,
           The range name is the name of the range within the network
           interface's subnet from which to allocate an IP alias range. If
           unspecified, it defaults to the primary IP range of the subnet.
-          The IP range can be a CIDR range (e.g. 192.168.100.0/24), a single
-          IP address (e.g. 192.168.100.1), or a net mask in CIDR format (e.g.
-          /24). If the IP range is specified by CIDR range or single IP
+          The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
+          IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
+          `/24`). If the IP range is specified by CIDR range or single IP
           address, it must belong to the CIDR range specified by the range
-          name on the subnet. If the IP range is specified by net mask, the
+          name on the subnet. If the IP range is specified by netmask, the
           IP allocator will pick an available range with the specified netmask
           and allocate it to this network interface."""
       else:
         network_interface_help += """
-          Each IP alias range consists of a range name and an CIDR net mask
-          (e.g. /24) separated by a colon, or just the net mask.
+          Each IP alias range consists of a range name and an CIDR netmask
+          (e.g. `/24`) separated by a colon, or just the netmask.
           The range name is the name of the range within the network
           interface's subnet from which to allocate an IP alias range. If
           unspecified, it defaults to the primary IP range of the subnet.
-          IP allocator will pick an available range with the specified netmask
-          and allocate it to this network interface."""
+          The IP allocator will pick an available range with the specified
+          netmask and allocate it to this network interface."""
     parser.add_argument(
         '--network-interface',
         type=arg_parsers.ArgDict(
@@ -676,10 +682,11 @@ def AddMachineTypeArgs(parser, required=False):
       """)
 
 
-def AddMinCpuPlatformArgs(parser):
+def AddMinCpuPlatformArgs(parser, required=False):
   parser.add_argument(
       '--min-cpu-platform',
       metavar='PLATFORM',
+      required=required,
       help="""\
       When specified the VM will be scheduled on host with specified CPU
       architecture or a newer one. To list available CPU platforms in given

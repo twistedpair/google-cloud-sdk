@@ -666,7 +666,7 @@ class ArgList(ArgType):
             'information on escaping list or dictionary flag values.')
     arg_list = _TokenizeQuotedList(arg_value, delim=delim)
 
-    # TODO(user): These exceptions won't present well to the user.
+    # TODO(b/35944028): These exceptions won't present well to the user.
     if len(arg_list) < self.min_length:
       raise ArgumentTypeError('not enough args')
     if self.max_length is not None and len(arg_list) > self.max_length:
@@ -755,7 +755,7 @@ class ArgDict(ArgList):
     arg_dict = {}
     for arg in arg_list:
       match = self.key_op_value.match(arg)
-      # TODO(user): These exceptions won't present well to the user.
+      # TODO(b/35944028): These exceptions won't present well to the user.
       if not match:
         raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
       key, op, value = match.group(1), match.group(2), match.group(3)
@@ -1030,9 +1030,6 @@ class BufferedFileInput(object):
           "Can't open '{0}': {1}".format(name, e))
 
 
-STRICT_ARGS_DEPRECATION_DATE = 'March 2017'
-
-
 class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-access
   """An action with a couple of helpers to better handle --.
 
@@ -1044,43 +1041,21 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
   Primarily, this Action provides two utility parsers to help a modified
   ArgumentParser parse -- properly.
 
-  There are three additional properties:
-    is_strict: Whether the parser errors out or warns if the -- is not present
-        before the implementation args. Previously, the -- was not required:
-        anything after the last valid token (and in some cases, before!) would
-        be used. This will be deprecated {deprecation_date} and strict will be
-        the only option.
-    strict_alternate: Another command with the strict behavior that the warning
-        can suggest to the user. Will be removed when strictness becomes the
-        only option.
+  There is one additional property:
     example: A usage statement used to construct nice additional help.
-  """.format(deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
+  """
 
-  def __init__(
-      self, is_strict=True, strict_alternate=None, example=None, *args,
-      **kwargs):
+  def __init__(self, example=None, *args, **kwargs):
     if kwargs['nargs'] is not argparse.REMAINDER:
       raise ValueError(
           'The RemainderAction should only be used when '
           'nargs=argparse.REMAINDER.')
-    if is_strict and strict_alternate:
-      raise ValueError(
-          'strict_alternate only makes sense if this command is not strict.')
-    self.strict_alternate = strict_alternate
-    self.is_strict = is_strict
 
-    # TODO(b/31400045)
-    # In 6 months we will remove the ability to use implementation args without
-    # a preceding --.
     # Create detailed help.
     self.explanation = (
         "The '--' argument must be specified between gcloud specific args on "
-        'the left and {metavar} on the right. IMPORTANT: previously, commands '
-        'allowed the omission of the --, and unparsed arguments were treated '
-        'as implementation args. This usage is being deprecated and will be '
-        'removed in {deprecation_date}.'
-    ).format(metavar=kwargs['metavar'],
-             deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
+        'the left and {metavar} on the right.'
+    ).format(metavar=kwargs['metavar'])
     if 'help' in kwargs:
       kwargs['help'] += '\n\n' + self.explanation
       if example:
@@ -1124,9 +1099,8 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     """
     # Only parse consecutive unknown args from the end of the original args.
     # Strip out everything after '--'
-    remainder_args = []
     if '--' in original_args:
-      original_args, remainder_args = self._SplitOnDash(original_args)
+      original_args, _ = self._SplitOnDash(original_args)
     # Find common suffix between remaining_args and orginal_args
     split_index = 0
     for i, (arg1, arg2) in enumerate(
@@ -1138,20 +1112,9 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     remaining_args = remaining_args[:split_index]
 
     if pass_through_args:
-      if self.is_strict:
-        msg = ('unrecognized args: {args}\n' + self.explanation).format(
-            args=' '.join(pass_through_args))
-        raise argparse.ArgumentError(self, msg)
-      pass_through_args += remainder_args
-      msg = self.explanation + (
-          '\nThis will be strictly enforced in {deprecation_date}.'
-          ).format(deprecation_date=STRICT_ARGS_DEPRECATION_DATE)
-      if self.strict_alternate:
-        msg += " Use '{alternate}' to see new behavior.".format(
-            alternate=self.strict_alternate)
-      msg += "\nUsing '{args}' for {metavar}.".format(
-          args=' '.join(pass_through_args), metavar=self.metavar)
-      log.warn(msg)
+      msg = ('unrecognized args: {args}\n' + self.explanation).format(
+          args=' '.join(pass_through_args))
+      raise argparse.ArgumentError(self, msg)
     self(None, namespace, pass_through_args)
     return namespace, remaining_args
 

@@ -15,7 +15,8 @@
 """Helper methods for configuring runtime config command flags."""
 
 
-def AddConfigFlag(parser):
+def AddRequiredConfigFlag(parser):
   parser.add_argument(
       '--config-name',
-      help='The name of the configuration resource to use.')
+      help='The name of the configuration resource to use.',
+      required=True)

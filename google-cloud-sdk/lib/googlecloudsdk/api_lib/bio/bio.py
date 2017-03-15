@@ -101,7 +101,7 @@ class Operations(Bio):
     return list_pager.YieldFromList(
         self.client.projects_operations,
         self.client.MESSAGES_MODULE.BioProjectsOperationsListRequest(
-            # TODO(user): b/32240422: use resource parser here
+            # TODO(b/32240422): use resource parser here
             name='projects/{0}'.format(self._project_id)),
         limit=limit,
         field='operations',

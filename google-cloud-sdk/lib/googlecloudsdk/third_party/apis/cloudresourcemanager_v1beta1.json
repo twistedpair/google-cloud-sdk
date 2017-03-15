@@ -699,7 +699,7 @@
           "description": "Returns the IAM access control policy for the specified Project.\nPermission is denied if the policy or the resource does not exist.",
           "parameters": {
             "resource": {
-              "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -727,7 +727,7 @@
           "description": "Sets the IAM access control policy for the specified Project. Replaces\nany existing policy.\n\nThe following constraints apply when using `setIamPolicy()`:\n\n+ Project does not support `allUsers` and `allAuthenticatedUsers` as\n`members` in a `Binding` of a `Policy`.\n\n+ The owner role can be granted only to `user` and `serviceAccount`.\n\n+ Service accounts can be made owners of a project directly\nwithout any restrictions. However, to be added as an owner, a user must be\ninvited via Cloud Platform console and must accept the invitation.\n\n+ A user cannot be granted the owner role using `setIamPolicy()`. The user\nmust be granted the owner role using the Cloud Platform Console and must\nexplicitly accept the invitation.\n\n+ Invitations to grant the owner role cannot be sent using `setIamPolicy()`;\nthey must be sent only using the Cloud Platform Console.\n\n+ Membership changes that leave the project without any owners that have\naccepted the Terms of Service (ToS) will be rejected.\n\n+ There must be at least one owner who has accepted the Terms of\nService (ToS) agreement in the policy. Calling `setIamPolicy()` to\nto remove the last ToS-accepted owner from the policy will fail. This\nrestriction also applies to legacy projects that no longer have owners\nwho have accepted the ToS. Edits to IAM policies will be rejected until\nthe lack of a ToS-accepting owner is rectified.\n\n+ Calling this method requires enabling the App Engine Admin API.\n\nNote: Removing service accounts from policies or changing their roles\ncan render services completely inoperable. It is important to understand\nhow the service account is being used before removing or updating its roles.",
           "parameters": {
             "resource": {
-              "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -754,7 +754,7 @@
           "description": "Returns permissions that a caller has on the specified Project.",
           "parameters": {
             "resource": {
-              "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -877,7 +877,7 @@
           "description": "Sets the access control policy on an Organization resource. Replaces any\nexisting policy. The `resource` field should be the organization's resource\nname, e.g. \"organizations\/123\".",
           "parameters": {
             "organizationsId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -904,7 +904,7 @@
           "description": "Gets the access control policy for an Organization resource. May be empty\nif no such policy or resource exists. The `resource` field should be the\norganization's resource name, e.g. \"organizations\/123\".",
           "parameters": {
             "organizationsId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -932,7 +932,7 @@
           "description": "Returns permissions that a caller has on the specified Organization.\nThe `resource` field should be the organization's resource name,\ne.g. \"organizations\/123\".",
           "parameters": {
             "organizationsId": {
-              "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
               "type": "string"

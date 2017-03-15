@@ -309,7 +309,7 @@ def _FormatInvalidDimension(environment):
     return ('[OS-version {vers} on {model}]'
             .format(model=device.androidModelId, vers=device.androidVersionId))
   else:
-    # TODO(user): handle other device environments here (e.g. iOS).
+    # Handle any new device environments here.
     return '[unknown-environment]'
 
 

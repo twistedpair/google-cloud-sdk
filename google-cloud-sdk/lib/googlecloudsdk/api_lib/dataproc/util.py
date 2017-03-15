@@ -48,7 +48,7 @@ def FormatRpcError(error):
   return formatted_error
 
 
-# TODO(user): Create a common wait_utils class to reuse common code.
+# TODO(b/36056506): Create a common wait_utils class to reuse common code.
 def WaitForOperation(
     operation, context, message, timeout_s=2100, poll_period_s=5):
   """Poll dataproc Operation until its status is done or timeout reached.
@@ -189,7 +189,7 @@ def WaitForJobTermination(
 
   def ReadDriverLogIfPresent():
     if driver_log_stream and driver_log_stream.open:
-      # TODO(user): Don't read all output.
+      # TODO(b/36049794): Don't read all output.
       driver_log_stream.ReadIntoWritable(log.err)
 
   def PrintEqualsLine():
@@ -283,7 +283,7 @@ def ParseOperation(operation, context):
   collection = 'dataproc.projects.regions.operations'
   # Dataproc usually refers to Operations by relative name, which must be
   # parsed explicitly until resources.Parse supports it.
-  # TODO(user): Remove once Parse delegates to ParseRelativeName.
+  # TODO(b/36055864): Remove once Parse delegates to ParseRelativeName.
   url = urlparse.urlparse(operation)
   if not url.scheme and '/' in url.path and not url.path.startswith('/'):
     return resources.ParseRelativeName(operation, collection=collection)

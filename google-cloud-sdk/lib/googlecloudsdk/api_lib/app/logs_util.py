@@ -79,7 +79,7 @@ def FormatAppEntry(entry):
   Returns:
     A string representing the entry or None if there was no text payload.
   """
-  # TODO(user): Output others than text here too?
+  # TODO(b/36056460): Output others than text here too?
   if entry.resource.type != 'gae_app':
     return None
   if entry.protoPayload:
@@ -137,7 +137,7 @@ def _ExtractServiceAndVersion(entry):
   Returns:
     A 2-tuple of the form (service_id, version_id)
   """
-  # TODO(user): If possible, extract instance ID too
+  # TODO(b/36051034): If possible, extract instance ID too
   ad_prop = entry.resource.labels.additionalProperties
   service = next(x.value
                  for x in ad_prop
@@ -235,7 +235,7 @@ class LogPrinter(object):
     return out
 
   def _FallbackFormatter(self, entry):
-    # TODO(user): Is there better serialization for messages than str()?
+    # TODO(b/36057358): Is there better serialization for messages than str()?
     if entry.protoPayload:
       return str(entry.protoPayload)
     elif entry.jsonPayload:

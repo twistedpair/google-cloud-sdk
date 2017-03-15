@@ -584,7 +584,8 @@
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
             "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". It is not permitted to grant access based on\nthe *absence* of a realm, so realm conditions can only be used in\na \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).\nSee: go\/rpc-security-policy-dynamicauth."
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).\nSee: go\/rpc-security-policy-dynamicauth.",
+            "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported."
           ],
           "type": "string",
           "enum": [
@@ -592,7 +593,8 @@
             "AUTHORITY",
             "ATTRIBUTION",
             "SECURITY_REALM",
-            "APPROVER"
+            "APPROVER",
+            "JUSTIFICATION_TYPE"
           ]
         },
         "sys": {
@@ -623,8 +625,8 @@
             "Default no-op.",
             "DEPRECATED. Use IN instead.",
             "DEPRECATED. Use NOT_IN instead.",
-            "Set-inclusion check.",
-            "Set-exclusion check.",
+            "The condition is true if the subject (or any element of it if it is\na set) matches any of the supplied values.",
+            "The condition is true if the subject (or every element of it if it is\na set) matches none of the supplied values.",
             "Subject is discharged"
           ],
           "type": "string",
@@ -892,7 +894,7 @@
               "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -921,7 +923,7 @@
               "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -947,7 +949,7 @@
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -1007,7 +1009,7 @@
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.+$",
@@ -1239,7 +1241,7 @@
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.+$",
@@ -1398,7 +1400,7 @@
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",

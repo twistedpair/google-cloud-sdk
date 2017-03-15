@@ -22,7 +22,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import platforms
 
 
-# TODO(user): b/34807345 -- print to stderr
+# TODO(b/34807345): print to stderr
 def _TraceAction(action):
   """Prints action to the standard output -- not really standard practice."""
   print action

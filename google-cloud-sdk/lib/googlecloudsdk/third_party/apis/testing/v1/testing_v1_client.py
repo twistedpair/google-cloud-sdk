@@ -116,38 +116,6 @@ May return any of the following canonical error codes:
         supports_download=False,
     )
 
-    def Delete(self, request, global_params=None):
-      """Delete all record of a test matrix plus any associated test executions.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the Test Matrix does not exist
-
-      Args:
-        request: (TestingProjectsTestMatricesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'testing.projects.testMatrices.delete',
-        ordered_params=[u'projectId', u'testMatrixId'],
-        path_params=[u'projectId', u'testMatrixId'],
-        query_params=[],
-        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
-        request_field='',
-        request_type_name=u'TestingProjectsTestMatricesDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       """Check the status of a test matrix.
 
@@ -177,38 +145,6 @@ May return any of the following canonical error codes:
         request_field='',
         request_type_name=u'TestingProjectsTestMatricesGetRequest',
         response_type_name=u'TestMatrix',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """List test matrices.
-The matrices are returned in the order of newest first by submit time.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-
-      Args:
-        request: (TestingProjectsTestMatricesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTestMatricesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'testing.projects.testMatrices.list',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[],
-        relative_path=u'v1/projects/{projectId}/testMatrices',
-        request_field='',
-        request_type_name=u'TestingProjectsTestMatricesListRequest',
-        response_type_name=u'ListTestMatricesResponse',
         supports_download=False,
     )
 

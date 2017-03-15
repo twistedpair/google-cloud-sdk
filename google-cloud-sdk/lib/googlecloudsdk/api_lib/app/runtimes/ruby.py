@@ -391,7 +391,7 @@ def _DetectRubyInterpreter(path, bundler_available):
                format(ruby_version))
         log.status.Print(msg)
         return ruby_version
-      # TODO(user): Identify other interpreters
+      # TODO(b/12036082): Recognize JRuby
       msg = 'Unrecognized platform in Gemfile: [{0}]'.format(ruby_info)
       log.status.Print(msg)
 
@@ -484,9 +484,6 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
         raise RubyConfigError('Entrypoint command is required.')
       entrypoint = default_entrypoint
     if appinfo:
-      # We've got an entrypoint and the user had an app.yaml that didn't
-      # specify it.
-      # TODO(mmuller): Offer to edit the user's app.yaml
       msg = ('\nTo avoid being asked for an entrypoint in the future, please '
              'add it to your app.yaml. e.g.\n  entrypoint: {0}'.
              format(entrypoint))

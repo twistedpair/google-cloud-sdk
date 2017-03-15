@@ -14,9 +14,7 @@
 """Common arguments for `gcloud source repos` commands."""
 from googlecloudsdk.calliope import arg_parsers
 
-
-# regex copied from API docs
 REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(
-    r'[a-z][-a-z0-9]{1,61}[a-z0-9]',
-    'may contain between 3 and 63 (inclusive) lowercase letters, digits, and '
-    'hyphens, must start with a letter, and may not end with a hyphen.')
+    '[-_A-Za-z0-9]+',
+    'repostory name may contain between 1 and 63 (inclusive) letters, digits, '
+    'hyphens, and underscores.')
