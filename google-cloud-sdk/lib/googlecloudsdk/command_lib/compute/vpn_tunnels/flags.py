@@ -37,3 +37,17 @@ def VpnTunnelArgumentForRoute(required=True):
       regional_collection='compute.vpnTunnels',
       short_help='The target VPN tunnel that will receive forwarded traffic.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
+def VpnTunnelArgumentForRouter(required=True, operation_type='added'):
+  return compute_flags.ResourceArgument(
+      resource_name='vpn tunnel',
+      name='--vpn-tunnel',
+      completion_resource_id='compute.vpnTunnels',
+      plural=False,
+      required=required,
+      regional_collection='compute.vpnTunnels',
+      short_help='The tunnel of the interface being {0}.'.format(
+          operation_type),
+      region_explanation=(
+          'If not specified it will be set to the region of the router.'))

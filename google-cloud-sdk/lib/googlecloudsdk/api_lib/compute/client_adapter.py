@@ -38,7 +38,7 @@ def GetBatchUrl(endpoint_url):
   parsed_endpoint = urlparse.urlparse(endpoint_url)
   return urlparse.urljoin(
       '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
-      'batch')
+      'batch/compute')
 
 
 class ClientAdapter(object):

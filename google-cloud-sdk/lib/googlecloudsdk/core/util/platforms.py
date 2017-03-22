@@ -146,10 +146,15 @@ class Architecture(object):
   ppc = _ARCH('PPC', 'PPC', 'ppc')
   arm = _ARCH('arm', 'arm', 'arm')
   _ALL = [x86, x86_64, ppc, arm]
-  _MACHINE_TO_ARCHITECTURE = {'AMD64': x86_64, 'x86_64': x86_64,
-                              'i386': x86, 'i686': x86, 'x86': x86,
-                              'Power Macintosh': ppc,
-                              'arm6l': arm, 'arm64': arm, 'armv7': arm}
+
+  # Possible values for `uname -m` and what arch they map to.
+  # Examples of possible values: https://en.wikipedia.org/wiki/Uname
+  _MACHINE_TO_ARCHITECTURE = {
+      'amd64': x86_64, 'x86_64': x86_64, 'i686-64': x86_64,
+      'i386': x86, 'i686': x86, 'x86': x86,
+      'ia64': x86,  # Itanium is different x64 arch, treat it as the common x86.
+      'powerpc': ppc, 'power macintosh': ppc, 'ppc64': ppc,
+      'armv6': arm, 'armv6l': arm, 'arm64': arm, 'armv7': arm, 'armv7l': arm}
 
   @staticmethod
   def AllValues():
@@ -194,7 +199,7 @@ class Architecture(object):
       ArchitectureTuple, One of the Architecture constants or None if it cannot
       be determined.
     """
-    return Architecture._MACHINE_TO_ARCHITECTURE.get(platform.machine())
+    return Architecture._MACHINE_TO_ARCHITECTURE.get(platform.machine().lower())
 
 
 class Platform(object):

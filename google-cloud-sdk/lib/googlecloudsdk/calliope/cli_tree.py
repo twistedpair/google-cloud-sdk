@@ -227,18 +227,17 @@ class Command(object):
     parent_path_string = ' '.join(parent.path) if parent else ''
     self.release, capsule = self.__Release(
         command, self.release, getattr(command, 'short_help', ''))
-    self.capsule = console_io.LazyFormat(
-        _NormalizeDescription(capsule),
-        command=command_path_string,
-        parent_command=parent_path_string)
+
+    # This code block must be meticulous on when and where LazyFormat expansion
+    # is applied to the markdown snippets. First, no expanded text should be
+    # passed as a LazyFormat kwarg. Second, no unexpanded text should appear
+    # in the CLI tree. The LazyFormat calls are ordered to make sure that
+    # doesn't happen.
+    sections = getattr(command, 'detailed_help', {})
+    capsule = _NormalizeDescription(capsule)
     self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
-    description = console_io.LazyFormat(
-        _NormalizeDescription(description),
-        command=command_path_string,
-        index=self.capsule,
-        parent_command=parent_path_string)
-    sections = getattr(command, 'detailed_help', None)
+    description = _NormalizeDescription(description)
     if sections:
       for s in sections:
         # islower() section names were used to convert markdown in command
@@ -247,11 +246,29 @@ class Command(object):
           self.sections[s] = console_io.LazyFormat(
               _NormalizeDescription(sections[s]),
               command=command_path_string,
-              index=self.capsule,
+              man_name='.'.join(self.path),
+              top_command=self.path[0] if self.path else '',
+              parent_command=parent_path_string,
+              index=capsule,
               description=description,
-              parent_command=parent_path_string)
+              **sections)
     if 'DESCRIPTION' not in self.sections:
-      self.sections['DESCRIPTION'] = description
+      self.sections['DESCRIPTION'] = console_io.LazyFormat(
+          description,
+          command=command_path_string,
+          man_name='.'.join(self.path),
+          top_command=self.path[0] if self.path else '',
+          parent_command=parent_path_string,
+          index=capsule,
+          **sections)
+    self.capsule = console_io.LazyFormat(
+        capsule,
+        command=command_path_string,
+        man_name='.'.join(self.path),
+        top_command=self.path[0] if self.path else '',
+        parent_command=parent_path_string,
+        **sections)
+
     # _parent is explicitly private so it won't appear in serialized output.
     self._parent = parent
     if parent:

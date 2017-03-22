@@ -57,6 +57,17 @@ class AndroidDeviceCatalog(_messages.Message):
   versions = _messages.MessageField('AndroidVersion', 3, repeated=True)
 
 
+class AndroidDeviceList(_messages.Message):
+  """A list of Android device configurations in which the test is to be
+  executed.
+
+  Fields:
+    androidDevices: A list of Android devices Required
+  """
+
+  androidDevices = _messages.MessageField('AndroidDevice', 1, repeated=True)
+
+
 class AndroidInstrumentationTest(_messages.Message):
   """A test of an Android application that can control an Android component
   independently of its normal lifecycle. Android instrumentation tests run an
@@ -376,10 +387,13 @@ class EnvironmentMatrix(_messages.Message):
   """The matrix of environments in which the test is to be executed.
 
   Fields:
+    androidDeviceList: A list of Android devices; the test will be run only on
+      the specified devices.
     androidMatrix: A matrix of Android devices.
   """
 
-  androidMatrix = _messages.MessageField('AndroidMatrix', 1)
+  androidDeviceList = _messages.MessageField('AndroidDeviceList', 1)
+  androidMatrix = _messages.MessageField('AndroidMatrix', 2)
 
 
 class EnvironmentVariable(_messages.Message):
@@ -731,6 +745,8 @@ class TestMatrix(_messages.Message):
         not allowed.
       INVALID_ROBO_DIRECTIVES: There is a conflict in the provided
         robo_directives.
+      TEST_LOOP_INTENT_FILTER_NOT_FOUND: There there is no test loop intent
+        filter, or the one that is given is not formatted correctly.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -743,6 +759,7 @@ class TestMatrix(_messages.Message):
     NO_LAUNCHER_ACTIVITY = 8
     FORBIDDEN_PERMISSIONS = 9
     INVALID_ROBO_DIRECTIVES = 10
+    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 11
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

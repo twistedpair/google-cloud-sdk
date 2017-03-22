@@ -309,6 +309,8 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    AddressTypeValueValuesEnum: The type of address to reserve. If
+      unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
@@ -328,6 +330,8 @@ class Address(_messages.Message):
   Fields:
     address: The static external IP address represented by this resource. Only
       IPv4 is supported.
+    addressType: The type of address to reserve. If unspecified, defaults to
+      EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -365,9 +369,24 @@ class Address(_messages.Message):
       IN_USE or RESERVED. An address that is RESERVED is currently reserved
       and available to use. An IN_USE address is currently being used by
       another resource and is not available.
+    subnetwork: For external addresses, this field should not be used.  The
+      URL of the subnetwork in which to reserve the address. If an IP address
+      is specified, it must be within the subnetwork's IP range.
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
+
+  class AddressTypeValueValuesEnum(_messages.Enum):
+    """The type of address to reserve. If unspecified, defaults to EXTERNAL.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      UNSPECIFIED_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    UNSPECIFIED_TYPE = 2
 
   class IpVersionValueValuesEnum(_messages.Enum):
     """The IP Version that will be used by this address. Valid options are
@@ -434,19 +453,21 @@ class Address(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   address = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 5)
-  kind = _messages.StringField(6, default=u'compute#address')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  users = _messages.StringField(14, repeated=True)
+  addressType = _messages.EnumField('AddressTypeValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
+  kind = _messages.StringField(7, default=u'compute#address')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  subnetwork = _messages.StringField(15)
+  users = _messages.StringField(16, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -840,28 +861,29 @@ class AttachedDiskInitializeParams(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
-  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
-  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
-  }, { "log_type": "ADMIN_READ", } ] }, { "service":
-  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
-  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
-  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
-  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
-  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices"
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
+  "ADMIN_READ", } ] }, { "service": "fooservice@googleapis.com"
+  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] } For
+  fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts foo@gmail.com from DATA_READ logging, and
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
     exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -2693,7 +2715,7 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   """A ComputeAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
@@ -2702,7 +2724,7 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
     zone: Name of the zone for this request.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
@@ -2746,6 +2768,24 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeBackendBucketsAddSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendBucketsAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendBucketsDeleteRequest(_messages.Message):
   """A ComputeBackendBucketsDeleteRequest object.
 
@@ -2759,6 +2799,24 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   backendBucket = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendBucketsDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
@@ -2915,6 +2973,24 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendServicesAddSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendServicesAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   """A ComputeBackendServicesAggregatedListRequest object.
 
@@ -2978,6 +3054,24 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendServicesDeleteSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendServicesDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendServicesGetHealthRequest(_messages.Message):
@@ -3090,6 +3184,25 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
+  """A ComputeBackendServicesSetSecurityPolicyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
 
 
 class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -6349,6 +6462,61 @@ class ComputeInstancesInsertRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesListReferrersRequest(_messages.Message):
+  """A ComputeInstancesListReferrersRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    instance: Name of the target instance scoping this request, or '-' if the
+      request should span over all instances in the container.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
+
+
 class ComputeInstancesListRequest(_messages.Message):
   """A ComputeInstancesListRequest object.
 
@@ -7345,7 +7513,7 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
   """A ComputeRegionAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
@@ -7354,7 +7522,7 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
       support idempotency.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
@@ -8885,6 +9053,132 @@ class ComputeRoutesListRequest(_messages.Message):
 
 class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
   """A ComputeRoutesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
+  """A ComputeSecurityPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    securityPolicy: Name of the security policy to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSecurityPoliciesGetRequest(_messages.Message):
+  """A ComputeSecurityPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSecurityPoliciesInsertRequest(_messages.Message):
+  """A ComputeSecurityPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    securityPolicy: A SecurityPolicy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeSecurityPoliciesListRequest(_messages.Message):
+  """A ComputeSecurityPoliciesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSecurityPoliciesPatchRequest(_messages.Message):
+  """A ComputeSecurityPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyResource: A SecurityPolicy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+
+
+class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSecurityPoliciesTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -13678,6 +13972,12 @@ class Image(_messages.Message):
       be a full or valid partial URL. You must provide exactly one of:   -
       this property, or   - the rawDisk.source property, or   - the sourceDisk
       property   in order to create an image.
+    sourceImageEncryptionKey: The customer-supplied encryption key of the
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
+    sourceImageId: [Output Only] The ID value of the image used to create this
+      image. This value may be used to determine whether the image was taken
+      from the current or a previous instance of a given image name.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -13790,8 +14090,10 @@ class Image(_messages.Message):
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
   sourceDiskId = _messages.StringField(19)
   sourceImage = _messages.StringField(20)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 21, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceImageId = _messages.StringField(22)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 23, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
 
 
 class ImageList(_messages.Message):
@@ -13841,7 +14143,8 @@ class Instance(_messages.Message):
       property when you create the resource.
     disks: Array of disks associated with this instance. Persistent disks must
       be created before you can assign them.
-    guestAccelerators: A AcceleratorConfig attribute.
+    guestAccelerators: List of the type and count of accelerator cards
+      attached to the instance.
     host: Full or partial URL of the host resource that the instance should be
       placed on, in the format: zones/zone/hosts/host.  Optional, Private Host
       (physical machine) that the instance will be placed on when it's
@@ -14983,6 +15286,30 @@ class InstanceList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class InstanceListReferrers(_messages.Message):
+  """Contains a list of instance referrers.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of referrers.
+    kind: [Output Only] Type of resource. Always compute#instanceListReferrers
+      for lists of Instance referrers.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Reference', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#instanceListReferrers')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class InstanceMoveRequest(_messages.Message):
   """A InstanceMoveRequest object.
 
@@ -15023,6 +15350,8 @@ class InstanceProperties(_messages.Message):
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    guestAccelerators: A list of guest accelerator cards' type and count to
+      use for instances created from the instance template.
     labels: Labels to apply to instances that are created from this template.
     machineType: The machine type to use for instances that are created from
       this template.
@@ -15071,13 +15400,14 @@ class InstanceProperties(_messages.Message):
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  machineType = _messages.StringField(5)
-  metadata = _messages.MessageField('Metadata', 6)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 8)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 9, repeated=True)
-  tags = _messages.MessageField('Tags', 10)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  machineType = _messages.StringField(6)
+  metadata = _messages.MessageField('Metadata', 7)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 8, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 9)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 10, repeated=True)
+  tags = _messages.MessageField('Tags', 11)
 
 
 class InstanceReference(_messages.Message):
@@ -15341,7 +15671,8 @@ class InstancesSetMachineResourcesRequest(_messages.Message):
   """A InstancesSetMachineResourcesRequest object.
 
   Fields:
-    guestAccelerators: A AcceleratorConfig attribute.
+    guestAccelerators: List of the type and count of accelerator cards
+      attached to the instance.
   """
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
@@ -16802,6 +17133,7 @@ class Quota(_messages.Message):
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
+      COMMITMENTS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -16840,44 +17172,63 @@ class Quota(_messages.Message):
     AUTOSCALERS = 0
     BACKEND_BUCKETS = 1
     BACKEND_SERVICES = 2
-    CPUS = 3
-    CPUS_ALL_REGIONS = 4
-    DISKS_TOTAL_GB = 5
-    FIREWALLS = 6
-    FORWARDING_RULES = 7
-    HEALTH_CHECKS = 8
-    IMAGES = 9
-    INSTANCES = 10
-    INSTANCE_GROUPS = 11
-    INSTANCE_GROUP_MANAGERS = 12
-    INSTANCE_TEMPLATES = 13
-    IN_USE_ADDRESSES = 14
-    LOCAL_SSD_TOTAL_GB = 15
-    NETWORKS = 16
-    NVIDIA_K80_GPUS = 17
-    PREEMPTIBLE_CPUS = 18
-    REGIONAL_AUTOSCALERS = 19
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 20
-    ROUTERS = 21
-    ROUTES = 22
-    SNAPSHOTS = 23
-    SSD_TOTAL_GB = 24
-    SSL_CERTIFICATES = 25
-    STATIC_ADDRESSES = 26
-    SUBNETWORKS = 27
-    TARGET_HTTPS_PROXIES = 28
-    TARGET_HTTP_PROXIES = 29
-    TARGET_INSTANCES = 30
-    TARGET_POOLS = 31
-    TARGET_SSL_PROXIES = 32
-    TARGET_TCP_PROXIES = 33
-    TARGET_VPN_GATEWAYS = 34
-    URL_MAPS = 35
-    VPN_TUNNELS = 36
+    COMMITMENTS = 3
+    CPUS = 4
+    CPUS_ALL_REGIONS = 5
+    DISKS_TOTAL_GB = 6
+    FIREWALLS = 7
+    FORWARDING_RULES = 8
+    HEALTH_CHECKS = 9
+    IMAGES = 10
+    INSTANCES = 11
+    INSTANCE_GROUPS = 12
+    INSTANCE_GROUP_MANAGERS = 13
+    INSTANCE_TEMPLATES = 14
+    IN_USE_ADDRESSES = 15
+    LOCAL_SSD_TOTAL_GB = 16
+    NETWORKS = 17
+    NVIDIA_K80_GPUS = 18
+    PREEMPTIBLE_CPUS = 19
+    REGIONAL_AUTOSCALERS = 20
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 21
+    ROUTERS = 22
+    ROUTES = 23
+    SNAPSHOTS = 24
+    SSD_TOTAL_GB = 25
+    SSL_CERTIFICATES = 26
+    STATIC_ADDRESSES = 27
+    SUBNETWORKS = 28
+    TARGET_HTTPS_PROXIES = 29
+    TARGET_HTTP_PROXIES = 30
+    TARGET_INSTANCES = 31
+    TARGET_POOLS = 32
+    TARGET_SSL_PROXIES = 33
+    TARGET_TCP_PROXIES = 34
+    TARGET_VPN_GATEWAYS = 35
+    URL_MAPS = 36
+    VPN_TUNNELS = 37
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
   usage = _messages.FloatField(3)
+
+
+class Reference(_messages.Message):
+  """Represents a reference to a resource.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#reference for
+      references.
+    referenceType: A description of the reference type with no implied
+      semantics. Possible values include:   - MEMBER_OF
+    referrer: URL of the resource which refers to the target.
+    target: URL of the resource to which this reference points.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#reference')
+  referenceType = _messages.StringField(2)
+  referrer = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Region(_messages.Message):
@@ -17623,8 +17974,10 @@ class RouterInterface(_messages.Message):
       the RFC3927 link-local IP space. The value must be a CIDR-formatted
       string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
       as it represents the IP address of the interface.
-    linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
-      as the router. Each interface can have at most one linked resource.
+    linkedVpnTunnel: URI of the linked VPN tunnel. It must be in the same
+      region as the router. Each interface can have at most one linked
+      resource and it could either be a VPN Tunnel or an interconnect
+      attachment.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
@@ -17971,6 +18324,120 @@ class Scheduling(_messages.Message):
   preemptible = _messages.BooleanField(3)
 
 
+class SecurityPoliciesList(_messages.Message):
+  """A SecurityPoliciesList object.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of SecurityPolicy resources.
+    kind: [Output Only] Type of resource. Always compute#securityPoliciesList
+      for listsof securityPolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SecurityPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#securityPoliciesList')
+  nextPageToken = _messages.StringField(4)
+
+
+class SecurityPolicy(_messages.Message):
+  """A security policy is comprised of one or more rules. It can also be
+  associated with one or more 'targets'.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the metadata's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change metadata.  To see the latest fingerprint, make get() request to
+      the security policy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#securityPolicyfor
+      security policies
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    rules: List of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no rules
+      are provided when creating a security policy, a default rule with action
+      "allow" will be added.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#securityPolicy')
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+
+
+class SecurityPolicyReference(_messages.Message):
+  """A SecurityPolicyReference object.
+
+  Fields:
+    securityPolicy: A string attribute.
+  """
+
+  securityPolicy = _messages.StringField(1)
+
+
+class SecurityPolicyRule(_messages.Message):
+  """Represents a rule that describes one or more match conditions along with
+  the action to be taken when traffic matches this condition (allow or deny)
+
+  Fields:
+    action: The Action to preform when the client connection triggers the
+      rule. Can currently be either "allow" or "deny()" where valid values for
+      status are 403, 404, and 502.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    kind: [Output only] Type of the resource. Always compute#rulefor security
+      policies
+    match: A match condition that incoming traffic is evaluated against. If it
+      evaluates to true, the corresponding ?action? is enforced.
+    preview: If set to true, the specified action is not enforced.
+    priority: An integer indicating the priority of a rule in the list. Rules
+      are evaluated in the increasing order of priority.
+  """
+
+  action = _messages.StringField(1)
+  description = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
+  preview = _messages.BooleanField(5)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+
+
+class SecurityPolicyRuleMatcher(_messages.Message):
+  """Represents a match condition that incoming traffic is evaluated against.
+  Exactly one of the fields must be set.
+
+  Fields:
+    srcIpRanges: CIDR IP address range. Only IPv4 is supported.
+  """
+
+  srcIpRanges = _messages.StringField(1, repeated=True)
+
+
 class SerialPortOutput(_messages.Message):
   """An instance's serial console output.
 
@@ -18005,6 +18472,24 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class SignedUrlKey(_messages.Message):
+  """Represents a customer-supplied Signing Key used by Cloud CDN Signed URLs
+
+  Fields:
+    keyName: Name of the key. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
+      the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    keyValue: 128-bit key value used for signing the URL. The key value must
+      be a valid RFC 4648 Section 5 base64url encoded string.
+  """
+
+  keyName = _messages.StringField(1)
+  keyValue = _messages.StringField(2)
 
 
 class Snapshot(_messages.Message):

@@ -24,7 +24,6 @@ import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core.console import console_io
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
@@ -380,46 +379,6 @@ def WrapWithPrefix(prefix, message, indent, length, spacing,
     Wln('%%%ds %%s'
         % (indent - len(prefix) - len(spacing) - 1)
         % (' ', message))
-
-
-def ExpandHelpText(command, text, sections=True):
-  """Expand command {...} references in text.
-
-  Args:
-    command: calliope._CommandCommon, The command object that we're helping.
-    text: str, The text chunk to expand.
-    sections: bool, Include #... markdown sections if True.
-
-  Returns:
-    str, The expanded help text.
-  """
-  if text == command.long_help:
-    long_help = ''
-  else:
-    long_help = ExpandHelpText(command, command.long_help, sections=False)
-  path = command.GetPath()
-  if not sections and text:
-    section_markdown_index = text.find('\n\n#')
-    if section_markdown_index >= 0:
-      text = text[:section_markdown_index]
-
-  # The lower case keys in the optional detailed_help dict are user specified
-  # parameters to LazyFormat().
-  details = {}
-  for key, value in getattr(command, 'detailed_help', {}).iteritems():
-    if key.islower():
-      details[key] = value
-
-  return console_io.LazyFormat(
-      text or '',
-      command=' '.join(path),
-      man_name='_'.join(path),
-      top_command=path[0],
-      parent_command=' '.join(path[:-1]),
-      index=command.short_help,
-      description=long_help,
-      **details
-  )
 
 
 def TextIfExists(title, messages):

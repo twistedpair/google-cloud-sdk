@@ -31,6 +31,9 @@ _LOGS_URL = ('https://console.cloud.google.com/logs?'
              'resource=ml.googleapis.com%2Fjob_id%2F{job_id}'
              '&project={project}')
 JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
+# Check every 10 seconds if the job is complete (if we didn't fetch any logs the
+# last time)
+_CONTINUE_INTERVAL = 10
 
 
 def Cancel(jobs_client, job):
@@ -64,13 +67,12 @@ def StreamLogs(api_version, job, task_name, polling_interval,
                allow_multiline_logs):
   log_fetcher = stream.LogFetcher(
       filters=log_utils.LogFilters(job, task_name),
-      polling_interval=polling_interval,
+      polling_interval=polling_interval, continue_interval=_CONTINUE_INTERVAL,
       continue_func=log_utils.MakeContinueFunction(job, api_version))
   return log_utils.SplitMultiline(
       log_fetcher.YieldLogs(), allow_multiline=allow_multiline_logs)
 
 
-_POLLING_INTERVAL = 10
 _FOLLOW_UP_MESSAGE = """\
 Your job is still active. You may view the status of your job with the command
 
@@ -88,10 +90,40 @@ def PrintSubmitFollowUp(job_id, print_follow_up_message=True):
     log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job_id))
 
 
+def GetStreamLogs(async_, stream_logs):
+  """Return, based on the command line arguments, whether we should stream logs.
+
+  Both arguments cannot be set (they're mutually exclusive flags) and the
+  default is False.
+
+  Args:
+    async_: bool, the value of the --async flag.
+    stream_logs: bool, the value of the --stream-logs flag.
+
+  Returns:
+    bool, whether to stream the logs
+
+  Raises:
+    ValueError: if both async_ and stream_logs are True.
+  """
+  if async_ and stream_logs:
+    # Doesn't have to be a nice error; they're mutually exclusive so we should
+    # never get here.
+    raise ValueError('--async and --stream-logs cannot both be set.')
+
+  if async_:
+    # TODO(b/36195821): Use the flag deprecation machinery when it supports the
+    # store_true action
+    log.warn('The --async flag is deprecated, as the default behavior is to '
+             'submit the job asynchronously; it can be omitted. '
+             'For synchronous behavior, please pass --stream-logs.\n')
+  return stream_logs
+
+
 def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
-                   async_=None, user_args=None):
+                   stream_logs=None, user_args=None):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -125,7 +157,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       properties.VALUES.core.project.Get(required=True),
       collection='ml.projects')
   job = jobs_client.Create(project_ref, job)
-  if async_:
+  if not stream_logs:
     PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
     return job
   else:
@@ -133,7 +165,8 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
 
   log_fetcher = stream.LogFetcher(
       filters=log_utils.LogFilters(job.jobId),
-      polling_interval=_POLLING_INTERVAL,
+      polling_interval=properties.VALUES.ml_engine.polling_interval.GetInt(),
+      continue_interval=_CONTINUE_INTERVAL,
       continue_func=log_utils.MakeContinueFunction(job.jobId))
 
   printer = resource_printer.Printer(log_utils.LOG_FORMAT,
@@ -143,11 +176,13 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       printer.Print(log_utils.SplitMultiline(log_fetcher.YieldLogs()))
     except KeyboardInterrupt:
       log.status.Print('Received keyboard interrupt.\n')
-      log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId))
+      log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId,
+                                                 project=project_ref.Name()))
     except exceptions.HttpError as err:
       log.status.Print('Polling logs failed:\n{}\n'.format(str(err)))
       log.info('Failure details:', exc_info=True)
-      log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId))
+      log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId,
+                                                 project=project_ref.Name()))
 
   job_ref = resources.REGISTRY.Parse(job.jobId, collection='ml.projects.jobs')
   job = jobs_client.Get(job_ref)

@@ -192,7 +192,7 @@ class _MetricsCollector(object):
     self._async_popen_args = current_platform.AsyncPopenArgs()
     self._project_ids = {}
 
-    hostname = socket.getfqdn()
+    hostname = socket.gethostname()
     install_type = 'Google' if hostname.endswith('.google.com') else 'External'
     cid = _MetricsCollector._GetCID()
 

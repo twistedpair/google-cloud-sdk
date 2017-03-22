@@ -19,6 +19,7 @@ import collections
 from googlecloudsdk.api_lib.util import apis
 
 _INDENT = '  '
+_NULL_SEVERITY = 'UNKNOWN'
 
 
 class BaseCollection(collections.deque):
@@ -48,14 +49,15 @@ class PackageVulnerability(object):
 
       severities = collections.defaultdict(list)
       for x in list(self):
-        severities[str(x.severity)].append(x)
+        sev = str(x.severity) if x.severity else _NULL_SEVERITY
+        severities[sev].append(x)
 
       output = ['Vulnerabilities:']
-      for sev in ['Critical', 'High', 'Medium', 'Low']:
-        vulnz = severities[sev.upper()]
+      for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', _NULL_SEVERITY]:
+        vulnz = severities[sev]
         if not vulnz:
           continue
-        output.append('{0} ({1}):'.format(sev, len(vulnz)))
+        output.append('{0} ({1}):'.format(sev.capitalize(), len(vulnz)))
         for v in vulnz:
           output.append(str(v))
         # Line breaks between sections.

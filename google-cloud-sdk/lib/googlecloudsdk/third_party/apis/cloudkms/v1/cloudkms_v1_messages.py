@@ -1,4 +1,4 @@
-"""Generated message classes for cloudkms version v1beta1.
+"""Generated message classes for cloudkms version v1.
 
 Manages encryption for your cloud services the same way you do on-premise. You
 can generate, use, rotate, and destroy AES256 encryption keys.

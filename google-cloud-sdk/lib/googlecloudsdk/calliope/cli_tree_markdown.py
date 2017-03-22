@@ -242,6 +242,10 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     super(CliTreeMarkdownGenerator, self).PrintFlagDefinition(
         flag, disable_header=disable_header)
 
+  def _ExpandHelpText(self, doc):
+    """{...} references were done when the tree was generated."""
+    return doc
+
 
 def Markdown(command, tree):
   """Returns the help markdown document string for the command node in tree.

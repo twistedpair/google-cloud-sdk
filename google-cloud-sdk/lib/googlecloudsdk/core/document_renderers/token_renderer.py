@@ -79,6 +79,9 @@ class TokenRenderer(renderer.Renderer):
     _indent: List of left indentations in characters indexed by _level.
     _level: The section or list level counting from 0.
     _table: True if currently rendering a table.
+    _tokens: The list of output tokens
+    _truncated: The number of output lines exceeded the output height.
+    _rows: current rows in table
   """
   # Internal inline embellishments are 2 character sequences
   # <CSI><EMBELLISHMENT>. The embellishment must be an alpha character
@@ -118,10 +121,11 @@ class TokenRenderer(renderer.Renderer):
     self._ignore_width = False
     self._indent = [self.Indent(compact)]
     self._level = 0
-    self._table = False
     self._lines = []
+    self._table = False
     self._tokens = []
     self._truncated = False
+    self._rows = []
 
   def _Truncate(self, tokens, overflow):
     """Injects a truncation indicator token and rejects subsequent tokens.
@@ -628,13 +632,13 @@ class TokenRenderer(renderer.Renderer):
         cols = len(self._rows[0])
         width = [0 for _ in range(cols)]
         for row in self._rows:
-          for i in range(cols - 1):
+          for i in range(min(len(row), cols) - 1):
             w = len(row[i])
             if width[i] <= w:
               width[i] = w + 1
         for row in self._rows:
           self._AddToken(' ' * (self._indent[self._level].indent + 2))
-          for i in range(cols - 1):
+          for i in range(min(len(row), cols) - 1):
             self._AddToken(row[i].ljust(width[i]))
           self._AddToken(row[-1])
           self._NewLine()

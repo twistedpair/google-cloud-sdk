@@ -13,7 +13,6 @@
 # limitations under the License.
 
 """Source apis layer."""
-import json
 import os
 
 from apitools.base.py import exceptions
@@ -107,45 +106,6 @@ def _GetViolationsFromError(error_info):
   except (ValueError, TypeError):
     pass
   return result
-
-
-# TODO(b/26202997): make this more general to be used by other library code.
-def GetHttpErrorMessage(error):
-  """Returns a human readable string representation from the http response.
-
-  Args:
-    error: HttpException representing the error response.
-
-  Returns:
-    A human readable string representation of the error.
-  """
-  status = error.response.status
-  code = error.response.reason
-  message = ''
-  try:
-    data = json.loads(error.content)
-  except ValueError:
-    data = error.content
-
-  if 'error' in data:
-    try:
-      error_info = data['error']
-      if 'message' in error_info:
-        message = error_info['message']
-      # If there is public message we use it instead; billing uses this.
-      if 'details' in error_info:
-        for d in error_info['details']:
-          if d['@type'] == 'type.googleapis.com/google.rpc.LocalizedMessage':
-            message = d['message']
-      violations = _GetViolationsFromError(error_info)
-      if violations:
-        message += '\nProblems:\n' + violations
-    except (ValueError, TypeError):
-      message = data
-  else:
-    message = data
-  return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
-      status, code, message)
 
 
 class Source(object):

@@ -97,6 +97,9 @@ apis:
   cloudkms:
     v1beta1:
       discovery_doc: cloudkms_v1beta1.json
+    v1:
+      discovery_doc: cloudkms_v1.json
+      default: true
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
@@ -194,6 +197,9 @@ apis:
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json
+  serviceuser:
+    v1:
+      discovery_doc: serviceuser_v1.json
   serviceregistry:
     v1alpha:
       discovery_doc: serviceregistry_v1alpha.json

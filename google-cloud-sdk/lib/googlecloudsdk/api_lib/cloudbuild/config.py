@@ -40,8 +40,6 @@ class FileReadException(exceptions.Error):
     msg = '{path} could not be read'.format(
         path=path or 'Cloud Build configuration',
     )
-    # TODO(b/36050948): Add a test to confirm that we get this exception when
-    # expected.
     super(FileReadException, self).__init__(msg)
 
 

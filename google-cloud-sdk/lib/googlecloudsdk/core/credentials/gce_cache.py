@@ -14,6 +14,7 @@
 
 """Caching logic for checking if we're on GCE."""
 
+import httplib
 import os
 import socket
 from threading import Lock
@@ -123,8 +124,7 @@ class _OnGCECache(object):
     try:
       numeric_project_id = gce_read.ReadNoProxy(
           gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib2.HTTPError, urllib2.URLError,
-            socket.timeout, socket.error, socket.herror, socket.gaierror):
+    except (urllib2.URLError, socket.error, httplib.HTTPException):
       # Depending on how a firewall/ NAT behaves, we can have different
       # exceptions at different levels in the networking stack when trying to
       # access an address that we can't reach. Capture all these exceptions.

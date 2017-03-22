@@ -33,8 +33,6 @@ class MissingEnvVarError(Error):
   """An exception raised when required environment variables are missing."""
 
 
-# TODO(b/36052478): marshal yaml directly into a type with a
-# matching structure.
 class Kubeconfig(object):
   """Interface for interacting with a kubeconfig file."""
 

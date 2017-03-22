@@ -73,6 +73,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regions = self.RegionsService(self)
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
+    self.securityPolicies = self.SecurityPoliciesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
     self.subnetworks = self.SubnetworksService(self)
@@ -317,7 +318,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an Address. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeAddressesSetLabelsRequest) input message
@@ -524,7 +525,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
         method_id=u'compute.autoscalers.patch',
-        ordered_params=[u'project', u'zone', u'autoscaler'],
+        ordered_params=[u'project', u'zone'],
         path_params=[u'project', u'zone'],
         query_params=[u'autoscaler', u'requestId'],
         relative_path=u'projects/{project}/zones/{zone}/autoscalers',
@@ -596,6 +597,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddSignedUrlKey(self, request, global_params=None):
+      """Adds the given Signed URL Key to the backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsAddSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendBuckets.addSignedUrlKey',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/addSignedUrlKey',
+        request_field=u'signedUrlKey',
+        request_type_name=u'ComputeBackendBucketsAddSignedUrlKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified BackendBucket resource.
 
@@ -618,6 +645,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
         request_field='',
         request_type_name=u'ComputeBackendBucketsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteSignedUrlKey(self, request, global_params=None):
+      """Deletes the given Signed URL Key from the backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsDeleteSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendBuckets.deleteSignedUrlKey',
+        ordered_params=[u'project', u'backendBucket', u'keyName'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[u'keyName', u'requestId'],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/deleteSignedUrlKey',
+        request_field='',
+        request_type_name=u'ComputeBackendBucketsDeleteSignedUrlKeyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -840,6 +893,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddSignedUrlKey(self, request, global_params=None):
+      """Adds the given Signed URL Key to the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesAddSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.addSignedUrlKey',
+        ordered_params=[u'project', u'backendService'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/addSignedUrlKey',
+        request_field=u'signedUrlKey',
+        request_type_name=u'ComputeBackendServicesAddSignedUrlKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def AggregatedList(self, request, global_params=None):
       """Retrieves the list of all BackendService resources, regional and global, available to the specified project.
 
@@ -888,6 +967,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendServices/{backendService}',
         request_field='',
         request_type_name=u'ComputeBackendServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteSignedUrlKey(self, request, global_params=None):
+      """Deletes the given Signed URL Key from the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesDeleteSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.deleteSignedUrlKey',
+        ordered_params=[u'project', u'backendService', u'keyName'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'keyName', u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/deleteSignedUrlKey',
+        request_field='',
+        request_type_name=u'ComputeBackendServicesDeleteSignedUrlKeyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1018,6 +1123,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendServices/{backendService}',
         request_field=u'backendServiceResource',
         request_type_name=u'ComputeBackendServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSecurityPolicy(self, request, global_params=None):
+      """Sets the security policy for the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.setSecurityPolicy',
+        ordered_params=[u'project', u'backendService'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/setSecurityPolicy',
+        request_field=u'securityPolicyReference',
+        request_type_name=u'ComputeBackendServicesSetSecurityPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1583,7 +1714,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -1967,7 +2098,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -2159,7 +2290,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalAddressesSetLabelsRequest) input message
@@ -2325,7 +2456,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -3619,7 +3750,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -3889,7 +4020,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -4830,6 +4961,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def ListReferrers(self, request, global_params=None):
+      """Retrieves the list of referrers to instances contained within the specified zone.
+
+      Args:
+        request: (ComputeInstancesListReferrersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceListReferrers) The response message.
+      """
+      config = self.GetMethodConfig('ListReferrers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListReferrers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.listReferrers',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/referrers',
+        request_field='',
+        request_type_name=u'ComputeInstancesListReferrersRequest',
+        response_type_name=u'InstanceListReferrers',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
       """Performs a hard reset on the instance.
 
@@ -4909,7 +5066,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -6144,7 +6301,7 @@ If you increase the size of the instance group, the group creates new instances 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
         method_id=u'compute.regionAutoscalers.patch',
-        ordered_params=[u'project', u'region', u'autoscaler'],
+        ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
         query_params=[u'autoscaler', u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/autoscalers',
@@ -7011,7 +7168,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -7918,6 +8075,172 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+  class SecurityPoliciesService(base_api.BaseApiService):
+    """Service class for the securityPolicies resource."""
+
+    _NAME = u'securityPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.SecurityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.securityPolicies.delete',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """List all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.get',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesGetRequest',
+        response_type_name=u'SecurityPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSecurityPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies',
+        request_field=u'securityPolicy',
+        request_type_name=u'ComputeSecurityPoliciesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List all the policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeSecurityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/securityPolicies',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesListRequest',
+        response_type_name=u'SecurityPoliciesList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeSecurityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.securityPolicies.patch',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field=u'securityPolicyResource',
+        request_type_name=u'ComputeSecurityPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSecurityPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSecurityPoliciesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class SnapshotsService(base_api.BaseApiService):
     """Service class for the snapshots resource."""
 
@@ -8061,7 +8384,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
@@ -10329,7 +10652,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeVpnTunnelsSetLabelsRequest) input message

@@ -16,6 +16,7 @@
 
 from __future__ import unicode_literals
 
+import os
 import subprocess
 import sys
 
@@ -237,6 +238,16 @@ def FixControlQ():
 def main():
   reset_tty = FixControlQ()
 
+  # Include the interactive shell in the environment property. This is sent via
+  # the useragent.
+  sdk_env = properties.VALUES.metrics.environment.Get()
+  if not sdk_env:
+    sdk_env = 'interactive_shell'
+  else:
+    sdk_env += '.interactive_shell'
+  env = os.environ.copy()
+  env['CLOUDSDK_METRICS_ENVIRONMENT'] = sdk_env
+
   try:
     hist = pt_history.InMemoryHistory()
 
@@ -248,7 +259,7 @@ def main():
         text = text.strip()
         if not text.startswith('gcloud'):
           text = 'gcloud ' + text
-        subprocess.call(text, shell=True)
+        subprocess.call(text, env=env, shell=True)
       except EOFError:
         # on ctrl-d, exit loop
         break

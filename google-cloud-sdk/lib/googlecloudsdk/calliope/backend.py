@@ -22,6 +22,7 @@ import argparse
 import os
 import re
 import sys
+import textwrap
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -165,10 +166,11 @@ class CommandCommon(object):
       all_notices = ('\n\n' +
                      '\n\n'.join(sorted(self.Notices().values())) +
                      '\n\n')
-      if 'DESCRIPTION' in self.detailed_help:
-        self.detailed_help['DESCRIPTION'] = (self.short_help +
-                                             all_notices +
-                                             self.detailed_help['DESCRIPTION'])
+      description = self.detailed_help.get('DESCRIPTION')
+      if description:
+        self.detailed_help = dict(self.detailed_help)  # make a shallow copy
+        self.detailed_help['DESCRIPTION'] = (all_notices +
+                                             textwrap.dedent(description))
       if self.short_help == self.long_help:
         self.long_help += all_notices
       else:
@@ -183,22 +185,29 @@ class CommandCommon(object):
 
     # Add an annotation to the help strings to mark the release stage.
     # TODO(b/32361958): Clean Up ReleaseTracks to Leverage Notices().
+    tags = []
     tag = self.ReleaseTrack().help_tag
-    if self.Notices():
-      notice_tags = ' '.join(sorted(self.Notices().keys()))
-      tag = tag +' '+ notice_tags if tag else notice_tags
-
     if tag:
-      self.short_help = tag + self.short_help
-      self.long_help = tag + self.long_help
-      # TODO(b/32361958): Work around to avoid overwriting all help files
-      if 'DESCRIPTION' in self.detailed_help and self.Notices():
-        self.detailed_help['DESCRIPTION'] = (tag +
-                                             self.detailed_help['DESCRIPTION'])
-      # TODO(b/21208128): Drop these 4 lines.
-      prefix = self.ReleaseTrack().prefix
-      if len(self._path) < 2 or self._path[1] != prefix:
-        self.index_help = tag + self.index_help
+      tags.append(tag)
+    if self.Notices():
+      tags.extend(sorted(self.Notices().keys()))
+    if tags:
+      tag = ' '.join(tags) + ' '
+
+      def _InsertTag(text):
+        return re.sub(r'^(\s*)', r'\1' + tag, text)
+
+      self.short_help = _InsertTag(self.short_help)
+      self.long_help = _InsertTag(self.long_help)
+
+      # No need to tag DESCRIPTION if it starts with {description} or {index}
+      # becase they are already tagged.
+      description = self.detailed_help.get('DESCRIPTION')
+      if description and not re.match(r'^[ \n]*\{(description|index)\}',
+                                      description):
+        self.detailed_help = dict(self.detailed_help)  # make a shallow copy
+        self.detailed_help['DESCRIPTION'] = _InsertTag(
+            textwrap.dedent(description))
 
   def _AssignParser(self, parser_group, allow_positional_args):
     """Assign a parser group to model this Command or CommandGroup.

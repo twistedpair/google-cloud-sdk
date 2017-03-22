@@ -35,15 +35,9 @@ VERIFY_TENSORFLOW_VERSION = ('Please verify the installed tensorflow version '
                              'with: "python -c \'import tensorflow; '
                              'print tensorflow.__version__\'".')
 
-VERIFY_CLOUDML_VERSION = ('Please verify the installed cloudml sdk version with'
-                          ': "python -c \'import google.cloud.ml as cloudml; '
-                          'print cloudml.__version__\'".')
 
-
-def _verify_tensorflow():
+def _verify_tensorflow(version):
   """Check whether TensorFlow is installed at an appropriate version."""
-  packages_ok = True
-
   # Check tensorflow with a recent version is installed.
   try:
     # pylint: disable=g-import-not-at-top
@@ -52,80 +46,89 @@ def _verify_tensorflow():
   except ImportError:
     eprint('Cannot import Tensorflow. Please verify '
            '"python -c \'import tensorflow\'" works.')
-    packages_ok = False
+    return False
   try:
-    if tf.__version__ < '0.10.0':
-      eprint('Tensorflow version must be at least 0.10.0. ',
+    if tf.__version__ < version:
+      eprint('Tensorflow version must be at least {} .'.format(version),
              VERIFY_TENSORFLOW_VERSION)
-      packages_ok = False
+      return False
   except (NameError, AttributeError) as e:
     eprint('Error while getting the installed TensorFlow version: ', e,
            '\n', VERIFY_TENSORFLOW_VERSION)
-    packages_ok = False
+    return False
 
-  return packages_ok
+  return True
 
 
-def _import_prediction_lib():
-  """Import a prediction library.
+def _import_prediction_lib_ga():
+  """Import a GA prediction library (bundled)."""
+  if not _verify_tensorflow('1.0.0'):
+    sys.exit(-1)
 
-  In preference order:
-  - an importable Cloud ML SDK with a valid version
-  - the bundled prediction library.
-
-  Returns:
-    a Python module with the Cloud ML predictions library.
-  """
-  # TODO(b/36049795): Don't try to import the Cloud ML SDK at all.
+  sdk_root_dir = os.environ['CLOUDSDK_ROOT']
   # pylint: disable=g-import-not-at-top
   try:
-    import google.cloud.ml as cloudml
-  except ImportError:
-    failure_msg = ('Cannot import google.cloud.ml. Please verify '
-                   '"python -c \'import google.cloud.ml\'" works.')
-  else:
-    try:
-      cloud_ml_version = cloudml.__version__
-    except (NameError, AttributeError) as e:
-      failure_msg = '\n'.join((
-          'Error while getting the installed Cloud ML SDK version:\n', e, '\n'))
-    else:
-      if cloud_ml_version >= '0.1.7':
-        from google.cloud.ml import prediction
-        return prediction
-      failure_msg = ('Cloudml SDK version must be at least 0.1.7 '
-                     'to run local prediction.')
-
-  try:
-    # This horrible hack is necessary because we're executing outside of the
-    # context of the Cloud SDK. There's no guarantee about what is/is not on the
-    # PYTHONPATH.
-    return imp.load_source(
-        'predict_lib_beta',
-        os.path.join(os.path.dirname(__file__), 'prediction_lib_beta.py'))
-  except ImportError:
-    # This shouldn't happen; we should always have predict_lib.py available.
-    # But if it does happen, an installed Cloud ML SDK will always work.
-    eprint(failure_msg, VERIFY_CLOUDML_VERSION)
-    sys.exit(-1)
+    # This horrible hack is necessary because we can't import the Cloud ML SDK
+    # like normal; we're probably missing dependencies. We just want to import
+    # prediction.prediction_lib.
+    sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
+                                    'cloud_ml_engine_sdk', 'prediction'))
+    import prediction_lib
+    return prediction_lib
+  finally:
+    sys.path.pop(0)
   # pylint: enable=g-import-not-at-top
+
+
+def _import_prediction_lib_beta():
+  """Import a beta prediction library (packaged with Cloud SDK source)."""
+  if not _verify_tensorflow('0.10.0'):
+    sys.exit(-1)
+  # This horrible hack is necessary because we're executing outside of the
+  # context of the Cloud SDK. There's no guarantee about what is/is not on the
+  # PYTHONPATH.
+  return imp.load_source(
+      'prediction_lib_beta',
+      os.path.join(os.path.dirname(__file__), 'prediction_lib_beta.py'))
+
+
+def import_prediction_lib(version):
+  try:
+    if version == 'ga':
+      return _import_prediction_lib_ga()
+    elif version == 'beta':
+      return _import_prediction_lib_beta()
+    else:
+      raise ValueError('Invalid version [{}]. Must be one of [beta, ga]')
+  except ImportError as err:
+    if 'prediction_lib' in err:
+      # This shouldn't happen; we should always have predict_lib.py available.
+      # If anyone gets here, we want to know about it.
+      eprint('Error importing prediction library:\n\n',
+             str(err), '\n\nPlease contact support.')
+      sys.exit(-1)
+    else:
+      # We shouldn't ever get here after _verify_tensorflow succeeds
+      eprint('Missing dependency for local prediction:', err)
+      eprint('Please make sure this module is available to `python`.')
+    sys.exit(1)
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--model-dir', required=True, help='Path of the model.')
+  parser.add_argument('--version', required=True, choices=['beta', 'ga'],
+                      help='Which prediction library release to use.')
   args, _ = parser.parse_known_args()
-  if not _verify_tensorflow():
-    sys.exit(-1)
 
   instances = []
   for line in sys.stdin:
     instance = json.loads(line.rstrip('\n'))
     instances.append(instance)
 
-  prediction = _import_prediction_lib()
-  predictions = prediction.local_predict(model_dir=args.model_dir,
-                                         instances=instances)
+  prediction_lib = import_prediction_lib(args.version)
+  predictions = prediction_lib.local_predict(model_dir=args.model_dir,
+                                             instances=instances)
   print(json.dumps(predictions))
 
 

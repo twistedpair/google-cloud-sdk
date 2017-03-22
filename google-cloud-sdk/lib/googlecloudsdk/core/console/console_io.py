@@ -472,9 +472,12 @@ def PromptChoice(options, default=None, message=None,
 
 
 def LazyFormat(s, **kwargs):
-  """Converts {key} => value for key, value in kwargs.iteritems().
+  """Expands {key} => value for key, value in kwargs.
 
-  After the {key} converstions it converts {{<identifier>}} => {<identifier>}.
+  Details:
+    * {{<identifier>}} expands to {<identifier>}
+    * {<unknown-key>} expands to {<unknown-key>}
+    * {key} values are recursively expanded before substitution into the result
 
   Args:
     s: str, The string to format.
@@ -484,24 +487,22 @@ def LazyFormat(s, **kwargs):
     str, The lazily-formatted string.
   """
 
-  for key, value in kwargs.iteritems():
-    fmt = '{' + key + '}'
-    start = 0
-    while True:
-      start = s.find(fmt, start)
-      if start == -1:
-        break
-      if (start and s[start - 1] == '{' and
-          len(fmt) < len(s[start:]) and s[start + len(fmt)] == '}'):
-        # {{key}} => {key}
-        s = s[0:start - 1] + fmt + s[start + len(fmt) + 1:]
-        start += len(fmt)
-      else:
-        # {key} => value
-        s = s[0:start] + value + s[start + len(fmt):]
-        start += len(value)
-  # {{unknown}} => {unknown}
-  return re.sub(r'{({\w+})}', r'\1', s)
+  def _Replacement(match):
+    """Returns one replacement string for LazyFormat re.sub()."""
+    prefix = match.group(1)[1:]
+    name = match.group(2)
+    suffix = match.group(3)[1:]
+    if prefix and suffix:
+      # {{name}} => {name}
+      return prefix + name + suffix
+    value = kwargs.get(name)
+    if value is None:
+      # {unknown} => {unknown}
+      return match.group(0)
+    # The substituted value is expanded too.
+    return prefix + LazyFormat(value, **kwargs) + suffix
+
+  return re.sub(r'(\{+)(\w+)(\}+)', _Replacement, s)
 
 
 def FormatRequiredUserAction(s):
@@ -714,3 +715,23 @@ def More(contents, out=None, prompt=None, check_pager=True):
       return
   # Fall back to the internal pager.
   console_pager.Pager(contents, out, prompt).Run()
+
+
+class TickableProgressBar(object):
+  """A progress bar with a discrete number of tasks."""
+
+  def __init__(self, total, *args, **kwargs):
+    self.completed = 0
+    self.total = total
+    self._progress_bar = ProgressBar(*args, **kwargs)
+
+  def __enter__(self):
+    self._progress_bar.__enter__()
+    return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    self._progress_bar.__exit__(exc_type, exc_value, traceback)
+
+  def Tick(self):
+    self.completed += 1
+    self._progress_bar.SetProgress(float(self.completed) / self.total)

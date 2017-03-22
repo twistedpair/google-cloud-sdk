@@ -447,13 +447,12 @@ def CreatePersistentAttachedDiskMessages(
   return disks_messages, boot_disk_ref
 
 
-def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
+def CreatePersistentCreateDiskMessages(compute_client,
                                        resources, csek_keys, create_disks,
                                        instance_ref):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
-    scope_prompter: Scope prompter object,
     compute_client: creates resources,
     resources: parser of resources,
     csek_keys: customer suplied encryption keys,
@@ -500,10 +499,10 @@ def CreatePersistentCreateDiskMessages(scope_prompter, compute_client,
       disk_type_ref = None
       disk_type_uri = None
 
-    image_expander = image_utils.ImageExpander(scope_prompter.compute_client,
-                                               scope_prompter.resources)
+    image_expander = image_utils.ImageExpander(compute_client,
+                                               resources)
     image_uri, _ = image_expander.ExpandImageFlag(
-        user_project=scope_prompter.project,
+        user_project=instance_ref.project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),
         image_project=disk.get('image-project'),

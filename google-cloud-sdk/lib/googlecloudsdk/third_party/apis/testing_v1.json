@@ -464,7 +464,8 @@
             "The test apk does not declare an instrumentation.",
             "A main launcher activity could not be found.",
             "The app declares one or more permissions that are not allowed.",
-            "There is a conflict in the provided robo_directives."
+            "There is a conflict in the provided robo_directives.",
+            "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly."
           ],
           "type": "string",
           "enum": [
@@ -478,7 +479,8 @@
             "NO_INSTRUMENTATION",
             "NO_LAUNCHER_ACTIVITY",
             "FORBIDDEN_PERMISSIONS",
-            "INVALID_ROBO_DIRECTIVES"
+            "INVALID_ROBO_DIRECTIVES",
+            "TEST_LOOP_INTENT_FILTER_NOT_FOUND"
           ]
         }
       }
@@ -717,6 +719,10 @@
         "androidMatrix": {
           "description": "A matrix of Android devices.",
           "$ref": "AndroidMatrix"
+        },
+        "androidDeviceList": {
+          "description": "A list of Android devices; the test will be run only on the specified\ndevices.",
+          "$ref": "AndroidDeviceList"
         }
       }
     },
@@ -752,6 +758,43 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "AndroidDeviceList": {
+      "id": "AndroidDeviceList",
+      "description": "A list of Android device configurations in which the test is to be executed.",
+      "type": "object",
+      "properties": {
+        "androidDevices": {
+          "description": "A list of Android devices\nRequired",
+          "type": "array",
+          "items": {
+            "$ref": "AndroidDevice"
+          }
+        }
+      }
+    },
+    "AndroidDevice": {
+      "id": "AndroidDevice",
+      "description": "A single Android device.",
+      "type": "object",
+      "properties": {
+        "androidModelId": {
+          "description": "The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "androidVersionId": {
+          "description": "The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "locale": {
+          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "orientation": {
+          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
         }
       }
     },
@@ -833,29 +876,6 @@
         "androidDevice": {
           "description": "An Android device which must be used with an Android test.",
           "$ref": "AndroidDevice"
-        }
-      }
-    },
-    "AndroidDevice": {
-      "id": "AndroidDevice",
-      "description": "A single Android device.",
-      "type": "object",
-      "properties": {
-        "androidModelId": {
-          "description": "The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "androidVersionId": {
-          "description": "The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "locale": {
-          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
-        },
-        "orientation": {
-          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
-          "type": "string"
         }
       }
     },

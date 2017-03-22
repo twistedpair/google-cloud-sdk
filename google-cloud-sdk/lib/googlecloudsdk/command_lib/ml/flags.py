@@ -17,10 +17,12 @@ import itertools
 import sys
 
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 
 class ArgumentError(exceptions.Error):
@@ -188,6 +190,7 @@ POLLING_INTERVAL = base.Argument(
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
     required=False,
     default=60,
+    action=actions.StoreProperty(properties.VALUES.ml_engine.polling_interval),
     help='Number of seconds to wait between efforts to fetch the latest '
     'log messages.')
 ALLOW_MULTILINE_LOGS = base.Argument(

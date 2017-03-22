@@ -382,12 +382,8 @@ RESOURCE_REGISTRY = {
             network.basename(),
             direction,
             priority,
-            sourceRanges.list():label=SRC_RANGES,
-            destinationRanges.list():label=DEST_RANGES,
             allowed[].map().firewall_rule().list():label=ALLOW,
-            denied[].map().firewall_rule().list():label=DENY,
-            sourceTags.list():label=SRC_TAGS,
-            targetTags.list():label=TARGET_TAGS
+            denied[].map().firewall_rule().list():label=DENY
           )
         """,),
     'compute.forwardingRules':
@@ -517,7 +513,7 @@ RESOURCE_REGISTRY = {
           table(
             name,
             zone.basename(),
-            machineType.machine_type(),
+            machineType.machine_type().basename(),
             scheduling.preemptible.yesno(yes=true, no=''),
             networkInterfaces[].networkIP.notnull().list():label=INTERNAL_IP,
             networkInterfaces[].accessConfigs[0].natIP.notnull().list()\

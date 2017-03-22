@@ -688,11 +688,11 @@ def AddMinCpuPlatformArgs(parser, required=False):
       metavar='PLATFORM',
       required=required,
       help="""\
-      When specified the VM will be scheduled on host with specified CPU
+      When specified, the VM will be scheduled on host with specified CPU
       architecture or a newer one. To list available CPU platforms in given
-      zone run
+      zone, run:
 
-          $ gcloud compute zones describe ZONE --format="value(availableCpuPlatforms)"
+          $ gcloud aplha compute zones describe ZONE --format="value(availableCpuPlatforms)"
 
       CPU platform selection is available only in selected zones.
       """)

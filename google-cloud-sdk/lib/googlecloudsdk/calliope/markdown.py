@@ -271,32 +271,15 @@ class MarkdownGenerator(object):
     """Returns a copy of args containing only non-hidden arguments."""
     return [a for a in args if not self.IsHidden(a)]
 
-  def _ExpandHelpText(self, text, sections=True):
+  def _ExpandHelpText(self, text):
     """Expand command {...} references in text.
 
     Args:
       text: The text chunk to expand.
-      sections: Include #... markdown sections if True.
 
     Returns:
       The expanded help text.
     """
-    if text == self._docstring:
-      description = ''
-    else:
-      description = self._ExpandHelpText(self._docstring, sections=False)
-    if not sections and text:
-      section_markdown_index = text.find('\n\n#')
-      if section_markdown_index >= 0:
-        text = text[:section_markdown_index]
-
-    # The lower case keys in the optional detailed_help dict are user specified
-    # parameters to LazyFormat().
-    details = {}
-    for key, value in self._sections.iteritems():
-      if key.islower():
-        details[key] = value
-
     return console_io.LazyFormat(
         text or '',
         command=self._command_name,
@@ -304,8 +287,7 @@ class MarkdownGenerator(object):
         top_command=self._command_path[0] if self._command_path else '',
         parent_command=' '.join(self._command_path[:-1]),
         index=self._capsule,
-        description=description,
-        **details
+        **self._sections
     )
 
   def _SetFlagSections(self):
@@ -443,14 +425,15 @@ class MarkdownGenerator(object):
       self._out('\n')
 
   def PrintNameSection(self, disable_header=False):
-    """Prints the command line synopsis section.
+    """Prints the command line name section.
 
     Args:
       disable_header: Disable printing the section header if True.
     """
     if not disable_header:
       self.PrintSectionHeader('NAME')
-    self._out('{{command}} - {index}\n'.format(
+    self._out('{command} - {index}\n'.format(
+        command=self._command_name,
         index=_GetIndexFromCapsule(self._capsule)))
 
   def PrintSynopsisSection(self, disable_header=False):
@@ -911,6 +894,7 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     self._capsule = self._command.short_help
     self._docstring = self._command.long_help
     self._ExtractSectionsFromDocstring(self._docstring)
+    self._sections['description'] = self._sections.get('DESCRIPTION', '')
     self._sections.update(getattr(self._command, 'detailed_help', {}))
     self._subcommands = command.GetSubCommandHelps()
     self._subgroups = command.GetSubGroupHelps()

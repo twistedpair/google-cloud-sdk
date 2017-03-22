@@ -78,15 +78,16 @@ class Api(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: {   "audit_configs": [
-  {       "service": "allServices"       "audit_log_configs": [         {
-  "log_type": "DATA_READ",           "exempted_members": [
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: {   "audit_configs": [     {       "service":
+  "allServices"       "audit_log_configs": [         {           "log_type":
+  "DATA_READ",           "exempted_members": [
   "user:foo@gmail.com"           ]         },         {           "log_type":
   "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
   }       ]     },     {       "service": "fooservice@googleapis.com"
@@ -102,8 +103,8 @@ class AuditConfig(_messages.Message):
       Next ID: 4
     exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -1294,6 +1295,50 @@ class File(_messages.Message):
   path = _messages.StringField(2)
 
 
+class FlowOperationMetadata(_messages.Message):
+  """The metadata associated with a long running operation resource.
+
+  Enums:
+    CancelStateValueValuesEnum: The state of the operation with respect to
+      cancellation.
+
+  Fields:
+    cancelState: The state of the operation with respect to cancellation.
+    deadline: Deadline for the flow to complete, to prevent orphaned
+      Operations.  If the flow has not completed by this time, it may be
+      terminated by the engine, or force-failed by Operation lookup.  Note
+      that this is not a hard deadline after which the Flow will definitely be
+      failed, rather it is a deadline after which it is reasonable to suspect
+      a problem and other parts of the system may kill operation to ensure we
+      don't have orphans. see also: go/prevent-orphaned-operations
+    flowName: The name of the top-level flow corresponding to this operation.
+      Must be equal to the "name" field for a FlowName enum.
+    resourceNames: The full name of the resources that this flow is directly
+      associated with.
+    startTime: The start time of the operation.
+  """
+
+  class CancelStateValueValuesEnum(_messages.Enum):
+    """The state of the operation with respect to cancellation.
+
+    Values:
+      RUNNING: Default state, cancellable but not cancelled.
+      UNCANCELLABLE: The operation has proceeded past the point of no return
+        and cannot be cancelled.
+      CANCELLED: The operation has been cancelled, work should cease and any
+        needed rollback steps executed.
+    """
+    RUNNING = 0
+    UNCANCELLABLE = 1
+    CANCELLED = 2
+
+  cancelState = _messages.EnumField('CancelStateValueValuesEnum', 1)
+  deadline = _messages.StringField(2)
+  flowName = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
+  startTime = _messages.StringField(5)
+
+
 class GenerateConfigReportRequest(_messages.Message):
   """Request message for GenerateConfigReport method.
 
@@ -1589,6 +1634,19 @@ class LabelDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 3)
 
 
+class ListOperationsResponse(_messages.Message):
+  """The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class ListServiceConfigsResponse(_messages.Message):
   """Response message for ListServiceConfigs method.
 
@@ -1642,20 +1700,7 @@ class ListServicesResponse(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present the
-  only supported field names are    - "iam_principal", corresponding to
-  IAMContext.principal;    - "" (empty string), resulting in one aggretated
-  counter with no field.  Examples:   counter { metric: "/debug_access_count"
-  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
+  """Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -2482,9 +2527,8 @@ class QuotaBucketId(_messages.Message):
 
   Fields:
     containerId: A Quota limit is defined at container level ORGANIZATION,
-      PROJECT, or The container of a quota bucket for a quota limit is
-      identified by organization id, or project id respectively. For example:
-      organization:google.com project:my-project-123
+      PROJECT. The container of a quota bucket for a quota limit is identified
+      by organization id, or project id respectively.
     region: If a quota limit is defined on PER_REGION dimension, then each
       region will have its own quota bucket. This field is non-empty only if
       the quota limit is defined on PER_REGION dimension.
@@ -2965,17 +3009,36 @@ class QuotaSettings(_messages.Message):
 class QuotaUsage(_messages.Message):
   """Specifies the used quota amount for a quota limit at a particular time.
 
+  Enums:
+    HierarchyLimitWarningValueValuesEnum: Somewhere in hierarchy a limit is
+      close to full.  Readonly
+
   Fields:
     endTime: The time the quota duration ended.
+    hierarchyLimitWarning: Somewhere in hierarchy a limit is close to full.
+      Readonly
     queryTime: The time the quota usage data was queried.
     startTime: The time the quota duration started.
     usage: The used quota value at the "query_time".
   """
 
+  class HierarchyLimitWarningValueValuesEnum(_messages.Enum):
+    """Somewhere in hierarchy a limit is close to full.  Readonly
+
+    Values:
+      HIERARCHY_LIMIT_WARNING_UNSPECIFIED: <no description>
+      NO_WARNING: <no description>
+      WARNING: <no description>
+    """
+    HIERARCHY_LIMIT_WARNING_UNSPECIFIED = 0
+    NO_WARNING = 1
+    WARNING = 2
+
   endTime = _messages.StringField(1)
-  queryTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-  usage = _messages.IntegerField(4)
+  hierarchyLimitWarning = _messages.EnumField('HierarchyLimitWarningValueValuesEnum', 2)
+  queryTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  usage = _messages.IntegerField(5)
 
 
 class Rollout(_messages.Message):
@@ -3148,6 +3211,8 @@ class Service(_messages.Message):
     producerProjectId: The id of the Google developer project that owns the
       service. Members of this project can manage the service configuration,
       manage consumption of the service, etc.
+    sourceInfo: Output only. The source information for this configuration if
+      available.
     systemParameters: System parameter configuration.
     systemTypes: A list of all proto message types included in this API
       service. It serves similar purpose as [google.api.Service.types], except
@@ -3184,12 +3249,13 @@ class Service(_messages.Message):
   monitoring = _messages.MessageField('Monitoring', 18)
   name = _messages.StringField(19)
   producerProjectId = _messages.StringField(20)
-  systemParameters = _messages.MessageField('SystemParameters', 21)
-  systemTypes = _messages.MessageField('Type', 22, repeated=True)
-  title = _messages.StringField(23)
-  types = _messages.MessageField('Type', 24, repeated=True)
-  usage = _messages.MessageField('Usage', 25)
-  visibility = _messages.MessageField('Visibility', 26)
+  sourceInfo = _messages.MessageField('SourceInfo', 21)
+  systemParameters = _messages.MessageField('SystemParameters', 22)
+  systemTypes = _messages.MessageField('Type', 23, repeated=True)
+  title = _messages.StringField(24)
+  types = _messages.MessageField('Type', 25, repeated=True)
+  usage = _messages.MessageField('Usage', 26)
+  visibility = _messages.MessageField('Visibility', 27)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):
@@ -3200,6 +3266,35 @@ class ServicemanagementOperationsGetRequest(_messages.Message):
   """
 
   operationsId = _messages.StringField(1, required=True)
+
+
+class ServicemanagementOperationsListRequest(_messages.Message):
+  """A ServicemanagementOperationsListRequest object.
+
+  Fields:
+    filter: A string for filtering Operations.   The following filter fields
+      are supported&#58;    * serviceName&#58; Required. Only `=` operator is
+      allowed.   * startTime&#58; The time this job was started, in ISO 8601
+      format.     Allowed operators are `>=`,  `>`, `<=`, and `<`.   *
+      status&#58; Can be `done`, `in_progress`, or `failed`. Allowed
+      operators are `=`, and `!=`.    Filter expression supports conjunction
+      (AND) and disjunction (OR)   logical operators. However, the serviceName
+      restriction must be at the   top-level and can only be combined with
+      other restrictions via the AND   logical operator.    Examples&#58;    *
+      `serviceName={some-service}.googleapis.com`   * `serviceName={some-
+      service}.googleapis.com AND startTime>="2017-02-01"`   * `serviceName
+      ={some-service}.googleapis.com AND status=done`   * `serviceName={some-
+      service}.googleapis.com AND (status=done OR startTime>="2017-02-01")`
+    name: Not used.
+    pageSize: The maximum number of operations to return. If unspecified,
+      defaults to 50. The maximum value is 100.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class ServicemanagementServicesAccessPolicyQueryRequest(_messages.Message):
@@ -3300,6 +3395,7 @@ class ServicemanagementServicesConsumersListRequest(_messages.Message):
       project:<project_id> - organization:<organization number> -
       folder:<folder number>  In this version of the API, the only supported
       consumer type is "organization".
+    consumerIds: A string attribute.
     pageSize: Requested size of the next page of data.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
@@ -3313,9 +3409,10 @@ class ServicemanagementServicesConsumersListRequest(_messages.Message):
   """
 
   consumerId = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  serviceName = _messages.StringField(4, required=True)
+  consumerIds = _messages.StringField(2, repeated=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  serviceName = _messages.StringField(5, required=True)
 
 
 class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):
@@ -3711,8 +3808,8 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, a default mask is used: paths: "bindings, etag" This field is
-      only used by Cloud IAM.
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -3730,6 +3827,45 @@ class SourceContext(_messages.Message):
   """
 
   fileName = _messages.StringField(1)
+
+
+class SourceInfo(_messages.Message):
+  """Source information used to create a Service Config
+
+  Messages:
+    SourceFilesValueListEntry: A SourceFilesValueListEntry object.
+
+  Fields:
+    sourceFiles: All files used during config generation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SourceFilesValueListEntry(_messages.Message):
+    """A SourceFilesValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SourceFilesValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a SourceFilesValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sourceFiles = _messages.MessageField('SourceFilesValueListEntry', 1, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

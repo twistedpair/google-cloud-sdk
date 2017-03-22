@@ -349,6 +349,22 @@ _SPECS_V1 = {
         editables=None,
     ),
 
+    'backendBuckets': _InternalSpec(
+        message_class_name='BackendBucket',
+        table_cols=[
+            ('NAME', 'name'),
+            ('GCS_BUCKET_NAME', 'bucketName'),
+            ('ENABLE_CDN', 'enableCdn')
+        ],
+        transformations=[
+            ('enableCdn', lambda x: str(x).lower()),
+        ],
+        editables=[
+            'bucketName'
+            'description',
+            'enableCdn',
+        ]),
+
     'backendServices': _InternalSpec(
         message_class_name='BackendService',
         table_cols=[
@@ -849,10 +865,10 @@ _SPECS_V1 = {
             ('DEFAULT_SERVICE', 'defaultService'),
         ],
         transformations=[
-            ('defaultService', path_simplifier.Name),
-            ('pathMatchers[].defaultService', path_simplifier.Name),
-            ('pathMatchers[].pathRules[].service', path_simplifier.Name),
-            ('tests[].service', path_simplifier.Name),
+            ('defaultService', path_simplifier.TypeSuffix),
+            ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
+            ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
+            ('tests[].service', path_simplifier.TypeSuffix),
         ],
         editables=[
             'defaultService',
@@ -919,21 +935,6 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
-_SPECS_BETA['backendBuckets'] = _InternalSpec(
-    message_class_name='BackendBucket',
-    table_cols=[
-        ('NAME', 'name'),
-        ('GCS_BUCKET_NAME', 'bucketName'),
-        ('ENABLE_CDN', 'enableCdn')
-    ],
-    transformations=[
-        ('enableCdn', lambda x: str(x).lower()),
-    ],
-    editables=[
-        'bucketName'
-        'description',
-        'enableCdn',
-    ])
 _SPECS_BETA['backendServices'] = _InternalSpec(
     message_class_name='BackendService',
     table_cols=[
@@ -969,25 +970,6 @@ _SPECS_BETA['commitments'] = _InternalSpec(
     ],
     transformations=[],
     editables=[])
-_SPECS_BETA['urlMaps'] = _InternalSpec(
-    message_class_name='UrlMap',
-    table_cols=[
-        ('NAME', 'name'),
-        ('DEFAULT_SERVICE', 'defaultService'),
-    ],
-    transformations=[
-        ('defaultService', path_simplifier.TypeSuffix),
-        ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
-        ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
-        ('tests[].service', path_simplifier.TypeSuffix),
-    ],
-    editables=[
-        'defaultService',
-        'description',
-        'hostRules',
-        'pathMatchers',
-        'tests',
-    ])
 _SPECS_BETA['peerings'] = _InternalSpec(
     message_class_name='NetworkPeering',
     table_cols=[

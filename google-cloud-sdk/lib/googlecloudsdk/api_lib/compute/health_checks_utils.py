@@ -75,10 +75,6 @@ def AddProtocolAgnosticCreationArgs(parser, protocol_string):
       help=('An optional, textual description for the ' + protocol_string +
             ' health check.'))
 
-  parser.add_argument(
-      'name',
-      help='The name of the ' + protocol_string + ' health check.')
-
 
 def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
   """Adds parser arguments common to update subcommand for all protocols."""
@@ -124,10 +120,6 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
       '--description',
       help=('A textual description for the ' + protocol_string +
             ' health check. Pass in an empty string to unset.'))
-
-  parser.add_argument(
-      'name',
-      help='The name of the ' + protocol_string + ' health check.')
 
 
 def AddHttpRelatedCreationArgs(parser):

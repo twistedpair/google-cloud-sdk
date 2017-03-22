@@ -157,7 +157,7 @@ class ServiceDeployer(object):
     return None
 
   def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
-                            code_bucket_ref):
+                            code_bucket_ref, gcr_domain):
     """Builds and Pushes the Docker image if necessary for this service.
 
     Args:
@@ -169,7 +169,8 @@ class ServiceDeployer(object):
         already exists).
       code_bucket_ref: cloud_storage.BucketReference where the service's files
         have been uploaded
-
+      gcr_domain: str, Cloud Registry domain, determines the physical location
+        of the image. E.g. `us.gcr.io`.
     Returns:
       str, The name of the pushed or given container image or None if the
         service does not require an image.
@@ -178,7 +179,8 @@ class ServiceDeployer(object):
       if not image:
         image = deploy_command_util.BuildAndPushDockerImage(
             new_version.project, service, source_dir, new_version.id,
-            code_bucket_ref, self.deploy_options.runtime_builder_strategy)
+            code_bucket_ref, gcr_domain,
+            self.deploy_options.runtime_builder_strategy)
       elif service.parsed.skip_files.regex:
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
@@ -210,7 +212,8 @@ class ServiceDeployer(object):
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def Deploy(self, service, new_version, code_bucket_ref, image, all_services):
+  def Deploy(self, service, new_version, code_bucket_ref, image, all_services,
+             gcr_domain):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
@@ -233,6 +236,8 @@ class ServiceDeployer(object):
       all_services: dict of service ID to service_util.Service objects
         corresponding to all pre-existing services (used to determine how to
         promote this version to receive all traffic, if applicable).
+      gcr_domain: str, Cloud Registry domain, determines the physical location
+        of the image. E.g. `us.gcr.io`.
     """
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
@@ -245,7 +250,7 @@ class ServiceDeployer(object):
       endpoints_info = self._PossiblyConfigureEndpoints(
           service, source_dir, new_version)
       image = self._PossiblyBuildAndPush(
-          new_version, service, source_dir, image, code_bucket_ref)
+          new_version, service, source_dir, image, code_bucket_ref, gcr_domain)
       manifest = None
       # "Non-hermetic" services require file upload outside the Docker image.
       if not service.is_hermetic:
@@ -418,7 +423,7 @@ def RunDeploy(
   for name, service in services.iteritems():
     new_version = version_util.Version(project, name, version_id)
     deployer.Deploy(service, new_version, code_bucket_ref, args.image_url,
-                    all_services)
+                    all_services, app.gcrDomain)
     new_versions.append(new_version)
     log.status.Print('Deployed service [{0}] to [{1}]'.format(
         name, deployed_urls[name]))

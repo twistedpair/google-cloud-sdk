@@ -122,6 +122,11 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
 
       Tags can be assigned to instances during instance creation.
       """
+  if with_egress_support:
+    source_tags_help += """
+      If source tags are specified then neither a source nor target service
+      account can also be specified.
+      """
   if for_update:
     source_tags_help += """
       Setting this will override the existing source tags for the firewall.
@@ -143,6 +148,19 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       receive inbound connections that match the rule.
 
       Tags can be assigned to instances during instance creation.
+      """
+  if with_egress_support:
+    target_tags_help = """\
+      A list of instance tags indicating the set of instances on the
+      network which may accept inbound connections that match the
+      firewall rule. If both target tags and target service account
+      are omitted, all instances on the network can receive inbound
+      connections that match the rule.
+
+      Tags can be assigned to instances during instance creation.
+
+      If target tags are specified then neither a source nor target
+      service account can also be specified.
       """
   if for_update:
     target_tags_help += """
@@ -259,6 +277,51 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       metavar='CIDR_RANGE',
       type=arg_parsers.ArgList(min_length=min_length),
       help=destination_ranges_help)
+
+  source_service_accounts_help = """\
+      The email of a service account indicating the set of instances on the
+      network which match as traffic source in the firewall rule.
+
+      If a source service account is specified then neither source tags nor
+      target tags can also be specified.
+      """
+  if for_update:
+    source_service_accounts_help += """
+      Setting this will override the existing source service accounts for the
+      firewall.
+      The following will clear the existing source service accounts:
+
+        $ {command} MY-RULE --source-service-accounts
+      """
+  parser.add_argument(
+      '--source-service-accounts',
+      default=None if for_update else [],
+      metavar='EMAIL',
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=source_service_accounts_help)
+
+  target_service_accounts_help = """\
+      The email of a service account indicating the set of instances to which
+      firewall rules apply. If both target tags and target service account are
+      omitted,  the firewall rule is applied to all instances on the network.
+
+      If a target service account is specified then neither source tag nor
+      target tags can also be specified.
+      """
+  if for_update:
+    target_service_accounts_help += """
+      Setting this will override the existing target service accounts for the
+      firewall.
+      The following will clear the existing target service accounts:
+
+        $ {command} MY-RULE --target-service-accounts
+      """
+  parser.add_argument(
+      '--target-service-accounts',
+      default=None if for_update else [],
+      metavar='EMAIL',
+      type=arg_parsers.ArgList(min_length=min_length),
+      help=target_service_accounts_help)
 
 
 def ParseRules(rules, message_classes, action=ActionType.ALLOW):

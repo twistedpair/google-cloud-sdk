@@ -198,7 +198,8 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
     task = storage_parallel.FileUploadTask(path, bucket_ref.ToBucketUrl(),
                                            sha1_hash)
     tasks.append(task)
-  storage_parallel.UploadFiles(tasks, num_threads=num_threads)
+  storage_parallel.UploadFiles(tasks, num_threads=num_threads,
+                               show_progress_bar=True)
 
 
 def CopyFilesToCodeBucket(service, source_dir, bucket_ref,

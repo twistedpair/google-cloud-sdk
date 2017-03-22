@@ -21,6 +21,7 @@ installations, and so on.
 
 import datetime
 import os
+import platform as system_platform
 import re
 import StringIO
 import sys
@@ -74,14 +75,16 @@ class BasicInfo(object):
     return textwrap.dedent(u"""\
         Google Cloud SDK [{version}]
 
-        Platform: [{os}, {arch}]
+        Platform: [{os}, {arch}] {uname}
         Python Version: [{python_version}]
         Python Location: [{python_location}]
         Site Packages: [{site_packages}]
         """.format(
             version=self.version,
-            os=self.operating_system.name,
-            arch=self.architecture.name,
+            os=(self.operating_system.name
+                if self.operating_system else 'unknown'),
+            arch=self.architecture.name if self.architecture else 'unknown',
+            uname=system_platform.uname(),
             python_location=sys.executable,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))

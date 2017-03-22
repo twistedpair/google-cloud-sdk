@@ -127,6 +127,24 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -364,6 +382,10 @@
         "systemParameters": {
           "description": "System parameter configuration.",
           "$ref": "SystemParameters"
+        },
+        "sourceInfo": {
+          "description": "Output only. The source information for this configuration if available.",
+          "$ref": "SourceInfo"
         },
         "experimental": {
           "description": "Experimental configuration.",
@@ -1537,6 +1559,24 @@
         }
       }
     },
+    "SourceInfo": {
+      "id": "SourceInfo",
+      "description": "Source information used to create a Service Config",
+      "type": "object",
+      "properties": {
+        "sourceFiles": {
+          "description": "All files used during config generation.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "Experimental": {
       "id": "Experimental",
       "description": "Experimental service configuration. These configuration options can\nonly be used by whitelisted users.",
@@ -1748,6 +1788,20 @@
           "description": "The time the quota usage data was queried.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "hierarchyLimitWarning": {
+          "description": "Somewhere in hierarchy a limit is close to full.  Readonly",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "HIERARCHY_LIMIT_WARNING_UNSPECIFIED",
+            "NO_WARNING",
+            "WARNING"
+          ]
         }
       }
     },
@@ -1995,7 +2049,7 @@
       "type": "object",
       "properties": {
         "containerId": {
-          "description": "A Quota limit is defined at container level ORGANIZATION, PROJECT, or\nThe container of a quota bucket for a quota limit is identified\nby organization id, or project id respectively. For example:\norganization:google.com\nproject:my-project-123",
+          "description": "A Quota limit is defined at container level ORGANIZATION, PROJECT.\nThe container of a quota bucket for a quota limit is identified\nby organization id, or project id respectively.",
           "type": "string"
         },
         "region": {
@@ -2527,7 +2581,7 @@
           "$ref": "Policy"
         },
         "updateMask": {
-          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, a default\nmask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -2595,11 +2649,11 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nIt consists of which permission types are logged, and what identities, if\nany, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
-          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `resourcemanager`, `storage`, `compute`.\n`allServices` is a special value that covers all services.",
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
           "type": "string"
         },
         "exemptedMembers": {
@@ -2794,7 +2848,7 @@
     },
     "LogConfig": {
       "id": "LogConfig",
-      "description": "Specifies what kind of log the caller must write\nIncrement a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present the only supported field names are\n   - \"iam_principal\", corresponding to IAMContext.principal;\n   - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
+      "description": "Specifies what kind of log the caller must write",
       "type": "object",
       "properties": {
         "counter": {
@@ -3010,11 +3064,92 @@
           "$ref": "ManagedService"
         }
       }
+    },
+    "FlowOperationMetadata": {
+      "id": "FlowOperationMetadata",
+      "description": "The metadata associated with a long running operation resource.",
+      "type": "object",
+      "properties": {
+        "cancelState": {
+          "description": "The state of the operation with respect to cancellation.",
+          "enumDescriptions": [
+            "Default state, cancellable but not cancelled.",
+            "The operation has proceeded past the point of no return and cannot\nbe cancelled.",
+            "The operation has been cancelled, work should cease\nand any needed rollback steps executed."
+          ],
+          "type": "string",
+          "enum": [
+            "RUNNING",
+            "UNCANCELLABLE",
+            "CANCELLED"
+          ]
+        },
+        "startTime": {
+          "description": "The start time of the operation.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "flowName": {
+          "description": "The name of the top-level flow corresponding to this operation.\nMust be equal to the \"name\" field for a FlowName enum.",
+          "type": "string"
+        },
+        "deadline": {
+          "description": "Deadline for the flow to complete, to prevent orphaned Operations.\n\nIf the flow has not completed by this time, it may be terminated by\nthe engine, or force-failed by Operation lookup.\n\nNote that this is not a hard deadline after which the Flow will\ndefinitely be failed, rather it is a deadline after which it is reasonable\nto suspect a problem and other parts of the system may kill operation\nto ensure we don't have orphans.\nsee also: go\/prevent-orphaned-operations",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resourceNames": {
+          "description": "The full name of the resources that this flow is directly associated with.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "resources": {
     "operations": {
       "methods": {
+        "list": {
+          "id": "servicemanagement.operations.list",
+          "path": "v1/operations",
+          "flatPath": "v1/operations",
+          "httpMethod": "GET",
+          "description": "Lists service operations that match the specified filter in the request.",
+          "parameters": {
+            "name": {
+              "description": "Not used.",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "A string for filtering Operations.\n  The following filter fields are supported&#58;\n\n  * serviceName&#58; Required. Only `=` operator is allowed.\n  * startTime&#58; The time this job was started, in ISO 8601 format.\n    Allowed operators are `>=`,  `>`, `<=`, and `<`.\n  * status&#58; Can be `done`, `in_progress`, or `failed`. Allowed\n    operators are `=`, and `!=`.\n\n  Filter expression supports conjunction (AND) and disjunction (OR)\n  logical operators. However, the serviceName restriction must be at the\n  top-level and can only be combined with other restrictions via the AND\n  logical operator.\n\n  Examples&#58;\n\n  * `serviceName={some-service}.googleapis.com`\n  * `serviceName={some-service}.googleapis.com AND startTime>=\"2017-02-01\"`\n  * `serviceName={some-service}.googleapis.com AND status=done`\n  * `serviceName={some-service}.googleapis.com AND (status=done OR startTime>=\"2017-02-01\")`",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of operations to return. If unspecified, defaults to\n50. The maximum value is 100.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The standard list page token.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ]
+        },
         "get": {
           "id": "servicemanagement.operations.get",
           "path": "v1/operations/{operationsId}",
@@ -3309,7 +3444,7 @@
           "path": "v1/services/{serviceName}:enable",
           "flatPath": "v1/services/{serviceName}:enable",
           "httpMethod": "POST",
-          "description": "Enable a managed service for a project with default setting.\n\nOperation<response: EnableServiceResponse>\n\ngoogle.rpc.Status errors may contain a\ngoogle.rpc.PreconditionFailure error detail.",
+          "description": "Enables a service for a project, so it can be used\nfor the project. See\n[Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for\nmore information.\n\nOperation<response: EnableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to enable. Specifying an unknown service name will\ncause the request to fail.",
@@ -3337,7 +3472,7 @@
           "path": "v1/services/{serviceName}:disable",
           "flatPath": "v1/services/{serviceName}:disable",
           "httpMethod": "POST",
-          "description": "Disable a managed service for a project.\n\nOperation<response: DisableServiceResponse>",
+          "description": "Disables a service for a project, so it can no longer be\nbe used for the project. It prevents accidental usage that may cause\nunexpected billing charges or security leaks.\n\nOperation<response: DisableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to disable. Specifying an unknown service name\nwill cause the request to fail.",
@@ -3778,6 +3913,11 @@
                 "consumerId": {
                   "description": "Include services consumed by the specified consumer.\n\nThe Google Service Management implementation accepts the following\nforms:\n- project:<project_id>\n- organization:<organization number>\n- folder:<folder number>\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
                   "location": "query",
+                  "type": "string"
+                },
+                "consumerIds": {
+                  "location": "query",
+                  "repeated": true,
                   "type": "string"
                 },
                 "pageSize": {

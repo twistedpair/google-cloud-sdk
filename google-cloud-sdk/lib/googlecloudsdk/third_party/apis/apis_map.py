@@ -153,11 +153,17 @@ MAP = {
         ),
     },
     'cloudkms': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudkms.v1',
+            client_classpath='cloudkms_v1_client.CloudkmsV1',
+            messages_modulepath='cloudkms_v1_messages',
+            default_version=True
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudkms.v1beta1',
             client_classpath='cloudkms_v1beta1_client.CloudkmsV1beta1',
             messages_modulepath='cloudkms_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'cloudresourcemanager': {
@@ -383,6 +389,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.serviceregistry.v1alpha',
             client_classpath='serviceregistry_v1alpha_client.ServiceregistryV1alpha',
             messages_modulepath='serviceregistry_v1alpha_messages',
+            default_version=True
+        ),
+    },
+    'serviceuser': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.serviceuser.v1',
+            client_classpath='serviceuser_v1_client.ServiceuserV1',
+            messages_modulepath='serviceuser_v1_messages',
             default_version=True
         ),
     },

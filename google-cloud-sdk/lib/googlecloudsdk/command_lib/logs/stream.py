@@ -24,6 +24,8 @@ too late (their timestamp is more than N seconds old).
 import datetime
 import time
 
+import enum
+
 from googlecloudsdk.api_lib.logging import common as logging_common
 from googlecloudsdk.core.util import times
 
@@ -99,27 +101,91 @@ class LogPosition(object):
         times.FormatDateTime(upper_bound, '%Y-%m-%dT%H:%M:%S.%6f%Ez'))
 
 
+class _TaskIntervalTimer(object):
+  """Timer to facilitate performing multiple tasks at different intervals.
+
+  Here's an overview of how the caller sees this class:
+
+  >>> timer = _TaskIntervalTimer({'a': 5, 'b': 10, 'c': 3})
+  >>> timer.Wait()  # sleeps 3 seconds, total time elapsed 3
+  ['c']
+  >>> timer.Wait()  # sleeps 2 seconds, total time elapsed 5
+  ['a']
+  >>> timer.Wait()  # sleeps 1 second,  total time elapsed 6
+  ['c']
+  >>> timer.Wait()  # sleeps 3 seconds, total time elapsed 9
+  ['c']
+  >>> timer.Wait()  # sleeps 1 second,  total time elapsed 10
+  ['a', 'c']
+
+  And here's how it might be used in practice:
+
+  >>> timer = _TaskIntervalTimer({'foo': 1, 'bar': 10, 'baz': 3})
+  >>> while True:
+  ...   tasks = timer.Wait()
+  ...   if 'foo' in tasks:
+  ...     foo()
+  ...   if 'bar' in tasks:
+  ...     bar()
+  ...   if 'baz' in tasks:
+  ...     do_baz()
+
+
+  Attributes:
+    task_intervals: dict (hashable to int), mapping from some representation of
+      a task to to the interval (in seconds) at which the task should be
+      performed
+  """
+
+  def __init__(self, task_intervals):
+    self.task_intervals = task_intervals
+    self._time_remaining = self.task_intervals.copy()
+
+  def Wait(self):
+    """Wait for the next task(s) and return them.
+
+    Returns:
+      set, the tasks which should be performed
+    """
+    sleep_time = min(self._time_remaining.values())
+    time.sleep(sleep_time)
+
+    tasks = set()
+    for task in self._time_remaining:
+      self._time_remaining[task] -= sleep_time
+      if self._time_remaining[task] == 0:
+        self._time_remaining[task] = self.task_intervals[task]
+        tasks.add(task)
+    return tasks
+
+
 class LogFetcher(object):
   """A class which fetches job logs."""
 
-  LOG_BATCH_SIZE = 5000
+  class _Tasks(enum.Enum):
+    POLL = 1
+    CHECK_CONTINUE = 2
 
-  def __init__(self, filters=None, polling_interval=5, continue_func=None):
+  LOG_BATCH_SIZE = 1000  # API max
+
+  def __init__(self, filters=None, polling_interval=10,
+               continue_func=lambda x: True, continue_interval=None):
     """Initializes the LogFetcher.
 
     Args:
       filters: list of string filters used in the API call.
       polling_interval: amount of time to sleep between each poll.
       continue_func: One-arg function that takes in the number of empty polls
-        and outputs a boolean to decide if we should keep polling or not.
+        and outputs a boolean to decide if we should keep polling or not. If not
+        given, keep polling indefinitely.
+      continue_interval: int, how often to check whether the job is complete
+        using continue_function. If not provided, defaults to the same as the
+        polling interval.
     """
     self.base_filters = filters or []
     self.polling_interval = polling_interval
-    # Default is to poll infinitely.
-    if continue_func:
-      self.should_continue = continue_func
-    else:
-      self.should_continue = lambda x: True
+    self.continue_interval = continue_interval or polling_interval
+    self.should_continue = continue_func
     self.log_position = LogPosition()
 
   def GetLogs(self):
@@ -151,18 +217,24 @@ class LogFetcher(object):
     Yields:
         A single log entry.
     """
+    timer = _TaskIntervalTimer({
+        self._Tasks.POLL: self.polling_interval,
+        self._Tasks.CHECK_CONTINUE: self.continue_interval
+    })
     empty_polls = 0
-    logs = self.GetLogs()
-    # If we find new logs, we continue to poll regardless of user-supplied
-    # continue function.
-    while logs or self.should_continue(empty_polls):
-      if logs:
-        empty_polls = 0
-        for log in logs:
-          yield log
-      else:
-        empty_polls += 1
-      time.sleep(self.polling_interval)
-      logs = self.GetLogs()
-    raise StopIteration
-
+    # Do both tasks when we start
+    tasks = [self._Tasks.POLL, self._Tasks.CHECK_CONTINUE]
+    while True:
+      if self._Tasks.POLL in tasks:
+        logs = self.GetLogs()
+        if logs:
+          empty_polls = 0
+          for log in logs:
+            yield log
+        else:
+          empty_polls += 1
+      if self._Tasks.CHECK_CONTINUE in tasks:
+        should_continue = self.should_continue(empty_polls)
+        if not should_continue:
+          break
+      tasks = timer.Wait()

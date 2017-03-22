@@ -244,6 +244,7 @@ def AutoscalersForZones(zones, project, compute, http, batch_url,
       fail_when_api_not_supported=fail_when_api_not_supported)
 
 
+# TODO(b/36242985) - Remove project argument
 def AutoscalersForLocations(zones, regions,
                             project, compute, http, batch_url,
                             fail_when_api_not_supported=True):
@@ -357,6 +358,7 @@ def AutoscalerForMig(mig_name, autoscalers, project, scope_name, scope_type):
   return None
 
 
+# TODO(b/36243552) - Remove project argument
 def AddAutoscalersToMigs(migs_iterator, project, compute, http,
                          batch_url, fail_when_api_not_supported=True):
   """Add Autoscaler to each IGM object if autoscaling is enabled for it."""

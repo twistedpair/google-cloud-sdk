@@ -35,11 +35,16 @@ current process). Afterwards, there will be objects at
 
 This removes the objects uploaded in the last code snippet.
 """
+import contextlib
+import itertools
+
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import retry
+from googlecloudsdk.core.util import text
 
 
 # This default value has been chosen after lots of experimentation.
@@ -76,7 +81,7 @@ class FileUploadTask(object):
     return hash((self.local_path, self.bucket_url, self.remote_path))
 
 
-def _UploadFile(file_upload_task):
+def _UploadFile((file_upload_task, callback)):
   """Complete one FileUploadTask (safe to run in parallel)."""
   storage_client = storage_api.StorageClient()
   bucket_ref = storage_util.BucketReference.FromBucketUrl(
@@ -86,9 +91,43 @@ def _UploadFile(file_upload_task):
   retry.Retryer(max_retrials=3).RetryOnException(
       storage_client.CopyFileToGCS,
       args=(bucket_ref, local_path, file_upload_task.remote_path))
+  if callback:
+    callback()
 
 
-def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS):
+def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
+  """Perform the given storage operation in parallel.
+
+  Factors out common work: logging, setting up parallelism, managing a progress
+  bar (if necessary).
+
+  Args:
+    num_threads: int, the number of threads to use
+    tasks: list of arguments to be passed to method, one at a time (each zipped
+      up in a tuple with a callback)
+    method: a function that takes in a single-argument: a tuple of a task to do
+      and a zero-argument callback to be done on completion of the task.
+    label: str, the label for the progress bar (if used).
+    show_progress_bar: bool, whether to show a progress bar during the
+      operation.
+  """
+  log.debug(label)
+  log.debug(u'Using [%d] threads', num_threads)
+
+  pool = parallel.GetPool(num_threads)
+  if show_progress_bar:
+    progress_bar = console_io.TickableProgressBar(len(tasks), label)
+    context_mgr = contextlib.nested(progress_bar, pool)
+    callback = progress_bar.Tick
+  else:
+    context_mgr = pool
+    callback = None
+  with context_mgr:
+    pool.Map(method, zip(tasks, itertools.cycle((callback,))))
+
+
+def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS,
+                show_progress_bar=False):
   """Upload the given files to the given Cloud Storage URLs.
 
   Uses the appropriate parallelism (multi-process, multi-thread, both, or
@@ -97,12 +136,14 @@ def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS):
   Args:
     files_to_upload: list of FileUploadTask
     num_threads: int (optional), the number of threads to use.
+    show_progress_bar: bool. If true, show a progress bar to the users when
+      uploading files.
   """
-  log.debug(u'Uploading:\n' + u'\n'.join(map(str, files_to_upload)))
-  log.debug(u'Using [%d] threads', num_threads)
-
-  with parallel.GetPool(num_threads) as pool:
-    pool.Map(_UploadFile, files_to_upload)
+  num_files = len(files_to_upload)
+  label = 'Uploading {} {} to Google Cloud Storage'.format(
+      num_files, text.Pluralize(num_files, 'file'))
+  _DoParallelOperation(num_threads, files_to_upload, _UploadFile, label,
+                       show_progress_bar)
 
 
 class ObjectDeleteTask(object):
@@ -132,7 +173,7 @@ class ObjectDeleteTask(object):
     return hash((self.bucket_url, self.remote_path))
 
 
-def _DeleteObject(object_delete_task):
+def _DeleteObject((object_delete_task, callback)):
   """Complete one ObjectDeleteTask (safe to run in parallel)."""
   storage_client = storage_api.StorageClient()
   bucket_ref = storage_util.BucketReference.FromBucketUrl(
@@ -141,9 +182,12 @@ def _DeleteObject(object_delete_task):
   retry.Retryer(max_retrials=3).RetryOnException(
       storage_client.DeleteObject,
       args=(bucket_ref, object_delete_task.remote_path))
+  if callback:
+    callback()
 
 
-def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS):
+def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS,
+                  show_progress_bar=False):
   """Delete the given Cloud Storage objects.
 
   Uses the appropriate parallelism (multi-process, multi-thread, both, or
@@ -152,9 +196,11 @@ def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS):
   Args:
     objects_to_delete: list of ObjectDeleteTask
     num_threads: int (optional), the number of threads to use.
+    show_progress_bar: bool. If true, show a progress bar to the users when
+      deleting files.
   """
-  log.debug(u'Deleting:\n' + u'\n'.join(map(str, objects_to_delete)))
-  log.debug(u'Using [%d] threads', num_threads)
-
-  with parallel.GetPool(num_threads) as pool:
-    pool.Map(_DeleteObject, objects_to_delete)
+  num_objects = len(objects_to_delete)
+  label = 'Deleting {} {} from Google Cloud Storage'.format(
+      num_objects, text.Pluralize(num_objects, 'object'))
+  _DoParallelOperation(num_threads, objects_to_delete, _DeleteObject,
+                       label, show_progress_bar)

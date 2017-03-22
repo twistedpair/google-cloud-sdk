@@ -85,53 +85,74 @@ class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
+def _NeedsDockerfile(info, dockerfile_dir):
+  """Returns True if the given directory needs a Dockerfile for this app.
+
+  Additionally verifies the sanity of the provided configuration by raising an
+  exception if:
+
+  - If the runtime is "custom", but no Dockerfile is present
+  - If the runtime is not "custom", and a Dockerfile is present
+
+  Args:
+    info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo). The
+      configuration for the service.
+    dockerfile_dir: str, the path to the directory
+
+  Raises:
+    DockerfileError: if a Dockerfile is present, but the runtime is not
+      "custom".
+    NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
+      custom runtime.
+
+  Returns:
+    bool, whether Dockerfile generation is necessary.
+  """
+  if os.path.exists(os.path.join(dockerfile_dir, 'Dockerfile')):
+    if info.runtime != 'custom':
+      raise DockerfileError(
+          'There is a Dockerfile in the current directory, and the runtime '
+          'field in {0} is currently set to [runtime: {1}]. To use your '
+          'Dockerfile to build a custom runtime, set the runtime field to '
+          '[runtime: custom]. To continue using the [{1}] runtime, please '
+          'remove the Dockerfile from this directory.'.format(info.file,
+                                                              info.runtime))
+    log.info('Using %s found in %s', config.DOCKERFILE, dockerfile_dir)
+    return False
+  else:
+    if info.runtime == 'custom':
+      raise NoDockerfileError(
+          'You must provide your own Dockerfile when using a custom runtime. '
+          'Otherwise provide a "runtime" field with one of the supported '
+          'runtimes.')
+    return True
+
+
 def _GetDockerfiles(info, dockerfile_dir):
-  """Returns file objects to create dockerfiles if the user doesn't have them.
+  """Returns map of in-memory Docker-related files to be packaged.
+
+  Returns the files in-memory, so that we don't have to drop them on disk;
+  instead, we include them in the archive sent to App Engine directly.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo)
       The service config.
-    dockerfile_dir: str, path to the directory with the Dockerfile
+    dockerfile_dir: str, path to the directory to fingerprint and generate
+      Dockerfiles for.
+
   Raises:
-    DockerfileError: Raised if a user supplied a Dockerfile and a non-custom
-      runtime.
-    NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
-      custom runtime.
     UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
       satisfy the requirements of the specified runtime type.
+
   Returns:
-    A dictionary of filename to (str) Dockerfile contents.
+    A dictionary of filename relative to the archive root (str) to file contents
+    (str).
   """
-  dockerfile = os.path.join(dockerfile_dir, 'Dockerfile')
-
-  if info.runtime != 'custom' and os.path.exists(dockerfile):
-    raise DockerfileError(
-        'There is a Dockerfile in the current directory, and the runtime field '
-        'in {0} is currently set to [runtime: {1}]. To use your Dockerfile to '
-        'build a custom runtime, set the runtime field in {0} to '
-        '[runtime: custom]. To continue using the [{1}] runtime, please omit '
-        'the Dockerfile from this directory.'.format(info.file, info.runtime))
-
-  # If we're "custom" there needs to be a Dockerfile.
-  if info.runtime == 'custom':
-    if os.path.exists(dockerfile):
-      log.info('Using %s found in %s', config.DOCKERFILE, dockerfile_dir)
-      return {}
-    else:
-      raise NoDockerfileError(
-          'You must provide your own Dockerfile when using a custom runtime.  '
-          'Otherwise provide a "runtime" field with one of the supported '
-          'runtimes.')
-
-  # Check the fingerprinting based code.
-  gen_files = {}
   params = ext_runtime.Params(appinfo=info.parsed, deploy=True)
   configurator = fingerprinter.IdentifyDirectory(dockerfile_dir, params)
   if configurator:
     dockerfiles = configurator.GenerateConfigData()
-    gen_files.update((d.filename, d.contents) for d in dockerfiles)
-    return gen_files
-  # Then throw an error.
+    return {d.filename: d.contents for d in dockerfiles}
   else:
     raise UnsatisfiedRequirementsError(
         'Your application does not satisfy all of the requirements for a '
@@ -176,16 +197,20 @@ def _GetDomainAndDisplayId(project_id):
   return l[1], l[0]
 
 
-def _GetImageName(project, service, version):
+def _GetImageName(project, service, version, gcr_domain):
   """Returns image tag according to App Engine convention."""
   display, domain = _GetDomainAndDisplayId(project)
   return (config.DOCKER_IMAGE_NAME_DOMAIN_FORMAT if domain
           else config.DOCKER_IMAGE_NAME_FORMAT).format(
-              display=display, domain=domain, service=service, version=version)
+              gcr_domain=gcr_domain,
+              display=display,
+              domain=domain,
+              service=service,
+              version=version)
 
 
 def BuildAndPushDockerImage(
-    project, service, source_dir, version_id, code_bucket_ref,
+    project, service, source_dir, version_id, code_bucket_ref, gcr_domain,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
   """Builds and pushes a set of docker images.
 
@@ -196,12 +221,22 @@ def BuildAndPushDockerImage(
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
+    gcr_domain: str, Cloud Registry domain, determines the physical location
+      of the image. E.g. `us.gcr.io`.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, whether
       to use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
 
   Returns:
     str, The name of the pushed container image.
+
+  Raises:
+    DockerfileError: if a Dockerfile is present, but the runtime is not
+      "custom".
+    NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
+      custom runtime.
+    UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
+      satisfy the requirements of the specified runtime type.
   """
   use_runtime_builders = runtime_builder_strategy.ShouldUseRuntimeBuilders(
       service.runtime)
@@ -214,12 +249,15 @@ def BuildAndPushDockerImage(
       .format(service=service.module))
 
   gen_files = dict(_GetSourceContextsForUpload(source_dir))
-  if not use_runtime_builders:
+  needs_dockerfile = _NeedsDockerfile(service, source_dir)
+  if needs_dockerfile and not use_runtime_builders:
+    # The runtime builders will generate a Dockerfile in the Cloud, so we only
+    # need to do this if use_runtime_builders is True
     gen_files.update(_GetDockerfiles(service, source_dir))
 
   image = docker_image.Image(
       dockerfile_dir=source_dir,
-      repo=_GetImageName(project, service.module, version_id),
+      repo=_GetImageName(project, service.module, version_id, gcr_domain),
       nocache=False,
       tag=config.DOCKER_IMAGE_TAG)
 

@@ -82,6 +82,32 @@ service.
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      """Lists service operations that match the specified filter in the request.
+
+      Args:
+        request: (ServicemanagementOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'servicemanagement.operations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        relative_path=u'v1/operations',
+        request_field='',
+        request_type_name=u'ServicemanagementOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ServicesAccessPolicyService(base_api.BaseApiService):
     """Service class for the services_accessPolicy resource."""
 
@@ -280,7 +306,7 @@ To search across all services, specify {service_name} as '-'.
         method_id=u'servicemanagement.services.consumers.list',
         ordered_params=[u'serviceName'],
         path_params=[u'serviceName'],
-        query_params=[u'consumerId', u'pageSize', u'pageToken'],
+        query_params=[u'consumerId', u'consumerIds', u'pageSize', u'pageToken'],
         relative_path=u'v1/services/{serviceName}/consumers',
         request_field='',
         request_type_name=u'ServicemanagementServicesConsumersListRequest',
@@ -653,7 +679,9 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Disable(self, request, global_params=None):
-      """Disable a managed service for a project.
+      """Disables a service for a project, so it can no longer be.
+be used for the project. It prevents accidental usage that may cause
+unexpected billing charges or security leaks.
 
 Operation<response: DisableServiceResponse>
 
@@ -681,12 +709,12 @@ Operation<response: DisableServiceResponse>
     )
 
     def Enable(self, request, global_params=None):
-      """Enable a managed service for a project with default setting.
+      """Enables a service for a project, so it can be used.
+for the project. See
+[Cloud Auth Guide](https://cloud.google.com/docs/authentication) for
+more information.
 
 Operation<response: EnableServiceResponse>
-
-google.rpc.Status errors may contain a
-google.rpc.PreconditionFailure error detail.
 
       Args:
         request: (ServicemanagementServicesEnableRequest) input message

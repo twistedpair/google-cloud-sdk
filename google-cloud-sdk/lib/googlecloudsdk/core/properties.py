@@ -234,7 +234,9 @@ class _Sections(object):
     self.datastore_emulator = _SectionDatastoreEmulator()
     self.devshell = _SectionDevshell()
     self.experimental = _SectionExperimental()
+    self.functions = _SectionFunctions()
     self.metrics = _SectionMetrics()
+    self.ml_engine = _SectionMlEngine()
     self.proxy = _SectionProxy()
     self.spanner = _SectionSpanner()
     self.test = _SectionTest()
@@ -244,7 +246,8 @@ class _Sections(object):
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.core, self.component_manager, self.compute,
          self.container, self.datastore_emulator, self.devshell,
-         self.experimental, self.metrics, self.proxy, self.spanner, self.test])
+         self.experimental, self.functions, self.metrics, self.ml_engine,
+         self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
 
   @property
@@ -540,6 +543,20 @@ class _SectionCompute(_Section):
         'gce_metadata_read_timeout_sec',
         default=1,
         hidden=True)
+
+
+class _SectionFunctions(_Section):
+  """Contains the properties for the 'functions' section."""
+
+  def __init__(self):
+    super(_SectionFunctions, self).__init__('functions')
+    self.region = self._Add(
+        'region',
+        help_text='The default region to use when working with Google Compute '
+        'functions resources. When a `--region` flag is required but not '
+        'provided, the command will fall back to this value, if set. To see '
+        'valid choices, run `gcloud functions regions list`.',
+        resource='cloudfunctions.locations')
 
 
 class _SectionApp(_Section):
@@ -926,6 +943,18 @@ class _SectionTest(_Section):
     self.results_base_url = self._Add('results_base_url', hidden=True)
     self.matrix_status_interval = self._Add('matrix_status_interval',
                                             hidden=True)
+
+
+class _SectionMlEngine(_Section):
+  """Contains the properties for the 'ml_engine' section."""
+
+  def __init__(self):
+    super(_SectionMlEngine, self).__init__('ml_engine')
+    self.polling_interval = self._Add(
+        'polling_interval', default=60,
+        help_text=('The interval (in seconds) at which to poll logs from your '
+                   'Cloud ML Engine jobs. Note that making it much faster than '
+                   'the default (60) will quickly use all of your quota.'))
 
 
 class _SectionProxy(_Section):

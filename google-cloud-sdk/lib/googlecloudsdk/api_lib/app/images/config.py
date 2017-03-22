@@ -21,10 +21,11 @@ DOCKER_PY_VERSION = 'auto'
 # Timeout of HTTP request from docker-py client to docker daemon, in seconds.
 DOCKER_D_REQUEST_TIMEOUT = 300
 
-DOCKER_IMAGE_NAME_FORMAT = 'us.gcr.io/{display}/appengine/{service}.{version}'
+DOCKER_IMAGE_NAME_FORMAT = (
+    '{gcr_domain}/{display}/appengine/{service}.{version}')
 DOCKER_IMAGE_TAG = 'latest'
 DOCKER_IMAGE_NAME_DOMAIN_FORMAT = (
-    'us.gcr.io/{domain}/{display}/appengine/{service}.{version}')
+    '{gcr_domain}/{domain}/{display}/appengine/{service}.{version}')
 
 # Name of the a Dockerfile.
 DOCKERFILE = 'Dockerfile'

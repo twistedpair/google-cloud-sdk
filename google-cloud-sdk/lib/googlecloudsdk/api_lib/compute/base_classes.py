@@ -707,7 +707,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
 
     get_request_class = self.service.GetRequestType(self.method)
 
-    request = get_request_class(project=self.project)
+    request = get_request_class(project=getattr(ref, 'project', self.project))
     self.SetNameField(ref, request)
     self.ScopeRequest(ref, request)
 
@@ -1067,6 +1067,7 @@ class NoOutputAsyncMutator(base.SilentCommand, BaseAsyncMutator):
   """Base class for mutating subcommands that don't display resources."""
 
 
+# TODO(b/36242149) - Remove 'self.project' from this class
 class InstanceGroupManagerDynamicProperiesMixin(object):
   """Mixin class to compute dynamic information for instance groups."""
 

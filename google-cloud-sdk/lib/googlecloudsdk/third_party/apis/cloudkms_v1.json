@@ -1,10 +1,10 @@
 {
   "kind": "discovery#restDescription",
   "discoveryVersion": "v1",
-  "id": "cloudkms:v1beta1",
+  "id": "cloudkms:v1",
   "name": "cloudkms",
   "canonicalName": "Cloud KMS",
-  "version": "v1beta1",
+  "version": "v1",
   "revision": "0",
   "title": "Google Cloud Key Management Service (KMS) API",
   "description": "Manages encryption for your cloud services the same way you do on-premise. You can generate, use, rotate, and destroy AES256 encryption keys.",
@@ -784,8 +784,8 @@
           "methods": {
             "list": {
               "id": "cloudkms.projects.locations.list",
-              "path": "v1beta1/{+name}/locations",
-              "flatPath": "v1beta1/projects/{projectsId}/locations",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
               "httpMethod": "GET",
               "description": "Lists information about the supported locations for this service.",
               "parameters": {
@@ -825,8 +825,8 @@
             },
             "get": {
               "id": "cloudkms.projects.locations.get",
-              "path": "v1beta1/{+name}",
-              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
               "httpMethod": "GET",
               "description": "Get information about a location.",
               "parameters": {
@@ -855,8 +855,8 @@
               "methods": {
                 "list": {
                   "id": "cloudkms.projects.locations.keyRings.list",
-                  "path": "v1beta1/{+parent}/keyRings",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
+                  "path": "v1/{+parent}/keyRings",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings",
                   "httpMethod": "GET",
                   "description": "Lists KeyRings.",
                   "parameters": {
@@ -891,8 +891,8 @@
                 },
                 "get": {
                   "id": "cloudkms.projects.locations.keyRings.get",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}",
                   "httpMethod": "GET",
                   "description": "Returns metadata for a given KeyRing.",
                   "parameters": {
@@ -916,8 +916,8 @@
                 },
                 "create": {
                   "id": "cloudkms.projects.locations.keyRings.create",
-                  "path": "v1beta1/{+parent}/keyRings",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings",
+                  "path": "v1/{+parent}/keyRings",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings",
                   "httpMethod": "POST",
                   "description": "Create a new KeyRing in a given Project and Location.",
                   "parameters": {
@@ -949,8 +949,8 @@
                 },
                 "setIamPolicy": {
                   "id": "cloudkms.projects.locations.keyRings.setIamPolicy",
-                  "path": "v1beta1/{+resource}:setIamPolicy",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:setIamPolicy",
                   "httpMethod": "POST",
                   "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
                   "parameters": {
@@ -977,8 +977,8 @@
                 },
                 "getIamPolicy": {
                   "id": "cloudkms.projects.locations.keyRings.getIamPolicy",
-                  "path": "v1beta1/{+resource}:getIamPolicy",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:getIamPolicy",
                   "httpMethod": "GET",
                   "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
                   "parameters": {
@@ -1002,8 +1002,8 @@
                 },
                 "testIamPermissions": {
                   "id": "cloudkms.projects.locations.keyRings.testIamPermissions",
-                  "path": "v1beta1/{+resource}:testIamPermissions",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}:testIamPermissions",
                   "httpMethod": "POST",
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
@@ -1035,8 +1035,8 @@
                   "methods": {
                     "list": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.list",
-                      "path": "v1beta1/{+parent}/cryptoKeys",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
+                      "path": "v1/{+parent}/cryptoKeys",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
                       "httpMethod": "GET",
                       "description": "Lists CryptoKeys.",
                       "parameters": {
@@ -1071,8 +1071,8 @@
                     },
                     "get": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
                       "httpMethod": "GET",
                       "description": "Returns metadata for a given CryptoKey, as well as its\nprimary CryptoKeyVersion.",
                       "parameters": {
@@ -1096,8 +1096,8 @@
                     },
                     "create": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.create",
-                      "path": "v1beta1/{+parent}/cryptoKeys",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
+                      "path": "v1/{+parent}/cryptoKeys",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys",
                       "httpMethod": "POST",
                       "description": "Create a new CryptoKey within a KeyRing.\n\nCryptoKey.purpose is required.",
                       "parameters": {
@@ -1129,8 +1129,8 @@
                     },
                     "patch": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.patch",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}",
                       "httpMethod": "PATCH",
                       "description": "Update a CryptoKey.",
                       "parameters": {
@@ -1163,8 +1163,8 @@
                     },
                     "encrypt": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.encrypt",
-                      "path": "v1beta1/{+name}:encrypt",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt",
+                      "path": "v1/{+name}:encrypt",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:encrypt",
                       "httpMethod": "POST",
                       "description": "Encrypt data, so that it can only be recovered by a call to Decrypt.",
                       "parameters": {
@@ -1191,8 +1191,8 @@
                     },
                     "decrypt": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.decrypt",
-                      "path": "v1beta1/{+name}:decrypt",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt",
+                      "path": "v1/{+name}:decrypt",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:decrypt",
                       "httpMethod": "POST",
                       "description": "Decrypt data that was protected by Encrypt.",
                       "parameters": {
@@ -1219,8 +1219,8 @@
                     },
                     "updatePrimaryVersion": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.updatePrimaryVersion",
-                      "path": "v1beta1/{+name}:updatePrimaryVersion",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
+                      "path": "v1/{+name}:updatePrimaryVersion",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
                       "httpMethod": "POST",
                       "description": "Update the version of a CryptoKey that will be used in Encrypt",
                       "parameters": {
@@ -1247,8 +1247,8 @@
                     },
                     "setIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.setIamPolicy",
-                      "path": "v1beta1/{+resource}:setIamPolicy",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:setIamPolicy",
                       "httpMethod": "POST",
                       "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
                       "parameters": {
@@ -1275,8 +1275,8 @@
                     },
                     "getIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.getIamPolicy",
-                      "path": "v1beta1/{+resource}:getIamPolicy",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:getIamPolicy",
                       "httpMethod": "GET",
                       "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
                       "parameters": {
@@ -1300,8 +1300,8 @@
                     },
                     "testIamPermissions": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.testIamPermissions",
-                      "path": "v1beta1/{+resource}:testIamPermissions",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:testIamPermissions",
                       "httpMethod": "POST",
                       "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                       "parameters": {
@@ -1333,8 +1333,8 @@
                       "methods": {
                         "list": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list",
-                          "path": "v1beta1/{+parent}/cryptoKeyVersions",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
+                          "path": "v1/{+parent}/cryptoKeyVersions",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
                           "httpMethod": "GET",
                           "description": "Lists CryptoKeyVersions.",
                           "parameters": {
@@ -1369,8 +1369,8 @@
                         },
                         "get": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
                           "httpMethod": "GET",
                           "description": "Returns metadata for a given CryptoKeyVersion.",
                           "parameters": {
@@ -1394,8 +1394,8 @@
                         },
                         "create": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.create",
-                          "path": "v1beta1/{+parent}/cryptoKeyVersions",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
+                          "path": "v1/{+parent}/cryptoKeyVersions",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions",
                           "httpMethod": "POST",
                           "description": "Create a new CryptoKeyVersion in a CryptoKey.\n\nThe server will assign the next sequential id. If unset,\nstate will be set to\nENABLED.",
                           "parameters": {
@@ -1422,8 +1422,8 @@
                         },
                         "patch": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.patch",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}",
                           "httpMethod": "PATCH",
                           "description": "Update a CryptoKeyVersion's metadata.\n\nstate may be changed between\nENABLED and\nDISABLED using this\nmethod. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to\nmove between other states.",
                           "parameters": {
@@ -1456,8 +1456,8 @@
                         },
                         "destroy": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy",
-                          "path": "v1beta1/{+name}:destroy",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
+                          "path": "v1/{+name}:destroy",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
                           "httpMethod": "POST",
                           "description": "Schedule a CryptoKeyVersion for destruction.\n\nUpon calling this method, CryptoKeyVersion.state will be set to\nDESTROY_SCHEDULED\nand destroy_time will be set to a time 24\nhours in the future, at which point the state\nwill be changed to\nDESTROYED, and the key\nmaterial will be irrevocably destroyed.\n\nBefore the destroy_time is reached,\nRestoreCryptoKeyVersion may be called to reverse the process.",
                           "parameters": {
@@ -1484,8 +1484,8 @@
                         },
                         "restore": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore",
-                          "path": "v1beta1/{+name}:restore",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
+                          "path": "v1/{+name}:restore",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
                           "httpMethod": "POST",
                           "description": "Restore a CryptoKeyVersion in the\nDESTROY_SCHEDULED,\nstate.\n\nUpon restoration of the CryptoKeyVersion, state\nwill be set to DISABLED,\nand destroy_time will be cleared.",
                           "parameters": {

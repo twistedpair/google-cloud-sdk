@@ -63,6 +63,10 @@ class DockerError(exceptions.Error):
   """Base class for docker errors."""
 
 
+class InvalidDockerConfigError(DockerError):
+  """The docker configuration file could not be read."""
+
+
 class UnsupportedRegistryError(DockerError):
   """Indicates an attempt to use an unsupported registry."""
 
@@ -122,8 +126,12 @@ def _ReadFullDockerConfiguration():
     if not contents or contents.isspace():
       return {}, new_format
 
-    # If there is some content, try to decode and return JSON
-    return json.loads(contents), new_format
+    try:
+      return json.loads(contents), new_format
+    except ValueError as err:
+      raise InvalidDockerConfigError(
+          ('Docker configuration file [{}] could not be read as JSON: '
+           '{}').format(path, str(err)))
 
 
 def _CredentialHelperConfigured():

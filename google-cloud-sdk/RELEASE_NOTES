@@ -2,6 +2,79 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 148.0.0 (2017-03-22)
+
+### Breaking Changes
+
+*   The `gcloud ml-engine jobs submit training`
+    command is now asynchronous by default; pass `--stream-logs` to get the
+    old behavior.
+*   `gcloud ml-engine local predict` now only supports
+    prediction using models in SavedModel format. For details, see:
+    https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/README.md
+
+### Cloud SDK
+
+*   Windows users upgrading to the new version might see an error after
+    running `gcloud components update`. This is because the update modifies
+    the gcloud.cmd file. The update should have finished successfully
+    regardless of the error. To make sure, run `gcloud components update`
+    again. It should say it's already up to date.
+
+### Google Cloud BigQuery
+
+*   Added support for updating field descriptions on query destination table.
+    See the `destination_schema` flag within the `query` command.
+*   Added support for showing only a subset of selected table fields.
+    See the `selected_fields` flag within the `head` command.
+*   Added support for setting labels on tables.
+    See the `label` flag within the `mk` command.
+
+### Google Cloud Datalab
+
+*   Updated the datalab component to the 20170316 build.
+    This release includes two bug fixes in how the tool looks up
+    Datalab instances:
+
+    1. No longer prompt for a zone if the specified instance does not exist.
+    2. Report an error if the specified instance was not created by the tool.
+
+### Deployment Manager
+
+*   Promote `gcloud alpha deployment-manager` commands to the beta
+    release track.
+
+### Google Cloud ML Engine
+
+*   The default log polling interval for logs has been raised;
+    this should prevent streaming from using too much quota.
+
+### Google Container Engine
+
+*   Update Google Container Engine's kubectl from version 1.5.3 to 1.5.4.
+
+### Google Container Registry
+
+*   `untag` has been added to the `container images` command group. In the
+    future, `container images delete` will be modified to delete the underlying
+    image (and all associated tags) and this will be the primary method of
+    removing tags from images.
+
+### Google Service Management
+
+*   `--validate-only` flag added to `service-management deploy` command
+
+### Google Cloud Key Management Service
+
+*   `gcloud beta kms` commands have been promoted to general availability
+     as `gcloud kms`.
+
+### Google Cloud Storage
+
+*   Promote `compute backend-buckets` commands to general availability.
+*   Update gsutil component to 4.23
+
+
 ## 147.0.0 (2017-03-15)
 
 ### Breaking Changes
@@ -49,7 +122,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 ### Google Cloud Datalab
 
-*   Updateed the datalab component to the 20170309 build. This is a small update
+*   Updated the datalab component to the 20170309 build. This is a small update
     that only updates the name of the project from which we fetch the
     Container OS images to the new `cos-cloud` project.
 
