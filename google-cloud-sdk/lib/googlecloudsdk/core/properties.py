@@ -552,6 +552,7 @@ class _SectionFunctions(_Section):
     super(_SectionFunctions, self).__init__('functions')
     self.region = self._Add(
         'region',
+        default='us-central1',
         help_text='The default region to use when working with Google Compute '
         'functions resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '

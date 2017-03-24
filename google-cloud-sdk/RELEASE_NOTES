@@ -2,6 +2,14 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 148.0.1 (2017-03-24)
+
+### Google Cloud Functions
+
+*   Fixed a bug where `gcloud beta functions deploy` did not work without the
+    `--region` flag specified.
+
+
 ## 148.0.0 (2017-03-22)
 
 ### Breaking Changes
