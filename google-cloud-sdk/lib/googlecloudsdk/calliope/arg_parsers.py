@@ -51,6 +51,7 @@ import copy
 import re
 import sys
 
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import times
 
@@ -312,7 +313,7 @@ def Duration(lower_bound=None, upper_bound=None):
 
 
 def BinarySize(lower_bound=None, upper_bound=None,
-               suggested_binary_size_scales=None):
+               suggested_binary_size_scales=None, default_unit='GB'):
   """Returns a function that can parse binary sizes.
 
   Binary sizes are defined as base-2 values representing number of
@@ -336,6 +337,7 @@ def BinarySize(lower_bound=None, upper_bound=None,
     upper_bound: str, An inclusive upper bound for values.
     suggested_binary_size_scales: list, A list of strings with units that will
                                     be recommended to user.
+    default_unit: str, unit used when user did not specify unit.
 
   Raises:
     ArgumentTypeError: If either the lower_bound or upper_bound
@@ -349,7 +351,7 @@ def BinarySize(lower_bound=None, upper_bound=None,
       parsed.
   """
   return _ValueParser(
-      _BINARY_SIZE_SCALES, default_unit='GB',
+      _BINARY_SIZE_SCALES, default_unit=default_unit,
       lower_bound=lower_bound, upper_bound=upper_bound,
       strict_case=False,
       suggested_binary_size_scales=suggested_binary_size_scales)
@@ -1112,9 +1114,9 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     remaining_args = remaining_args[:split_index]
 
     if pass_through_args:
-      msg = ('unrecognized args: {args}\n' + self.explanation).format(
-          args=' '.join(pass_through_args))
-      raise argparse.ArgumentError(self, msg)
+      msg = (u'unrecognized args: {args}\n' + self.explanation).format(
+          args=u' '.join(pass_through_args))
+      raise parser_errors.UnrecognizedArgumentsError(msg)
     self(None, namespace, pass_through_args)
     return namespace, remaining_args
 

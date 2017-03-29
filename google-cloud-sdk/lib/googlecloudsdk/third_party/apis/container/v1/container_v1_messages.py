@@ -147,6 +147,18 @@ class AutoUpgradeOptions(_messages.Message):
   requestedUpgradeStartTime = _messages.StringField(3)
 
 
+class CIDR(_messages.Message):
+  """CIDR contains an optional name and one CIDR block.
+
+  Fields:
+    name: Network name is an optional field for users to identify CIDR blocks.
+    network: Authorized network must be specified in CIDR notation.
+  """
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   """CancelOperationRequest cancels a single operation."""
 
@@ -287,6 +299,8 @@ class Cluster(_messages.Message):
       node_pool at the same time.
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this cluster.
+    labelFingerprint: The fingerprint of the set of labels for this cluster.
+    legacyAbac: Configuration for the legacy ABAC authorization mode.
     locations: The list of Google Compute Engine
       [locations](/compute/docs/zones#available) in which the cluster's nodes
       should be located.
@@ -297,6 +311,8 @@ class Cluster(_messages.Message):
       used.
     masterAuth: The authentication information for accessing the master
       endpoint.
+    masterAuthorizedNetworks: The configuration options for master authorized
+      networks feature.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  * `monitoring.googleapis.com` -
       the Google Cloud Monitoring service. * `none` - no metrics will be
@@ -375,22 +391,25 @@ class Cluster(_messages.Message):
   initialClusterVersion = _messages.StringField(11)
   initialNodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(13, repeated=True)
-  locations = _messages.StringField(14, repeated=True)
-  loggingService = _messages.StringField(15)
-  masterAuth = _messages.MessageField('MasterAuth', 16)
-  monitoringService = _messages.StringField(17)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  nodeConfig = _messages.MessageField('NodeConfig', 20)
-  nodeIpv4CidrSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 22, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabels', 23)
-  selfLink = _messages.StringField(24)
-  servicesIpv4Cidr = _messages.StringField(25)
-  status = _messages.EnumField('StatusValueValuesEnum', 26)
-  statusMessage = _messages.StringField(27)
-  subnetwork = _messages.StringField(28)
-  zone = _messages.StringField(29)
+  labelFingerprint = _messages.StringField(14)
+  legacyAbac = _messages.MessageField('LegacyAbac', 15)
+  locations = _messages.StringField(16, repeated=True)
+  loggingService = _messages.StringField(17)
+  masterAuth = _messages.MessageField('MasterAuth', 18)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 19)
+  monitoringService = _messages.StringField(20)
+  name = _messages.StringField(21)
+  network = _messages.StringField(22)
+  nodeConfig = _messages.MessageField('NodeConfig', 23)
+  nodeIpv4CidrSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 25, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabels', 26)
+  selfLink = _messages.StringField(27)
+  servicesIpv4Cidr = _messages.StringField(28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  statusMessage = _messages.StringField(30)
+  subnetwork = _messages.StringField(31)
+  zone = _messages.StringField(32)
 
 
 class ClusterUpdate(_messages.Message):
@@ -409,6 +428,8 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
+    desiredMasterAuthorizedNetworks: The desired configuration options for
+      master authorized networks feature.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -435,12 +456,13 @@ class ClusterUpdate(_messages.Message):
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredImageType = _messages.StringField(2)
   desiredLocations = _messages.StringField(3, repeated=True)
-  desiredMasterMachineType = _messages.StringField(4)
-  desiredMasterVersion = _messages.StringField(5)
-  desiredMonitoringService = _messages.StringField(6)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 7)
-  desiredNodePoolId = _messages.StringField(8)
-  desiredNodeVersion = _messages.StringField(9)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 4)
+  desiredMasterMachineType = _messages.StringField(5)
+  desiredMasterVersion = _messages.StringField(6)
+  desiredMonitoringService = _messages.StringField(7)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 8)
+  desiredNodePoolId = _messages.StringField(9)
+  desiredNodeVersion = _messages.StringField(10)
 
 
 class ContainerMasterProjectsZonesAuthenticateRequest(_messages.Message):
@@ -595,6 +617,25 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ContainerProjectsZonesClustersLegacyAbacRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersLegacyAbacRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to update.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setLegacyAbacRequest: A SetLegacyAbacRequest resource to be passed as the
+      request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  setLegacyAbacRequest = _messages.MessageField('SetLegacyAbacRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ContainerProjectsZonesClustersListRequest(_messages.Message):
   """A ContainerProjectsZonesClustersListRequest object.
 
@@ -721,6 +762,44 @@ class ContainerProjectsZonesClustersNodePoolsSetManagementRequest(_messages.Mess
   projectId = _messages.StringField(3, required=True)
   setNodePoolManagementRequest = _messages.MessageField('SetNodePoolManagementRequest', 4)
   zone = _messages.StringField(5, required=True)
+
+
+class ContainerProjectsZonesClustersResourceLabelsRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersResourceLabelsRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    setLabelsRequest: A SetLabelsRequest resource to be passed as the request
+      body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  setLabelsRequest = _messages.MessageField('SetLabelsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsZonesClustersSetMasterAuthRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersSetMasterAuthRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to upgrade.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setMasterAuthRequest: A SetMasterAuthRequest resource to be passed as the
+      request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  setMasterAuthRequest = _messages.MessageField('SetMasterAuthRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ContainerProjectsZonesClustersUpdateRequest(_messages.Message):
@@ -1047,6 +1126,20 @@ class Item(_messages.Message):
   value = _messages.StringField(2)
 
 
+class LegacyAbac(_messages.Message):
+  """Configuration for the legacy Attribute Based Access Control authorization
+  mode.
+
+  Fields:
+    enabled: Whether the ABAC authorizer is enabled for this cluster. When
+      enabled, identities in the system, including service accounts, nodes,
+      and controllers, will have statically granted permissions beyond those
+      provided by the RBAC configuration or IAM.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class ListClustersResponse(_messages.Message):
   """ListClustersResponse is the result of ListClustersRequest.
 
@@ -1108,6 +1201,22 @@ class MasterAuth(_messages.Message):
   clusterCaCertificate = _messages.StringField(3)
   password = _messages.StringField(4)
   username = _messages.StringField(5)
+
+
+class MasterAuthorizedNetworks(_messages.Message):
+  """Configuration options for the master authorized networks feature. Enabled
+  master authorized networks will disallow all external traffic to access
+  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
+  GCE Public IPs and Google Prod IPs.
+
+  Fields:
+    cidrs: Network CIDRs define up to 10 external networks that could access
+      Kubernetes master through HTTPS.
+    enabled: Whether or not master authorized networks is enabled.
+  """
+
+  cidrs = _messages.MessageField('CIDR', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
 
 
 class NodeConfig(_messages.Message):
@@ -1265,8 +1374,13 @@ class NodeManagement(_messages.Message):
   the node pool.
 
   Fields:
-    autoRepair: Whether the nodes will be automatically repaired.
-    autoUpgrade: Whether the nodes will be automatically upgraded.
+    autoRepair: A flag that specifies whether the node auto-repair is enabled
+      for the node pool. If enabled, the nodes in this node pool will be
+      monitored and, if they fail health checks too many times, an automatic
+      repair action will be triggered.
+    autoUpgrade: A flag that specifies whether node auto-upgrade is enabled
+      for the node pool. If enabled, node auto-upgrade helps keep the nodes in
+      your node pool up to date with the latest release version of Kubernetes.
     upgradeOptions: Specifies the Auto Upgrade knobs for the node pool.
   """
 
@@ -1442,6 +1556,10 @@ class Operation(_messages.Message):
       CREATE_NODE_POOL: Node pool create.
       DELETE_NODE_POOL: Node pool delete.
       SET_NODE_POOL_MANAGEMENT: Set node pool management.
+      AUTO_REPAIR_NODES: Automatic node pool repair.
+      AUTO_UPGRADE_NODES: Automatic node upgrade.
+      SET_LABELS: Set labels.
+      SET_MASTER_AUTH: Set/generate master auth materials
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -1453,6 +1571,10 @@ class Operation(_messages.Message):
     CREATE_NODE_POOL = 7
     DELETE_NODE_POOL = 8
     SET_NODE_POOL_MANAGEMENT = 9
+    AUTO_REPAIR_NODES = 10
+    AUTO_UPGRADE_NODES = 11
+    SET_LABELS = 12
+    SET_MASTER_AUTH = 13
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.
@@ -1543,6 +1665,64 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(4, repeated=True)
   validMasterVersions = _messages.StringField(5, repeated=True)
   validNodeVersions = _messages.StringField(6, repeated=True)
+
+
+class SetLabelsRequest(_messages.Message):
+  """SetLabelsRequest sets the Google Cloud Platform labels on a Google
+  Container Engine cluster, which will in turn set them for Google Compute
+  Engine resources used by that cluster
+
+  Fields:
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Container Engine and changes after every request to modify
+      or update labels. You must always provide an up-to-date fingerprint hash
+      when updating or changing labels. Make a <code>get()</code> request to
+      the resource to get the latest fingerprint.
+    resourceLabels: The labels to set for that cluster.
+  """
+
+  labelFingerprint = _messages.StringField(1)
+  resourceLabels = _messages.MessageField('ResourceLabels', 2)
+
+
+class SetLegacyAbacRequest(_messages.Message):
+  """SetLegacyAbacRequest enables or disables the ABAC authorization mechanism
+  for a cluster.
+
+  Fields:
+    enabled: Whether ABAC authorization will be enabled in the cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class SetMasterAuthRequest(_messages.Message):
+  """SetMasterAuthRequest updates the admin password of a cluster.
+
+  Enums:
+    ActionValueValuesEnum: The exact form of action to be taken on the master
+      auth
+
+  Fields:
+    action: The exact form of action to be taken on the master auth
+    update: A description of the update.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """The exact form of action to be taken on the master auth
+
+    Values:
+      UNKNOWN: Operation is unknown and will error out
+      SET_PASSWORD: Set the password to a user generated value.
+      GENERATE_PASSWORD: Generate a new password and set it to that.
+    """
+    UNKNOWN = 0
+    SET_PASSWORD = 1
+    GENERATE_PASSWORD = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  update = _messages.MessageField('MasterAuth', 2)
 
 
 class SetNodePoolManagementRequest(_messages.Message):

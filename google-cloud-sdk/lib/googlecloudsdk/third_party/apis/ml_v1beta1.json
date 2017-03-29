@@ -287,7 +287,7 @@
             "A single worker instance. This tier is suitable for learning how to use\nCloud ML, and for experimenting with new models using small datasets.",
             "Many workers and a few parameter servers.",
             "A large number of workers with many parameter servers.",
-            "A single worker instance [with a GPU](ml\/docs\/how-tos\/using-gpus).",
+            "A single worker instance [with a GPU](\/ml-engine\/docs\/how-tos\/using-gpus).",
             "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
@@ -300,7 +300,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a\n  <a href=\"ml\/docs\/how-tos\/using-gpus\">\n  GPU that you can use in your trainer<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">coplex_model_m<\/code> that also includes\n  four GPUs.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a\n  <a href=\"\/ml-engine\/docs\/how-tos\/using-gpus\">\n  GPU that you can use in your trainer<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">coplex_model_m<\/code> that also includes\n  four GPUs.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "workerType": {
@@ -667,11 +667,11 @@
           "type": "string"
         },
         "defaultVersion": {
-          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
+          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
           "$ref": "GoogleCloudMlV1beta1__Version"
         },
         "regions": {
-          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.",
+          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.\nNote:\n*   No matter where a model is deployed, it can always be accessed by\n    users from anywhere, both for online and batch prediction.\n*   The region for a batch prediction job is set by the region field when\n    submitting the batch prediction job and does not take its value from\n    this field.",
           "type": "array",
           "items": {
             "type": "string"
@@ -685,7 +685,7 @@
     },
     "GoogleCloudMlV1beta1__Version": {
       "id": "GoogleCloudMlV1beta1__Version",
-      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/list).",
       "type": "object",
       "properties": {
         "name": {
@@ -697,11 +697,11 @@
           "type": "string"
         },
         "isDefault": {
-          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
+          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model deployment](\/ml\/docs\/concepts\/deployment-overview) for\nmore informaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model deployment](\/ml-engine\/docs\/concepts\/deployment-overview) for\nmore informaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.",
           "type": "string"
         },
         "createTime": {
@@ -924,7 +924,7 @@
     },
     "GoogleCloudMlV1__Version": {
       "id": "GoogleCloudMlV1__Version",
-      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1\/projects.models.versions\/list).",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
       "type": "object",
       "properties": {
         "name": {
@@ -936,11 +936,11 @@
           "type": "string"
         },
         "isDefault": {
-          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
+          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model deployment](\/ml\/docs\/concepts\/deployment-overview) for\nmore informaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model deployment](\/ml-engine\/docs\/concepts\/deployment-overview) for\nmore informaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.",
           "type": "string"
         },
         "createTime": {
@@ -1288,7 +1288,7 @@
               "path": "v1beta1/{+parent}/models",
               "flatPath": "v1beta1/projects/{projectsId}/models",
               "httpMethod": "POST",
-              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/create).",
+              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/create).",
               "parameters": {
                 "parent": {
                   "description": "Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
@@ -1377,7 +1377,7 @@
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/delete).",
+              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/delete).",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1407,7 +1407,7 @@
                   "path": "v1beta1/{+parent}/versions",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "POST",
-                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
+                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
@@ -1471,7 +1471,7 @@
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "GET",
-                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
+                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
@@ -1499,7 +1499,7 @@
                   "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version.",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
@@ -1524,7 +1524,7 @@
                   "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method.",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",

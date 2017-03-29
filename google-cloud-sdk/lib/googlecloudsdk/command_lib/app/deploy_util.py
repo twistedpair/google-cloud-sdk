@@ -262,6 +262,7 @@ class ServiceDeployer(object):
       message = 'Updating service [{service}]'.format(
           service=new_version.service)
       with progress_tracker.ProgressTracker(message):
+        metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
         self.api_client.DeployService(new_version.service, new_version.id,
                                       service, manifest, image,
                                       endpoints_info)
@@ -399,6 +400,7 @@ def RunDeploy(
   if services:
     # Do generic app setup if deploying any services.
     # All deployment paths for a service involve uploading source to GCS.
+    metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET_START)
     code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
     metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
     log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToBucketUrl()))
@@ -420,19 +422,30 @@ def RunDeploy(
     stager = staging.GetStager()
   deployer = ServiceDeployer(api_client, stager, deploy_options)
 
+  # Track whether a service has been deployed yet, for metrics.
+  service_deployed = False
   for name, service in services.iteritems():
+    if not service_deployed:
+      metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY_START)
     new_version = version_util.Version(project, name, version_id)
     deployer.Deploy(service, new_version, code_bucket_ref, args.image_url,
                     all_services, app.gcrDomain)
     new_versions.append(new_version)
     log.status.Print('Deployed service [{0}] to [{1}]'.format(
         name, deployed_urls[name]))
+    if not service_deployed:
+      metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY)
+    service_deployed = True
 
   # Deploy config files.
+  if app_config.Configs():
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
   for (name, config) in app_config.Configs().iteritems():
     message = 'Updating config [{config}]'.format(config=name)
     with progress_tracker.ProgressTracker(message):
       ac_client.UpdateConfig(name, config.parsed)
+  if app_config.Configs():
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 
   updated_configs = app_config.Configs().keys()
 

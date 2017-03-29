@@ -1279,13 +1279,15 @@ class WebDetection(_messages.Message):
     partialMatchingImages: Partial matching images from the Internet. Those
       images are similar enough to share some key-point features. For example
       an original image will likely have partial matching for its crops.
+    visuallySimilarImages: The visually similar image results.
     webEntities: Deduced entities from similar images on the Internet.
   """
 
   fullMatchingImages = _messages.MessageField('WebImage', 1, repeated=True)
   pagesWithMatchingImages = _messages.MessageField('WebPage', 2, repeated=True)
   partialMatchingImages = _messages.MessageField('WebImage', 3, repeated=True)
-  webEntities = _messages.MessageField('WebEntity', 4, repeated=True)
+  visuallySimilarImages = _messages.MessageField('WebImage', 4, repeated=True)
+  webEntities = _messages.MessageField('WebEntity', 5, repeated=True)
 
 
 class WebEntity(_messages.Message):

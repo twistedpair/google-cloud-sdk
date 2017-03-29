@@ -2012,16 +2012,17 @@ class KeyRangeLocation(_messages.Message):
       "myproject-1014-104817-4c2-harness-0-disk-1".
     deliveryEndpoint: The physical location of this range assignment to be
       used for streaming computation cross-worker message delivery.
+    deprecatedPersistentDirectory: DEPRECATED. The location of the persistent
+      state for this range, as a persistent directory in the worker local
+      filesystem.
     end: The end (exclusive) of the key range.
-    persistentDirectory: The location of the persistent state for this range,
-      as a persistent directory in the worker local filesystem.
     start: The start (inclusive) of the key range.
   """
 
   dataDisk = _messages.StringField(1)
   deliveryEndpoint = _messages.StringField(2)
-  end = _messages.StringField(3)
-  persistentDirectory = _messages.StringField(4)
+  deprecatedPersistentDirectory = _messages.StringField(3)
+  end = _messages.StringField(4)
   start = _messages.StringField(5)
 
 
@@ -2072,12 +2073,9 @@ class LaunchTemplateResponse(_messages.Message):
   Fields:
     job: The job that was launched, if the request was not a dry run and the
       job was successfully launched.
-    status: The status of the launch template request. Any problems with the
-      request will be indicated in the error_details.
   """
 
   job = _messages.MessageField('Job', 1)
-  status = _messages.MessageField('Status', 2)
 
 
 class LeaseWorkItemRequest(_messages.Message):

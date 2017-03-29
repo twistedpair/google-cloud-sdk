@@ -306,7 +306,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      """Writes log entries to Stackdriver Logging. All log entries are written by this method.
+      """Writes log entries to Stackdriver Logging.
 
       Args:
         request: (WriteLogEntriesRequest) input message

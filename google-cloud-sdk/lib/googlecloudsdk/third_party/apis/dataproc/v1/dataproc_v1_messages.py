@@ -303,11 +303,15 @@ class ClusterStatus(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output-only The cluster's state.
+    SubstateValueValuesEnum: Output-only Additional state information that
+      includes status reported by the agent.
 
   Fields:
     detail: Output-only Optional details of cluster's state.
     state: Output-only The cluster's state.
     stateStartTime: Output-only Time when this state was entered.
+    substate: Output-only Additional state information that includes status
+      reported by the agent.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -331,9 +335,27 @@ class ClusterStatus(_messages.Message):
     DELETING = 4
     UPDATING = 5
 
+  class SubstateValueValuesEnum(_messages.Enum):
+    """Output-only Additional state information that includes status reported
+    by the agent.
+
+    Values:
+      UNSPECIFIED: <no description>
+      UNHEALTHY: The cluster is known to be in an unhealthy state (for
+        example, critical daemons are not running or HDFS capacity is
+        exhausted).Applies to RUNNING state.
+      STALE_STATUS: The agent-reported status is out of date (may occur if
+        Cloud Dataproc loses communication with Agent).Applies to RUNNING
+        state.
+    """
+    UNSPECIFIED = 0
+    UNHEALTHY = 1
+    STALE_STATUS = 2
+
   detail = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateStartTime = _messages.StringField(3)
+  substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
@@ -1149,12 +1171,16 @@ class JobStatus(_messages.Message):
   Enums:
     StateValueValuesEnum: Output-only A state message specifying the overall
       job state.
+    SubstateValueValuesEnum: Output-only Additional state information, which
+      includes status reported by the agent.
 
   Fields:
     details: Output-only Optional job state details, such as an error
       description if the state is <code>ERROR</code>.
     state: Output-only A state message specifying the overall job state.
     stateStartTime: Output-only The time when this state was entered.
+    substate: Output-only Additional state information, which includes status
+      reported by the agent.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1187,9 +1213,30 @@ class JobStatus(_messages.Message):
     ERROR = 8
     ATTEMPT_FAILURE = 9
 
+  class SubstateValueValuesEnum(_messages.Enum):
+    """Output-only Additional state information, which includes status
+    reported by the agent.
+
+    Values:
+      UNSPECIFIED: <no description>
+      SUBMITTED: The Job is submitted to the agent.Applies to RUNNING state.
+      QUEUED: The Job has been received and is awaiting execution (it may be
+        waiting for a condition to be met). See the "details" field for the
+        reason for the delay.Applies to RUNNING state.
+      STALE_STATUS: The agent-reported status is out of date, which may be
+        caused by a loss of communication between the agent and Cloud
+        Dataproc. If the agent does not send a timely update, the job will
+        fail.Applies to RUNNING state.
+    """
+    UNSPECIFIED = 0
+    SUBMITTED = 1
+    QUEUED = 2
+    STALE_STATUS = 3
+
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateStartTime = _messages.StringField(3)
+  substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
 class ListClustersResponse(_messages.Message):

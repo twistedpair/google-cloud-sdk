@@ -213,6 +213,18 @@
           "description": "The resource labels for the cluster to use to annotate any related GCE\nresources.",
           "$ref": "ResourceLabels"
         },
+        "labelFingerprint": {
+          "description": "The fingerprint of the set of labels for this cluster.",
+          "type": "string"
+        },
+        "masterAuthorizedNetworks": {
+          "description": "The configuration options for master authorized networks feature.",
+          "$ref": "MasterAuthorizedNetworks"
+        },
+        "legacyAbac": {
+          "description": "Configuration for the legacy ABAC authorization mode.",
+          "$ref": "LegacyAbac"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -513,11 +525,11 @@
       "type": "object",
       "properties": {
         "autoUpgrade": {
-          "description": "Whether the nodes will be automatically upgraded.",
+          "description": "A flag that specifies whether node auto-upgrade is enabled for the node\npool. If enabled, node auto-upgrade helps keep the nodes in your node pool\nup to date with the latest release version of Kubernetes.",
           "type": "boolean"
         },
         "autoRepair": {
-          "description": "Whether the nodes will be automatically repaired.",
+          "description": "A flag that specifies whether the node auto-repair is enabled for the node\npool. If enabled, the nodes in this node pool will be monitored and, if\nthey fail health checks too many times, an automatic repair action will be\ntriggered.",
           "type": "boolean"
         },
         "upgradeOptions": {
@@ -574,6 +586,50 @@
         }
       }
     },
+    "MasterAuthorizedNetworks": {
+      "id": "MasterAuthorizedNetworks",
+      "description": "Configuration options for the master authorized networks feature. Enabled\nmaster authorized networks will disallow all external traffic to access\nKubernetes master through HTTPS except traffic from the given CIDR blocks,\nGCE Public IPs and Google Prod IPs.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether or not master authorized networks is enabled.",
+          "type": "boolean"
+        },
+        "cidrs": {
+          "description": "Network CIDRs define up to 10 external networks that could access\nKubernetes master through HTTPS.",
+          "type": "array",
+          "items": {
+            "$ref": "CIDR"
+          }
+        }
+      }
+    },
+    "CIDR": {
+      "id": "CIDR",
+      "description": "CIDR contains an optional name and one CIDR block.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Network name is an optional field for users to identify CIDR blocks.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Authorized network must be specified in CIDR notation.",
+          "type": "string"
+        }
+      }
+    },
+    "LegacyAbac": {
+      "id": "LegacyAbac",
+      "description": "Configuration for the legacy Attribute Based Access Control authorization\nmode.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the ABAC authorizer is enabled for this cluster. When enabled,\nidentities in the system, including service accounts, nodes, and\ncontrollers, will have statically granted permissions beyond those\nprovided by the RBAC configuration or IAM.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -610,7 +666,11 @@
             "Cluster update.",
             "Node pool create.",
             "Node pool delete.",
-            "Set node pool management."
+            "Set node pool management.",
+            "Automatic node pool repair.",
+            "Automatic node upgrade.",
+            "Set labels.",
+            "Set\/generate master auth materials"
           ],
           "type": "string",
           "enum": [
@@ -623,7 +683,11 @@
             "UPDATE_CLUSTER",
             "CREATE_NODE_POOL",
             "DELETE_NODE_POOL",
-            "SET_NODE_POOL_MANAGEMENT"
+            "SET_NODE_POOL_MANAGEMENT",
+            "AUTO_REPAIR_NODES",
+            "AUTO_UPGRADE_NODES",
+            "SET_LABELS",
+            "SET_MASTER_AUTH"
           ]
         },
         "status": {
@@ -709,6 +773,10 @@
             "type": "string"
           }
         },
+        "desiredMasterAuthorizedNetworks": {
+          "description": "The desired configuration options for master authorized networks feature.",
+          "$ref": "MasterAuthorizedNetworks"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
           "type": "string"
@@ -716,6 +784,31 @@
         "desiredMasterMachineType": {
           "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
           "type": "string"
+        }
+      }
+    },
+    "SetMasterAuthRequest": {
+      "id": "SetMasterAuthRequest",
+      "description": "SetMasterAuthRequest updates the admin password of a cluster.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "The exact form of action to be taken on the master auth",
+          "enumDescriptions": [
+            "Operation is unknown and will error out",
+            "Set the password to a user generated value.",
+            "Generate a new password and set it to that."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SET_PASSWORD",
+            "GENERATE_PASSWORD"
+          ]
+        },
+        "update": {
+          "description": "A description of the update.",
+          "$ref": "MasterAuth"
         }
       }
     },
@@ -834,6 +927,32 @@
         "management": {
           "description": "NodeManagement configuration for the node pool.",
           "$ref": "NodeManagement"
+        }
+      }
+    },
+    "SetLabelsRequest": {
+      "id": "SetLabelsRequest",
+      "description": "SetLabelsRequest sets the Google Cloud Platform labels on a Google Container\nEngine cluster, which will in turn set them for Google Compute Engine\nresources used by that cluster",
+      "type": "object",
+      "properties": {
+        "resourceLabels": {
+          "description": "The labels to set for that cluster.",
+          "$ref": "ResourceLabels"
+        },
+        "labelFingerprint": {
+          "description": "The fingerprint of the previous set of labels for this resource,\nused to detect conflicts. The fingerprint is initially generated by\nContainer Engine and changes after every request to modify or update\nlabels. You must always provide an up-to-date fingerprint hash when\nupdating or changing labels. Make a <code>get()<\/code> request to the\nresource to get the latest fingerprint.",
+          "type": "string"
+        }
+      }
+    },
+    "SetLegacyAbacRequest": {
+      "id": "SetLegacyAbacRequest",
+      "description": "SetLegacyAbacRequest enables or disables the ABAC authorization mechanism for\na cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether ABAC authorization will be enabled in the cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -1605,6 +1724,47 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
+                "setMasterAuth": {
+                  "id": "container.projects.zones.clusters.setMasterAuth",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
+                  "httpMethod": "POST",
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set the password.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster to upgrade.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "SetMasterAuthRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
@@ -1636,6 +1796,88 @@
                     "zone",
                     "clusterId"
                   ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "resourceLabels": {
+                  "id": "container.projects.zones.clusters.resourceLabels",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
+                  "httpMethod": "POST",
+                  "description": "Sets labels on a cluster.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "SetLabelsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "legacyAbac": {
+                  "id": "container.projects.zones.clusters.legacyAbac",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
+                  "httpMethod": "POST",
+                  "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster to update.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "SetLegacyAbacRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },

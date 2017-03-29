@@ -1313,6 +1313,7 @@ class FlowOperationMetadata(_messages.Message):
       don't have orphans. see also: go/prevent-orphaned-operations
     flowName: The name of the top-level flow corresponding to this operation.
       Must be equal to the "name" field for a FlowName enum.
+    isPersisted: Is the update for the operation persisted?
     resourceNames: The full name of the resources that this flow is directly
       associated with.
     startTime: The start time of the operation.
@@ -1335,8 +1336,9 @@ class FlowOperationMetadata(_messages.Message):
   cancelState = _messages.EnumField('CancelStateValueValuesEnum', 1)
   deadline = _messages.StringField(2)
   flowName = _messages.StringField(3)
-  resourceNames = _messages.StringField(4, repeated=True)
-  startTime = _messages.StringField(5)
+  isPersisted = _messages.BooleanField(4)
+  resourceNames = _messages.StringField(5, repeated=True)
+  startTime = _messages.StringField(6)
 
 
 class GenerateConfigReportRequest(_messages.Message):

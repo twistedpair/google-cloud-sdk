@@ -396,15 +396,43 @@ def _TransformsDescriptions(transforms):
   return ''.join(descriptions)
 
 
+_TRANSFORMS = {}  # The registered transforms indexed by topic (api).
+
+
+def RegisterTransforms(api, transforms):
+  """Registers transforms for api to be included in the projections topic.
+
+  Args:
+    api: The api name to be used as a title for the transforms.
+    transforms: A name=>transform dict of transforms.
+  """
+  _TRANSFORMS[api] = transforms
+
+
 def TransformRegistryDescriptions():
   """Returns help markdown for all registered resource transforms."""
-  apis = set([x.split('.')[0]
-              for x in resource_registry.RESOURCE_REGISTRY.keys()])
+  if not resource_registry.RESOURCE_REGISTRY:
+    raise ValueError('The resource_registry refactor is complete. '
+                     'Delete this if-else and celebrate.')
+  else:
+    for api in set([x.split('.')[0]
+                    for x in resource_registry.RESOURCE_REGISTRY.keys()]):
+      if api in _TRANSFORMS:
+        raise ValueError('The {api} api has new and legacy transforms '
+                         'registered -- pick one or the other.', api=api)
+      transforms = resource_transform.GetTransforms(api)
+      if transforms:
+        _TRANSFORMS[api] = transforms
+
   descriptions = []
-  for api in ['builtin'] + sorted(apis):
-    transforms = resource_transform.GetTransforms(api)
-    if transforms:
-      descriptions.append(
-          '\nThe {api} transform functions are:\n{desc}\n'.format(
-              api=api, desc=_TransformsDescriptions(transforms)))
+
+  def _AddDescription(api, transforms):
+    descriptions.append(
+        '\nThe {api} transform functions are:\n{desc}\n'.format(
+            api=api, desc=_TransformsDescriptions(transforms)))
+
+  _AddDescription('builtin', resource_transform.GetTransforms())
+  for api, transforms in sorted(_TRANSFORMS.iteritems()):
+    _AddDescription(api, transforms)
+
   return ''.join(descriptions)

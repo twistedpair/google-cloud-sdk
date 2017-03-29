@@ -318,7 +318,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on an Address. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeAddressesSetLabelsRequest) input message
@@ -1714,7 +1714,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -1932,7 +1932,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request.
+      """Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -2098,7 +2098,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -2290,7 +2290,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeGlobalAddressesSetLabelsRequest) input message
@@ -2456,7 +2456,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -3750,7 +3750,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -4988,7 +4988,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Reset(self, request, global_params=None):
-      """Performs a hard reset on the instance.
+      """Performs a reset on the instance. For more information, see Resetting an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message
@@ -5066,7 +5066,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
+      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -6590,6 +6590,32 @@ If you increase the size of the instance group, the group creates new instances 
       super(ComputeAlpha.RegionCommitmentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of commitments.
+
+      Args:
+        request: (ComputeRegionCommitmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CommitmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionCommitments.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/commitments',
+        request_field='',
+        request_type_name=u'ComputeRegionCommitmentsAggregatedListRequest',
+        response_type_name=u'CommitmentAggregatedList',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns the specified commitment resource. Get a list of available commitments by making a list() request.
@@ -8384,7 +8410,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
@@ -10652,7 +10678,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeVpnTunnelsSetLabelsRequest) input message

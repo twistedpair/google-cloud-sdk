@@ -30,6 +30,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import platforms
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
@@ -93,6 +94,26 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
       'instance, use [gcloud compute instances add-access-config].'
       .format(instance_resource.name,
               path_simplifier.Name(instance_resource.zone)))
+
+
+def GetInternalIPAddress(instance_resource):
+  """Returns the internal IP address of the instance.
+
+  Args:
+    instance_resource: An instance resource object.
+
+  Raises:
+    ToolException: If instance has no network interfaces.
+
+  Returns:
+    A string IP or None if no_raise is True and no ip exists.
+  """
+  if instance_resource.networkInterfaces:
+    return instance_resource.networkInterfaces[0].networkIP
+  raise exceptions.ToolException(
+      'Instance [{0}] in zone [{1}] has no network interfaces.'.format(
+          instance_resource.name,
+          path_simplifier.Name(instance_resource.zone)))
 
 
 def _GetMetadataKey(iam_ssh_keys):
@@ -491,10 +512,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
           error_message='Could not fetch instance:')
     return objects[0]
 
-  def HostKeyAlias(self, instance):
-    return 'compute.{0}'.format(instance.id)
-
-  def ActuallyRun(self, args, cmd_args, user, instance, project,
+  def ActuallyRun(self, args, cmd_args, user, instance, project, ip_address,
                   strict_error_checking=True, use_account_service=False,
                   wait_for_sshable=True, ignore_ssh_errors=False):
     """Runs the scp/ssh command specified in cmd_args.
@@ -508,6 +526,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
       user: str, The user name.
       instance: Instance, the instance to connect to
       project: str, the project instance is in
+      ip_address: str, IP address of the instance
       strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
         code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
@@ -589,10 +608,9 @@ class BaseSSHCLICommand(BaseSSHCommand):
                                                            iam_keys=True)
 
     if keys_newly_added and wait_for_sshable:
-      external_ip_address = GetExternalIPAddress(instance)
-      host_key_alias = self.HostKeyAlias(instance)
+      host_key_alias = HostKeyAlias(instance)
       ssh.WaitUntilSSHable(
-          user, external_ip_address, self.env, self.keys.key_file,
+          user, ip_address, self.env, self.keys.key_file,
           host_key_alias, args.plain, args.strict_host_key_checking,
           _SSH_KEY_PROPAGATION_TIMEOUT_SEC)
 
@@ -604,3 +622,86 @@ class BaseSSHCLICommand(BaseSSHCommand):
                                ignore_ssh_errors=ignore_ssh_errors)
     except ssh.CommandError as e:
       raise CommandError(e)
+
+
+def HostKeyAlias(instance):
+  return 'compute.{0}'.format(instance.id)
+
+
+def GetUserAndInstance(user_host, use_accounts_service, http):
+  """Returns pair consiting of user name and instance name."""
+  parts = user_host.split('@')
+  if len(parts) == 1:
+    if use_accounts_service:  # Using Account Service.
+      user = gaia.GetDefaultAccountName(http)
+    else:  # Uploading keys through metadata.
+      user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
+    instance = parts[0]
+    return user, instance
+  if len(parts) == 2:
+    return parts
+  raise exceptions.ToolException(
+      'Expected argument of the form [USER@]INSTANCE; received [{0}].'
+      .format(user_host))
+
+
+def _GetSharedSshArgs(args, user, instance, ip_address, env, keys):
+  """Returns list with ssh commands and shared arguments it."""
+  ssh_args = [env.ssh]
+  if not args.plain:
+    ssh_args.extend(ssh.GetDefaultFlags(keys.key_file))
+    # Allocates a tty if no command was provided and a container was provided.
+    if args.container and not args.command:
+      ssh_args.append('-t')
+
+  if args.ssh_flag:
+    for flag in args.ssh_flag:
+      for flag_part in flag.split():  # We want grouping here
+        dereferenced_flag = (
+            flag_part.replace('%USER%', user)
+            .replace('%INSTANCE%', ip_address))
+        ssh_args.append(dereferenced_flag)
+
+  host_key_alias = HostKeyAlias(instance)
+  ssh_args.extend(ssh.GetHostKeyArgs(host_key_alias, args.plain,
+                                     args.strict_host_key_checking))
+
+  ssh_args.append(ssh.UserHost(user, ip_address))
+  return ssh_args
+
+
+def GetSshArgs(args, user, instance, ip_address, env, keys):
+  """Returns list with argmuments for actually connecting."""
+  ssh_args = _GetSharedSshArgs(args, user, instance, ip_address, env, keys)
+  if args.ssh_args:
+    ssh_args.extend(args.ssh_args)
+  if args.container:
+    ssh_args.append('--')
+    ssh_args.append('container_exec')
+    ssh_args.append(args.container)
+    # Runs the given command inside the given container if --command was
+    # specified, otherwise runs /bin/sh.
+    if args.command:
+      ssh_args.append(args.command)
+    else:
+      ssh_args.append('/bin/sh')
+
+  elif args.command:
+    if not platforms.OperatingSystem.IsWindows():
+      ssh_args.append('--')
+    ssh_args.append(args.command)
+  return ssh_args
+
+
+def GetSshArgsForPreliminaryVerification(
+    args, user, instance, ip_address, env, keys):
+  """Returns list of argmuments for preliminary verification of the instance."""
+  ssh_args = _GetSharedSshArgs(args, user, instance, ip_address, env, keys)
+  if not platforms.OperatingSystem.IsWindows():
+    ssh_args.append('--')
+  metadata_id_url = (
+      'http://metadata.google.internal/computeMetadata/v1/instance/id')
+  ssh_args.append(
+      '`curl "{0}" -H "Metadata-Flavor: Google" -q` = {1} ] || exit 1'.format(
+          metadata_id_url, instance.id))
+  return ssh_args

@@ -106,6 +106,7 @@ class InstallationInfo(object):
       manager = update_manager.UpdateManager()
       self.components = manager.GetCurrentVersionsInformation()
       self.old_tool_paths = manager.FindAllOldToolsOnPath()
+      self.duplicate_tool_paths = manager.FindAllDuplicateToolsOnPath()
       paths = [os.path.realpath(p) for p in self.path.split(os.pathsep)]
       this_path = os.path.realpath(
           os.path.join(self.sdk_root,
@@ -116,6 +117,7 @@ class InstallationInfo(object):
     else:
       self.components = {}
       self.old_tool_paths = []
+      self.duplicate_tool_paths = []
       self.on_path = False
 
     self.kubectl = file_utils.SearchForExecutableOnPath('kubectl')
@@ -147,6 +149,10 @@ class InstallationInfo(object):
       out.write(u'\nWARNING: There are old versions of the Google Cloud '
                 u'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.old_tool_paths)))
+    if self.duplicate_tool_paths:
+      out.write(u'There are alternate versions of the following Google Cloud '
+                'Platform tools on your system PATH.\n  {0}\n'
+                .format('\n  '.join(self.duplicate_tool_paths)))
     return out.getvalue()
 
 

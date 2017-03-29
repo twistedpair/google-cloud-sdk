@@ -12,28 +12,29 @@ package = 'deploymentmanager'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
-  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
-  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
-  }, { "log_type": "ADMIN_READ", } ] }, { "service":
-  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
-  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
-  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
-  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
-  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices"
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
+  "ADMIN_READ", } ] }, { "service": "fooservice@googleapis.com"
+  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] } For
+  fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts foo@gmail.com from DATA_READ logging, and
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
     exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -957,6 +958,20 @@ class DeploymentmanagerTypeProvidersGetRequest(_messages.Message):
   typeProvider = _messages.StringField(2, required=True)
 
 
+class DeploymentmanagerTypeProvidersGetTypeRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersGetTypeRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    type: The name of the type provider for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  type = _messages.StringField(2, required=True)
+  typeProvider = _messages.StringField(3, required=True)
+
+
 class DeploymentmanagerTypeProvidersInsertRequest(_messages.Message):
   """A DeploymentmanagerTypeProvidersInsertRequest object.
 
@@ -1017,6 +1032,58 @@ class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class DeploymentmanagerTypeProvidersListTypesRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersListTypesRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  typeProvider = _messages.StringField(6, required=True)
 
 
 class DeploymentmanagerTypeProvidersPatchRequest(_messages.Message):
@@ -1892,6 +1959,48 @@ class Type(_messages.Message):
   selfLink = _messages.StringField(8)
 
 
+class TypeInfo(_messages.Message):
+  """Contains detailed information about a composite type, base type, or base
+  type with specific collection.
+
+  Fields:
+    description: The description of the type.
+    documentationLink: For swagger 2.0 externalDocs field will be used. For
+      swagger 1.2 this field will be empty.
+    kind: [Output Only] Type of the output. Always deploymentManager#TypeInfo
+      for TypeInfo.
+    name: The base type or composite type name.
+    schema: For base types with a collection, we return a schema and
+      documentation link For template types, we return only a schema
+    selfLink: [Output Only] Server-defined URL for the resource.
+    title: The title on the API descriptor URL provided.
+  """
+
+  description = _messages.StringField(1)
+  documentationLink = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'deploymentmanager#typeInfo')
+  name = _messages.StringField(4)
+  schema = _messages.MessageField('TypeInfoSchemaInfo', 5)
+  selfLink = _messages.StringField(6)
+  title = _messages.StringField(7)
+
+
+class TypeInfoSchemaInfo(_messages.Message):
+  """TypeInfoSchemaInfo message type.
+
+  Fields:
+    input: The properties that this composite type or base type collection
+      accept as input, represented as a json blob, format is: JSON Schema
+      Draft V4
+    output: The properties that this composite type or base type collection
+      exposes as output, these properties can be used for references,
+      represented as json blob, format is: JSON Schema Draft V4
+  """
+
+  input = _messages.StringField(1)
+  output = _messages.StringField(2)
+
+
 class TypeLabelEntry(_messages.Message):
   """A TypeLabelEntry object.
 
@@ -1968,6 +2077,18 @@ class TypeProvidersListResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   typeProviders = _messages.MessageField('TypeProvider', 2, repeated=True)
+
+
+class TypeProvidersListTypesResponse(_messages.Message):
+  """TypeProvidersListTypesResponse message type.
+
+  Fields:
+    nextPageToken: A token used to continue a truncated list request.
+    types: [Output Only] A list of resource type info.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  types = _messages.MessageField('TypeInfo', 2, repeated=True)
 
 
 class TypesListResponse(_messages.Message):

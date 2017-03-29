@@ -18,11 +18,11 @@ from googlecloudsdk.core import resources
 
 
 def GetClientInstance():
-  return apis.GetClientInstance('cloudkms', 'v1beta1')
+  return apis.GetClientInstance('cloudkms', 'v1')
 
 
 def GetMessagesModule():
-  return apis.GetMessagesModule('cloudkms', 'v1beta1')
+  return apis.GetMessagesModule('cloudkms', 'v1')
 
 
 def MakeGetUriFunc(command):
@@ -42,7 +42,7 @@ def MakeGetUriFunc(command):
 
   def _GetUri(resource):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('cloudkms', 'v1beta1')
+    registry.RegisterApiByName('cloudkms', 'v1')
     parsed = registry.Parse(resource.name, collection=command.Collection())
     return parsed.SelfLink()
 

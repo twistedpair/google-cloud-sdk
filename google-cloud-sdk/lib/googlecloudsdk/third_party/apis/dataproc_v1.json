@@ -496,6 +496,20 @@
           "description": "Output-only Time when this state was entered.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "substate": {
+          "description": "Output-only Additional state information that includes status reported by the agent.",
+          "enumDescriptions": [
+            "",
+            "The cluster is known to be in an unhealthy state (for example, critical daemons are not running or HDFS capacity is exhausted).Applies to RUNNING state.",
+            "The agent-reported status is out of date (may occur if Cloud Dataproc loses communication with Agent).Applies to RUNNING state."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "UNHEALTHY",
+            "STALE_STATUS"
+          ]
         }
       }
     },
@@ -1033,6 +1047,22 @@
           "description": "Output-only The time when this state was entered.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "substate": {
+          "description": "Output-only Additional state information, which includes status reported by the agent.",
+          "enumDescriptions": [
+            "",
+            "The Job is submitted to the agent.Applies to RUNNING state.",
+            "The Job has been received and is awaiting execution (it may be waiting for a condition to be met). See the \"details\" field for the reason for the delay.Applies to RUNNING state.",
+            "The agent-reported status is out of date, which may be caused by a loss of communication between the agent and Cloud Dataproc. If the agent does not send a timely update, the job will fail.Applies to RUNNING state."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "SUBMITTED",
+            "QUEUED",
+            "STALE_STATUS"
+          ]
         }
       }
     },

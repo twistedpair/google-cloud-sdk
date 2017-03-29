@@ -15,12 +15,16 @@
 """Utilities to manage credentials."""
 
 import abc
+import base64
+import json
+
 import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import devshell as c_devshell
+import oauth2client
 from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
@@ -146,6 +150,13 @@ class CredentialType(enum.Enum):
     self.is_serializable = is_serializable
 
   @staticmethod
+  def FromTypeKey(key):
+    for cred_type in CredentialType:
+      if cred_type.key == key:
+        return cred_type
+    return CredentialType.UNKNOWN
+
+  @staticmethod
   def FromCredentials(creds):
     if isinstance(creds, c_devshell.DevshellCredentials):
       return CredentialType.DEVSHELL
@@ -158,3 +169,59 @@ class CredentialType(enum.Enum):
     if getattr(creds, 'refresh_token', None) is not None:
       return CredentialType.USER_ACCOUNT
     return CredentialType.UNKNOWN
+
+
+def ToJson(credentials):
+  """Given Oauth2client credentials return library independent json for it."""
+  creds_type = CredentialType.FromCredentials(credentials)
+  if creds_type == CredentialType.USER_ACCOUNT:
+    creds_dict = {
+        'type': creds_type.key,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'refresh_token': credentials.refresh_token
+    }
+  elif creds_type == CredentialType.SERVICE_ACCOUNT:
+    creds_dict = credentials.serialization_data
+  elif creds_type == CredentialType.P12_SERVICE_ACCOUNT:
+    # pylint: disable=protected-access
+    creds_dict = {
+        'client_email': credentials._service_account_email,
+        'type': creds_type.key,
+        'private_key': base64.b64encode(credentials._private_key_pkcs12),
+        'password': credentials._private_key_password
+    }
+  else:
+    raise UnknownCredentialsType(creds_type)
+  return json.dumps(creds_dict, sort_keys=True,
+                    indent=2, separators=(',', ': '))
+
+
+def FromJson(json_value):
+  """Returns Oauth2client credentials from library independend json format."""
+  json_key = json.loads(json_value)
+  cred_type = CredentialType.FromTypeKey(json_key['type'])
+  if cred_type == CredentialType.SERVICE_ACCOUNT:
+    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
+        json_key, scopes=config.CLOUDSDK_SCOPES)
+    cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
+  elif cred_type == CredentialType.USER_ACCOUNT:
+    cred = client.GoogleCredentials(
+        access_token=None,
+        client_id=json_key['client_id'],
+        client_secret=json_key['client_secret'],
+        refresh_token=json_key['refresh_token'],
+        token_expiry=None,
+        token_uri=oauth2client.GOOGLE_TOKEN_URI,
+        user_agent=config.CLOUDSDK_USER_AGENT)
+  elif cred_type == CredentialType.P12_SERVICE_ACCOUNT:
+    # pylint: disable=protected-access
+    cred = service_account.ServiceAccountCredentials._from_p12_keyfile_contents(
+        service_account_email=json_key['client_email'],
+        private_key_pkcs12=base64.b64decode(json_key['private_key']),
+        private_key_password=json_key['password'],
+        scopes=config.CLOUDSDK_SCOPES)
+    cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
+  else:
+    raise UnknownCredentialsType(json_key['type'])
+  return cred

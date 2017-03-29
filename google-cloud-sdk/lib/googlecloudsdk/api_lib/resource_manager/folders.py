@@ -51,3 +51,18 @@ def GetFolder(folder_id):
   return FoldersService().Get(
       FoldersMessages().CloudresourcemanagerFoldersGetRequest(
           foldersId=folder_id))
+
+
+def GetIamPolicy(folder_id):
+  messages = FoldersMessages()
+  request = messages.CloudresourcemanagerFoldersGetIamPolicyRequest(
+      foldersId=folder_id, getIamPolicyRequest=messages.GetIamPolicyRequest())
+  return FoldersService().GetIamPolicy(request)
+
+
+def SetIamPolicy(folder_id, policy):
+  messages = FoldersMessages()
+  request = messages.CloudresourcemanagerFoldersSetIamPolicyRequest(
+      foldersId=folder_id,
+      setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+  return FoldersService().SetIamPolicy(request)

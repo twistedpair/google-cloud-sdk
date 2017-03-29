@@ -47,30 +47,6 @@ def GetDefaultScope():
   return None
 
 
-def GetHealthChecks(args, resource_parser):
-  """Returns health check URIs from arguments."""
-  health_check_refs = []
-
-  if args.http_health_checks:
-    health_check_refs.extend(resource_parser.CreateGlobalReferences(
-        args.http_health_checks, resource_type='httpHealthChecks'))
-
-  if getattr(args, 'https_health_checks', None):
-    health_check_refs.extend(resource_parser.CreateGlobalReferences(
-        args.https_health_checks, resource_type='httpsHealthChecks'))
-
-  if getattr(args, 'health_checks', None):
-    if health_check_refs:
-      raise exceptions.ToolException(
-          'Mixing --health-checks with --http-health-checks or with '
-          '--https-health-checks is not supported.')
-    else:
-      health_check_refs.extend(resource_parser.CreateGlobalReferences(
-          args.health_checks, resource_type='healthChecks'))
-
-  return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
-
-
 def GetIAP(iap_arg, messages, existing_iap_settings=None):
   """Returns IAP settings from arguments."""
 

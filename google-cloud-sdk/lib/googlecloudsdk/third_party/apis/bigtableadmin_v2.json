@@ -600,6 +600,46 @@
         }
       }
     },
+    "CreateClusterMetadata": {
+      "id": "CreateClusterMetadata",
+      "description": "The metadata for the Operation returned by CreateCluster.",
+      "type": "object",
+      "properties": {
+        "originalRequest": {
+          "description": "The request that prompted the initiation of this CreateCluster operation.",
+          "$ref": "CreateClusterRequest"
+        },
+        "requestTime": {
+          "description": "The time at which the original request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "finishTime": {
+          "description": "The time at which the operation failed or was completed successfully.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "CreateClusterRequest": {
+      "id": "CreateClusterRequest",
+      "description": "Request message for BigtableInstanceAdmin.CreateCluster.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>`.",
+          "type": "string"
+        },
+        "clusterId": {
+          "description": "The ID to be used when referring to the new cluster within its instance,\ne.g., just `mycluster` rather than\n`projects\/myproject\/instances\/myinstance\/clusters\/mycluster`.",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "The cluster to be created.\nFields marked `OutputOnly` must be left blank.",
+          "$ref": "Cluster"
+        }
+      }
+    },
     "UpdateClusterMetadata": {
       "id": "UpdateClusterMetadata",
       "description": "The metadata for the Operation returned by UpdateCluster.",
@@ -1124,7 +1164,7 @@
                       "type": "string"
                     },
                     "view": {
-                      "description": "The view to be applied to the returned table's fields.\nDefaults to `SCHEMA_ONLY` if unspecified.",
+                      "description": "The view to be applied to the returned table's fields.\nDefaults to `SCHEMA_VIEW` if unspecified.",
                       "location": "query",
                       "type": "string",
                       "enum": [

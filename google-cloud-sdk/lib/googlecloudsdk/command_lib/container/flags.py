@@ -369,3 +369,46 @@ If no Service Account is specified, the "default" service account is used.
       '--service-account',
       help=help_text)
 
+
+def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
+  """Adds Master Authorized Networks related flags to parser.
+
+  Master Authorized Networks related flags are:
+  --enable-master-authorized-networks --master-authorized-networks
+  --no-enable-master-authorized-networks.
+
+  Args:
+    parser: A given parser.
+    update_group: An optional group of mutually exclusive flag options
+        to which an --enable-master-authorized-networks flag is added.
+    hidden: If true, suppress help text for added options.
+  """
+  group = parser.add_argument_group('Master Authorized Networks')
+  authorized_networks_group = group if update_group is None else update_group
+  authorized_networks_group.add_argument(
+      '--enable-master-authorized-networks',
+      default=None if update_group else False,
+      help='Allow only Authorized Networks and GCE Public IPs to connect to '
+      'Kubernetes master through HTTPS.',
+      hidden=hidden,
+      action='store_true')
+  # If we have an update group, add an inverted arg.
+  # Automatic inverted flag will not be added for mutually exclusive group.
+  if update_group:
+    authorized_networks_group.add_argument(
+        '--no-enable-master-authorized-networks',
+        default=None,
+        help='Allow public internet (0.0.0.0/0) to connect to Kubernetes '
+        'master through HTTPS.',
+        hidden=hidden,
+        action='store_false',
+        dest='enable_master_authorized_networks')
+  group.add_argument(
+      '--master-authorized-networks',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='NETWORK',
+      help='The list of external networks that are allowed to connect to '
+      'Kubernetes master through HTTPS. Specified in CIDR notation '
+      '(e.g. 192.168.100.0/24). Can not be specified unless '
+      '--enable-master-authorized-networks is also specified.',
+      hidden=hidden)

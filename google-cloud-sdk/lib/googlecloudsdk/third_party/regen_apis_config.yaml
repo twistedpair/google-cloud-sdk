@@ -140,6 +140,9 @@ apis:
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
+  datapol:
+    v1alpha1:
+      discovery_doc: datapol_v1alpha1.json
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -166,6 +169,9 @@ apis:
   iam:
     v1:
       discovery_doc: iam_v1.json
+  language:
+    v1:
+      discovery_doc: language_v1.json
   logging:
     v1beta3:
       discovery_doc: logging_v1beta3.json

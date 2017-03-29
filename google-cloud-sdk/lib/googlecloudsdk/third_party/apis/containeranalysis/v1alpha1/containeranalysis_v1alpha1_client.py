@@ -177,9 +177,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsNotesGetIamPolicyRequest) input message
@@ -241,9 +244,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project, or a
 PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsNotesSetIamPolicyRequest) input message
@@ -274,9 +280,12 @@ PERMISSION_DENIED error otherwise.
 resource.
 Requires list permission on the project (e.g., "storage.objects.list" on
 the containing bucket for testing permission of an object).
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsNotesTestIamPermissionsRequest) input message
@@ -427,9 +436,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetIamPolicyRequest) input message
@@ -519,9 +531,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project, or a
 PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesSetIamPolicyRequest) input message
@@ -552,9 +567,12 @@ PERMISSION_DENIED error otherwise.
 resource.
 Requires list permission on the project (e.g., "storage.objects.list" on
 the containing bucket for testing permission of an object).
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest) input message
@@ -752,9 +770,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProvidersNotesGetIamPolicyRequest) input message
@@ -816,9 +837,12 @@ Requires "containeranalysis.notes.setIamPolicy" or
 a note or occurrence, respectively.
 Attempting this RPC on a resource without the needed permission will note
 in a PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project, or a
 PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProvidersNotesSetIamPolicyRequest) input message
@@ -849,9 +873,12 @@ PERMISSION_DENIED error otherwise.
 resource.
 Requires list permission on the project (e.g., "storage.objects.list" on
 the containing bucket for testing permission of an object).
-Attempting this RPC on a non-existent resource will note in a NOT_FOUND
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
 error if the user has list permission on the project,
 or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
 
       Args:
         request: (ContaineranalysisProvidersNotesTestIamPermissionsRequest) input message

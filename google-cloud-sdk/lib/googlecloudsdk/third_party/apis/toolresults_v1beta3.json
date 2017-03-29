@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20170227",
+ "revision": "20170320",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -117,11 +117,13 @@
     "perfUnit": {
      "type": "string",
      "enum": [
+      "bytesPerSecond",
       "kibibyte",
       "percent",
       "perfUnitUnspecified"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -136,11 +138,17 @@
       "memoryRssPrivate",
       "memoryRssShared",
       "memoryRssTotal",
+      "memoryTotal",
+      "networkReceived",
+      "networkSent",
       "ntBytesReceived",
       "ntBytesTransferred",
       "sampleSeriesTypeUnspecified"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
       "",
       "",
       "",

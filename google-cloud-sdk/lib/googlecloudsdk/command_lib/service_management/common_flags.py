@@ -25,29 +25,29 @@ def operation_flag(suffix='to act on'):
       help='The name of the operation {0}.'.format(suffix))
 
 
-def producer_service_flag(suffix='to act on'):
+def producer_service_flag(suffix='to act on', flag_name='service'):
   return base.Argument(
-      'service',
+      flag_name,
       completion_resource=services_util.SERVICES_COLLECTION,
       list_command_callback_fn=(completion_callbacks.
                                 ProducerServiceFlagCompletionCallback),
       help='The name of the service {0}.'.format(suffix))
 
 
-def consumer_service_flag(suffix='to act on'):
+def consumer_service_flag(suffix='to act on', flag_name='service'):
   return base.Argument(
-      'service',
+      flag_name,
       completion_resource=services_util.SERVICES_COLLECTION,
       list_command_callback_fn=(completion_callbacks.
                                 ConsumerServiceFlagCompletionCallback),
       help='The name of the service {0}.'.format(suffix))
 
 
-def available_service_flag(suffix='to act on'):
+def available_service_flag(suffix='to act on', flag_name='service'):
   # NOTE: Because listing available services often forces the tab completion
   #       code to timeout, this flag will not enable tab completion.
   return base.Argument(
-      'service',
+      flag_name,
       help='The name of the service {0}.'.format(suffix))
 
 

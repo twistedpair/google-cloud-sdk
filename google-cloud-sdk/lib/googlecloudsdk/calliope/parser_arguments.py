@@ -19,7 +19,6 @@ Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
 import argparse
-import re
 
 from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import parser_errors
@@ -189,6 +188,8 @@ class ArgumentInterceptor(object):
     # Any alias this flag has for the purposes of the "did you mean"
     # suggestions.
     suggestion_aliases = kwargs.pop('suggestion_aliases', [])
+    # The unbound completer object (or legacy completer function).
+    completer = kwargs.pop('completer', None)
     # The resource name for the purposes of doing remote completion.
     completion_resource = kwargs.pop('completion_resource', None)
     # An explicit command to run for remote completion instead of the default
@@ -261,8 +262,11 @@ class ArgumentInterceptor(object):
       added_argument = self.parser.AddRemainderArgument(*args, **kwargs)
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
-    self._AddRemoteCompleter(added_argument, completion_resource,
-                             list_command_path, list_command_callback_fn)
+    if completer:
+      added_argument.completer = completer
+    else:
+      self._AddRemoteCompleter(added_argument, completion_resource,
+                               list_command_path, list_command_callback_fn)
 
     if positional:
       if category:
@@ -448,30 +452,11 @@ class ArgumentInterceptor(object):
     """
     if not completion_resource:
       return
-
-    if not list_command_path:
-      list_command_path = completion_resource
-      # alpha, beta, and preview commands need to specify list_command_path
-      if (list_command_path.startswith('alpha') or
-          list_command_path.startswith('beta') or
-          list_command_path.startswith('preview')):
-        # if list_command_path not specified don't add the completer
-        completion_resource = None
-      else:
-        list_command_path = self._LowerCaseWithDashes(completion_resource)
-
-    if completion_resource:
-      # add a remote completer
-      added_argument.completer = (
-          remote_completion.RemoteCompletion.GetCompleterForResource(
-              completion_resource,
-              self.cli_generator.Generate,
-              command_line=list_command_path,
-              list_command_callback_fn=list_command_callback_fn))
-      added_argument.completion_resource = completion_resource
-
-  def _LowerCaseWithDashes(self, name):
-    # Uses two passes to handle all-upper initialisms, such as fooBARBaz
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
-    s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
-    return s2
+    # add a remote completer
+    added_argument.completer = (
+        remote_completion.RemoteCompletion.GetCompleterForResource(
+            completion_resource,
+            self.cli_generator.Generate,
+            command_line=list_command_path,
+            list_command_callback_fn=list_command_callback_fn))
+    added_argument.completion_resource = completion_resource

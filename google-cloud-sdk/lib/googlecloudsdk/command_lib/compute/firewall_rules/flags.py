@@ -15,20 +15,22 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+# Needs to be indented to show up correctly in help text
 LIST_WITH_ALL_FIELDS_FORMAT = """\
 table(
-  name,
-  network,
-  direction,
-  priority,
-  sourceRanges.list():label=SRC_RANGES,
-  destinationRanges.list():label=DEST_RANGES,
-  allowed[].map().firewall_rule().list():label=ALLOW,
-  denied[].map().firewall_rule().list():label=DENY,
-  sourceTags.list():label=SRC_TAGS,
-  sourceServiceAccounts.list():label=SRC_SVC_ACCT,
-  targetTags.list():label=TARGET_TAGS,
-  targetServiceAccounts.list():label=TARGET_SVC_ACCT)"""
+            name,
+            network,
+            direction,
+            priority,
+            sourceRanges.list():label=SRC_RANGES,
+            destinationRanges.list():label=DEST_RANGES,
+            allowed[].map().firewall_rule().list():label=ALLOW,
+            denied[].map().firewall_rule().list():label=DENY,
+            sourceTags.list():label=SRC_TAGS,
+            sourceServiceAccounts.list():label=SRC_SVC_ACCT,
+            targetTags.list():label=TARGET_TAGS,
+            targetServiceAccounts.list():label=TARGET_SVC_ACCT
+        )"""
 
 LIST_NOTICE = """\
 To show all fields of the firewall, please show in JSON format: --format=json

@@ -3104,6 +3104,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "isPersisted": {
+          "description": "Is the update for the operation persisted?",
+          "type": "boolean"
         }
       }
     }
@@ -4170,7 +4174,7 @@
               "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "httpMethod": "PATCH",
-              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>",
+              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>\nThe metadata field of the Operation will be a CompositeOperationMetadata\nobject.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",

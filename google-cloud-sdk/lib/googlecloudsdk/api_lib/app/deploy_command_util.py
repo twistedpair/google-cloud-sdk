@@ -77,6 +77,14 @@ class DockerfileError(exceptions.Error):
   """Raised if a Dockerfile was found along with a non-custom runtime."""
 
 
+class CloudbuildYamlError(exceptions.Error):
+  """Raised if a cloudbuild.yaml was found along with a non-custom runtime."""
+
+
+class CustomRuntimeFilesError(exceptions.Error):
+  """Raised if a custom runtime has both a Dockerfile and a cloudbuild.yaml."""
+
+
 class NoDockerfileError(exceptions.Error):
   """No Dockerfile found."""
 
@@ -85,31 +93,66 @@ class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
-def _NeedsDockerfile(info, dockerfile_dir):
+def _NeedsDockerfile(info, source_dir):
   """Returns True if the given directory needs a Dockerfile for this app.
 
-  Additionally verifies the sanity of the provided configuration by raising an
-  exception if:
+  A Dockerfile is necessary when there is no Dockerfile in source_dir,
+  regardless of whether we generate it here on the client-side, or in Cloud
+  Container Builder server-side.
 
-  - If the runtime is "custom", but no Dockerfile is present
-  - If the runtime is not "custom", and a Dockerfile is present
+  The reason this function is more complicated than that is that it additionally
+  verifies the sanity of the provided configuration by raising an exception if:
+
+  - The runtime is "custom", but no Dockerfile is present
+  - The runtime is not "custom", and a Dockerfile or cloudbuild.yaml is present
+  - The runtime is "custom", and has both a cloudbuild.yaml and a Dockerfile.
+
+  (The reason cloudbuild.yaml is tied into this method is that its use should be
+  mutually exclusive with the Dockerfile.)
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo). The
       configuration for the service.
-    dockerfile_dir: str, the path to the directory
+    source_dir: str, the path to the service's source directory
 
   Raises:
+    CloudbuildYamlError: if a cloudbuild.yaml is present, but the runtime is not
+      "custom".
     DockerfileError: if a Dockerfile is present, but the runtime is not
       "custom".
     NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
       custom runtime.
+    CustomRuntimeFilesError: if a custom runtime had both a Dockerfile and a
+      cloudbuild.yaml file.
 
   Returns:
     bool, whether Dockerfile generation is necessary.
   """
-  if os.path.exists(os.path.join(dockerfile_dir, 'Dockerfile')):
-    if info.runtime != 'custom':
+  has_dockerfile = os.path.exists(
+      os.path.join(source_dir, config.DOCKERFILE))
+  has_cloudbuild = os.path.exists(
+      os.path.join(source_dir, runtime_builders.CLOUDBUILD_FILE))
+  if info.runtime == 'custom':
+    if has_dockerfile and has_cloudbuild:
+      raise CustomRuntimeFilesError(
+          ('A custom runtime must have exactly one of [{}] and [{}] in the '
+           'source directory; [{}] contains both').format(
+               config.DOCKERFILE, runtime_builders.CLOUDBUILD_FILE,
+               source_dir))
+    elif has_dockerfile:
+      log.info('Using %s found in %s', config.DOCKERFILE, source_dir)
+      return False
+    elif has_cloudbuild:
+      log.info('Not using %s because cloudbuild.yaml was found instead.',
+               config.DOCKERFILE)
+      return True
+    else:
+      raise NoDockerfileError(
+          'You must provide your own Dockerfile when using a custom runtime. '
+          'Otherwise provide a "runtime" field with one of the supported '
+          'runtimes.')
+  else:
+    if has_dockerfile:
       raise DockerfileError(
           'There is a Dockerfile in the current directory, and the runtime '
           'field in {0} is currently set to [runtime: {1}]. To use your '
@@ -117,14 +160,15 @@ def _NeedsDockerfile(info, dockerfile_dir):
           '[runtime: custom]. To continue using the [{1}] runtime, please '
           'remove the Dockerfile from this directory.'.format(info.file,
                                                               info.runtime))
-    log.info('Using %s found in %s', config.DOCKERFILE, dockerfile_dir)
-    return False
-  else:
-    if info.runtime == 'custom':
-      raise NoDockerfileError(
-          'You must provide your own Dockerfile when using a custom runtime. '
-          'Otherwise provide a "runtime" field with one of the supported '
-          'runtimes.')
+    elif has_cloudbuild:
+      raise CloudbuildYamlError(
+          'There is a cloudbuild.yaml in the current directory, and the '
+          'runtime field in {0} is currently set to [runtime: {1}]. To use '
+          'your cloudbuild.yaml to build a custom runtime, set the runtime '
+          'field to [runtime: custom]. To continue using the [{1}] runtime, '
+          'please remove the cloudbuild.yaml from this directory.'.format(
+              info.file, info.runtime))
+    log.info('Need Dockerfile to be generated for runtime %s', info.runtime)
     return True
 
 
@@ -238,8 +282,9 @@ def BuildAndPushDockerImage(
     UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
       satisfy the requirements of the specified runtime type.
   """
+  needs_dockerfile = _NeedsDockerfile(service, source_dir)
   use_runtime_builders = runtime_builder_strategy.ShouldUseRuntimeBuilders(
-      service.runtime)
+      service.runtime, needs_dockerfile)
 
   # Nothing to do if this is not an image-based deployment.
   if not service.RequiresImage():
@@ -249,7 +294,6 @@ def BuildAndPushDockerImage(
       .format(service=service.module))
 
   gen_files = dict(_GetSourceContextsForUpload(source_dir))
-  needs_dockerfile = _NeedsDockerfile(service, source_dir)
   if needs_dockerfile and not use_runtime_builders:
     # The runtime builders will generate a Dockerfile in the Cloud, so we only
     # need to do this if use_runtime_builders is True
@@ -261,6 +305,7 @@ def BuildAndPushDockerImage(
       nocache=False,
       tag=config.DOCKER_IMAGE_TAG)
 
+  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD_START)
   object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
   try:
     cloud_build.UploadSource(image.dockerfile_dir, object_ref,
@@ -274,12 +319,12 @@ def BuildAndPushDockerImage(
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
 
   if use_runtime_builders:
-    builder_version = runtime_builders.RuntimeBuilderVersion.FromServiceInfo(
-        service)
+    builder_version = runtime_builders.FromServiceInfo(service, source_dir)
     build = builder_version.LoadCloudBuild({'_OUTPUT_IMAGE': image.tagged_repo})
   else:
     build = cloud_build.GetDefaultBuild(image.tagged_repo)
 
+  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_START)
   cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
       cloud_build.FixUpBuild(build, object_ref), project=project)
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
@@ -289,6 +334,7 @@ def BuildAndPushDockerImage(
 
 def DoPrepareManagedVms(gae_client):
   """Call an API to prepare the for App Engine Flexible."""
+  metrics.CustomTimedEvent(metric_names.PREPARE_ENV_START)
   try:
     message = 'If this is your first deployment, this may take a while'
     with progress_tracker.ProgressTracker(message):
@@ -303,6 +349,7 @@ def DoPrepareManagedVms(gae_client):
         ("We couldn't validate that your project is ready to deploy to App "
          'Engine Flexible Environment. If deployment fails, please check the '
          'following message and try again:\n') + str(err))
+  metrics.CustomTimedEvent(metric_names.PREPARE_ENV)
 
 
 def UseSsl(handlers):

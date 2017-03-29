@@ -424,6 +424,8 @@ consumer project's usage of the service.  Attempts to update a field not
 controlled by the caller will result in an access denied error.
 
 Operation<response: ProjectSettings>
+The metadata field of the Operation will be a CompositeOperationMetadata
+object.
 
       Args:
         request: (ServicemanagementServicesProjectSettingsPatchRequest) input message

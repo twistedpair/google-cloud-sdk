@@ -27,6 +27,10 @@ _python_argcomplete() {
           set -- "$1" "${2#$prefix}" "$3"
           COMP_LINE==${COMP_LINE%$prefix*}$2
     fi
+    # Treat --flag=<TAB> as --flag <TAB> to work around bash 4.x bug
+    if [[ ${COMP_LINE} == *=  && ${COMP_WORDS[-2]} == --* ]]; then
+        COMP_LINE=${COMP_LINE%=}' '
+    fi
     COMPREPLY=( $(IFS="$IFS"                   COMP_LINE="$COMP_LINE"                   COMP_POINT="$COMP_POINT"                   _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS"                   _ARGCOMPLETE=1                   "$1" 8>&1 9>&2 1>/dev/null 2>/dev/null) )
     if [[ $? != 0 ]]; then
         unset COMPREPLY

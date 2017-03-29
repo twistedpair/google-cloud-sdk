@@ -107,7 +107,8 @@ def AddImageArgs(parser):
           instance, a new boot disk will be created from the given
           image. Each boot disk will have the same name as the
           instance. To view a list of public images and projects, run
-          `$ gcloud compute images list`.
+          `$ gcloud compute images list`. It is best practice to use `--image`
+          when a specific version of an image is needed.
 
           When using this option, ``--boot-disk-device-name'' and
           ``--boot-disk-size'' can be used to override the boot disk's
@@ -126,7 +127,9 @@ def AddImageArgs(parser):
       help="""\
       The family of the image that the boot disk will be initialized
       with. When a family is specified instead of an image, the latest
-      non-deprecated image associated with that family is used.
+      non-deprecated image associated with that family is used. It is best
+      practice to use `--image-family` when the latest version of an image is
+      needed.
 
       By default, ``{default_image_family}'' is assumed for this flag.
       """.format(default_image_family=constants.DEFAULT_IMAGE_FAMILY))
@@ -288,16 +291,24 @@ def AddCreateDiskArgs(parser):
       initialized with. A new disk will be created based on the given
       image. To view a list of public images and projects, run
       `$ gcloud compute images list`. If omitted image-family must be
-      specified to identify the image.
+      specified to identify the image. It is best practice to use image when
+      a specific version of an image is needed.
 
       *image-family*::: The family of the image that the disk will be
       initialized with. When a family is specified instead of an image,
       the latest non-deprecated image associated with that family is
-      used.
+      used. It is best practice to use image-family when the latest version
+      of an image is needed.
 
       *image-project*::: The project that the image or image family
-      belongs to. If not specified and either an image or image family
-      is provided, the project of the instance is assumed.
+      belongs to. It is best practice to define image-project.
+          * If specifying one of our public images, image-project must be
+            provided.
+          * If there are several of the same image-family value in multiple
+            projects, image-project must be specified to clarify the image to
+            be used.
+          * If not specified and either image or image-family is provided, the
+            current default project is used.
 
       *size*::: The size of the disk. The value must be a whole number
       followed by a size unit of ``KB'' for kilobyte, ``MB'' for

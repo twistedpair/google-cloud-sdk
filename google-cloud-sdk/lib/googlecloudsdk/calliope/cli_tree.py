@@ -84,7 +84,11 @@ class Argument(object):
   def __init__(self, arg, name):
 
     completer = getattr(arg, 'completer', None)
-    self.completer = _GetModulePath(completer, '')
+    if isinstance(completer, type):
+      self.completer = _GetModulePath(completer, '')
+    else:
+      # Legacy completer.
+      self.completer = None
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
     self.name = name

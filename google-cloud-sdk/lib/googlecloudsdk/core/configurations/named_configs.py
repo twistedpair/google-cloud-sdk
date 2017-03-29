@@ -484,8 +484,10 @@ def _ActiveConfigNameFromFile():
   except (OSError, IOError) as exc:
     if exc.errno != errno.ENOENT:
       raise NamedConfigFileAccessError(
-          'Active configuration name could not be read from: [{0}]'
-          .format(path), exc)
+          'Active configuration name could not be read from: [{0}]. Ensure you '
+          'have sufficient read permissions on required active configuration '
+          'in [{1}]'
+          .format(path, config.Paths().named_config_directory), exc)
 
   # The active named config pointer file is missing, return None
   return None

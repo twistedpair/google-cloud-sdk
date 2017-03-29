@@ -23,5 +23,5 @@ def IdArg(description):
       'id',
       metavar='ORGANIZATION_ID',
       completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
+      list_command_path='organizations list --uri',
       help='ID for the organization {0}'.format(description))

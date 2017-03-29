@@ -21,6 +21,7 @@ from googlecloudsdk.calliope import exceptions
 
 
 # TODO(b/35104889): Migrate methods containing Namespace args to command_lib
+# TODO(b/35930151): Make methods in api_lib command-agnostic
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
 
@@ -233,17 +234,13 @@ class _BaseInstances(object):
     if hasattr(args, 'master_instance_name'):
       if args.master_instance_name:
         replication = 'ASYNCHRONOUS'
-        activation_policy = 'ALWAYS'
         if hasattr(args, 'replica_type') and args.replica_type == 'FAILOVER':
           instance_resource.replicaConfiguration = (
               sql_messages.ReplicaConfiguration(failoverTarget=True))
       else:
         replication = 'SYNCHRONOUS'
-        activation_policy = 'ON_DEMAND'
       if not args.replication:
         instance_resource.settings.replicationType = replication
-      if not args.activation_policy:
-        instance_resource.settings.activationPolicy = activation_policy
 
     if instance_ref:
       cls.SetProjectAndInstanceFromRef(instance_resource, instance_ref)

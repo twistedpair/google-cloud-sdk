@@ -18,7 +18,6 @@ from __future__ import with_statement
 
 import urllib2
 
-from googlecloudsdk.api_lib.app import logs_requestor
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.core import exceptions
@@ -32,7 +31,6 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
-import yaml
 
 
 APPCFG_SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -153,155 +151,11 @@ class AppengineClient(object):
           warning_message += index.ToYAML()
         log.warning(warning_message)
 
-  def GetLogs(self, service, version, severity, vhost, include_vhost,
-              include_all, num_days, end_date, output_file):
-    """Get application logs for the given version of the service.
-
-    Args:
-      service: str, The service of the app to fetch logs from.
-      version: str, The version of the app to fetch logs for.
-      severity: int, App log severity to request (0-4); None for request logs
-        only.
-      vhost: str, The virtual host of log messages to get. None for all hosts.
-      include_vhost: bool, If true, the virtual host is included in log
-        messages.
-      include_all: bool, If true, we add to the log message everything we know
-        about the request.
-      num_days: int, Number of days worth of logs to export; 0 for all
-        available.
-      end_date: datetime.date, Date object representing last day of logs to
-        return.  If None, today is used.
-      output_file: Output file name or '-' for standard output.
-    """
-    rpcserver = self._GetRpcServer()
-    requestor = logs_requestor.LogsRequester(
-        rpcserver, self.project, service, version, severity, vhost,
-        include_vhost, include_all)
-    requestor.DownloadLogs(num_days, end_date, output_file)
-
-  def GetLogsAppend(self, service, version, severity, vhost, include_vhost,
-                    include_all, end_date, output_file):
-    """Get application logs and append them to an existing file.
-
-    Args:
-      service: str, The service of the app to fetch logs from.
-      version: str, The version of the app to fetch logs for.
-      severity: int, App log severity to request (0-4); None for request logs
-        only.
-      vhost: str, The virtual host of log messages to get. None for all hosts.
-      include_vhost: bool, If true, the virtual host is included in log
-        messages.
-      include_all: bool, If true, we add to the log message everything we know
-        about the request.
-      end_date: datetime.date, Date object representing last day of logs to
-        return.  If None, today is used.
-      output_file: Output file name or '-' for standard output.
-    """
-    rpcserver = self._GetRpcServer()
-    requestor = logs_requestor.LogsRequester(
-        rpcserver, self.project, service, version, severity, vhost,
-        include_vhost, include_all)
-    requestor.DownloadLogsAppend(end_date, output_file)
-
   def PrepareVmRuntime(self):
     """Prepare the application for vm runtimes and return state."""
     rpcserver = self._GetRpcServer(
         timeout_max_errors=self._PREPARE_TIMEOUT_RETIRES)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
-
-  # Note: vm_name and instance id are different, this API client
-  # needs the VM name. The Zeus API uses instance id instead.
-  def SetManagedByGoogle(self, service, version, vm_name=None, wait=True):
-    """Sets a service version (and optionally an instance) to Google managed.
-
-    This will reboot the machine and restore the instance with a fresh runtime.
-
-    Args:
-      service: str, The service to update.
-      version: str, The version of the service to update.
-      vm_name: str, The vm name of the instance to update.
-      wait: bool, True to wait until it takes effect.
-    """
-    self._SetManagedBy(service, version, vm_name, '/api/vms/lock', wait)
-
-  def SetManagedBySelf(self, service, version, vm_name=None, wait=True):
-    """Sets a service version (optionally a single instance) as self managed.
-
-    This is the 'break the glass' mode that lets you ssh into the machine and
-    debug.
-
-    Args:
-      service: str, The service to update.
-      version: str, The version of the service to update.
-      vm_name: str, The vm name of the instance to update.
-      wait: bool, True to wait until it takes effect.
-    """
-    self._SetManagedBy(service, version, vm_name, '/api/vms/debug', wait)
-
-  def _SetManagedBy(self, service, version, vm_name, url, wait):
-    """Switches a service version between management modes.
-
-    Args:
-      service: str, The service to update.
-      version: str, The version of the service to update.
-      vm_name: str, The vm name of the instance to update.
-      url: str, The URL of the API to call to make the update.
-      wait: bool, True to wait until it takes effect.
-
-    Raises:
-      Error: if changing the instance debug state failed.
-    """
-    rpcserver = self._GetRpcServer()
-    kwargs = {'app_id': self.project,
-              'version_match': version,
-              'module': service}
-    if vm_name:
-      kwargs['instance'] = vm_name
-
-    rpcserver.Send(url, **kwargs)
-
-    if wait:
-      def GetState():
-        yaml_data = rpcserver.Send(
-            '/api/vms/debugstate', app_id=self.project, version_match=version,
-            module=service)
-        state = yaml.safe_load(yaml_data)
-        done = state['state'] != 'PENDING'
-        return (done, (state['state'], state['message']))
-
-      def PrintRetryMessage((unused_state, msg), delay):
-        log.status.Print('{0}.  Will try again in {1} seconds.'
-                         .format(msg, delay))
-
-      _, (state, message) = util.RetryWithBackoff(
-          GetState, PrintRetryMessage, initial_delay=1, backoff_factor=2,
-          max_delay=5, max_tries=20)
-      if state == 'ERROR':
-        raise Error(message)
-
-  def StartService(self, service, version):
-    """Starts serving a the given version of the service.
-
-    This only works if scaling is set to manual.
-
-    Args:
-      service: str, The service to start.
-      version: str, The version of the service to start.
-    """
-    self._GetRpcServer().Send('/api/modules/start', app_id=self.project,
-                              module=service, version=version)
-
-  def StopService(self, service, version):
-    """Stop serving a the given version of the service.
-
-    This only works if scaling is set to manual.
-
-    Args:
-      service: str, The service to stop.
-      version: str, The version of the service to stop.
-    """
-    self._GetRpcServer().Send('/api/modules/stop', app_id=self.project,
-                              module=service, version=version)
 
   def UpdateConfig(self, config_name, parsed_yaml):
     """Updates any of the supported config file types.

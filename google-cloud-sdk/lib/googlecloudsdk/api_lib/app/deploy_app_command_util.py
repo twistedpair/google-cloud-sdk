@@ -15,6 +15,7 @@
 
 """Utility methods used by the deploy_app command."""
 
+import hashlib
 import json
 import os
 import shutil
@@ -83,7 +84,8 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   # Normal application files.
   for rel_path in util.FileIterator(source_dir, excluded_files_regex):
     full_path = os.path.join(source_dir, rel_path)
-    sha1_hash = file_utils.Checksum.HashSingleFile(full_path)
+    sha1_hash = file_utils.Checksum.HashSingleFile(full_path,
+                                                   algorithm=hashlib.sha1)
     manifest_path = '/'.join([bucket_url, sha1_hash])
     manifest[rel_path] = {
         'sourceUrl': manifest_path,
@@ -101,7 +103,8 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
       log.debug('Source context already exists. Using the existing file.')
       continue
     else:
-      sha1_hash = file_utils.Checksum.HashSingleFile(context_file)
+      sha1_hash = file_utils.Checksum.HashSingleFile(context_file,
+                                                     algorithm=hashlib.sha1)
       manifest_path = '/'.join([bucket_url, sha1_hash])
       manifest[rel_path] = {
           'sourceUrl': manifest_path,
@@ -248,9 +251,9 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
   Raises:
     ValueError: if an invalid upload strategy or None is given
   """
+  metrics.CustomTimedEvent(metric_names.COPY_APP_FILES_START)
   if upload_strategy is UploadStrategy.GSUTIL:
     manifest = CopyFilesToCodeBucketGsutil(service, source_dir, bucket_ref)
-    metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
   elif upload_strategy is UploadStrategy.THREADS:
     # Collect a list of files to upload, indexed by the SHA so uploads are
     # deduplicated.
@@ -385,7 +388,8 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
       caller must copy, move, or link the file.
     """
     file_ext = os.path.splitext(input_path)[1]
-    sha1_hash = file_utils.Checksum().AddFileContents(input_path).HexDigest()
+    sha1_hash = (file_utils.Checksum(algorithm=hashlib.sha1)
+                 .AddFileContents(input_path).HexDigest())
 
     target_filename = sha1_hash + file_ext
     target_path = os.path.join(staging_dir, target_filename)

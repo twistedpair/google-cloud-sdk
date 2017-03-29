@@ -39,6 +39,9 @@ MAX_WAITER_TIMEOUT = 60 * 60 * 12  # 12 hours
 # Default number of seconds to sleep between checking waiter status.
 DEFAULT_WAITER_SLEEP = 5  # 5 seconds
 
+# Length of the prefix before the short variable name.
+VARIABLE_NAME_PREFIX_LENGTH = 5
+
 
 def ProjectPath(project):
   return '/'.join(['projects', project])
@@ -279,12 +282,37 @@ def FormatConfig(message):
   return _DictWithShortName(message, lambda name: name.split('/')[-1])
 
 
-def FormatVariable(message):
-  """Returns the variable message as a dict with a shortened name."""
+def FormatVariable(message, output_value=False):
+  """Returns the variable message as a dict with a shortened name.
+
+  This method first converts the variable message to a dict with a shortened
+  name and an atomicName. Then, decodes the variable value in the dict if the
+  output_value flag is True.
+
+  Args:
+    message: A protorpclite message.
+    output_value: A bool flag indicates whether we want to decode and output the
+        values of the variables. The default value of this flag is False.
+
+  Returns:
+    A dict representation of the message with a shortened name field.
+  """
   # Example name:
   #   "projects/my-project/configs/my-config/variables/my/var"
   # '/'.join(name.split('/')[5:]) returns 'my/var'
-  return _DictWithShortName(message, lambda name: '/'.join(name.split('/')[5:]))
+  message_dict = _DictWithShortName(
+      message,
+      lambda name: '/'.join(name.split('/')[VARIABLE_NAME_PREFIX_LENGTH:]))
+
+  if output_value:
+    # A variable always has either a "text" field or a base64-encoded "value"
+    # field but not both.
+    if 'text' in message_dict:
+      message_dict['value'] = message_dict['text']
+    else:
+      message_dict['value'] = message_dict['value'].decode('base64')
+
+  return message_dict
 
 
 def FormatWaiter(message):

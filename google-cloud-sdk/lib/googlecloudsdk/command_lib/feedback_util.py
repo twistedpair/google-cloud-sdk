@@ -31,6 +31,12 @@ MAX_URL_LENGTH = 8208
 
 
 COMMENT_PRE_STACKTRACE_TEMPLATE = """\
+WARNING: This is a PUBLIC issue tracker, and as such, anybody can read the
+information in the report you file. In order to help diagnose the issue,
+we've included some installation information in this report. Please look
+through and redact any information you consider personal or sensitive
+before submitting this issue.
+
 {formatted_command}What steps will reproduce the problem?
 
 

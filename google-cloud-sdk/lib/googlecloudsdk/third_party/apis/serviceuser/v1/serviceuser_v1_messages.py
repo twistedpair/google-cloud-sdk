@@ -217,6 +217,10 @@ class BackendRule(_messages.Message):
   selector = _messages.StringField(3)
 
 
+class CancelOperationRequest(_messages.Message):
+  """The request message for Operations.CancelOperation."""
+
+
 class Context(_messages.Message):
   """`Context` defines which contexts an API requests.  Example:      context:
   rules:       - selector: "*"         requested:         -
@@ -389,6 +393,16 @@ class DocumentationRule(_messages.Message):
   deprecationDescription = _messages.StringField(1)
   description = _messages.StringField(2)
   selector = _messages.StringField(3)
+
+
+class Empty(_messages.Message):
+  """A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
 
 
 class EnableServiceRequest(_messages.Message):
@@ -779,6 +793,19 @@ class ListEnabledServicesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   services = _messages.MessageField('PublishedService', 2, repeated=True)
+
+
+class ListOperationsResponse(_messages.Message):
+  """The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class LogDescriptor(_messages.Message):
@@ -1541,6 +1568,55 @@ class Service(_messages.Message):
   types = _messages.MessageField('Type', 25, repeated=True)
   usage = _messages.MessageField('Usage', 26)
   visibility = _messages.MessageField('Visibility', 27)
+
+
+class ServiceuserOperationsCancelRequest(_messages.Message):
+  """A ServiceuserOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    operationsId: Part of `name`. The name of the operation resource to be
+      cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  operationsId = _messages.StringField(2, required=True)
+
+
+class ServiceuserOperationsDeleteRequest(_messages.Message):
+  """A ServiceuserOperationsDeleteRequest object.
+
+  Fields:
+    operationsId: Part of `name`. The name of the operation resource to be
+      deleted.
+  """
+
+  operationsId = _messages.StringField(1, required=True)
+
+
+class ServiceuserOperationsGetRequest(_messages.Message):
+  """A ServiceuserOperationsGetRequest object.
+
+  Fields:
+    operationsId: Part of `name`. The name of the operation resource.
+  """
+
+  operationsId = _messages.StringField(1, required=True)
+
+
+class ServiceuserOperationsListRequest(_messages.Message):
+  """A ServiceuserOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class ServiceuserProjectsServicesDisableRequest(_messages.Message):

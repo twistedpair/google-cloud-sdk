@@ -29,7 +29,6 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
-from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
@@ -1067,7 +1066,6 @@ class NoOutputAsyncMutator(base.SilentCommand, BaseAsyncMutator):
   """Base class for mutating subcommands that don't display resources."""
 
 
-# TODO(b/36242149) - Remove 'self.project' from this class
 class InstanceGroupManagerDynamicProperiesMixin(object):
   """Mixin class to compute dynamic information for instance groups."""
 
@@ -1078,7 +1076,7 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
     items = list(items)
     for mig in managed_instance_groups_utils.AddAutoscalersToMigs(
         migs_iterator=self.ComputeInstanceGroupSize(items=items),
-        project=self.project,
+        resources=self.resources,
         compute=self.compute,
         http=self.http,
         batch_url=self.batch_url,
@@ -1098,40 +1096,42 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
     """Add information about Instance Group size."""
     errors = []
     items = list(items)
-    zone_names = set([path_simplifier.Name(mig['zone'])
-                      for mig in items if 'zone' in mig])
-    region_names = set([path_simplifier.Name(mig['region'])
-                        for mig in items if 'region' in mig])
-    if zone_names:
-      zonal_instance_groups = lister.GetZonalResources(
+    zone_refs = [
+        self.resources.Parse(mig['zone'], collection='compute.zones')
+        for mig in items if 'zone' in mig
+    ]
+    region_refs = [
+        self.resources.Parse(mig['region'], collection='compute.regions')
+        for mig in items if 'region' in mig
+    ]
+    group_by_project = managed_instance_groups_utils.GroupByProject
+
+    zonal_instance_groups = []
+    for project, zone_refs in group_by_project(zone_refs).iteritems():
+      zonal_instance_groups.extend(lister.GetZonalResources(
           service=self.compute.instanceGroups,
-          project=self.project,
-          requested_zones=zone_names,
+          project=project,
+          requested_zones=set([zone.zone for zone in zone_refs]),
           filter_expr=None,
           http=self.http,
           batch_url=self.batch_url,
-          errors=errors)
-    else:
-      zonal_instance_groups = []
+          errors=errors))
 
-    if region_names and hasattr(self.compute, 'regionInstanceGroups'):
-      regional_instance_groups = lister.GetRegionalResources(
-          service=self.compute.regionInstanceGroups,
-          project=self.project,
-          requested_regions=region_names,
-          filter_expr=None,
-          http=self.http,
-          batch_url=self.batch_url,
-          errors=errors)
-    else:
-      regional_instance_groups = []
+    regional_instance_groups = []
+    if getattr(self.compute, 'regionInstanceGroups', None):
+      for project, region_refs in group_by_project(region_refs).iteritems():
+        regional_instance_groups.extend(lister.GetRegionalResources(
+            service=self.compute.regionInstanceGroups,
+            project=project,
+            requested_regions=set([region.region for region in region_refs]),
+            filter_expr=None,
+            http=self.http,
+            batch_url=self.batch_url,
+            errors=errors))
 
-    instance_groups = (
-        list(zonal_instance_groups) + list(regional_instance_groups))
-    instance_group_ref_to_size = dict([
-        (path_simplifier.ScopedSuffix(ig.selfLink), ig.size)
-        for ig in instance_groups
-    ])
+    instance_groups = zonal_instance_groups + regional_instance_groups
+    instance_group_uri_to_size = {ig.selfLink: ig.size
+                                  for ig in instance_groups}
 
     if errors:
       utils.RaiseToolException(errors)
@@ -1140,13 +1140,8 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
       self_link = item['selfLink']
       gm_self_link = self_link.replace(
           '/instanceGroupManagers/', '/instanceGroups/')
-      scoped_suffix = path_simplifier.ScopedSuffix(gm_self_link)
-      if scoped_suffix in instance_group_ref_to_size:
-        size = instance_group_ref_to_size[scoped_suffix]
-      else:
-        size = ''
 
-      item['size'] = str(size)
+      item['size'] = str(instance_group_uri_to_size.get(gm_self_link, ''))
       yield item
 
 
@@ -1209,7 +1204,7 @@ class BaseDeleter(BaseAsyncMutator):
 
     requests = []
     for ref in refs:
-      request = delete_request_class(project=self.project)
+      request = delete_request_class(project=ref.project)
       setattr(request, name_field, ref.Name())
       self.ScopeRequest(ref, request)
       requests.append(request)
@@ -1468,7 +1463,7 @@ class InstanceMetadataMutatorMixin(ReadWriteCommand):
             'Get',
             self.messages.ComputeInstancesGetRequest(
                 instance=self.ref.Name(),
-                project=self.project,
+                project=self.ref.project,
                 zone=self.ref.zone))
 
   def GetSetRequest(self, args, replacement, existing):
@@ -1477,7 +1472,7 @@ class InstanceMetadataMutatorMixin(ReadWriteCommand):
             self.messages.ComputeInstancesSetMetadataRequest(
                 instance=self.ref.Name(),
                 metadata=replacement.metadata,
-                project=self.project,
+                project=self.ref.project,
                 zone=self.ref.zone))
 
 
@@ -1512,7 +1507,7 @@ class InstanceTagsMutatorMixin(ReadWriteCommand):
             'Get',
             self.messages.ComputeInstancesGetRequest(
                 instance=self.ref.Name(),
-                project=self.project,
+                project=self.ref.project,
                 zone=self.ref.zone))
 
   def GetSetRequest(self, args, replacement, existing):
@@ -1521,7 +1516,7 @@ class InstanceTagsMutatorMixin(ReadWriteCommand):
             self.messages.ComputeInstancesSetTagsRequest(
                 instance=self.ref.Name(),
                 tags=replacement.tags,
-                project=self.project,
+                project=self.ref.project,
                 zone=self.ref.zone))
 
 

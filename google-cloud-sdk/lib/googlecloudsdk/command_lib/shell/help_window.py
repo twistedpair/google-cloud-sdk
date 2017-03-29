@@ -67,6 +67,17 @@ def GetCurrentToken(tokens, pos):
 
 
 def GenerateHelpContent(cli, width):
+  """Generates and renders the corresponding help content in the gcloud shell.
+
+  Args:
+    cli: the CLI in which to render the help contents.
+    width: the width of the help prompt.
+
+  Returns:
+    A list with one list per line, each containing (token, string) tuples for
+    words in the help text. These tuples represent (Markdown format,
+    actual text) pairs.
+  """
   if width > 80:
     width = 80
   doc = cli.current_buffer.document
@@ -88,56 +99,138 @@ def GenerateHelpContent(cli, width):
   return []
 
 
-def GenerateHelpForCommand(token, width):
-  lines = []
+def RenderMarkdown(fin, width, height=HELP_WINDOW_HEIGHT, compact=True):
+  """Renders the markdown for the help prompt in the gcloud shell.
 
-  # Get description
-  height = 2
+  Args:
+    fin: the input stream containing the markdown.
+    width: the width for which to create the renderer.
+    height: optional value representing the height for which to create the
+    renderer. Defaults to HELP_WINDOW_HEIGHT.
+    compact: optional value representing whether the renderer representation
+    should be compact. Defaults to True.
+
+  Returns:
+    A MarkdownRenderer Finish() value.
+  """
+  return render_document.MarkdownRenderer(
+      token_renderer.TokenRenderer(width=width, height=height, compact=compact),
+      fin=fin).Run()
+
+
+def GetDescriptionForCommand(token):
+  """Gets the description for the command specified in token.
+
+  Args:
+    token: the ArgTokenType.COMMAND token for which to get the description.
+
+  Returns:
+    A StringIO with the description of the token.
+  """
   gen = markdown.CliTreeMarkdownGenerator(token.tree, gcloud_tree)
   gen.PrintSectionIfExists('DESCRIPTION', disable_header=True)
   doc = gen.Edit()
-  fin = StringIO.StringIO(doc)
-  lines.extend(render_document.MarkdownRenderer(
-      token_renderer.TokenRenderer(
-          width=width, height=height), fin=fin).Run())
+  return StringIO.StringIO(doc)
 
-  lines.append([])  # blank line
 
-  # Get synopis
+def GetSynopsisForCommand(token):
+  """Gets the synopsis for the command specified in token.
+
+  Args:
+    token: the ArgTokenType.COMMAND token for which to get the synopsis.
+
+  Returns:
+    A StringIO with the synopsis of the token.
+  """
   gen = markdown.CliTreeMarkdownGenerator(token.tree, gcloud_tree)
   gen.PrintSynopsisSection()
   doc = gen.Edit()
-  fin = StringIO.StringIO(doc)
-  lines.extend(render_document.MarkdownRenderer(
-      token_renderer.TokenRenderer(
-          width=width, height=5, compact=False), fin=fin).Run())
-
-  lines.append([])  # blank line
-
-  lines.append([
-      (Token.Purple, 'ctrl-w'),
-      (Token, ' to open full reference page within browser')])
-
-  return lines
+  return StringIO.StringIO(doc)
 
 
-def GenerateHelpForFlag(token, width):
+def GetFullReferencePromptTokens():
+  """A line of Prompt Toolkit tokens about opening full reference pages."""
+  return [[(Token.Purple, 'ctrl-w'),
+           (Token, ' to open full reference page within browser')]]
+
+
+def GenerateHelpForCommand(token, width):
+  """Generates the help to show in the CLI for the command token passed.
+
+  Args:
+    token: the command token to show help for.
+    width: the width of the CLI.
+
+  Returns:
+    A list with one list per line, each containing (token, string) tuples for
+    words in the help text. These tuples represent (Markdown format,
+    actual text) pairs.
+  """
+  blank_line = [[]]
+  return (
+      RenderMarkdown(GetDescriptionForCommand(token), width=width, height=2) +
+      blank_line +
+      RenderMarkdown(
+          GetSynopsisForCommand(token), width=width, height=5, compact=False) +
+      blank_line +
+      GetFullReferencePromptTokens())
+
+
+def GetDefinitionForFlag(token):
+  """Gets the definition for the flag specified in token.
+
+  Args:
+    token: the ArgTokenType.FLAG/FLAG_ARG token for which to get the definition.
+
+  Returns:
+    A StringIO with the definition of the token.
+  """
   gen = markdown.CliTreeMarkdownGenerator(gcloud_tree, gcloud_tree)
   gen.PrintFlagDefinition(token.tree)
   mark = gen.Edit()
-
-  fin = StringIO.StringIO(mark)
-  return render_document.MarkdownRenderer(
-      token_renderer.TokenRenderer(
-          width=width, height=HELP_WINDOW_HEIGHT), fin=fin).Run()
+  return StringIO.StringIO(mark)
 
 
-def GenerateHelpForPositional(token, width):
+def GenerateHelpForFlag(token, width):
+  """Generates the help to show in the CLI for the flag token passed.
+
+  Args:
+    token: the command token to show help for.
+    width: the width of the CLI.
+
+  Returns:
+    A list with one list per line, each containing (token, string) tuples for
+    words in the help text. These tuples represent (Markdown format,
+    actual text) pairs.
+  """
+  return RenderMarkdown(GetDefinitionForFlag(token), width=width)
+
+
+def GetDefinitionForPositional(token):
+  """Gets the definition for the positional specified in token.
+
+  Args:
+    token: the ArgTokenType.POSITIONAL token for which to get the definition.
+
+  Returns:
+    A StringIO with the definition of the token.
+  """
   gen = markdown.CliTreeMarkdownGenerator(gcloud_tree, gcloud_tree)
   gen.PrintPositionalDefinition(markdown.Positional(token.tree))
   mark = gen.Edit()
+  return StringIO.StringIO(mark)
 
-  fin = StringIO.StringIO(mark)
-  return render_document.MarkdownRenderer(
-      token_renderer.TokenRenderer(
-          width=width, height=HELP_WINDOW_HEIGHT), fin=fin).Run()
+
+def GenerateHelpForPositional(token, width):
+  """Generates the help to show in the CLI for the positional token passed.
+
+  Args:
+    token: the command token to show help for.
+    width: the width of the CLI.
+
+  Returns:
+    A list with one list per line, each containing (token, string) tuples for
+    words in the help text. These tuples represent (Markdown format,
+    actual text) pairs.
+  """
+  return RenderMarkdown(GetDefinitionForPositional(token), width=width)

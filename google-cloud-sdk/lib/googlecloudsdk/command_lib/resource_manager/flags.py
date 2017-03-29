@@ -27,7 +27,7 @@ def FolderIdArg(use_description):
       'id',
       metavar='FOLDER_ID',
       completion_resource=folders.FOLDERS_COLLECTION,
-      list_command_path='resource-manager folders',
+      list_command_path='resource-manager folders list --uri',
       help='ID for the folder {0}'.format(use_description))
 
 

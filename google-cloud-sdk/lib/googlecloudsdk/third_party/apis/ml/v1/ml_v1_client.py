@@ -176,7 +176,7 @@ version of the specified model, it will be made the default version of the
 model. When you add a version to a model that already has one or more
 versions, the default version does not automatically change. If you want a
 new version to be the default, you must call
-[projects.models.versions.setDefault](/ml/reference/rest/v1/projects.models.versions/setDefault).
+[projects.models.versions.setDefault](/ml-engine/reference/rest/v1/projects.models.versions/setDefault).
 
       Args:
         request: (MlProjectsModelsVersionsCreateRequest) input message
@@ -239,7 +239,7 @@ of the model unless it is the only remaining version.
       """Gets information about a model version.
 
 Models can have multiple versions. You can call
-[projects.models.versions.list](/ml/reference/rest/v1/projects.models.versions/list)
+[projects.models.versions.list](/ml-engine/reference/rest/v1/projects.models.versions/list)
 to get the same information that this method returns for all of the
 versions of a model.
 
@@ -347,7 +347,7 @@ setting manually using this method.
 
 You must add at least one version before you can request predictions from
 the model. Add versions by calling
-[projects.models.versions.create](/ml/reference/rest/v1/projects.models.versions/create).
+[projects.models.versions.create](/ml-engine/reference/rest/v1/projects.models.versions/create).
 
       Args:
         request: (MlProjectsModelsCreateRequest) input message
@@ -378,7 +378,7 @@ the model. Add versions by calling
 
 You can only delete a model if there are no versions in it. You can delete
 versions by calling
-[projects.models.versions.delete](/ml/reference/rest/v1/projects.models.versions/delete).
+[projects.models.versions.delete](/ml-engine/reference/rest/v1/projects.models.versions/delete).
 
       Args:
         request: (MlProjectsModelsDeleteRequest) input message

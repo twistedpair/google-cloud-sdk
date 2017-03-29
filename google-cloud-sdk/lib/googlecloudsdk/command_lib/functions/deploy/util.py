@@ -43,7 +43,7 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
     Relative resource name to use in EventTrigger field.
   """
   project = properties.VALUES.core.project.Get(required=True)
-  resource_type = util.trigger_provider_registry.Event(
+  resource_type = util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type
   resources.REGISTRY.SetParamDefault(api='cloudresourcemanager',
                                      collection=None,
@@ -194,16 +194,16 @@ def _CheckTriggerProviderArgs(args):
   trigger_resource = args.trigger_resource
   # check and infer correct usage of flags accompanying --trigger-provider
   if trigger_event is None:
-    trigger_event = util.trigger_provider_registry.Provider(
+    trigger_event = util.input_trigger_provider_registry.Provider(
         trigger_provider).default_event.label
-  elif trigger_event not in util.trigger_provider_registry.EventsLabels(
+  elif trigger_event not in util.input_trigger_provider_registry.EventsLabels(
       trigger_provider):
     raise exceptions.FunctionsError('You can use only one of [' + ','.join(
-        util.trigger_provider_registry.EventsLabels(trigger_provider)
+        util.input_trigger_provider_registry.EventsLabels(trigger_provider)
     ) + '] with --trigger-provider=' + trigger_provider)
   # checked if Event Type is correct
 
-  if trigger_resource is None and util.trigger_provider_registry.Event(
+  if trigger_resource is None and util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type != util.Resources.PROJECT:
     raise exceptions.FunctionsError(
         'You must provide --trigger-resource when using '
@@ -211,7 +211,7 @@ def _CheckTriggerProviderArgs(args):
             trigger_provider, trigger_event))
   # checked if Resource Type and Path were provided or not as required
 
-  resource_type = util.trigger_provider_registry.Event(
+  resource_type = util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type
   if resource_type == util.Resources.TOPIC:
     trigger_resource = util.ValidatePubsubTopicNameOrRaise(

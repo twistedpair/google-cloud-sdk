@@ -252,7 +252,9 @@ class AccessConfig(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: Name of this access configuration.
+    name: The name of this access configuration. The default and recommended
+      name is External NAT but you can use any arbitrary string you would
+      like. For example, My external IP or Network Access.
     natIP: An external IP address associated with this instance. Specify an
       unused static external IP address available to the project or leave this
       field undefined to use an IP from a shared ephemeral IP address pool. If
@@ -328,8 +330,7 @@ class Address(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
-    address: The static external IP address represented by this resource. Only
-      IPv4 is supported.
+    address: The static external IP address represented by this resource.
     addressType: The type of address to reserve. If unspecified, defaults to
       EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -1569,6 +1570,16 @@ class BackendService(_messages.Message):
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.  When the
       load balancing scheme is INTERNAL, this field is not used.
+    failoverRatio: The value of the field must be in [0, 1]. If set,
+      'backends[].failover' must be set. They together define the fallback
+      behavior of the primary backend: if the ratio of the healthy VMs in the
+      primary backend is at or below this number, traffic arriving at the
+      load-balanced IP will be directed to the failover backend.  In case
+      where 'failoverRatio' is not set or all the VMs in the backup backend
+      are unhealthy, the traffic will be directed back to the primary backend
+      in the "force" mode, where traffic will be spread to the healthy VMs
+      with the best effort, or to all VMs when no VM is healthy.  This field
+      is only used with l4 load balancing.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -1677,21 +1688,22 @@ class BackendService(_messages.Message):
   customRequestHeaders = _messages.StringField(6, repeated=True)
   description = _messages.StringField(7)
   enableCDN = _messages.BooleanField(8)
-  fingerprint = _messages.BytesField(9)
-  healthChecks = _messages.StringField(10, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(13, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(17)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
-  region = _messages.StringField(19)
-  securityPolicy = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
-  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  failoverRatio = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  fingerprint = _messages.BytesField(10)
+  healthChecks = _messages.StringField(11, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 12)
+  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(14, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
+  name = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(18)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 19)
+  region = _messages.StringField(20)
+  securityPolicy = _messages.StringField(21)
+  selfLink = _messages.StringField(22)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 23)
+  timeoutSec = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -7742,6 +7754,56 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
   """A ComputeRegionCommitmentsGetRequest object.
 
@@ -11486,6 +11548,8 @@ class CustomerEncryptionKey(_messages.Message):
   """Represents a customer-supplied encryption key
 
   Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
@@ -11500,9 +11564,10 @@ class CustomerEncryptionKey(_messages.Message):
       customer-supplied encryption key that protects this resource.
   """
 
-  rawKey = _messages.StringField(1)
-  rsaEncryptedKey = _messages.StringField(2)
-  sha256 = _messages.StringField(3)
+  kmsKeyName = _messages.StringField(1)
+  rawKey = _messages.StringField(2)
+  rsaEncryptedKey = _messages.StringField(3)
+  sha256 = _messages.StringField(4)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):
@@ -14202,7 +14267,7 @@ class Instance(_messages.Message):
       specifies how this interface is configured to interact with other
       network services, such as connecting to the internet. Only one interface
       is supported per instance.
-    scheduling: Scheduling options for this instance.
+    scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
       authorized for this instance. Only one service account per VM instance
@@ -14531,8 +14596,6 @@ class InstanceGroupManager(_messages.Message):
       accounts needs all permissions required to create and delete instances.
       When not specified, the service account
       {projectNumber}@cloudservices.gserviceaccount.com will be used.
-    spreadingPolicy: Policy valid only for regional managed instance groups.
-      Deprecated in favor of distribution_policy.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -14582,12 +14645,11 @@ class InstanceGroupManager(_messages.Message):
   region = _messages.StringField(16)
   selfLink = _messages.StringField(17)
   serviceAccount = _messages.StringField(18)
-  spreadingPolicy = _messages.MessageField('SpreadingPolicy', 19)
-  targetPools = _messages.StringField(20, repeated=True)
-  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
-  zone = _messages.StringField(24)
+  targetPools = _messages.StringField(19, repeated=True)
+  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
+  zone = _messages.StringField(23)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -15359,6 +15421,8 @@ class InstanceProperties(_messages.Message):
       created from this template. These pairs can consist of custom metadata
       or predefined keys. See Project and instance metadata for more
       information.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
+      instance may be scheduled on the specified or later cpu/platform.
     networkInterfaces: An array of network access configurations for this
       interface.
     scheduling: Specifies the scheduling options for the instances that are
@@ -15404,10 +15468,11 @@ class InstanceProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   machineType = _messages.StringField(6)
   metadata = _messages.MessageField('Metadata', 7)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 8, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 9)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 10, repeated=True)
-  tags = _messages.MessageField('Tags', 11)
+  minCpuPlatform = _messages.StringField(8)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 10)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
+  tags = _messages.MessageField('Tags', 12)
 
 
 class InstanceReference(_messages.Message):
@@ -17384,7 +17449,9 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to abandon.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -17394,7 +17461,8 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to delete.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -17877,6 +17945,19 @@ class Router(_messages.Message):
   selfLink = _messages.StringField(11)
 
 
+class RouterAdvertisedPrefix(_messages.Message):
+  """Description-tagged prefixes for the router to advertise.
+
+  Fields:
+    description: User-specified description for the prefix.
+    prefix: The prefix to advertise. The value must be a CIDR-formatted
+      string.
+  """
+
+  description = _messages.StringField(1)
+  prefix = _messages.StringField(2)
+
+
 class RouterAggregatedList(_messages.Message):
   """Contains a list of routers.
 
@@ -17930,20 +18011,75 @@ class RouterAggregatedList(_messages.Message):
 class RouterBgp(_messages.Message):
   """A RouterBgp object.
 
+  Enums:
+    AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
+      to use for advertisement.
+    AdvertisedGroupsValueListEntryValuesEnum:
+
   Fields:
+    advertiseMode: User-specified flag to indicate which mode to use for
+      advertisement.
+    advertisedGroups: User-specified list of prefix groups to advertise in
+      custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and is advertised to all peers of the router. These groups will
+      be advertised in addition to any specified prefixes. Leave this field
+      blank to advertise no custom groups.
+    advertisedPrefixs: User-specified list of individual prefixes to advertise
+      in custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and is advertised to all peers of the router. These prefixes will
+      be advertised in addition to any specified groups. Leave this field
+      blank to advertise no custom prefixes.
     asn: Local BGP Autonomous System Number (ASN). Must be an RFC6996 private
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
   """
 
-  asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  class AdvertiseModeValueValuesEnum(_messages.Enum):
+    """User-specified flag to indicate which mode to use for advertisement.
+
+    Values:
+      CUSTOM: <no description>
+      DEFAULT: <no description>
+    """
+    CUSTOM = 0
+    DEFAULT = 1
+
+  class AdvertisedGroupsValueListEntryValuesEnum(_messages.Enum):
+    """AdvertisedGroupsValueListEntryValuesEnum enum type.
+
+    Values:
+      ALL_SUBNETS: <no description>
+    """
+    ALL_SUBNETS = 0
+
+  advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
+  advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
+  advertisedPrefixs = _messages.MessageField('RouterAdvertisedPrefix', 3, repeated=True)
+  asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
   """A RouterBgpPeer object.
 
+  Enums:
+    AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
+      to use for advertisement.
+    AdvertisedGroupsValueListEntryValuesEnum:
+
   Fields:
+    advertiseMode: User-specified flag to indicate which mode to use for
+      advertisement.
+    advertisedGroups: User-specified list of prefix groups to advertise in
+      custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and overrides the list defined for the router (in Bgp message).
+      These groups will be advertised in addition to any specified prefixes.
+      Leave this field blank to advertise no custom groups.
+    advertisedPrefixs: User-specified list of individual prefixes to advertise
+      in custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and overrides the list defined for the router (in Bgp message).
+      These prefixes will be advertised in addition to any specified groups.
+      Leave this field blank to advertise no custom prefixes.
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. In the case where there is more than one matching route of maximum
       length, the routes with lowest priority value win.
@@ -17958,12 +18094,33 @@ class RouterBgpPeer(_messages.Message):
       IPv4 is supported.
   """
 
-  advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  interfaceName = _messages.StringField(2)
-  ipAddress = _messages.StringField(3)
-  name = _messages.StringField(4)
-  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(6)
+  class AdvertiseModeValueValuesEnum(_messages.Enum):
+    """User-specified flag to indicate which mode to use for advertisement.
+
+    Values:
+      CUSTOM: <no description>
+      DEFAULT: <no description>
+    """
+    CUSTOM = 0
+    DEFAULT = 1
+
+  class AdvertisedGroupsValueListEntryValuesEnum(_messages.Enum):
+    """AdvertisedGroupsValueListEntryValuesEnum enum type.
+
+    Values:
+      ALL_SUBNETS: <no description>
+    """
+    ALL_SUBNETS = 0
+
+  advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
+  advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
+  advertisedPrefixs = _messages.MessageField('RouterAdvertisedPrefix', 3, repeated=True)
+  advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  interfaceName = _messages.StringField(5)
+  ipAddress = _messages.StringField(6)
+  name = _messages.StringField(7)
+  peerAsn = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(9)
 
 
 class RouterInterface(_messages.Message):
@@ -18303,7 +18460,9 @@ class Scheduling(_messages.Message):
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
       information, see Setting Instance Scheduling Options.
-    preemptible: Whether the instance is preemptible.
+    preemptible: Defines whether the instance is preemptible. This can only be
+      set during instance creation, it cannot be set or changed after the
+      instance has been created.
   """
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
@@ -18661,28 +18820,6 @@ class SnapshotList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#snapshotList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-
-
-class SpreadingPolicy(_messages.Message):
-  """Deprecated in favor of distribution policy.
-
-  Fields:
-    zones: A SpreadingPolicyZoneConfiguration attribute.
-  """
-
-  zones = _messages.MessageField('SpreadingPolicyZoneConfiguration', 1, repeated=True)
-
-
-class SpreadingPolicyZoneConfiguration(_messages.Message):
-  """A SpreadingPolicyZoneConfiguration object.
-
-  Fields:
-    zone: URL of the zone where managed instance group is spawning instances
-      (for regional resources). Zone has to belong to the region where managed
-      instance group is located.
-  """
-
-  zone = _messages.StringField(1)
 
 
 class SslCertificate(_messages.Message):

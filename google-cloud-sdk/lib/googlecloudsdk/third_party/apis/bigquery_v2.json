@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20170227",
+ "revision": "20170320",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -280,7 +280,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "[Experimental] The labels associated with this dataset. You can use these to organize and group your datasets. You can set this property when inserting or updating a dataset. See Labeling Datasets for more information.",
+     "description": "The labels associated with this dataset. You can use these to organize and group your datasets. You can set this property when inserting or updating a dataset. See Labeling Datasets for more information.",
      "additionalProperties": {
       "type": "string"
      }
@@ -292,7 +292,7 @@
     },
     "location": {
      "type": "string",
-     "description": "[Experimental] The geographic location where the dataset should reside. Possible values include EU and US. The default value is US."
+     "description": "The geographic location where the dataset should reside. Possible values include EU and US. The default value is US."
     },
     "selfLink": {
      "type": "string",
@@ -329,7 +329,7 @@
        },
        "labels": {
         "type": "object",
-        "description": "[Experimental] The labels associated with this dataset. You can use these to organize and group your datasets.",
+        "description": "The labels associated with this dataset. You can use these to organize and group your datasets.",
         "additionalProperties": {
          "type": "string"
         }
@@ -497,7 +497,7 @@
    "properties": {
     "autodetect": {
      "type": "boolean",
-     "description": "[Experimental] Try to detect schema and format options automatically. Any option specified explicitly will be honored."
+     "description": "Try to detect schema and format options automatically. Any option specified explicitly will be honored."
     },
     "bigtableOptions": {
      "$ref": "BigtableOptions",
@@ -530,7 +530,7 @@
     },
     "sourceFormat": {
      "type": "string",
-     "description": "[Required] The data format. For CSV files, specify \"CSV\". For Google sheets, specify \"GOOGLE_SHEETS\". For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\". For Avro files, specify \"AVRO\". For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\". [Experimental] For Google Cloud Bigtable, specify \"BIGTABLE\". Please note that reading from Google Cloud Bigtable is experimental and has to be enabled for your project. Please contact Google Cloud Support to enable this for your project."
+     "description": "[Required] The data format. For CSV files, specify \"CSV\". For Google sheets, specify \"GOOGLE_SHEETS\". For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\". For Avro files, specify \"AVRO\". For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\". [Beta] For Google Cloud Bigtable, specify \"BIGTABLE\"."
     },
     "sourceUris": {
      "type": "array",
@@ -575,7 +575,7 @@
     },
     "numDmlAffectedRows": {
      "type": "string",
-     "description": "[Output-only, Experimental] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
+     "description": "[Output-only] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
      "format": "int64"
     },
     "pageToken": {
@@ -759,7 +759,7 @@
     },
     "autodetect": {
      "type": "boolean",
-     "description": "[Experimental] Indicates if we should automatically infer the options and schema for CSV and JSON sources."
+     "description": "Indicates if we should automatically infer the options and schema for CSV and JSON sources."
     },
     "createDisposition": {
      "type": "string",
@@ -788,11 +788,11 @@
     },
     "nullMarker": {
      "type": "string",
-     "description": "[Optional] Specifies a string that represents a null value in a CSV file. For example, if you specify \"\\N\", BigQuery interprets \"\\N\" as a null value when loading a CSV file. The default value is the empty string. If you set this property to a custom value, BigQuery still interprets the empty string as a null value for all data types except for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets the empty string as an empty value."
+     "description": "[Optional] Specifies a string that represents a null value in a CSV file. For example, if you specify \"\\N\", BigQuery interprets \"\\N\" as a null value when loading a CSV file. The default value is the empty string. If you set this property to a custom value, BigQuery throws an error if an empty string is present for all data types except for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets the empty string as an empty value."
     },
     "projectionFields": {
      "type": "array",
-     "description": "[Experimental] If sourceFormat is set to \"DATASTORE_BACKUP\", indicates which entity properties to load into BigQuery from a Cloud Datastore backup. Property names are case sensitive and must be top-level properties. If no properties are specified, BigQuery loads all properties. If any named property isn't found in the Cloud Datastore backup, an invalid error is returned in the job result.",
+     "description": "If sourceFormat is set to \"DATASTORE_BACKUP\", indicates which entity properties to load into BigQuery from a Cloud Datastore backup. Property names are case sensitive and must be top-level properties. If no properties are specified, BigQuery loads all properties. If any named property isn't found in the Cloud Datastore backup, an invalid error is returned in the job result.",
      "items": {
       "type": "string"
      }
@@ -882,7 +882,7 @@
     },
     "parameterMode": {
      "type": "string",
-     "description": "[Experimental] Standard SQL only. Set to POSITIONAL to use positional (?) query parameters or to NAMED to use named (@myparam) query parameters in this query."
+     "description": "Standard SQL only. Set to POSITIONAL to use positional (?) query parameters or to NAMED to use named (@myparam) query parameters in this query."
     },
     "preserveNulls": {
      "type": "boolean",
@@ -928,7 +928,7 @@
     },
     "userDefinedFunctionResources": {
      "type": "array",
-     "description": "[Experimental] Describes user-defined function resources used in the query.",
+     "description": "Describes user-defined function resources used in the query.",
      "items": {
       "$ref": "UserDefinedFunctionResource"
      }
@@ -1110,12 +1110,12 @@
     },
     "numDmlAffectedRows": {
      "type": "string",
-     "description": "[Output-only, Experimental] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
+     "description": "[Output-only] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
      "format": "int64"
     },
     "queryPlan": {
      "type": "array",
-     "description": "[Output-only, Experimental] Describes execution plan for the query.",
+     "description": "[Output-only] Describes execution plan for the query.",
      "items": {
       "$ref": "ExplainQueryStage"
      }
@@ -1393,7 +1393,7 @@
     },
     "parameterMode": {
      "type": "string",
-     "description": "[Experimental] Standard SQL only. Set to POSITIONAL to use positional (?) query parameters or to NAMED to use named (@myparam) query parameters in this query."
+     "description": "Standard SQL only. Set to POSITIONAL to use positional (?) query parameters or to NAMED to use named (@myparam) query parameters in this query."
     },
     "preserveNulls": {
      "type": "boolean",
@@ -1410,7 +1410,7 @@
     },
     "queryParameters": {
      "type": "array",
-     "description": "[Experimental] Query parameters for Standard SQL queries.",
+     "description": "Query parameters for Standard SQL queries.",
      "items": {
       "$ref": "QueryParameter"
      }
@@ -1462,7 +1462,7 @@
     },
     "numDmlAffectedRows": {
      "type": "string",
-     "description": "[Output-only, Experimental] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
+     "description": "[Output-only] The number of rows affected by a DML statement. Present only for DML statements INSERT, UPDATE or DELETE.",
      "format": "int64"
     },
     "pageToken": {
@@ -1927,7 +1927,7 @@
     },
     "userDefinedFunctionResources": {
      "type": "array",
-     "description": "[Experimental] Describes user-defined function resources used in the query.",
+     "description": "Describes user-defined function resources used in the query.",
      "items": {
       "$ref": "UserDefinedFunctionResource"
      }
@@ -2516,6 +2516,11 @@
        "required": true,
        "location": "path"
       },
+      "selectedFields": {
+       "type": "string",
+       "description": "List of fields to return (comma-separated). If unspecified, all fields are returned",
+       "location": "query"
+      },
       "startIndex": {
        "type": "string",
        "description": "Zero-based index of the starting row to read",
@@ -2599,6 +2604,11 @@
        "description": "Project ID of the requested table",
        "required": true,
        "location": "path"
+      },
+      "selectedFields": {
+       "type": "string",
+       "description": "List of fields to return (comma-separated). If unspecified, all fields are returned",
+       "location": "query"
       },
       "tableId": {
        "type": "string",

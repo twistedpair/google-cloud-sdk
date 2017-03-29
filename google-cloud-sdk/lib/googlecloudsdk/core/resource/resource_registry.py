@@ -1511,31 +1511,12 @@ RESOURCE_REGISTRY = {
         """,),
 
     # spanner
-    'spanner.databases':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            state
-          )
-        """,),
     'spanner.instanceConfigs':
         resource_info.ResourceInfo(
             list_format="""
           table(
             name.basename(),
             displayName
-          )
-        """,),
-    'spanner.instances':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            displayName,
-            config.basename(),
-            nodeCount,
-            state
           )
         """,),
     'spanner.operations':
@@ -1548,129 +1529,27 @@ RESOURCE_REGISTRY = {
             metadata.'@type'.split('.').slice(-1:).join()
           )
         """,),
-
-    # sql
-    'sql.databases':
+    'spanner.projects.instances':
         resource_info.ResourceInfo(
             list_format="""
           table(
-            name,
-            charset,
-            collation
+            name.basename(),
+            displayName,
+            config.basename(),
+            nodeCount,
+            state
           )
         """,),
-    'sql.backupRuns':
+    'spanner.projects.instances.databases':
         resource_info.ResourceInfo(
             list_format="""
           table(
-            dueTime.iso(),
-            error.code.yesno(no="-"):label=ERROR,
-            status
-          )
-        """,),
-    'sql.backupRuns.v1beta4':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            windowStartTime.iso(),
-            error.code.yesno(no="-"):label=ERROR,
-            status
-          )
-        """,),
-    'sql.flags':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name,
-            type,
-            appliesTo.list():label=DATABASE_VERSION,
-            allowedStringValues.list():label=ALLOWED_VALUES
-          )
-        """,),
-    'sql.instances':
-        resource_info.ResourceInfo(
-            async_collection='sql.operations',
-            cache_command='sql instances list',
-            list_format="""
-          table(
-            instance:label=NAME,
-            region,
-            settings.tier,
-            ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
-            state:label=STATUS
-          )
-        """,),
-    'sql.instances.v1beta4':
-        resource_info.ResourceInfo(
-            async_collection='sql.operations.v1beta4',
-            cache_command='sql instances list',
-            list_format="""
-          table(
-            name,
-            region,
-            settings.tier,
-            ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
-            state:label=STATUS
-          )
-        """,),
-    'sql.operations':
-        resource_info.ResourceInfo(
-            async_collection='default',
-            list_format="""
-          table(
-            operation,
-            operationType:label=TYPE,
-            startTime.iso():label=START,
-            endTime.iso():label=END,
-            error[0].code.yesno(no="-"):label=ERROR,
-            state:label=STATUS
-          )
-        """,),
-    'sql.operations.v1beta4':
-        resource_info.ResourceInfo(
-            async_collection='default',
-            list_format="""
-          table(
-            name,
-            operationType:label=TYPE,
-            startTime.iso():label=START,
-            endTime.iso():label=END,
-            error[0].code.yesno(no="-"):label=ERROR,
-            status:label=STATUS
-          )
-        """,),
-    'sql.sslCerts':
-        resource_info.ResourceInfo(
-            async_collection='sql.operations',
-            list_format="""
-          table(
-            commonName:label=NAME,
-            sha1Fingerprint,
-            expirationTime.yesno(no="-"):label=EXPIRATION
-          )
-        """,),
-    'sql.tiers':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            tier,
-            region.list():label=AVAILABLE_REGIONS,
-            RAM.size(),
-            DiskQuota.size():label=DISK
-          )
-        """,),
-    'sql.users.v1beta4':
-        resource_info.ResourceInfo(
-            async_collection='sql.operations.v1beta4',
-            list_format="""
-          table(
-            name.yesno(no='(anonymous)'),
-            host
+            name.basename(),
+            state
           )
         """,),
 
-    # test
+    # firebase test
     'test.android.devices':
         resource_info.ResourceInfo(  # Deprecated
             list_format="""
@@ -1684,7 +1563,7 @@ RESOURCE_REGISTRY = {
             tags.list().color(green=default,red=deprecated,yellow=preview)
           )
         """,),
-    'test.android.models':
+    'firebase.test.android.models':
         resource_info.ResourceInfo(
             list_format="""
           table[box](
@@ -1697,7 +1576,7 @@ RESOURCE_REGISTRY = {
             tags.list().color(green=default,red=deprecated,yellow=preview)
           )
         """,),
-    'test.android.versions':
+    'firebase.test.android.versions':
         resource_info.ResourceInfo(
             list_format="""
           table[box](
@@ -1709,7 +1588,7 @@ RESOURCE_REGISTRY = {
             tags.list().color(green=default,red=deprecated,yellow=preview)
           )
         """,),
-    'test.android.locales':
+    'firebase.test.android.locales':
         resource_info.ResourceInfo(
             list_format="""
           table[box](
@@ -1719,9 +1598,9 @@ RESOURCE_REGISTRY = {
             tags.list().color(green=default,red=deprecated,yellow=preview)
           )
         """,),
-    'test.android.run.outcomes':
+    'firebase.test.android.run.outcomes':
         resource_info.ResourceInfo(
-            async_collection='test.android.run.url',
+            async_collection='firebase.test.android.run.url',
             list_format="""
           table[box](
             outcome.color(red=Fail, green=Pass, yellow=Inconclusive),
@@ -1729,7 +1608,7 @@ RESOURCE_REGISTRY = {
             test_details:label=TEST_DETAILS
           )
         """,),
-    'test.android.run.url':
+    'firebase.test.android.run.url':
         resource_info.ResourceInfo(
             list_format="""
           value(format(
@@ -1758,7 +1637,7 @@ RESOURCE_REGISTRY = {
 }
 
 
-def Get(collection, must_be_registered=True):
+def Get(collection, must_be_registered=False):
   """Returns the ResourceInfo for collection or None if not registered.
 
   Args:
@@ -1770,12 +1649,13 @@ def Get(collection, must_be_registered=True):
       must_be_registered is True.
 
   Returns:
-    The ResourceInfo for collection or None if not registered.
+    The ResourceInfo for collection or an default ResourceInfo if not
+      registered.
   """
   info = RESOURCE_REGISTRY.get(collection, None)
   if not info:
     if not must_be_registered:
-      return None
+      return resource_info.ResourceInfo()
     raise resource_exceptions.UnregisteredCollectionError(
         'Collection [{0}] is not registered.'.format(collection))
   info.collection = collection

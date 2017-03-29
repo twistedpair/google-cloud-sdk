@@ -22,13 +22,12 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags as forward
 def AddressArgument(required=True):
   return compute_flags.ResourceArgument(
       resource_name='address name',
-      completion_resource_id='compute.address',
+      completion_resource_id='compute.addresses',
       plural=True,
       required=required,
       regional_collection='compute.addresses',
       global_collection='compute.globalAddresses',
-      short_help='The address names to operate on.',
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      short_help='The address names to operate on.')
 
 
 def AddAddresses(parser):

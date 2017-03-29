@@ -15,6 +15,7 @@
 
 import abc
 import os
+import re
 import shutil
 import StringIO
 import tempfile
@@ -551,6 +552,12 @@ class RemoteCompletion(object):
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       return None
 
+    def _LowerCaseWithDashes(name):
+      # Uses two passes to handle all-upper initialisms, such as fooBARBaz
+      s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
+      s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
+      return s2
+
     def RemoteCompleter(parsed_args, **unused_kwargs):
       """Runs list command on resource to generate completion data."""
       list_command_updates_cache = False
@@ -558,12 +565,14 @@ class RemoteCompletion(object):
       if info.cache_command:
         command = info.cache_command.split(' ')
         list_command_updates_cache = True
+      elif info.list_command:
+        command = info.list_command.split(' ')
       elif list_command_callback_fn:
         command = list_command_callback_fn(parsed_args)
       elif command_line:
-        command = command_line.split('.') + ['list']
+        command = command_line.replace('.', ' ').split(' ')
       else:
-        command = resource.split('.') + ['list']
+        command = _LowerCaseWithDashes(resource).split('.') + ['list', '--uri']
 
       if info.bypass_cache:
         # Don't cache - use the cache_command results directly.
@@ -608,18 +617,7 @@ class RemoteCompletion(object):
         # This part can be dropped when all commands are subclassed.
         options = []
         self_links = []
-        for item in items:
-          # Get a selflink for the item
-          if command[0] == 'compute':
-            if 'selfLink' in item:
-              instance_ref = resources.REGISTRY.Parse(item['selfLink'])
-              selflink = instance_ref.SelfLink()
-            elif resource_link:
-              selflink = resource_link.rstrip('+') + item['name']
-          else:
-            instance_ref = resources.Create(resource, project=item.project,
-                                            instance=item.instance)
-            selflink = instance_ref.SelfLink()
+        for selflink in items:
           self_links.append(selflink)
           _, name = selflink.rsplit('/', 1)
           if not prefix or name.startswith(prefix):
@@ -630,7 +628,8 @@ class RemoteCompletion(object):
             options = ccache.GetFromCache(resource_link, prefix,
                                           increment_counters=False) or []
       except Exception:  # pylint:disable=broad-except
-        log.error(resource + 'completion command failed', exc_info=True)
+        log.error('completion command [%s] failed', ' '.join(command),
+                  exc_info=True)
         return []
       return options
 

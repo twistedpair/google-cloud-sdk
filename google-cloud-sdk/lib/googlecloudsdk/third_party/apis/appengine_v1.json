@@ -218,7 +218,7 @@
           "type": "string"
         },
         "dispatchRules": {
-          "description": "HTTP path dispatch rules for requests to the application that do not explicitly target a service or version. Rules are order-dependent.@OutputOnly",
+          "description": "HTTP path dispatch rules for requests to the application that do not explicitly target a service or version. Rules are order-dependent. Up to 20 dispatch rules can be supported.@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "UrlDispatchRule"
@@ -285,7 +285,7 @@
           "type": "string"
         },
         "path": {
-          "description": "Pathname within the host. Must start with a \"\/\". A single \"*\" can be included at the end of the path. The sum of the lengths of the domain and path may not exceed 100 characters.",
+          "description": "Pathname within the host. Must start with a \"\/\". A single \"*\" can be included at the end of the path.The sum of the lengths of the domain and path may not exceed 100 characters.",
           "type": "string"
         },
         "service": {
@@ -371,13 +371,15 @@
           "enumDescriptions": [
             "Diversion method unspecified.",
             "Diversion based on a specially named cookie, \"GOOGAPPUID.\" The cookie must be set by the application itself or no diversion will occur.",
-            "Diversion based on applying the modulus operation to a fingerprint of the IP address."
+            "Diversion based on applying the modulus operation to a fingerprint of the IP address.",
+            "Diversion based on weighted random assignment. An incoming request is randomly routed to a version in the traffic split, with probability proportional to the version's traffic share."
           ],
           "type": "string",
           "enum": [
             "UNSPECIFIED",
             "COOKIE",
-            "IP"
+            "IP",
+            "RANDOM"
           ]
         },
         "allocations": {
@@ -1558,46 +1560,6 @@
         "target": {
           "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/services\/default.@OutputOnly",
           "type": "string"
-        }
-      }
-    },
-    "OperationMetadataV1Alpha": {
-      "id": "OperationMetadataV1Alpha",
-      "description": "Metadata for the given google.longrunning.Operation.",
-      "type": "object",
-      "properties": {
-        "method": {
-          "description": "API method that initiated this operation. Example: google.appengine.v1alpha.Versions.CreateVersion.@OutputOnly",
-          "type": "string"
-        },
-        "insertTime": {
-          "description": "Time that this operation was created.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Time that this operation completed.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "user": {
-          "description": "User who requested this operation.@OutputOnly",
-          "type": "string"
-        },
-        "target": {
-          "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/services\/default.@OutputOnly",
-          "type": "string"
-        },
-        "ephemeralMessage": {
-          "description": "Ephemeral message that may change every time the operation is polled. @OutputOnly",
-          "type": "string"
-        },
-        "warning": {
-          "description": "Durable messages that persist on every operation poll. @OutputOnly",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },

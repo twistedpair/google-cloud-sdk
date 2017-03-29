@@ -424,13 +424,13 @@ class InstanceGroupFilteringMode(enum.Enum):
 
 
 def ComputeInstanceGroupManagerMembership(
-    compute, project, http, batch_url, items,
+    compute, resources, http, batch_url, items,
     filter_mode=(InstanceGroupFilteringMode.ALL_GROUPS)):
   """Add information if instance group is managed.
 
   Args:
     compute: GCE Compute API client,
-    project: str, project name
+    resources: resource registry,
     http: http client,
     batch_url: str, batch url
     items: list of instance group messages,
@@ -440,35 +440,45 @@ def ComputeInstanceGroupManagerMembership(
   """
   errors = []
   items = list(items)
-  zone_names = set([path_simplifier.Name(ig['zone'])
-                    for ig in items if 'zone' in ig])
-  region_names = set([path_simplifier.Name(ig['region'])
-                      for ig in items if 'region' in ig])
+  zone_links = set([ig['zone'] for ig in items if 'zone' in ig])
 
-  if zone_names:
-    zonal_instance_group_managers = lister.GetZonalResources(
+  project_to_zones = {}
+  for zone in zone_links:
+    zone_ref = resources.Parse(zone, collection='compute.zones')
+    if zone_ref.project not in project_to_zones:
+      project_to_zones[zone_ref.project] = set()
+    project_to_zones[zone_ref.project].add(zone_ref.zone)
+
+  zonal_instance_group_managers = []
+  for project, zones in project_to_zones.iteritems():
+    zonal_instance_group_managers.extend(lister.GetZonalResources(
         service=compute.instanceGroupManagers,
         project=project,
-        requested_zones=zone_names,
+        requested_zones=zones,
         filter_expr=None,
         http=http,
         batch_url=batch_url,
-        errors=errors)
-  else:
-    zonal_instance_group_managers = []
+        errors=errors))
 
-  if region_names and hasattr(compute, 'regionInstanceGroups'):
+  regional_instance_group_managers = []
+  if hasattr(compute, 'regionInstanceGroups'):
     # regional instance groups are just in 'alpha' API
-    regional_instance_group_managers = lister.GetRegionalResources(
-        service=compute.regionInstanceGroupManagers,
-        project=project,
-        requested_regions=region_names,
-        filter_expr=None,
-        http=http,
-        batch_url=batch_url,
-        errors=errors)
-  else:
-    regional_instance_group_managers = []
+    region_links = set([ig['region'] for ig in items if 'region' in ig])
+    project_to_regions = {}
+    for region in region_links:
+      region_ref = resources.Parse(region, collection='compute.regions')
+      if region_ref.project not in project_to_regions:
+        project_to_regions[region_ref.project] = set()
+      project_to_regions[region_ref.project].add(region_ref.region)
+    for project, regions in project_to_regions.iteritems():
+      regional_instance_group_managers.extend(lister.GetRegionalResources(
+          service=compute.regionInstanceGroupManagers,
+          project=project,
+          requested_regions=regions,
+          filter_expr=None,
+          http=http,
+          batch_url=batch_url,
+          errors=errors))
 
   instance_group_managers = (
       list(zonal_instance_group_managers)

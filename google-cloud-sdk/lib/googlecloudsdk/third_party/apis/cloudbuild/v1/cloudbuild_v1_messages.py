@@ -204,12 +204,13 @@ class BuildStep(_messages.Message):
       the image first, using the builder service account's credentials if
       necessary.  The Docker daemon's cache will already have the latest
       versions of all of the officially supported build steps
-      (https://github.com/GoogleCloudPlatform/cloud-builders). The Docker
-      daemon will also have cached many of the layers for some popular images,
-      like "ubuntu", "debian", but they will be refreshed at the time you
-      attempt to use them.  If you built an image in a previous build step, it
-      will be stored in the host's Docker daemon's cache and is available to
-      use as the name for a later build step.
+      ([https://github.com/GoogleCloudPlatform/cloud-
+      builders](https://github.com/GoogleCloudPlatform/cloud-builders)). The
+      Docker daemon will also have cached many of the layers for some popular
+      images, like "ubuntu", "debian", but they will be refreshed at the time
+      you attempt to use them.  If you built an image in a previous build
+      step, it will be stored in the host's Docker daemon's cache and is
+      available to use as the name for a later build step.
     waitFor: The ID(s) of the step(s) that this build step depends on. This
       build step will not start until all the build steps in wait_for have
       completed successfully. If wait_for is empty, this build step will start

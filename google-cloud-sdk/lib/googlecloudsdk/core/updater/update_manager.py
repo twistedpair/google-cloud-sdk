@@ -78,6 +78,7 @@ _SHELL_RCFILES = [
     'completion.bash.inc',
     'completion.zsh.inc',
     'path.bash.inc',
+    'path.fish.inc',
     'path.zsh.inc',
     'gcfilesys.bash.inc',
     'gcfilesys.zsh.inc'
@@ -834,18 +835,59 @@ To revert your SDK to the previously installed version, you may run:
   $ gcloud components update --version {current}
 """.format(current=current_version), word_wrap=False)
 
-    if self.__warn:
+    if self.__warn and not os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
       bad_commands = self.FindAllOldToolsOnPath()
-      if bad_commands and not os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+      if bad_commands:
         log.warning(u"""\
-There are older versions of Google Cloud Platform tools on your system PATH.
-Please remove the following to avoid accidentally invoking these old tools:
+  There are older versions of Google Cloud Platform tools on your system PATH.
+  Please remove the following to avoid accidentally invoking these old tools:
 
-{0}
+  {0}
 
-""".format('\n'.join(bad_commands)))
+  """.format('\n'.join(bad_commands)))
+      duplicate_commands = self.FindAllDuplicateToolsOnPath()
+      if duplicate_commands:
+        log.warning(u"""\
+  There are alternate versions of the following Google Cloud Platform tools on
+  your system PATH. Please double check your PATH:
+
+  {0}
+
+  """.format('\n'.join(duplicate_commands)))
 
     return True
+
+  def _FindToolsOnPath(self, path=None, duplicates=True, old=True):
+    """Helper function to find commands matching SDK bin dir on the path."""
+    bin_dir = os.path.realpath(
+        os.path.join(self.__sdk_root, UpdateManager.BIN_DIR_NAME))
+    if not os.path.exists(bin_dir):
+      return set()
+
+    commands = [f for f in os.listdir(bin_dir)
+                if os.path.isfile(os.path.join(bin_dir, f)) and
+                not f.startswith('.')]
+    duplicates_in_sdk_root = set()
+    bad_commands = set()
+    for command in commands:
+      existing_paths = file_utils.SearchForExecutableOnPath(command, path=path)
+      if existing_paths:
+        this_tool = os.path.join(bin_dir, command)
+        if old:
+          # Add old commands outside of the SDK root.
+          bad_commands.update(
+              set(os.path.realpath(f) for f in existing_paths
+                  if self.__sdk_root not in os.path.realpath(f)
+                 )
+              - set([this_tool]))
+        if duplicates:
+          # Add duplicate commands inside SDK root.
+          duplicates_in_sdk_root.update(
+              set(os.path.realpath(f) for f in existing_paths
+                  if self.__sdk_root in os.path.realpath(f)
+                 )
+              - set([this_tool]))
+    return bad_commands.union(duplicates_in_sdk_root)
 
   def FindAllOldToolsOnPath(self, path=None):
     """Searches the PATH for any old Cloud SDK tools.
@@ -854,26 +896,24 @@ Please remove the following to avoid accidentally invoking these old tools:
       path: str, A path to use instead of the PATH environment variable.
 
     Returns:
-      {str}, The old executable paths.
+      {str}, The old executable paths that are not in the SDK root directory.
     """
-    bin_dir = os.path.realpath(
-        os.path.join(self.__sdk_root, UpdateManager.BIN_DIR_NAME))
-    bad_commands = set()
-    if not os.path.exists(bin_dir):
-      return bad_commands
+    return self._FindToolsOnPath(path=path, duplicates=False, old=True)
 
-    commands = [f for f in os.listdir(bin_dir)
-                if os.path.isfile(os.path.join(bin_dir, f)) and
-                not f.startswith('.')]
+  def FindAllDuplicateToolsOnPath(self, path=None):
+    """Searches PATH for alternate versions of Cloud SDK tools in installation.
 
-    for command in commands:
-      existing_paths = file_utils.SearchForExecutableOnPath(command, path=path)
-      if existing_paths:
-        this_tool = os.path.join(bin_dir, command)
-        bad_commands.update(
-            set(os.path.realpath(f) for f in existing_paths)
-            - set([this_tool]))
-    return bad_commands
+    Some gcloud components include duplicate versions of commands, so if
+    those component locations are on a user's PATH then multiple versions of
+    the commands may be found.
+
+    Args:
+      path: str, A path to use instead of the PATH environment variable.
+
+    Returns:
+      {str}, Alternate executable paths that are in the SDK root directory.
+    """
+    return self._FindToolsOnPath(path=path, duplicates=True, old=False)
 
   def Remove(self, ids, allow_no_backup=False):
     """Uninstalls the given components.

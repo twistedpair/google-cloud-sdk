@@ -23,7 +23,11 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
+from googlecloudsdk.command_lib.util import ssh
 from googlecloudsdk.core import log
+
+
+EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
 
 
 def GetCpuRamFromCustomName(name):
@@ -189,6 +193,12 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
       raise exceptions.ToolException(
           '[{0}] is an illegal value for [--scopes]. Values must be of the '
           'form [SCOPE] or [ACCOUNT=SCOPE].'.format(scope))
+
+    if service_account != 'default' and not ssh.Remote.FromArg(service_account):
+      raise exceptions.InvalidArgumentException(
+          '--service-account',
+          'Invalid format: expected default or user@domain.com, received ' +
+          service_account)
 
     # Expands the scope if the user provided an alias like
     # "compute-rw".

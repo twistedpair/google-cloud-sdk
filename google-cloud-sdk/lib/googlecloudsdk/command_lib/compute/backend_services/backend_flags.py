@@ -109,9 +109,9 @@ def AddMaxUtilization(parser):
       '--max-utilization',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
-      The target CPU utilization for the group as a float in the range
-      [0.0, 1.0]. This flag can only be provided when the balancing
-      mode is *UTILIZATION*.
+      The maximum average CPU utilization of the backend service.
+      Acceptable values are `0.0` (0%) through `1.0` (100%). This flag can only
+      be provided when the balancing mode is *UTILIZATION*.
       """)
 
 
@@ -123,12 +123,33 @@ def AddCapacityLimits(parser):
   capacity_group.add_argument(
       '--max-rate',
       type=int,
-      help='Maximum requests per second (RPS) that the group can handle.')
+      help="""\
+      Maximum number of requests per second that can be sent to the instance
+      group. Must not be used with Autoscaled Managed Instance Groups.
+      `--max-rate` and `--max-rate-per-instance` are mutually exclusive.
+      However, one of them can be set even if `--balancing-mode` is set to
+      `UTILIZATION`. If either `--max-rate` or `--max-rate-per-instance` is set
+      and `--balancing-mode` is set to `RATE`, then only that value is
+      considered when judging capacity. If either `--max-rate` or
+      `--max-rate-per-instance` is set and `--balancing-mode` is set to
+      `UTILIZATION`, then instances are judged to be at capacity when either the
+      `UTILIZATION` or `RATE` value is reached.
+      """)
 
   capacity_group.add_argument(
       '--max-rate-per-instance',
       type=float,
-      help='The maximum per-instance requests per second (RPS).')
+      help="""\
+      Maximum number of requests per second that can be sent to each instance in
+      the instance group. `--max-rate` and `--max-rate-per-instance` are
+      mutually exclusive. However, one of them can be set even if
+      `--balancing-mode` is set to `UTILIZATION`. If either `--max-rate` or
+      `--max-rate-per-instance` is set and `--balancing-mode` is set to `RATE`,
+      then only that value is considered when judging capacity. If either
+      `--max-rate` or `--max-rate-per-instance` is set and `--balancing-mode`
+      is set to `UTILIZATION`, then instances are judged to be at capacity when
+      either the `UTILIZATION` or `RATE` value is reached.
+      """)
 
   capacity_group.add_argument(
       '--max-connections',
@@ -146,7 +167,10 @@ def AddCapacityScalar(parser):
       '--capacity-scaler',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
-      A float in the range [0.0, 1.0] that scales the maximum
-      parameters for the group (e.g., max rate). A value of 0.0 will
-      cause no requests to be sent to the group (i.e., it adds the
-      group in a ``drained'' state).""")
+      A setting that applies to all balancing modes. This value is multiplied
+      by the balancing mode value to set the current max usage of the instance
+      group. Acceptable values are `0.0` (0%) through `1.0` (100%). Setting this
+      value to `0.0` (0%) drains the backend service. Note that draining a
+      backend service only prevents new connections to instances in the group.
+      All existing connections are allowed to continue until they close by
+      normal means.""")

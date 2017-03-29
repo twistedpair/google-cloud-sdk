@@ -435,7 +435,7 @@ class Application(_messages.Message):
       App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
-      dependent.@OutputOnly
+      dependent. Up to 20 dispatch rules can be supported.@OutputOnly
     gcrDomain: The Google Container Registry domain used for storing managed
       build docker images for this application.
     iap: A IdentityAwareProxy attribute.
@@ -1264,32 +1264,6 @@ class OperationMetadataV1(_messages.Message):
   warning = _messages.StringField(7, repeated=True)
 
 
-class OperationMetadataV1Alpha(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
-
-  Fields:
-    endTime: Time that this operation completed.@OutputOnly
-    ephemeralMessage: Ephemeral message that may change every time the
-      operation is polled. @OutputOnly
-    insertTime: Time that this operation was created.@OutputOnly
-    method: API method that initiated this operation. Example:
-      google.appengine.v1alpha.Versions.CreateVersion.@OutputOnly
-    target: Name of the resource that this operation is acting on. Example:
-      apps/myapp/services/default.@OutputOnly
-    user: User who requested this operation.@OutputOnly
-    warning: Durable messages that persist on every operation poll.
-      @OutputOnly
-  """
-
-  endTime = _messages.StringField(1)
-  ephemeralMessage = _messages.StringField(2)
-  insertTime = _messages.StringField(3)
-  method = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-  warning = _messages.StringField(7, repeated=True)
-
-
 class OperationMetadataV1Beta(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
@@ -1679,10 +1653,14 @@ class TrafficSplit(_messages.Message):
         occur.
       IP: Diversion based on applying the modulus operation to a fingerprint
         of the IP address.
+      RANDOM: Diversion based on weighted random assignment. An incoming
+        request is randomly routed to a version in the traffic split, with
+        probability proportional to the version's traffic share.
     """
     UNSPECIFIED = 0
     COOKIE = 1
     IP = 2
+    RANDOM = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AllocationsValue(_messages.Message):
@@ -1727,8 +1705,8 @@ class UrlDispatchRule(_messages.Message):
     domain: Domain name to match against. The wildcard "*" is supported if
       specified before a period: "*.".Defaults to matching all domains: "*".
     path: Pathname within the host. Must start with a "/". A single "*" can be
-      included at the end of the path. The sum of the lengths of the domain
-      and path may not exceed 100 characters.
+      included at the end of the path.The sum of the lengths of the domain and
+      path may not exceed 100 characters.
     service: Resource ID of a service in this application that should serve
       the matched request. The service must already exist. Example: default.
   """

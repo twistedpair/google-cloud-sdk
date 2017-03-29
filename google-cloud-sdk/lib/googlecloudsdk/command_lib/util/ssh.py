@@ -476,13 +476,16 @@ class Keys(object):
       first_line = f.readline()
       return self.PublicKey.FromKeyString(first_line)
 
-  def EnsureKeysExist(self, overwrite):
+  def EnsureKeysExist(self, overwrite, allow_passphrase=True):
     """Generate ssh key files if they do not yet exist.
 
     Precondition: Environment.SupportsSSH()
 
     Args:
       overwrite: bool or None, overwrite key files if they are broken.
+      allow_passphrase: bool, if keygeneration occurs, let the user specfiy
+        a passphrase for private key encryption. See `ssh.KeygenCommand` for
+        details on when this is possible.
 
     Raises:
       console_io.OperationCancelledError: if interrupted by user
@@ -497,8 +500,7 @@ class Keys(object):
       if key_files_validity is KeyFileStatus.ABSENT:
         # If key is broken, message is already displayed
         log.warn('You do not have an SSH key for gcloud.')
-        log.warn('[%s] will be executed to generate a key.',
-                 self.env.keygen)
+        log.warn('SSH keygen will be executed to generate a key.')
 
       if not os.path.exists(self.dir):
         msg = ('This tool needs to create the directory [{0}] before being '
@@ -508,19 +510,8 @@ class Keys(object):
             cancel_string='SSH key generation aborted by user.')
         files.MakeDir(self.dir, 0700)
 
-      keygen_args = [self.env.keygen]
-      if self.env.suite is Suite.PUTTY:
-        # No passphrase in the current implementation.
-        keygen_args.append(self.key_file)
-      else:
-        if properties.VALUES.core.disable_prompts.GetBool():
-          # Specify empty passphrase on command line
-          keygen_args.extend(['-P', ''])
-        keygen_args.extend([
-            '-t', 'rsa',
-            '-f', self.key_file,
-        ])
-      RunExecutable(keygen_args)
+      cmd = KeygenCommand(self.key_file, allow_passphrase=allow_passphrase)
+      cmd.Run(self.env)
 
 
 class KnownHosts(object):
@@ -865,6 +856,9 @@ def WaitUntilSSHable(user, host, env, key_file, host_key_alias=None,
 class Remote(object):
   """A reference to an SSH remote, consisting of a host and user.
 
+  Hashing and equality methods are implemented for this class,
+  so remotes can be put in sets for de-duplication.
+
   Attributes:
     user: str or None, SSH user name (optional).
     host: str or None, Host name.
@@ -915,6 +909,87 @@ class Remote(object):
       return cls(host, user=user)
     else:
       return None
+
+  def __hash__(self):
+    return hash(self.ToArg())
+
+  def __eq__(self, other):
+    return type(self) is type(other) and self.ToArg() == other.ToArg()
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+
+class KeygenCommand(object):
+  """Platform independent SSH client key generation command.
+
+  For OpenSSH, we use `ssh-keygen(1)`. For PuTTY, we use a custom binary.
+  Currently, the only supported algorithm is 'rsa'. The command generates the
+  following files:
+  - `<identity_file>`: Private key, on OpenSSH format (possibly encrypted).
+  - `<identity_file>.pub`: Public key, on OpenSSH format.
+  - `<identity_file>.ppk`: Unencrypted PPK key-pair, on PuTTY format.
+
+  The PPK-file is only generated from a PuTTY environment, and encodes the same
+  private- and public keys as the other files.
+
+  Attributes:
+    identity_file: str, path to private key file.
+    allow_passphrase: bool, If True, attempt at prompting the user for a
+      passphrase for private key encryption, given that the following
+      conditions are also true:
+      - Running in an OpenSSH environment (Linux and Mac)
+      - Running in interactive mode (from an actual TTY)
+      - Prompts are enabled in gcloud
+  """
+
+  def __init__(self, identity_file, allow_passphrase=True):
+    """Construct a suite independent `ssh-keygen` command."""
+    self.identity_file = identity_file
+    self.allow_passphrase = allow_passphrase
+
+  def Build(self, env=None):
+    """Construct the actual command according to the given environment.
+
+    Args:
+      env: Environment, to construct the command for (or current if None).
+
+    Raises:
+      MissingCommandError: If keygen command was not found.
+
+    Returns:
+      [str], the command args (where the first arg is the command itself).
+    """
+    env = env or Environment.Current()
+    if not env.keygen:
+      raise MissingCommandError('Keygen command not found in the current '
+                                'environment.')
+    args = [env.keygen]
+    if env.suite is Suite.OPENSSH:
+      prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
+      if not prompt_passphrase:
+        args.extend(['-P', ''])  # Empty passphrase
+      args.extend(['-t', 'rsa', '-f', self.identity_file])
+    else:
+      args.append(self.identity_file)
+
+    return args
+
+  def Run(self, env=None):
+    """Run the keygen command in the given environment.
+
+    Args:
+      env: Environment, environment to run in (or current if None).
+
+    Raises:
+      MissingCommandError: Keygen command not found.
+      CommandError: Keygen command failed.
+    """
+    args = self.Build(env)
+    log.debug('Running command [{}].'.format(' '.join(args)))
+    status = execution_utils.Exec(args, no_exit=True)
+    if status:
+      raise CommandError(args[0], return_code=status)
 
 
 class SSHCommand(object):

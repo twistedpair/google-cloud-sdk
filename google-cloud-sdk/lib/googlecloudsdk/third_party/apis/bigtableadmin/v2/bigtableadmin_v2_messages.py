@@ -193,18 +193,18 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The view to be applied to the returned table's
-      fields. Defaults to `SCHEMA_ONLY` if unspecified.
+      fields. Defaults to `SCHEMA_VIEW` if unspecified.
 
   Fields:
     name: The unique name of the requested table. Values are of the form
       `projects/<project>/instances/<instance>/tables/<table>`.
     view: The view to be applied to the returned table's fields. Defaults to
-      `SCHEMA_ONLY` if unspecified.
+      `SCHEMA_VIEW` if unspecified.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     """The view to be applied to the returned table's fields. Defaults to
-    `SCHEMA_ONLY` if unspecified.
+    `SCHEMA_VIEW` if unspecified.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -352,6 +352,41 @@ class ColumnFamily(_messages.Message):
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
+
+
+class CreateClusterMetadata(_messages.Message):
+  """The metadata for the Operation returned by CreateCluster.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      CreateCluster operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('CreateClusterRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class CreateClusterRequest(_messages.Message):
+  """Request message for BigtableInstanceAdmin.CreateCluster.
+
+  Fields:
+    cluster: The cluster to be created. Fields marked `OutputOnly` must be
+      left blank.
+    clusterId: The ID to be used when referring to the new cluster within its
+      instance, e.g., just `mycluster` rather than
+      `projects/myproject/instances/myinstance/clusters/mycluster`.
+    parent: The unique name of the instance in which to create the new
+      cluster. Values are of the form
+      `projects/<project>/instances/<instance>`.
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  clusterId = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class CreateInstanceMetadata(_messages.Message):

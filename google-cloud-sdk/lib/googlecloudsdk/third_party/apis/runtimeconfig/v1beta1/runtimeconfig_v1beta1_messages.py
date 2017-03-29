@@ -14,15 +14,16 @@ package = 'runtimeconfig'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: {   "audit_configs": [
-  {       "service": "allServices"       "audit_log_configs": [         {
-  "log_type": "DATA_READ",           "exempted_members": [
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: {   "audit_configs": [     {       "service":
+  "allServices"       "audit_log_configs": [         {           "log_type":
+  "DATA_READ",           "exempted_members": [
   "user:foo@gmail.com"           ]         },         {           "log_type":
   "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
   }       ]     },     {       "service": "fooservice@googleapis.com"
@@ -38,8 +39,8 @@ class AuditConfig(_messages.Message):
       Next ID: 4
     exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -325,20 +326,7 @@ class ListWaitersResponse(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present the
-  only supported field names are    - "iam_principal", corresponding to
-  IAMContext.principal;    - "" (empty string), resulting in one aggretated
-  counter with no field.  Examples:   counter { metric: "/debug_access_count"
-  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
+  """Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -668,17 +656,15 @@ class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.
   """A RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest object.
 
   Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
   """
 
-  permissions = _messages.StringField(1, repeated=True)
-  resource = _messages.StringField(2, required=True)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
@@ -788,17 +774,15 @@ class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.M
   """A RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest object.
 
   Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
   """
 
-  permissions = _messages.StringField(1, repeated=True)
-  resource = _messages.StringField(2, required=True)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class RuntimeconfigProjectsConfigsVariablesWatchRequest(_messages.Message):
@@ -882,17 +866,15 @@ class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Mes
   """A RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest object.
 
   Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
   """
 
-  permissions = _messages.StringField(1, repeated=True)
-  resource = _messages.StringField(2, required=True)
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -905,8 +887,8 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, a default mask is used: paths: "bindings, etag" This field is
-      only used by Cloud IAM.
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)

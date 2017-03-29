@@ -1302,13 +1302,24 @@
       "description": "Response to the request to launch a template.",
       "type": "object",
       "properties": {
-        "status": {
-          "description": "The status of the launch template request. Any problems with the request\nwill be indicated in the error_details.",
-          "$ref": "Status"
-        },
         "job": {
           "description": "The job that was launched, if the request was not a dry run and\nthe job was successfully launched.",
           "$ref": "Job"
+        }
+      }
+    },
+    "GetTemplateResponse": {
+      "id": "GetTemplateResponse",
+      "description": "The response to a GetTemplate request.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The status of the get template request. Any problems with the\nrequest will be indicated in the error_details.",
+          "$ref": "Status"
+        },
+        "metadata": {
+          "description": "The template metadata describing the template name, available\nparameters, etc.",
+          "$ref": "TemplateMetadata"
         }
       }
     },
@@ -1336,21 +1347,6 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
-        }
-      }
-    },
-    "GetTemplateResponse": {
-      "id": "GetTemplateResponse",
-      "description": "The response to a GetTemplate request.",
-      "type": "object",
-      "properties": {
-        "status": {
-          "description": "The status of the get template request. Any problems with the\nrequest will be indicated in the error_details.",
-          "$ref": "Status"
-        },
-        "metadata": {
-          "description": "The template metadata describing the template name, available\nparameters, etc.",
-          "$ref": "TemplateMetadata"
         }
       }
     },
@@ -2912,12 +2908,12 @@
           "description": "The physical location of this range assignment to be used for\nstreaming computation cross-worker message delivery.",
           "type": "string"
         },
-        "persistentDirectory": {
-          "description": "The location of the persistent state for this range, as a\npersistent directory in the worker local filesystem.",
-          "type": "string"
-        },
         "dataDisk": {
           "description": "The name of the data disk where data for this range is stored.\nThis name is local to the Google Cloud Platform project and uniquely\nidentifies the disk within that project, for example\n\"myproject-1014-104817-4c2-harness-0-disk-1\".",
+          "type": "string"
+        },
+        "deprecatedPersistentDirectory": {
+          "description": "DEPRECATED. The location of the persistent state for this range, as a\npersistent directory in the worker local filesystem.",
           "type": "string"
         }
       }

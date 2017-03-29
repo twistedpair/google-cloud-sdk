@@ -52,24 +52,35 @@ class Artifact(_messages.Message):
       digest like gcr.io/projectID/imagename@sha256:123456
     name: Name of the artifact. This may be the path to a binary or jar file,
       or in the case of a container build, the name used to push the container
-      image to Google Container Registry, as presented to `docker push`.
+      image to Google Container Registry, as presented to `docker push`.  This
+      field is deprecated in favor of the plural `names` field; it continues
+      to exist here to allow existing BuildProvenance serialized to json in
+      google.devtools.containeranalysis.v1alpha1.BuildDetails.provenance_bytes
+      to deserialize back into proto.
+    names: Related artifact names. This may be the path to a binary or jar
+      file, or in the case of a container build, the name used to push the
+      container image to Google Container Registry, as presented to `docker
+      push`. Note that a single Artifact ID can have multiple names, for
+      example if two tags are applied to one image.
   """
 
   checksum = _messages.StringField(1)
   id = _messages.StringField(2)
   name = _messages.StringField(3)
+  names = _messages.StringField(4, repeated=True)
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: {   "audit_configs": [
-  {       "service": "allServices"       "audit_log_configs": [         {
-  "log_type": "DATA_READ",           "exempted_members": [
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: {   "audit_configs": [     {       "service":
+  "allServices"       "audit_log_configs": [         {           "log_type":
+  "DATA_READ",           "exempted_members": [
   "user:foo@gmail.com"           ]         },         {           "log_type":
   "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
   }       ]     },     {       "service": "fooservice@googleapis.com"
@@ -85,8 +96,8 @@ class AuditConfig(_messages.Message):
       Next ID: 4
     exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -510,7 +521,7 @@ class ContaineranalysisProjectsNotesGetRequest(_messages.Message):
   """A ContaineranalysisProjectsNotesGetRequest object.
 
   Fields:
-    name: The name of the occurrence in the form
+    name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
   """
 
@@ -592,7 +603,7 @@ class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
       "projects/{project_id}". @deprecated
     occurrence: A Occurrence resource to be passed as the request body.
     parent: This field contains the projectId for example:
-      "project/{project_id}
+      "projects/{project_id}"
   """
 
   name = _messages.StringField(1)
@@ -657,7 +668,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       "projects/{project_id} @deprecated
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    parent: This contains the projectId for example: project/{project_id}
+    parent: This contains the projectId for example: projects/{project_id}
   """
 
   filter = _messages.StringField(1)
@@ -745,7 +756,7 @@ class ContaineranalysisProvidersNotesGetRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesGetRequest object.
 
   Fields:
-    name: The name of the occurrence in the form
+    name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
   """
 
@@ -1204,20 +1215,7 @@ class Location(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present the
-  only supported field names are    - "iam_principal", corresponding to
-  IAMContext.principal;    - "" (empty string), resulting in one aggretated
-  counter with no field.  Examples:   counter { metric: "/debug_access_count"
-  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
+  """Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -1267,7 +1265,7 @@ class Note(_messages.Message):
       UNKNOWN: Unknown
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
-      BUILD_DETAILS: The note and occurrence  assert build provenance.
+      BUILD_DETAILS: The note and occurrence assert build provenance.
       IMAGE_BASIS: This represents an image basis relationship.
       PACKAGE_MANAGER: This represents a package installed via a package
         manager.
@@ -1332,7 +1330,7 @@ class Occurrence(_messages.Message):
       UNKNOWN: Unknown
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
-      BUILD_DETAILS: The note and occurrence  assert build provenance.
+      BUILD_DETAILS: The note and occurrence assert build provenance.
       IMAGE_BASIS: This represents an image basis relationship.
       PACKAGE_MANAGER: This represents a package installed via a package
         manager.
@@ -1550,8 +1548,8 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, a default mask is used: paths: "bindings, etag" This field is
-      only used by Cloud IAM.
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common ML file upload logic."""
+import hashlib
 import os
 
 from googlecloudsdk.api_lib.storage import storage_api
@@ -55,7 +56,7 @@ def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
 
   storage_client = storage_api.StorageClient()
   dests = []
-  checksum = file_utils.Checksum()
+  checksum = file_utils.Checksum(algorithm=hashlib.sha1)
   for local_path, _ in upload_pairs:
     checksum.AddFileContents(local_path)
 

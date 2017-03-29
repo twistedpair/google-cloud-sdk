@@ -252,6 +252,14 @@ MAP = {
             default_version=True
         ),
     },
+    'datapol': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datapol.v1alpha1',
+            client_classpath='datapol_v1alpha1_client.DatapolV1alpha1',
+            messages_modulepath='datapol_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'dataproc': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.dataproc.v1',
@@ -313,6 +321,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.iam.v1',
             client_classpath='iam_v1_client.IamV1',
             messages_modulepath='iam_v1_messages',
+            default_version=True
+        ),
+    },
+    'language': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.language.v1',
+            client_classpath='language_v1_client.LanguageV1',
+            messages_modulepath='language_v1_messages',
             default_version=True
         ),
     },

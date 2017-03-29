@@ -180,13 +180,23 @@ def _TempDirOrBackup(default_dir):
   Yields:
     str, the temporary directory.
   """
+  try:
+    temp_dir = files.TemporaryDirectory()
+    # We can't use the context manager form of files.TemporaryDirectory()
+    # because it makes it hard to distinguish between an OSError that occurred
+    # during the creation of the temporary directory and one that occurred in
+    # the middle of *this* context manager's body.
+    path = temp_dir.__enter__()
+  except OSError:
+    temp_dir = None
+    # Some systems don't allow access to '/tmp'
+    path = default_dir
 
   try:
-    with files.TemporaryDirectory() as temp_dir:
-      yield temp_dir
-  except OSError:
-    # Some systems don't allow access to '/tmp'
-    yield default_dir
+    yield path
+  finally:
+    if temp_dir:
+      temp_dir.__exit__(*sys.exc_info())
 
 
 class _SetupPyCommand(object):

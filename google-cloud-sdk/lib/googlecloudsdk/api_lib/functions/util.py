@@ -103,15 +103,18 @@ class TriggerEvent(object):
   def resource_is_optional(self):
     return self.resource_type in TriggerEvent.optional_resource_types
 
-
-# Don't use this structure directly. Use registry object instead.
-_ALL_PROVIDERS = [
+# Don't use those structures directly. Use registry object instead.
+# By convention, first event type is default.
+_BETA_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
         TriggerEvent('topic.publish', Resources.TOPIC),
     ]),
     TriggerProvider('cloud.storage', [
         TriggerEvent('object.change', Resources.BUCKET),
     ]),
+]
+
+_ALPHA_PROVIDERS = [
     TriggerProvider('firebase.auth', [
         TriggerEvent('user.create', Resources.PROJECT),
         TriggerEvent('user.delete', Resources.PROJECT),
@@ -119,7 +122,7 @@ _ALL_PROVIDERS = [
     TriggerProvider('firebase.database', [
         TriggerEvent('data.write', Resources.PROJECT),
     ])
-]  # by convention, first event type is default
+]
 
 
 class _TriggerProviderRegistry(object):
@@ -141,7 +144,9 @@ class _TriggerProviderRegistry(object):
     return next((e for e in self.Provider(provider).events if e.label == event))
 
 
-trigger_provider_registry = _TriggerProviderRegistry(_ALL_PROVIDERS)
+output_trigger_provider_registry = _TriggerProviderRegistry(_BETA_PROVIDERS)
+input_trigger_provider_registry = _TriggerProviderRegistry(
+    _BETA_PROVIDERS + _ALPHA_PROVIDERS)
 
 
 _ID_CHAR = '[a-zA-Z0-9_]'

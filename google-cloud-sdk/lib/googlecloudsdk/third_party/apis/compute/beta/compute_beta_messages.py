@@ -277,20 +277,24 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    IpVersionValueValuesEnum: The IP Version that will be used by this
+      address. Valid options are IPV4 or IPV6. This can only be specified for
+      a global address.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
       reserved and available to use. An IN_USE address is currently being used
       by another resource and is not available.
 
   Fields:
-    address: The static external IP address represented by this resource. Only
-      IPv4 is supported.
+    address: The static external IP address represented by this resource.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipVersion: The IP Version that will be used by this address. Valid options
+      are IPV4 or IPV6. This can only be specified for a global address.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     name: Name of the resource. Provided by the client when the resource is
@@ -311,6 +315,19 @@ class Address(_messages.Message):
       address.
   """
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    """The IP Version that will be used by this address. Valid options are
+    IPV4 or IPV6. This can only be specified for a global address.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      UNSPECIFIED_VERSION: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    UNSPECIFIED_VERSION = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
     RESERVED. An address that is RESERVED is currently reserved and available
@@ -328,12 +345,13 @@ class Address(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#address')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  users = _messages.StringField(10, repeated=True)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 5)
+  kind = _messages.StringField(6, default=u'compute#address')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  users = _messages.StringField(11, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -724,28 +742,29 @@ class AttachedDiskInitializeParams(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. It consists of which
-  permission types are logged, and what identities, if any, are exempted from
-  logging. An AuditConifg must have one or more AuditLogConfigs.  If there are
-  AuditConfigs for both `allServices` and a specific service, the union of the
-  two AuditConfigs is used for that service: the log_types specified in each
-  AuditConfig are enabled, and the exempted_members in each AuditConfig are
-  exempted. Example Policy with multiple AuditConfigs: { "audit_configs": [ {
-  "service": "allServices" "audit_log_configs": [ { "log_type": "DATA_READ",
-  "exempted_members": [ "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE",
-  }, { "log_type": "ADMIN_READ", } ] }, { "service":
-  "fooservice@googleapis.com" "audit_log_configs": [ { "log_type":
-  "DATA_READ", }, { "log_type": "DATA_WRITE", "exempted_members": [
-  "user:bar@gmail.com" ] } ] } ] } For fooservice, this policy enables
-  DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com
-  from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices"
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
+  "ADMIN_READ", } ] }, { "service": "fooservice@googleapis.com"
+  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] } For
+  fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts foo@gmail.com from DATA_READ logging, and
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
     exemptedMembers:
     service: Specifies a service that will be enabled for audit logging. For
-      example, `resourcemanager`, `storage`, `compute`. `allServices` is a
-      special value that covers all services.
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
@@ -2457,14 +2476,14 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   """A ComputeAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
     zone: Name of the zone for this request.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
@@ -2594,7 +2613,7 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   """A ComputeBackendBucketsPatchRequest object.
 
   Fields:
-    backendBucket: Name of the BackendBucket resource to update.
+    backendBucket: Name of the BackendBucket resource to patch.
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -2777,7 +2796,7 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   """A ComputeBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -3945,7 +3964,7 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
   """A ComputeHealthChecksPatchRequest object.
 
   Fields:
-    healthCheck: Name of the HealthCheck resource to update.
+    healthCheck: Name of the HealthCheck resource to patch.
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
@@ -4077,7 +4096,7 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpHealthChecksPatchRequest object.
 
   Fields:
-    httpHealthCheck: Name of the HttpHealthCheck resource to update.
+    httpHealthCheck: Name of the HttpHealthCheck resource to patch.
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -4209,7 +4228,7 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpsHealthChecksPatchRequest object.
 
   Fields:
-    httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to patch.
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -6106,14 +6125,14 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
   """A ComputeRegionAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
@@ -6270,7 +6289,7 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
   """A ComputeRegionBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -7161,7 +7180,7 @@ class ComputeRoutersPatchRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    router: Name of the Router resource to update.
+    router: Name of the Router resource to patch.
     routerResource: A Router resource to be passed as the request body.
   """
 
@@ -8975,7 +8994,7 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    urlMap: Name of the UrlMap resource to update.
+    urlMap: Name of the UrlMap resource to patch.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
 
@@ -10299,6 +10318,9 @@ class ForwardingRule(_messages.Message):
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
       Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  When the load
       balancing scheme is INTERNAL, only TCP and UDP are valid.
+    IpVersionValueValuesEnum: The IP Version that will be used by this
+      forwarding rule. Valid options are IPV4 or IPV6. This can only be
+      specified for a global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: This signifies what the ForwardingRule
       will be used for and can only take the following values: INTERNAL,
       EXTERNAL The value of INTERNAL means that this will be used for Internal
@@ -10330,6 +10352,9 @@ class ForwardingRule(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipVersion: The IP Version that will be used by this forwarding rule. Valid
+      options are IPV4 or IPV6. This can only be specified for a global
+      forwarding rule.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
     loadBalancingScheme: This signifies what the ForwardingRule will be used
@@ -10397,6 +10422,19 @@ class ForwardingRule(_messages.Message):
     TCP = 4
     UDP = 5
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    """The IP Version that will be used by this forwarding rule. Valid options
+    are IPV4 or IPV6. This can only be specified for a global forwarding rule.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+      UNSPECIFIED_VERSION: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+    UNSPECIFIED_VERSION = 2
+
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     """This signifies what the ForwardingRule will be used for and can only
     take the following values: INTERNAL, EXTERNAL The value of INTERNAL means
@@ -10419,16 +10457,17 @@ class ForwardingRule(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#forwardingRule')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  portRange = _messages.StringField(11)
-  ports = _messages.StringField(12, repeated=True)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  subnetwork = _messages.StringField(15)
-  target = _messages.StringField(16)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
+  kind = _messages.StringField(8, default=u'compute#forwardingRule')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  portRange = _messages.StringField(12)
+  ports = _messages.StringField(13, repeated=True)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  subnetwork = _messages.StringField(16)
+  target = _messages.StringField(17)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -11356,7 +11395,8 @@ class Instance(_messages.Message):
       property when you create the resource.
     disks: Array of disks associated with this instance. Persistent disks must
       be created before you can assign them.
-    guestAccelerators: A AcceleratorConfig attribute.
+    guestAccelerators: List of the type and count of accelerator cards
+      attached to the instance.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for
@@ -12376,6 +12416,8 @@ class InstanceProperties(_messages.Message):
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    guestAccelerators: A list of guest accelerator cards' type and count to
+      use for instances created from the instance template.
     labels: Labels to apply to instances that are created from this template.
     machineType: The machine type to use for instances that are created from
       this template.
@@ -12424,13 +12466,14 @@ class InstanceProperties(_messages.Message):
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  machineType = _messages.StringField(5)
-  metadata = _messages.MessageField('Metadata', 6)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 8)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 9, repeated=True)
-  tags = _messages.MessageField('Tags', 10)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  machineType = _messages.StringField(6)
+  metadata = _messages.MessageField('Metadata', 7)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 8, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 9)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 10, repeated=True)
+  tags = _messages.MessageField('Tags', 11)
 
 
 class InstanceReference(_messages.Message):
@@ -12688,7 +12731,8 @@ class InstancesSetMachineResourcesRequest(_messages.Message):
   """A InstancesSetMachineResourcesRequest object.
 
   Fields:
-    guestAccelerators: A AcceleratorConfig attribute.
+    guestAccelerators: List of the type and count of accelerator cards
+      attached to the instance.
   """
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
@@ -14037,6 +14081,7 @@ class Quota(_messages.Message):
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
+      COMMITMENTS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -14074,39 +14119,40 @@ class Quota(_messages.Message):
     AUTOSCALERS = 0
     BACKEND_BUCKETS = 1
     BACKEND_SERVICES = 2
-    CPUS = 3
-    CPUS_ALL_REGIONS = 4
-    DISKS_TOTAL_GB = 5
-    FIREWALLS = 6
-    FORWARDING_RULES = 7
-    HEALTH_CHECKS = 8
-    IMAGES = 9
-    INSTANCES = 10
-    INSTANCE_GROUPS = 11
-    INSTANCE_GROUP_MANAGERS = 12
-    INSTANCE_TEMPLATES = 13
-    IN_USE_ADDRESSES = 14
-    LOCAL_SSD_TOTAL_GB = 15
-    NETWORKS = 16
-    NVIDIA_K80_GPUS = 17
-    PREEMPTIBLE_CPUS = 18
-    REGIONAL_AUTOSCALERS = 19
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 20
-    ROUTERS = 21
-    ROUTES = 22
-    SNAPSHOTS = 23
-    SSD_TOTAL_GB = 24
-    SSL_CERTIFICATES = 25
-    STATIC_ADDRESSES = 26
-    SUBNETWORKS = 27
-    TARGET_HTTPS_PROXIES = 28
-    TARGET_HTTP_PROXIES = 29
-    TARGET_INSTANCES = 30
-    TARGET_POOLS = 31
-    TARGET_SSL_PROXIES = 32
-    TARGET_VPN_GATEWAYS = 33
-    URL_MAPS = 34
-    VPN_TUNNELS = 35
+    COMMITMENTS = 3
+    CPUS = 4
+    CPUS_ALL_REGIONS = 5
+    DISKS_TOTAL_GB = 6
+    FIREWALLS = 7
+    FORWARDING_RULES = 8
+    HEALTH_CHECKS = 9
+    IMAGES = 10
+    INSTANCES = 11
+    INSTANCE_GROUPS = 12
+    INSTANCE_GROUP_MANAGERS = 13
+    INSTANCE_TEMPLATES = 14
+    IN_USE_ADDRESSES = 15
+    LOCAL_SSD_TOTAL_GB = 16
+    NETWORKS = 17
+    NVIDIA_K80_GPUS = 18
+    PREEMPTIBLE_CPUS = 19
+    REGIONAL_AUTOSCALERS = 20
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 21
+    ROUTERS = 22
+    ROUTES = 23
+    SNAPSHOTS = 24
+    SSD_TOTAL_GB = 25
+    SSL_CERTIFICATES = 26
+    STATIC_ADDRESSES = 27
+    SUBNETWORKS = 28
+    TARGET_HTTPS_PROXIES = 29
+    TARGET_HTTP_PROXIES = 30
+    TARGET_INSTANCES = 31
+    TARGET_POOLS = 32
+    TARGET_SSL_PROXIES = 33
+    TARGET_VPN_GATEWAYS = 34
+    URL_MAPS = 35
+    VPN_TUNNELS = 36
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -14769,8 +14815,10 @@ class RouterInterface(_messages.Message):
       the RFC3927 link-local IP space. The value must be a CIDR-formatted
       string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
       as it represents the IP address of the interface.
-    linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
-      as the router. Each interface can have at most one linked resource.
+    linkedVpnTunnel: URI of the linked VPN tunnel. It must be in the same
+      region as the router. Each interface can have at most one linked
+      resource and it could either be a VPN Tunnel or an interconnect
+      attachment.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
@@ -14808,13 +14856,15 @@ class RouterStatus(_messages.Message):
 
   Fields:
     bestRoutes: Best routes for this router's network.
+    bestRoutesForRouter: Best routes learned by this router.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     network: URI of the network to which this router belongs.
   """
 
   bestRoutes = _messages.MessageField('Route', 1, repeated=True)
-  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 2, repeated=True)
-  network = _messages.StringField(3)
+  bestRoutesForRouter = _messages.MessageField('Route', 2, repeated=True)
+  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 3, repeated=True)
+  network = _messages.StringField(4)
 
 
 class RouterStatusBgpPeerStatus(_messages.Message):

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170314",
+ "revision": "20170323",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -309,7 +309,7 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of this access configuration."
+     "description": "The name of this access configuration. The default and recommended name is External NAT but you can use any arbitrary string you would like. For example, My external IP or Network Access."
     },
     "natIP": {
      "type": "string",
@@ -363,7 +363,7 @@
    "properties": {
     "address": {
      "type": "string",
-     "description": "The static external IP address represented by this resource. Only IPv4 is supported."
+     "description": "The static external IP address represented by this resource."
     },
     "addressType": {
      "type": "string",
@@ -1420,6 +1420,11 @@
      "type": "boolean",
      "description": "If true, enable Cloud CDN for this BackendService.\n\nWhen the load balancing scheme is INTERNAL, this field is not used."
     },
+    "failoverRatio": {
+     "type": "number",
+     "description": "The value of the field must be in [0, 1]. If set, 'backends[].failover' must be set. They together define the fallback behavior of the primary backend: if the ratio of the healthy VMs in the primary backend is at or below this number, traffic arriving at the load-balanced IP will be directed to the failover backend.\n\nIn case where 'failoverRatio' is not set or all the VMs in the backup backend are unhealthy, the traffic will be directed back to the primary backend in the \"force\" mode, where traffic will be spread to the healthy VMs with the best effort, or to all VMs when no VM is healthy.\n\nThis field is only used with l4 load balancing.",
+     "format": "float"
+    },
     "fingerprint": {
      "type": "string",
      "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a BackendService. An up-to-date fingerprint must be provided in order to update the BackendService.",
@@ -2134,6 +2139,10 @@
    "type": "object",
    "description": "Represents a customer-supplied encryption key",
    "properties": {
+    "kmsKeyName": {
+     "type": "string",
+     "description": "The name of the encryption key that is stored in Google Cloud KMS."
+    },
     "rawKey": {
      "type": "string",
      "description": "Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource."
@@ -4502,7 +4511,7 @@
     },
     "scheduling": {
      "$ref": "Scheduling",
-     "description": "Scheduling options for this instance."
+     "description": "Sets the scheduling options for this instance."
     },
     "selfLink": {
      "type": "string",
@@ -4822,10 +4831,6 @@
     "serviceAccount": {
      "type": "string",
      "description": "Service account will be used as credentials for all operations performed by managed instance group on instances. The service accounts needs all permissions required to create and delete instances. When not specified, the service account {projectNumber}@cloudservices.gserviceaccount.com will be used."
-    },
-    "spreadingPolicy": {
-     "$ref": "SpreadingPolicy",
-     "description": "Policy valid only for regional managed instance groups. Deprecated in favor of distribution_policy."
     },
     "targetPools": {
      "type": "array",
@@ -5571,6 +5576,10 @@
     "metadata": {
      "$ref": "Metadata",
      "description": "The metadata key/value pairs to assign to instances that are created from this template. These pairs can consist of custom metadata or predefined keys. See Project and instance metadata for more information."
+    },
+    "minCpuPlatform": {
+     "type": "string",
+     "description": "Minimum cpu/platform to be used by this instance. The instance may be scheduled on the specified or later cpu/platform."
     },
     "networkInterfaces": {
      "type": "array",
@@ -7522,7 +7531,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The names of one or more instances to abandon.",
+     "description": "The URLs of one or more instances to abandon. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -7535,7 +7544,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The names of one or more instances to delete.",
+     "description": "The URLs of one or more instances to delete. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -8046,6 +8055,21 @@
     }
    }
   },
+  "RouterAdvertisedPrefix": {
+   "id": "RouterAdvertisedPrefix",
+   "type": "object",
+   "description": "Description-tagged prefixes for the router to advertise.",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "User-specified description for the prefix."
+    },
+    "prefix": {
+     "type": "string",
+     "description": "The prefix to advertise. The value must be a CIDR-formatted string."
+    }
+   }
+  },
   "RouterAggregatedList": {
    "id": "RouterAggregatedList",
    "type": "object",
@@ -8082,6 +8106,38 @@
    "id": "RouterBgp",
    "type": "object",
    "properties": {
+    "advertiseMode": {
+     "type": "string",
+     "description": "User-specified flag to indicate which mode to use for advertisement.",
+     "enum": [
+      "CUSTOM",
+      "DEFAULT"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "advertisedGroups": {
+     "type": "array",
+     "description": "User-specified list of prefix groups to advertise in custom mode. This field can only be populated if advertise_mode is CUSTOM and is advertised to all peers of the router. These groups will be advertised in addition to any specified prefixes. Leave this field blank to advertise no custom groups.",
+     "items": {
+      "type": "string",
+      "enum": [
+       "ALL_SUBNETS"
+      ],
+      "enumDescriptions": [
+       ""
+      ]
+     }
+    },
+    "advertisedPrefixs": {
+     "type": "array",
+     "description": "User-specified list of individual prefixes to advertise in custom mode. This field can only be populated if advertise_mode is CUSTOM and is advertised to all peers of the router. These prefixes will be advertised in addition to any specified groups. Leave this field blank to advertise no custom prefixes.",
+     "items": {
+      "$ref": "RouterAdvertisedPrefix"
+     }
+    },
     "asn": {
      "type": "integer",
      "description": "Local BGP Autonomous System Number (ASN). Must be an RFC6996 private ASN, either 16-bit or 32-bit. The value will be fixed for this router resource. All VPN tunnels that link to this router will have the same local ASN.",
@@ -8093,6 +8149,38 @@
    "id": "RouterBgpPeer",
    "type": "object",
    "properties": {
+    "advertiseMode": {
+     "type": "string",
+     "description": "User-specified flag to indicate which mode to use for advertisement.",
+     "enum": [
+      "CUSTOM",
+      "DEFAULT"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "advertisedGroups": {
+     "type": "array",
+     "description": "User-specified list of prefix groups to advertise in custom mode. This field can only be populated if advertise_mode is CUSTOM and overrides the list defined for the router (in Bgp message). These groups will be advertised in addition to any specified prefixes. Leave this field blank to advertise no custom groups.",
+     "items": {
+      "type": "string",
+      "enum": [
+       "ALL_SUBNETS"
+      ],
+      "enumDescriptions": [
+       ""
+      ]
+     }
+    },
+    "advertisedPrefixs": {
+     "type": "array",
+     "description": "User-specified list of individual prefixes to advertise in custom mode. This field can only be populated if advertise_mode is CUSTOM and overrides the list defined for the router (in Bgp message). These prefixes will be advertised in addition to any specified groups. Leave this field blank to advertise no custom prefixes.",
+     "items": {
+      "$ref": "RouterAdvertisedPrefix"
+     }
+    },
     "advertisedRoutePriority": {
      "type": "integer",
      "description": "The priority of routes advertised to this BGP peer. In the case where there is more than one matching route of maximum length, the routes with lowest priority value win.",
@@ -8492,7 +8580,7 @@
     },
     "preemptible": {
      "type": "boolean",
-     "description": "Whether the instance is preemptible."
+     "description": "Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created."
     }
    }
   },
@@ -8825,29 +8913,6 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
-    }
-   }
-  },
-  "SpreadingPolicy": {
-   "id": "SpreadingPolicy",
-   "type": "object",
-   "description": "Deprecated in favor of distribution policy.",
-   "properties": {
-    "zones": {
-     "type": "array",
-     "items": {
-      "$ref": "SpreadingPolicyZoneConfiguration"
-     }
-    }
-   }
-  },
-  "SpreadingPolicyZoneConfiguration": {
-   "id": "SpreadingPolicyZoneConfiguration",
-   "type": "object",
-   "properties": {
-    "zone": {
-     "type": "string",
-     "description": "URL of the zone where managed instance group is spawning instances (for regional resources). Zone has to belong to the region where managed instance group is located."
     }
    }
   },
@@ -11434,7 +11499,7 @@
      "id": "compute.addresses.setLabels",
      "path": "{project}/regions/{region}/addresses/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on an Address. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -13688,7 +13753,7 @@
      "id": "compute.disks.setLabels",
      "path": "{project}/zones/{zone}/disks/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -14019,7 +14084,7 @@
      "id": "compute.firewalls.update",
      "path": "{project}/global/firewalls/{firewall}",
      "httpMethod": "PUT",
-     "description": "Updates the specified firewall rule with the data included in the request.",
+     "description": "Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.",
      "parameters": {
       "firewall": {
        "type": "string",
@@ -14299,7 +14364,7 @@
      "id": "compute.forwardingRules.setLabels",
      "path": "{project}/regions/{region}/forwardingRules/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -14600,7 +14665,7 @@
      "id": "compute.globalAddresses.setLabels",
      "path": "{project}/global/addresses/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -14831,7 +14896,7 @@
      "id": "compute.globalForwardingRules.setLabels",
      "path": "{project}/global/forwardingRules/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -16778,7 +16843,7 @@
      "id": "compute.images.setLabels",
      "path": "{project}/global/images/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -18970,7 +19035,7 @@
      "id": "compute.instances.reset",
      "path": "{project}/zones/{zone}/instances/{instance}/reset",
      "httpMethod": "POST",
-     "description": "Performs a hard reset on the instance.",
+     "description": "Performs a reset on the instance. For more information, see Resetting an instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -19121,7 +19186,7 @@
      "id": "compute.instances.setLabels",
      "path": "{project}/zones/{zone}/instances/{instance}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -21544,6 +21609,55 @@
   },
   "regionCommitments": {
    "methods": {
+    "aggregatedList": {
+     "id": "compute.regionCommitments.aggregatedList",
+     "path": "{project}/aggregated/commitments",
+     "httpMethod": "GET",
+     "description": "Retrieves an aggregated list of commitments.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "CommitmentAggregatedList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "get": {
      "id": "compute.regionCommitments.get",
      "path": "{project}/regions/{region}/commitments/{commitment}",
@@ -24527,7 +24641,7 @@
      "id": "compute.snapshots.setLabels",
      "path": "{project}/global/snapshots/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",
@@ -28113,7 +28227,7 @@
      "id": "compute.vpnTunnels.setLabels",
      "path": "{project}/regions/{region}/vpnTunnels/{resource}/setLabels",
      "httpMethod": "POST",
-     "description": "Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.",
+     "description": "Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling or Tagging Resources documentation.",
      "parameters": {
       "project": {
        "type": "string",

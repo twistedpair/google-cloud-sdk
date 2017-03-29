@@ -96,6 +96,22 @@ def GetCurrentProjectParent():
   return project_ref.RelativeName()
 
 
+def GetSinkReference(sink_name, log, service):
+  """Returns the appropriate sink resource based on args."""
+  if log:
+    collection = 'logging.projects.logs.sinks'
+    params = {'logsId': log}
+  elif service:
+    collection = 'logging.projects.logServices.sinks'
+    params = {'logServicesId': service}
+  else:
+    collection = 'logging.projects.sinks'
+    params = {}
+
+  return resources.REGISTRY.Parse(
+      sink_name, params=params, collection=collection)
+
+
 def WarnOnUsingLogOrServiceArguments(args):
   """Warns on using the --log or --service flag."""
   if args.log:

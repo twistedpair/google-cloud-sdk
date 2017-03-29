@@ -26,7 +26,7 @@ def UrlMapArgument(required=True):
       short_help='The name of the URL map.')
 
 
-def UrlMapArgumentForTargetHttpsProxy(required=True):
+def UrlMapArgumentForTargetProxy(required=True, proxy_type='HTTP'):
   return compute_flags.ResourceArgument(
       name='--url-map',
       resource_name='url map',
@@ -40,5 +40,5 @@ def UrlMapArgumentForTargetHttpsProxy(required=True):
       detailed_help="""\
         A reference to a URL map resource that defines the mapping of
         URLs to backend services. The URL map must exist and cannot be
-        deleted while referenced by a target HTTPS proxy.
-        """)
+        deleted while referenced by a target {0} proxy.
+        """.format(proxy_type))

@@ -493,7 +493,7 @@ class ComputeBeta(base_api.BaseApiClient):
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
         method_id=u'compute.autoscalers.patch',
-        ordered_params=[u'project', u'zone', u'autoscaler'],
+        ordered_params=[u'project', u'zone'],
         path_params=[u'project', u'zone'],
         query_params=[u'autoscaler'],
         relative_path=u'projects/{project}/zones/{zone}/autoscalers',
@@ -888,7 +888,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -3152,7 +3152,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -5199,7 +5199,7 @@ If you increase the size of the instance group, the group creates new instances 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
         method_id=u'compute.regionAutoscalers.patch',
-        ordered_params=[u'project', u'region', u'autoscaler'],
+        ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
         query_params=[u'autoscaler'],
         relative_path=u'projects/{project}/regions/{region}/autoscalers',
@@ -5760,7 +5760,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -6424,7 +6424,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Router resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified Router resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -8756,7 +8756,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message

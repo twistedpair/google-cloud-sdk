@@ -567,8 +567,11 @@ class _SectionApp(_Section):
     super(_SectionApp, self).__init__('app')
     self.promote_by_default = self._AddBool(
         'promote_by_default',
-        default=True,
-        hidden=True)
+        help_text='If True, when deploying a new version of a service, that '
+        'version will be promoted to receive all traffic for the service. '
+        'The flag can be overridden via the `--promote-by-default` or '
+        '`--no-promote-by-default` flags.',
+        default=True)
     self.stop_previous_version = self._AddBool(
         'stop_previous_version',
         help_text='If True, when deploying a new version of a service, the '
@@ -863,7 +866,7 @@ class _SectionCore(_Section):
         validator=ProjectValidator,
         callbacks=[_GetDevshellProject, _GetGCEProject],
         resource='cloudresourcemanager.projects',
-        resource_command_path='beta.projects')
+        resource_command_path='beta projects list --uri')
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains',
         hidden=True)
@@ -933,6 +936,10 @@ class _SectionExperimental(_Section):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
     self.fast_component_update = self._AddBool(
         'fast_component_update',
+        default=False)
+    self.shell_autocomplete = self._AddBool(
+        'shell_autocomplete',
+        hidden=True,
         default=False)
 
 

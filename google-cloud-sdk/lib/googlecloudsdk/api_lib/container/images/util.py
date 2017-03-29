@@ -265,6 +265,9 @@ def GetDockerImageFromTagOrDigest(image_name):
 
   Returns:
     Either a docker_name.Tag or a docker_name.Digest object.
+
+  Raises:
+    InvalidImageNameError: Given digest could not be resolved to a full digest.
   """
   if not IsFullySpecified(image_name):
     image_name += ':latest'
@@ -273,12 +276,23 @@ def GetDockerImageFromTagOrDigest(image_name):
     return docker_name.Tag(image_name)
   except docker_name.BadNameException:
     pass
-  # If the full digest wasn't specified, check if what was passed
-  # in is a valid digest prefix.
-  # 7 for 'sha256:' and 64 for the full digest
+
   parts = image_name.split('@', 1)
-  if len(parts) == 2 and len(parts[1]) < 7 + 64:
-    image_name = GetDockerDigestFromPrefix(image_name)
+  if len(parts) == 2:
+    if not parts[1].startswith('sha256:'):
+      raise InvalidImageNameError(
+          '[{0}] digest must be of the form "sha256:<digest>".'.format(
+              image_name))
+
+    # If the full digest wasn't specified, check if what was passed
+    # in is a valid digest prefix.
+    # 7 for 'sha256:' and 64 for the full digest
+    if len(parts[1]) < 7 + 64:
+      resolved = GetDockerDigestFromPrefix(image_name)
+      if resolved == image_name:
+        raise InvalidImageNameError(
+            '[{0}] could not be resolved to a full digest.'.format(image_name))
+      image_name = resolved
   return docker_name.Digest(image_name)
 
 

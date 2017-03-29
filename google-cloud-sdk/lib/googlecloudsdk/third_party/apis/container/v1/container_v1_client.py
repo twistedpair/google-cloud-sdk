@@ -537,6 +537,32 @@ at the initial create time.
         supports_download=False,
     )
 
+    def LegacyAbac(self, request, global_params=None):
+      """Enables or disables the ABAC authorization mechanism on a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersLegacyAbacRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LegacyAbac')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.legacyAbac',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac',
+        request_field=u'setLegacyAbacRequest',
+        request_type_name=u'ContainerProjectsZonesClustersLegacyAbacRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all clusters owned by a project in either the specified zone or all.
 zones.
@@ -561,6 +587,60 @@ zones.
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersListRequest',
         response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
+    def ResourceLabels(self, request, global_params=None):
+      """Sets labels on a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersResourceLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResourceLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.resourceLabels',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
+        request_field=u'setLabelsRequest',
+        request_type_name=u'ContainerProjectsZonesClustersResourceLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMasterAuth(self, request, global_params=None):
+      """Used to set master auth materials. Currently supports :-.
+Changing the admin password of a specific cluster.
+This can be either via password generation or explicitly set the password.
+
+      Args:
+        request: (ContainerProjectsZonesClustersSetMasterAuthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMasterAuth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.setMasterAuth',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
+        request_field=u'setMasterAuthRequest',
+        request_type_name=u'ContainerProjectsZonesClustersSetMasterAuthRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

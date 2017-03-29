@@ -41,11 +41,11 @@ class CallFunctionResponse(_messages.Message):
 
 
 class CloudFunction(_messages.Message):
-  """Describes a cloud function that contains user computation executed in
+  """Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
-    StatusValueValuesEnum: Status of the function deployment. Output only.
+    StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
@@ -58,32 +58,26 @@ class CloudFunction(_messages.Message):
       `source_location`.
     eventTrigger: A source that fires events in response to a condition in
       another service.
-    gcsTrigger: Google Cloud Storage resource whose changes trigger the
-      events. Currently, it must have the form `gs://<bucket>/` (that is, it
-      must refer to a bucket, rather than an object).
-    gcsUrl: Google Cloud Storage URL pointing to the zip archive which
-      contains the function.
-    httpsTrigger: A https endpoint type of source that can be triggered via
+    httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
-    latestOperation: Name of the most recent operation modifying the function.
-      If the function status is `DEPLOYING` or `DELETING`, then it points to
-      the active operation. Output only.
+    latestOperation: Output only. Name of the most recent operation modifying
+      the function. If the function status is `DEPLOYING` or `DELETING`, then
+      it points to the active operation.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
-    pubsubTrigger: A Google Cloud PubSub type of source.
-    serviceAccount: The service account of the function. Output only.
+    serviceAccount: Output only. The service account of the function.
     sourceArchiveUrl: The URL, starting with gs://, pointing to the zip
       archive which contains the function.
     sourceRepository: The hosted repository where the function is defined.
-    status: Status of the function deployment. Output only.
+    status: Output only. Status of the function deployment.
     timeout: The function execution timeout. Execution is considered failed
       and can be terminated if the function is not completed at the end of the
       timeout period. Defaults to 60 seconds.
-    updateTime: [Output only] The last update timestamp of a cloud function.
+    updateTime: Output only. The last update timestamp of a Cloud Function.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the function deployment. Output only.
+    """Output only. Status of the function deployment.
 
     Values:
       STATUS_UNSPECIFIED: Status not specified.
@@ -102,18 +96,15 @@ class CloudFunction(_messages.Message):
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   entryPoint = _messages.StringField(2)
   eventTrigger = _messages.MessageField('EventTrigger', 3)
-  gcsTrigger = _messages.StringField(4)
-  gcsUrl = _messages.StringField(5)
-  httpsTrigger = _messages.MessageField('HTTPSTrigger', 6)
-  latestOperation = _messages.StringField(7)
-  name = _messages.StringField(8)
-  pubsubTrigger = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  sourceArchiveUrl = _messages.StringField(11)
-  sourceRepository = _messages.MessageField('SourceRepository', 12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  httpsTrigger = _messages.MessageField('HTTPSTrigger', 4)
+  latestOperation = _messages.StringField(5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  sourceArchiveUrl = _messages.StringField(8)
+  sourceRepository = _messages.MessageField('SourceRepository', 9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  timeout = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -230,33 +221,27 @@ class EventTrigger(_messages.Message):
     eventType: `event_type` names contain the service that is sending an event
       and the kind of event that was fired. Must be of the form
       `providers/*/eventTypes/*` e.g. Directly handle a Message published to
-      Google Cloud PubSub `providers/cloud.pubsub/eventTypes/topic.publish`
+      Google Cloud Pub/Sub `providers/cloud.pubsub/eventTypes/topic.publish`
       Handle an object changing in Google Cloud Storage
       `providers/cloud.storage/eventTypes/object.change`       Handle a write
       to the Firebase Realtime Database
       `providers/firebase.database/eventTypes/data.write`
-    path: Optional path within the resource that should be used to filter
-      events. Named wildcards may be written in curly brackets (e.g.
-      {variable}). The value that matched this parameter will be included  in
-      the event parameters. e.g. `users/{userId}/profilePic` Path is not
-      supported for all actions.
     resource: Which instance of the source's service should send events. E.g.
-      for PubSub this would be a PubSub topic at `projects/*/topics/*`. For
+      for Pub/Sub this would be a Pub/Sub topic at `projects/*/topics/*`. For
       Google Cloud Storage this would be a bucket at `projects/*/buckets/*`.
       For any source that only supports one instance per-project, this should
       be the name of the project (`projects/*`)
   """
 
   eventType = _messages.StringField(1)
-  path = _messages.StringField(2)
-  resource = _messages.StringField(3)
+  resource = _messages.StringField(2)
 
 
 class HTTPSTrigger(_messages.Message):
   """Describes HTTPSTrigger, could be used to connect web hooks to function.
 
   Fields:
-    url: [Output only] The deployed url for the function.
+    url: Output only. The deployed url for the function.
   """
 
   url = _messages.StringField(1)
@@ -552,18 +537,18 @@ class SourceRepository(_messages.Message):
 
   Fields:
     branch: The name of the branch from which the function should be fetched.
-    deployedRevision: The id of the revision that was resolved at the moment
-      of function creation or update. For example when a user deployed from a
-      branch, it will be the revision id of the latest change on this branch
-      at that time. If user deployed from revision then this value will be
-      always equal to the revision specified by the user. Output only.
+    deployedRevision: Output only. The id of the revision that was resolved at
+      the moment of function creation or update. For example when a user
+      deployed from a branch, it will be the revision id of the latest change
+      on this branch at that time. If user deployed from revision then this
+      value will be always equal to the revision specified by the user.
     repositoryUrl: URL to the hosted repository where the function is defined.
       Only paths in https://source.developers.google.com domain are supported.
       The path should contain the name of the repository.
     revision: The id of the revision that captures the state of the repository
       from which the function should be fetched.
     sourcePath: The path within the repository where the function is defined.
-      The path should point to the directory where cloud functions files are
+      The path should point to the directory where Cloud Functions files are
       located. Use "/" if the function is defined directly in the root
       directory of a repository.
     tag: The name of the tag that captures the state of the repository from

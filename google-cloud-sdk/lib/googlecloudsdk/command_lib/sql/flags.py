@@ -47,3 +47,74 @@ COLLATION_FLAG = base.Argument(
     help='Cloud SQL database collation setting, which specifies '
     'the set of rules for comparing characters in a character set. Each'
     ' database version may support a different set of collations.')
+
+OPERATION_ARGUMENT = base.Argument(
+    'operation',
+    nargs='+',
+    help='An identifier that uniquely identifies the operation.')
+
+INSTANCES_FORMAT = """
+  table(
+    instance:label=NAME,
+    region,
+    settings.tier,
+    ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
+    state:label=STATUS
+  )
+"""
+
+INSTANCES_FORMAT_BETA = """
+  table(
+    name,
+    region,
+    settings.tier,
+    ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
+    state:label=STATUS
+  )
+"""
+
+OPERATION_FORMAT = """
+  table(
+    operation,
+    operationType:label=TYPE,
+    startTime.iso():label=START,
+    endTime.iso():label=END,
+    error[0].code.yesno(no="-"):label=ERROR,
+    state:label=STATUS
+  )
+"""
+
+OPERATION_FORMAT_BETA = """
+  table(
+    name,
+    operationType:label=TYPE,
+    startTime.iso():label=START,
+    endTime.iso():label=END,
+    error[0].code.yesno(no="-"):label=ERROR,
+    status:label=STATUS
+  )
+"""
+
+SSL_CERTS_FORMAT = """
+  table(
+    commonName:label=NAME,
+    sha1Fingerprint,
+    expirationTime.yesno(no="-"):label=EXPIRATION
+  )
+"""
+
+TIERS_FORMAT = """
+  table(
+    tier,
+    region.list():label=AVAILABLE_REGIONS,
+    RAM.size(),
+    DiskQuota.size():label=DISK
+  )
+"""
+
+USERS_FORMAT_BETA = """
+  table(
+    name.yesno(no='(anonymous)'),
+    host
+  )
+"""

@@ -26,6 +26,7 @@ class ResourceInfo(object):
   Attributes:
     bypass_cache: True if cache_command output should be used instead of cache.
     cache_command: The gcloud command string that updates the URI cache.
+    list_command: The gcloud command string that lists URIs one per line.
     list_format: The default list format string for resource_printer.Print().
     defaults: The resource projection transform defaults.
     transforms: Memoized combined transform symbols dict set by GetTransforms().
@@ -43,12 +44,14 @@ class ResourceInfo(object):
   def __init__(self,
                bypass_cache=False,
                cache_command=None,
+               list_command=None,
                list_format=None,
                defaults=None,
                transforms=None,
                async_collection=None):
     self.bypass_cache = bypass_cache
     self.cache_command = cache_command
+    self.list_command = list_command
     self.list_format = list_format
     self.defaults = defaults
     self.transforms = transforms

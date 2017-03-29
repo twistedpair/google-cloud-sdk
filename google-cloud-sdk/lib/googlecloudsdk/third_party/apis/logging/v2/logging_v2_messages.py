@@ -120,13 +120,14 @@ class ListLogEntriesRequest(_messages.Message):
       first option returns entries in order of increasing values of
       LogEntry.timestamp (oldest first), and the second option returns entries
       in order of decreasing timestamps (newest first). Entries with equal
-      timestamps are returned in order of LogEntry.insertId.
+      timestamps are returned in order of their insert_id values.
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
+      request. Non-positive values are ignored. The presence of
+      next_page_token in the response indicates that more results might be
+      available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
+      from the preceding call to this method. page_token must be the value of
+      next_page_token from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     projectIds: Deprecated. Use resource_names instead. One or more project
       identifiers or project numbers from which to retrieve log entries.
@@ -249,10 +250,12 @@ class LogEntry(_messages.Message):
   Fields:
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
-    insertId: Optional. A unique ID for the log entry. If you provide this
-      field, the logging service considers other log entries in the same
-      project with the same ID as duplicates which can be removed. If omitted,
-      Stackdriver Logging will generate a unique ID for this log entry.
+    insertId: Optional. A unique identifier for the log entry. If you provide
+      a value, then Stackdriver Logging considers other log entries in the
+      same project, with the same timestamp, and with the same insert_id to be
+      duplicates which can be removed. If omitted in new log entries, then
+      Stackdriver Logging will insert its own unique identifier. The insert_id
+      is used to order log entries that have the same timestamp value.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -287,8 +290,10 @@ class LogEntry(_messages.Message):
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
     timestamp: Optional. The time the event described by the log entry
-      occurred. If omitted, Stackdriver Logging will use the time the log
-      entry is received.
+      occurred. If omitted in a new log entry, Stackdriver Logging will insert
+      the time the log entry is received. Stackdriver Logging might reject log
+      entries whose time stamps are more than a couple of hours in the future.
+      Log entries with time stamps in the past are accepted.
     trace: Optional. Resource name of the trace associated with the log entry,
       if any. If it contains a relative resource name, the name is assumed to
       be relative to //tracing.googleapis.com. Example: projects/my-
@@ -1593,10 +1598,15 @@ class WriteLogEntriesRequest(_messages.Message):
   Fields:
     entries: Required. The log entries to write. Values supplied for the
       fields log_name, resource, and labels in this entries.write request are
-      added to those log entries that do not provide their own values for the
-      fields.To improve throughput and to avoid exceeding the quota limit for
-      calls to entries.write, you should write multiple log entries at once
-      rather than calling this method for each individual log entry.
+      inserted into those log entries in this list that do not provide their
+      own values.Stackdriver Logging also creates and inserts values for
+      timestamp and insert_id if the entries do not provide them. The created
+      insert_id for the N'th entry in this list will be greater than earlier
+      entries and less than later entries. Otherwise, the order of log entries
+      in this list does not matter.To improve throughput and to avoid
+      exceeding the quota limit for calls to entries.write, you should write
+      multiple log entries at once rather than calling this method for each
+      individual log entry.
     labels: Optional. Default labels that are added to the labels field of all
       log entries in entries. If a log entry already has a label with the same
       key as a label in this parameter, then the log entry's label is not
@@ -1612,9 +1622,10 @@ class WriteLogEntriesRequest(_messages.Message):
       information about log names, see LogEntry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
-      errors. If any entry is not written, the response status will be the
-      error associated with one of the failed entries and include error
-      details in the form of WriteLogEntriesPartialErrors.
+      errors. If any entry is not written, then the response status is the
+      error associated with one of the failed entries and the response
+      includes error details keyed by the entries' zero-based index in the
+      entries.write method.
     resource: Optional. A default monitored resource object that is assigned
       to all log entries in entries that do not specify a value for resource.
       Example: { "type": "gce_instance",   "labels": {     "zone": "us-

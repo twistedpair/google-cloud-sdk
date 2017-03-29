@@ -752,6 +752,32 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetType(self, request, global_params=None):
+      """Gets a type info for a type provided by a TypeProvider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersGetTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeInfo) The response message.
+      """
+      config = self.GetMethodConfig('GetType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetType.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.getType',
+        ordered_params=[u'project', u'typeProvider', u'type'],
+        path_params=[u'project', u'type', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types/{type}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersGetTypeRequest',
+        response_type_name=u'TypeInfo',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a type provider.
 
@@ -801,6 +827,32 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DeploymentmanagerTypeProvidersListRequest',
         response_type_name=u'TypeProvidersListResponse',
+        supports_download=False,
+    )
+
+    def ListTypes(self, request, global_params=None):
+      """Lists all the type info for a TypeProvider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersListTypesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeProvidersListTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListTypes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListTypes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.listTypes',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersListTypesRequest',
+        response_type_name=u'TypeProvidersListTypesResponse',
         supports_download=False,
     )
 

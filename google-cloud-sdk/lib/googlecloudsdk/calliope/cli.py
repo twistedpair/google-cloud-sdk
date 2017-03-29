@@ -23,7 +23,6 @@ import uuid
 
 import argcomplete
 from googlecloudsdk.calliope import actions
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
@@ -34,7 +33,6 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import pkg_resources
 
 
@@ -426,6 +424,9 @@ class CLILoader(object):
     Args:
       top_element: backend._CommandCommon, The root of the command tree.
     """
+    calliope_base.FLATTEN_FLAG.AddToParser(top_element.ai)
+    calliope_base.FORMAT_FLAG.AddToParser(top_element.ai)
+
     if self.__version_func is not None:
       top_element.ai.add_argument(
           '-v', '--version',
@@ -468,32 +469,6 @@ class CLILoader(object):
         action=actions.StoreBooleanProperty(
             properties.VALUES.core.user_output_enabled),
         help='Print user intended output to the console.')
-
-    top_element.ai.add_argument(
-        '--flatten',
-        metavar='KEY',
-        default=None,
-        type=arg_parsers.ArgList(),
-        category=calliope_base.COMMONLY_USED_FLAGS,
-        help="""\
-        Flatten _name_[] output resource slices in _KEY_ into separate records
-        for each item in each slice. Multiple keys and slices may be specified.
-        This also flattens keys for *--format* and *--filter*. For example,
-        *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
-        *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
-        will expand to N records in the flattened output. This flag interacts
-        with other flags that are applied in this order: *--flatten*,
-        *--sort-by*, *--filter*, *--limit*.""")
-
-    top_element.ai.add_argument(
-        '--format',
-        default=None,
-        category=calliope_base.COMMONLY_USED_FLAGS,
-        help="""\
-        Sets the format for printing command output resources. The default is a
-        command-specific human-friendly output format. The supported formats
-        are: `{0}`. For more details run $ gcloud topic formats.""".format(
-            '`, `'.join(resource_printer.SupportedFormats())))
 
     top_element.ai.add_argument(
         '--log-http',

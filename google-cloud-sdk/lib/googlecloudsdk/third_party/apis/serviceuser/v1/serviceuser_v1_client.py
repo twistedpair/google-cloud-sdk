@@ -34,9 +34,142 @@ class ServiceuserV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.operations = self.OperationsService(self)
     self.projects_services = self.ProjectsServicesService(self)
     self.projects = self.ProjectsService(self)
     self.services = self.ServicesService(self)
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(ServiceuserV1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      """Starts asynchronous cancellation on a long-running operation.  The server.
+makes a best effort to cancel the operation, but success is not
+guaranteed.  If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
+Operations.GetOperation or
+other methods to check whether the cancellation succeeded or whether the
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (ServiceuserOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'serviceuser.operations.cancel',
+        ordered_params=[u'operationsId'],
+        path_params=[u'operationsId'],
+        query_params=[],
+        relative_path=u'v1/operations/{operationsId}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'ServiceuserOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a long-running operation. This method indicates that the client is.
+no longer interested in the operation result. It does not cancel the
+operation. If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (ServiceuserOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'serviceuser.operations.delete',
+        ordered_params=[u'operationsId'],
+        path_params=[u'operationsId'],
+        query_params=[],
+        relative_path=u'v1/operations/{operationsId}',
+        request_field='',
+        request_type_name=u'ServiceuserOperationsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (ServiceuserOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceuser.operations.get',
+        ordered_params=[u'operationsId'],
+        path_params=[u'operationsId'],
+        query_params=[],
+        relative_path=u'v1/operations/{operationsId}',
+        request_field='',
+        request_type_name=u'ServiceuserOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding below allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`.
+
+      Args:
+        request: (ServiceuserOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceuser.operations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/operations',
+        request_field='',
+        request_type_name=u'ServiceuserOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsServicesService(base_api.BaseApiService):
     """Service class for the projects_services resource."""

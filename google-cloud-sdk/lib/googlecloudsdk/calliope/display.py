@@ -103,13 +103,10 @@ class Displayer(object):
             lambda r, undefined='': self._info.collection or undefined)
       geturi = command.GetUriFunc()
       if geturi:
-        self._transform_uri = lambda r, undefined='': geturi(r) or undefined
-        self._defaults.symbols['uri'] = self._transform_uri
-      else:
-        self._transform_uri = resource_transform.TransformUri
-    else:
-      self._transform_uri = self._defaults.symbols.get(
-          'uri', resource_transform.TransformUri)
+        self._defaults.symbols['uri'] = (
+            lambda r, undefined='': geturi(r) or undefined)
+    self._transform_uri = self._defaults.symbols.get(
+        'uri', resource_transform.TransformUri)
     self._defaults.symbols[
         resource_transform.GetTypeDataName('conditionals')] = args
 

@@ -265,6 +265,8 @@ class BigqueryTabledataListRequest(_messages.Message):
     pageToken: Page token, returned by a previous call, identifying the result
       set
     projectId: Project ID of the table to read
+    selectedFields: List of fields to return (comma-separated). If
+      unspecified, all fields are returned
     startIndex: Zero-based index of the starting row to read
     tableId: Table ID of the table to read
   """
@@ -273,8 +275,9 @@ class BigqueryTabledataListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   pageToken = _messages.StringField(3)
   projectId = _messages.StringField(4, required=True)
-  startIndex = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  tableId = _messages.StringField(6, required=True)
+  selectedFields = _messages.StringField(5)
+  startIndex = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  tableId = _messages.StringField(7, required=True)
 
 
 class BigqueryTablesDeleteRequest(_messages.Message):
@@ -301,12 +304,15 @@ class BigqueryTablesGetRequest(_messages.Message):
   Fields:
     datasetId: Dataset ID of the requested table
     projectId: Project ID of the requested table
+    selectedFields: List of fields to return (comma-separated). If
+      unspecified, all fields are returned
     tableId: Table ID of the requested table
   """
 
   datasetId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
-  tableId = _messages.StringField(3, required=True)
+  selectedFields = _messages.StringField(3)
+  tableId = _messages.StringField(4, required=True)
 
 
 class BigqueryTablesInsertRequest(_messages.Message):
@@ -525,10 +531,10 @@ class Dataset(_messages.Message):
 
   Messages:
     AccessValueListEntry: A AccessValueListEntry object.
-    LabelsValue: [Experimental] The labels associated with this dataset. You
-      can use these to organize and group your datasets. You can set this
-      property when inserting or updating a dataset. See Labeling Datasets for
-      more information.
+    LabelsValue: The labels associated with this dataset. You can use these to
+      organize and group your datasets. You can set this property when
+      inserting or updating a dataset. See Labeling Datasets for more
+      information.
 
   Fields:
     access: [Optional] An array of objects that define dataset access for one
@@ -561,14 +567,14 @@ class Dataset(_messages.Message):
       given in the datasetId field. When creating a new dataset, leave this
       field blank, and instead specify the datasetId field.
     kind: [Output-only] The resource type.
-    labels: [Experimental] The labels associated with this dataset. You can
-      use these to organize and group your datasets. You can set this property
-      when inserting or updating a dataset. See Labeling Datasets for more
+    labels: The labels associated with this dataset. You can use these to
+      organize and group your datasets. You can set this property when
+      inserting or updating a dataset. See Labeling Datasets for more
       information.
     lastModifiedTime: [Output-only] The date when this dataset or any of its
       tables was last modified, in milliseconds since the epoch.
-    location: [Experimental] The geographic location where the dataset should
-      reside. Possible values include EU and US. The default value is US.
+    location: The geographic location where the dataset should reside.
+      Possible values include EU and US. The default value is US.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
   """
@@ -608,10 +614,9 @@ class Dataset(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Experimental] The labels associated with this dataset. You can use
-    these to organize and group your datasets. You can set this property when
-    inserting or updating a dataset. See Labeling Datasets for more
-    information.
+    """The labels associated with this dataset. You can use these to organize
+    and group your datasets. You can set this property when inserting or
+    updating a dataset. See Labeling Datasets for more information.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -671,8 +676,8 @@ class DatasetList(_messages.Message):
     """A DatasetsValueListEntry object.
 
     Messages:
-      LabelsValue: [Experimental] The labels associated with this dataset. You
-        can use these to organize and group your datasets.
+      LabelsValue: The labels associated with this dataset. You can use these
+        to organize and group your datasets.
 
     Fields:
       datasetReference: The dataset reference. Use this property to access
@@ -681,14 +686,14 @@ class DatasetList(_messages.Message):
       id: The fully-qualified, unique, opaque ID of the dataset.
       kind: The resource type. This property always returns the value
         "bigquery#dataset".
-      labels: [Experimental] The labels associated with this dataset. You can
-        use these to organize and group your datasets.
+      labels: The labels associated with this dataset. You can use these to
+        organize and group your datasets.
     """
 
     @encoding.MapUnrecognizedFields('additionalProperties')
     class LabelsValue(_messages.Message):
-      """[Experimental] The labels associated with this dataset. You can use
-      these to organize and group your datasets.
+      """The labels associated with this dataset. You can use these to
+      organize and group your datasets.
 
       Messages:
         AdditionalProperty: An additional property for a LabelsValue object.
@@ -814,8 +819,8 @@ class ExternalDataConfiguration(_messages.Message):
   """A ExternalDataConfiguration object.
 
   Fields:
-    autodetect: [Experimental] Try to detect schema and format options
-      automatically. Any option specified explicitly will be honored.
+    autodetect: Try to detect schema and format options automatically. Any
+      option specified explicitly will be honored.
     bigtableOptions: [Optional] Additional options if sourceFormat is set to
       BIGTABLE.
     compression: [Optional] The compression type of the data source. Possible
@@ -846,11 +851,8 @@ class ExternalDataConfiguration(_messages.Message):
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
       For Google sheets, specify "GOOGLE_SHEETS". For newline-delimited JSON,
       specify "NEWLINE_DELIMITED_JSON". For Avro files, specify "AVRO". For
-      Google Cloud Datastore backups, specify "DATASTORE_BACKUP".
-      [Experimental] For Google Cloud Bigtable, specify "BIGTABLE". Please
-      note that reading from Google Cloud Bigtable is experimental and has to
-      be enabled for your project. Please contact Google Cloud Support to
-      enable this for your project.
+      Google Cloud Datastore backups, specify "DATASTORE_BACKUP". [Beta] For
+      Google Cloud Bigtable, specify "BIGTABLE".
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
       '*' wildcard character and it must come after the 'bucket' name. Size
@@ -893,9 +895,8 @@ class GetQueryResultsResponse(_messages.Message):
       results, subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type of the response.
-    numDmlAffectedRows: [Output-only, Experimental] The number of rows
-      affected by a DML statement. Present only for DML statements INSERT,
-      UPDATE or DELETE.
+    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+      statement. Present only for DML statements INSERT, UPDATE or DELETE.
     pageToken: A token used for paging results.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
@@ -1094,8 +1095,8 @@ class JobConfigurationLoad(_messages.Message):
     allowQuotedNewlines: Indicates if BigQuery should allow quoted data
       sections that contain newline characters in a CSV file. The default
       value is false.
-    autodetect: [Experimental] Indicates if we should automatically infer the
-      options and schema for CSV and JSON sources.
+    autodetect: Indicates if we should automatically infer the options and
+      schema for CSV and JSON sources.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1129,17 +1130,16 @@ class JobConfigurationLoad(_messages.Message):
     nullMarker: [Optional] Specifies a string that represents a null value in
       a CSV file. For example, if you specify "\N", BigQuery interprets "\N"
       as a null value when loading a CSV file. The default value is the empty
-      string. If you set this property to a custom value, BigQuery still
-      interprets the empty string as a null value for all data types except
-      for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets
-      the empty string as an empty value.
-    projectionFields: [Experimental] If sourceFormat is set to
-      "DATASTORE_BACKUP", indicates which entity properties to load into
-      BigQuery from a Cloud Datastore backup. Property names are case
-      sensitive and must be top-level properties. If no properties are
-      specified, BigQuery loads all properties. If any named property isn't
-      found in the Cloud Datastore backup, an invalid error is returned in the
-      job result.
+      string. If you set this property to a custom value, BigQuery throws an
+      error if an empty string is present for all data types except for STRING
+      and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
+      string as an empty value.
+    projectionFields: If sourceFormat is set to "DATASTORE_BACKUP", indicates
+      which entity properties to load into BigQuery from a Cloud Datastore
+      backup. Property names are case sensitive and must be top-level
+      properties. If no properties are specified, BigQuery loads all
+      properties. If any named property isn't found in the Cloud Datastore
+      backup, an invalid error is returned in the job result.
     quote: [Optional] The value that is used to quote data sections in a CSV
       file. BigQuery converts the string to ISO-8859-1 encoding, and then uses
       the first byte of the encoded string to split the data in its raw,
@@ -1244,9 +1244,9 @@ class JobConfigurationQuery(_messages.Message):
       Queries that will have bytes billed beyond this limit will fail (without
       incurring a charge). If unspecified, this will be set to your project
       default.
-    parameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to use
-      positional (?) query parameters or to NAMED to use named (@myparam)
-      query parameters in this query.
+    parameterMode: Standard SQL only. Set to POSITIONAL to use positional (?)
+      query parameters or to NAMED to use named (@myparam) query parameters in
+      this query.
     preserveNulls: [Deprecated] This property is deprecated.
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
@@ -1277,8 +1277,8 @@ class JobConfigurationQuery(_messages.Message):
       whenever tables in the query are modified. Moreover, the query cache is
       only available when a query does not have a destination table specified.
       The default value is true.
-    userDefinedFunctionResources: [Experimental] Describes user-defined
-      function resources used in the query.
+    userDefinedFunctionResources: Describes user-defined function resources
+      used in the query.
     writeDisposition: [Optional] Specifies the action that occurs if the
       destination table already exists. The following values are supported:
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
@@ -1467,11 +1467,9 @@ class JobStatistics2(_messages.Message):
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
-    numDmlAffectedRows: [Output-only, Experimental] The number of rows
-      affected by a DML statement. Present only for DML statements INSERT,
-      UPDATE or DELETE.
-    queryPlan: [Output-only, Experimental] Describes execution plan for the
-      query.
+    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+      statement. Present only for DML statements INSERT, UPDATE or DELETE.
+    queryPlan: [Output-only] Describes execution plan for the query.
     referencedTables: [Output-only, Experimental] Referenced tables for the
       job. Queries that reference more than 50 tables will not have a complete
       list.
@@ -1735,14 +1733,14 @@ class QueryRequest(_messages.Message):
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
-    parameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to use
-      positional (?) query parameters or to NAMED to use named (@myparam)
-      query parameters in this query.
+    parameterMode: Standard SQL only. Set to POSITIONAL to use positional (?)
+      query parameters or to NAMED to use named (@myparam) query parameters in
+      this query.
     preserveNulls: [Deprecated] This property is deprecated.
     query: [Required] A query string, following the BigQuery query syntax, of
       the query to execute. Example: "SELECT count(f1) FROM
       [myProjectId:myDatasetId.myTableId]".
-    queryParameters: [Experimental] Query parameters for Standard SQL queries.
+    queryParameters: Query parameters for Standard SQL queries.
     timeoutMs: [Optional] How long to wait for the query to complete, in
       milliseconds, before the request times out and returns. Note that this
       is only a timeout for the request, not the query. If the query takes
@@ -1792,9 +1790,8 @@ class QueryResponse(_messages.Message):
       subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type.
-    numDmlAffectedRows: [Output-only, Experimental] The number of rows
-      affected by a DML statement. Present only for DML statements INSERT,
-      UPDATE or DELETE.
+    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+      statement. Present only for DML statements INSERT, UPDATE or DELETE.
     pageToken: A token used for paging results.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
@@ -2281,8 +2278,8 @@ class ViewDefinition(_messages.Message):
       BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
       reference/ Queries and views that reference this view must use the same
       flag value.
-    userDefinedFunctionResources: [Experimental] Describes user-defined
-      function resources used in the query.
+    userDefinedFunctionResources: Describes user-defined function resources
+      used in the query.
   """
 
   query = _messages.StringField(1)

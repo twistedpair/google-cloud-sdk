@@ -57,8 +57,7 @@ class Address(_messages.Message):
       by another resource and is not available.
 
   Fields:
-    address: The static external IP address represented by this resource. Only
-      IPv4 is supported.
+    address: The static external IP address represented by this resource.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -959,6 +958,7 @@ class BackendService(_messages.Message):
       allowed value for TTL is one day.  When the load balancing scheme is
       INTERNAL, this field is not used.
     backends: The list of backends that serve this BackendService.
+    cdnPolicy: Cloud CDN configuration for this BackendService.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -1063,23 +1063,24 @@ class BackendService(_messages.Message):
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  enableCDN = _messages.BooleanField(6)
-  fingerprint = _messages.BytesField(7)
-  healthChecks = _messages.StringField(8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(14)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 18)
-  timeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  enableCDN = _messages.BooleanField(7)
+  fingerprint = _messages.BytesField(8)
+  healthChecks = _messages.StringField(9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(15)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
+  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1128,6 +1129,16 @@ class BackendServiceAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#backendServiceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class BackendServiceCdnPolicy(_messages.Message):
+  """Message containing Cloud CDN configuration for a backend service.
+
+  Fields:
+    cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+  """
+
+  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -1280,6 +1291,36 @@ class CacheInvalidationRule(_messages.Message):
 
   host = _messages.StringField(1)
   path = _messages.StringField(2)
+
+
+class CacheKeyPolicy(_messages.Message):
+  """Message containing what to include in the cache key for a request for
+  Cloud CDN.
+
+  Fields:
+    includeHost: If true, requests to different hosts will be cached
+      separately.
+    includeProtocol: If true, http and https requests will be cached
+      separately.
+    includeQueryString: If true, include query string parameters in the cache
+      key according to query_string_whitelist and query_string_blacklist. If
+      neither is set, the entire query string will be included. If false, the
+      query string will be excluded from the cache key entirely.
+    queryStringBlacklist: Names of query string parameters to exclude in cache
+      keys. All other parameters will be included. Either specify
+      query_string_whitelist or query_string_blacklist, not both. '&' and '='
+      will be percent encoded and not treated as delimiters.
+    queryStringWhitelist: Names of query string parameters to include in cache
+      keys. All other parameters will be excluded. Either specify
+      query_string_whitelist or query_string_blacklist, not both. '&' and '='
+      will be percent encoded and not treated as delimiters.
+  """
+
+  includeHost = _messages.BooleanField(1)
+  includeProtocol = _messages.BooleanField(2)
+  includeQueryString = _messages.BooleanField(3)
+  queryStringBlacklist = _messages.StringField(4, repeated=True)
+  queryStringWhitelist = _messages.StringField(5, repeated=True)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -11952,8 +11993,10 @@ class RouterInterface(_messages.Message):
       the RFC3927 link-local IP space. The value must be a CIDR-formatted
       string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
       as it represents the IP address of the interface.
-    linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
-      as the router. Each interface can have at most one linked resource.
+    linkedVpnTunnel: URI of the linked VPN tunnel. It must be in the same
+      region as the router. Each interface can have at most one linked
+      resource and it could either be a VPN Tunnel or an interconnect
+      attachment.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
@@ -12548,6 +12591,8 @@ class Subnetwork(_messages.Message):
     network: The URL of the network to which this subnetwork belongs, provided
       by the client when initially creating the subnetwork. Only networks that
       are in the distributed mode can have subnetworks.
+    privateIpGoogleAccess: Whether the VMs in this subnet can access Google
+      services without assigned external IP addresses.
     region: URL of the region where the Subnetwork resides.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
@@ -12560,8 +12605,9 @@ class Subnetwork(_messages.Message):
   kind = _messages.StringField(6, default=u'compute#subnetwork')
   name = _messages.StringField(7)
   network = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
+  privateIpGoogleAccess = _messages.BooleanField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
 
 
 class SubnetworkAggregatedList(_messages.Message):

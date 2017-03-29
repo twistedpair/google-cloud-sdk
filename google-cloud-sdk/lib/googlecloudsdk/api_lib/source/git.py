@@ -190,6 +190,27 @@ def _NormalizeToUnixPath(path, strip=True):
     return path
 
 
+def _HasSystemCredHelper():
+  """Determine whether there is a system-wide credential helper set.
+
+  Returns:
+    True if a non-cloud system credential helper is set.
+
+  Raises:
+    NoGitException: if `git` was not found.
+  """
+  try:
+    stdout = subprocess.check_output(['git', 'config', '--system', '--list'])
+    return (re.search(r'^credential.helper=', stdout, re.MULTILINE) and
+            not re.search(r'^credential.helper=!gcloud', stdout, re.MULTILINE))
+  except OSError as e:
+    if e.errno == errno.ENOENT:
+      raise NoGitException()
+    return False
+  except subprocess.CalledProcessError:
+    return False
+
+
 class GitIgnoreHandler(object):
   """Processes .gitignore rules.
 
@@ -498,6 +519,13 @@ class Git(object):
                current=e.cur_version, min_version=helper_min)))
           cmd = ['git', 'clone', self._uri, abs_repository_path]
         else:
+          if _HasSystemCredHelper():
+            log.warn(
+                textwrap.dedent("""\
+            Your system's credential.helper setting will interfere with gcloud's
+            credential.helper.  To use gcloud's credential helper, unset the
+            system credential helper by running the following command.
+            $ git config --system --unset credential.helper"""))
           cmd = ['git', 'clone', self._uri, abs_repository_path,
                  '--config',
                  # Use git alias "!shell command" syntax so we can configure

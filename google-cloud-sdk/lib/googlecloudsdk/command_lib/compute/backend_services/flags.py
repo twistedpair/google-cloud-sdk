@@ -16,6 +16,7 @@
 
 import argparse
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
@@ -236,38 +237,74 @@ def AddCacheKeyQueryStringList(parser):
       """)
 
 
-def AddHealthChecks(parser):
-  parser.add_argument(
-      '--health-checks',
-      type=arg_parsers.ArgList(min_length=1),
-      metavar='HEALTH_CHECK',
-      help="""\
+def HealthCheckArgument(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='health check',
+      name='--health-checks',
+      completion_resource_id='compute.healthChecks',
+      plural=True,
+      required=required,
+      global_collection='compute.healthChecks',
+      short_help="""\
       Specifies a list of health check objects for checking the health of
       the backend service. Health checks need not be for the same protocol
       as that of the backend service.
       """)
 
 
-def AddHttpHealthChecks(parser):
-  parser.add_argument(
-      '--http-health-checks',
-      type=arg_parsers.ArgList(min_length=1),
-      metavar='HTTP_HEALTH_CHECK',
-      help="""\
+def HttpHealthCheckArgument(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='http health check',
+      name='--http-health-checks',
+      completion_resource_id='compute.httpHealthChecks',
+      plural=True,
+      required=required,
+      global_collection='compute.httpHealthChecks',
+      short_help="""\
       Specifies a list of HTTP health check objects for checking the health
       of the backend service.
       """)
 
 
-def AddHttpsHealthChecks(parser):
-  parser.add_argument(
-      '--https-health-checks',
-      type=arg_parsers.ArgList(min_length=1),
-      metavar='HTTPS_HEALTH_CHECK',
-      help="""\
+def HttpsHealthCheckArgument(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='https health check',
+      name='--https-health-checks',
+      completion_resource_id='compute.httpsHealthChecks',
+      plural=True,
+      required=required,
+      global_collection='compute.httpsHealthChecks',
+      short_help="""\
       Specifies a list of HTTPS health check objects for checking the health
       of the backend service.
       """)
+
+
+def GetHealthCheckUris(args, resource_resolver, resource_parser):
+  """Returns health check URIs from arguments."""
+  health_check_refs = []
+
+  if args.http_health_checks:
+    health_check_refs.extend(
+        resource_resolver.HTTP_HEALTH_CHECK_ARG.ResolveAsResource(
+            args, resource_parser))
+
+  if getattr(args, 'https_health_checks', None):
+    health_check_refs.extend(
+        resource_resolver.HTTPS_HEALTH_CHECK_ARG.ResolveAsResource(
+            args, resource_parser))
+
+  if getattr(args, 'health_checks', None):
+    if health_check_refs:
+      raise exceptions.ToolException(
+          'Mixing --health-checks with --http-health-checks or with '
+          '--https-health-checks is not supported.')
+    else:
+      health_check_refs.extend(
+          resource_resolver.HEALTH_CHECK_ARG.ResolveAsResource(
+              args, resource_resolver.resources))
+
+  return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 
 
 def AddIap(parser, help=None):  # pylint: disable=redefined-builtin

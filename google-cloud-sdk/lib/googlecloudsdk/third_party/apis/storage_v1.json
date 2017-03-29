@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20170227",
+ "revision": "20170320",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -161,6 +161,14 @@
      "type": "string",
      "description": "The kind of item this is. For buckets, this is always storage#bucket.",
      "default": "storage#bucket"
+    },
+    "labels": {
+     "type": "object",
+     "description": "User-provided labels, in key/value pairs.",
+     "additionalProperties": {
+      "type": "string",
+      "description": "An individual label entry."
+     }
     },
     "lifecycle": {
      "type": "object",

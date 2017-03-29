@@ -30,7 +30,7 @@ CRYPTO_KEY_VERSION_COLLECTION = (
 def AddLocationFlag(parser):
   def _CompletionCallback(parser):
     del parser  # Unused by Callback.
-    return ['beta', 'kms', 'locations', 'list', '--format=value(locationId)']
+    return ['kms', 'locations', 'list', '--format=value(locationId)']
   parser.add_argument(
       '--location',
       completion_resource=LOCATION_COLLECTION,

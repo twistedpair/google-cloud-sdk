@@ -279,7 +279,7 @@ def MoveDir(src, dst):
     raise Error(u"Destination path '{0}' already exists".format(dst))
   if _DestInSrc(src, dst):
     raise Error(u"Cannot move a directory '{0}' into itself '{0}'."
-                .format(src, dst))
+                .format(src))
   try:
     logging.debug(u'Attempting to move directory [%s] to [%s]', src, dst)
     try:
@@ -400,7 +400,7 @@ def _FindExecutableOnPath(executable, path, pathext):
     ValueError: invalid input.
   """
 
-  if type(pathext) is str:
+  if isinstance(pathext, str):
     raise ValueError('_FindExecutableOnPath(..., pathext=\'{0}\') failed '
                      'because pathext must be an iterable of strings, but got '
                      'a string.'.format(pathext))
@@ -578,9 +578,9 @@ class TemporaryDirectory(object):
 class Checksum(object):
   """Consistently handles calculating checksums across the Cloud SDK."""
 
-  def __init__(self):
+  def __init__(self, algorithm=hashlib.sha256):
     """Creates a new Checksum."""
-    self.__hash = hashlib.sha1()
+    self.__hash = algorithm()
     self.__files = set()
 
   def AddContents(self, contents):
@@ -668,28 +668,30 @@ class Checksum(object):
     return self.__files
 
   @staticmethod
-  def FromSingleFile(input_path):
+  def FromSingleFile(input_path, algorithm=hashlib.sha256):
     """Creates a Checksum containing one file.
 
     Args:
       input_path: str, The file path of the contents to add.
+      algorithm: a hashing algorithm method, a la hashlib.algorithms
 
     Returns:
       Checksum, The checksum containing the file.
     """
-    return Checksum().AddFileContents(input_path)
+    return Checksum(algorithm=algorithm).AddFileContents(input_path)
 
   @staticmethod
-  def HashSingleFile(input_path):
+  def HashSingleFile(input_path, algorithm=hashlib.sha256):
     """Gets the hex digest of a single file.
 
     Args:
       input_path: str, The file path of the contents to add.
+      algorithm: a hashing algorithm method, ala hashlib.algorithms
 
     Returns:
       str, The checksum digest of the file as a hex string.
     """
-    return Checksum.FromSingleFile(input_path).HexDigest()
+    return Checksum.FromSingleFile(input_path, algorithm=algorithm).HexDigest()
 
 
 def OpenForWritingPrivate(path, binary=False):

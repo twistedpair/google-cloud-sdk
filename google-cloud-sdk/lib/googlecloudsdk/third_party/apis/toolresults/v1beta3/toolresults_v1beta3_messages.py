@@ -91,13 +91,15 @@ class BasicPerfSampleSeries(_messages.Message):
     """PerfUnitValueValuesEnum enum type.
 
     Values:
+      bytesPerSecond: <no description>
       kibibyte: <no description>
       percent: <no description>
       perfUnitUnspecified: <no description>
     """
-    kibibyte = 0
-    percent = 1
-    perfUnitUnspecified = 2
+    bytesPerSecond = 0
+    kibibyte = 1
+    percent = 2
+    perfUnitUnspecified = 3
 
   class SampleSeriesLabelValueValuesEnum(_messages.Enum):
     """SampleSeriesLabelValueValuesEnum enum type.
@@ -109,6 +111,9 @@ class BasicPerfSampleSeries(_messages.Message):
       memoryRssPrivate: <no description>
       memoryRssShared: <no description>
       memoryRssTotal: <no description>
+      memoryTotal: <no description>
+      networkReceived: <no description>
+      networkSent: <no description>
       ntBytesReceived: <no description>
       ntBytesTransferred: <no description>
       sampleSeriesTypeUnspecified: <no description>
@@ -119,9 +124,12 @@ class BasicPerfSampleSeries(_messages.Message):
     memoryRssPrivate = 3
     memoryRssShared = 4
     memoryRssTotal = 5
-    ntBytesReceived = 6
-    ntBytesTransferred = 7
-    sampleSeriesTypeUnspecified = 8
+    memoryTotal = 6
+    networkReceived = 7
+    networkSent = 8
+    ntBytesReceived = 9
+    ntBytesTransferred = 10
+    sampleSeriesTypeUnspecified = 11
 
   perfMetricType = _messages.EnumField('PerfMetricTypeValueValuesEnum', 1)
   perfUnit = _messages.EnumField('PerfUnitValueValuesEnum', 2)

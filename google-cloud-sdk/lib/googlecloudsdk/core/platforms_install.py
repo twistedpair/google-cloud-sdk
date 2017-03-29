@@ -19,6 +19,7 @@ import re
 import shutil
 
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
@@ -98,7 +99,27 @@ Create a new command shell for the changes to take effect.
 """.format(bin_path=bin_path))
 
 
-def _GetRcContents(comment, rc_path, rc_contents, pattern=None):
+# The trick where we squash multiple spaces into one optimizes for readability.
+# It shows the control flow, while keeping the actual shell code to one line
+# (important for ease-of-RC-file-management).
+_SOURCE_LINE_SH = ' '.join(filter(None, """\
+if [ -f '{rc_path}' ]; then \
+    source '{rc_path}'; \
+fi
+""".split(' ')))
+_SOURCE_LINE_FISH = ' '.join(filter(None, """\
+if [ -f '{rc_path}' ]; \
+    if type source > /dev/null; \
+       source '{rc_path}'; \
+    else; \
+       . '{rc_path}'; \
+    end; \
+end
+""".split(' ')))
+
+
+def _GetRcContents(comment, rc_path, rc_contents, pattern=None,
+                   source_line=_SOURCE_LINE_SH):
   """Generates the RC file contents with new comment and `source rc_path` lines.
 
   Args:
@@ -107,6 +128,8 @@ def _GetRcContents(comment, rc_path, rc_contents, pattern=None):
     rc_contents: The current contents.
     pattern: A regex pattern that matches comment, None for exact match on
       comment.
+    source_line: str, the template for sourcing a file in the shell being
+      updated ('{rc_path}' will be substituted with the file to source)
 
   Returns:
     The comment and `source rc_path` lines to be inserted into a shell rc file.
@@ -122,17 +145,19 @@ def _GetRcContents(comment, rc_path, rc_contents, pattern=None):
   #
   # At some point we can drop the alternate patterns and only search for the
   # sentinel comment line and assume the next line is ours too (that was the
-  # original intent before th 3-line form was added).
+  # original intent before the 3-line form was added).
   subre = re.compile('\n' + pattern + '\n('
                      "source '.*'"
                      '|'
                      'if .*; then\n  source .*\nfi'
                      '|'
                      'if .*; then source .*; fi'
+                     '|'
+                     'if .*; if type source .*; end'
                      ')\n', re.MULTILINE)
   # script checks that the rc_path currently exists before sourcing the file
-  line = ("\n{comment}\nif [ -f '{rc_path}' ]; then source '{rc_path}'; fi\n"
-          .format(comment=comment, rc_path=rc_path))
+  line = ('\n{comment}\n' + source_line).format(comment=comment,
+                                                rc_path=rc_path)
   filtered_contents = subre.sub('', rc_contents)
   rc_contents = '{filtered_contents}{line}'.format(
       filtered_contents=filtered_contents, line=line)
@@ -150,15 +175,31 @@ class _RcUpdater(object):
         sdk_root, 'completion.{shell}.inc'.format(shell=shell))
     self.path = os.path.join(
         sdk_root, 'path.{shell}.inc'.format(shell=shell))
+    self.shell = shell
+
+  def _CompletionExists(self):
+    return os.path.exists(self.completion)
+
+  def _GetSourceLine(self):
+    if self.shell == 'fish':
+      return _SOURCE_LINE_FISH
+    else:
+      return _SOURCE_LINE_SH
 
   def Update(self):
     """Creates or updates the RC file."""
     if self.rc_path:
 
+      # Check whether RC file is a file and store its contents.
       if os.path.isfile(self.rc_path):
         with open(self.rc_path) as rc_file:
           rc_contents = rc_file.read()
           original_rc_contents = rc_contents
+      elif os.path.exists(self.rc_path):
+        _TraceAction(
+            '[{rc_path}] exists and is not a file, so it cannot be updated.'
+            .format(rc_path=self.rc_path))
+        return
       else:
         rc_contents = ''
         original_rc_contents = ''
@@ -166,12 +207,14 @@ class _RcUpdater(object):
       if self.path_update:
         rc_contents = _GetRcContents(
             '# The next line updates PATH for the Google Cloud SDK.',
-            self.path, rc_contents)
+            self.path, rc_contents, source_line=self._GetSourceLine())
 
-      if self.completion_update:
+      # gcloud doesn't (yet?) support completion for Fish, so check whether the
+      # completion file exists
+      if self.completion_update and self._CompletionExists():
         rc_contents = _GetRcContents(
             '# The next line enables shell command completion for gcloud.',
-            self.completion, rc_contents,
+            self.completion, rc_contents, source_line=self._GetSourceLine(),
             pattern=('# The next line enables [a-z][a-z]*'
                      ' command completion for gcloud.'))
 
@@ -184,6 +227,16 @@ class _RcUpdater(object):
         _TraceAction('Backing up [{rc}] to [{backup}].'.format(
             rc=self.rc_path, backup=rc_backup))
         shutil.copyfile(self.rc_path, rc_backup)
+
+      # Update rc file, creating it if it does not exist.
+      rc_dir = os.path.dirname(self.rc_path)
+      try:
+        files.MakeDir(rc_dir)
+      except (files.Error, OSError):
+        _TraceAction(
+            'Could not create directories for [{rc_path}], so it '
+            'cannot be updated.'.format(rc_path=self.rc_path))
+        return
 
       with open(self.rc_path, 'w') as rc_file:
         rc_file.write(rc_contents)
@@ -215,7 +268,7 @@ def _GetPreferredShell(path, default='bash'):
     The preferred user shell name or default if none can be determined.
   """
   name = os.path.basename(path)
-  for shell in ('bash', 'zsh', 'ksh'):
+  for shell in ('bash', 'zsh', 'ksh', 'fish'):
     if shell in name:
       return shell
   return default
@@ -233,6 +286,8 @@ def _GetShellRcFileName(shell, host_os):
   """
   if shell == 'ksh':
     return os.environ.get('ENV', None) or '.kshrc'
+  elif shell == 'fish':
+    return os.path.join('.config', 'fish', 'config.fish')
   elif shell != 'bash':
     return '.{shell}rc'.format(shell=shell)
   elif host_os == platforms.OperatingSystem.LINUX:
@@ -261,6 +316,12 @@ def _GetRcUpdater(completion_update, path_update, rc_path, sdk_root, host_os):
   # An initial guess on the preferred user shell based on the environment.
   preferred_shell = _GetPreferredShell(os.environ.get('SHELL', '/bin/sh'))
   if not completion_update and not path_update:
+    # If we aren't updating the RC file for either completions or PATH, there's
+    # no point.
+    rc_path = None
+  elif not console_io.CanPrompt():
+    # If we can't ask the user to confirm the RC file to update, don't assume
+    # for them. They're installing non-interactively and can do this part later.
     rc_path = None
   elif not rc_path:
     file_name = _GetShellRcFileName(preferred_shell, host_os)

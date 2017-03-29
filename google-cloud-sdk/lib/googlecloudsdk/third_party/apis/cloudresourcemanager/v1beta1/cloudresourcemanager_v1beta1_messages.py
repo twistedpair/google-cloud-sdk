@@ -22,6 +22,74 @@ class Ancestor(_messages.Message):
   resourceId = _messages.MessageField('ResourceId', 1)
 
 
+class AuditConfig(_messages.Message):
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConifg must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditConfig are exempted. Example Policy with
+  multiple AuditConfigs: {   "audit_configs": [     {       "service":
+  "allServices"       "audit_log_configs": [         {           "log_type":
+  "DATA_READ",           "exempted_members": [
+  "user:foo@gmail.com"           ]         },         {           "log_type":
+  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
+  }       ]     },     {       "service": "fooservice@googleapis.com"
+  "audit_log_configs": [         {           "log_type": "DATA_READ",
+  },         {           "log_type": "DATA_WRITE",
+  "exempted_members": [             "user:bar@gmail.com"           ]         }
+  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+      Next ID: 4
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  """Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -220,7 +288,7 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       |name:HOWL|Equivalent to above.| |NAME:howl|Equivalent to above.|
       |labels.color:*|The project has the label `color`.|
       |labels.color:red|The project's label `color` has the value `red`.|
-      |labels.color:red&nbsp;label.size:big|The project's label `color` has
+      |labels.color:red&nbsp;labels.size:big|The project's label `color` has
       the value `red` and its label `size` has the value `big`.  Optional.
     pageSize: The maximum number of Projects to return in the response. The
       server can return fewer Projects than requested. If unspecified, server
@@ -347,8 +415,8 @@ class FolderOperationError(_messages.Message):
         deleted.
       CYCLE_INTRODUCED_ERROR: The attempted action would introduce cycle in
         resource path.
-      FOLDER_ALREADY_BEING_MOVED: The attempted action would move a folder
-        that is already being moved.
+      FOLDER_BEING_MOVED: The attempted action would move a folder that is
+        already being moved.
       FOLDER_TO_DELETE_NON_EMPTY: The folder the caller is trying to delete
         contains active resources.
     """
@@ -359,7 +427,7 @@ class FolderOperationError(_messages.Message):
     RESOURCE_DELETED = 4
     PARENT_DELETED = 5
     CYCLE_INTRODUCED_ERROR = 6
-    FOLDER_ALREADY_BEING_MOVED = 7
+    FOLDER_BEING_MOVED = 7
     FOLDER_TO_DELETE_NON_EMPTY = 8
 
   errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
@@ -506,6 +574,7 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -521,9 +590,10 @@ class Policy(_messages.Message):
     version: Version of the `Policy`. The default version is 0.
   """
 
-  bindings = _messages.MessageField('Binding', 1, repeated=True)
-  etag = _messages.BytesField(2)
-  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class Project(_messages.Message):
@@ -675,9 +745,14 @@ class SetIamPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

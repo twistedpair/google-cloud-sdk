@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
 
 
@@ -31,10 +32,6 @@ from googlecloudsdk.core.resource import resource_registry
 MARKDOWN_BOLD = '*'
 MARKDOWN_ITALIC = '_'
 MARKDOWN_CODE = '`'
-
-
-# Common flag categories.
-COMMONLY_USED_FLAGS = 'COMMONLY USED'
 
 
 class LayoutException(Exception):
@@ -201,6 +198,36 @@ class Argument(object):
 
 
 # Common flag definitions for consistency.
+
+# Common flag categories.
+
+COMMONLY_USED_FLAGS = 'COMMONLY USED'
+
+FLATTEN_FLAG = Argument(
+    '--flatten',
+    metavar='KEY',
+    default=None,
+    type=arg_parsers.ArgList(),
+    category=COMMONLY_USED_FLAGS,
+    help="""\
+        Flatten _name_[] output resource slices in _KEY_ into separate records
+        for each item in each slice. Multiple keys and slices may be specified.
+        This also flattens keys for *--format* and *--filter*. For example,
+        *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
+        *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
+        will expand to N records in the flattened output. This flag interacts
+        with other flags that are applied in this order: *--flatten*,
+        *--sort-by*, *--filter*, *--limit*.""")
+
+FORMAT_FLAG = Argument(
+    '--format',
+    default=None,
+    category=COMMONLY_USED_FLAGS,
+    help="""\
+        Sets the format for printing command output resources. The default is a
+        command-specific human-friendly output format. The supported formats
+        are: `{0}`. For more details run $ gcloud topic formats.""".format(
+            '`, `'.join(resource_printer.SupportedFormats())))
 
 LIST_COMMAND_FLAGS = 'LIST COMMAND'
 
@@ -421,6 +448,31 @@ class _Common(object):
     return cls._valid_release_tracks
 
   @classmethod
+  def GetTrackedAttribute(cls, obj, attribute):
+    """Gets the attribute value from obj for tracks.
+
+    The values are checked in ReleaseTrack._ALL order.
+
+    Args:
+      obj: The object to extract attribute from.
+      attribute: The attribute name in object.
+
+    Returns:
+      The attribute value from obj for tracks.
+    """
+    for track in ReleaseTrack._ALL:  # pylint: disable=protected-access
+      if track not in cls._valid_release_tracks:
+        continue
+      names = []
+      names.append(attribute + '_' + track.id)
+      if track.prefix:
+        names.append(attribute + '_' + track.prefix)
+      for name in names:
+        if hasattr(obj, name):
+          return getattr(obj, name)
+    return getattr(obj, attribute, None)
+
+  @classmethod
   def Notices(cls):
     return cls._notices
 
@@ -436,7 +488,7 @@ class _Common(object):
 
     This class method can be called at any time to generate a function that will
     execute another gcloud command.  The function itself can only be executed
-    after the gcloud CLI has been build i.e. after all Args methods have
+    after the gcloud CLI has been built i.e. after all Args methods have
     been called.
 
     Args:
@@ -509,6 +561,15 @@ class Command(_Common):
 
   def ExecuteCommand(self, args):
     self.cli.Execute(args, call_arg_complete=False)
+
+  @staticmethod
+  def _Flags(parser):
+    """Sets the default output format.
+
+    Args:
+      parser: The argparse parser.
+    """
+    parser.display_info.AddFormat('default')
 
   @abc.abstractmethod
   def Run(self, args):
@@ -645,6 +706,10 @@ class SilentCommand(Command):
   """A command that produces no output."""
 
   __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  def _Flags(parser):
+    parser.display_info.AddFormat('none')
 
   def Format(self, unused_args):
     return 'none'

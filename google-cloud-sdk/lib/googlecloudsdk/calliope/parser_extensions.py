@@ -200,12 +200,17 @@ class ArgumentParser(argparse.ArgumentParser):
       # arguments into _remainder_action. Either do this with a warning or
       # fail depending on strictness.
       # pylint:disable=protected-access
-      namespace, unknown_args = (
-          deepest_parser._remainder_action.ParseRemainingArgs(
-              unknown_args, namespace, args))
-      # There still may be unknown_args that came before the last known arg.
-      if not unknown_args:
-        return namespace
+      try:
+        namespace, unknown_args = (
+            deepest_parser._remainder_action.ParseRemainingArgs(
+                unknown_args, namespace, args))
+        # There still may be unknown_args that came before the last known arg.
+        if not unknown_args:
+          return namespace
+      except parser_errors.UnrecognizedArgumentsError as e:
+        # In the case of UnrecognizedArgumentsError, we want to just let it
+        # continue so that we can get the nicer error handling.
+        pass
 
     # There is at least one parsing error. Add a message for each unknown
     # argument.  For each, try to come up with a suggestion based on text

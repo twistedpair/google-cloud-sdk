@@ -26,8 +26,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 # Default is to retry every 5 seconds for 1 hour.
-DEFAULT_OPERATION_MAX_RETRIES = 120 * 6
 DEFAULT_OPERATION_RETRY_INTERVAL = 5
+DEFAULT_OPERATION_MAX_RETRIES = (60 / DEFAULT_OPERATION_RETRY_INTERVAL) * 60
 
 
 class OperationError(exceptions.Error):
@@ -116,7 +116,7 @@ def WaitForOperation(operation_service, operation,
     operation_service: The apitools service type for operations
     operation: The operation resource to wait on
     max_retries: Maximum number of times to poll the operation
-    retry_interval: Frequency of polling
+    retry_interval: Frequency of polling in seconds
     retry_callback: A callback to be executed before each retry.
   Returns:
     The operation resource when it has completed

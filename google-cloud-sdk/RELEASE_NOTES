@@ -2,13 +2,72 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
-## 148.0.1 (2017-03-24)
+## 149.0.0 (2017-03-29)
 
-### Google Cloud Functions
+### Breaking Changes
 
-*   Fixed a bug where `gcloud beta functions deploy` did not work without the
-    `--region` flag specified.
+*   The Cloud SDK installer on `*nix` will no longer attempt to update your RC
+    files in non-interactive mode.
+*   Support for creating/updating legacy sinks has been removed from
+    `gcloud beta logging`.
 
+### Cloud SDK
+
+*   SHA256 checksums, instead of SHA1 checksums, are now being published for
+    Cloud SDK versioned archives and other downloadable assets.
+
+### Firebase Test Lab
+
+*   The `gcloud test` commands have been promoted to GA and renamed
+    `gcloud firebase test ...`.  All `gcloud beta test ...` commands are
+    deprecated.
+*   The preferred way to specify test devices is the new `--device` argument,
+    which allows more precise control over which device dimensions are included
+    in a test matrix. See `gcloud firebase test android run --help` and
+    `gcloud topic arg-files` for details.
+
+### Google App Engine
+
+*   Updated Python SDK to version 1.9.51.
+*   Support Server Name Indication (SNI) for remote API shell.
+
+### Google Cloud Datalab
+
+*   Update the datalab component to the 20170323 build. With this release, the
+    entire `/content` directory of newly created instances will be persisted to
+    the attached disk rather than just the `/content/datalab` directory.
+
+### Google Cloud Natural Language
+
+*   The `gcloud beta ml language` command group is now available. Use commands
+    in this group to analyze text with the Natural Language API. For more
+    information, see: https://cloud.google.com/natural-language/.
+
+### Google Cloud Runtime Configuration
+
+*   The optional flag `--values` has been added to
+    `gcloud beta runtime-config configs variables list`; it can be used to
+    return values along with variables.
+
+### Google Cloud SQL
+
+*   Argument validation for instance arguments has been added to
+   `gcloud beta sql instances create`, `gcloud sql instances create`, and
+   `gcloud sql instances set-root-password`
+
+### Google Compute Engine
+
+*   `gcloud alpha compute ssh` can now connect to instances using private IP
+    addresses.
+*   `gcloud alpha compute images create` now has a `--force-creation` flag.
+
+### Google Container Engine
+
+*   `gcloud container images delete` has been modified to delete the underlying
+    image, and all associated tags, when given a tag reference. For the
+    remainder of beta, `--resolve-tag-to-digest` will be required when deleting
+    an image by tag, to avoid accidental deletion. This will become default
+    behavior when the command graduates from beta.
 
 ## 148.0.0 (2017-03-22)
 

@@ -23,5 +23,5 @@ def GetProjectFlag(verb):
       'id',
       metavar='PROJECT_ID',
       completion_resource=util.PROJECTS_COLLECTION,
-      list_command_path='projects',
+      list_command_path='projects list --uri',
       help='ID for the project you want to {0}.'.format(verb))

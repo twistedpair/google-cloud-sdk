@@ -18,6 +18,7 @@ class Bucket(_messages.Message):
 
   Messages:
     CorsValueListEntry: A CorsValueListEntry object.
+    LabelsValue: User-provided labels, in key/value pairs.
     LifecycleValue: The bucket's lifecycle configuration. See lifecycle
       management for more information.
     LoggingValue: The bucket's logging configuration, which defines the
@@ -40,6 +41,7 @@ class Bucket(_messages.Message):
       same.
     kind: The kind of item this is. For buckets, this is always
       storage#bucket.
+    labels: User-provided labels, in key/value pairs.
     lifecycle: The bucket's lifecycle configuration. See lifecycle management
       for more information.
     location: The location of the bucket. Object data for objects in the
@@ -87,6 +89,30 @@ class Bucket(_messages.Message):
     method = _messages.StringField(2, repeated=True)
     origin = _messages.StringField(3, repeated=True)
     responseHeader = _messages.StringField(4, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User-provided labels, in key/value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: An individual label entry.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class LifecycleValue(_messages.Message):
     """The bucket's lifecycle configuration. See lifecycle management for more
@@ -216,19 +242,20 @@ class Bucket(_messages.Message):
   etag = _messages.StringField(4)
   id = _messages.StringField(5)
   kind = _messages.StringField(6, default=u'storage#bucket')
-  lifecycle = _messages.MessageField('LifecycleValue', 7)
-  location = _messages.StringField(8)
-  logging = _messages.MessageField('LoggingValue', 9)
-  metageneration = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  owner = _messages.MessageField('OwnerValue', 12)
-  projectNumber = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  selfLink = _messages.StringField(14)
-  storageClass = _messages.StringField(15)
-  timeCreated = _message_types.DateTimeField(16)
-  updated = _message_types.DateTimeField(17)
-  versioning = _messages.MessageField('VersioningValue', 18)
-  website = _messages.MessageField('WebsiteValue', 19)
+  labels = _messages.MessageField('LabelsValue', 7)
+  lifecycle = _messages.MessageField('LifecycleValue', 8)
+  location = _messages.StringField(9)
+  logging = _messages.MessageField('LoggingValue', 10)
+  metageneration = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  owner = _messages.MessageField('OwnerValue', 13)
+  projectNumber = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  selfLink = _messages.StringField(15)
+  storageClass = _messages.StringField(16)
+  timeCreated = _message_types.DateTimeField(17)
+  updated = _message_types.DateTimeField(18)
+  versioning = _messages.MessageField('VersioningValue', 19)
+  website = _messages.MessageField('WebsiteValue', 20)
 
 
 class BucketAccessControl(_messages.Message):

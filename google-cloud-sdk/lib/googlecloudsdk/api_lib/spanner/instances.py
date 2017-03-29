@@ -19,15 +19,23 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
+# The list of pre-defined IAM roles in Spanner.
+KNOWN_ROLES = [
+    'roles/spanner.admin', 'roles/spanner.databaseAdmin',
+    'roles/spanner.databaseReader', 'roles/spanner.databaseUser',
+    'roles/spanner.viewer'
+]
+
+
 def Create(instance, config, description, nodes):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
+  # Module containing the definitions of messages for the specified API.
   msgs = apis.GetMessagesModule('spanner', 'v1')
   config_ref = resources.REGISTRY.Parse(
-      config,
-      collection='spanner.projects.instanceConfigs')
+      config, collection='spanner.projects.instanceConfigs')
   req = msgs.SpannerProjectsInstancesCreateRequest(
-      parent='projects/'+properties.VALUES.core.project.Get(required=True),
+      parent='projects/' + properties.VALUES.core.project.Get(required=True),
       createInstanceRequest=msgs.CreateInstanceRequest(
           instanceId=instance,
           instance=msgs.Instance(
@@ -37,15 +45,32 @@ def Create(instance, config, description, nodes):
   return client.projects_instances.Create(req)
 
 
+def SetPolicy(instance_ref, policy):
+  """Saves the given policy on the instance, overwriting whatever exists."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesSetIamPolicyRequest(
+      resource=instance_ref.RelativeName(),
+      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy))
+  return client.projects_instances.SetIamPolicy(req)
+
+
+def GetIamPolicy(instance_ref):
+  """Gets the IAM policy on an instance."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesGetIamPolicyRequest(
+      resource=instance_ref.RelativeName())
+  return client.projects_instances.GetIamPolicy(req)
+
+
 def Delete(instance):
   """Delete an instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance,
-      collection='spanner.projects.instances')
-  req = msgs.SpannerProjectsInstancesDeleteRequest(
-      name=ref.RelativeName())
+      instance, collection='spanner.projects.instances')
+  req = msgs.SpannerProjectsInstancesDeleteRequest(name=ref.RelativeName())
   return client.projects_instances.Delete(req)
 
 
@@ -54,10 +79,8 @@ def Get(instance):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance,
-      collection='spanner.projects.instances')
-  req = msgs.SpannerProjectsInstancesGetRequest(
-      name=ref.RelativeName())
+      instance, collection='spanner.projects.instances')
+  req = msgs.SpannerProjectsInstancesGetRequest(name=ref.RelativeName())
   return client.projects_instances.Get(req)
 
 
@@ -66,7 +89,7 @@ def List():
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstancesListRequest(
-      parent='projects/'+properties.VALUES.core.project.Get(required=True))
+      parent='projects/' + properties.VALUES.core.project.Get(required=True))
   return list_pager.YieldFromList(
       client.projects_instances,
       req,
@@ -84,13 +107,10 @@ def Patch(instance, description=None, nodes=None):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance,
-      collection='spanner.projects.instances')
+      instance, collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesPatchRequest(
       name=ref.RelativeName(),
       updateInstanceRequest=msgs.UpdateInstanceRequest(
           fieldMask=','.join(fields),
-          instance=msgs.Instance(
-              displayName=description,
-              nodeCount=nodes)))
+          instance=msgs.Instance(displayName=description, nodeCount=nodes)))
   return client.projects_instances.Patch(req)

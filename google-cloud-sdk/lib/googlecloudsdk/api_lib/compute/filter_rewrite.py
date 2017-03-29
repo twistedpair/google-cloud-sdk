@@ -42,7 +42,7 @@ To use in compute Run(args) methods:
   from googlecloudsdk.api_lib.compute import filter_rewrite
     ...
   if args.filter:
-    filter_expr = filter_rewrite.Rewrite(args.filter)
+    filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
   else:
     filter_expr = None
     ...
@@ -67,8 +67,8 @@ import re
 from googlecloudsdk.core.resource import resource_expr_rewrite
 
 
-class Backend(resource_expr_rewrite.Backend):
-  """Compute resource filter expression rewrite backend.
+class Rewriter(resource_expr_rewrite.Backend):
+  """Compute resource filter expression rewriter backend.
 
   This rewriter builds a list of tokens that is joined into a string at the
   very end. This makes it easy to apply the NOT and - logical inversion ops.
@@ -77,7 +77,7 @@ class Backend(resource_expr_rewrite.Backend):
   _INVERT = {'eq': 'ne', 'ne': 'eq'}
 
   def Rewrite(self, expression, defaults=None):
-    rewrite = super(Backend, self).Rewrite(expression, defaults=defaults)
+    rewrite = super(Rewriter, self).Rewrite(expression, defaults=defaults)
     if not rewrite:
       return None
     return ' '.join(rewrite)

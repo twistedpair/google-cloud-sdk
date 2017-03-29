@@ -282,9 +282,9 @@ class GoogleCloudMlV1Model(_messages.Message):
   Fields:
     defaultVersion: Output only. The default version of the model. This
       version will be used to handle prediction requests that do not specify a
-      version.  You can change the default version by calling [projects.method
-      s.versions.setDefault](/ml/reference/rest/v1/projects.models.versions/se
-      tDefault).
+      version.  You can change the default version by calling
+      [projects.methods.versions.setDefault](/ml-
+      engine/reference/rest/v1/projects.models.versions/setDefault).
     description: Optional. The description specified for the model when it was
       created.
     name: Required. The name specified for the model when it was created.  The
@@ -293,7 +293,11 @@ class GoogleCloudMlV1Model(_messages.Message):
       for online prediction. Default is false.
     regions: Optional. The list of regions where the model is going to be
       deployed. Currently only one region per model is supported. Defaults to
-      'us-central1' if nothing is set.
+      'us-central1' if nothing is set. Note: *   No matter where a model is
+      deployed, it can always be accessed by     users from anywhere, both for
+      online and batch prediction. *   The region for a batch prediction job
+      is set by the region field when     submitting the batch prediction job
+      and does not take its value from     this field.
   """
 
   defaultVersion = _messages.MessageField('GoogleCloudMlV1Version', 1)
@@ -596,8 +600,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       number of cores and roughly double the   memory of <code
       suppresswarning="true">complex_model_m</code>.   </dd>
       <dt>standard_gpu</dt>   <dd>   A machine equivalent to <code
-      suppresswarning="true">standard</code> that   also includes a   <a
-      href="ml/docs/how-tos/using-gpus">   GPU that you can use in your
+      suppresswarning="true">standard</code> that   also includes a   <a href
+      ="/ml-engine/docs/how-tos/using-gpus">   GPU that you can use in your
       trainer</a>.   </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine
       equivalent to   <code suppresswarning="true">coplex_model_m</code> that
       also includes   four GPUs.   </dd> </dl>  You must set this value when
@@ -644,8 +648,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
         datasets.
       STANDARD_1: Many workers and a few parameter servers.
       PREMIUM_1: A large number of workers with many parameter servers.
-      BASIC_GPU: A single worker instance [with a GPU](ml/docs/how-tos/using-
-        gpus).
+      BASIC_GPU: A single worker instance [with a GPU](/ml-engine/docs/how-tos
+        /using-gpus).
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *
@@ -708,25 +712,25 @@ class GoogleCloudMlV1Version(_messages.Message):
   """Represents a version of the model.  Each version is a trained model
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
-  given model by calling [projects.models.versions.list](/ml/reference/rest/v1
-  /projects.models.versions/list).
+  given model by calling [projects.models.versions.list](/ml-
+  engine/reference/rest/v1/projects.models.versions/list).
 
   Fields:
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
-      model used to create the version. See the [overview of model
-      deployment](/ml/docs/concepts/deployment-overview) for more informaiton.
-      When passing Version to [projects.models.versions.create](/ml/reference/
-      rest/v1/projects.models.versions/create) the model service uses the
-      specified location as the source of the model. Once deployed, the model
-      version is hosted by the prediction service, so this location is useful
-      only as a historical record.
+      model used to create the version. See the [overview of model deployment
+      ](/ml-engine/docs/concepts/deployment-overview) for more informaiton.
+      When passing Version to [projects.models.versions.create](/ml-
+      engine/reference/rest/v1/projects.models.versions/create) the model
+      service uses the specified location as the source of the model. Once
+      deployed, the model version is hosted by the prediction service, so this
+      location is useful only as a historical record.
     description: Optional. The description specified for the version when it
       was created.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
-      default version by calling [projects.methods.versions.setDefault](/ml/re
-      ference/rest/v1/projects.models.versions/setDefault).
+      default version by calling [projects.methods.versions.setDefault](/ml-
+      engine/reference/rest/v1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
     manualScaling: Optional. Manually select the number of nodes to use for
@@ -808,25 +812,25 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   """Represents a version of the model.  Each version is a trained model
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
-  given model by calling [projects.models.versions.list](/ml/reference/rest/v1
-  beta1/projects.models.versions/list).
+  given model by calling [projects.models.versions.list](/ml-
+  engine/reference/rest/v1beta1/projects.models.versions/list).
 
   Fields:
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
-      model used to create the version. See the [overview of model
-      deployment](/ml/docs/concepts/deployment-overview) for more informaiton.
-      When passing Version to [projects.models.versions.create](/ml/reference/
-      rest/v1beta1/projects.models.versions/create) the model service uses the
-      specified location as the source of the model. Once deployed, the model
-      version is hosted by the prediction service, so this location is useful
-      only as a historical record.
+      model used to create the version. See the [overview of model deployment
+      ](/ml-engine/docs/concepts/deployment-overview) for more informaiton.
+      When passing Version to [projects.models.versions.create](/ml-
+      engine/reference/rest/v1beta1/projects.models.versions/create) the model
+      service uses the specified location as the source of the model. Once
+      deployed, the model version is hosted by the prediction service, so this
+      location is useful only as a historical record.
     description: Optional. The description specified for the version when it
       was created.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
-      default version by calling [projects.methods.versions.setDefault](/ml/re
-      ference/rest/v1beta1/projects.models.versions/setDefault).
+      default version by calling [projects.methods.versions.setDefault](/ml-
+      engine/reference/rest/v1beta1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
     manualScaling: Optional. Manually select the number of nodes to use for
@@ -1206,9 +1210,9 @@ class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the version. You can get the names of all the
-      versions of a model by calling [projects.models.versions.list](/ml/refer
-      ence/rest/v1/projects.models.versions/list).  Authorization: requires
-      `Editor` role on the parent project.
+      versions of a model by calling [projects.models.versions.list](/ml-
+      engine/reference/rest/v1/projects.models.versions/list).  Authorization:
+      requires `Editor` role on the parent project.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1253,9 +1257,10 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
       GoogleCloudMlV1SetDefaultVersionRequest resource to be passed as the
       request body.
     name: Required. The name of the version to make the default for the model.
-      You can get the names of all the versions of a model by calling [project
-      s.models.versions.list](/ml/reference/rest/v1/projects.models.versions/l
-      ist).  Authorization: requires `Editor` role on the parent project.
+      You can get the names of all the versions of a model by calling
+      [projects.models.versions.list](/ml-
+      engine/reference/rest/v1/projects.models.versions/list).  Authorization:
+      requires `Editor` role on the parent project.
   """
 
   googleCloudMlV1SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1SetDefaultVersionRequest', 1)

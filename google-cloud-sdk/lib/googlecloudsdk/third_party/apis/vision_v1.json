@@ -1232,6 +1232,13 @@
           "items": {
             "$ref": "WebPage"
           }
+        },
+        "visuallySimilarImages": {
+          "description": "The visually similar image results.",
+          "type": "array",
+          "items": {
+            "$ref": "WebImage"
+          }
         }
       }
     },

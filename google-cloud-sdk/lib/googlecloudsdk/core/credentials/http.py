@@ -60,12 +60,12 @@ def Http(auth=True, creds=None, timeout='unset'):
       creds = store.Load()
     http_client = creds.authorize(http_client)
     # Wrap the request method to put in our own error handling.
-    http_client = _WrapRequestForAuthErrHandling(http_client)
+    http_client = http.Modifiers.WrapRequest(
+        http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
 
 
-# TODO(b/25115137): Refactor the wrapper functions to be more clear.
 def _WrapRequestForIAMAuth(http_client, authority_selector,
                            authorization_token_file):
   """Wrap request with IAM authority seelctor.
@@ -80,8 +80,6 @@ def _WrapRequestForIAMAuth(http_client, authority_selector,
   Returns:
     http: The same http object but with the request method wrapped.
   """
-  orig_request = http_client.request
-
   authorization_token = None
   if authorization_token_file:
     try:
@@ -89,71 +87,29 @@ def _WrapRequestForIAMAuth(http_client, authority_selector,
     except IOError as e:
       raise Error(e)
 
-  def RequestWithIAMAuthoritySelector(*args, **kwargs):
-    """Wrap request with IAM authority selector.
+  handlers = []
+  if authority_selector:
+    handlers.append(http.Modifiers.Handler(
+        http.Modifiers.SetHeader('x-goog-iam-authority-selector',
+                                 authority_selector)))
 
-    Args:
-      *args: Positional arguments.
-      **kwargs: Keyword arguments.
+  if authorization_token:
+    handlers.append(http.Modifiers.Handler(
+        http.Modifiers.SetHeader('x-goog-iam-authorization-token',
+                                 authorization_token)))
 
-    Returns:
-      Wrapped request with IAM authority selector.
-    """
-    modified_args = list(args)
-    if authority_selector:
-      http.RequestArgsSetHeader(
-          modified_args, kwargs,
-          'x-goog-iam-authority-selector', authority_selector)
-    if authorization_token:
-      http.RequestArgsSetHeader(
-          modified_args, kwargs,
-          'x-goog-iam-authorization-token', authorization_token)
-    return orig_request(*modified_args, **kwargs)
-
-  http_client.request = RequestWithIAMAuthoritySelector
-
-  # apitools needs this attribute to do credential refreshes during batch API
-  # requests.
-  if hasattr(orig_request, 'credentials'):
-    setattr(http_client.request, 'credentials', orig_request.credentials)
-
-  return http_client
+  return http.Modifiers.WrapRequest(http_client, handlers)
 
 
-# TODO(b/25115137): Refactor the wrapper functions to be more clear.
-def _WrapRequestForAuthErrHandling(http_client):
-  """Wrap request with exception handling for auth.
-
-  We need to wrap exception handling because oauth2client does similar wrapping
-  when you authorize the http object.  Because of this, a credential refresh
-  error can get raised wherever someone makes an http request.  With no common
-  place to handle this exception, we do more wrapping here so we can convert it
-  to one of our typed exceptions.
+def _HandleAuthError(e):
+  """Handle a generic auth error and raise a nicer message.
 
   Args:
-    http_client: The original http object.
+    e: The exception that was caught.
 
-  Returns:
-    http, The same http object but with the request method wrapped.
+  Raises:
+    sore.TokenRefreshError: If an auth error occurs.
   """
-  orig_request = http_client.request
-
-  def RequestWithErrHandling(*args, **kwargs):
-    try:
-      return orig_request(*args, **kwargs)
-    except client.AccessTokenRefreshError as e:
-      log.debug('Exception caught during HTTP request: %s', e.message,
-                exc_info=True)
-      raise store.TokenRefreshError(e.message)
-
-  http_client.request = RequestWithErrHandling
-
-  # apitools needs this attribute to do credential refreshes during batch API
-  # requests.  Ideally we would patch the refresh() method on the credentials to
-  # catch the same error as above, but if we do, the credentials are no longer
-  # serializable.  The batch API bypasses the error handling we add above so
-  # we just need a top level error handler in the CLI for that.
-  if hasattr(orig_request, 'credentials'):
-    setattr(http_client.request, 'credentials', orig_request.credentials)
-
-  return http_client
+  log.debug('Exception caught during HTTP request: %s', e.message,
+            exc_info=True)
+  raise store.TokenRefreshError(e.message)
