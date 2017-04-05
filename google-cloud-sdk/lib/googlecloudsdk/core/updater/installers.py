@@ -22,11 +22,13 @@ import urllib2
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import retry
 
 
 UPDATE_MANAGER_COMMAND_PATH = 'UPDATE_MANAGER'
@@ -280,7 +282,7 @@ class ComponentInstaller(object):
                           ComponentInstaller.GCS_API_DL_URL,
                           1)
       req = urllib2.Request(url, headers=headers)
-      return url_opener.urlopen(req, timeout=timeout)
+      return ComponentInstaller._RawRequest(req, timeout=timeout)
     except urllib2.HTTPError as e:
       if e.code != 403 or not url.startswith(ComponentInstaller.GCS_API_DL_URL):
         raise e
@@ -296,7 +298,7 @@ class ComponentInstaller(object):
       try:
         # Retry the download using the credentials.
         req = urllib2.Request(url, headers=headers)
-        return url_opener.urlopen(req, timeout=timeout)
+        return ComponentInstaller._RawRequest(req, timeout=timeout)
       except urllib2.HTTPError as e:
         if e.code != 403:
           raise e
@@ -310,3 +312,23 @@ ensure that this account should have access or run:
 
 to choose another account.""".format(
     account=properties.VALUES.core.account.Get()), e)
+
+  @staticmethod
+  def _RawRequest(*args, **kwargs):
+    def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
+      return exc_type == urllib2.HTTPError and exc_value.code == 404
+
+    def StatusUpdate(unused_result, unused_state):
+      log.debug('Retrying request...')
+
+    retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2,
+                            jitter_ms=100, status_update_func=StatusUpdate)
+    try:
+      return retryer.RetryOnException(
+          url_opener.urlopen, args, kwargs,
+          should_retry_if=RetryIf, sleep_ms=500)
+    except retry.RetryException as e:
+      # last_result is (return value, sys.exc_info)
+      if e.last_result[1]:
+        raise e.last_result[1][0], e.last_result[1][1], e.last_result[1][2]
+      raise

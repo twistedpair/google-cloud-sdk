@@ -207,7 +207,7 @@ def _AuthProvider(name='gcp'):
   kubectl to call out to a specific gcloud command and parse the output to
   retrieve access tokens to authenticate to the kubernetes master.
   Kubernetes gcp auth provider plugin at
-  https://github.com/kubernetes/kubernetes/blob/master/plugin/pkg/client/auth/gcp/gcp.go
+  https://github.com/kubernetes/kubernetes/tree/master/staging/src/k8s.io/client-go/plugin/pkg/client/auth/gcp
 
   Args:
     name: auth provider name
@@ -220,10 +220,11 @@ def _AuthProvider(name='gcp'):
     bin_name = 'gcloud'
     if platforms.OperatingSystem.IsWindows():
       bin_name = 'gcloud.cmd'
-    path = os.path.join(config.Paths().sdk_bin_path, bin_name)
     cfg = {
-        # Command + args for gcloud credential helper
-        'cmd-path': '{0} config config-helper --format=json'.format(path),
+        # Command for gcloud credential helper
+        'cmd-path': os.path.join(config.Paths().sdk_bin_path, bin_name),
+        # Args for gcloud credential helper
+        'cmd-args': 'config config-helper --format=json',
         # JSONpath to the field that is the raw access token
         'token-key': '{.credential.access_token}',
         # JSONpath to the field that is the expiration timestamp

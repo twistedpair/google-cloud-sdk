@@ -766,7 +766,8 @@ class CLI(object):
                                orig_exc=exc)
       else:
         # Make sure any uncaught exceptions still make it into the log file.
-        log.debug(console_attr.EncodeForOutput(exc), exc_info=sys.exc_info())
+        log.debug(console_attr.EncodeForConsole(exc),
+                  exc_info=sys.exc_info())
         metrics.Error(command_path_string, exc.__class__, specified_arg_names,
                       error_extra_info={'error_code': 1})
         raise
@@ -784,8 +785,9 @@ class CLI(object):
       orig_exc: Exception or None, The original exception for metrics purposes
         if the exception was converted to a new type.
     """
-    msg = u'({0}) {1}'.format(console_attr.EncodeForOutput(command_path_string),
-                              console_attr.EncodeForOutput(exc))
+    msg = u'({0}) {1}'.format(
+        console_attr.EncodeForConsole(command_path_string),
+        console_attr.EncodeForConsole(exc))
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)

@@ -18,6 +18,14 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 
+# The list of pre-defined IAM roles in Spanner.
+KNOWN_ROLES = [
+    'roles/spanner.admin', 'roles/spanner.databaseAdmin',
+    'roles/spanner.databaseReader', 'roles/spanner.databaseUser',
+    'roles/spanner.viewer'
+]
+
+
 def Create(instance, database, ddl):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
@@ -33,6 +41,16 @@ def Create(instance, database, ddl):
   return client.projects_instances_databases.Create(req)
 
 
+def SetPolicy(database_ref, policy):
+  """Saves the given policy on the database, overwriting whatever exists."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesDatabasesSetIamPolicyRequest(
+      resource=database_ref.RelativeName(),
+      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy))
+  return client.projects_instances_databases.SetIamPolicy(req)
+
+
 def Delete(instance, database):
   """Delete a database."""
   client = apis.GetClientInstance('spanner', 'v1')
@@ -44,6 +62,15 @@ def Delete(instance, database):
   req = msgs.SpannerProjectsInstancesDatabasesDropDatabaseRequest(
       database=ref.RelativeName())
   return client.projects_instances_databases.DropDatabase(req)
+
+
+def GetIamPolicy(database_ref):
+  """Gets the IAM policy on a database."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesDatabasesGetIamPolicyRequest(
+      resource=database_ref.RelativeName())
+  return client.projects_instances_databases.GetIamPolicy(req)
 
 
 def Get(instance, database):

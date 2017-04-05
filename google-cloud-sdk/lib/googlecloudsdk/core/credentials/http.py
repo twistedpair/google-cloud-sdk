@@ -28,13 +28,10 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-def Http(auth=True, creds=None, timeout='unset'):
+def Http(timeout='unset'):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
-    auth: bool, True if the http client returned should be authorized.
-    creds: oauth2client.client.Credentials, If auth is True and creds is not
-        None, use those credentials to authorize the httplib2.Http client.
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
@@ -55,13 +52,11 @@ def Http(auth=True, creds=None, timeout='unset'):
     http_client = _WrapRequestForIAMAuth(
         http_client, authority_selector, authorization_token_file)
 
-  if auth:
-    if not creds:
-      creds = store.Load()
-    http_client = creds.authorize(http_client)
-    # Wrap the request method to put in our own error handling.
-    http_client = http.Modifiers.WrapRequest(
-        http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
+  creds = store.Load()
+  http_client = creds.authorize(http_client)
+  # Wrap the request method to put in our own error handling.
+  http_client = http.Modifiers.WrapRequest(
+      http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
 

@@ -14,8 +14,8 @@
 
 """list format resource printer."""
 
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.util import encoding
 
 
 def _HasDefaultRepr(obj):
@@ -64,7 +64,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
               if v is not None]
     if isinstance(record, list):
       return [i for i in record if i is not None]
-    return [console_attr.DecodeFromInput(record or '')]
+    return [encoding.Decode(record or '')]
 
   def _AddRecord(self, record, delimit=False):
     """Immediately prints the given record as a list item.

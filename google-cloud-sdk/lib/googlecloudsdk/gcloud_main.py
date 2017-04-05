@@ -28,6 +28,7 @@ import sys
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
+from googlecloudsdk.command_lib.ml import flags
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -68,6 +69,7 @@ def IssueMlWarning(command_path=None):
   log.warn(
       'The `gcloud beta ml` commands have been renamed and will soon be '
       'removed. Please use `gcloud ml-engine` instead.')
+  log.warn(flags.V1BETA1_DEPRECATION_WARNING)
 
 
 def _IssueTestWarning(command_path=None):

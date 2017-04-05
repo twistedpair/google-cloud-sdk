@@ -45,7 +45,6 @@ def AddVisionFlags(parser, with_max_results=True):
 
 
 # Help text to be used by commands that have a --language-hints flag.
-# TODO(b/35950947): Use {command} when markdown handles nested expansion.
 LANGUAGE_HINTS = ("""\
 Language hints can be provided to Google Cloud Vision API. In most cases,
 an empty value yields the best results since it enables automatic language
@@ -55,7 +54,7 @@ more of the specified languages is not one of the supported languages.
 (See https://cloud.google.com/vision/docs/languages.) To provide language
 hints run:
 
-  $ {} --language-hints ja,ko
+  $ {command} --language-hints ja,ko
 """)
 
 

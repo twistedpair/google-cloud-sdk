@@ -24,6 +24,7 @@ from googlecloudsdk.core.resource import resource_printer
 import yaml
 
 
+MAX_RESOURCE_TO_DISPLAY = 50
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 
@@ -163,6 +164,15 @@ def FlattenLayoutOutputs(manifest_layout):
   return outputs
 
 
+def LimitResourcesToDisplay(resources, resource_limit=MAX_RESOURCE_TO_DISPLAY):
+  if len(resources) > resource_limit:
+    log.status.Print('Note: maximum of %s resources are shown, please use '
+                     'describe command to show all of the resources.'
+                     % resource_limit)
+    resources = resources[:resource_limit]
+  return resources
+
+
 def YieldWithHttpExceptions(generator):
   """Wraps generators to translate HttpErrors into HttpExceptions."""
   try:
@@ -182,7 +192,10 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
             deployment=deployment_name,
         )
     )
-    resources = response.resources if response.resources else []
+    if response.resources:
+      resources = LimitResourcesToDisplay(response.resources)
+    else:
+      resources = []
 
     deployment_response = client.deployments.Get(
         messages.DeploymentmanagerDeploymentsGetRequest(
@@ -202,7 +215,8 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
               manifest=manifest,
           )
       )
-      outputs = FlattenLayoutOutputs(manifest_response.layout)
+      if manifest_response.layout:
+        outputs = FlattenLayoutOutputs(manifest_response.layout)
 
     # TODO(b/36049939): Pagination b/28298504
     return ResourcesAndOutputs(resources, outputs)

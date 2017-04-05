@@ -58,7 +58,10 @@ class TypedLogSink(object):
       self.filter = sink.filter if sink.filter else '(empty filter)'
     # Get sink format.
     if hasattr(sink, 'outputVersionFormat'):
-      self.format = sink.outputVersionFormat.name
+      if sink.outputVersionFormat is None:
+        self.format = 'V2'
+      else:
+        self.format = sink.outputVersionFormat.name
     else:
       self.format = 'V1'
     # Get sink writer identity

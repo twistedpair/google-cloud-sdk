@@ -26,7 +26,7 @@ import tempfile
 import time
 import traceback
 
-from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 
@@ -278,8 +278,8 @@ def MoveDir(src, dst):
   if os.path.exists(dst):
     raise Error(u"Destination path '{0}' already exists".format(dst))
   if _DestInSrc(src, dst):
-    raise Error(u"Cannot move a directory '{0}' into itself '{0}'."
-                .format(src))
+    raise Error(u"Cannot move a directory '{0}' into itself '{1}'."
+                .format(src, dst))
   try:
     logging.debug(u'Attempting to move directory [%s] to [%s]', src, dst)
     try:
@@ -372,7 +372,7 @@ def SearchForExecutableOnPath(executable, path=None):
     are found.
   """
   if not path:
-    path = console_attr.GetEncodedValue(os.environ, 'PATH')
+    path = encoding.GetEncodedValue(os.environ, 'PATH')
   paths = path.split(os.pathsep)
 
   matching = []
@@ -453,7 +453,7 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
                      u'argument must not have a path.'.format(executable))
 
   if path is None:
-    effective_path = console_attr.GetEncodedValue(os.environ, 'PATH')
+    effective_path = encoding.GetEncodedValue(os.environ, 'PATH')
   else:
     effective_path = path
   effective_pathext = (pathext if pathext is not None
@@ -556,11 +556,13 @@ class TemporaryDirectory(object):
     except:  # pylint: disable=bare-except
       if not prev_exc_type:
         raise
-      message = (u'Got exception {0}'
-                 u'while another exception was active {1} [{2}]'
-                 .format(console_attr.DecodeFromInput(traceback.format_exc()),
-                         prev_exc_type,
-                         console_attr.DecodeFromInput(prev_exc_val)))
+      message = (
+          u'Got exception {0}'
+          u'while another exception was active {1} [{2}]'
+          .format(
+              encoding.Decode(traceback.format_exc()),
+              prev_exc_type,
+              encoding.Decode(prev_exc_val)))
       raise prev_exc_type, message, prev_exc_trace
     # always return False so any exceptions will be re-raised
     return False

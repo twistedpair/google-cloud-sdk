@@ -22,10 +22,10 @@ import StringIO
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import encoding
 
 
 class _JsonSortedDict(dict):
@@ -156,9 +156,8 @@ class HttpErrorPayload(string.Formatter):
     response = getattr(http_error, 'response', None)
     if response:
       self.status_code = int(response.get('status', 0))
-      self.status_description = console_attr.DecodeFromInput(
-          response.get('reason', ''))
-    content = console_attr.DecodeFromInput(http_error.content)
+      self.status_description = encoding.Decode(response.get('reason', ''))
+    content = encoding.Decode(http_error.content)
     try:
       # X-GOOG-API-FORMAT-VERSION: 2
       self.content = _JsonSortedDict(json.loads(content))

@@ -2,6 +2,93 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 150.0.0 (2017-04-05)
+
+### Breaking Changes
+
+*   The v1beta1 API for Google Cloud ML Engine is deprecated and will be turned
+    off on 2017-05-31. Please switch to the `gcloud ml-engine` commands, which
+    use the v1 API, by that date; at that time, the `gcloud beta ml-engine`
+    commands will switch over to the v1 API.
+
+### Cloud Tools for PowerShell
+
+*   Added beta cmdlets for Google Container Engine.
+*   Fixed a bug where `Get-GcdChange` and `Get-GcdResourceRecordSet` were not
+    returning more than 1000 items.
+
+### Google App Engine
+
+*   Fixed an issue in `gcloud app operations list` which resulted in sporadic
+    crashes.
+
+### Google Compute Engine
+
+*   Added Google Cloud TCP proxy commands to the Beta track. For more
+    information see `gcloud beta compute target-tcp-proxies` group and the
+    online documentation:
+    *   https://cloud.google.com/compute/docs/load-balancing/tcp-ssl/tcp-proxy
+
+### Google Container Engine
+
+*   `gcloud container clusters create|get-credentials` will now configure
+    kubectl to use the credentials of the active gcloud account by default,
+    instead of using application default credentials. This requires kubectl
+    1.6.0 or higher. You can update kubectl by running
+    `gcloud components update kubectl`.
+    If you prefer to use application default credentials to authenticate kubectl
+    to Google Container Engine clusters, you can revert to the previous behavior
+    by setting the `container/use_application_default_credentials` property:
+    *   `gcloud config set container/use_application_default_credentials true`
+    *   `export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true`
+*   Added `--[no-]enable-legacy-abac` option to
+    `gcloud container clusters create` and `gcloud container clusters update`.
+    For more details see online documentation:
+    *   https://cloud.google.com/container-engine/docs/role-based-access-control
+*   Added `--set-password` and `--generate-password` options to the
+    `gcloud container cluster update` command.
+*   Modified the `gcloud container images list-tags` command to consider 10
+    recent images by default, instead of all.
+*   Updated Google Container Engine's kubectl from version 1.5.4 to 1.6.0.
+
+### Google Cloud IAM
+
+*   Added tab completion to `gcloud iam service-accounts` commands.
+
+### Google Cloud Logging
+
+*   Removed deprecated "unique-writer-identity" flag. All created/updated sinks
+    will use custom service accounts to increase security.
+    Please see documentation for more details:
+    *   https://cloud.google.com/logging/docs/export/configure_export_v2#destination_authorization
+*   Remove support for creating/updating sinks with legacy V1 format.
+
+### Google Cloud Resource Manager
+
+*   Updated `gcloud projects set-iam-policy` and
+    `gcloud organizations set-iam-policy` commands to allow users to edit audit
+    configs. Changes to IAM policy should be handled via a read-modify-write
+    command sequence.
+
+### Google Cloud Storage
+
+*   Update gsutil component to 4.24.
+
+### Google Cloud SQL
+
+*   Added `gcloud beta sql instances set-root-password` for consistency with
+    the GA set of commands.
+    This command is deprecated in favor of `gcloud beta sql users set-password`.
+
+### Google Cloud Source Repositories
+
+*   `gcloud source repos` command group promoted to Beta track.
+
+### Emulators
+
+*   Datastore emulator now defaults to port 8081, and pubsub emulator to 8085.
+
+
 ## 149.0.0 (2017-03-29)
 
 ### Breaking Changes
@@ -68,6 +155,15 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     remainder of beta, `--resolve-tag-to-digest` will be required when deleting
     an image by tag, to avoid accidental deletion. This will become default
     behavior when the command graduates from beta.
+
+
+## 148.0.1 (2017-03-24)
+
+### Google Cloud Functions
+
+*   Fixed a bug where `gcloud beta functions deploy` did not work without the
+    `--region` flag specified.
+
 
 ## 148.0.0 (2017-03-22)
 

@@ -235,6 +235,7 @@ class Modifiers(object):
       try:
         response = orig_request(*modified_args, **kwargs)
       except exc_type as e:  # pylint: disable=broad-except
+        response = None
         if exc_handler:
           exc_handler(e)
         else:

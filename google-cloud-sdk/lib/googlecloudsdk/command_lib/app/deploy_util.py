@@ -61,21 +61,6 @@ class VersionPromotionError(core_exceptions.Error):
         'Original error: ' + str(err))
 
 
-GSUTIL_DEPRECATION_WARNING = """\
-Your gcloud installation has a deprecated config property enabled: \
-[app/use_gsutil], which will be removed in a future version.  Run \
-`gcloud config unset app/use_gsutil` to switch to the recommended approach.  \
-If you encounter any issues, please report using `gcloud feedback`.  To \
-revert temporarily, run `gcloud config set app/use_gsutil True`.
-"""
-
-MANAGED_VMS_DEPRECATION_WARNING = """\
-Deployments using `vm: true` have been deprecated.  Please update your \
-app.yaml to use `env: flex`. To learn more, please visit \
-https://cloud.google.com/appengine/docs/flexible/migration.
-"""
-
-
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
@@ -85,34 +70,25 @@ class DeployOptions(object):
     promote: True if the deployed version should recieve all traffic.
     stop_previous_version: Stop previous version
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
-    upload_strategy: deploy_app_command_util.UploadStrategy, the file upload
-       strategy to be used for this deployment.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
   """
 
   def __init__(self, promote, stop_previous_version, enable_endpoints,
-               upload_strategy, runtime_builder_strategy):
+               runtime_builder_strategy):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
-    self.upload_strategy = upload_strategy
     self.runtime_builder_strategy = runtime_builder_strategy
 
   @classmethod
-  def FromProperties(cls, enable_endpoints, upload_strategy,
-                     runtime_builder_strategy):
+  def FromProperties(cls, enable_endpoints, runtime_builder_strategy):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    if upload_strategy is None:
-      upload_strategy = deploy_app_command_util.UploadStrategy.THREADS
-    if properties.VALUES.app.use_gsutil.GetBool():
-      log.warning(GSUTIL_DEPRECATION_WARNING)
-      upload_strategy = deploy_app_command_util.UploadStrategy.GSUTIL
     return cls(promote, stop_previous_version, enable_endpoints,
-               upload_strategy, runtime_builder_strategy)
+               runtime_builder_strategy)
 
 
 class ServiceDeployer(object):
@@ -242,8 +218,6 @@ class ServiceDeployer(object):
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
 
-    if service.env is util.Environment.MANAGED_VMS:
-      log.warning(MANAGED_VMS_DEPRECATION_WARNING)
     with self.stager.Stage(service.file, service.runtime,
                            service.env) as staging_dir:
       source_dir = staging_dir or os.path.dirname(service.file)
@@ -255,8 +229,7 @@ class ServiceDeployer(object):
       # "Non-hermetic" services require file upload outside the Docker image.
       if not service.is_hermetic:
         manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-            service, source_dir, code_bucket_ref,
-            self.deploy_options.upload_strategy)
+            service, source_dir, code_bucket_ref)
 
       # Actually create the new version of the service.
       message = 'Updating service [{service}]'.format(
@@ -332,7 +305,7 @@ def ArgsDeploy(parser):
 
 
 def RunDeploy(
-    args, enable_endpoints=False, use_beta_stager=False, upload_strategy=None,
+    args, enable_endpoints=False, use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
   """Perform a deployment based on the given args.
 
@@ -342,8 +315,6 @@ def RunDeploy(
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     use_beta_stager: Use the stager registry defined for the beta track rather
         than the default stager registry.
-    upload_strategy: deploy_app_command_util.UploadStrategy, the parallelism
-      straetgy to use for uploading files, or None to use the default.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
@@ -355,8 +326,7 @@ def RunDeploy(
   """
   project = properties.VALUES.core.project.Get(required=True)
   deploy_options = DeployOptions.FromProperties(
-      enable_endpoints, upload_strategy=upload_strategy,
-      runtime_builder_strategy=runtime_builder_strategy)
+      enable_endpoints, runtime_builder_strategy=runtime_builder_strategy)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.

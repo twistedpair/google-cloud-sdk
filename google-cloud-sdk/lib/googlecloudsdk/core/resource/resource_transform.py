@@ -76,7 +76,7 @@ def _GetParsedKey(key):
   return resource_lex.Lexer(key).Key()
 
 
-def _GetKeyValue(r, key, undefined=None):
+def GetKeyValue(r, key, undefined=None):
   """Returns the value for key in r.
 
   Args:
@@ -379,8 +379,8 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
 
     # Get the datetime of both.
     try:
-      start_datetime = times.ParseDateTime(_GetKeyValue(r, start))
-      end_value = _GetKeyValue(r, end) if end else None
+      start_datetime = times.ParseDateTime(GetKeyValue(r, start))
+      end_value = GetKeyValue(r, end) if end else None
       if end_value:
         end_datetime = times.ParseDateTime(end_value)
       else:
@@ -502,7 +502,7 @@ def TransformExtract(r, *keys):
   """
   try:
     # Use undefined=TransformExtract to test if k is in r.
-    values = [_GetKeyValue(r, k, TransformExtract) for k in keys]
+    values = [GetKeyValue(r, k, TransformExtract) for k in keys]
     return [v for v in values if v is not TransformExtract]
   except TypeError:
     return []
@@ -539,7 +539,7 @@ def TransformFirstOf(r, *keys):
     non-empty value.
   """
   for key in keys:
-    v = _GetKeyValue(r, key)
+    v = GetKeyValue(r, key)
     if v is not None:
       return v
   return ''
@@ -1089,7 +1089,7 @@ def TransformSort(r, attr=''):
   def SortKey(item):
     if not attr:
       return item
-    return _GetKeyValue(item, attr)
+    return GetKeyValue(item, attr)
   return sorted(r, key=SortKey)
 
 
@@ -1265,13 +1265,11 @@ _API_TO_TRANSFORMS = {
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
     'container': ('googlecloudsdk.api_lib.container.transforms',
                   'GetTransforms'),
-    'debug': ('googlecloudsdk.command_lib.debug.transforms', 'GetTransforms'),
+    'debug': ('googlecloudsdk.api_lib.debug.transforms', 'GetTransforms'),
     'functions': ('googlecloudsdk.api_lib.functions.transforms',
                   'GetTransforms'),
     'runtimeconfig': ('googlecloudsdk.api_lib.runtime_config.transforms',
                       'GetTransforms'),
-    'service_registry': ('googlecloudsdk.api_lib.service_registry.transforms',
-                         'GetTransforms'),
 }
 
 

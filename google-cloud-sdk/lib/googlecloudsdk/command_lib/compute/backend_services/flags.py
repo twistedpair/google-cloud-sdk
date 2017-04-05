@@ -388,11 +388,17 @@ def AddTimeout(parser, default='30s'):
       default=default,
       type=arg_parsers.Duration(),
       help="""\
-      The amount of time to wait for a backend to respond to a request
-      before considering the request failed. For example, specifying
-      ``10s'' will give backends 10 seconds to respond to
-      requests. Valid units for this flag are ``s'' for seconds, ``m''
-      for minutes, and ``h'' for hours.
+      The amount of time to wait for a backend to return a full response for the
+      request and for the load balancer to proxy the response to the client
+      before considering the request failed.
+
+      For example, specifying `10s` gives instances 10 seconds to respond to
+      requests. The load balancer will retry GET requests once if the backend
+      closes the connection or times out before sending response headers to the
+      proxy. If the backend produces any response headers, the load balancer
+      does not retry. If the backend does not reply at all, the load balancer
+      returns a `502 Bad Gateway` error to the client. Valid units for this flag
+      are `s` for seconds, `m` for minutes, and `h` for hours.
       """)
 
 

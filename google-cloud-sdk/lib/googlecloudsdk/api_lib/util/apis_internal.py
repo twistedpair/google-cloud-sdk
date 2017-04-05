@@ -140,6 +140,11 @@ def _GetClientInstance(api_name, api_version, no_http=False,
       http=http_client)
   if check_response_func is not None:
     client_instance.check_response_func = check_response_func
+  api_key = properties.VALUES.core.api_key.Get()
+  if api_key:
+    client_instance.AddGlobalParam('key', api_key)
+    header = 'X-Google-Project-Override'
+    client_instance.additional_http_headers[header] = 'apikey'
   return client_instance
 
 

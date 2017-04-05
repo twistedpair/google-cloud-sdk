@@ -88,10 +88,8 @@ the default node pool if --node-pool is not provided.""",
         '--disable-autoscaling',
         default=None,
         help="""\
-Disables autoscaling for a node pool.
-
-Disables autoscaling in the node pool specified by --node-pool or
-the default node pool if --node-pool is not provided.""",
+Disables autoscaling for a node pool. This flag is deprecated and will be
+removed in a future release. Use --no-enable-autoscaling instead.""",
         hidden=hidden,
         action='store_false',
         dest='enable_autoscaling')
@@ -374,8 +372,7 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
   """Adds Master Authorized Networks related flags to parser.
 
   Master Authorized Networks related flags are:
-  --enable-master-authorized-networks --master-authorized-networks
-  --no-enable-master-authorized-networks.
+  --enable-master-authorized-networks --master-authorized-networks.
 
   Args:
     parser: A given parser.
@@ -389,20 +386,10 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
       '--enable-master-authorized-networks',
       default=None if update_group else False,
       help='Allow only Authorized Networks and GCE Public IPs to connect to '
-      'Kubernetes master through HTTPS.',
+      'Kubernetes master through HTTPS. By default public internet (0.0.0.0/0)'
+      ' is allowed to connect to Kubernetes master through HTTPS.',
       hidden=hidden,
       action='store_true')
-  # If we have an update group, add an inverted arg.
-  # Automatic inverted flag will not be added for mutually exclusive group.
-  if update_group:
-    authorized_networks_group.add_argument(
-        '--no-enable-master-authorized-networks',
-        default=None,
-        help='Allow public internet (0.0.0.0/0) to connect to Kubernetes '
-        'master through HTTPS.',
-        hidden=hidden,
-        action='store_false',
-        dest='enable_master_authorized_networks')
   group.add_argument(
       '--master-authorized-networks',
       type=arg_parsers.ArgList(min_length=1),
@@ -412,3 +399,17 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
       '(e.g. 192.168.100.0/24). Can not be specified unless '
       '--enable-master-authorized-networks is also specified.',
       hidden=hidden)
+
+
+def AddEnableLegacyAbacFlag(parser, hidden=False):
+  """Adds a --enable-legacy-abac flag to parser."""
+  help_text = """\
+Enables the legacy ABAC authentication for the cluster.
+See https://cloud.google.com/container-engine/docs/legacyabac for more \
+info."""
+  parser.add_argument(
+      '--enable-legacy-abac',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help=help_text)

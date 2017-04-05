@@ -98,8 +98,10 @@ def _GetInsertTime(operation):
     operation: A messages.Operation instance.
 
   Returns:
-    The time the operation started in string form.
+    The time the operation started in string form or None if N/A.
   """
+  if not operation.metadata:
+    return None
   properties = operation.metadata.additionalProperties
   for prop in properties:
     if prop.key == 'insertTime':

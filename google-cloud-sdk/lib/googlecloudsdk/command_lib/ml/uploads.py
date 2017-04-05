@@ -56,7 +56,7 @@ def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
 
   storage_client = storage_api.StorageClient()
   dests = []
-  checksum = file_utils.Checksum(algorithm=hashlib.sha1)
+  checksum = file_utils.Checksum(algorithm=hashlib.sha256)
   for local_path, _ in upload_pairs:
     checksum.AddFileContents(local_path)
 

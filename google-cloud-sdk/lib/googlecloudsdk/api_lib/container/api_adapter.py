@@ -260,6 +260,9 @@ class APIAdapter(object):
   def UpdateCluster(self, cluster_ref, options):
     raise NotImplementedError('Update requires a v1 client.')
 
+  def SetMasterAuth(self, cluster_ref, options):
+    raise NotImplementedError('SetMasterAuth requires a v1 client.')
+
   def GetOperation(self, operation_ref):
     return self.client.projects_zones_operations.Get(
         self.messages.ContainerProjectsZonesOperationsGetRequest(
@@ -439,7 +442,8 @@ class CreateClusterOptions(object):
                enable_autoupgrade=None,
                service_account=None,
                enable_master_authorized_networks=None,
-               master_authorized_networks=None):
+               master_authorized_networks=None,
+               enable_legacy_abac=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -471,6 +475,7 @@ class CreateClusterOptions(object):
     self.service_account = service_account
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
+    self.enable_legacy_abac = enable_legacy_abac
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -506,6 +511,17 @@ class UpdateClusterOptions(object):
     self.locations = locations
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
+
+
+class SetMasterAuthOptions(object):
+  SET_PASSWORD = 'SetPassword'
+  GENERATE_PASSWORD = 'GeneratePassword'
+
+  def __init__(self,
+               action=None,
+               password=None):
+    self.action = action
+    self.password = password
 
 
 class CreateNodePoolOptions(object):
@@ -661,6 +677,10 @@ class V1Adapter(APIAdapter):
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
 
+    if options.enable_legacy_abac is not None:
+      cluster.legacyAbac = self.messages.LegacyAbac(
+          enabled=bool(options.enable_legacy_abac))
+
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 
     req = self.messages.ContainerProjectsZonesClustersCreateRequest(
@@ -726,6 +746,16 @@ class V1Adapter(APIAdapter):
                 update=update)))
     return self.ParseOperation(op.name)
 
+  def SetLegacyAbac(self, cluster_ref, enable_legacy_abac):
+    op = self.client.projects_zones_clusters.LegacyAbac(
+        self.messages.ContainerProjectsZonesClustersLegacyAbacRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLegacyAbacRequest=self.messages.SetLegacyAbacRequest(
+                enabled=bool(enable_legacy_abac))))
+    return self.ParseOperation(op.name)
+
   def _AddonsConfig(self, disable_ingress=None, disable_hpa=None):
     addons = self.messages.AddonsConfig()
     if disable_ingress is not None:
@@ -735,6 +765,26 @@ class V1Adapter(APIAdapter):
       addons.horizontalPodAutoscaling = self.messages.HorizontalPodAutoscaling(
           disabled=bool(disable_hpa))
     return addons
+
+  def SetMasterAuth(self, cluster_ref, options):
+    update = self.messages.MasterAuth(password=options.password)
+    if options.action == SetMasterAuthOptions.SET_PASSWORD:
+      request = self.messages.SetMasterAuthRequest(
+          action=self.messages.SetMasterAuthRequest.
+          ActionValueValuesEnum.SET_PASSWORD,
+          update=update)
+    else:
+      request = self.messages.SetMasterAuthRequest(
+          action=self.messages.SetMasterAuthRequest.
+          ActionValueValuesEnum.GENERATE_PASSWORD,
+          update=update)
+    req = self.messages.ContainerProjectsZonesClustersSetMasterAuthRequest(
+        clusterId=cluster_ref.clusterId,
+        zone=cluster_ref.zone,
+        projectId=cluster_ref.projectId,
+        setMasterAuthRequest=request)
+    op = self.client.projects_zones_clusters.SetMasterAuth(req)
+    return self.ParseOperation(op.name)
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_zones_clusters.Delete(

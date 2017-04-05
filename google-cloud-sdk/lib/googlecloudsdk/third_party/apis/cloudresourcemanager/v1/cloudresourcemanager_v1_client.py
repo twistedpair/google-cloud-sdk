@@ -836,7 +836,7 @@ accepted the Terms of Service (ToS) will be rejected.
 
 + There must be at least one owner who has accepted the Terms of
 Service (ToS) agreement in the policy. Calling `setIamPolicy()` to
-to remove the last ToS-accepted owner from the policy will fail. This
+remove the last ToS-accepted owner from the policy will fail. This
 restriction also applies to legacy projects that no longer have owners
 who have accepted the ToS. Edits to IAM policies will be rejected until
 the lack of a ToS-accepting owner is rectified.

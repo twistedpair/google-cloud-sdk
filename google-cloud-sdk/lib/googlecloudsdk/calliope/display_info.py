@@ -13,8 +13,6 @@
 # limitations under the License.
 """Resource display info for the Calliope display module."""
 
-from googlecloudsdk.core.resource import resource_topics
-
 
 class DisplayInfo(object):
   """Display info accumulator for priming Displayer.
@@ -47,18 +45,15 @@ class DisplayInfo(object):
     if format:
       self._format = format
 
-  def AddTransforms(self, transforms, topic=None):
+  def AddTransforms(self, transforms):
     """Adds transforms to the display info, newer values takes precedence.
 
     Args:
       transforms: A filter/format transforms symbol dict.
-      topic: Optional name to register for the projections topic.
     """
     self._legacy = False
     if transforms:
       self._transforms.update(transforms)
-      if topic:
-        resource_topics.AddTransforms(topic, transforms)
 
   def AddUriFunc(self, uri_func):
     """Adds a uri transform to the display info using uri_func.

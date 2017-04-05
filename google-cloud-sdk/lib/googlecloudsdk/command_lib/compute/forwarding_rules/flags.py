@@ -187,7 +187,7 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
 
 def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   """Adds common flags for mutating forwarding rule targets."""
-  del include_beta
+  del include_alpha
   target = parser.add_mutually_exclusive_group(required=True)
 
   TARGET_HTTP_PROXY_ARG.AddArgument(parser, mutex_group=target)
@@ -211,7 +211,7 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
       default='EXTERNAL',
       help='This signifies what the forwarding rule will be used for.')
 
-  if include_alpha:
+  if include_beta:
     TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
 
 

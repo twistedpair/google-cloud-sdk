@@ -132,7 +132,7 @@ class _ConsoleWriter(object):
     """
 
     from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
-    msg = (console_attr.EncodeForOutput(x, escape=False) for x in msg)
+    msg = (console_attr.EncodeForConsole(x, escape=False) for x in msg)
     message = u' '.join(msg)
     self.write(message + u'\n')
 

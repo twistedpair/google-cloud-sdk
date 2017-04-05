@@ -16,8 +16,6 @@
 
 import sys
 import traceback
-import urllib
-import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.error_reporting import util
@@ -87,35 +85,10 @@ def _GetReportingClient():
   Returns:
     An error reporting client that uses an API key for Cloud SDK crash reports.
   """
-  http_client = http.Http()
-  orig_request = http_client.request
-
-  def RequestWithAPIKey(*args, **kwargs):
-    """Wrap request for request/response logging.
-
-    Args:
-      *args: Positional arguments.
-      **kwargs: Keyword arguments.
-
-    Returns:
-      Original returned response of this wrapped request.
-    """
-    # Modify request url to enable API key based authentication.
-    url_parts = urlparse.urlsplit(args[0])
-    query_params = urlparse.parse_qs(url_parts.query)
-    query_params['key'] = CRASH_API_KEY
-
-    modified_url_parts = list(url_parts)
-    modified_url_parts[3] = urllib.urlencode(query_params, doseq=True)
-    modified_args = list(args)
-    modified_args[0] = urlparse.urlunsplit(modified_url_parts)
-
-    return orig_request(*modified_args, **kwargs)
-
-  http_client.request = RequestWithAPIKey
-
   client_class = core_apis.GetClientClass(util.API_NAME, util.API_VERSION)
-  return client_class(get_credentials=False, http=http_client)
+  client_instance = client_class(get_credentials=False, http=http.Http())
+  client_instance.AddGlobalParam('key', CRASH_API_KEY)
+  return client_instance
 
 
 def _ReportCrash(err):
@@ -142,7 +115,7 @@ def _ReportCrash(err):
   except apitools_exceptions.HttpError as http_err:
     log.file_only_logger.error(
         'Unable to report crash stacktrace:\n{0}'.format(
-            console_attr.EncodeForOutput(http_err)))
+            console_attr.EncodeForConsole(http_err)))
 
 
 def HandleGcloudCrash(err):
@@ -151,7 +124,7 @@ def HandleGcloudCrash(err):
   Args:
     err: Exception err.
   """
-  err_string = console_attr.EncodeForOutput(err)
+  err_string = console_attr.EncodeForConsole(err)
   log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
   if _IsInstallationCorruption(err):
     _PrintInstallationAction(err, err_string)

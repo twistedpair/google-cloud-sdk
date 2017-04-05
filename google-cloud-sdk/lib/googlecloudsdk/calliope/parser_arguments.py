@@ -425,9 +425,6 @@ class ArgumentInterceptor(object):
     if '--no-' + name[2:] in self.parser._option_string_actions:  # pylint: disable=protected-access
       # Don't override explicit --no-* inverted flag.
       return False, None
-    if isinstance(self.parser, argparse._MutuallyExclusiveGroup):  # pylint: disable=protected-access
-      # Flags in mutually exclusive groups are not inverted.
-      return False, None
     if action in ('store_true', 'store_false'):
       return True, None
     prop, kind, _ = getattr(action, 'store_property', (None, None, None))

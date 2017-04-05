@@ -14,11 +14,13 @@
 
 """Utility functions for opening a GCE URL and getting contents."""
 
+import os
 import urllib2
 
 from googlecloudsdk.core import properties
 
-GOOGLE_GCE_METADATA_URI = 'http://metadata.google.internal/computeMetadata/v1'
+GOOGLE_GCE_METADATA_URI = 'http://{}/computeMetadata/v1'.format(
+    os.getenv('GOOGLE_METADATA_ROOT', 'metadata.google.internal'))
 
 GOOGLE_GCE_METADATA_DEFAULT_ACCOUNT_URI = (
     GOOGLE_GCE_METADATA_URI + '/instance/service-accounts/default/email')

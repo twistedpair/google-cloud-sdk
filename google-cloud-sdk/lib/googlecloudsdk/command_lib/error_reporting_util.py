@@ -47,12 +47,20 @@ def RemovePrivateInformationFromTraceback(traceback):
 
   pattern_file_path = re.compile(FILE_PATH_PATTERN)
 
+  lines_since_match = 0
   for line in stacktrace_list:
     match = pattern_file_path.match(line)
     if match:
       remove_path_stacktrace_list.append(line.replace(match.group('file'), ''))
-      continue
-    remove_path_stacktrace_list.append(line)
+      lines_since_match = 0
+    else:
+      lines_since_match += 1
+      # This will only be true for the second and subsequent message lines.
+      if lines_since_match > 2:
+        # Merge second and subsequent message lines into the first line.
+        remove_path_stacktrace_list[-1] += line
+      else:
+        remove_path_stacktrace_list.append(line)
 
   # Last line will be the exception type followed by message.
   # Remove the message since it could contain PII.

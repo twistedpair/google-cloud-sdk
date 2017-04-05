@@ -472,7 +472,7 @@ class HttpRpcServerOAuth2(HttpRpcServerHttpLib2):
 
 def _ScopesToString(scopes):
   """Converts scope value to a string."""
-  # TODO(emcmanus): replace with oauth2client.util.scopes_to_string when we
+  # TODO(user): replace with oauth2client.util.scopes_to_string when we
   # have a more recent oauth2client.
   if isinstance(scopes, types.StringTypes):
     return scopes

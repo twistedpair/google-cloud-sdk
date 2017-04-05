@@ -31,9 +31,9 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
@@ -100,7 +100,7 @@ class InstallationInfo(object):
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
     self.additional_repos = repos.split(',') if repos else []
-    self.path = console_attr.GetEncodedValue(os.environ, 'PATH', '')
+    self.path = encoding.GetEncodedValue(os.environ, 'PATH', '')
 
     if self.sdk_root:
       manager = update_manager.UpdateManager()

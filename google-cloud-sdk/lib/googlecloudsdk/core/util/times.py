@@ -46,7 +46,7 @@ from dateutil import parser
 from dateutil import tz
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
 
@@ -245,7 +245,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
   extension = re.compile('%[1-9]?[EO]?[fz]')
   m = extension.search(fmt)
   if not m:
-    return console_attr.DecodeFromInput(_StrFtime(dt, fmt))
+    return encoding.Decode(_StrFtime(dt, fmt))
 
   # Split the format into standard and extension parts.
   parts = []
@@ -254,8 +254,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     match = start + m.start()
     if start < match:
       # Format the preceeding standard part.
-      parts.append(console_attr.DecodeFromInput(
-          _StrFtime(dt, fmt[start:match])))
+      parts.append(encoding.Decode(_StrFtime(dt, fmt[start:match])))
 
     # Format the standard variant of the exetended spec. The extensions only
     # have one modifier char.
@@ -291,14 +290,14 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
         elif len(val) == 5:
           val = val[:3] + ':' + val[3:]
     if val:
-      parts.append(console_attr.DecodeFromInput(val))
+      parts.append(encoding.Decode(val))
 
     start += m.end()
     m = extension.search(fmt[start:])
 
   # Format the trailing part if any.
   if start < len(fmt):
-    parts.append(console_attr.DecodeFromInput(_StrFtime(dt, fmt[start:])))
+    parts.append(encoding.Decode(_StrFtime(dt, fmt[start:])))
 
   # Combine the parts.
   return ''.join(parts)

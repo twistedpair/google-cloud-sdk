@@ -42,3 +42,14 @@ def RunVisionCommand(feature, image_path, max_results=None,
   response = client.images.Annotate(request)
   util.PossiblyRaiseException(response)
   return response
+
+
+VISION_AUTH_HELP = ("""\
+To use the Google Cloud Vision API, use a service account belonging to a
+project that has Google Cloud Vision enabled. Please see
+https://cloud.google.com/vision/docs/common/auth#set_up_a_service_account
+for directions on setting up an account to use with the API. After setting up
+the account, download the key file and run:
+
+  $ gcloud auth activate-service-account --key-file=$KEY_FILE
+""")

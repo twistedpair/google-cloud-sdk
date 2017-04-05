@@ -23,8 +23,8 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.docker import constants as const_lib
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import times
 
@@ -231,8 +231,8 @@ class _Sections(object):
     self.component_manager = _SectionComponentManager()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
-    self.datastore_emulator = _SectionDatastoreEmulator()
     self.devshell = _SectionDevshell()
+    self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
     self.functions = _SectionFunctions()
     self.metrics = _SectionMetrics()
@@ -245,7 +245,7 @@ class _Sections(object):
         (section.name, section) for section in
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.core, self.component_manager, self.compute,
-         self.container, self.datastore_emulator, self.devshell,
+         self.container, self.devshell, self.emulator,
          self.experimental, self.functions, self.metrics, self.ml_engine,
          self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
@@ -445,6 +445,17 @@ class _Section(object):
               s=self.__name,
               p=property_name))
 
+  def HasProperty(self, property_name):
+    """True iff section has given property.
+
+    Args:
+      property_name: str, The name of the property to check for membership.
+
+    Returns:
+      a boolean. True iff this section contains property_name.
+    """
+    return property_name in self.__properties
+
   def AllProperties(self, include_hidden=False):
     """Gets a list of all registered property names in this section.
 
@@ -597,10 +608,6 @@ class _SectionApp(_Section):
         'container_builder_image',
         default='gcr.io/cloud-builders/docker',
         hidden=True)
-    self.use_gsutil = self._AddBool(
-        'use_gsutil',
-        default=False,
-        hidden=True)
     self.use_appengine_api = self._AddBool(
         'use_appengine_api',
         default=True,
@@ -659,7 +666,7 @@ class _SectionContainer(_Section):
         'the cluster API server.')
     self.use_app_default_credentials = self._AddBool(
         'use_application_default_credentials',
-        default=True,
+        default=False,
         help_text='Use application default credentials to authenticate to '
         'the cluster API server.')
 
@@ -799,6 +806,11 @@ class _SectionCore(_Section):
         default=True,
         help_text='If True, pass the configured Cloud SDK authentication '
                   'to gsutil.')
+    self.api_key = self._Add(
+        'api_key',
+        hidden=True,
+        help_text='If provided, this API key is attached to all outgoing '
+        'API calls.')
 
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:
@@ -1049,7 +1061,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
     self.servicemanagement = self._Add('servicemanagement')
-    self.serviceregistry = self._Add('serviceregistry')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
     self.spanner = self._Add('spanner')
@@ -1087,17 +1098,21 @@ class _SectionApiClientOverrides(_Section):
     self.sql = self._Add('sql')
 
 
-class _SectionDatastoreEmulator(_Section):
-  """Contains the properties for the 'datastore-emulator' section.
+class _SectionEmulator(_Section):
+  """Contains the properties for the 'emulator' section.
 
-  This is used to configure emulator properties like data_dir and host_port.
+  This is used to configure emulator properties for pubsub and datastore, such
+  as host_port and data_dir.
   """
 
   def __init__(self):
-    super(_SectionDatastoreEmulator, self).__init__(
-        'datastore_emulator', hidden=True)
-    self.data_dir = self._Add('data_dir')
-    self.host_port = self._Add('host_port')
+    super(_SectionEmulator, self).__init__('emulator', hidden=True)
+    self.datastore_data_dir = self._Add('datastore_data_dir')
+    self.pubsub_data_dir = self._Add('pubsub_data_dir')
+    self.datastore_host_port = self._Add('datastore_host_port',
+                                         default='localhost:8081')
+    self.pubsub_host_port = self._Add('pubsub_host_port',
+                                      default='localhost:8085')
 
 
 class _Property(object):
@@ -1292,7 +1307,7 @@ class _Property(object):
     self.Validate(value)
     if value is not None:
       value = Stringize(value)
-    console_attr.SetEncodedValue(os.environ, self.EnvironmentName(), value)
+    encoding.SetEncodedValue(os.environ, self.EnvironmentName(), value)
 
   def EnvironmentName(self):
     """Get the name of the environment variable for this property.
@@ -1570,7 +1585,7 @@ def _GetPropertyWithoutCallback(prop, properties_file):
       return Stringize(value_flag.value)
 
   # Check the environment variable overrides.
-  value = console_attr.GetEncodedValue(os.environ, prop.EnvironmentName())
+  value = encoding.GetEncodedValue(os.environ, prop.EnvironmentName())
   if value is not None:
     return Stringize(value)
 

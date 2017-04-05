@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
-
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 
@@ -22,6 +21,7 @@ from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 
 import yaml
 
@@ -33,6 +33,8 @@ CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
 KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
 PUBLIC_KEY_TYPES = (
     msgs.IamProjectsServiceAccountsKeysGetRequest.PublicKeyTypeValueValuesEnum)
+
+SERVICE_ACCOUNTS_COLLECTION = 'iam.projects.serviceAccounts'
 
 
 class IamEtagReadError(core_exceptions.Error):
@@ -163,6 +165,29 @@ def RemoveBindingFromIamPolicy(policy, member, role):
 
   # Second, remove any empty bindings.
   policy.bindings[:] = [b for b in policy.bindings if b.members]
+
+
+def ConstructUpdateMaskFromPolicy(policy_file_path):
+  """Construct a FieldMask based on input policy.
+
+  Args:
+    policy_file_path: Path to the JSON or YAML IAM policy file.
+  Returns:
+    a FieldMask containing policy fields to be modified, based on which fields
+    are present in the input file.
+  """
+  policy_file = files.GetFileContents(policy_file_path)
+  try:
+    # Since json is a subset of yaml, parse file as yaml.
+    policy = yaml.load(policy_file)
+  except yaml.YAMLError as e:
+    raise gcloud_exceptions.BadFileException(
+        'Policy file {0} is not a properly formatted JSON or YAML policy file'
+        '. {1}'.format(policy_file_path, str(e)))
+
+  # The IAM update mask should only contain top level fields. Sort the fields
+  # for testing purposes.
+  return ','.join(sorted(policy.keys()))
 
 
 def ParsePolicyFile(policy_file_path, policy_message_type):
@@ -501,3 +526,38 @@ def PublicKeyTypeFromString(key_str):
   if key_str == 'pem':
     return PUBLIC_KEY_TYPES.TYPE_X509_PEM_FILE
   return PUBLIC_KEY_TYPES.TYPE_RAW_PUBLIC_KEY
+
+
+def ServiceAccountsUriFunc(resource):
+  """Transforms a service account resource into a URL string.
+
+  Args:
+    resource: The ServiceAccount object
+
+  Returns:
+    URL to the service account
+  """
+
+  ref = resources.REGISTRY.Parse(resource.uniqueId,
+                                 {'projectsId': resource.projectId},
+                                 collection=SERVICE_ACCOUNTS_COLLECTION)
+  return ref.SelfLink()
+
+
+def AddServiceAccountNameArg(parser, help_text):
+  """Adds the IAM service account name argument that supports tab completion.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the args.
+    help_text: Help message to display for the service account name argument.
+
+  Raises:
+    ArgumentError if one of the arguments is already defined in the parser.
+  """
+
+  parser.add_argument('name',
+                      metavar='IAM-ACCOUNT',
+                      completion_resource='iam.service_accounts',
+                      list_command_path='iam.service_accounts',
+                      help=help_text)
+

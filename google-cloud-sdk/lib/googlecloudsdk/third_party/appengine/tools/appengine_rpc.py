@@ -289,7 +289,7 @@ class AbstractRpcServer(object):
         if os.getenv("APPENGINE_RPC_USE_SID", "0") == "1":
           return
       except ClientLoginError, e:
-        # TODO(emcmanus): some of these cases probably only pertain to the
+        # TODO(user): some of these cases probably only pertain to the
         # obsolete username/password authentication.
         if e.reason == "CaptchaRequired":
           print >>sys.stderr, (
@@ -392,7 +392,7 @@ class AbstractRpcServer(object):
           return response
         except urllib2.HTTPError, e:
           logger.debug("Got http error, this is try #%s", tries)
-          # TODO(emcmanus): consider whether all of the e.code cases still apply
+          # TODO(user): consider whether all of the e.code cases still apply
           # now that we no longer have username/password authentication.
           if tries > self.rpc_tries:
             raise

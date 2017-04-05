@@ -40,6 +40,15 @@ HINT_VERSION = ('Versions are generated automatically by default but can also '
                 'be manually specified by setting the `--version` flag on '
                 'individual command executions.')
 
+MANAGED_VMS_DEPRECATION_WARNING = """\
+Deployments using `vm: true` have been deprecated.  Please update your \
+app.yaml to use `env: flex`. To learn more, please visit \
+https://cloud.google.com/appengine/docs/flexible/migration.
+"""
+
+UPGRADE_FLEX_PYTHON_URL = (
+    'https://cloud.google.com/appengine/docs/flexible/python/migrating')
+
 # This is the equivalent of the following in app.yaml:
 # skip_files:
 # - ^(.*/)?#.*#$
@@ -267,10 +276,18 @@ class ServiceYamlInfo(_YamlInfo):
         raise YamlValidationError(
             'runtime "custom" requires that env be explicitly specified.')
 
+    if parsed.vm:
+      log.warn(MANAGED_VMS_DEPRECATION_WARNING)
+
     if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(
           'The "python27" is not a valid runtime in env: flex.  '
-          'Please use [python-compat] instead.')
+          'Please use [python] instead.')
+
+    if util.IsFlex(parsed.env) and vm_runtime == 'python-compat':
+      log.warn('[runtime: {}] is deprecated.  Please use [runtime: python] '
+               'instead.  See {} for more info.'
+               .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
 
     if parsed.module:
       log.warn('The "module" parameter in application .yaml files is '

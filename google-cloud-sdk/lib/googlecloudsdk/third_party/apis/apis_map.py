@@ -400,14 +400,6 @@ MAP = {
             default_version=True
         ),
     },
-    'serviceregistry': {
-        'v1alpha': APIDef(
-            class_path='googlecloudsdk.third_party.apis.serviceregistry.v1alpha',
-            client_classpath='serviceregistry_v1alpha_client.ServiceregistryV1alpha',
-            messages_modulepath='serviceregistry_v1alpha_messages',
-            default_version=True
-        ),
-    },
     'serviceuser': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.serviceuser.v1',

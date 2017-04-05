@@ -20,8 +20,8 @@ import ssl
 import urlparse
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
 from googlecloudsdk.core.diagnostics import http_proxy_setup
@@ -101,7 +101,7 @@ class ReachabilityChecker(check_base.Checker):
 
   def _CheckURL(self, url):
     try:
-      http.Http(auth=False).request(url, method='GET')
+      http.Http().request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
     except (httplib.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error, socks.HTTPError) as err:

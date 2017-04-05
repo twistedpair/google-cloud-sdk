@@ -154,13 +154,19 @@ def GetIamPolicy(project_ref):
     raise projects_util.ConvertHttpError(error)
 
 
-def SetIamPolicy(project_ref, policy):
+def SetIamPolicy(project_ref, policy, update_mask=None):
   """Set IAM policy, for a given project."""
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
+
+  set_iam_policy_request = messages.SetIamPolicyRequest(policy=policy)
+  # Only include update_mask if provided, otherwise, leave the field unset.
+  if update_mask is not None:
+    set_iam_policy_request.updateMask = update_mask
+
   policy_request = messages.CloudresourcemanagerProjectsSetIamPolicyRequest(
       resource=project_ref.Name(),
-      setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+      setIamPolicyRequest=set_iam_policy_request)
   try:
     return client.projects.SetIamPolicy(policy_request)
   except exceptions.HttpError as error:
@@ -171,8 +177,17 @@ def SetIamPolicyFromFile(project_ref, policy_file):
   """Read projects IAM policy from a file, and set it."""
   messages = projects_util.GetMessages()
   policy = iam_util.ParsePolicyFile(policy_file, messages.Policy)
+  update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
+
+  # To preserve the existing set-iam-policy behavior of always overwriting
+  # bindings and etag, add bindings and etag to update_mask.
+  if 'bindings' not in update_mask:
+    update_mask += ',bindings'
+  if 'etag' not in update_mask:
+    update_mask += ',etag'
+
   try:
-    return SetIamPolicy(project_ref, policy)
+    return SetIamPolicy(project_ref, policy, update_mask)
   except exceptions.HttpError as error:
     raise projects_util.ConvertHttpError(error)
 

@@ -27,7 +27,6 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
@@ -36,6 +35,7 @@ from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import release_notes
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.updater import update_check
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
@@ -241,7 +241,7 @@ class UpdateManager(object):
       self.__sdk_root = config.Paths().sdk_root
     if not self.__sdk_root:
       raise local_state.InvalidSDKRootError()
-    self.__sdk_root = console_attr.DecodeFromInput(self.__sdk_root)
+    self.__sdk_root = encoding.Decode(self.__sdk_root)
 
     if not url:
       url = properties.VALUES.component_manager.snapshot_url.Get()
@@ -305,7 +305,7 @@ class UpdateManager(object):
 
     cwd = None
     try:
-      cwd = console_attr.DecodeFromInput(os.path.realpath(os.getcwd()))
+      cwd = encoding.Decode(os.path.realpath(os.getcwd()))
     except OSError:
       log.debug('Could not determine CWD, assuming detached directory not '
                 'under SDK root.')

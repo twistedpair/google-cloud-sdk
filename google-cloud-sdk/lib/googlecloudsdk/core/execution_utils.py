@@ -28,7 +28,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
-from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
 
@@ -136,12 +136,12 @@ def _GetToolEnv(env=None):
   # environment so that those commands will use the same settings.
   for s in properties.VALUES:
     for p in s:
-      console_attr.SetEncodedValue(
+      encoding.SetEncodedValue(
           env, p.EnvironmentName(), p.Get(required=False, validate=False))
 
   # Configuration needs to be handled separately because it's not a real
   # property (although it behaves like one).
-  console_attr.SetEncodedValue(
+  encoding.SetEncodedValue(
       env, config.CLOUDSDK_ACTIVE_CONFIG_NAME,
       named_configs.ConfigurationStore.ActiveConfig().name)
 
@@ -288,7 +288,7 @@ def Exec(args,
           raise InvalidCommandError(args[0])
         raise
       process_holder.process = p
-      stdout, stderr = p.communicate(in_str)
+      stdout, stderr = p.communicate(input=in_str)
       if out_func:
         out_func(stdout)
       if err_func:

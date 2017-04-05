@@ -31,8 +31,9 @@ def RetryOnHttpStatus(status):
 
     # pylint:disable=invalid-name
     def wrapper(*args, **kwargs):
-      retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2)
+      retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2,
+                              jitter_ms=100)
       return retryer.RetryOnException(func, args, kwargs,
-                                      should_retry_if=retryIf)
+                                      should_retry_if=retryIf, sleep_ms=1000)
     return wrapper
   return RetryOnHttpStatusAttribute

@@ -858,7 +858,7 @@ RESOURCE_REGISTRY = {
         resource_info.ResourceInfo(
             list_format="""
           table(
-            id:label=ID,
+            id:label=JOB_ID,
             name:label=NAME,
             type:label=TYPE,
             creationTime.yesno(no="-"),
@@ -1183,6 +1183,8 @@ RESOURCE_REGISTRY = {
     # iam
     'iam.service_accounts':
         resource_info.ResourceInfo(
+            list_command='iam service-accounts list --format=value(email)',
+            bypass_cache=True,
             list_format="""
           table(
             displayName:label=NAME,
@@ -1284,114 +1286,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # pubsub
-    'pubsub.projects.topics':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            topicId:label=TOPIC,
-            success:label=SUCCESS,
-            reason:label=REASON
-          )
-        """,),
-    'pubsub.topics.publish':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            messageIds:label=MESSAGE_ID,
-          )
-        """,),
-    'pubsub.projects.subscriptions':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            subscriptionId:label=SUBSCRIPTION,
-            topic:label=TOPIC,
-            type,
-            pushEndpoint:label=PUSH_ENDPOINT,
-            ackDeadlineSeconds:label=ACK_DEADLINE,
-            retainAckedMessages:label=RETAIN_ACKED_MESSAGES,
-            messageRetentionDuration:label=MESSAGE_RETENTION_DURATION,
-            success:label=SUCCESS,
-            reason:label=REASON
-          )
-        """,),
-    'pubsub.subscriptions.ack':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            subscriptionId:label=SUBSCRIPTION,
-            ackIds:label=ACK_IDS
-          )
-        """,),
-    'pubsub.subscriptions.mod_ack':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            subscriptionId:label=SUBSCRIPTION,
-            ackId:label=ACK_ID,
-            ackDeadlineSeconds:label=ACK_DEADLINE
-          )
-        """,),
-    'pubsub.subscriptions.mod_config':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            subscriptionId:label=SUBSCRIPTION,
-            pushEndpoint:label=PUSH_ENDPOINT
-          )
-        """,),
-    'pubsub.subscriptions.pull':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            message.data.decode(base64),
-            message.messageId,
-            message.attributes.list(separator=' '),
-            ackId.if(NOT auto_ack)
-          )
-        """,),
-    'pubsub.subscriptions.list':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            projectId:label=PROJECT,
-            subscriptionId:label=SUBSCRIPTION,
-            topicId:label=TOPIC,
-            type,
-            ackDeadlineSeconds:label=ACK_DEADLINE
-          )
-        """,),
-    'pubsub.projects.snapshots':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            snapshotId:label=SNAPSHOT,
-            topicId:label=TOPIC,
-            exipirationTime:label=EXPIRATION_TIME,
-            success:label=SUCCESS,
-            reason:label=REASON
-            )
-        """,),
-    'pubsub.snapshots.list':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            projectId:label=PROJECT,
-            snapshotId:label=SNAPSHOT,
-            topicId:label=TOPIC,
-            expirationTime:label=EXPIRATION_TIME
-            )
-        """,),
-    'pubsub.subscriptions.seek':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            time:label=TIME,
-            snapshotId:label=SNAPSHOT
-            subscriptionId:label=SUBSCRIPTION,
-          )
-        """,),
     'replicapoolupdater.rollingUpdates':
         resource_info.ResourceInfo(
             list_format="""
@@ -1457,30 +1351,6 @@ RESOURCE_REGISTRY = {
           table(
             id:label=CONFIG_ID,
             name:label=SERVICE_NAME
-          )
-        """,),
-
-    # service registry
-    'service_registry.endpoints':
-        resource_info.ResourceInfo(
-            async_collection='service_registry.operations',
-            list_format="""
-          table[box](
-            name,
-            state,
-            addresses[].map().endpoint_address().list(separator=' | '):label=ADDRESSES
-          )
-        """,),
-    'service_registry.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name,
-            operationType:label=TYPE,
-            status,
-            targetLink.basename():label=TARGET,
-            insertTime.date(format="%Y-%m-%d"):label=DATE,
-            error.errors.group(code, message)
           )
         """,),
 

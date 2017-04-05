@@ -18,6 +18,7 @@ import errno
 import os
 import random
 import re
+import socket
 import subprocess
 
 from googlecloudsdk.core import config
@@ -57,6 +58,15 @@ class Java7Error(exceptions.Error):
 
 class NoEmulatorError(exceptions.Error):
   pass
+
+
+class InvalidHostError(exceptions.Error):
+  """The configured host:port is invalid."""
+
+  def __init__(self):
+    super(InvalidHostError, self).__init__(
+        'Emulator host-port must take the form ADDRESS:PORT where ADDRESS'
+        ' is a hostname, IPv4 or IPv6 address.')
 
 
 def EnsureComponentIsInstalled(component_id, for_text):
@@ -200,7 +210,8 @@ def GetDataDir(prefix):
   """If present, returns the configured data dir, else returns the default.
 
   Args:
-    prefix: str, The prefix for the *-emulator property group to look up.
+    prefix: Either pubsub or datastore. The prefix for the *_data_dir property
+    of the emulators section.
 
   Returns:
     str, The configured or default data_dir path.
@@ -220,11 +231,24 @@ def GetHostPort(prefix):
   Args:
     prefix: str, The prefix for the *-emulator property group to look up.
 
+  Raises:
+    InvalidHostError: If configured host-port is not of the form
+    ADDRESS:PORT.
+
   Returns:
     str, The configured or default host_port
   """
-  configured = _GetEmulatorProperty(prefix, 'host_port')
-  if configured: return configured
+  try:
+    configured = _GetEmulatorProperty(prefix, 'host_port')
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # TODO(b/36653529): Support IPv6 via configured host-port.
+    host, port = configured.split(':')
+    port = int(port)
+  except ValueError:
+    raise InvalidHostError()
+
+  if sock.connect_ex((host, port)) != 0:
+    return configured
 
   return 'localhost:8{rand:03d}'.format(rand=random.randint(0, 999))
 
@@ -239,10 +263,11 @@ def _GetEmulatorProperty(prefix, prop_name):
   Returns:
     str, The the value of the given property in the specified emulator group.
   """
-  property_group = '{prefix}_emulator'.format(prefix=prefix)
+  property_group = 'emulator'
+  full_name = '{}_{}'.format(prefix, prop_name)
   for section in properties.VALUES:
-    if section.name == property_group:
-      return section.Property(prop_name).Get()
+    if section.name == property_group and section.HasProperty(full_name):
+      return section.Property(full_name).Get()
   return None
 
 

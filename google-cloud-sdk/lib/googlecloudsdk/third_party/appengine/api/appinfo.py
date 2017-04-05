@@ -74,7 +74,7 @@ _START_PATH = '/_ah/start'
 _NON_WHITE_SPACE_REGEX = r'^\S+$'
 
 # Regular expression for matching service names.
-# TODO(arb): this may need altering so as to not leak unreleased service names
+# TODO(user): this may need altering so as to not leak unreleased service names
 # TODO(user): Re-add sms to list of services.
 _ALLOWED_SERVICES = ['mail', 'mail_bounce', 'xmpp_message', 'xmpp_subscribe',
                      'xmpp_presence', 'xmpp_error', 'channel_presence', 'rest',
@@ -2056,7 +2056,7 @@ class AppInfoExternal(validation.Validated):
       INCLUDES: validation.Optional(validation.Type(list)),
       HANDLERS: validation.Optional(validation.Repeated(URLMap), default=[]),
       LIBRARIES: validation.Optional(validation.Repeated(Library)),
-      # TODO(arb): change to a regex when `validation.Repeated` supports it
+      # TODO(user): change to a regex when `validation.Repeated` supports it
       SERVICES: validation.Optional(validation.Repeated(
           validation.Regex(_SERVICE_RE_STRING))),
       DEFAULT_EXPIRATION: validation.Optional(_EXPIRATION_REGEX),

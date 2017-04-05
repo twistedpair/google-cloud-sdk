@@ -30,8 +30,8 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -351,7 +351,7 @@ class _MetricsCollector(object):
       pickle.dump(self._metrics, temp_metrics_file)
       self._metrics = []
 
-    this_file = console_attr.DecodeFromInput(__file__)
+    this_file = encoding.Decode(__file__)
     reporting_script_path = os.path.realpath(
         os.path.join(os.path.dirname(this_file), 'metrics_reporter.py'))
     execution_args = execution_utils.ArgsForPythonTool(

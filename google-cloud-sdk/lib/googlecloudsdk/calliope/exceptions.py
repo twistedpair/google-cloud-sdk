@@ -245,7 +245,8 @@ def _FormatNonAsciiMarkerString(args):
 
   # Make sure that this will still print out nicely on an odd-sized screen
   align = len(marker_string)
-  args_string = u' '.join([console_attr.EncodeForOutput(arg) for arg in args])
+  args_string = u' '.join(
+      [console_attr.EncodeForConsole(arg) for arg in args])
   width, _ = console_attr_os.GetTermSize()
   fill = '...'
   if width < len(_MARKER) + len(fill):
@@ -289,7 +290,7 @@ class InvalidCharacterInArgException(ToolException):
         u'Failed to read command line argument [{0}] because it does '
         u'not appear to be valid 7-bit ASCII.\n\n'
         u'{1}'.format(
-            console_attr.EncodeForOutput(self.invalid_arg),
+            console_attr.EncodeForConsole(self.invalid_arg),
             _FormatNonAsciiMarkerString(args)))
 
 

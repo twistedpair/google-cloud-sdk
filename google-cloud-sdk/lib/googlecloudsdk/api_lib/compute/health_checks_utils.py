@@ -72,8 +72,10 @@ def AddProtocolAgnosticCreationArgs(parser, protocol_string):
 
   parser.add_argument(
       '--description',
-      help=('An optional, textual description for the ' + protocol_string +
-            ' health check.'))
+      help="""\
+      An optional string description for the """ + protocol_string + """ health
+      check.
+      """)
 
 
 def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
@@ -275,14 +277,22 @@ def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
   """Adds TCP-related subcommand parser arguments."""
 
   request_help = """\
-      Application data to send once the TCP connection has been established. By
-      default, this is empty. If both request and response are empty, the
-      connection establishment alone will indicate health of the TCP connection.
+      An optional string of up to 1024 characters to send once the health check
+      TCP connection has been established. The health checker then looks for a
+      reply of the string provided in the `--response` field.
+
+      If `--response` is not configured, the health checker does not wait for a
+      response and regards the probe as successful if the TCP or SSL handshake
+      was successful.
       """
   response_help = """\
-      The bytes to match against the beginning of the response data. By default,
-      this is empty. If empty, any response will indicate health of the TCP
-      connection.
+      An optional string of up to 1024 characters that the health checker
+      expects to receive from the instance. If the response is not received
+      exactly, the health check probe fails. If `--response` is configured, but
+      not `--request`, the health checker will wait for a response anyway.
+      Unless your system automatically sends out a message in response to a
+      successful handshake, only configure `--response` to match an explicit
+      `--request`.
       """
 
   if add_info_about_clearing:

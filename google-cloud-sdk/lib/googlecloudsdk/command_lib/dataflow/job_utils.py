@@ -34,7 +34,7 @@ def ArgsForJobRefs(parser, **kwargs):
     **kwargs: Extra arguments to pass to the add_argument call.
   """
   parser.add_argument(
-      'jobs', metavar='JOB', help='The jobs to operate on.', **kwargs)
+      'jobs', metavar='JOB_ID', help='The job IDs to operate on.', **kwargs)
 
 
 def ExtractJobRef(job):

@@ -14,10 +14,11 @@
 
 """Common resource topic text."""
 
+import pkgutil
 import textwrap
 
+from googlecloudsdk import api_lib
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_registry
 from googlecloudsdk.core.resource import resource_transform
 
 
@@ -366,7 +367,7 @@ def _ParseTransformDocString(func):
   return ''.join(descriptions), prototype, args, example
 
 
-def _TransformsDescriptions(transforms):
+def TransformsDescriptions(transforms):
   """Generates resource transform help text markdown for transforms.
 
   Args:
@@ -396,43 +397,30 @@ def _TransformsDescriptions(transforms):
   return ''.join(descriptions)
 
 
-_TRANSFORMS = {}  # The registered transforms indexed by topic (api).
-
-
-def RegisterTransforms(api, transforms):
-  """Registers transforms for api to be included in the projections topic.
-
-  Args:
-    api: The api name to be used as a title for the transforms.
-    transforms: A name=>transform dict of transforms.
-  """
-  _TRANSFORMS[api] = transforms
+def _GetApiTransforms(api):
+  """Returns the transforms for api if it has a transforms module."""
+  if api == 'builtin':
+    return resource_transform.GetTransforms()
+  # Include all api_lib.*.transforms modules that have GetTransforms().
+  method_name = 'GetTransforms'
+  module_path = 'googlecloudsdk.api_lib.{api}.transforms'.format(api=api)
+  try:
+    module = __import__(module_path, fromlist=[method_name])
+    method = getattr(module, method_name)
+    return method()
+  except ImportError:
+    return None
 
 
 def TransformRegistryDescriptions():
   """Returns help markdown for all registered resource transforms."""
-  if not resource_registry.RESOURCE_REGISTRY:
-    raise ValueError('The resource_registry refactor is complete. '
-                     'Delete this if-else and celebrate.')
-  else:
-    for api in set([x.split('.')[0]
-                    for x in resource_registry.RESOURCE_REGISTRY.keys()]):
-      if api in _TRANSFORMS:
-        raise ValueError('The {api} api has new and legacy transforms '
-                         'registered -- pick one or the other.', api=api)
-      transforms = resource_transform.GetTransforms(api)
-      if transforms:
-        _TRANSFORMS[api] = transforms
-
   descriptions = []
-
-  def _AddDescription(api, transforms):
-    descriptions.append(
-        '\nThe {api} transform functions are:\n{desc}\n'.format(
-            api=api, desc=_TransformsDescriptions(transforms)))
-
-  _AddDescription('builtin', resource_transform.GetTransforms())
-  for api, transforms in sorted(_TRANSFORMS.iteritems()):
-    _AddDescription(api, transforms)
-
+  apis = set(
+      [name for _, name, _ in pkgutil.iter_modules(api_lib.__path__) if name])
+  for api in ['builtin'] + sorted(apis):
+    transforms = _GetApiTransforms(api)
+    if transforms:
+      descriptions.append(
+          '\nThe {api} transform functions are:\n{desc}\n'.format(
+              api=api, desc=TransformsDescriptions(transforms)))
   return ''.join(descriptions)

@@ -206,9 +206,6 @@ apis:
   serviceuser:
     v1:
       discovery_doc: serviceuser_v1.json
-  serviceregistry:
-    v1alpha:
-      discovery_doc: serviceregistry_v1alpha.json
   source:
     v1:
       discovery_doc: source_v1.json

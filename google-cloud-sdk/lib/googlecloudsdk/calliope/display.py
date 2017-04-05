@@ -432,7 +432,7 @@ class Displayer(object):
     log.out.flush()
 
     # If the default format was used then display the epilog.
-    if self._default_format_used:
+    if not self._args.IsSpecified('format'):
       self._command.Epilog(resources_were_displayed)
 
     return self._resources

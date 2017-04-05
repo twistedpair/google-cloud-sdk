@@ -109,6 +109,15 @@
       "location": "query"
     }
   },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
   "schemas": {
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
@@ -368,7 +377,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice@googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -1560,7 +1569,10 @@
               ],
               "response": {
                 "$ref": "ListInstanceConfigsResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "get": {
               "id": "spanner.projects.instanceConfigs.get",
@@ -1582,7 +1594,10 @@
               ],
               "response": {
                 "$ref": "InstanceConfig"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
         },
@@ -1624,7 +1639,10 @@
               ],
               "response": {
                 "$ref": "ListInstancesResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "get": {
               "id": "spanner.projects.instances.get",
@@ -1646,7 +1664,10 @@
               ],
               "response": {
                 "$ref": "Instance"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "create": {
               "id": "spanner.projects.instances.create",
@@ -1671,7 +1692,10 @@
               },
               "response": {
                 "$ref": "Operation"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "patch": {
               "id": "spanner.projects.instances.patch",
@@ -1696,7 +1720,10 @@
               },
               "response": {
                 "$ref": "Operation"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "delete": {
               "id": "spanner.projects.instances.delete",
@@ -1718,7 +1745,10 @@
               ],
               "response": {
                 "$ref": "Empty"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "setIamPolicy": {
               "id": "spanner.projects.instances.setIamPolicy",
@@ -1743,7 +1773,10 @@
               },
               "response": {
                 "$ref": "Policy"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "getIamPolicy": {
               "id": "spanner.projects.instances.getIamPolicy",
@@ -1768,7 +1801,10 @@
               },
               "response": {
                 "$ref": "Policy"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             },
             "testIamPermissions": {
               "id": "spanner.projects.instances.testIamPermissions",
@@ -1793,7 +1829,10 @@
               },
               "response": {
                 "$ref": "TestIamPermissionsResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
           ,
@@ -1836,7 +1875,10 @@
                   ],
                   "response": {
                     "$ref": "ListOperationsResponse"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "get": {
                   "id": "spanner.projects.instances.operations.get",
@@ -1858,7 +1900,10 @@
                   ],
                   "response": {
                     "$ref": "Operation"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "delete": {
                   "id": "spanner.projects.instances.operations.delete",
@@ -1880,7 +1925,10 @@
                   ],
                   "response": {
                     "$ref": "Empty"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "cancel": {
                   "id": "spanner.projects.instances.operations.cancel",
@@ -1902,7 +1950,10 @@
                   ],
                   "response": {
                     "$ref": "Empty"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
             },
@@ -1939,7 +1990,10 @@
                   ],
                   "response": {
                     "$ref": "ListDatabasesResponse"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "create": {
                   "id": "spanner.projects.instances.databases.create",
@@ -1964,7 +2018,10 @@
                   },
                   "response": {
                     "$ref": "Operation"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "get": {
                   "id": "spanner.projects.instances.databases.get",
@@ -1986,7 +2043,10 @@
                   ],
                   "response": {
                     "$ref": "Database"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "updateDdl": {
                   "id": "spanner.projects.instances.databases.updateDdl",
@@ -2011,7 +2071,10 @@
                   },
                   "response": {
                     "$ref": "Operation"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "dropDatabase": {
                   "id": "spanner.projects.instances.databases.dropDatabase",
@@ -2033,7 +2096,10 @@
                   ],
                   "response": {
                     "$ref": "Empty"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "getDdl": {
                   "id": "spanner.projects.instances.databases.getDdl",
@@ -2055,7 +2121,10 @@
                   ],
                   "response": {
                     "$ref": "GetDatabaseDdlResponse"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "setIamPolicy": {
                   "id": "spanner.projects.instances.databases.setIamPolicy",
@@ -2080,7 +2149,10 @@
                   },
                   "response": {
                     "$ref": "Policy"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "getIamPolicy": {
                   "id": "spanner.projects.instances.databases.getIamPolicy",
@@ -2105,7 +2177,10 @@
                   },
                   "response": {
                     "$ref": "Policy"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 },
                 "testIamPermissions": {
                   "id": "spanner.projects.instances.databases.testIamPermissions",
@@ -2130,7 +2205,10 @@
                   },
                   "response": {
                     "$ref": "TestIamPermissionsResponse"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
               ,
@@ -2173,7 +2251,10 @@
                       ],
                       "response": {
                         "$ref": "ListOperationsResponse"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "get": {
                       "id": "spanner.projects.instances.databases.operations.get",
@@ -2195,7 +2276,10 @@
                       ],
                       "response": {
                         "$ref": "Operation"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "delete": {
                       "id": "spanner.projects.instances.databases.operations.delete",
@@ -2217,7 +2301,10 @@
                       ],
                       "response": {
                         "$ref": "Empty"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "cancel": {
                       "id": "spanner.projects.instances.databases.operations.cancel",
@@ -2239,7 +2326,10 @@
                       ],
                       "response": {
                         "$ref": "Empty"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     }
                   }
                 },
@@ -2265,7 +2355,10 @@
                       ],
                       "response": {
                         "$ref": "Session"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "get": {
                       "id": "spanner.projects.instances.databases.sessions.get",
@@ -2287,7 +2380,10 @@
                       ],
                       "response": {
                         "$ref": "Session"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "delete": {
                       "id": "spanner.projects.instances.databases.sessions.delete",
@@ -2309,7 +2405,10 @@
                       ],
                       "response": {
                         "$ref": "Empty"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "executeSql": {
                       "id": "spanner.projects.instances.databases.sessions.executeSql",
@@ -2334,7 +2433,10 @@
                       },
                       "response": {
                         "$ref": "ResultSet"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "executeStreamingSql": {
                       "id": "spanner.projects.instances.databases.sessions.executeStreamingSql",
@@ -2359,7 +2461,10 @@
                       },
                       "response": {
                         "$ref": "PartialResultSet"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "read": {
                       "id": "spanner.projects.instances.databases.sessions.read",
@@ -2384,7 +2489,10 @@
                       },
                       "response": {
                         "$ref": "ResultSet"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "streamingRead": {
                       "id": "spanner.projects.instances.databases.sessions.streamingRead",
@@ -2409,7 +2517,10 @@
                       },
                       "response": {
                         "$ref": "PartialResultSet"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "beginTransaction": {
                       "id": "spanner.projects.instances.databases.sessions.beginTransaction",
@@ -2434,7 +2545,10 @@
                       },
                       "response": {
                         "$ref": "Transaction"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "commit": {
                       "id": "spanner.projects.instances.databases.sessions.commit",
@@ -2459,7 +2573,10 @@
                       },
                       "response": {
                         "$ref": "CommitResponse"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     },
                     "rollback": {
                       "id": "spanner.projects.instances.databases.sessions.rollback",
@@ -2484,7 +2601,10 @@
                       },
                       "response": {
                         "$ref": "Empty"
-                      }
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
                     }
                   }
                 }

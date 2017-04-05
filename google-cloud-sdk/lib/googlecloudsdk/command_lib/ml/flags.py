@@ -25,6 +25,14 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
+# TODO(b/36712515) Remove this warning and cut over.
+V1BETA1_DEPRECATION_WARNING = """\
+The v1beta1 API for Google Cloud ML Engine is deprecated and will be turned off
+on 2017-05-31. Please switch to the `gcloud ml-engine` commands, which use the
+v1 API, by that date; at that time, the `gcloud beta ml-engine` commands will switch over to the v1 API.
+"""
+
+
 class ArgumentError(exceptions.Error):
   pass
 

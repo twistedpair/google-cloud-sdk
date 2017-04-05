@@ -20,9 +20,6 @@ import json
 import os
 import shutil
 
-import enum
-
-from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -32,7 +29,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
-from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
 
 
@@ -165,22 +161,6 @@ class FileUploadTask(object):
     self.bucket_url = bucket_url
 
 
-class UploadStrategy(enum.Enum):
-  """The file upload parallelism strategy to use.
-
-  The old method of parallelism involved `num_file_upload_processes` (from the
-  App Engine properties) processes, with a special case for OS X Sierra.
-
-  The new method of parallelism involves `num_file_upload_threads` threads. It's
-  being tested in beta right now. Eventually, it will be become the default. It
-  should lead to fewer upload-related issues.
-
-  The old old method of parallelism involved shelling out to gsutil.
-  """
-  THREADS = 1
-  GSUTIL = 2
-
-
 def _UploadFilesThreads(files_to_upload, bucket_ref):
   """Uploads files to App Engine Cloud Storage bucket using threads.
 
@@ -205,12 +185,10 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
                                show_progress_bar=True)
 
 
-def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
-                          upload_strategy):
+def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
   """Copies application files to the Google Cloud Storage code bucket.
 
-  Uses either gsutil, the Cloud Storage API using processes, or the Cloud
-  Storage API using threads.
+  Use the Cloud Storage API using threads.
 
   Consider the following original structure:
     app/
@@ -243,85 +221,22 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
     service: ServiceYamlInfo, The service being deployed.
     source_dir: str, path to the service's source directory
     bucket_ref: The reference to the bucket files will be placed in.
-    upload_strategy: The UploadStrategy to use
 
   Returns:
     A dictionary representing the manifest.
-
-  Raises:
-    ValueError: if an invalid upload strategy or None is given
   """
   metrics.CustomTimedEvent(metric_names.COPY_APP_FILES_START)
-  if upload_strategy is UploadStrategy.GSUTIL:
-    manifest = CopyFilesToCodeBucketGsutil(service, source_dir, bucket_ref)
-  elif upload_strategy is UploadStrategy.THREADS:
-    # Collect a list of files to upload, indexed by the SHA so uploads are
-    # deduplicated.
-    with file_utils.TemporaryDirectory() as tmp_dir:
-      manifest = _BuildDeploymentManifest(service, source_dir, bucket_ref,
-                                          tmp_dir)
-      files_to_upload = _BuildFileUploadMap(
-          manifest, source_dir, bucket_ref, tmp_dir)
-      _UploadFilesThreads(files_to_upload, bucket_ref)
-  else:
-    raise ValueError('Invalid upload strategy ' + str(upload_strategy))
+  # Collect a list of files to upload, indexed by the SHA so uploads are
+  # deduplicated.
+  with file_utils.TemporaryDirectory() as tmp_dir:
+    manifest = _BuildDeploymentManifest(service, source_dir, bucket_ref,
+                                        tmp_dir)
+    files_to_upload = _BuildFileUploadMap(
+        manifest, source_dir, bucket_ref, tmp_dir)
+    _UploadFilesThreads(files_to_upload, bucket_ref)
   log.status.Print('File upload done.')
   log.info('Manifest: [{0}]'.format(manifest))
   metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
-  return manifest
-
-
-def CopyFilesToCodeBucketGsutil(service, source_dir, bucket_ref):
-  """Examines services and copies files to a Google Cloud Storage bucket.
-
-  Args:
-    service: ServiceYamlInfo, The parsed service information.
-    source_dir: str, path to the service's source directory
-    bucket_ref: str A reference to a GCS bucket where the files will be
-      uploaded.
-
-  Returns:
-    A dictionary representing the manifest. See _BuildStagingDirectory.
-  """
-  with file_utils.TemporaryDirectory() as staging_directory:
-    excluded_files_regex = service.parsed.skip_files.regex
-    manifest = _BuildStagingDirectory(source_dir,
-                                      staging_directory,
-                                      bucket_ref,
-                                      excluded_files_regex)
-    if manifest:
-      log.status.Print('Copying files to Google Cloud Storage...')
-      log.status.Print('Synchronizing files to [{b}].'
-                       .format(b=bucket_ref.bucket))
-      try:
-        log.SetUserOutputEnabled(False)
-
-        def _StatusUpdate(result, unused_retry_state):
-          log.info('Error synchronizing files. Return code: {0}. '
-                   'Retrying.'.format(result))
-
-        retryer = retry.Retryer(max_retrials=3,
-                                status_update_func=_StatusUpdate)
-        def _ShouldRetry(return_code, unused_retry_state):
-          return return_code != 0
-
-        # gsutil expects a trailing /
-        dest_dir = bucket_ref.ToBucketUrl()
-        try:
-          retryer.RetryOnResult(
-              storage_api.Rsync,
-              (staging_directory, dest_dir),
-              should_retry_if=_ShouldRetry)
-        except retry.RetryException as e:
-          raise exceptions.StorageError(
-              ('Could not synchronize files. The gsutil command exited with '
-               'status [{s}]. Command output is available in [{l}].').format(
-                   s=e.last_result, l=log.GetLogFilePath()))
-      finally:
-        # Reset to the standard log level.
-        log.SetUserOutputEnabled(None)
-      log.status.Print('File upload done.')
-
   return manifest
 
 

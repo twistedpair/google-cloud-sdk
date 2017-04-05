@@ -29,10 +29,10 @@ import sys
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import snapshots
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 
 
@@ -189,11 +189,11 @@ class InstallationState(object):
       ValueError: If the given SDK root does not exist.
     """
     if not os.path.isdir(sdk_root):
-      raise ValueError('The given Cloud SDK root does not exist: [{0}]'
+      raise ValueError(u'The given Cloud SDK root does not exist: [{0}]'
                        .format(sdk_root))
 
-    self.__sdk_root = console_attr.DecodeFromInput(sdk_root)
-    self._state_directory = os.path.join(sdk_root,
+    self.__sdk_root = encoding.Decode(sdk_root)
+    self._state_directory = os.path.join(self.__sdk_root,
                                          InstallationState.STATE_DIR_NAME)
     self.__backup_directory = os.path.join(self._state_directory,
                                            InstallationState.BACKUP_DIR_NAME)
@@ -601,7 +601,7 @@ class InstallationState(object):
           'platform',
       ]
       for d in to_compile:
-        d = console_attr.DecodeFromInput(d)
+        d = encoding.Decode(d)
         # Using rx to skip unused Python3 directory vendored with gsutil's copy
         # of httplib2.
         compileall.compile_dir(d, rx=re.compile('python3'), quiet=True)
