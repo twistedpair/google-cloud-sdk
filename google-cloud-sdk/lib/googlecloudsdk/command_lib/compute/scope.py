@@ -17,20 +17,22 @@
 import enum
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 
 
 class ScopeEnum(enum.Enum):
   """Enum representing GCE scope."""
 
-  ZONE = ('zone', 'a ')
-  REGION = ('region', 'a ')
-  GLOBAL = ('global', '')
+  ZONE = ('zone', 'a ', properties.VALUES.compute.zone.Get)
+  REGION = ('region', 'a ', properties.VALUES.compute.zone.Get)
+  GLOBAL = ('global', '', lambda: None)
 
-  def __init__(self, flag_name, prefix):
+  def __init__(self, flag_name, prefix, property_func):
     # Collection parameter name matches command line file in this case.
     self.param_name = flag_name
     self.flag_name = flag_name
     self.prefix = prefix
+    self.property_func = property_func
 
   @classmethod
   def CollectionForScope(cls, scope):

@@ -78,6 +78,15 @@ class CommandError(core_exceptions.Error):
         exit_code=return_code)
 
 
+class InvalidConfigurationError(core_exceptions.Error):
+  """When arguments provided have misconfigured sources/destinations."""
+
+  def __init__(self, msg, sources, destination):
+    super(InvalidConfigurationError, self).__init__(
+        msg + '  Got sources: {}, destination: {}'
+        .format(sources, destination))
+
+
 class Suite(enum.Enum):
   """Represents an SSH implementation suite."""
   OPENSSH = 'OpenSSH'
@@ -1115,9 +1124,9 @@ class SCPCommand(object):
   This class is intended to manage the most important suite- and platform
   specifics. We manage the following data:
   - The executable to call, either `scp` or `pscp`.
-  - User and host, through either `sources` or `destination` arg. For
-    cross-suite compatibility, multiple remote sources are not allowed.
-    However, multiple local sources are always allowed.
+  - User and host, through either `sources` or `destination` arg. Multiple
+    remote sources are allowed but not supported under PuTTY. Multiple local
+    sources are always allowed.
   - Potential remote command to execute, `remote_command` arg.
 
   In addition, it manages these flags:
@@ -1136,9 +1145,9 @@ class SCPCommand(object):
     """Construct a suite independent SCP command.
 
     Args:
-      sources: [FileReference] or FileReference, the source(s) for this copy. If
-        local, at least one source is required. If remote source, exactly one
-        source must be provided.
+      sources: [FileReference] or FileReference, the source(s) for this copy. At
+        least one source is required. NOTE: Multiple remote sources are not
+        supported in PuTTY and is discouraged for consistency.
       destination: FileReference, the destination file or directory. If remote
         source, this must be local, and vice versa.
       recursive: bool, recursive directory copy.
@@ -1156,6 +1165,45 @@ class SCPCommand(object):
     self.options = options or {}
     self.extra_flags = extra_flags or []
 
+  def Verify(self, env=None):
+    """Verify that the source- and destination config is sound.
+
+    Checks that sources are remote if destination is local and vice versa,
+    plus raises error for multiple remote sources in PuTTY, which is not
+    supported by `pscp`.
+
+    Args:
+      env: Environment, to construct the command for (or current if None).
+
+    Raises:
+      MissingCommandError: If SCP command(s) required were not found.
+      InvalidConfigurationError: The source/destination configuration is
+        invalid.
+    """
+    env = env or Environment.Current()
+    if not env.scp:
+      raise MissingCommandError('The current environment lacks an SCP (secure '
+                                'copy) client.')
+
+    if not self.sources:
+      raise InvalidConfigurationError('No sources provided.', self.sources,
+                                      self.destination)
+
+    if self.destination.remote:  # local -> remote
+      if any([src.remote for src in self.sources]):
+        raise InvalidConfigurationError(
+            'All sources must be local files when destination is remote.',
+            self.sources, self.destination)
+    else:  # remote -> local
+      if env.suite is Suite.PUTTY and len(self.sources) != 1:
+        raise InvalidConfigurationError(
+            'Multiple remote sources not supported by PuTTY.',
+            self.sources, self.destination)
+      if not all([src.remote for src in self.sources]):
+        raise InvalidConfigurationError(
+            'Source(s) must be remote when destination is local.',
+            self.sources, self.destination)
+
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
 
@@ -1163,14 +1211,15 @@ class SCPCommand(object):
       env: Environment, to construct the command for (or current if None).
 
     Raises:
+      InvalidConfigurationError: The source/destination configuration is
+        invalid.
       MissingCommandError: If SCP command(s) required were not found.
 
     Returns:
       [str], the command args (where the first arg is the command itself).
     """
     env = env or Environment.Current()
-    if not env.scp:
-      raise MissingCommandError('The current environment lacks SCP.')
+    self.Verify(env)
 
     args = [env.scp]
 
@@ -1209,6 +1258,8 @@ class SCPCommand(object):
         purposes only.
 
     Raises:
+      InvalidConfigurationError: The source/destination configuration is
+        invalid.
       MissingCommandError: If SCP command(s) not found.
       CommandError: SCP command failed to copy the file(s).
     """

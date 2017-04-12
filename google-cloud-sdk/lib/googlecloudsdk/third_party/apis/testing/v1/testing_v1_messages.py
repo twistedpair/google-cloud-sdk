@@ -228,6 +228,33 @@ class AndroidRuntimeConfiguration(_messages.Message):
   orientations = _messages.MessageField('Orientation', 2, repeated=True)
 
 
+class AndroidTestLoop(_messages.Message):
+  """A test of an Android Application with a Test Loop. The intent <intent-
+  name> will be implicitly added, since Games is the only user of this api,
+  for the time being.
+
+  Fields:
+    appApk: The APK for the application under test. Required
+    appPackageId: The java package for the application under test. Optional,
+      default is determined by examining the application's manifest.
+    scenarioLabels: The list of scenario labels that should be run during the
+      test. The scenario labels should map to labels defined in the
+      application's manifest. For example, player_experience and
+      com.google.test.loops.player_experience add all of the loops labeled in
+      the manifest with the com.google.test.loops.player_experience name to
+      the execution. Optional. Scenarios can also be specified in the
+      scenarios field.
+    scenarios: The list of scenarios that should be run during the test.
+      Optional, default is all test loops, derived from the application's
+      manifest.
+  """
+
+  appApk = _messages.MessageField('FileReference', 1)
+  appPackageId = _messages.StringField(2)
+  scenarioLabels = _messages.StringField(3, repeated=True)
+  scenarios = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+
+
 class AndroidVersion(_messages.Message):
   """A version of the Android OS
 
@@ -747,6 +774,9 @@ class TestMatrix(_messages.Message):
         robo_directives.
       TEST_LOOP_INTENT_FILTER_NOT_FOUND: There there is no test loop intent
         filter, or the one that is given is not formatted correctly.
+      INVALID_TEST_LOOP_LABELS: The specified scenario labels were not found.
+      MALFORMED_TEST_LOOP_LABELS: There was a parsing error with the scenario
+        labels.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -760,6 +790,8 @@ class TestMatrix(_messages.Message):
     FORBIDDEN_PERMISSIONS = 9
     INVALID_ROBO_DIRECTIVES = 10
     TEST_LOOP_INTENT_FILTER_NOT_FOUND = 11
+    INVALID_TEST_LOOP_LABELS = 12
+    MALFORMED_TEST_LOOP_LABELS = 13
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -844,6 +876,7 @@ class TestSpecification(_messages.Message):
   Fields:
     androidInstrumentationTest: An Android instrumentation test.
     androidRoboTest: An Android robo test.
+    androidTestLoop: An Android Application with a Test Loop
     autoGoogleLogin: Enables automatic Google account login. If set, the
       service will automatically generate a Google test account and add it to
       the device, before executing the test. Note that test accounts might be
@@ -859,9 +892,10 @@ class TestSpecification(_messages.Message):
 
   androidInstrumentationTest = _messages.MessageField('AndroidInstrumentationTest', 1)
   androidRoboTest = _messages.MessageField('AndroidRoboTest', 2)
-  autoGoogleLogin = _messages.BooleanField(3)
-  testSetup = _messages.MessageField('TestSetup', 4)
-  testTimeout = _messages.StringField(5)
+  androidTestLoop = _messages.MessageField('AndroidTestLoop', 3)
+  autoGoogleLogin = _messages.BooleanField(4)
+  testSetup = _messages.MessageField('TestSetup', 5)
+  testTimeout = _messages.StringField(6)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

@@ -13,6 +13,16 @@ from apitools.base.py import extra_types
 package = 'cloudresourcemanager'
 
 
+class Ancestor(_messages.Message):
+  """Identifying information for a single ancestor of a project.
+
+  Fields:
+    resourceId: Resource id of the ancestor.
+  """
+
+  resourceId = _messages.MessageField('ResourceId', 1)
+
+
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -20,17 +30,18 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted. Example Policy with
-  multiple AuditConfigs: {   "audit_configs": [     {       "service":
-  "allServices"       "audit_log_configs": [         {           "log_type":
-  "DATA_READ",           "exempted_members": [
-  "user:foo@gmail.com"           ]         },         {           "log_type":
-  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
-  }       ]     },     {       "service": "fooservice@googleapis.com"
-  "audit_log_configs": [         {           "log_type": "DATA_READ",
-  },         {           "log_type": "DATA_WRITE",
-  "exempted_members": [             "user:bar@gmail.com"           ]         }
-  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  exempted_members in each AuditConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice@googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
   ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
   and bar@gmail.com from DATA_WRITE logging.
 
@@ -368,6 +379,19 @@ class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
 
 
+class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
+  """A CloudresourcemanagerProjectsGetAncestryRequest object.
+
+  Fields:
+    getAncestryRequest: A GetAncestryRequest resource to be passed as the
+      request body.
+    projectId: The Project ID (for example, `my-project-123`).  Required.
+  """
+
+  getAncestryRequest = _messages.MessageField('GetAncestryRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
 class CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest(_messages.Message):
   """A CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest object.
 
@@ -598,6 +622,24 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GetAncestryRequest(_messages.Message):
+  """The request sent to the
+GetAncestry
+method."""
+
+
+class GetAncestryResponse(_messages.Message):
+  """Response from the GetAncestry method.
+
+  Fields:
+    ancestor: Ancestors are ordered from bottom to top of the resource
+      hierarchy. The first ancestor is the project itself, followed by the
+      project's parent, etc.
+  """
+
+  ancestor = _messages.MessageField('Ancestor', 1, repeated=True)
 
 
 class GetEffectiveOrgPolicyRequest(_messages.Message):

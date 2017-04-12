@@ -205,6 +205,8 @@ class _ResourceParser(object):
       GRIPathMismatchException: If the number of path segments in the GRI does
           not match the expected format of the URL for the given resource
           collection.
+      ValueError: if parameter set in kwargs is not subset of the resource
+          parameters.
     """
     if resource_id is not None:
       try:
@@ -214,6 +216,12 @@ class _ResourceParser(object):
         pass
 
     params = self.collection_info.GetParams(subcollection)
+
+    # Sanity check that Parse was called with right backup parameters.
+    if not set(kwargs.keys()).issubset(params):
+      raise ValueError(
+          'Provided params {} is not subset of the resource parameters {}'
+          .format(sorted(kwargs.keys()), sorted(params)))
 
     if properties.VALUES.core.enable_gri.GetBool():
       # Also ensures that the collection specified in the GRI matches ours.

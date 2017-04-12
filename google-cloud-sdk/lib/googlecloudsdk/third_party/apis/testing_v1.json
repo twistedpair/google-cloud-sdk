@@ -465,7 +465,9 @@
             "A main launcher activity could not be found.",
             "The app declares one or more permissions that are not allowed.",
             "There is a conflict in the provided robo_directives.",
-            "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly."
+            "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
+            "The specified scenario labels were not found.",
+            "There was a parsing error with the scenario labels."
           ],
           "type": "string",
           "enum": [
@@ -480,7 +482,9 @@
             "NO_LAUNCHER_ACTIVITY",
             "FORBIDDEN_PERMISSIONS",
             "INVALID_ROBO_DIRECTIVES",
-            "TEST_LOOP_INTENT_FILTER_NOT_FOUND"
+            "TEST_LOOP_INTENT_FILTER_NOT_FOUND",
+            "INVALID_TEST_LOOP_LABELS",
+            "MALFORMED_TEST_LOOP_LABELS"
           ]
         }
       }
@@ -517,6 +521,10 @@
         "androidRoboTest": {
           "description": "An Android robo test.",
           "$ref": "AndroidRoboTest"
+        },
+        "androidTestLoop": {
+          "description": "An Android Application with a Test Loop",
+          "$ref": "AndroidTestLoop"
         },
         "autoGoogleLogin": {
           "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and\nadd it to the device, before executing the test. Note that test accounts\nmight be reused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated\naccounts allows testing more functionalities.\nDefault is false.\nOptional",
@@ -708,6 +716,36 @@
         "inputText": {
           "description": "The text that Robo is directed to set. If left empty, the directive will be\ntreated as a CLICK on the element matching the resource_name.",
           "type": "string"
+        }
+      }
+    },
+    "AndroidTestLoop": {
+      "id": "AndroidTestLoop",
+      "description": "A test of an Android Application with a Test Loop.\nThe intent <intent-name> will be implicitly added, since Games is the only\nuser of this api, for the time being.",
+      "type": "object",
+      "properties": {
+        "appApk": {
+          "description": "The APK for the application under test.\nRequired",
+          "$ref": "FileReference"
+        },
+        "appPackageId": {
+          "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "scenarios": {
+          "description": "The list of scenarios that should be run during the test.\nOptional, default is all test loops, derived from the application's\nmanifest.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "scenarioLabels": {
+          "description": "The list of scenario labels that should be run during the test.\nThe scenario labels should map to labels defined in the application's\nmanifest. For example, player_experience and\ncom.google.test.loops.player_experience add all of the loops labeled in the\nmanifest with the com.google.test.loops.player_experience name to the\nexecution.\nOptional. Scenarios can also be specified in the scenarios field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

@@ -22,6 +22,13 @@ from googlecloudsdk.core import resources
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
 PROJECTS_API_VERSION = 'v1'
 _CLOUD_CONSOLE_LAUNCH_DATE = datetime.datetime(2012, 10, 11)
+LIST_FORMAT = """
+    table(
+      projectId:sort=1,
+      name,
+      projectNumber
+    )
+"""
 
 
 def ParseProject(project_id):

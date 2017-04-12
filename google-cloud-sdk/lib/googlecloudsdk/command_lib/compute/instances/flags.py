@@ -23,6 +23,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 import ipaddr
 
 MIGRATION_OPTIONS = {
@@ -166,6 +167,39 @@ def AddLocalSsdArgs(parser):
       for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
       the default and is supported by more guest operating systems.  NVME
       may provide higher performance.
+      """)
+
+
+def AddLocalSsdArgsWithSize(parser):
+  """Adds local SSD argument for instances and instance-templates."""
+
+  parser.add_argument(
+      '--local-ssd',
+      type=arg_parsers.ArgDict(spec={
+          'device-name': str,
+          'interface': (lambda x: x.upper()),
+          'size': arg_parsers.BinarySize(lower_bound='375GB'),
+      }),
+      action='append',
+      help="""\
+      Attaches a local SSD to the instances.
+
+      This flag is currently in BETA and may change without notice.
+
+      *device-name*::: Optional. A name that indicates the disk name
+      the guest operating system will see.  If omitted, a device name
+      of the form ``local-ssd-N'' will be used.
+
+      *interface*::: Optional. The kind of disk interface exposed to the VM
+      for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
+      the default and is supported by more guest operating systems.  NVME
+      may provide higher performance.
+
+      *size*::: Optional. Size of the SSD disk. The value must be a whole number
+      followed by a size unit of ``KB'' for kilobyte, ``MB'' for megabyte,
+      ``GB'' for gigabyte, or ``TB'' for terabyte. For example, ``750GB'' will
+      produce a 750 gigabyte disk. The size must be a multiple of 375 GB and
+      the default is 375 GB. For Alpha API only.
       """)
 
 
@@ -422,7 +456,10 @@ def ExpandAddressFlag(resources, compute_client, address, region):
   address_ref = resources.Parse(
       address,
       collection='compute.addresses',
-      params={'region': region})
+      params={
+          'project': properties.VALUES.core.project.GetOrFail,
+          'region': region
+      })
   res = _GetAddress(compute_client, address_ref)
   return res.address
 
@@ -1195,6 +1232,12 @@ def ValidateLocalSsdFlags(args):
           'Legal values are [{ok}].'
           .format(given=interface,
                   ok=', '.join(LOCAL_SSD_INTERFACES)))
+    size = local_ssd.get('size')
+    if size is not None and size % (375 * constants.BYTES_IN_ONE_GB) != 0:
+      raise exceptions.InvalidArgumentException(
+          '--local-ssd:size', 'Unexpected local SSD size: [{given}]. '
+          'Legal values are positive multiples of 375GB.'
+          .format(given=size))
 
 
 def ValidateNicFlags(args):

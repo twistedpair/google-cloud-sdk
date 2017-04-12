@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
+from googlecloudsdk.core import properties
 
 EPHEMERAL_ADDRESS = object()
 
@@ -54,11 +55,16 @@ def CreateNetworkInterfaceMessage(
         scope_lister=scope_lister)[0]
     network_interface.subnetwork = subnet_ref.SelfLink()
   if network is not None:
-    network_ref = resources.Parse(network, collection='compute.networks')
+    network_ref = resources.Parse(
+        network,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
   elif subnet is None:
     network_ref = resources.Parse(
-        constants.DEFAULT_NETWORK, collection='compute.networks')
+        constants.DEFAULT_NETWORK,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
 
   if address:

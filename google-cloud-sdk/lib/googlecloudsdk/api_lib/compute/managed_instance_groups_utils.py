@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 
 
 _ALLOWED_UTILIZATION_TARGET_TYPES = [
@@ -372,10 +373,16 @@ def AddAutoscalersToMigs(migs_iterator, resources, compute, http,
                          batch_url, fail_when_api_not_supported=True):
   """Add Autoscaler to each IGM object if autoscaling is enabled for it."""
   def ParseZone(zone_link):
-    return resources.Parse(zone_link, collection='compute.zones')
+    return resources.Parse(
+        zone_link,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.zones')
 
   def ParseRegion(region_link):
-    return resources.Parse(region_link, collection='compute.regions')
+    return resources.Parse(
+        region_link,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.regions')
 
   migs = list(migs_iterator)
   zones = set([ParseZone(mig['zone']) for mig in migs if 'zone' in mig])
@@ -587,11 +594,13 @@ def CreateAutohealingPolicies(resources, messages, args):
       if args.http_health_check:
         health_check_ref = resources.Parse(
             args.http_health_check,
+            params={'project': properties.VALUES.core.project.GetOrFail},
             collection='compute.httpHealthChecks')
         policy.healthCheck = health_check_ref.SelfLink()
       elif args.https_health_check:
         health_check_ref = resources.Parse(
             args.https_health_check,
+            params={'project': properties.VALUES.core.project.GetOrFail},
             collection='compute.httpsHealthChecks')
         policy.healthCheck = health_check_ref.SelfLink()
       if args.initial_delay:

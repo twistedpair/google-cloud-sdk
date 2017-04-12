@@ -25,8 +25,8 @@ def GetMessagesModule():
   return apis.GetMessagesModule('cloudkms', 'v1')
 
 
-def MakeGetUriFunc(command):
-  """Returns a function to use in GetUriFunc.
+def MakeGetUriFunc(collection):
+  """Returns a function which turns a resource into a uri.
 
   Example:
     class List(base.ListCommand):
@@ -34,7 +34,7 @@ def MakeGetUriFunc(command):
         return MakeGetUriFunc(self)
 
   Args:
-    command: A command instance.
+    collection: A command instance.
 
   Returns:
     A function which can be returned in GetUriFunc.
@@ -43,7 +43,7 @@ def MakeGetUriFunc(command):
   def _GetUri(resource):
     registry = resources.REGISTRY.Clone()
     registry.RegisterApiByName('cloudkms', 'v1')
-    parsed = registry.Parse(resource.name, collection=command.Collection())
+    parsed = registry.Parse(resource.name, collection=collection)
     return parsed.SelfLink()
 
   return _GetUri

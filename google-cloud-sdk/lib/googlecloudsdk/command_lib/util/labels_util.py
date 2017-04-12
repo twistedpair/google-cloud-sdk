@@ -97,17 +97,21 @@ def UpdateLabels(labels, labels_value, update_labels=None, remove_labels=None):
     remove_labels: A list of labels keys to remove.
 
   Returns:
-    A new labels request proto representing the update and remove edits.
+    A new labels request proto representing the update and remove edits, None
+    if there are no changes.
   """
+  # Return None if there are no edits.
   if not update_labels and not remove_labels:
-    return labels
+    return None
 
   new_labels = {}
+  existing_labels = {}
 
   # Add pre-existing labels.
   if labels:
     for label in labels.additionalProperties:
       new_labels[label.key] = label.value
+      existing_labels[label.key] = label.value
 
   # Add label updates and/or addtions.
   if update_labels:
@@ -117,6 +121,10 @@ def UpdateLabels(labels, labels_value, update_labels=None, remove_labels=None):
   if remove_labels:
     for key in remove_labels:
       new_labels.pop(key, None)
+
+  # Return None if the edits are a no-op.
+  if new_labels == existing_labels:
+    return None
 
   # Return the labels proto with all edits applied, sorted for reproducability.
   return labels_value(additionalProperties=[

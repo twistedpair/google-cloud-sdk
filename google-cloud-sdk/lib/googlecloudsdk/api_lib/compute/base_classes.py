@@ -502,13 +502,21 @@ class MultiScopeLister(BaseLister):
     """The service used to get aggregated list of resources."""
 
   def GetResources(self, args, errors):
-    """Yields zonal, regional and/or global resources."""
-    has_regions = hasattr(args, 'regions') and args.regions
-    has_zones = hasattr(args, 'zones') and args.zones
-    has_global = hasattr(args, 'global') and getattr(args, 'global')
+    """Yields zonal, regional and/or global resources.
+
+    Args:
+      args: argparse.Namespace, Parsed arguments
+      errors: list, Errors will be returned in this list
+
+    Returns:
+      Zonal, regional and/or global resources.
+    """
+    regions = getattr(args, 'regions', None)
+    zones = getattr(args, 'zones', None)
+    global_arg = getattr(args, 'global', None)
 
     # This is true if the user provided no flags indicating scope
-    no_scope_flags = not has_regions and not has_zones and not has_global
+    no_scope_flags = not regions and not zones and not global_arg
 
     requests = []
     filter_expr = self.GetFilterExpr(args)
@@ -530,10 +538,10 @@ class MultiScopeLister(BaseLister):
                maxResults=max_results,
                project=project)))
     # Else if some regions were provided then only list within them
-    elif has_regions:
+    elif regions is not None:
       region_names = set(
           self.CreateGlobalReference(region, resource_type='regions').Name()
-          for region in args.regions)
+          for region in regions)
       for region_name in sorted(region_names):
         requests.append(
             (self.regional_service,
@@ -544,10 +552,10 @@ class MultiScopeLister(BaseLister):
                  region=region_name,
                  project=project)))
     # Else if some regions were provided then only list within them
-    elif has_zones:
+    elif zones is not None:
       zone_names = set(
           self.CreateGlobalReference(zone, resource_type='zones').Name()
-          for zone in args.zones)
+          for zone in zones)
       for zone_name in sorted(zone_names):
         requests.append(
             (self.zonal_service,
@@ -830,12 +838,18 @@ class MultiScopeDescriber(BaseDescriber):
     return self._service
 
   def CreateReference(self, args, default=None):
-    has_region = hasattr(args, 'region') and args.region
-    has_zone = hasattr(args, 'zone') and args.zone
-    has_global = hasattr(args, 'global') and getattr(args, 'global')
+    # Check if scope was provided
+    has_region = bool(getattr(args, 'region', None))
+    has_zone = bool(getattr(args, 'zone', None))
+    has_global = bool(getattr(args, 'global', None))
 
-    only_zone_prompt = hasattr(args, 'zone') and not hasattr(args, 'region')
-    only_region_prompt = hasattr(args, 'region') and not hasattr(args, 'zone')
+    null = object()
+
+    # Check if only one kind of scope can be provided
+    only_zone_prompt = ((getattr(args, 'zone', null) is not null) and
+                        (getattr(args, 'region', null) is null))
+    only_region_prompt = ((getattr(args, 'region', null) is not null) and
+                          (getattr(args, 'zone', null) is null))
 
     if not (has_region or has_zone or has_global):
       if default == ScopeType.global_scope:
@@ -1082,8 +1096,10 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
         batch_url=self.batch_url,
         fail_when_api_not_supported=False):
       if 'autoscaler' in mig and mig['autoscaler'] is not None:
-        if (hasattr(mig['autoscaler'], 'status') and mig['autoscaler'].status ==
-            self.messages.Autoscaler.StatusValueValuesEnum.ERROR):
+        # status is present in autoscaler iff Autoscaler message has embedded
+        # StatusValueValuesEnum defined.
+        if (getattr(mig['autoscaler'], 'status', False) and mig['autoscaler']
+            .status == self.messages.Autoscaler.StatusValueValuesEnum.ERROR):
           mig['autoscaled'] = 'yes (*)'
           self._had_errors = True
         else:
@@ -1097,11 +1113,17 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
     errors = []
     items = list(items)
     zone_refs = [
-        self.resources.Parse(mig['zone'], collection='compute.zones')
+        self.resources.Parse(
+            mig['zone'],
+            params={'project': properties.VALUES.core.project.GetOrFail},
+            collection='compute.zones')
         for mig in items if 'zone' in mig
     ]
     region_refs = [
-        self.resources.Parse(mig['region'], collection='compute.regions')
+        self.resources.Parse(
+            mig['region'],
+            params={'project': properties.VALUES.core.project.GetOrFail},
+            collection='compute.regions')
         for mig in items if 'region' in mig
     ]
     group_by_project = managed_instance_groups_utils.GroupByProject

@@ -439,6 +439,32 @@ This will be an no-op if the last upgrade successfully completed.
       self._upload_configs = {
           }
 
+    def CompleteIpRotation(self, request, global_params=None):
+      """Completes master IP rotation.
+
+      Args:
+        request: (ContainerProjectsZonesClustersCompleteIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.completeIpRotation',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation',
+        request_field=u'completeIPRotationRequest',
+        request_type_name=u'ContainerProjectsZonesClustersCompleteIpRotationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a cluster, consisting of the specified number and type of Google.
 Compute Engine instances.
@@ -640,6 +666,32 @@ This can be either via password generation or explicitly set the password.
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
         request_field=u'setMasterAuthRequest',
         request_type_name=u'ContainerProjectsZonesClustersSetMasterAuthRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def StartIpRotation(self, request, global_params=None):
+      """Start master IP rotation.
+
+      Args:
+        request: (ContainerProjectsZonesClustersStartIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.startIpRotation',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation',
+        request_field=u'startIPRotationRequest',
+        request_type_name=u'ContainerProjectsZonesClustersStartIpRotationRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

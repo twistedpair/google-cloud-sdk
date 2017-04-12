@@ -638,14 +638,23 @@ class RemoteCompletion(object):
 
 def _GetResourceLink(parms, collection_name):
   """Resolves specified resource and returns its self link."""
-  parms['project'] = properties.VALUES.core.project.Get(required=True)
-
   collection_info = resources.REGISTRY.GetCollectionInfo(collection_name)
+  new_params = {}
+  # Project is known by many different names in the cloud APIs, see which one
+  # this API is using and set it.
+  for project_id in ('project', 'projectsId', 'projectId'):
+    if project_id in collection_info.params:
+      new_params[project_id] = properties.VALUES.core.project.GetOrFail
+      break
+
   for param in collection_info.params:
-    if param not in parms:
-      param_default = resources.REGISTRY.GetParamDefault(
-          collection_info.api_name, collection_info.name, param)
-      if param_default is None:
-        parms[param] = u'*'
-  return resources.REGISTRY.Parse('+', parms, collection_name).SelfLink()
+    if param not in new_params:
+      if param in parms:
+        new_params[param] = parms[param]
+      else:
+        param_default = resources.REGISTRY.GetParamDefault(
+            collection_info.api_name, collection_info.name, param)
+        if param_default is None:
+          new_params[param] = u'*'
+  return resources.REGISTRY.Parse('+', new_params, collection_name).SelfLink()
 

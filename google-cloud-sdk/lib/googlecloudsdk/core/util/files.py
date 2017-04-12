@@ -68,6 +68,7 @@ def CopyTree(src, dst):
   os.makedirs(dst)
   errors = []
   for name in os.listdir(src):
+    name = encoding.Decode(name)
     srcname = os.path.join(src, name)
     dstname = os.path.join(dst, name)
     try:
@@ -312,7 +313,7 @@ def FindDirectoryContaining(starting_dir_path, directory_entry_name):
     it.
   """
   prev_path = None
-  path = os.path.realpath(starting_dir_path)
+  path = encoding.Decode(os.path.realpath(starting_dir_path))
   while path != prev_path:
     search_dir = os.path.join(path, directory_entry_name)
     if os.path.isdir(search_dir):
@@ -340,8 +341,8 @@ def IsDirAncestorOf(ancestor_directory, path):
   if not os.path.isdir(ancestor_directory):
     raise ValueError(u'[{0}] is not a directory.'.format(ancestor_directory))
 
-  path = os.path.realpath(path)
-  ancestor_directory = os.path.realpath(ancestor_directory)
+  path = encoding.Decode(os.path.realpath(path))
+  ancestor_directory = encoding.Decode(os.path.realpath(ancestor_directory))
 
   # This works on *nix, because os.path.splitdrive always returns '' as the
   # first component
@@ -708,7 +709,8 @@ def OpenForWritingPrivate(path, binary=False):
   """
 
   parent_dir_path, _ = os.path.split(path)
-  full_parent_dir_path = os.path.realpath(os.path.expanduser(parent_dir_path))
+  full_parent_dir_path = encoding.Decode(
+      os.path.realpath(os.path.expanduser(parent_dir_path)))
   MakeDir(full_parent_dir_path, mode=0700)
 
   flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC

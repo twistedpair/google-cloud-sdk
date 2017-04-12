@@ -12,8 +12,9 @@ begin
   end
   # No "cd -P" in fish. It always resolves symlinks to their canonical location,
   # though, when you "cd" in.
-  # Also, cd is *only* a shell function in fish, so "command cd" won't work.
-  set sdk_dir (builtin cd "$apparent_sdk_dir" > /dev/null; and pwd -P)
+  # Also, cd is  cd is *both* a shell builtin and shell wrapper function (to
+  # implement "cd -") in fish, so "command cd" won't work. "builtin cd" will.
+  set sdk_dir (builtin cd "$apparent_sdk_dir" > /dev/null; and pwd)
   set bin_path "$sdk_dir/bin"
   # -gx for global (not limited to this begin/end block) and exportable (part of
   # the environment for child processes)

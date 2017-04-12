@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ def AddInstanceIamPolicyBinding(instance_ref, member, role):
 def SetInstanceIamPolicy(instance_ref, policy):
   """Sets the IAM policy on an instance."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  policy = iam_util.ParseJsonPolicyFile(policy, msgs.Policy)
+  policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
   return instances.SetPolicy(instance_ref, policy)
 
 
@@ -52,7 +52,7 @@ def AddDatabaseIamPolicyBinding(database_ref, member, role):
 def SetDatabaseIamPolicy(database_ref, policy):
   """Sets the IAM policy on a database."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  policy = iam_util.ParseJsonPolicyFile(policy, msgs.Policy)
+  policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
   return databases.SetPolicy(database_ref, policy)
 
 

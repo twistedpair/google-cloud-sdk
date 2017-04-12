@@ -18,7 +18,6 @@ from googlecloudsdk.core import resources
 
 
 FOLDERS_API_VERSION = 'v2alpha1'
-FOLDERS_COLLECTION = 'cloudresourcemanager.folders'
 
 
 def FoldersClient():
@@ -66,3 +65,12 @@ def SetIamPolicy(folder_id, policy):
       foldersId=folder_id,
       setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
   return FoldersService().SetIamPolicy(request)
+
+
+def GetUri(resource):
+  """Returns the uri for resource."""
+  folder_id = FolderNameToId(resource.name)
+  folder_ref = FoldersRegistry().Parse(
+      None, params={'foldersId': folder_id},
+      collection='cloudresourcemanager.folders')
+  return folder_ref.SelfLink()

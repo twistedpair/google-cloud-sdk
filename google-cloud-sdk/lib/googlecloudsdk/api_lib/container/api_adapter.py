@@ -25,7 +25,6 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.console import progress_tracker
 
@@ -80,16 +79,6 @@ def NewAPIAdapter():
 
   adapter = V1Adapter
 
-  registry.SetParamDefault(
-      api='compute', collection=None, param='project',
-      resolver=resolvers.FromProperty(properties.VALUES.core.project))
-  registry.SetParamDefault(
-      api='container', collection=None, param='projectId',
-      resolver=resolvers.FromProperty(properties.VALUES.core.project))
-  registry.SetParamDefault(
-      api='container', collection=None, param='zone',
-      resolver=resolvers.FromProperty(properties.VALUES.compute.zone))
-
   return adapter(registry, api_client, messages, api_compute_client,
                  compute_messages)
 
@@ -138,11 +127,13 @@ class APIAdapter(object):
     self.compute_messages = compute_messages
 
   def ParseCluster(self, name):
-    # TODO(b/33342507): Remove setting these values as required.
-    properties.VALUES.compute.zone.Get(required=True)
-    properties.VALUES.core.project.Get(required=True)
     return self.registry.Parse(
-        name, collection='container.projects.zones.clusters')
+        name,
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
+        collection='container.projects.zones.clusters')
 
   def Zone(self, cluster_ref):
     raise NotImplementedError('Zone is not overriden')
@@ -160,20 +151,22 @@ class APIAdapter(object):
     raise NotImplementedError('PrintNodePools is not overriden')
 
   def ParseOperation(self, operation_id):
-    # TODO(b/33342507): Remove setting these values as required.
-    properties.VALUES.compute.zone.Get(required=True)
-    properties.VALUES.core.project.Get(required=True)
     return self.registry.Parse(
-        operation_id, collection='container.projects.zones.operations')
+        operation_id,
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
+        collection='container.projects.zones.operations')
 
   def ParseNodePool(self, node_pool_id):
-    properties.VALUES.compute.zone.Get(required=True)
-    properties.VALUES.core.project.Get(required=True)
-    properties.VALUES.container.cluster.Get(required=True)
-    cluster_id = properties.VALUES.container.cluster.Get(required=True)
     return self.registry.Parse(
         node_pool_id,
-        params={'clusterId': cluster_id},
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'clusterId': properties.VALUES.container.cluster.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
         collection='container.projects.zones.clusters.nodePools')
 
   def ParseIGM(self, igm_id):
@@ -443,7 +436,7 @@ class CreateClusterOptions(object):
                service_account=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
-               enable_legacy_abac=None):
+               enable_legacy_authorization=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -475,7 +468,7 @@ class CreateClusterOptions(object):
     self.service_account = service_account
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
-    self.enable_legacy_abac = enable_legacy_abac
+    self.enable_legacy_authorization = enable_legacy_authorization
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -677,9 +670,9 @@ class V1Adapter(APIAdapter):
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
 
-    if options.enable_legacy_abac is not None:
+    if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
-          enabled=bool(options.enable_legacy_abac))
+          enabled=bool(options.enable_legacy_authorization))
 
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 
@@ -746,14 +739,14 @@ class V1Adapter(APIAdapter):
                 update=update)))
     return self.ParseOperation(op.name)
 
-  def SetLegacyAbac(self, cluster_ref, enable_legacy_abac):
+  def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
     op = self.client.projects_zones_clusters.LegacyAbac(
         self.messages.ContainerProjectsZonesClustersLegacyAbacRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId,
             setLegacyAbacRequest=self.messages.SetLegacyAbacRequest(
-                enabled=bool(enable_legacy_abac))))
+                enabled=bool(enable_legacy_authorization))))
     return self.ParseOperation(op.name)
 
   def _AddonsConfig(self, disable_ingress=None, disable_hpa=None):

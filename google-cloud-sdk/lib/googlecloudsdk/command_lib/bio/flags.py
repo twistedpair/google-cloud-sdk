@@ -16,7 +16,6 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.bio import util
 
 
 # Operation flags
@@ -24,7 +23,7 @@ def GetOperationNameFlag(verb):
   return base.Argument(
       'name',
       metavar='OPERATION_NAME',
-      completion_resource=util.OPERATIONS_COLLECTION,
+      list_command_path='alpha bio operations list --uri',
       help='Name for the operation you want to {0}.'.format(verb))
 
 

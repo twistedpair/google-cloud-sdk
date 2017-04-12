@@ -52,12 +52,6 @@ class Collections(enum.Enum):
       {},
       [u'project', u'backendService']
   )
-  COMMITMENTS = (
-      'commitments',
-      'projects/{project}/zones/{zone}/commitments/{commitment}',
-      {},
-      [u'project', u'zone', u'commitment']
-  )
   DISKTYPES = (
       'diskTypes',
       'projects/{project}/zones/{zone}/diskTypes/{diskType}',
@@ -160,6 +154,25 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/instances/{instance}',
       {},
       [u'project', u'zone', u'instance']
+  )
+  INTERCONNECTATTACHMENTS = (
+      'interconnectAttachments',
+      'projects/{project}/regions/{region}/interconnectAttachments/'
+      '{interconnectAttachment}',
+      {},
+      [u'project', u'region', u'interconnectAttachment']
+  )
+  INTERCONNECTLOCATIONS = (
+      'interconnectLocations',
+      'projects/{project}/global/interconnectLocations/{interconnectLocation}',
+      {},
+      [u'project', u'interconnectLocation']
+  )
+  INTERCONNECTS = (
+      'interconnects',
+      'projects/{project}/global/interconnects/{interconnect}',
+      {},
+      [u'project', u'interconnect']
   )
   LICENSES = (
       'licenses',

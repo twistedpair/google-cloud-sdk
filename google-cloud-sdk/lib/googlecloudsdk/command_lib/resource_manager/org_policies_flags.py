@@ -15,7 +15,6 @@
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.resource_manager import flags
 
 
 def AddIdArgToParser(parser):
@@ -30,7 +29,6 @@ def AddResourceFlagsToParser(parser):
   base.Argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      completion_resource=flags.ORGS_COLLECTION,
       list_command_path='organizations list --uri',
       help='Organization ID for Org Policies.').AddToParser(parser)
 

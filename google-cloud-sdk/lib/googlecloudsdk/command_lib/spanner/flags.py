@@ -20,7 +20,7 @@ from googlecloudsdk.calliope import base
 
 def Database(positional=True,
              required=True,
-             text='Cloud Spanner database name.'):
+             text='Cloud Spanner database ID.'):
   resource = 'spanner.projects.instances.databases'
   if positional:
     return base.Argument(

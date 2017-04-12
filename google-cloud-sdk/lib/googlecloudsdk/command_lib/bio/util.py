@@ -14,10 +14,10 @@
 
 """Common utility functions for all bio commands."""
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-OPERATIONS_COLLECTION = 'bio.projects.operations'
 BIO_API_VERSION = 'v1'
 
 
@@ -34,10 +34,20 @@ def ParseOperation(name):
   Returns:
     Resource: resource object of the operation
   """
-  return resources.REGISTRY.Parse(name, collection=OPERATIONS_COLLECTION)
+  return resources.REGISTRY.Parse(
+      name,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='bio.projects.operations')
 
 
-def OperationsUriFunc(resource):
+def _GetUri(resource, undefined=None):
   """Transforms an operations resource item to a URI."""
   ref = ParseOperation(resource.name)
-  return ref.SelfLink()
+  return ref.SelfLink() or undefined
+
+
+def GetTransforms():
+  """Returns the bio display transforms table."""
+  return {
+      'uri': _GetUri,
+  }

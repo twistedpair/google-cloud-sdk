@@ -19,6 +19,7 @@ _GCS_BUCKET_DETAILED_HELP = """\
 The name of the Google Cloud Storage bucket to serve from. The storage
         bucket must be owned by the project's owner."""
 BACKEND_BUCKET_ARG = compute_flags.ResourceArgument(
+    name='backend_bucket_name',
     resource_name='backend bucket',
     completion_resource_id='compute.backendBuckets',
     global_collection='compute.backendBuckets')

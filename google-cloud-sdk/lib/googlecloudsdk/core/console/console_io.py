@@ -499,6 +499,8 @@ def LazyFormat(s, **kwargs):
     if value is None:
       # {unknown} => {unknown}
       return match.group(0)
+    if callable(value):
+      value = value()
     # The substituted value is expanded too.
     return prefix + LazyFormat(value, **kwargs) + suffix
 

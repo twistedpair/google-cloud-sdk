@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.command_lib.deployment_manager import dm_beta_base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 import yaml
 
@@ -149,7 +150,7 @@ def AddOptions(options_file, type_provider):
   yaml_content = None
   try:
     yaml_content = yaml.safe_load(file_contents)
-  except yaml.YAMLError, exc:
+  except yaml.YAMLError as exc:
     raise exceptions.ConfigError(
         'Could not load yaml file {0}: {1}'.format(options_file, exc))
 
@@ -178,4 +179,6 @@ def AddOptions(options_file, type_provider):
 
 def GetReference(name):
   return dm_beta_base.GetResources().Parse(
-      name, collection='deploymentmanager.typeProviders')
+      name,
+      params={'project': properties.VALUES.core.project.GetOrFail},
+      collection='deploymentmanager.typeProviders')

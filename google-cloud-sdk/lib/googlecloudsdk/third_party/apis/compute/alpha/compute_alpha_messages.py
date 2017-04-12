@@ -283,9 +283,11 @@ class AccessConfig(_messages.Message):
     Values:
       PREMIUM: <no description>
       SELECT: <no description>
+      STANDARD: <no description>
     """
     PREMIUM = 0
     SELECT = 1
+    STANDARD = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -410,9 +412,11 @@ class Address(_messages.Message):
     Values:
       PREMIUM: <no description>
       SELECT: <no description>
+      STANDARD: <no description>
     """
     PREMIUM = 0
     SELECT = 1
+    STANDARD = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
@@ -868,13 +872,13 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted. Example Policy with
-  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices"
+  exempted_members in each AuditConfig are exempted.  Example Policy with
+  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
-  "ADMIN_READ", } ] }, { "service": "fooservice@googleapis.com"
+  "ADMIN_READ", } ] }, { "service": "fooservice.googleapis.com"
   "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
-  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] } For
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
   bar@gmail.com from DATA_WRITE logging.
@@ -2043,7 +2047,6 @@ class Commitment(_messages.Message):
       following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
-    zone: [Output Only] URL of the zone where this commitment may be used.
   """
 
   class PlanValueValuesEnum(_messages.Enum):
@@ -2089,7 +2092,6 @@ class Commitment(_messages.Message):
   startTimestamp = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   statusMessage = _messages.StringField(13)
-  zone = _messages.StringField(14)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -3265,156 +3267,6 @@ class ComputeClientSslPoliciesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
-class ComputeCommitmentsAggregatedListRequest(_messages.Message):
-  """A ComputeCommitmentsAggregatedListRequest object.
-
-  Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  You can filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  To filter on multiple expressions, provide each
-      separate expression within parentheses. For example,
-      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
-      expressions are treated as AND expressions, meaning that resources must
-      match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests. Acceptable values are 0 to
-      500, inclusive. (Default: 500)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-
-
-class ComputeCommitmentsGetRequest(_messages.Message):
-  """A ComputeCommitmentsGetRequest object.
-
-  Fields:
-    commitment: Name of the commitment to return.
-    project: Project ID for this request.
-    zone: Name of the zone for this request.
-  """
-
-  commitment = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeCommitmentsInsertRequest(_messages.Message):
-  """A ComputeCommitmentsInsertRequest object.
-
-  Fields:
-    commitment: A Commitment resource to be passed as the request body.
-    project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
-    zone: Name of the zone for this request.
-  """
-
-  commitment = _messages.MessageField('Commitment', 1)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeCommitmentsListRequest(_messages.Message):
-  """A ComputeCommitmentsListRequest object.
-
-  Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  You can filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  To filter on multiple expressions, provide each
-      separate expression within parentheses. For example,
-      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
-      expressions are treated as AND expressions, meaning that resources must
-      match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests. Acceptable values are 0 to
-      500, inclusive. (Default: 500)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    zone: Name of the zone for this request.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
-
-
-class ComputeCommitmentsTestIamPermissionsRequest(_messages.Message):
-  """A ComputeCommitmentsTestIamPermissionsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
-      the request body.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   """A ComputeDiskTypesAggregatedListRequest object.
 
@@ -4083,6 +3935,26 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeForwardingRulesPatchRequest(_messages.Message):
+  """A ComputeForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
   """A ComputeForwardingRulesSetLabelsRequest object.
 
@@ -4354,6 +4226,24 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
+  """A ComputeGlobalForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeGlobalForwardingRulesSetLabelsRequest(_messages.Message):
@@ -6923,6 +6813,390 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsDeleteRequest object.
+
+  Fields:
+    interconnectAttachment: Name of the interconnect attachment to delete.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  interconnectAttachment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeInterconnectAttachmentsGetIamPolicyRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeInterconnectAttachmentsGetRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsGetRequest object.
+
+  Fields:
+    interconnectAttachment: Name of the interconnect attachment to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  interconnectAttachment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeInterconnectAttachmentsInsertRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsInsertRequest object.
+
+  Fields:
+    interconnectAttachment: A InterconnectAttachment resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeInterconnectAttachmentsListRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeInterconnectAttachmentsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeInterconnectLocationsGetRequest(_messages.Message):
+  """A ComputeInterconnectLocationsGetRequest object.
+
+  Fields:
+    interconnectLocation: Name of the interconnect location to return.
+    project: Project ID for this request.
+  """
+
+  interconnectLocation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeInterconnectLocationsListRequest(_messages.Message):
+  """A ComputeInterconnectLocationsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeInterconnectLocationsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInterconnectLocationsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeInterconnectsDeleteRequest(_messages.Message):
+  """A ComputeInterconnectsDeleteRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect to delete.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeInterconnectsGetRequest(_messages.Message):
+  """A ComputeInterconnectsGetRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect to return.
+    project: Project ID for this request.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeInterconnectsInsertRequest(_messages.Message):
+  """A ComputeInterconnectsInsertRequest object.
+
+  Fields:
+    interconnect: A Interconnect resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  interconnect = _messages.MessageField('Interconnect', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeInterconnectsListRequest(_messages.Message):
+  """A ComputeInterconnectsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeInterconnectsPatchRequest(_messages.Message):
+  """A ComputeInterconnectsPatchRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect to update.
+    interconnectResource: A Interconnect resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  interconnectResource = _messages.MessageField('Interconnect', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeInterconnectsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInterconnectsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   """A ComputeLicensesGetRequest object.
 
@@ -6948,6 +7222,56 @@ class ComputeLicensesInsertRequest(_messages.Message):
   license = _messages.MessageField('License', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeLicensesListRequest(_messages.Message):
+  """A ComputeLicensesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeMachineTypesAggregatedListRequest(_messages.Message):
@@ -12477,7 +12801,7 @@ class FixedOrPercent(_messages.Message):
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
-  [IPAddress, IPProtocol, portRange] tuple.
+  [IPAddress, IPProtocol, ports] tuple.
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -12568,9 +12892,8 @@ class ForwardingRule(_messages.Message):
     ports: This field is not used for external load balancing.  When the load
       balancing scheme is INTERNAL, a single port or a comma separated list of
       ports can be configured. Only packets addressed to these ports will be
-      forwarded to the backends configured with this forwarding rule. If the
-      port list is not provided then all ports are allowed to pass through.
-      You may specify a maximum of up to 5 ports.
+      forwarded to the backends configured with this forwarding rule.  You may
+      specify a maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -12595,9 +12918,8 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For example, TargetHttpProxy requires
-      HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.  This field
-      is not used for internal load balancing.
+      appropriate to the target object.  This field is not used for internal
+      load balancing.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -12657,9 +12979,11 @@ class ForwardingRule(_messages.Message):
     Values:
       PREMIUM: <no description>
       SELECT: <no description>
+      STANDARD: <no description>
     """
     PREMIUM = 0
     SELECT = 1
+    STANDARD = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -14274,6 +14598,8 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    startRestricted: [Output Only] Whether a VM has been restricted for start
+      because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
@@ -14355,10 +14681,11 @@ class Instance(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 18)
   selfLink = _messages.StringField(19)
   serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  tags = _messages.MessageField('Tags', 23)
-  zone = _messages.StringField(24)
+  startRestricted = _messages.BooleanField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  tags = _messages.MessageField('Tags', 24)
+  zone = _messages.StringField(25)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -14908,8 +15235,9 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A InstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to abandon from the managed
-      instance group.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -14919,8 +15247,8 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A InstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The list of instances to delete from this managed instance
-      group. Specify one or more instance URLs.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -14947,7 +15275,9 @@ class InstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A InstanceGroupManagersRecreateInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -15797,6 +16127,509 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
   instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
 
 
+class Interconnect(_messages.Message):
+  """Protocol definitions for Mixer API to support Interconnect. Next
+  available tag: 20
+
+  Enums:
+    InterconnectTypeValueValuesEnum:
+    LinkTypeValueValuesEnum:
+    OperationalStatusValueValuesEnum: [Output Only] The current status of
+      whether or not this Interconnect is functional.
+
+  Fields:
+    adminEnabled: Administrative status of the interconnect. When this is set
+      to ?true?, the Interconnect is functional and may carry traffic
+      (assuming there are functional InterconnectAttachments and other
+      requirements are satisfied). When set to ?false?, no packets will be
+      carried over this Interconnect and no BGP routes will be exchanged over
+      it. By default, it is set to ?true?.
+    connectionAuthorization: [Output Only] URL to retrieve the Letter Of
+      Authority and Customer Facility Assignment (LOA-CFA) documentation
+      relating to this Interconnect. This documentation authorizes the
+      facility provider to connect to the specified crossconnect ports.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    googleIpAddress: [Output Only] IP address configured on the Google side of
+      the Interconnect link. This can be used only for ping tests.
+    googleReferenceId: [Output Only] Google reference ID; to be used when
+      raising support tickets with Google or otherwise to debug backend
+      connectivity issues.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    interconnectAttachments: [Output Only] A list of the URLs of all
+      InterconnectAttachments configured to use this Interconnect.
+    interconnectType: A InterconnectTypeValueValuesEnum attribute.
+    kind: [Output Only] Type of the resource. Always compute#interconnect for
+      interconnects.
+    linkType: A LinkTypeValueValuesEnum attribute.
+    location: URL of the InterconnectLocation object that represents where
+      this connection is to be provisioned.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    nocContactEmail: Email address to contact the customer NOC for operations
+      and maintenance notifications regarding this Interconnect. If specified,
+      this will be used for notifications in addition to all other forms
+      described, such as Stackdriver logs alerting and Cloud Notifications.
+    operationalStatus: [Output Only] The current status of whether or not this
+      Interconnect is functional.
+    peerIpAddress: [Output Only] IP address configured on the customer side of
+      the Interconnect link. The customer should configure this IP address
+      during turnup when prompted by Google NOC. This can be used only for
+      ping tests.
+    provisionedLinkCount: [Output Only] Number of links actually provisioned
+      in this interconnect.
+    requestedLinkCount: Target number of physical links in the link bundle, as
+      requested by the customer.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  class InterconnectTypeValueValuesEnum(_messages.Enum):
+    """InterconnectTypeValueValuesEnum enum type.
+
+    Values:
+      IT_PRIVATE: <no description>
+    """
+    IT_PRIVATE = 0
+
+  class LinkTypeValueValuesEnum(_messages.Enum):
+    """LinkTypeValueValuesEnum enum type.
+
+    Values:
+      LINK_TYPE_ETHERNET_10G_LR: <no description>
+    """
+    LINK_TYPE_ETHERNET_10G_LR = 0
+
+  class OperationalStatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The current status of whether or not this Interconnect is
+    functional.
+
+    Values:
+      OS_ACTIVE: <no description>
+      OS_UNPROVISIONED: <no description>
+      OS_UNSPECIFIED: <no description>
+    """
+    OS_ACTIVE = 0
+    OS_UNPROVISIONED = 1
+    OS_UNSPECIFIED = 2
+
+  adminEnabled = _messages.BooleanField(1)
+  connectionAuthorization = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  googleIpAddress = _messages.StringField(5)
+  googleReferenceId = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(8, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#interconnect')
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 11)
+  location = _messages.StringField(12)
+  name = _messages.StringField(13)
+  nocContactEmail = _messages.StringField(14)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 15)
+  peerIpAddress = _messages.StringField(16)
+  provisionedLinkCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(19)
+
+
+class InterconnectAttachment(_messages.Message):
+  """Protocol definitions for Mixer API to support InterconnectAttachment.
+  Next available tag: 14
+
+  Enums:
+    OperationalStatusValueValuesEnum: [Output Only] The current status of
+      whether or not this interconnect attachment is functional.
+
+  Fields:
+    cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
+      configured on Cloud Router Interface for this interconnect attachment.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
+      configured on the customer router subinterface for this interconnect
+      attachment.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    googleReferenceId: [Output Only] Google reference ID, to be used when
+      raising support tickets with Google or otherwise to debug backend
+      connectivity issues.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    interconnect: URL of the underlying Interconnect object that this
+      attachment's traffic will traverse through.
+    kind: [Output Only] Type of the resource. Always
+      compute#interconnectAttachment for interconnect attachments.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    operationalStatus: [Output Only] The current status of whether or not this
+      interconnect attachment is functional.
+    privateInterconnectInfo: [Output Only] Information specific to a Private
+      InterconnectAttachment. Only populated if the interconnect that this is
+      attached is of type IT_PRIVATE.
+    region: [Output Only] URL of the region where the regional interconnect
+      attachment resides.
+    router: URL of the cloud router to be used for dynamic routing. This
+      router must be in the same region as this InterconnectAttachment. The
+      InterconnectAttachment will automatically connect the Interconnect to
+      the network & region within which the Cloud Router is configured.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  class OperationalStatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The current status of whether or not this interconnect
+    attachment is functional.
+
+    Values:
+      OS_ACTIVE: <no description>
+      OS_UNPROVISIONED: <no description>
+    """
+    OS_ACTIVE = 0
+    OS_UNPROVISIONED = 1
+
+  cloudRouterIpAddress = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  customerRouterIpAddress = _messages.StringField(3)
+  description = _messages.StringField(4)
+  googleReferenceId = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(7)
+  kind = _messages.StringField(8, default=u'compute#interconnectAttachment')
+  name = _messages.StringField(9)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 10)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 11)
+  region = _messages.StringField(12)
+  router = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+
+
+class InterconnectAttachmentAggregatedList(_messages.Message):
+  """A InterconnectAttachmentAggregatedList object.
+
+  Messages:
+    ItemsValue: [Output Only] A map of scoped InterconnectAttachment lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A map of scoped InterconnectAttachment lists.
+    kind: [Output Only] Type of resource. Always
+      compute#interconnectAttachmentAggregatedList for aggregated lists of
+      interconnect attachments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """[Output Only] A map of scoped InterconnectAttachment lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of
+        interconnect attachments.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A InterconnectAttachmentsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InterconnectAttachmentsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#interconnectAttachmentAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class InterconnectAttachmentList(_messages.Message):
+  """Response to the list request, and contains a list of interconnect
+  attachments.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of InterconnectAttachment resources.
+    kind: [Output Only] Type of resource. Always
+      compute#interconnectAttachmentList for lists of interconnect
+      attachments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InterconnectAttachment', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#interconnectAttachmentList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class InterconnectAttachmentPrivateInfo(_messages.Message):
+  """Private information for an interconnect attachment when this belongs to
+  an interconnect of type IT_PRIVATE.
+
+  Fields:
+    tag8021q: [Output Only] 802.1q encapsulation tag to be used for traffic
+      between Google and the customer, going to and from this network and
+      region.
+  """
+
+  tag8021q = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+
+
+class InterconnectAttachmentsScopedList(_messages.Message):
+  """A InterconnectAttachmentsScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of addresses
+      when the list is empty.
+
+  Fields:
+    interconnectAttachments: List of interconnect attachments contained in
+      this scope.
+    warning: Informational warning which replaces the list of addresses when
+      the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """Informational warning which replaces the list of addresses when the
+    list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  interconnectAttachments = _messages.MessageField('InterconnectAttachment', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
+class InterconnectList(_messages.Message):
+  """Response to the list request, and contains a list of interconnects.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of Interconnect resources.
+    kind: [Output Only] Type of resource. Always compute#interconnectList for
+      lists of interconnects.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Interconnect', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#interconnectList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class InterconnectLocation(_messages.Message):
+  """Protocol definitions for Mixer API to support InterconnectLocation.
+
+  Fields:
+    address: [Output Only] The postal address of the Point of Presence, each
+      line in the address is separated by a newline character.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] An optional description of the resource.
+    facilityProvider: [Output Only] The name of the provider for this facility
+      (e.g., EQUINIX).
+    facilityProviderFacilityId: [Output Only] A provider-assigned Identifier
+      for this facility (e.g., Ashburn-DC1).
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always
+      compute#interconnectLocation for interconnect locations.
+    name: [Output Only] Name of the resource.
+    peeringdbFacilityId: [Output Only] The peeringdb identifier for this
+      facility (corresponding with a netfac type in peeringdb).
+    regionInfos: [Output Only] A list of InterconnectLocation.RegionInfo
+      objects, that describe parameters pertaining to the relation between
+      this InterconnectLocation and various Google Cloud regions.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  address = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  facilityProvider = _messages.StringField(4)
+  facilityProviderFacilityId = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#interconnectLocation')
+  name = _messages.StringField(8)
+  peeringdbFacilityId = _messages.StringField(9)
+  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+
+
+class InterconnectLocationList(_messages.Message):
+  """Response to the list request, and contains a list of interconnect
+  locations.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of InterconnectLocation resources.
+    kind: [Output Only] Type of resource. Always
+      compute#interconnectLocationList for lists of interconnect locations.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InterconnectLocation', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#interconnectLocationList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class InterconnectLocationRegionInfo(_messages.Message):
+  """Information about any potential InterconnectAttachments between an
+  Interconnect at a specific InterconnectLocation, and a specific Cloud
+  Region.
+
+  Enums:
+    LocationPresenceValueValuesEnum: Identifies the network presence of this
+      location.
+
+  Fields:
+    expectedRttMs: Expected round-trip time in milliseconds, from this
+      InterconnectLocation to a VM in this region.
+    locationPresence: Identifies the network presence of this location.
+    regionKey: Scope key for the region of this location.
+  """
+
+  class LocationPresenceValueValuesEnum(_messages.Enum):
+    """Identifies the network presence of this location.
+
+    Values:
+      LP_GLOBAL: <no description>
+      LP_LOCAL_REGION: <no description>
+    """
+    LP_GLOBAL = 0
+    LP_LOCAL_REGION = 1
+
+  expectedRttMs = _messages.IntegerField(1)
+  locationPresence = _messages.EnumField('LocationPresenceValueValuesEnum', 2)
+  regionKey = _messages.StringField(3)
+
+
 class License(_messages.Message):
   """A license resource.
 
@@ -15845,6 +16678,27 @@ class LicenseResourceRequirements(_messages.Message):
 
   minGuestCpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class LicensesListResponse(_messages.Message):
+  """A LicensesListResponse object.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of License resources.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('License', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+  selfLink = _messages.StringField(4)
 
 
 class LogConfig(_messages.Message):
@@ -17488,7 +18342,9 @@ class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
   """A RegionInstanceGroupManagersRecreateRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -18131,6 +18987,10 @@ class RouterInterface(_messages.Message):
       the RFC3927 link-local IP space. The value must be a CIDR-formatted
       string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
       as it represents the IP address of the interface.
+    linkedInterconnectAttachment: URI of the linked interconnect attachment.
+      It must be in the same region as the router. Each interface can have at
+      most one linked resource and it could either be a VPN Tunnel or an
+      interconnect attachment.
     linkedVpnTunnel: URI of the linked VPN tunnel. It must be in the same
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
@@ -18140,8 +19000,9 @@ class RouterInterface(_messages.Message):
   """
 
   ipRange = _messages.StringField(1)
-  linkedVpnTunnel = _messages.StringField(2)
-  name = _messages.StringField(3)
+  linkedInterconnectAttachment = _messages.StringField(2)
+  linkedVpnTunnel = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class RouterList(_messages.Message):
@@ -18455,7 +19316,9 @@ class Scheduling(_messages.Message):
     automaticRestart: Specifies whether the instance should be automatically
       restarted if it is terminated by Compute Engine (not terminated by a
       user). You can only set the automatic restart option for standard
-      instances. Preemptible instances cannot be automatically restarted.
+      instances. Preemptible instances cannot be automatically restarted.  By
+      default, this is set to true so an instance is automatically restarted
+      if it is terminated by Compute Engine.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more

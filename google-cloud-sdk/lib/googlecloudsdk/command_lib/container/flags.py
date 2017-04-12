@@ -401,14 +401,14 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
       hidden=hidden)
 
 
-def AddEnableLegacyAbacFlag(parser, hidden=False):
-  """Adds a --enable-legacy-abac flag to parser."""
+def AddEnableLegacyAuthorizationFlag(parser, hidden=False):
+  """Adds a --enable-legacy-authorization flag to parser."""
   help_text = """\
 Enables the legacy ABAC authentication for the cluster.
 See https://cloud.google.com/container-engine/docs/legacyabac for more \
 info."""
   parser.add_argument(
-      '--enable-legacy-abac',
+      '--enable-legacy-authorization',
       action='store_true',
       default=None,
       hidden=hidden,

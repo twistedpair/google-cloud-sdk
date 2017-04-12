@@ -27,6 +27,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
@@ -1323,12 +1324,15 @@ def RestartCommand(command=None, args=None, python=None, block=True):
   command_args = args or sys.argv[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)
+  args = [console_attr.EncodeForConsole(a) for a in args]
 
   short_command = os.path.basename(command)
   if short_command == 'gcloud.py':
     short_command = 'gcloud'
+  log_args = ' '.join([
+      console_attr.EncodeForConsole(a) for a in command_args])
   log.status.Print('Restarting command:\n  $ {command} {args}\n'.format(
-      command=short_command, args=' '.join(command_args)))
+      command=short_command, args=log_args))
   log.debug('Restarting command: %s %s', command, args)
   log.out.flush()
   log.err.flush()

@@ -17,6 +17,7 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 FAMILY_PREFIX = 'family/'
@@ -164,11 +165,20 @@ class ImageExpander(object):
 
     if image:
       image_ref = self._resources.Parse(
-          image, params={'project': image_project}, collection='compute.images')
+          image,
+          params={
+              'project': image_project
+                         or properties.VALUES.core.project.GetOrFail,
+          },
+          collection='compute.images')
     else:
       if image_family is not None:
         image_ref = self._resources.Parse(
-            image_family, params={'project': image_project},
+            image_family,
+            params={
+                'project': image_project
+                           or properties.VALUES.core.project.GetOrFail
+            },
             collection='compute.images')
       else:
         image_ref = self._resources.Parse(
@@ -274,8 +284,15 @@ def AddImageProjectFlag(parser):
       '--image-project',
       help="""\
       The project against which all image and image family references will be
-      resolved. See ``--image'' for more details.
-      """)
+      resolved. It is best practice to define image-project.
+          * If specifying one of our public images, image-project must be
+            provided.
+          * If there are several of the same image-family value in multiple
+            projects, image-project must be specified to clarify the image to
+            be used.
+          * If not specified and either image or image-family is provided, the
+            current default project is used.
+        """)
 
 
 def WarnAlias(alias):

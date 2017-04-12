@@ -39,12 +39,14 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
 
 
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    name='backend_service_name',
     resource_name='backend service',
     completion_resource_id='compute.backendServices',
     global_collection='compute.backendServices')
 
 
 GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    name='backend_service_name',
     resource_name='backend service',
     completion_resource_id='compute.backendServices',
     plural=True,
@@ -52,6 +54,7 @@ GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
 
 
 GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    name='backend_service_name',
     resource_name='backend service',
     completion_resource_id='compute.backendServices',
     regional_collection='compute.regionBackendServices',
@@ -59,6 +62,7 @@ GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
 
 
 GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    name='backend_service_name',
     resource_name='backend service',
     completion_resource_id='compute.backendServices',
     plural=True,

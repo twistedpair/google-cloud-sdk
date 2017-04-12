@@ -270,7 +270,14 @@ class Paths(object):
     return os.path.join(sdk_root, 'bin') if sdk_root else None
 
   @property
+  def cache_dir(self):
+    """Gets the dir path that will contain all cache objects."""
+    return os.path.join(self.global_config_dir, 'cache')
+
+  # TODO(b/36751527): drop this in 2017Q3
+  @property
   def completion_cache_dir(self):
+    """Gets the legacy completion cache dir path."""
     return os.path.join(self.global_config_dir, 'completion_cache')
 
   @property

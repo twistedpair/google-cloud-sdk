@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util import ssh
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
@@ -269,7 +270,10 @@ def CreateMachineTypeUris(
         resources.Parse(
             machine_type_name,
             collection='compute.machineTypes',
-            params={'zone': instance_ref.zone}).SelfLink())
+            params={
+                'project': instance_ref.project,
+                'zone': instance_ref.zone
+            }).SelfLink())
 
   return machine_type_uris
 
@@ -301,14 +305,24 @@ def CreateNetworkInterfaceMessage(resources,
     subnet_ref = resources.Parse(
         subnet,
         collection='compute.subnetworks',
-        params={'region': region})
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+            'region': region
+        })
     network_interface.subnetwork = subnet_ref.SelfLink()
   if network is not None:
-    network_ref = resources.Parse(network, collection='compute.networks')
+    network_ref = resources.Parse(
+        network,
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+        },
+        collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
   elif subnet is None:
     network_ref = resources.Parse(
-        constants.DEFAULT_NETWORK, collection='compute.networks')
+        constants.DEFAULT_NETWORK,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
 
   if private_network_ip is not None:
@@ -393,12 +407,18 @@ def ParseDiskResource(resources, name, zone, type_):
     return resources.Parse(
         name,
         collection='compute.regionDisks',
-        params={'region': utils.ZoneNameToRegionName(zone)})
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+            'region': utils.ZoneNameToRegionName(zone)
+        })
   else:
     return resources.Parse(
         name,
         collection='compute.disks',
-        params={'zone': zone})
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+            'zone': zone
+        })
 
 
 def CreatePersistentAttachedDiskMessages(
@@ -502,7 +522,10 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if disk_type:
       disk_type_ref = resources.Parse(disk_type,
                                       collection='compute.diskTypes',
-                                      params={'zone': instance_ref.zone})
+                                      params={
+                                          'project': instance_ref.project,
+                                          'zone': instance_ref.zone
+                                      })
 
       disk_type_uri = disk_type_ref.SelfLink()
     else:
@@ -580,9 +603,13 @@ def CreateDefaultBootAttachedDiskMessage(
   compute = compute_client.apitools_client
 
   if disk_type:
-    disk_type_ref = resources.Parse(disk_type,
-                                    collection='compute.diskTypes',
-                                    params={'zone': instance_ref.zone})
+    disk_type_ref = resources.Parse(
+        disk_type,
+        collection='compute.diskTypes',
+        params={
+            'project': instance_ref.project,
+            'zone': instance_ref.zone
+        })
     disk_type_uri = disk_type_ref.SelfLink()
   else:
     disk_type_ref = None
@@ -613,7 +640,10 @@ def CreateDefaultBootAttachedDiskMessage(
 
     disk_ref = resources.Parse(effective_boot_disk_name,
                                collection='compute.disks',
-                               params={'zone': instance_ref.zone})
+                               params={
+                                   'project': instance_ref.project,
+                                   'zone': instance_ref.zone
+                               })
     disk_key_or_none = csek_utils.MaybeToMessage(
         csek_keys.LookupKey(disk_ref, require_csek_key_create),
         compute)
@@ -646,13 +676,18 @@ def UseExistingBootDisk(disks):
 
 
 def CreateLocalSsdMessage(resources, messages, device_name, interface,
-                          zone=None):
+                          size_bytes=None, zone=None):
   """Create a message representing a local ssd."""
 
   if zone:
-    disk_type_ref = resources.Parse('local-ssd',
-                                    collection='compute.diskTypes',
-                                    params={'zone': zone})
+    disk_type_ref = resources.Parse(
+        'local-ssd',
+        collection='compute.diskTypes',
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+            'zone': zone
+        }
+    )
     disk_type = disk_type_ref.SelfLink()
   else:
     disk_type = 'local-ssd'
@@ -661,7 +696,7 @@ def CreateLocalSsdMessage(resources, messages, device_name, interface,
       messages.AttachedDisk.InterfaceValueValuesEnum(interface)
       if interface else None)
 
-  return messages.AttachedDisk(
+  local_ssd = messages.AttachedDisk(
       type=messages.AttachedDisk.TypeValueValuesEnum.SCRATCH,
       autoDelete=True,
       deviceName=device_name,
@@ -670,3 +705,8 @@ def CreateLocalSsdMessage(resources, messages, device_name, interface,
       initializeParams=messages.AttachedDiskInitializeParams(
           diskType=disk_type),
       )
+
+  if size_bytes is not None:
+    local_ssd.diskSizeGb = utils.BytesToGb(size_bytes)
+
+  return local_ssd

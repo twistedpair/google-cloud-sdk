@@ -37,6 +37,43 @@ class _AdditionalHelp(object):
     self.message = message
 
 
+def GetArgparseBuiltInAction(action):
+  """Get an argparse.Action from a string.
+
+  This function takes one of the supplied argparse.Action strings (see below)
+  and returns the corresponding argparse.Action class.
+
+  This "work around" is (e.g. hack) is necessary due to the fact these required
+  action mappings are only exposed through subclasses of
+  argparse._ActionsContainer as opposed to a static function or global variable.
+
+  Args:
+    action: string, one of the following supplied argparse.Action names:
+      'store', 'store_const', 'store_false', 'append', 'append_const', 'count',
+      'version', 'parsers'.
+
+  Returns:
+    argparse.Action, the action class to use.
+
+  Raises:
+    ValueError: For unknown action string.
+  """
+  # pylint:disable=protected-access
+  # Disabling lint check to access argparse._ActionsContainer
+  dummy_actions_container = argparse._ActionsContainer(description=None,
+                                                       prefix_chars=None,
+                                                       argument_default=None,
+                                                       conflict_handler='error')
+
+  action_cls = dummy_actions_container._registry_get('action', action)
+
+  if action_cls is None:
+    raise ValueError('unknown action "{0}"'.format(action_cls))
+
+  return action_cls
+ # pylint:disable=protected-access
+
+
 def FunctionExitAction(func):
   """Get an argparse.Action that runs the provided function, and exits.
 
@@ -425,7 +462,7 @@ def RenderDocumentAction(command, default_style=None):
   return Action
 
 
-def _PreActionHook(action_cls, func, additional_help=None):
+def _PreActionHook(action, func, additional_help=None):
   """Allows an function hook to be injected before an Action executes.
 
   Wraps an Action in another action that can execute an arbitrary function on
@@ -437,7 +474,8 @@ def _PreActionHook(action_cls, func, additional_help=None):
   underlying intended behavior of the flag itself
 
   Args:
-    action_cls: type object (must be subclass of argparse.Action) to be wrapped.
+    action: action class to be wrapped. Either a subclass of argparse.Action
+        or a string representing one of the built in arg_parse action types.
         If None, argparse._StoreAction type is used as default.
     func: callable, function to be executed before invoking the __call__ method
         of the wrapped action. Takes value from command line.
@@ -448,13 +486,24 @@ def _PreActionHook(action_cls, func, additional_help=None):
     argparse.Action, wrapper action to use.
 
   Raises:
-    ValueError: If action_cls or func are invalid types.
+    TypeError: If action or func are invalid types.
   """
-  if not issubclass(action_cls, argparse.Action):
-    raise TypeError('action_cls should be subclass of argparse.Action')
-
   if not callable(func):
     raise TypeError('func should be a callable of the form func(value)')
+
+  if not isinstance(action, basestring) and not issubclass(
+      action, argparse.Action):
+    raise TypeError(('action should be either a subclass of argparse.Action '
+                     'or a string representing one of the default argparse '
+                     'Action Types'))
+
+  if isinstance(action, basestring):
+    try:
+      action_cls = GetArgparseBuiltInAction(action)
+    except ValueError:
+      raise TypeError('Invalid action {0}'.format(action))
+  else:
+    action_cls = action
 
   class Action(argparse.Action):
     """Action Wrapper Class."""
@@ -466,12 +515,28 @@ def _PreActionHook(action_cls, func, additional_help=None):
             kwargs.pop('detailed_help', '') or kwargs.get('help', ''),
             additional_help.message)
 
-      super(Action, self).__init__(*args, **kwargs)
       self.wrapped_action = action_cls(*args, **kwargs)
       self.func = func
+      # These parameters are necessary to ensure that the wrapper action
+      # behaves the same as the action it is wrapping. These based off of
+      # analysis of the constructor params (and their defaults) or the built in
+      # argparse Action classes. This could change if argparse internals are
+      # updated, but that would probably also affect much more than this.
+      kwargs['nargs'] = self.wrapped_action.nargs
+      kwargs['const'] = self.wrapped_action.const
+      kwargs['choices'] = self.wrapped_action.choices
+      kwargs['option_strings'] = self.wrapped_action.option_strings
+      super(Action, self).__init__(*args, **kwargs)
 
     def __call__(self, parser, namespace, value, option_string=None):
-      self.func(value)
+      # Fix for _Append and _AppendConst to only run self.func once.
+      flag_value = getattr(namespace, self.dest, None)
+      if isinstance(flag_value, list):
+        if len(flag_value) < 1:
+          self.func(value)
+      else:
+        self.func(value)
+
       self.wrapped_action(parser, namespace, value, option_string)
 
   return Action
@@ -511,7 +576,7 @@ def DeprecationAction(flag_name,
     add_help = _AdditionalHelp('(DEPRECATED)', warn.format(flag_name=flag_name))
 
   if not action:  # Default Action
-    action = argparse._StoreAction  # pylint:disable=protected-access
+    action = 'store'
 
   def DeprecationFunc(value):
     if show_message(value):
@@ -521,7 +586,3 @@ def DeprecationAction(flag_name,
         log.warn(add_help.message)
 
   return _PreActionHook(action, DeprecationFunc, add_help)
-
-
-
-

@@ -465,6 +465,13 @@ class ClusterUpdate(_messages.Message):
   desiredNodeVersion = _messages.StringField(10)
 
 
+class CompleteIPRotationRequest(_messages.Message):
+  """CompleteIPRotationRequest moves the cluster master back into single-IP
+  mode.
+  """
+
+
+
 class ContainerMasterProjectsZonesAuthenticateRequest(_messages.Message):
   """A ContainerMasterProjectsZonesAuthenticateRequest object.
 
@@ -566,6 +573,25 @@ class ContainerMasterProjectsZonesTokensCreateRequest(_messages.Message):
   createTokenRequest = _messages.MessageField('CreateTokenRequest', 1)
   masterProjectId = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
+
+
+class ContainerProjectsZonesClustersCompleteIpRotationRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersCompleteIpRotationRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    completeIPRotationRequest: A CompleteIPRotationRequest resource to be
+      passed as the request body.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  completeIPRotationRequest = _messages.MessageField('CompleteIPRotationRequest', 2)
+  projectId = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ContainerProjectsZonesClustersCreateRequest(_messages.Message):
@@ -799,6 +825,25 @@ class ContainerProjectsZonesClustersSetMasterAuthRequest(_messages.Message):
   clusterId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   setMasterAuthRequest = _messages.MessageField('SetMasterAuthRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsZonesClustersStartIpRotationRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersStartIpRotationRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    startIPRotationRequest: A StartIPRotationRequest resource to be passed as
+      the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  startIPRotationRequest = _messages.MessageField('StartIPRotationRequest', 3)
   zone = _messages.StringField(4, required=True)
 
 
@@ -1813,6 +1858,13 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
+
+
+class StartIPRotationRequest(_messages.Message):
+  """StartIPRotationRequest creates a new IP for the cluster and then performs
+  a node upgrade on each node pool to point to the new IP.
+  """
+
 
 
 class SubjectAccessReviewSpec(_messages.Message):

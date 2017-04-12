@@ -20,6 +20,7 @@ import time
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.command_lib.deployment_manager import dm_base
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
@@ -45,7 +46,9 @@ def Execute(request, async, call, logger):
   response = call(request)
   if not async:
     operation_ref = dm_base.GetResources().Parse(
-        response.name, collection='deploymentmanager.operations')
+        response.name,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='deploymentmanager.operations')
     WaitForOperation(operation_ref.operation, response.operationType,
                      project=request.project)
 

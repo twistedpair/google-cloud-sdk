@@ -956,6 +956,20 @@
         }
       }
     },
+    "StartIPRotationRequest": {
+      "id": "StartIPRotationRequest",
+      "description": "StartIPRotationRequest creates a new IP for the cluster and then performs\na node upgrade on each node pool to point to the new IP.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CompleteIPRotationRequest": {
+      "id": "CompleteIPRotationRequest",
+      "description": "CompleteIPRotationRequest moves the cluster master back into single-IP mode.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "CreateTokenRequest": {
       "id": "CreateTokenRequest",
       "description": "A request for a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow hosted masters to\nmake modifications to a user's project.",
@@ -1877,6 +1891,88 @@
                   ],
                   "request": {
                     "$ref": "SetLegacyAbacRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "startIpRotation": {
+                  "id": "container.projects.zones.clusters.startIpRotation",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
+                  "httpMethod": "POST",
+                  "description": "Start master IP rotation.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "StartIPRotationRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "completeIpRotation": {
+                  "id": "container.projects.zones.clusters.completeIpRotation",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
+                  "httpMethod": "POST",
+                  "description": "Completes master IP rotation.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "CompleteIPRotationRequest"
                   },
                   "response": {
                     "$ref": "Operation"

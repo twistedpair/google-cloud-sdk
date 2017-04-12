@@ -29,17 +29,18 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted. Example Policy with
-  multiple AuditConfigs: {   "audit_configs": [     {       "service":
-  "allServices"       "audit_log_configs": [         {           "log_type":
-  "DATA_READ",           "exempted_members": [
-  "user:foo@gmail.com"           ]         },         {           "log_type":
-  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
-  }       ]     },     {       "service": "fooservice@googleapis.com"
-  "audit_log_configs": [         {           "log_type": "DATA_READ",
-  },         {           "log_type": "DATA_WRITE",
-  "exempted_members": [             "user:bar@gmail.com"           ]         }
-  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  exempted_members in each AuditConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice@googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
   ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
   and bar@gmail.com from DATA_WRITE logging.
 
@@ -354,83 +355,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class FolderOperation(_messages.Message):
-  """Metadata describing a long running folder operation
-
-  Enums:
-    OperationTypeValueValuesEnum: The type of this operation.
-
-  Fields:
-    destinationParent: The resource name of the folder or organization we are
-      either creating the folder under or moving the folder to.
-    displayName: The display name of the folder.
-    operationType: The type of this operation.
-    sourceParent: The resource name of the folder's parent. Only applicable
-      when the operation_type is MOVE.
-  """
-
-  class OperationTypeValueValuesEnum(_messages.Enum):
-    """The type of this operation.
-
-    Values:
-      OPERATION_TYPE_UNSPECIFIED: Operation type not specified.
-      CREATE: A create folder operation.
-      MOVE: A move folder operation.
-    """
-    OPERATION_TYPE_UNSPECIFIED = 0
-    CREATE = 1
-    MOVE = 2
-
-  destinationParent = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
-  sourceParent = _messages.StringField(4)
-
-
-class FolderOperationError(_messages.Message):
-  """A classification of the Folder Operation error.
-
-  Enums:
-    ErrorMessageIdValueValuesEnum: The type of operation error experienced.
-
-  Fields:
-    errorMessageId: The type of operation error experienced.
-  """
-
-  class ErrorMessageIdValueValuesEnum(_messages.Enum):
-    """The type of operation error experienced.
-
-    Values:
-      ERROR_TYPE_UNSPECIFIED: The error type was unrecognized or unspecified.
-      FOLDER_HEIGHT_VIOLATION: The attempted action would violate the max
-        folder depth constraint.
-      MAX_CHILD_FOLDERS_VIOLATION: The attempted action would violate the max
-        child folders constraint.
-      FOLDER_NAME_UNIQUENESS_VIOLATION: The attempted action would violate the
-        locally-unique folder display_name constraint.
-      RESOURCE_DELETED: The resource being moved has been deleted.
-      PARENT_DELETED: The resource a folder was being added to has been
-        deleted.
-      CYCLE_INTRODUCED_ERROR: The attempted action would introduce cycle in
-        resource path.
-      FOLDER_BEING_MOVED: The attempted action would move a folder that is
-        already being moved.
-      FOLDER_TO_DELETE_NON_EMPTY: The folder the caller is trying to delete
-        contains active resources.
-    """
-    ERROR_TYPE_UNSPECIFIED = 0
-    FOLDER_HEIGHT_VIOLATION = 1
-    MAX_CHILD_FOLDERS_VIOLATION = 2
-    FOLDER_NAME_UNIQUENESS_VIOLATION = 3
-    RESOURCE_DELETED = 4
-    PARENT_DELETED = 5
-    CYCLE_INTRODUCED_ERROR = 6
-    FOLDER_BEING_MOVED = 7
-    FOLDER_TO_DELETE_NON_EMPTY = 8
-
-  errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
 
 
 class GetAncestryRequest(_messages.Message):

@@ -28,6 +28,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
@@ -280,6 +281,11 @@ def Exec(args,
       if in_str:
         extra_popen_kwargs['stdin'] = subprocess.PIPE
       try:
+        # popen is silly when it comes to non-ascii args. The executable has to
+        # be _unencoded_, while the rest of the args have to be _encoded_.
+        if args and isinstance(args, list):
+          args = args[0:1] + [
+              console_attr.EncodeForConsole(a) for a in args[1:]]
         p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
       except OSError as err:
         if err.errno == errno.EACCES:

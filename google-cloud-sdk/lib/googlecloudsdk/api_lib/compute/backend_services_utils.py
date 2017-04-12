@@ -202,3 +202,90 @@ def ValidateCacheKeyPolicyArgs(cache_key_policy_args):
     if (cache_key_policy_args.cache_key_query_string_whitelist is not None or
         cache_key_policy_args.cache_key_query_string_blacklist is not None):
       raise CacheKeyQueryStringException()
+
+
+def HasCacheKeyPolicyArgsForCreate(args):
+  """Returns true if create request requires a CacheKeyPolicy message.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if there are cache key policy related arguments which require adding
+    a CacheKeyPolicy message in the create request.
+  """
+  # When doing create cache_key_include_host, cache_key_include_protocol,
+  # and cache_key_include_query_string have defaults in the API set to True.
+  # So only if the user specifies False for any of these or if the user has
+  # specified cache_key_query_string_whitelist,
+  # cache_key_query_string_blacklist we need to add a CacheKeyPolicy message
+  # in the request.
+  return (not args.cache_key_include_host or
+          not args.cache_key_include_protocol or
+          not args.cache_key_include_query_string or
+          args.IsSpecified('cache_key_query_string_whitelist') or
+          args.IsSpecified('cache_key_query_string_blacklist'))
+
+
+def HasCacheKeyPolicyArgsForUpdate(args):
+  """Returns true if update request requires a CacheKeyPolicy message.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if there are cache key policy related arguments which require adding
+    a CacheKeyPolicy message in the update request.
+  """
+  # When doing update, if any of the cache key related fields have been
+  # specified by the user in the command line, we need to add a
+  # CacheKeyPolicy message in the request.
+  return (args.IsSpecified('cache_key_include_protocol') or
+          args.IsSpecified('cache_key_include_host') or
+          args.IsSpecified('cache_key_include_query_string') or
+          args.IsSpecified('cache_key_query_string_whitelist') or
+          args.IsSpecified('cache_key_query_string_blacklist'))
+
+
+def GetCacheKeyPolicy(client, args, backend_service):
+  """Validates and returns the cache key policy.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object. If the backend service object
+    contains a cache key policy already, it is used as the base to apply
+    changes based on args.
+
+  Returns:
+    The cache key policy.
+  """
+  cache_key_policy = client.messages.CacheKeyPolicy()
+  if (backend_service.cdnPolicy is not None and
+      backend_service.cdnPolicy.cacheKeyPolicy is not None):
+    cache_key_policy = backend_service.cdnPolicy.cacheKeyPolicy
+
+  ValidateCacheKeyPolicyArgs(args)
+  UpdateCacheKeyPolicy(args, cache_key_policy)
+  return cache_key_policy
+
+
+def ApplyCdnPolicyArgs(client, args, backend_service, is_update=False):
+  """Applies the CdnPolicy arguments to the specified backend service.
+
+  If there are no arguments related to CdnPolicy, the backend service remains
+  unmodified.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+    is_update: True if this is called on behalf of an update command instead
+    of a create command, False otherwise.
+  """
+  add_cache_key_policy = (HasCacheKeyPolicyArgsForUpdate(args) if is_update else
+                          HasCacheKeyPolicyArgsForCreate(args))
+
+  if add_cache_key_policy:
+    backend_service.cdnPolicy = client.messages.BackendServiceCdnPolicy(
+        cacheKeyPolicy=GetCacheKeyPolicy(client, args, backend_service))

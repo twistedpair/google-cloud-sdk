@@ -17,12 +17,14 @@
 import abc
 import base64
 import json
+import os
 
 import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 import oauth2client
 from oauth2client import client
@@ -65,16 +67,217 @@ class CredentialStore(object):
   def Remove(self, account_id):
     return NotImplemented
 
+_CREDENTIAL_TABLE_NAME = 'credentials'
 
-def GetCredentialStore():
-  return Oauth2ClientCredentialStore(config.Paths().credentials_path)
+
+class _SqlCursor(object):
+  """Context manager to access sqlite store."""
+
+  def __init__(self, store_file):
+    self._store_file = store_file
+    self._connection = None
+    self._cursor = None
+
+  def __enter__(self):
+    # TODO(b/36879084): Do not import sqlite upfront since some python
+    # setups might not have it.
+    import sqlite3  # pylint: disable=g-import-not-at-top
+    self._connection = sqlite3.connect(
+        self._store_file,
+        isolation_level=None,  # Use autocommit mode.
+        check_same_thread=True  # Only creating thread may use the connection.
+    )
+    self._cursor = self._connection.cursor()
+    return self
+
+  def __exit__(self, exc_type, unused_value, unused_traceback):
+    if not exc_type:
+      # Don't try to commit if exception is in progress.
+      self._connection.commit()
+    self._connection.close()
+
+  def Execute(self, *args):
+    return self._cursor.execute(*args)
+
+
+class SqliteCredentialStore(CredentialStore):
+  """Sqllite backed credential store."""
+
+  def __init__(self, store_file):
+    self._cursor = _SqlCursor(store_file)
+    self._Execute(
+        'CREATE TABLE IF NOT EXISTS "{}" '
+        '(account_id TEXT PRIMARY KEY, value BLOB)'
+        .format(_CREDENTIAL_TABLE_NAME))
+
+  def _Execute(self, *args):
+    with self._cursor as cur:
+      return cur.Execute(*args)
+
+  def GetAccounts(self):
+    with self._cursor as cur:
+      return set(key[0] for key in cur.Execute(
+          'SELECT account_id FROM "{}" ORDER BY rowid'
+          .format(_CREDENTIAL_TABLE_NAME)))
+
+  def Load(self, account_id):
+    with self._cursor as cur:
+      item = cur.Execute(
+          'SELECT value FROM "{}" WHERE account_id = ?'
+          .format(_CREDENTIAL_TABLE_NAME), (account_id,)).fetchone()
+    if item is not None:
+      return FromJson(item[0])
+    return None
+
+  def Store(self, account_id, credentials):
+    value = ToJson(credentials)
+    self._Execute(
+        'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'
+        .format(_CREDENTIAL_TABLE_NAME), (account_id, value))
+
+  def Remove(self, account_id):
+    self._Execute(
+        'DELETE FROM "{}" WHERE account_id = ?'
+        .format(_CREDENTIAL_TABLE_NAME), (account_id,))
+
+
+_ACCESS_TOKEN_TABLE = 'access_tokens'
+
+
+class AccessTokenCache(object):
+  """Sqlite implementation of for access token cache."""
+
+  def __init__(self, store_file):
+    self._cursor = _SqlCursor(store_file)
+    self._Execute(
+        'CREATE TABLE IF NOT EXISTS "{}" '
+        '(account_id TEXT PRIMARY KEY, '
+        'access_token TEXT, '
+        'token_expiry TIMESTAMP)'.format(_ACCESS_TOKEN_TABLE))
+
+  def _Execute(self, *args):
+    with self._cursor as cur:
+      cur.Execute(*args)
+
+  def Load(self, account_id):
+    with self._cursor as cur:
+      return cur.Execute(
+          'SELECT access_token, token_expiry FROM "{}" WHERE account_id = ?'
+          .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
+
+  def Store(self, account_id, access_token, token_expiry):
+    self._Execute(
+        'REPLACE INTO "{}" '
+        '(account_id, access_token, token_expiry) VALUES (?,?,?)'
+        .format(_ACCESS_TOKEN_TABLE),
+        (account_id, access_token, token_expiry))
+
+  def Remove(self, account_id):
+    self._Execute(
+        'DELETE FROM "{}" WHERE account_id = ?'
+        .format(_ACCESS_TOKEN_TABLE), (account_id,))
+
+
+class AccessTokenStore(client.Storage):
+  """Oauth2client adapted for access token cache.
+
+  This class works with Oauth2client model where access token is part of
+  credential serialization format and get captured as part of that.
+  By extending client.Storage this class pretends to serialize credentials, but
+  only serializes access token.
+  """
+
+  def __init__(self, access_token_cache, account_id, credentials):
+    """Sets up token store for given acount.
+
+    Args:
+      access_token_cache: AccessTokenCache, cache for access tokens.
+      account_id: str, account for which token is stored.
+      credentials: oauth2client.client.OAuth2Credentials, they are auto-updated
+        with cached access token.
+    """
+    super(AccessTokenStore, self).__init__(lock=None)
+    self._access_token_cache = access_token_cache
+    self._account_id = account_id
+    self._credentials = credentials
+
+  def locked_get(self):
+    access_token, token_expiry = self._access_token_cache.Load(self._account_id)
+    self._credentials.access_token = access_token
+    self._credentials.token_expiry = token_expiry
+    return self._credentials
+
+  def locked_put(self, credentials):
+    self._access_token_cache.Store(self._account_id,
+                                   self._credentials.access_token,
+                                   self._credentials.token_expiry)
+
+  def locked_delete(self):
+    self._access_token_cache.Remove(self._account_id)
+
+
+class CredentialStoreWithCache(CredentialStore):
+  """Implements CredentialStore interface with access token caching."""
+
+  def __init__(self, credential_store, access_token_cache):
+    self._credential_store = credential_store
+    self._access_token_cache = access_token_cache
+
+  def GetAccounts(self):
+    return self._credential_store.GetAccounts()
+
+  def Load(self, account_id):
+    credentials = self._credential_store.Load(account_id)
+    if credentials is None:
+      return None
+    store = AccessTokenStore(self._access_token_cache, account_id, credentials)
+    credentials.set_store(store)
+    return store.get()
+
+  def Store(self, account_id, credentials):
+    store = AccessTokenStore(self._access_token_cache, account_id, credentials)
+    credentials.set_store(store)
+    store.put(credentials)
+    return self._credential_store.Store(account_id, credentials)
+
+  def Remove(self, account_id):
+    self._credential_store.Remove(account_id)
+    self._access_token_cache.Remove(account_id)
+
+
+def GetCredentialStore(store_file=None, access_token_file=None):
+  """Constructs credential store.
+
+  Args:
+    store_file: str, optional path to use for storage. If not specified
+      config.Paths().credentials_path will be used.
+
+    access_token_file: str, optional path to use for access token storage. Note
+      that some implementations use store_file to also store access_tokens, in
+      which case this argument is ignored.
+
+  Returns:
+    CredentialStore object.
+  """
+
+  if properties.VALUES.auth.use_sqlite_store.GetBool():
+    store_file = store_file or os.path.join(
+        config.Paths().global_config_dir, 'credentials.db')
+    credential_store = SqliteCredentialStore(store_file)
+    access_token_store_file = access_token_file or os.path.join(
+        config.Paths().global_config_dir, 'access_token.db')
+    access_token_cache = AccessTokenCache(access_token_store_file)
+    return CredentialStoreWithCache(credential_store, access_token_cache)
+
+  store_file = store_file or config.Paths().credentials_path
+  return Oauth2ClientCredentialStore(store_file)
 
 
 class Oauth2ClientCredentialStore(CredentialStore):
   """Implementation of credential sotore over oauth2client.multistore_file."""
 
-  def __init__(self, store_file=None):
-    self._store_file = store_file or config.Paths().credentials_path
+  def __init__(self, store_file):
+    self._store_file = store_file
 
   def GetAccounts(self):
     """Overrides."""

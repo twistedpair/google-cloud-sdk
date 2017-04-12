@@ -911,6 +911,8 @@ class _SectionAuth(_Section):
         'authorization_token_file', hidden=True)
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
+    self.use_sqlite_store = self._AddBool(
+        'use_sqlite_store', default=False, hidden=True)
 
 
 class _SectionMetrics(_Section):
@@ -1217,6 +1219,19 @@ class _Property(object):
 
   def __le__(self, other):
     return self.name <= other.name
+
+  def GetOrFail(self):
+    """Shortcut for Get(required=True).
+
+    Convinient as a callback function.
+
+    Returns:
+      str, The value for this property.
+    Raises:
+      RequiredPropertyError if property is not set.
+    """
+
+    return self.Get(required=True)
 
   def Get(self, required=False, validate=True):
     """Gets the value for this property.

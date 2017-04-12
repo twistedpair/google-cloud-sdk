@@ -46,10 +46,21 @@ class ActionType(enum.Enum):
   DENY = 2
 
 
-def AddCommonArgs(parser, for_update=False, with_egress_support=False):
+def AddCommonArgs(parser,
+                  for_update=False,
+                  with_egress_support=False,
+                  with_service_account=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
+  if not for_update:
+    parser.add_argument(
+        '--network',
+        default='default',
+        help="""\
+        The network to which this rule is attached. If omitted, the
+        rule is attached to the ``default'' network.
+        """)
 
   ruleset_parser = parser
   if with_egress_support:
@@ -63,21 +74,28 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       help="""\
       A list of protocols and ports whose traffic will be allowed.
 
-      PROTOCOL is the IP protocol whose traffic will be allowed.
-      PROTOCOL can be either the name of a well-known protocol
-      (e.g., tcp or icmp) or the IP protocol number.
-      A list of IP protocols can be found at
-      link:http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml[].
+      The protocols allowed over this connection. This can be the
+      (case-sensitive) string values `tcp`, `udp`, `icmp`, `esp`, `ah`, `sctp`,
+      or any IP protocol number. An IP-based protocol must be specified for each
+      rule. The rule applies only to specified protocol.
 
-      A port or port range can be specified after PROTOCOL to
-      allow traffic through specific ports. If no port or port range
-      is specified, connections through all ranges are allowed. For
-      example, the following will create a rule that allows TCP traffic
-      through port 80 and allows ICMP traffic:
+      For port-based protocols - `tcp`, `udp`, and `sctp` - a list of
+      destination ports or port ranges to which the rule applies may optionally
+      be specified. If no port or port range is specified, the rule applies to
+      all destination ports. TCP and UDP rules must include a port or port
+      range.
+
+      The ICMP protocol is supported, but there is no support for configuring
+      ICMP packet filtering by ICMP code.
+
+      For example, to create a rule that allows TCP traffic through port 80 and
+      ICMP traffic:
 
         $ {command} MY-RULE --allow tcp:80,icmp
 
-      TCP and UDP rules must include a port or port range.
+      To create a rule that allows TCP traffic from port 20000 to 25000:
+
+        $ {command} MY-RULE --allow tcp:20000-25000
       """ + ("""
       Setting this will override the current values.
       """ if for_update else ''))
@@ -93,6 +111,13 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       the network. The IP address blocks must be specified in CIDR
       format:
       link:http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing[].
+
+      If neither --source-ranges nor --source-tags are specified,
+      --source-ranges defaults to `0.0.0.0/0`, which means that the rule applies
+      to all incoming connections from inside or outside the network.  If both
+      --source-ranges and --source-tags are specified, the rule matches if
+      either the range of the source matches  --source-ranges or the tag of the
+      source matches --source-tags.
       """
   if for_update:
     source_ranges_help += """
@@ -115,14 +140,19 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       help=source_ranges_help)
 
   source_tags_help = """\
-      A list of instance tags indicating the set of instances on the
-      network which may make network connections that match the
-      firewall rule. If omitted, all instances on the network can
-      make connections that match the rule.
+      A list of instance tags indicating the set of instances on the network to
+      which the rule applies if all other fields match.  If neither
+      --source-ranges nor --source-tags are specified, --source-ranges
+      defaults to `0.0.0.0/0`, which means that the rule applies to all
+      incoming connections from inside or outside the network.
+
+      If both --source-ranges and --source-tags are specified, an inbound
+      connection is allowed if either the range of the source matches
+      --source-ranges or the tag of the source matches --source-tags.
 
       Tags can be assigned to instances during instance creation.
       """
-  if with_egress_support:
+  if with_service_account:
     source_tags_help += """
       If source tags are specified then neither a source nor target service
       account can also be specified.
@@ -142,14 +172,13 @@ def AddCommonArgs(parser, for_update=False, with_egress_support=False):
       help=source_tags_help)
 
   target_tags_help = """\
-      A list of instance tags indicating the set of instances on the
-      network which may accept inbound connections that match the
-      firewall rule. If omitted, all instances on the network can
-      receive inbound connections that match the rule.
+      A list of instance tags indicating which instances the rule is applied to.
+      If the field is set, the rule applies to only instances with a matching
+      tag. If omitted, the rule applies to all instances in the network.
 
       Tags can be assigned to instances during instance creation.
       """
-  if with_egress_support:
+  if with_service_account:
     target_tags_help = """\
       A list of instance tags indicating the set of instances on the
       network which may accept inbound connections that match the
@@ -202,12 +231,12 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       PROTOCOL can be either the name of a well-known protocol
       (e.g., tcp or icmp) or the IP protocol number.
       A list of IP protocols can be found at
-      link:http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml[].
+      http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
 
       A port or port range can be specified after PROTOCOL to which the
       firewall rule apply on traffic through specific ports. If no port
       or port range is specified, connections through all ranges are applied.
-      For example, the following will create a rule that denys TCP
+      For example, the following will create a rule that blocks TCP
       traffic through port 80 and ICMP traffic:
 
         $ {command} MY-RULE --action deny --rules tcp:80,icmp
@@ -240,6 +269,9 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
         traffic. For incoming traffic, it is NOT supported to specify
         destination-ranges; For outbound traffic, it is NOT supported to specify
         source-ranges or source-tags.
+
+        For convenience, 'IN' can be used to represent ingress direction and
+        'OUT' can be used to represent egress direction.
         """)
 
   parser.add_argument(
@@ -278,6 +310,10 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       type=arg_parsers.ArgList(min_length=min_length),
       help=destination_ranges_help)
 
+
+def AddArgsForServiceAccount(parser, for_update=False):
+  """Adds arguments for secure firewall create or update subcommands."""
+  min_length = 0 if for_update else 1
   source_service_accounts_help = """\
       The email of a service account indicating the set of instances on the
       network which match as traffic source in the firewall rule.

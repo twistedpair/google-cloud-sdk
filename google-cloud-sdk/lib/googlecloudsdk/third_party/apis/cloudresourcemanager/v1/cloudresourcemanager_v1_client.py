@@ -642,6 +642,35 @@ The caller must have read permissions for this Project.
         supports_download=False,
     )
 
+    def GetAncestry(self, request, global_params=None):
+      """Gets a list of ancestors in the resource hierarchy for the Project.
+identified by the specified `project_id` (for example, `my-project-123`).
+
+The caller must have read permissions for this Project.
+
+      Args:
+        request: (CloudresourcemanagerProjectsGetAncestryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetAncestryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAncestry')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAncestry.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.projects.getAncestry',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}:getAncestry',
+        request_field=u'getAncestryRequest',
+        request_type_name=u'CloudresourcemanagerProjectsGetAncestryRequest',
+        response_type_name=u'GetAncestryResponse',
+        supports_download=False,
+    )
+
     def GetEffectiveOrgPolicy(self, request, global_params=None):
       """Gets the effective `Policy` on a resource. This is the result of merging.
 `Policies` in the resource hierarchy. The returned `Policy` will not have

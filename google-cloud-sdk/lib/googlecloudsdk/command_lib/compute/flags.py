@@ -364,7 +364,9 @@ class ResourceResolver(object):
             .format(default_scope,
                     ' or '.join([s.scope_enum.name for s in self.scopes])))
       default_scope = self.scopes[default_scope]
-    params = {}
+    params = {
+        'project': properties.VALUES.core.project.GetOrFail,
+    }
     if scope_value is not None:
       if resource_scope.scope_enum == compute_scope.ScopeEnum.GLOBAL:
         stored_value = scope_value
@@ -372,10 +374,16 @@ class ResourceResolver(object):
         collection = compute_scope.ScopeEnum.CollectionForScope(
             resource_scope.scope_enum)
         stored_value = api_resource_registry.Parse(
-            scope_value, collection=collection).Name()
-      params[resource_scope.scope_enum.param_name] = stored_value
+            scope_value,
+            params=params,
+            collection=collection).Name()
+        params[resource_scope.scope_enum.param_name] = stored_value
     else:
       resource_scope = self.scopes.GetImplicitScope(default_scope)
+      if resource_scope and (
+          resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL):
+        params[resource_scope.scope_enum.param_name] = (
+            resource_scope.scope_enum.property_func)
 
     collection = resource_scope and resource_scope.collection
 
@@ -410,10 +418,15 @@ class ResourceResolver(object):
       if resource_scope_enum is None:
         raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
       resource_scope = self.scopes[resource_scope_enum]
+      params = {
+          'project': properties.VALUES.core.project.GetOrFail,
+      }
+      if resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL:
+        params[resource_scope.scope_enum.param_name] = scope_value
       for name in underspecified_names:
         name[0] = api_resource_registry.Parse(
             name[0],
-            params={resource_scope.scope_enum.param_name: scope_value},
+            params=params,
             collection=resource_scope.collection,
             enforce_collection=True)
     # Now unpack each element.

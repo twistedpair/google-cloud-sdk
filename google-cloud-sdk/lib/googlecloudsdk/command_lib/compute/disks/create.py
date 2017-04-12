@@ -16,7 +16,6 @@
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
 
 
 def ParseRegionDisksResources(resources, disks, replica_zones, project,
@@ -70,7 +69,7 @@ def ParseRegionDisksResources(resources, disks, replica_zones, project,
   region_name = region_res.region
   if project_name == dummy:
     # no project in --project nor --region - fallback to property
-    project_name = resolvers.FromProperty(properties.VALUES.core.project)
+    project_name = properties.VALUES.core.project.GetOrFail
   # parse each disk separately as meaning of other flags may depend on disk URI
   for disk in disks:
     result_disk = _ParseDisk(resources, disk, dummy, project_name,
@@ -87,9 +86,11 @@ def _ParseDisk(resources, disk, dummy, project_name, project_to_region,
   # I need project to parse zone URI - parse disk argument, stage 1
   disk_resource = resources.Parse(
       disk,
-      collection='compute.regionDisks',
-      params={'region': region_name,
-              'project': project_name})
+      params={
+          'region': region_name,
+          'project': project_name
+      },
+      collection='compute.regionDisks')
   current_project = disk_resource.project
   # maintain cache
   if current_project not in project_to_region:

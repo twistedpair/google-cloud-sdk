@@ -69,54 +69,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # bigtable
-    'bigtable.clusters.list.alpha':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            displayName:label=NAME,
-            clusterId:label=ID,
-            zoneId:label=ZONE,
-            serveNodes:label=NODES
-          )
-        """,),
-    'bigtable.clusters.list':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.segment(3):sort=1:label=INSTANCE,
-            name.basename():sort=2:label=NAME,
-            location.basename():label=ZONE,
-            serveNodes:label=NODES,
-            defaultStorageType:label=STORAGE,
-            state
-          )
-        """,),
-    'bigtable.instances.list':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename():sort=1,
-            displayName,
-            state
-          )
-        """,),
-
-    # bio
-    'bio.projects.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            metadata.request.'@type'.split('.').slice(-1:):label=TYPE,
-            metadata.request.workflowName,
-            metadata.createTime.date(),
-            done,
-            error.code:label=ERROR_CODE,
-            format('{0:40}', error.message):label=ERROR_MESSAGE
-          )
-        """,),
-
     # cloud billing
     'cloudbilling.billingAccounts':
         resource_info.ResourceInfo(
@@ -162,86 +114,12 @@ RESOURCE_REGISTRY = {
     'cloudkms.projects.locations':
         resource_info.ResourceInfo(
             bypass_cache=True,
+            list_command='kms locations list --format=value(location_id)',
             list_format="""
           table(
             locationId
           )
         """,),
-    'cloudkms.projects.locations.keyRings':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name
-          )
-        """,),
-    'cloudkms.projects.locations.keyRings.cryptoKeys':
-        resource_info.ResourceInfo(
-            list_format="""
-              table(
-                name,
-                purpose,
-                primary.state:label=PRIMARY_STATE
-              )
-            """,),
-    'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions':
-        resource_info.ResourceInfo(
-            list_format="""
-              table(
-                name,
-                state
-              )
-            """,),
-
-    # cloud resource manager
-    'cloudresourcemanager.folders':
-        resource_info.ResourceInfo(
-            async_collection='cloudresourcemanager.operations',
-            list_format="""
-          table(
-            displayName,
-            name:sort=101,
-            parent
-          )
-        """,),
-    'cloudresourcemanager.projects':
-        resource_info.ResourceInfo(
-            cache_command='projects list',
-            list_format="""
-          table(
-            projectId:sort=1,
-            name,
-            projectNumber
-          )
-        """,),
-    'cloudresourcemanager.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name:sort=101,
-            done,
-            response,
-            metadata,
-            error
-          )
-        """,),
-    'cloudresourcemanager.organizations':
-        resource_info.ResourceInfo(
-            cache_command='organizations list',
-            list_format="""
-          table(
-            displayName,
-            organizationId:sort=1,
-            owner.directoryCustomerId
-          )
-        """,),
-    'cloudresourcemanager.liens':
-        resource_info.ResourceInfo(list_format="""
-          table(
-            name.segment(),
-            origin,
-            reason
-          )
-        """),
 
     # Cloud SDK client side resources
 
@@ -1100,86 +978,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # genomics
-    'genomics.alignments':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            alignment.position.referenceName,
-            alignment.position.position,
-            alignment.position.reverseStrand,
-            fragmentName,
-            alignedSequence:label=SEQUENCE
-          )
-        """,),
-    'genomics.callSets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            name,
-            variantSetIds.list()
-          )
-        """,),
-    'genomics.datasets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            name
-          )
-        """,),
-    'genomics.readGroupSets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            name,
-            referenceSetId
-          )
-        """,),
-    'genomics.references':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            name,
-            length,
-            sourceUri,
-            sourceAccessions.list():label=ACCESSIONS
-          )
-        """,),
-    'genomics.referenceSets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            assemblyId,
-            sourceAccessions.list()
-          )
-        """,),
-    'genomics.variants':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            variantSetId,
-            referenceName,
-            start,
-            end,
-            referenceBases,
-            alternateBases
-          )
-        """,),
-    'genomics.variantsets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            name,
-            description
-          )
-        """,),
-
     # iam
     'iam.service_accounts':
         resource_info.ResourceInfo(
@@ -1351,71 +1149,6 @@ RESOURCE_REGISTRY = {
           table(
             id:label=CONFIG_ID,
             name:label=SERVICE_NAME
-          )
-        """,),
-
-    # source
-    'source.captures':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            project_id,
-            id:label=CAPTURE_ID
-          )
-        """,),
-    'source.captures.upload':
-        resource_info.ResourceInfo(
-            list_format="""
-          flattened(capture.id, context_file, extended_context_file)
-        """,),
-    'source.jobs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.yesno(no="default"):label=REPO_NAME,
-            projectId,
-            vcs,
-            state,
-            createTime
-          )
-        """,),
-
-    # spanner
-    'spanner.instanceConfigs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            displayName
-          )
-        """,),
-    'spanner.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename():label=OPERATION_ID,
-            metadata.statements.join(sep="\n"),
-            done,
-            metadata.'@type'.split('.').slice(-1:).join()
-          )
-        """,),
-    'spanner.projects.instances':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            displayName,
-            config.basename(),
-            nodeCount,
-            state
-          )
-        """,),
-    'spanner.projects.instances.databases':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            state
           )
         """,),
 

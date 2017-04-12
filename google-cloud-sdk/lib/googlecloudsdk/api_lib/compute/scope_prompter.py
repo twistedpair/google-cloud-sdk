@@ -149,7 +149,8 @@ class ScopePrompter(object):
 
     for ambigous_name, params, collection in ambiguous_names:
       new_params = params.copy()
-      new_params[selected_attribute] = selected_resource_name
+      if selected_attribute in new_params:
+        new_params[selected_attribute] = selected_resource_name
       try:
         resource_ref = self.resources.Parse(
             ambigous_name, params=new_params, collection=collection)
@@ -232,14 +233,22 @@ class ScopePrompter(object):
     for resource_name in resource_names:
       for resource_type in resource_types:
         collection = utils.GetApiCollection(resource_type)
+        params = {
+            'project': properties.VALUES.core.project.GetOrFail,
+        }
+        collection_info = self.resources.GetCollectionInfo(collection)
+        if 'zone' in collection_info.params:
+          params['zone'] = properties.VALUES.compute.zone.GetOrFail
+        elif 'region' in collection_info.params:
+          params['region'] = properties.VALUES.compute.region.GetOrFail
         try:
           resource_ref = self.resources.Parse(
-              resource_name, collection=collection, params={})
+              resource_name, params=params, collection=collection)
         except resources.WrongResourceCollectionException:
           pass
         except (resources.RequiredFieldOmittedException,
                 properties.RequiredPropertyError):
-          ambiguous_names.append((resource_name, {}, collection))
+          ambiguous_names.append((resource_name, params, collection))
         else:
           resource_refs.append(resource_ref)
 
@@ -263,7 +272,11 @@ class ScopePrompter(object):
     resource_type = resource_type or self.resource_type
     collection = utils.GetApiCollection(resource_type)
     for resource_name in resource_names:
-      params = {scope_name: scope_arg}
+      params = {
+          'project': properties.VALUES.core.project.GetOrFail,
+          scope_name: (scope_arg or
+                       getattr(properties.VALUES.compute, scope_name).GetOrFail)
+      }
       try:
         resource_ref = self.resources.Parse(
             resource_name,
@@ -296,7 +309,12 @@ class ScopePrompter(object):
       flag_names = ['--zone']
 
     if zone_arg:
-      zone_ref = self.resources.Parse(zone_arg, collection='compute.zones')
+      zone_ref = self.resources.Parse(
+          zone_arg,
+          params={
+              'project': properties.VALUES.core.project.GetOrFail,
+          },
+          collection='compute.zones')
       zone_name = zone_ref.Name()
     else:
       zone_name = None
@@ -323,7 +341,11 @@ class ScopePrompter(object):
 
     if region_arg:
       region_ref = self.resources.Parse(
-          region_arg, collection='compute.regions')
+          region_arg,
+          params={
+              'project': properties.VALUES.core.project.GetOrFail,
+          },
+          collection='compute.regions')
       region_name = region_ref.Name()
     else:
       region_name = None
@@ -347,6 +369,9 @@ class ScopePrompter(object):
     for resource_name in resource_names:
       resource_refs.append(self.resources.Parse(
           resource_name,
+          params={
+              'project': properties.VALUES.core.project.GetOrFail,
+          },
           collection=utils.GetApiCollection(
               resource_type or self.resource_type)))
     return resource_refs

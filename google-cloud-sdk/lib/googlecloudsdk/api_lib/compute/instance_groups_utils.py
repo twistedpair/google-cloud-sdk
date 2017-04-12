@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as resource_exceptions
 
 INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
@@ -189,7 +190,7 @@ def CreateInstanceGroupReferences(
   unresolved_names = []
   for name in names:
     try:
-      ref = resources.Parse(name, params={'region': region, 'zone': zone})
+      ref = resources.Parse(name)
       resolved_refs[name] = ref
     except resource_exceptions.UnknownCollectionException:
       unresolved_names.append(name)
@@ -202,7 +203,10 @@ def CreateInstanceGroupReferences(
         ref = resources.Parse(
             name,
             collection='compute.' + regional_resource_type,
-            params={'region': region})
+            params={
+                'project': properties.VALUES.core.project.GetOrFail,
+                'region': region
+            })
         refs.append(ref)
     elif zone is not None:
       refs = []
@@ -210,7 +214,10 @@ def CreateInstanceGroupReferences(
         ref = resources.Parse(
             name,
             collection='compute.' + zonal_resource_type,
-            params={'zone': zone})
+            params={
+                'project': properties.VALUES.core.project.GetOrFail,
+                'zone': zone
+            })
         refs.append(ref)
     else:
       refs = scope_prompter.PromptForMultiScopedReferences(
@@ -399,8 +406,12 @@ def CreateInstanceReferences(
     instance_refs = []
     for instance in instance_names:
       instance_refs.append(resources.Parse(
-          instance, collection='compute.instances',
-          params={'zone': igm_ref.zone}))
+          instance,
+          params={
+              'project': igm_ref.project,
+              'zone': igm_ref.zone,
+          },
+          collection='compute.instances'))
     return [instance_ref.SelfLink() for instance_ref in instance_refs]
   else:
     service = compute_client.apitools_client.regionInstanceGroupManagers
@@ -444,7 +455,12 @@ def ComputeInstanceGroupManagerMembership(
 
   project_to_zones = {}
   for zone in zone_links:
-    zone_ref = resources.Parse(zone, collection='compute.zones')
+    zone_ref = resources.Parse(
+        zone,
+        params={
+            'project': properties.VALUES.core.project.GetOrFail,
+        },
+        collection='compute.zones')
     if zone_ref.project not in project_to_zones:
       project_to_zones[zone_ref.project] = set()
     project_to_zones[zone_ref.project].add(zone_ref.zone)

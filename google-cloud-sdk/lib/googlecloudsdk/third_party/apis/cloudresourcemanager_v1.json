@@ -677,7 +677,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice@googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -848,6 +848,38 @@
       "description": "The request sent to the UndeleteProject\nmethod.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GetAncestryRequest": {
+      "id": "GetAncestryRequest",
+      "description": "The request sent to the\nGetAncestry\nmethod.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetAncestryResponse": {
+      "id": "GetAncestryResponse",
+      "description": "Response from the GetAncestry method.",
+      "type": "object",
+      "properties": {
+        "ancestor": {
+          "description": "Ancestors are ordered from bottom to top of the resource hierarchy. The\nfirst ancestor is the project itself, followed by the project's parent,\netc.",
+          "type": "array",
+          "items": {
+            "$ref": "Ancestor"
+          }
+        }
+      }
+    },
+    "Ancestor": {
+      "id": "Ancestor",
+      "description": "Identifying information for a single ancestor of a project.",
+      "type": "object",
+      "properties": {
+        "resourceId": {
+          "description": "Resource id of the ancestor.",
+          "$ref": "ResourceId"
+        }
       }
     },
     "ProjectCreationStatus": {
@@ -1279,6 +1311,34 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "getAncestry": {
+          "id": "cloudresourcemanager.projects.getAncestry",
+          "path": "v1/projects/{projectId}:getAncestry",
+          "flatPath": "v1/projects/{projectId}:getAncestry",
+          "httpMethod": "POST",
+          "description": "Gets a list of ancestors in the resource hierarchy for the Project\nidentified by the specified `project_id` (for example, `my-project-123`).\n\nThe caller must have read permissions for this Project.",
+          "parameters": {
+            "projectId": {
+              "description": "The Project ID (for example, `my-project-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "GetAncestryRequest"
+          },
+          "response": {
+            "$ref": "GetAncestryResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
           ]
         },
         "getIamPolicy": {

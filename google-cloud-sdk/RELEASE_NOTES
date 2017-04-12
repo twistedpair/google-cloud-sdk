@@ -2,6 +2,50 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 151.0.0 (2017-04-12)
+
+### Google App Engine
+
+*   Added command `gcloud beta app repair`, for restoring resources needed by
+    App Engine.
+*   Updated Google App Engine components to 1.9.51.
+    Please visit the following release notes for details:
+    *    Java - https://cloud.google.com/appengine/docs/java/release-notes
+    *    Python - https://cloud.google.com/appengine/docs/python/release-notes
+
+### Google Cloud Datalab
+
+*   Updated the datalab component to the 20170330 build:
+    *    Fixed a race condition on `create` when mounting /tmp that caused
+         intermittent mount failures.
+    *    Added `.gitignore` and `README.md` files to newly created user
+         notebooks.
+
+### Google Cloud Source Repositories
+
+*   Added `--use-full-gcloud-path` flag to `gcloud source repos clone` command
+    in alpha and beta tracks. Fixes issue
+    <https://issuetracker.google.com/issues/35907670>.
+
+### Google Cloud Storage
+
+*    Updated gsutil component to 4.25.
+
+### Google Compute Engine
+
+*   Added `--action`, `--rules`, `--direction`, `--destination-ranges`, and
+    `--priority` flags to
+    `gcloud beta compute firewall-rules {describe,create,update}` commands.
+*   Added `size=SIZE` parameter to the `--local-ssd` flag for
+    `gcloud compute {instances,instance-templates} create{,-from-container}`
+    commands in the alpha track.
+
+### Google Service Management
+
+*   Added `gcloud service-management operations list` command in the alpha and
+    beta tracks.
+
+
 ## 150.0.0 (2017-04-05)
 
 ### Breaking Changes

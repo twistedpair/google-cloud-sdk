@@ -17,7 +17,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 LIENS_API_VERSION = 'v1'
-LIENS_COLLECTION = 'cloudresourcemanager.liens'
 
 
 def LiensClient():
@@ -49,3 +48,12 @@ def LienIdToName(lien_id):
 def GetLien(lien_id):
   return LiensService().Get(
       LiensMessages().CloudresourcemanagerLiensGetRequest(LiensId=lien_id))
+
+
+def GetUri(resource):
+  """Returns the uri for resource."""
+  lien_id = LienNameToId(resource.name)
+  lien_ref = LiensRegistry().Parse(
+      None, params={'liensId': lien_id},
+      collection='cloudresourcemanager.liens')
+  return lien_ref.SelfLink()

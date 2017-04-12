@@ -21,10 +21,13 @@ from googlecloudsdk.core.util import times
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug', 'any']
 
 # Request logs come from different sources if the app is Flex or Standard.
-FLEX_REQUEST = 'nginx.requests'
+FLEX_REQUEST = 'nginx.request'
 STANDARD_REQUEST = 'request_log'
 DEFAULT_LOGS = ['stderr', 'stdout', 'crash.log',
                 FLEX_REQUEST, STANDARD_REQUEST]
+NGINX_LOGS = [
+    'appengine.googleapis.com/nginx.request',
+    'appengine.googleapis.com/nginx.health_check']
 
 
 def GetFilters(project, log_sources, service=None, version=None, level='any'):
@@ -123,6 +126,31 @@ def FormatRequestLogEntry(entry):
              resource=GetStr('resource'),
              http_version=GetStr('httpVersion'),
              status=GetInt('status')))
+  return '{service}[{version}]  {msg}'.format(service=service,
+                                              version=version,
+                                              msg=msg)
+
+
+def FormatNginxLogEntry(entry):
+  """App Engine nginx.* formatter for `LogPrinter`.
+
+  Args:
+    entry: A log entry message emitted from the V2 API client.
+
+  Returns:
+    A string representing the entry if it is a request entry.
+  """
+  if entry.resource.type != 'gae_app':
+    return None
+  log_id = util.ExtractLogId(entry.logName)
+  if log_id not in NGINX_LOGS:
+    return None
+  service, version = _ExtractServiceAndVersion(entry)
+  msg = ('"{method} {resource}" {status}'
+         .format(
+             method=entry.httpRequest.requestMethod or '-',
+             resource=entry.httpRequest.requestUrl or '-',
+             status=entry.httpRequest.status or '-'))
   return '{service}[{version}]  {msg}'.format(service=service,
                                               version=version,
                                               msg=msg)

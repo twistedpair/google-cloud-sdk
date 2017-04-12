@@ -16,7 +16,6 @@
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import converters as c
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import schema as s
 
-
 SCHEMA = s.Message(
     api_config=s.Message(
         url=s.Value(converter=c.ToJsonString),
@@ -108,6 +107,24 @@ SCHEMA = s.Message(
         unhealthy_threshold=s.Value(),
         host=s.Value(converter=c.ToJsonString),
         restart_threshold=s.Value()),
+    liveness_check=s.Message(
+        check_interval_sec=s.Value('check_interval',
+                                   converter=c.SecondsToDuration),
+        timeout_sec=s.Value('timeout', converter=c.SecondsToDuration),
+        initial_delay_sec=s.Value('initial_delay',
+                                  converter=c.SecondsToDuration),
+        success_threshold=s.Value(),
+        failure_threshold=s.Value(),
+        path=s.Value(),
+        host=s.Value(converter=c.ToJsonString)),
+    readiness_check=s.Message(
+        check_interval_sec=s.Value('check_interval',
+                                   converter=c.SecondsToDuration),
+        timeout_sec=s.Value('timeout', converter=c.SecondsToDuration),
+        success_threshold=s.Value(),
+        failure_threshold=s.Value(),
+        path=s.Value(),
+        host=s.Value(converter=c.ToJsonString)),
     inbound_services=s.RepeatedField(element=s.Value(
         converter=c.EnumConverter('INBOUND_SERVICE'))),
     instance_class=s.Value(converter=c.ToJsonString),

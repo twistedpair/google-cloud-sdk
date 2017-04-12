@@ -25,7 +25,6 @@ from googlecloudsdk.core.util import retry
 
 
 OPERATIONS_API_VERSION = 'v1'
-OPERATIONS_COLLECTION = 'cloudresourcemanager.operations'
 
 
 def OperationsClient():
@@ -150,3 +149,13 @@ class OperationFailedException(calliope_exceptions.ToolException):
     message = 'Operation [{0}] failed: {1}: {2}'.format(op_id, error_code,
                                                         error_message)
     super(OperationFailedException, self).__init__(message)
+
+
+def GetUri(resource):
+  """Returns the uri for resource."""
+  operation_id = OperationNameToId(resource.name)
+  operation_ref = OperationsRegistry().Parse(
+      None,
+      params={'operationsId': operation_id},
+      collection='cloudresourcemanager.operations')
+  return operation_ref.SelfLink()

@@ -63,6 +63,12 @@ class OperationErrorException(core_exceptions.Error):
     super(OperationErrorException, self).__init__(message)
 
 
+class ServiceDeployErrorException(core_exceptions.Error):
+
+  def __init__(self, message):
+    super(ServiceDeployErrorException, self).__init__(message)
+
+
 def GetMessagesModule():
   return apis.GetMessagesModule('servicemanagement', 'v1')
 
@@ -235,6 +241,10 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
 
   Returns:
     Full response from the SubmitConfigSource request.
+
+  Raises:
+    ServiceDeployErrorException: the SubmitConfigSource API call returned a
+      diagnostic with a level of ERROR.
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -257,11 +267,22 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
   response = operation.get('response', {})
   diagnostics = response.get('diagnostics', [])
 
+  num_errors = 0
   for diagnostic in diagnostics:
     kind = diagnostic.get('kind', '').upper()
     logger = log.error if kind == 'ERROR' else log.warning
-    logger('{l}: {m}'.format(
-        l=diagnostic.get('location'), m=diagnostic.get('message')))
+    msg = '{l}: {m}'.format(
+        l=diagnostic.get('location'), m=diagnostic.get('message'))
+    logger(msg)
+
+    if kind == 'ERROR':
+      num_errors += 1
+
+  if num_errors > 0:
+    exception_msg = ('{0} diagnostic error{1} found in service configuration '
+                     'deployment. See log for details.').format(
+                         num_errors, 's' if num_errors > 1 else '')
+    raise ServiceDeployErrorException(exception_msg)
 
   return response
 

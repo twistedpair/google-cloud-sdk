@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.deployment_manager import importer
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.deployment_manager import dm_beta_base
+from googlecloudsdk.core import properties
 
 
 def AddCompositeTypeNameFlag(parser):
@@ -131,5 +132,6 @@ def TemplateContentsFor(template_path):
 def GetReference(name):
   return dm_beta_base.GetResources().Parse(
       name,
+      params={'project': properties.VALUES.core.project.GetOrFail},
       collection='deploymentmanager.compositeTypes')
 

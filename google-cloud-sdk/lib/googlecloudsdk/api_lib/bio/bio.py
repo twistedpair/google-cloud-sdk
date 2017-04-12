@@ -19,9 +19,6 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
-from googlecloudsdk.core import resources
 
 
 class NoEndpointException(Exception):
@@ -61,19 +58,11 @@ class Bio(object):
     return apis.GetClientInstance('bio', 'v1', no_http)
 
   @classmethod
-  def _InitResources(cls):
-    project = properties.VALUES.core.project
-    resolver = resolvers.FromProperty(project)
-    resources.REGISTRY.SetParamDefault(
-        'bio', collection=None, param='projectsId', resolver=resolver)
-
-  @classmethod
   def _SetApiEndpoint(cls):
     cls._client = cls.GetClientInstance()
 
   @classmethod
   def Init(cls):
-    cls._InitResources()
     cls._SetApiEndpoint()
 
   def _MakeRequest(self, method, message):

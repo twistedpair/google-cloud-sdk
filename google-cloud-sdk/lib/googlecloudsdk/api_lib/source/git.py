@@ -145,8 +145,19 @@ def _GetRepositoryURI(project, alias):
       {'project': project, 'alias': alias})
 
 
-def _GetGcloudScript():
-  """Get name of the gcloud script."""
+def _GetGcloudScript(full_path=False):
+  """Get name of the gcloud script.
+
+  Args:
+    full_path: boolean, True if the gcloud full path should be used if free
+      of spaces.
+
+  Returns:
+    str, command to use to execute gcloud
+
+  Raises:
+    GcloudIsNotInPath: if gcloud is not found in the path
+  """
 
   if (platforms.OperatingSystem.Current() ==
       platforms.OperatingSystem.WINDOWS):
@@ -161,7 +172,16 @@ def _GetGcloudScript():
     raise GcloudIsNotInPath(
         'Could not verify that gcloud is in the PATH. '
         'Please make sure the Cloud SDK bin folder is in PATH.')
-  return gcloud_name + gcloud_ext
+  if full_path:
+    if not re.match(r'[-a-zA-Z0-9_/]+$', gcloud):
+      log.warn(
+          textwrap.dedent("""\
+          You specified the option to use the full gcloud path in the git
+          credential.helper, but the path contains non alphanumberic characters
+          so the credential helper may not work correctly."""))
+    return gcloud
+  else:
+    return gcloud_name + gcloud_ext
 
 
 def _NormalizeToUnixPath(path, strip=True):
@@ -467,7 +487,7 @@ class Git(object):
   def GetName(self):
     return self._repo_name
 
-  def Clone(self, destination_path, dry_run=False):
+  def Clone(self, destination_path, dry_run=False, full_path=False):
     """Clone a git repository into a gcloud workspace.
 
     If the resulting clone does not have a .gcloud directory, create one. Also,
@@ -476,6 +496,7 @@ class Git(object):
     Args:
       destination_path: str, The relative path for the repository clone.
       dry_run: bool, If true do not run but print commands instead.
+      full_path: bool, If true use the full path to gcloud.
 
     Returns:
       str, The absolute path of cloned repository.
@@ -534,7 +555,7 @@ class Git(object):
                  # See https://git-scm.com/docs/git-config
                  'credential.helper=!{0} auth git-helper --account={1} '
                  '--ignore-unknown $@'
-                 .format(_GetGcloudScript(),
+                 .format(_GetGcloudScript(full_path),
                          properties.VALUES.core.account.Get(required=True))]
         self._RunCommand(cmd, dry_run)
       else:

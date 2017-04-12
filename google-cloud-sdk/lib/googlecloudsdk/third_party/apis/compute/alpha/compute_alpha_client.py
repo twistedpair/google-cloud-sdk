@@ -40,7 +40,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
     self.clientSslPolicies = self.ClientSslPoliciesService(self)
-    self.commitments = self.CommitmentsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.firewalls = self.FirewallsService(self)
@@ -58,6 +57,9 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.instanceGroups = self.InstanceGroupsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
+    self.interconnectAttachments = self.InterconnectAttachmentsService(self)
+    self.interconnectLocations = self.InterconnectLocationsService(self)
+    self.interconnects = self.InterconnectsService(self)
     self.licenses = self.LicensesService(self)
     self.machineTypes = self.MachineTypesService(self)
     self.networks = self.NetworksService(self)
@@ -1241,146 +1243,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class CommitmentsService(base_api.BaseApiService):
-    """Service class for the commitments resource."""
-
-    _NAME = u'commitments'
-
-    def __init__(self, client):
-      super(ComputeAlpha.CommitmentsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of commitments.
-
-      Args:
-        request: (ComputeCommitmentsAggregatedListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CommitmentAggregatedList) The response message.
-      """
-      config = self.GetMethodConfig('AggregatedList')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.commitments.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/commitments',
-        request_field='',
-        request_type_name=u'ComputeCommitmentsAggregatedListRequest',
-        response_type_name=u'CommitmentAggregatedList',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      """Returns the specified commitment resource. Get a list of available commitments by making a list() request.
-
-      Args:
-        request: (ComputeCommitmentsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Commitment) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.commitments.get',
-        ordered_params=[u'project', u'zone', u'commitment'],
-        path_params=[u'commitment', u'project', u'zone'],
-        query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/commitments/{commitment}',
-        request_field='',
-        request_type_name=u'ComputeCommitmentsGetRequest',
-        response_type_name=u'Commitment',
-        supports_download=False,
-    )
-
-    def Insert(self, request, global_params=None):
-      """Creates an commitment in the specified project using the data included in the request.
-
-      Args:
-        request: (ComputeCommitmentsInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.commitments.insert',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/commitments',
-        request_field=u'commitment',
-        request_type_name=u'ComputeCommitmentsInsertRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """Retrieves a list of commitments contained within the specified zone.
-
-      Args:
-        request: (ComputeCommitmentsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CommitmentList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.commitments.list',
-        ordered_params=[u'project', u'zone'],
-        path_params=[u'project', u'zone'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/zones/{zone}/commitments',
-        request_field='',
-        request_type_name=u'ComputeCommitmentsListRequest',
-        response_type_name=u'CommitmentList',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (ComputeCommitmentsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.commitments.testIamPermissions',
-        ordered_params=[u'project', u'zone', u'resource'],
-        path_params=[u'project', u'resource', u'zone'],
-        query_params=[],
-        relative_path=u'projects/{project}/zones/{zone}/commitments/{resource}/testIamPermissions',
-        request_field=u'testPermissionsRequest',
-        request_type_name=u'ComputeCommitmentsTestIamPermissionsRequest',
-        response_type_name=u'TestPermissionsResponse',
-        supports_download=False,
-    )
-
   class DiskTypesService(base_api.BaseApiService):
     """Service class for the diskTypes resource."""
 
@@ -2097,6 +1959,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates the specified forwarding rule with the data included in the request. This method supports patch semantics. Currently it only allow to patch network_tier field.
+
+      Args:
+        request: (ComputeForwardingRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.forwardingRules.patch',
+        ordered_params=[u'project', u'region', u'forwardingRule'],
+        path_params=[u'forwardingRule', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
+        request_field=u'forwardingRuleResource',
+        request_type_name=u'ComputeForwardingRulesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
@@ -2452,6 +2340,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'ComputeGlobalForwardingRulesListRequest',
         response_type_name=u'ForwardingRuleList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified forwarding rule with the data included in the request. This method supports patch semantics. Currently it only allow to patch network_tier field.
+
+      Args:
+        request: (ComputeGlobalForwardingRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.globalForwardingRules.patch',
+        ordered_params=[u'project', u'forwardingRule'],
+        path_params=[u'forwardingRule', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/forwardingRules/{forwardingRule}',
+        request_field=u'forwardingRuleResource',
+        request_type_name=u'ComputeGlobalForwardingRulesPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -3814,6 +3728,8 @@ If an empty request body is given, clears the deprecation status instead.
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeInstanceGroupManagersAbandonInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3892,6 +3808,8 @@ If an empty request body is given, clears the deprecation status instead.
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeInstanceGroupManagersDeleteInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3943,6 +3861,8 @@ If an empty request body is given, clears the deprecation status instead.
 
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+A managed instance group can have up to 1000 VM instances per group.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -4020,7 +3940,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -4047,6 +3967,8 @@ If an empty request body is given, clears the deprecation status instead.
 
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersRecreateInstancesRequest) input message
@@ -4230,7 +4152,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdateRequest) input message
@@ -5455,6 +5377,452 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+  class InterconnectAttachmentsService(base_api.BaseApiService):
+    """Service class for the interconnectAttachments resource."""
+
+    _NAME = u'interconnectAttachments'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InterconnectAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of interconnect attachments.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/interconnectAttachments',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsAggregatedListRequest',
+        response_type_name=u'InterconnectAttachmentAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified interconnect attachment.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.interconnectAttachments.delete',
+        ordered_params=[u'project', u'region', u'interconnectAttachment'],
+        path_params=[u'interconnectAttachment', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified interconnect attachment.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.get',
+        ordered_params=[u'project', u'region', u'interconnectAttachment'],
+        path_params=[u'interconnectAttachment', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsGetRequest',
+        response_type_name=u'InterconnectAttachment',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates an InterconnectAttachment in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
+        request_field=u'interconnectAttachment',
+        request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect attachments contained within the specified region.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsListRequest',
+        response_type_name=u'InterconnectAttachmentList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeInterconnectAttachmentsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InterconnectLocationsService(base_api.BaseApiService):
+    """Service class for the interconnectLocations resource."""
+
+    _NAME = u'interconnectLocations'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InterconnectLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Returns the details for the specified interconnect location. Get a list of available interconnect locations by making a list() request.
+
+      Args:
+        request: (ComputeInterconnectLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectLocation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectLocations.get',
+        ordered_params=[u'project', u'interconnectLocation'],
+        path_params=[u'interconnectLocation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnectLocations/{interconnectLocation}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectLocationsGetRequest',
+        response_type_name=u'InterconnectLocation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect locations available to the specified project.
+
+      Args:
+        request: (ComputeInterconnectLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectLocationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectLocations.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/interconnectLocations',
+        request_field='',
+        request_type_name=u'ComputeInterconnectLocationsListRequest',
+        response_type_name=u'InterconnectLocationList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectLocationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectLocations.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnectLocations/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeInterconnectLocationsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InterconnectsService(base_api.BaseApiService):
+    """Service class for the interconnects resource."""
+
+    _NAME = u'interconnects'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InterconnectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified interconnect.
+
+      Args:
+        request: (ComputeInterconnectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.interconnects.delete',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified interconnect. Get a list of available interconnects by making a list() request.
+
+      Args:
+        request: (ComputeInterconnectsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Interconnect) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.get',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsGetRequest',
+        response_type_name=u'Interconnect',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a Interconnect in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeInterconnectsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects',
+        request_field=u'interconnect',
+        request_type_name=u'ComputeInterconnectsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect available to the specified project.
+
+      Args:
+        request: (ComputeInterconnectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/interconnects',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsListRequest',
+        response_type_name=u'InterconnectList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified interconnect with the data included in the request using patch semantics.
+
+      Args:
+        request: (ComputeInterconnectsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.interconnects.patch',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field=u'interconnectResource',
+        request_type_name=u'ComputeInterconnectsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInterconnectsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeInterconnectsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class LicensesService(base_api.BaseApiService):
     """Service class for the licenses resource."""
 
@@ -5514,6 +5882,32 @@ If you increase the size of the instance group, the group creates new instances 
         request_field=u'license',
         request_type_name=u'ComputeLicensesInsertRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 8. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+
+      Args:
+        request: (ComputeLicensesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LicensesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.licenses.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/licenses',
+        request_field='',
+        request_type_name=u'ComputeLicensesListRequest',
+        response_type_name=u'LicensesListResponse',
         supports_download=False,
     )
 
@@ -7014,6 +7408,8 @@ If you increase the size of the instance group, the group creates new instances 
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -7066,6 +7462,8 @@ If you increase the size of the instance group, the group creates new instances 
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -7117,6 +7515,8 @@ If you increase the size of the instance group, the group creates new instances 
 
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+A regional managed instance group can contain up to 2000 instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
@@ -7194,7 +7594,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -7221,6 +7621,8 @@ If you increase the size of the instance group, the group creates new instances 
 
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message

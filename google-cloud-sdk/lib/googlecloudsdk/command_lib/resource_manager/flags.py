@@ -13,20 +13,14 @@
 # limitations under the License.
 """Flags for commands that deal with the CRM API."""
 
-from googlecloudsdk.api_lib.resource_manager import folders
-from googlecloudsdk.api_lib.resource_manager import liens
-from googlecloudsdk.api_lib.resource_manager import operations
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
 
 
 def FolderIdArg(use_description):
   return base.Argument(
       'id',
       metavar='FOLDER_ID',
-      completion_resource=folders.FOLDERS_COLLECTION,
       list_command_path='resource-manager folders list --uri',
       help='ID for the folder {0}'.format(use_description))
 
@@ -36,9 +30,8 @@ def FolderIdFlag(use_description):
   return base.Argument(
       '--folder',
       metavar='FOLDER_ID',
-      completion_resource=folders.FOLDERS_COLLECTION,
       default=None,
-      list_command_path='resource-manager folders',
+      list_command_path='resource-manager folders list --uri',
       help='ID for the folder {0}'.format(use_description))
 
 
@@ -46,8 +39,7 @@ def OrganizationIdFlag(use_description):
   return base.Argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
+      list_command_path='organizations list --uri',
       help='ID for the organization {0}'.format(use_description))
 
 
@@ -55,7 +47,7 @@ def OperationIdArg(use_description):
   return base.Argument(
       'id',
       metavar='OPERATION_ID',
-      completion_resource=operations.OPERATIONS_COLLECTION,
+      list_command_path='resource-manager operations list --uri',
       help='ID for the operation {0}'.format(use_description))
 
 
@@ -72,7 +64,7 @@ def LienIdArg(use_description):
   return base.Argument(
       'id',
       metavar='LIEN_ID',
-      completion_resource=liens.LIENS_COLLECTION,
+      list_command_path='resource-manager liens list --uri',
       help='ID for the lien {0}'.format(use_description))
 
 
