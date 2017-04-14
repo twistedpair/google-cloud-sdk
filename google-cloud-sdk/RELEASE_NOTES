@@ -2,6 +2,13 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 151.0.1 (2017-04-14)
+
+### Cloud SDK
+
+*  Fixed issue in which some users could not use the Windows installer or
+   "bundled python" version of the Cloud SDK for installation.
+
 ## 151.0.0 (2017-04-12)
 
 ### Google App Engine
