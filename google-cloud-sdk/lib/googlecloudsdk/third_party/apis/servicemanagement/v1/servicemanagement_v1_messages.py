@@ -84,17 +84,18 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted. Example Policy with
-  multiple AuditConfigs: {   "audit_configs": [     {       "service":
-  "allServices"       "audit_log_configs": [         {           "log_type":
-  "DATA_READ",           "exempted_members": [
-  "user:foo@gmail.com"           ]         },         {           "log_type":
-  "DATA_WRITE",         },         {           "log_type": "ADMIN_READ",
-  }       ]     },     {       "service": "fooservice@googleapis.com"
-  "audit_log_configs": [         {           "log_type": "DATA_READ",
-  },         {           "log_type": "DATA_WRITE",
-  "exempted_members": [             "user:bar@gmail.com"           ]         }
-  ]     }   ] } For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  exempted_members in each AuditConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
   ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
   and bar@gmail.com from DATA_WRITE logging.
 
@@ -1123,6 +1124,11 @@ class Endpoint(_messages.Message):
     apis: The list of APIs served by this endpoint.
     features: The list of features enabled on this endpoint.
     name: The canonical name of this endpoint.
+    target: The specification of an Internet routable address of API frontend
+      that will handle requests to this [API
+      Endpoint](https://cloud.google.com/apis/design/glossary). It should be
+      either a valid IPv4 address or a fully-qualified domain name. For
+      example, "8.8.8.8" or "myservice.appspot.com".
   """
 
   aliases = _messages.StringField(1, repeated=True)
@@ -1130,6 +1136,7 @@ class Endpoint(_messages.Message):
   apis = _messages.StringField(3, repeated=True)
   features = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
+  target = _messages.StringField(6)
 
 
 class Enum(_messages.Message):
@@ -1313,7 +1320,6 @@ class FlowOperationMetadata(_messages.Message):
       don't have orphans. see also: go/prevent-orphaned-operations
     flowName: The name of the top-level flow corresponding to this operation.
       Must be equal to the "name" field for a FlowName enum.
-    isPersisted: Is the update for the operation persisted?
     resourceNames: The full name of the resources that this flow is directly
       associated with.
     startTime: The start time of the operation.
@@ -1336,9 +1342,8 @@ class FlowOperationMetadata(_messages.Message):
   cancelState = _messages.EnumField('CancelStateValueValuesEnum', 1)
   deadline = _messages.StringField(2)
   flowName = _messages.StringField(3)
-  isPersisted = _messages.BooleanField(4)
-  resourceNames = _messages.StringField(5, repeated=True)
-  startTime = _messages.StringField(6)
+  resourceNames = _messages.StringField(4, repeated=True)
+  startTime = _messages.StringField(5)
 
 
 class GenerateConfigReportRequest(_messages.Message):
@@ -1453,12 +1458,17 @@ class Http(_messages.Message):
   REST API methods.
 
   Fields:
+    fullyDecodeReservedExpansion: When set to true, URL path parmeters will be
+      fully URI-decoded except in cases of single segment matches in reserved
+      expansion, where "%2F" will be left encoded.  The default behavior is to
+      not decode RFC 6570 reserved characters in multi segment matches.
     rules: A list of HTTP configuration rules that apply to individual API
       methods.  **NOTE:** All service configuration rules follow "last one
       wins" order.
   """
 
-  rules = _messages.MessageField('HttpRule', 1, repeated=True)
+  fullyDecodeReservedExpansion = _messages.BooleanField(1)
+  rules = _messages.MessageField('HttpRule', 2, repeated=True)
 
 
 class HttpRule(_messages.Message):
@@ -2004,6 +2014,60 @@ class MetricDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
 
 
+class MetricRule(_messages.Message):
+  """Bind API methods to metrics. Binding a method to a metric causes that
+  metric's configured quota, billing, and monitoring behaviors to apply to the
+  method call.  Used by metric-based quotas only.
+
+  Messages:
+    MetricCostsValue: Metrics to update when the selected methods are called,
+      and the associated cost applied to each metric.  The key of the map is
+      the metric name, and the values are the amount increased for the metric
+      against which the quota limits are defined. The value must not be
+      negative.
+
+  Fields:
+    metricCosts: Metrics to update when the selected methods are called, and
+      the associated cost applied to each metric.  The key of the map is the
+      metric name, and the values are the amount increased for the metric
+      against which the quota limits are defined. The value must not be
+      negative.
+    selector: Selects the methods to which this rule applies.  Refer to
+      selector for syntax details.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetricCostsValue(_messages.Message):
+    """Metrics to update when the selected methods are called, and the
+    associated cost applied to each metric.  The key of the map is the metric
+    name, and the values are the amount increased for the metric against which
+    the quota limits are defined. The value must not be negative.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetricCostsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetricCostsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetricCostsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metricCosts = _messages.MessageField('MetricCostsValue', 1)
+  selector = _messages.StringField(2)
+
+
 class Mixin(_messages.Message):
   """Declares an API to be included in this API. The including API must
   redeclare all the methods from the included API, but documentation and
@@ -2506,6 +2570,41 @@ class QueryUserAccessResponse(_messages.Message):
   canAccessService = _messages.BooleanField(2)
 
 
+class Quota(_messages.Message):
+  """Quota configuration helps to achieve fairness and budgeting in service
+  usage.  The quota configuration works this way: - The service configuration
+  defines a set of metrics. - For API calls, the quota.metric_rules maps
+  methods to metrics with   corresponding costs. - The quota.limits defines
+  limits on the metrics, which will be used for   quota checks at runtime.  An
+  example quota configuration in yaml format:     quota:       - name:
+  apiWriteQpsPerProject        metric: library.googleapis.com/write_calls
+  unit: "1/min/{project}"  # rate limit for consumer projects        values:
+  STANDARD: 10000        # The metric rules bind all methods to the read_calls
+  metric,      # except for the UpdateBook and DeleteBook methods. These two
+  methods      # are mapped to the write_calls metric, with the UpdateBook
+  method      # consuming at twice rate as the DeleteBook method.
+  metric_rules:      - selector: "*"        metric_costs:
+  library.googleapis.com/read_calls: 1      - selector:
+  google.example.library.v1.LibraryService.UpdateBook        metric_costs:
+  library.googleapis.com/write_calls: 2      - selector:
+  google.example.library.v1.LibraryService.DeleteBook        metric_costs:
+  library.googleapis.com/write_calls: 1   Corresponding Metric definition:
+  metrics:      - name: library.googleapis.com/read_calls        display_name:
+  Read requests        metric_kind: DELTA        value_type: INT64       -
+  name: library.googleapis.com/write_calls        display_name: Write requests
+  metric_kind: DELTA        value_type: INT64
+
+  Fields:
+    limits: List of `QuotaLimit` definitions for the service.  Used by metric-
+      based quotas only.
+    metricRules: List of `MetricRule` definitions, each one mapping a selected
+      method to one or more metrics.  Used by metric-based quotas only.
+  """
+
+  limits = _messages.MessageField('QuotaLimit', 1, repeated=True)
+  metricRules = _messages.MessageField('MetricRule', 2, repeated=True)
+
+
 class QuotaBucket(_messages.Message):
   """The quota limit value and current usage for a quota bucket.
 
@@ -2589,15 +2688,6 @@ class QuotaLimit(_messages.Message):
   duration for a limit type. There can be at most one limit for a duration and
   limit type combination defined within a `QuotaGroup`.
 
-  Enums:
-    LimitByValueValuesEnum: Limit type to use for enforcing this quota limit.
-      Each unique value gets the defined number of tokens to consume from. For
-      a quota limit that uses user type, each user making requests through the
-      same client application project will get his/her own pool of tokens to
-      consume, whereas for a limit that uses client project type, all users
-      making requests through the same client application project share a
-      single pool of tokens.  Used by group-based quotas only.
-
   Messages:
     ValuesValue: Tiered limit values. Also allows for regional or zone
       overrides for these values if "/{region}" or "/{zone}" is specified in
@@ -2649,19 +2739,6 @@ class QuotaLimit(_messages.Message):
       any other limit. If this field is not set, it defaults to 0, indicating
       that there is no free tier for this service.  Used by group-based quotas
       only.
-    isPrecise: Whether the quota limit needs to be enforced precisely.  Note
-      that precise quota limits are more expensive to enforce. Make a quota
-      limit precise only if it is necessary.  Precise rate quota is not
-      currently supported. An error will be raised if a rate quota is
-      specified to be precise. Imprecise allocation quota is not currently
-      supported.  Used by metric-based quotas only.
-    limitBy: Limit type to use for enforcing this quota limit. Each unique
-      value gets the defined number of tokens to consume from. For a quota
-      limit that uses user type, each user making requests through the same
-      client application project will get his/her own pool of tokens to
-      consume, whereas for a limit that uses client project type, all users
-      making requests through the same client application project share a
-      single pool of tokens.  Used by group-based quotas only.
     maxLimit: Maximum number of tokens that can be consumed during the
       specified duration. Client application developers can override the
       default limit up to this maximum. If specified, this value cannot be set
@@ -2695,19 +2772,17 @@ class QuotaLimit(_messages.Message):
       granted containers:   * "/{organization}" quota for an organization.   *
       "/{project}" quota for a project.   * "/{folder}" quota for a folder.
       * "/{resource}" quota for a universal resource. * Zero or more quota
-      segmentation dimension. Not all combos are valid.   * "/{user}" quota
-      for every user GAIA ID or client ip address.     User GAIA ID has
-      precedence over client ip address.   * "/{region}" quota for every
-      region. Not to be used with time intervals.   * Otherwise the resources
-      granted on the target is not segmented.   * "/{zone}" quota for every
-      zone. Not to be used with time intervals.   * Otherwise the resources
-      granted on the target is not segmented.   * "/{resource}" quota for a
-      resource associated with a project or org.  Here are some examples: *
-      "1/min/{project}" for quota per minute per project. * "1/min/{user}" for
-      quota per minute per user. * "1/min/{organization}" for quota per minute
-      per organization.  Note: the order of unit components is insignificant.
-      The "1" at the beginning is required to follow the metric unit syntax.
-      Used by metric-based quotas only.
+      segmentation dimension. Not all combos are valid.   * "/{region}" quota
+      for every region. Not to be used with time intervals.   * Otherwise the
+      resources granted on the target is not segmented.   * "/{zone}" quota
+      for every zone. Not to be used with time intervals.   * Otherwise the
+      resources granted on the target is not segmented.   * "/{resource}"
+      quota for a resource associated with a project or org.  Here are some
+      examples: * "1/min/{project}" for quota per minute per project. *
+      "1/min/{user}" for quota per minute per user. * "1/min/{organization}"
+      for quota per minute per organization.  Note: the order of unit
+      components is insignificant. The "1" at the beginning is required to
+      follow the metric unit syntax.  Used by metric-based quotas only.
     values: Tiered limit values. Also allows for regional or zone overrides
       for these values if "/{region}" or "/{zone}" is specified in the unit
       field.  Currently supported tiers from low to high: VERY_LOW, LOW,
@@ -2730,24 +2805,6 @@ class QuotaLimit(_messages.Message):
       tier set for default limit values. Same rule applies for zone overrides
       tier as well.  Used by metric-based quotas only.
   """
-
-  class LimitByValueValuesEnum(_messages.Enum):
-    """Limit type to use for enforcing this quota limit. Each unique value
-    gets the defined number of tokens to consume from. For a quota limit that
-    uses user type, each user making requests through the same client
-    application project will get his/her own pool of tokens to consume,
-    whereas for a limit that uses client project type, all users making
-    requests through the same client application project share a single pool
-    of tokens.  Used by group-based quotas only.
-
-    Values:
-      CLIENT_PROJECT: ID of the project owned by the client application
-        developer making the request.
-      USER: ID of the end user making the request using the client
-        application.
-    """
-    CLIENT_PROJECT = 0
-    USER = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValuesValue(_messages.Message):
@@ -2798,13 +2855,11 @@ class QuotaLimit(_messages.Message):
   displayName = _messages.StringField(3)
   duration = _messages.StringField(4)
   freeTier = _messages.IntegerField(5)
-  isPrecise = _messages.BooleanField(6)
-  limitBy = _messages.EnumField('LimitByValueValuesEnum', 7)
-  maxLimit = _messages.IntegerField(8)
-  metric = _messages.StringField(9)
-  name = _messages.StringField(10)
-  unit = _messages.StringField(11)
-  values = _messages.MessageField('ValuesValue', 12)
+  maxLimit = _messages.IntegerField(6)
+  metric = _messages.StringField(7)
+  name = _messages.StringField(8)
+  unit = _messages.StringField(9)
+  values = _messages.MessageField('ValuesValue', 10)
 
 
 class QuotaLimitOverride(_messages.Message):
@@ -3213,6 +3268,7 @@ class Service(_messages.Message):
     producerProjectId: The id of the Google developer project that owns the
       service. Members of this project can manage the service configuration,
       manage consumption of the service, etc.
+    quota: Quota configuration.
     sourceInfo: Output only. The source information for this configuration if
       available.
     systemParameters: System parameter configuration.
@@ -3251,13 +3307,14 @@ class Service(_messages.Message):
   monitoring = _messages.MessageField('Monitoring', 18)
   name = _messages.StringField(19)
   producerProjectId = _messages.StringField(20)
-  sourceInfo = _messages.MessageField('SourceInfo', 21)
-  systemParameters = _messages.MessageField('SystemParameters', 22)
-  systemTypes = _messages.MessageField('Type', 23, repeated=True)
-  title = _messages.StringField(24)
-  types = _messages.MessageField('Type', 25, repeated=True)
-  usage = _messages.MessageField('Usage', 26)
-  visibility = _messages.MessageField('Visibility', 27)
+  quota = _messages.MessageField('Quota', 21)
+  sourceInfo = _messages.MessageField('SourceInfo', 22)
+  systemParameters = _messages.MessageField('SystemParameters', 23)
+  systemTypes = _messages.MessageField('Type', 24, repeated=True)
+  title = _messages.StringField(25)
+  types = _messages.MessageField('Type', 26, repeated=True)
+  usage = _messages.MessageField('Usage', 27)
+  visibility = _messages.MessageField('Visibility', 28)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):

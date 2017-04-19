@@ -22,6 +22,24 @@ BASE_URL = 'https://iam.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  ORGANIZATIONS_ROLES = (
+      'organizations.roles',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/roles/{rolesId}',
+      },
+      [u'name']
+  )
+  PROJECTS_ROLES = (
+      'projects.roles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/roles/{rolesId}',
+      },
+      [u'name']
+  )
   PROJECTS_SERVICEACCOUNTS = (
       'projects.serviceAccounts',
       '{+name}',
@@ -38,6 +56,15 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
               'keys/{keysId}',
+      },
+      [u'name']
+  )
+  ROLES = (
+      'roles',
+      '{+name}',
+      {
+          '':
+              'roles/{rolesId}',
       },
       [u'name']
   )

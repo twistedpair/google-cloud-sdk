@@ -1218,9 +1218,10 @@ class JobConfigurationQuery(_messages.Message):
       source can then be queried as if it were a standard BigQuery table.
 
   Fields:
-    allowLargeResults: If true, allows the query to produce arbitrarily large
-      result tables at a slight cost in performance. Requires destinationTable
-      to be set.
+    allowLargeResults: [Optional] If true and query uses legacy SQL dialect,
+      allows the query to produce arbitrarily large result tables at a slight
+      cost in performance. Requires destinationTable to be set. For standard
+      SQL queries, this flag is ignored and large results are always allowed.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1233,9 +1234,10 @@ class JobConfigurationQuery(_messages.Message):
     destinationTable: [Optional] Describes the table where the query results
       should be stored. If not present, a new table will be created to store
       the results.
-    flattenResults: [Optional] Flattens all nested and repeated fields in the
-      query results. The default value is true. allowLargeResults must be true
-      if this is set to false.
+    flattenResults: [Optional] If true and query uses legacy SQL dialect,
+      flattens all nested and repeated fields in the query results.
+      allowLargeResults must be true if this is set to false. For standard SQL
+      queries, this flag is ignored and results are never flattened.
     maximumBillingTier: [Optional] Limits the billing tier for this job.
       Queries that have resource usage beyond this tier will fail (without
       incurring a charge). If unspecified, this will be set to your project
@@ -1319,7 +1321,7 @@ class JobConfigurationQuery(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allowLargeResults = _messages.BooleanField(1)
+  allowLargeResults = _messages.BooleanField(1, default=False)
   createDisposition = _messages.StringField(2)
   defaultDataset = _messages.MessageField('DatasetReference', 3)
   destinationTable = _messages.MessageField('TableReference', 4)

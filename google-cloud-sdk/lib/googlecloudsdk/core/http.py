@@ -15,6 +15,7 @@
 """A module to get an unauthenticated http object."""
 
 
+import copy
 import platform
 import time
 import urllib
@@ -224,6 +225,12 @@ class Modifiers(object):
     def WrappedRequest(*args, **kwargs):
       """Replacement http.request() method."""
       modified_args = args
+      # We need to make a copy here because if we don't we will be modifying the
+      # dictionary that people pass in.
+      # TODO(b/37281703): Copy the entire dictionary. This is blocked on making
+      # sure anything that comes through is actually copyable.
+      if 'headers' in kwargs:
+        kwargs['headers'] = copy.copy(kwargs['headers'])
       modifier_data = []
 
       for handler in handlers:

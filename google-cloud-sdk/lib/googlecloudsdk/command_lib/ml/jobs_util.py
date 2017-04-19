@@ -37,7 +37,10 @@ _CONTINUE_INTERVAL = 10
 
 
 def Cancel(jobs_client, job):
-  job_ref = resources.REGISTRY.Parse(job, collection='ml.projects.jobs')
+  job_ref = resources.REGISTRY.Parse(
+      job,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.jobs')
   return jobs_client.Cancel(job_ref)
 
 
@@ -52,7 +55,10 @@ def PrintDescribeFollowUp(job_id):
 
 
 def Describe(jobs_client, job):
-  job_ref = resources.REGISTRY.Parse(job, collection='ml.projects.jobs')
+  job_ref = resources.REGISTRY.Parse(
+      job,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.jobs')
   return jobs_client.Get(job_ref)
 
 
@@ -184,7 +190,10 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job.jobId,
                                                  project=project_ref.Name()))
 
-  job_ref = resources.REGISTRY.Parse(job.jobId, collection='ml.projects.jobs')
+  job_ref = resources.REGISTRY.Parse(
+      job.jobId,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.jobs')
   job = jobs_client.Get(job_ref)
 
   return job

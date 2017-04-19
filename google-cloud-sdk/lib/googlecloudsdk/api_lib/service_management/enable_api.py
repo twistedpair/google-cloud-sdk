@@ -14,9 +14,13 @@
 
 """service-management enable helper functions."""
 
+import json
+
+from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.service_management import services_util
+from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.core import log
 
 
@@ -26,6 +30,12 @@ def EnableServiceApiCall(project_id, service_name):
   Args:
     project_id: The ID of the project for which to enable the service.
     service_name: The name of the service to enable on the project.
+
+  Raises:
+    services_util.EnableServicePermissionDeniedException: when enabling the API
+        fails.
+    api_lib_exceptions.HttpException: Another miscellaneous error with the
+        enabling service.
 
   Returns:
     The result of the Enable operation
@@ -40,7 +50,16 @@ def EnableServiceApiCall(project_id, service_name):
           consumerId='project:' + project_id
       )
   )
-  return client.services.Enable(request)
+
+  try:
+    return client.services.Enable(request)
+  except exceptions.HttpError as e:
+    if e.status_code in [403, 404]:
+      # TODO(b/36865980): When backend supports it, differentiate errors.
+      msg = json.loads(e.content).get('error', {}).get('message', '')
+      raise services_util.EnableServicePermissionDeniedException(msg)
+    else:
+      raise api_lib_exceptions.HttpException(e)
 
 
 def IsServiceEnabled(project_id, service_name):
@@ -50,6 +69,12 @@ def IsServiceEnabled(project_id, service_name):
     project_id: The ID of the project we want to query.
     service_name: The name of the service.
 
+  Raises:
+    services_util.ListServicesPermissionDeniedException: if a 403 or 404
+        error is returned by the List request.
+    api_lib_exceptions.HttpException: Another miscellaneous error with the
+        listing service.
+
   Returns:
     True if the service is enabled, false otherwise.
   """
@@ -58,17 +83,21 @@ def IsServiceEnabled(project_id, service_name):
 
   # Get the list of enabled services.
   request = services_util.GetEnabledListRequest(project_id)
-  services = list_pager.YieldFromList(
-      client.services,
-      request,
-      batch_size_attribute='pageSize',
-      field='services')
-
-  # If the service is present in the list of enabled services, return
-  # True, otherwise return False
-  for service in services:
-    if service.serviceName.lower() == service_name.lower():
-      return True
+  try:
+    for service in list_pager.YieldFromList(
+        client.services,
+        request,
+        batch_size_attribute='pageSize',
+        field='services'):
+      # If the service is present in the list of enabled services, return
+      # True, otherwise return False
+      if service.serviceName.lower() == service_name.lower():
+        return True
+  except exceptions.HttpError as e:
+    if e.status_code in [403, 404]:
+      msg = json.loads(e.content).get('error', {}).get('message', '')
+      raise services_util.ListServicesPermissionDeniedException(msg)
+    raise api_lib_exceptions.HttpException(e)
   return False
 
 
@@ -80,6 +109,14 @@ def EnableServiceIfDisabled(project_id, service_name, async=False):
     service_name: The name of the service to enable on the project.
     async: bool, if True, print the operation ID and return immediately,
            without waiting for the op to complete.
+
+  Raises:
+    services_util.ListServicesPermissionDeniedException: if a 403 or 404 error
+        is returned by the listing service.
+    services_util.EnableServicePermissionDeniedException: when enabling the API
+        fails with a 403 or 404 error code.
+    api_lib_exceptions.HttpException: Another miscellaneous error with the
+        servicemanagement service.
   """
 
   # If the service is enabled, we can return

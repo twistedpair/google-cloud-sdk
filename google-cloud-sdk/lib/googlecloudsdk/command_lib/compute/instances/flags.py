@@ -826,6 +826,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
       else 'Create instance without scopes')
   scopes_exists = 'keep the scopes it currently has'
   scopes_not_exists = 'be assigned the default scopes, described below'
+  scopes_default_list = '- ' + '\n      - '.join(constants.DEFAULT_SCOPES)
   scopes_help = """\
   If not provided, the instance will {0}.
 
@@ -834,12 +835,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
 
     default
       Scopes assigned to instances by default:
-      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
-      - https://www.googleapis.com/auth/service.management.readonly
-      - https://www.googleapis.com/auth/servicecontrol
+      {scopes_default_list}
 
     bigquery
       - https://www.googleapis.com/auth/bigquery
@@ -897,7 +893,8 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
 
     userinfo-email
       - https://www.googleapis.com/auth/userinfo.email
-    """.format(scopes_exists if instance_exists else scopes_not_exists)
+    """.format(scopes_exists if instance_exists else scopes_not_exists,
+               scopes_default_list=scopes_default_list)
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),

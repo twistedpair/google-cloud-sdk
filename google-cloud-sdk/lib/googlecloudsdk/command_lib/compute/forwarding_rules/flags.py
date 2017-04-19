@@ -171,17 +171,20 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
     short_help='The external IP address that the forwarding rule will serve.',
     detailed_help="""\
-      The external IP address that the forwarding rule will
-      serve. All traffic sent to this IP address is directed to the
-      target pointed to by the forwarding rule. If the address is
-      reserved, it must either (1) reside in the global scope if the
-      forwarding rule is being configured to point to a target HTTP
-      proxy or (2) reside in the same region as the forwarding rule
+      The external IPv4 address in the format of 1.2.3.4 that the forwarding
+      rule will serve. All traffic sent to this IP address is directed to the
+      target pointed to by the forwarding rule. Assigned IP addresses can be
+      reserved or unreserved.
+
+      If the address is reserved, it must either (1) reside in the global scope
+      if the forwarding rule is being configured to point to an external load
+      balancer or (2) reside in the same region as the forwarding rule
       if the forwarding rule is being configured to point to a
       target pool or target instance. If this flag is omitted, an
       ephemeral IP address is assigned.
 
-      Note: --address only accepts IPv4 addresses in the format of 1.2.3.4.
+      Note: An IP address must be specified if the traffic is being forwarded to
+      a VPN.
       """)
 
 

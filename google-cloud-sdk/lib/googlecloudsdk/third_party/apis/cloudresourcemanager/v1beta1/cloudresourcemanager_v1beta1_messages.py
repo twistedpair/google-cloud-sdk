@@ -36,7 +36,7 @@ class AuditConfig(_messages.Message):
   "user:foo@gmail.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice@googleapis.com"           "audit_log_configs": [
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:bar@gmail.com"               ]             }           ]         }

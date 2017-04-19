@@ -16,6 +16,7 @@
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -25,7 +26,10 @@ def Create(instance, database):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesSessionsCreateRequest(
       database=ref.RelativeName())

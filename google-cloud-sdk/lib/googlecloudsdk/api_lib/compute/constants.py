@@ -141,10 +141,13 @@ _SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
 _SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management.readonly'
 _SOURCE_REPOS = 'https://www.googleapis.com/auth/source.full_control'
 _SOURCE_REPOS_RO = 'https://www.googleapis.com/auth/source.read_only'
+_PUBSUB = 'https://www.googleapis.com/auth/pubsub'
+_STACKDRIVER_TRACE = 'https://www.googleapis.com/auth/trace.append'
 
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
-    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE,
+    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _PUBSUB,
+    _STACKDRIVER_TRACE,
 ])
 
 SCOPES = {

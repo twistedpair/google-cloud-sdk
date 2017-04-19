@@ -1115,6 +1115,8 @@ class _SectionEmulator(_Section):
                                          default='localhost:8081')
     self.pubsub_host_port = self._Add('pubsub_host_port',
                                       default='localhost:8085')
+    self.bigtable_host_port = self._Add('bigtable_host_port',
+                                        default='localhost:8086')
 
 
 class _Property(object):

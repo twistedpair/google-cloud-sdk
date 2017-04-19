@@ -323,6 +323,10 @@
           "description": "HTTP configuration.",
           "$ref": "Http"
         },
+        "quota": {
+          "description": "Quota configuration.",
+          "$ref": "Quota"
+        },
         "authentication": {
           "description": "Auth configuration.",
           "$ref": "Authentication"
@@ -909,6 +913,10 @@
           "items": {
             "$ref": "HttpRule"
           }
+        },
+        "fullyDecodeReservedExpansion": {
+          "description": "When set to true, URL path parmeters will be fully URI-decoded except in\ncases of single segment matches in reserved expansion, where \"%2F\" will be\nleft encoded.\n\nThe default behavior is to not decode RFC 6570 reserved characters in multi\nsegment matches.",
+          "type": "boolean"
         }
       }
     },
@@ -1012,6 +1020,100 @@
         "downloadService": {
           "description": "DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the download service if one is used for download.",
           "type": "string"
+        }
+      }
+    },
+    "Quota": {
+      "id": "Quota",
+      "description": "Quota configuration helps to achieve fairness and budgeting in service\nusage.\n\nThe quota configuration works this way:\n- The service configuration defines a set of metrics.\n- For API calls, the quota.metric_rules maps methods to metrics with\n  corresponding costs.\n- The quota.limits defines limits on the metrics, which will be used for\n  quota checks at runtime.\n\nAn example quota configuration in yaml format:\n\n   quota:\n\n     - name: apiWriteQpsPerProject\n       metric: library.googleapis.com\/write_calls\n       unit: \"1\/min\/{project}\"  # rate limit for consumer projects\n       values:\n         STANDARD: 10000\n\n\n     # The metric rules bind all methods to the read_calls metric,\n     # except for the UpdateBook and DeleteBook methods. These two methods\n     # are mapped to the write_calls metric, with the UpdateBook method\n     # consuming at twice rate as the DeleteBook method.\n     metric_rules:\n     - selector: \"*\"\n       metric_costs:\n         library.googleapis.com\/read_calls: 1\n     - selector: google.example.library.v1.LibraryService.UpdateBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 2\n     - selector: google.example.library.v1.LibraryService.DeleteBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 1\n\n Corresponding Metric definition:\n\n     metrics:\n     - name: library.googleapis.com\/read_calls\n       display_name: Read requests\n       metric_kind: DELTA\n       value_type: INT64\n\n     - name: library.googleapis.com\/write_calls\n       display_name: Write requests\n       metric_kind: DELTA\n       value_type: INT64",
+      "type": "object",
+      "properties": {
+        "limits": {
+          "description": "List of `QuotaLimit` definitions for the service.\n\nUsed by metric-based quotas only.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaLimit"
+          }
+        },
+        "metricRules": {
+          "description": "List of `MetricRule` definitions, each one mapping a selected method to one\nor more metrics.\n\nUsed by metric-based quotas only.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricRule"
+          }
+        }
+      }
+    },
+    "QuotaLimit": {
+      "id": "QuotaLimit",
+      "description": "`QuotaLimit` defines a specific limit that applies over a specified duration\nfor a limit type. There can be at most one limit for a duration and limit\ntype combination defined within a `QuotaGroup`.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the quota limit. The name is used to refer to the limit when\noverriding the default limit on per-consumer basis.\n\nFor group-based quota limits, the name must be unique within the quota\ngroup. If a name is not provided, it will be generated from the limit_by\nand duration fields.\n\nFor metric-based quota limits, the name must be provided, and it must be\nunique within the service. The name can only include alphanumeric\ncharacters as well as '-'.\n\nThe maximum length of the limit name is 64 characters.\n\nThe name of a limit is used as a unique identifier for this limit.\nTherefore, once a limit has been put into use, its name should be\nimmutable. You can use the display_name field to provide a user-friendly\nname for the limit. The display name can be evolved over time without\naffecting the identity of the limit.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. User-visible, extended description for this quota limit.\nShould be used only when more context is needed to understand this limit\nthan provided by the limit's display name (see: `display_name`).",
+          "type": "string"
+        },
+        "defaultLimit": {
+          "description": "Default number of tokens that can be consumed during the specified\nduration. This is the number of tokens assigned when a client\napplication developer activates the service for his\/her project.\n\nSpecifying a value of 0 will block all requests. This can be used if you\nare provisioning quota to selected consumers and blocking others.\nSimilarly, a value of -1 will indicate an unlimited quota. No other\nnegative values are allowed.\n\nUsed by group-based quotas only.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxLimit": {
+          "description": "Maximum number of tokens that can be consumed during the specified\nduration. Client application developers can override the default limit up\nto this maximum. If specified, this value cannot be set to a value less\nthan the default limit. If not specified, it is set to the default limit.\n\nTo allow clients to apply overrides with no upper bound, set this to -1,\nindicating unlimited maximum quota.\n\nUsed by group-based quotas only.",
+          "type": "string",
+          "format": "int64"
+        },
+        "freeTier": {
+          "description": "Free tier value displayed in the Developers Console for this limit.\nThe free tier is the number of tokens that will be subtracted from the\nbilled amount when billing is enabled.\nThis field can only be set on a limit with duration \"1d\", in a billable\ngroup; it is invalid on any other limit. If this field is not set, it\ndefaults to 0, indicating that there is no free tier for this service.\n\nUsed by group-based quotas only.",
+          "type": "string",
+          "format": "int64"
+        },
+        "duration": {
+          "description": "Duration of this limit in textual notation. Example: \"100s\", \"24h\", \"1d\".\nFor duration longer than a day, only multiple of days is supported. We\nsupport only \"100s\" and \"1d\" for now. Additional support will be added in\nthe future. \"0\" indicates indefinite duration.\n\nUsed by group-based quotas only.",
+          "type": "string"
+        },
+        "metric": {
+          "description": "The name of the metric this quota limit applies to. The quota limits with\nthe same metric will be checked together during runtime. The metric must be\ndefined within the service config.\n\nUsed by metric-based quotas only.",
+          "type": "string"
+        },
+        "unit": {
+          "description": "Specify the unit of the quota limit. It uses the same syntax as\nMetric.unit. The supported unit kinds are determined by the quota\nbackend system.\n\nThe [Google Service Control](https:\/\/cloud.google.com\/service-control)\nsupports the following unit components:\n* One of the time intevals:\n  * \"\/min\"  for quota every minute.\n  * \"\/d\"  for quota every 24 hours, starting 00:00 US Pacific Time.\n  * Otherwise the quota won't be reset by time, such as storage limit.\n* One and only one of the granted containers:\n  * \"\/{organization}\" quota for an organization.\n  * \"\/{project}\" quota for a project.\n  * \"\/{folder}\" quota for a folder.\n  * \"\/{resource}\" quota for a universal resource.\n* Zero or more quota segmentation dimension. Not all combos are valid.\n  * \"\/{region}\" quota for every region. Not to be used with time intervals.\n  * Otherwise the resources granted on the target is not segmented.\n  * \"\/{zone}\" quota for every zone. Not to be used with time intervals.\n  * Otherwise the resources granted on the target is not segmented.\n  * \"\/{resource}\" quota for a resource associated with a project or org.\n\nHere are some examples:\n* \"1\/min\/{project}\" for quota per minute per project.\n* \"1\/min\/{user}\" for quota per minute per user.\n* \"1\/min\/{organization}\" for quota per minute per organization.\n\nNote: the order of unit components is insignificant.\nThe \"1\" at the beginning is required to follow the metric unit syntax.\n\nUsed by metric-based quotas only.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Tiered limit values. Also allows for regional or zone overrides for these\nvalues if \"\/{region}\" or \"\/{zone}\" is specified in the unit field.\n\nCurrently supported tiers from low to high:\nVERY_LOW, LOW, STANDARD, HIGH, VERY_HIGH\n\nTo apply different limit values for users according to their tiers, specify\nthe values for the tiers you want to differentiate. For example:\n{LOW:100, STANDARD:500, HIGH:1000, VERY_HIGH:5000}\n\nThe limit value for each tier is optional except for the tier STANDARD.\nThe limit value for an unspecified tier falls to the value of its next\ntier towards tier STANDARD. For the above example, the limit value for tier\nSTANDARD is 500.\n\nTo apply the same limit value for all users, just specify limit value for\ntier STANDARD. For example: {STANDARD:500}.\n\nTo apply a regional overide for a tier, add a map entry with key\n\"<TIER>\/<region>\", where <region> is a region name. Similarly, for a zone\noverride, add a map entry with key \"<TIER>\/{zone}\".\nFurther, a wildcard can be used at the end of a zone name in order to\nspecify zone level overrides. For example:\nLOW: 10, STANDARD: 50, HIGH: 100,\nLOW\/us-central1: 20, STANDARD\/us-central1: 60, HIGH\/us-central1: 200,\nLOW\/us-central1-*: 10, STANDARD\/us-central1-*: 20, HIGH\/us-central1-*: 80\n\nThe regional overrides tier set for each region must be the same as\nthe tier set for default limit values. Same rule applies for zone overrides\ntier as well.\n\nUsed by metric-based quotas only.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "displayName": {
+          "description": "User-visible display name for this limit.\nOptional. If not set, the UI will provide a default display name based on\nthe quota configuration. This field can be used to override the default\ndisplay name generated from the configuration.",
+          "type": "string"
+        }
+      }
+    },
+    "MetricRule": {
+      "id": "MetricRule",
+      "description": "Bind API methods to metrics. Binding a method to a metric causes that\nmetric's configured quota, billing, and monitoring behaviors to apply to the\nmethod call.\n\nUsed by metric-based quotas only.",
+      "type": "object",
+      "properties": {
+        "selector": {
+          "description": "Selects the methods to which this rule applies.\n\nRefer to selector for syntax details.",
+          "type": "string"
+        },
+        "metricCosts": {
+          "description": "Metrics to update when the selected methods are called, and the associated\ncost applied to each metric.\n\nThe key of the map is the metric name, and the values are the amount\nincreased for the metric against which the quota limits are defined.\nThe value must not be negative.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -1255,6 +1357,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "target": {
+          "description": "The specification of an Internet routable address of API frontend that will\nhandle requests to this [API Endpoint](https:\/\/cloud.google.com\/apis\/design\/glossary).\nIt should be either a valid IPv4 address or a fully-qualified domain name.\nFor example, \"8.8.8.8\" or \"myservice.appspot.com\".",
+          "type": "string"
         },
         "allowCors": {
           "description": "Allowing\n[CORS](https:\/\/en.wikipedia.org\/wiki\/Cross-origin_resource_sharing), aka\ncross-domain traffic, would allow the backends served from this endpoint to\nreceive and respond to HTTP OPTIONS requests. The response will be used by\nthe browser to determine whether the subsequent cross-origin request is\nallowed to proceed.",
@@ -1862,76 +1968,6 @@
         "billable": {
           "description": "Indicates if the quota limits defined in this quota group apply to\nconsumers who have active billing. Quota limits defined in billable\ngroups will be applied only to consumers who have active billing. The\namount of tokens consumed from billable quota group will also be reported\nfor billing. Quota limits defined in non-billable groups will be applied\nonly to consumers who have no active billing.",
           "type": "boolean"
-        }
-      }
-    },
-    "QuotaLimit": {
-      "id": "QuotaLimit",
-      "description": "`QuotaLimit` defines a specific limit that applies over a specified duration\nfor a limit type. There can be at most one limit for a duration and limit\ntype combination defined within a `QuotaGroup`.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the quota limit. The name is used to refer to the limit when\noverriding the default limit on per-consumer basis.\n\nFor group-based quota limits, the name must be unique within the quota\ngroup. If a name is not provided, it will be generated from the limit_by\nand duration fields.\n\nFor metric-based quota limits, the name must be provided, and it must be\nunique within the service. The name can only include alphanumeric\ncharacters as well as '-'.\n\nThe maximum length of the limit name is 64 characters.\n\nThe name of a limit is used as a unique identifier for this limit.\nTherefore, once a limit has been put into use, its name should be\nimmutable. You can use the display_name field to provide a user-friendly\nname for the limit. The display name can be evolved over time without\naffecting the identity of the limit.",
-          "type": "string"
-        },
-        "limitBy": {
-          "description": "Limit type to use for enforcing this quota limit. Each unique value gets\nthe defined number of tokens to consume from. For a quota limit that uses\nuser type, each user making requests through the same client application\nproject will get his\/her own pool of tokens to consume, whereas for a limit\nthat uses client project type, all users making requests through the same\nclient application project share a single pool of tokens.\n\nUsed by group-based quotas only.",
-          "enumDescriptions": [
-            "ID of the project owned by the client application developer making the\nrequest.",
-            "ID of the end user making the request using the client application."
-          ],
-          "type": "string",
-          "enum": [
-            "CLIENT_PROJECT",
-            "USER"
-          ]
-        },
-        "description": {
-          "description": "Optional. User-visible, extended description for this quota limit.\nShould be used only when more context is needed to understand this limit\nthan provided by the limit's display name (see: `display_name`).",
-          "type": "string"
-        },
-        "defaultLimit": {
-          "description": "Default number of tokens that can be consumed during the specified\nduration. This is the number of tokens assigned when a client\napplication developer activates the service for his\/her project.\n\nSpecifying a value of 0 will block all requests. This can be used if you\nare provisioning quota to selected consumers and blocking others.\nSimilarly, a value of -1 will indicate an unlimited quota. No other\nnegative values are allowed.\n\nUsed by group-based quotas only.",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxLimit": {
-          "description": "Maximum number of tokens that can be consumed during the specified\nduration. Client application developers can override the default limit up\nto this maximum. If specified, this value cannot be set to a value less\nthan the default limit. If not specified, it is set to the default limit.\n\nTo allow clients to apply overrides with no upper bound, set this to -1,\nindicating unlimited maximum quota.\n\nUsed by group-based quotas only.",
-          "type": "string",
-          "format": "int64"
-        },
-        "freeTier": {
-          "description": "Free tier value displayed in the Developers Console for this limit.\nThe free tier is the number of tokens that will be subtracted from the\nbilled amount when billing is enabled.\nThis field can only be set on a limit with duration \"1d\", in a billable\ngroup; it is invalid on any other limit. If this field is not set, it\ndefaults to 0, indicating that there is no free tier for this service.\n\nUsed by group-based quotas only.",
-          "type": "string",
-          "format": "int64"
-        },
-        "duration": {
-          "description": "Duration of this limit in textual notation. Example: \"100s\", \"24h\", \"1d\".\nFor duration longer than a day, only multiple of days is supported. We\nsupport only \"100s\" and \"1d\" for now. Additional support will be added in\nthe future. \"0\" indicates indefinite duration.\n\nUsed by group-based quotas only.",
-          "type": "string"
-        },
-        "metric": {
-          "description": "The name of the metric this quota limit applies to. The quota limits with\nthe same metric will be checked together during runtime. The metric must be\ndefined within the service config.\n\nUsed by metric-based quotas only.",
-          "type": "string"
-        },
-        "unit": {
-          "description": "Specify the unit of the quota limit. It uses the same syntax as\nMetric.unit. The supported unit kinds are determined by the quota\nbackend system.\n\nThe [Google Service Control](https:\/\/cloud.google.com\/service-control)\nsupports the following unit components:\n* One of the time intevals:\n  * \"\/min\"  for quota every minute.\n  * \"\/d\"  for quota every 24 hours, starting 00:00 US Pacific Time.\n  * Otherwise the quota won't be reset by time, such as storage limit.\n* One and only one of the granted containers:\n  * \"\/{organization}\" quota for an organization.\n  * \"\/{project}\" quota for a project.\n  * \"\/{folder}\" quota for a folder.\n  * \"\/{resource}\" quota for a universal resource.\n* Zero or more quota segmentation dimension. Not all combos are valid.\n  * \"\/{user}\" quota for every user GAIA ID or client ip address.\n    User GAIA ID has precedence over client ip address.\n  * \"\/{region}\" quota for every region. Not to be used with time intervals.\n  * Otherwise the resources granted on the target is not segmented.\n  * \"\/{zone}\" quota for every zone. Not to be used with time intervals.\n  * Otherwise the resources granted on the target is not segmented.\n  * \"\/{resource}\" quota for a resource associated with a project or org.\n\nHere are some examples:\n* \"1\/min\/{project}\" for quota per minute per project.\n* \"1\/min\/{user}\" for quota per minute per user.\n* \"1\/min\/{organization}\" for quota per minute per organization.\n\nNote: the order of unit components is insignificant.\nThe \"1\" at the beginning is required to follow the metric unit syntax.\n\nUsed by metric-based quotas only.",
-          "type": "string"
-        },
-        "values": {
-          "description": "Tiered limit values. Also allows for regional or zone overrides for these\nvalues if \"\/{region}\" or \"\/{zone}\" is specified in the unit field.\n\nCurrently supported tiers from low to high:\nVERY_LOW, LOW, STANDARD, HIGH, VERY_HIGH\n\nTo apply different limit values for users according to their tiers, specify\nthe values for the tiers you want to differentiate. For example:\n{LOW:100, STANDARD:500, HIGH:1000, VERY_HIGH:5000}\n\nThe limit value for each tier is optional except for the tier STANDARD.\nThe limit value for an unspecified tier falls to the value of its next\ntier towards tier STANDARD. For the above example, the limit value for tier\nSTANDARD is 500.\n\nTo apply the same limit value for all users, just specify limit value for\ntier STANDARD. For example: {STANDARD:500}.\n\nTo apply a regional overide for a tier, add a map entry with key\n\"<TIER>\/<region>\", where <region> is a region name. Similarly, for a zone\noverride, add a map entry with key \"<TIER>\/{zone}\".\nFurther, a wildcard can be used at the end of a zone name in order to\nspecify zone level overrides. For example:\nLOW: 10, STANDARD: 50, HIGH: 100,\nLOW\/us-central1: 20, STANDARD\/us-central1: 60, HIGH\/us-central1: 200,\nLOW\/us-central1-*: 10, STANDARD\/us-central1-*: 20, HIGH\/us-central1-*: 80\n\nThe regional overrides tier set for each region must be the same as\nthe tier set for default limit values. Same rule applies for zone overrides\ntier as well.\n\nUsed by metric-based quotas only.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "isPrecise": {
-          "description": "Whether the quota limit needs to be enforced precisely.\n\nNote that precise quota limits are more expensive to enforce. Make a quota\nlimit precise only if it is necessary.\n\nPrecise rate quota is not currently supported. An error will be raised if\na rate quota is specified to be precise.\nImprecise allocation quota is not currently supported.\n\nUsed by metric-based quotas only.",
-          "type": "boolean"
-        },
-        "displayName": {
-          "description": "User-visible display name for this limit.\nOptional. If not set, the UI will provide a default display name based on\nthe quota configuration. This field can be used to override the default\ndisplay name generated from the configuration.",
-          "type": "string"
         }
       }
     },
@@ -2649,7 +2685,7 @@
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\nExample Policy with multiple AuditConfigs:\n{\n  \"audit_configs\": [\n    {\n      \"service\": \"allServices\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        },\n        {\n          \"log_type\": \"ADMIN_READ\",\n        }\n      ]\n    },\n    {\n      \"service\": \"fooservice@googleapis.com\"\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n          \"exempted_members\": [\n            \"user:bar@gmail.com\"\n          ]\n        }\n      ]\n    }\n  ]\n}\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
@@ -3104,10 +3140,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "isPersisted": {
-          "description": "Is the update for the operation persisted?",
-          "type": "boolean"
         }
       }
     }

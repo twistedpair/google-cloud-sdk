@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 # Regular expression to match only metrics from Dataflow. Currently, this should
@@ -124,7 +125,10 @@ def JobsUriFunc(resource):
     URL to the job
   """
 
-  ref = resources.REGISTRY.Parse(resource.id, collection=JOBS_COLLECTION)
+  ref = resources.REGISTRY.Parse(
+      resource.id,
+      params={'projectId': properties.VALUES.core.project.GetOrFail},
+      collection=JOBS_COLLECTION)
   return ref.SelfLink()
 
 
@@ -137,5 +141,8 @@ def JobsUriFromId(job_id):
   Returns:
     URL to the job
   """
-  ref = resources.REGISTRY.Parse(job_id, collection=JOBS_COLLECTION)
+  ref = resources.REGISTRY.Parse(
+      job_id,
+      params={'projectId': properties.VALUES.core.project.GetOrFail},
+      collection=JOBS_COLLECTION)
   return ref.SelfLink()

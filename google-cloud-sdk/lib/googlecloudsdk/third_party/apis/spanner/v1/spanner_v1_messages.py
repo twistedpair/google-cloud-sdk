@@ -27,7 +27,7 @@ class AuditConfig(_messages.Message):
   "user:foo@gmail.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice@googleapis.com"           "audit_log_configs": [
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:bar@gmail.com"               ]             }           ]         }
@@ -310,6 +310,8 @@ class CreateDatabaseRequest(_messages.Message):
     createStatement: Required. A `CREATE DATABASE` statement, which specifies
       the ID of the new database.  The database ID must conform to the regular
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
+      If the database ID is a reserved word or if it contains a hyphen, the
+      database ID must be enclosed in backticks (`` ` ``).
     extraStatements: An optional list of DDL statements to run inside the
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:

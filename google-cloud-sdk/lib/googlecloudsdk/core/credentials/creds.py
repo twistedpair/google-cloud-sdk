@@ -17,7 +17,6 @@
 import abc
 import base64
 import json
-import os
 
 import enum
 
@@ -84,6 +83,7 @@ class _SqlCursor(object):
     import sqlite3  # pylint: disable=g-import-not-at-top
     self._connection = sqlite3.connect(
         self._store_file,
+        detect_types=sqlite3.PARSE_DECLTYPES,
         isolation_level=None,  # Use autocommit mode.
         check_same_thread=True  # Only creating thread may use the connection.
     )
@@ -261,16 +261,10 @@ def GetCredentialStore(store_file=None, access_token_file=None):
   """
 
   if properties.VALUES.auth.use_sqlite_store.GetBool():
-    store_file = store_file or os.path.join(
-        config.Paths().global_config_dir, 'credentials.db')
-    credential_store = SqliteCredentialStore(store_file)
-    access_token_store_file = access_token_file or os.path.join(
-        config.Paths().global_config_dir, 'access_token.db')
-    access_token_cache = AccessTokenCache(access_token_store_file)
-    return CredentialStoreWithCache(credential_store, access_token_cache)
+    return _GetSqliteStore(store_file, access_token_file)
 
-  store_file = store_file or config.Paths().credentials_path
-  return Oauth2ClientCredentialStore(store_file)
+  return Oauth2ClientCredentialStore(
+      store_file or config.Paths().credentials_path)
 
 
 class Oauth2ClientCredentialStore(CredentialStore):
@@ -428,3 +422,11 @@ def FromJson(json_value):
   else:
     raise UnknownCredentialsType(json_key['type'])
   return cred
+
+
+def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
+  credential_store = SqliteCredentialStore(
+      sqlite_credential_file or config.Paths().credentials_db_path)
+  access_token_cache = AccessTokenCache(
+      sqlite_access_token_file or config.Paths().access_token_db_path)
+  return CredentialStoreWithCache(credential_store, access_token_cache)

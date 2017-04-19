@@ -467,7 +467,8 @@
             "There is a conflict in the provided robo_directives.",
             "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
             "The specified scenario labels were not found.",
-            "There was a parsing error with the scenario labels."
+            "There was a parsing error with the scenario labels.",
+            "The request contains scenarios that were not declared in the manifest"
           ],
           "type": "string",
           "enum": [
@@ -484,7 +485,8 @@
             "INVALID_ROBO_DIRECTIVES",
             "TEST_LOOP_INTENT_FILTER_NOT_FOUND",
             "INVALID_TEST_LOOP_LABELS",
-            "MALFORMED_TEST_LOOP_LABELS"
+            "MALFORMED_TEST_LOOP_LABELS",
+            "SCENARIOS_NOT_DECLARED"
           ]
         }
       }

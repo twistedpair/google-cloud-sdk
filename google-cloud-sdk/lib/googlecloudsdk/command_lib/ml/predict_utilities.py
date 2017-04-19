@@ -16,6 +16,7 @@
 import json
 
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 
@@ -106,8 +107,15 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
 
 def ParseModelOrVersionRef(model_id, version_id):
   if version_id:
-    return resources.REGISTRY.Parse(version_id,
-                                    collection='ml.projects.models.versions',
-                                    params={'modelsId': model_id})
+    return resources.REGISTRY.Parse(
+        version_id,
+        collection='ml.projects.models.versions',
+        params={
+            'projectsId': properties.VALUES.core.project.GetOrFail,
+            'modelsId': model_id
+        })
   else:
-    return resources.REGISTRY.Parse(model_id, collection='ml.projects.models')
+    return resources.REGISTRY.Parse(
+        model_id,
+        params={'projectsId': properties.VALUES.core.project.GetOrFail},
+        collection='ml.projects.models')

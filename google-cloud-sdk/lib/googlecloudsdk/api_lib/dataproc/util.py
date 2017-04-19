@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -268,13 +269,25 @@ def WaitForJobTermination(
 
 def ParseCluster(name, context):
   resources = context['resources']
-  ref = resources.Parse(name, collection='dataproc.projects.regions.clusters')
+  region = context['dataproc_region']
+  projectid_callback = properties.VALUES.core.project.GetOrFail
+
+  ref = resources.Parse(
+      name,
+      params={'region': region, 'projectId': projectid_callback},
+      collection='dataproc.projects.regions.clusters')
   return ref
 
 
 def ParseJob(job_id, context):
   resources = context['resources']
-  ref = resources.Parse(job_id, collection='dataproc.projects.regions.jobs')
+  ref = resources.Parse(
+      job_id,
+      params={
+          'region': context['dataproc_region'],
+          'projectId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='dataproc.projects.regions.jobs')
   return ref
 
 
@@ -287,7 +300,13 @@ def ParseOperation(operation, context):
   url = urlparse.urlparse(operation)
   if not url.scheme and '/' in url.path and not url.path.startswith('/'):
     return resources.ParseRelativeName(operation, collection=collection)
-  return resources.Parse(operation, collection=collection)
+  return resources.Parse(
+      operation,
+      params={
+          'regionsId': context['dataproc_region'],
+          'projectsId': properties.VALUES.core.project.GetOrFail
+      },
+      collection=collection)
 
 
 def GetJobId(job_id=None):

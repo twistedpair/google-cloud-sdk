@@ -33,7 +33,9 @@ def Create(instance, config, description, nodes):
   # Module containing the definitions of messages for the specified API.
   msgs = apis.GetMessagesModule('spanner', 'v1')
   config_ref = resources.REGISTRY.Parse(
-      config, collection='spanner.projects.instanceConfigs')
+      config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent='projects/' + properties.VALUES.core.project.Get(required=True),
       createInstanceRequest=msgs.CreateInstanceRequest(
@@ -69,7 +71,9 @@ def Delete(instance):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance, collection='spanner.projects.instances')
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesDeleteRequest(name=ref.RelativeName())
   return client.projects_instances.Delete(req)
 
@@ -79,7 +83,9 @@ def Get(instance):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance, collection='spanner.projects.instances')
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesGetRequest(name=ref.RelativeName())
   return client.projects_instances.Get(req)
 
@@ -107,7 +113,9 @@ def Patch(instance, description=None, nodes=None):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
-      instance, collection='spanner.projects.instances')
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesPatchRequest(
       name=ref.RelativeName(),
       updateInstanceRequest=msgs.UpdateInstanceRequest(

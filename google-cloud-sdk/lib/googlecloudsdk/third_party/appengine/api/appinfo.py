@@ -345,6 +345,8 @@ CHECK_INTERVAL_SEC = 'check_interval_sec'
 TIMEOUT_SEC = 'timeout_sec'
 UNHEALTHY_THRESHOLD = 'unhealthy_threshold'
 HEALTHY_THRESHOLD = 'healthy_threshold'
+FAILURE_THRESHOLD = 'failure_threshold'
+SUCCESS_THRESHOLD = 'success_threshold'
 RESTART_THRESHOLD = 'restart_threshold'
 INITIAL_DELAY_SEC = 'initial_delay_sec'
 HOST = 'host'
@@ -1715,6 +1717,8 @@ class LivenessCheck(validation.Validated):
       TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
       UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       INITIAL_DELAY_SEC: validation.Optional(validation.Range(0, sys.maxint)),
       PATH: validation.Optional(validation.TYPE_STR),
       HOST: validation.Optional(validation.TYPE_STR)}
@@ -1727,6 +1731,8 @@ class ReadinessCheck(validation.Validated):
       TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
       UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       PATH: validation.Optional(validation.TYPE_STR),
       HOST: validation.Optional(validation.TYPE_STR)}
 

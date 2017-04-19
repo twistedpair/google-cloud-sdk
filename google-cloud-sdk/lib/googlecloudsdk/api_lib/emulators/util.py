@@ -13,13 +13,15 @@
 # limitations under the License.
 """Utility functions for gcloud emulators datastore group."""
 
-import atexit
+import abc
+import contextlib
 import errno
 import os
 import random
 import re
 import socket
 import subprocess
+import tempfile
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -30,6 +32,7 @@ from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+import portpicker
 import yaml
 
 
@@ -54,6 +57,10 @@ class Java7Error(exceptions.Error):
 
   def __init__(self, msg):
     super(Java7Error, self).__init__(msg)
+
+
+class MissingProxyError(exceptions.Error):
+  pass
 
 
 class NoEmulatorError(exceptions.Error):
@@ -236,10 +243,12 @@ def GetHostPort(prefix):
     ADDRESS:PORT.
 
   Returns:
-    str, The configured or default host_port
+    str, Configured or default host_port if present, else a random local port.
   """
+
+  random_host_port = 'localhost:8{rand:03d}'.format(rand=random.randint(0, 999))
+  configured = _GetEmulatorProperty(prefix, 'host_port') or random_host_port
   try:
-    configured = _GetEmulatorProperty(prefix, 'host_port')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # TODO(b/36653529): Support IPv6 via configured host-port.
     host, port = configured.split(':')
@@ -250,7 +259,7 @@ def GetHostPort(prefix):
   if sock.connect_ex((host, port)) != 0:
     return configured
 
-  return 'localhost:8{rand:03d}'.format(rand=random.randint(0, 999))
+  return random_host_port
 
 
 def _GetEmulatorProperty(prefix, prop_name):
@@ -271,29 +280,30 @@ def _GetEmulatorProperty(prefix, prop_name):
   return None
 
 
-def Exec(args):
+@contextlib.contextmanager
+def Exec(args, log_file=None):
   """Starts subprocess with given args and ensures its termination upon exit.
 
   This starts a subprocess with the given args. The stdout and stderr of the
-  subprocess are piped. The subprocess is terminated upon exit.
+  subprocess are piped. Note that this is a context manager, to ensure that
+  processes (and references to them) are not leaked.
 
   Args:
     args: [str], The arguments to execute.  The first argument is the command.
+    log_file: optional file argument to reroute process's output. If given,
+      will be closed when the file is terminated.
 
-  Returns:
+  Yields:
     process, The process handle of the subprocess that has been started.
   """
+  reroute_stdout = log_file or subprocess.PIPE
   process = subprocess.Popen(args,
-                             stdout=subprocess.PIPE,
+                             stdout=reroute_stdout,
                              stderr=subprocess.STDOUT)
-
-  def Terminate():
-    if process.poll() is None:
-      process.terminate()
-      process.wait()
-  atexit.register(Terminate)
-
-  return process
+  yield process
+  if process.poll() is None:
+    process.terminate()
+    process.wait()
 
 
 def PrefixOutput(process, prefix):
@@ -327,3 +337,161 @@ def GetEmulatorRoot(emulator):
   if not os.path.isdir(emulator_dir):
     raise NoEmulatorError('No {0} directory found.'.format(emulator))
   return emulator_dir
+
+
+def GetEmulatorProxyPath():
+  """Returns path to the emulator reverse proxy."""
+  path = os.path.join(GetCloudSDKRoot(), 'platform', 'emulator-reverse-proxy')
+  if not os.path.isdir(path):
+    # We shouldn't get here because the emulators package should ensure that
+    # this component installed. That's computers for you, though!
+    # TODO(b/36654459) We should potentially allow the user to specify a
+    # location via a property
+    raise MissingProxyError(
+        'emulator-reverse-proxy component must be installed. try running '
+        '`gcloud components install emulator-reverse-proxy`')
+  return path
+
+
+class AttrDict(object):
+  """Allows for a wrapped map to be indexed via attributes instead of keys.
+
+  Example:
+  m = {'a':'b', 'c':{'d':'e', 'f':'g'}}
+  a = AttrDict(m)
+  m['c']['d'] == a.c.d
+  """
+
+  def __init__(self, _dict, recurse=True):
+    """Initializes attributes dictionary.
+
+    Args:
+      _dict: dict, the map to convert into an attribute dictionary
+      recurse: bool, if True then any nested maps will also be treated as
+               attribute dictionaries
+    """
+    if recurse:
+      dict_copy = {}
+      for key, value in _dict.iteritems():
+        toset = value
+        if isinstance(value, dict):
+          toset = AttrDict(value, recurse)
+        dict_copy[key] = toset
+      self._dict = dict_copy
+    else:
+      self._dict = _dict
+    self._recurse = recurse
+
+  def __getattr__(self, attr):
+    return self._dict[attr]
+
+  def __setattr__(self, attr, value):
+    if attr in set(['_dict', '_recurse']):
+      super(AttrDict, self).__setattr__(attr, value)
+    else:
+      self._dict[attr] = value
+
+
+class Emulator:
+  """This organizes the information to expose an emulator."""
+  __metaclass__ = abc.ABCMeta
+
+  # TODO(b/35871640) Right now, there is no error handling contract with the
+  #   subclasses. This means that if the subclass process fails, there is no
+  #  way to detect that, surface that, etc. We could implement a contract as
+  #  well as liveness checks etc to ensure that we detect if a process has
+  #  failed and respond gracefully.
+  @abc.abstractmethod
+  def Start(self, port):
+    """Starts the emulator process on the given port.
+
+    Args:
+      port: int, port number for emulator to bind to
+
+    Returns:
+      subprocess.Popen, the emulator process
+    """
+    raise NotImplementedError()
+
+  @property
+  @abc.abstractproperty
+  def prefixes(self):
+    """Returns the grpc route prefixes to route to this service.
+
+    Returns:
+      list(str), list of prefixes.
+    """
+    raise NotImplementedError()
+
+  @property
+  @abc.abstractproperty
+  def service_name(self):
+    """Returns the service name this emulator corresponds to.
+
+    Note that it is assume that the production API this service is emulating
+    exists at <name>.googleapis.com
+
+    Returns:
+      str, the service name
+    """
+    raise NotImplementedError()
+
+  @property
+  @abc.abstractproperty
+  def emulator_title(self):
+    """Returns title of the emulator.
+
+    This is just for nice rendering in the cloud sdk.
+
+    Returns:
+      str, the emulator title
+    """
+    raise NotImplementedError()
+
+  @property
+  @abc.abstractproperty
+  def emulator_component(self):
+    """Returns cloud sdk component to install.
+
+    Returns:
+      str, cloud sdk component name
+    """
+    raise NotImplementedError()
+
+  def _GetLogNo(self):
+    """Returns the OS-level handle to log file.
+
+    This handle is the same as would be returned by os.open(). This is what the
+    subprocess interface expects. Note that the caller needs to make sure to
+    close this to avoid leaking file descriptors.
+
+    Returns:
+      int, OS-level handle to log file
+    """
+    log_file_no, log_file = tempfile.mkstemp()
+    log.status.Print('Logging {0} to: {1}'.format(self.service_name, log_file))
+    return log_file_no
+
+
+class EmulatorArgumentsError(exceptions.Error):
+  """Generic error for invalid arguments."""
+  pass
+
+
+_DEFAULT_PORT = 45763
+
+
+def DefaultPortIfAvailable():
+  """Returns default port if available.
+
+  Raises:
+    EmulatorArgumentsError: if port is not available.
+
+  Returns:
+    int, default port
+  """
+  if portpicker.is_port_free(_DEFAULT_PORT):
+    return _DEFAULT_PORT
+  else:
+    raise EmulatorArgumentsError(
+        'Default emulator port [{}] is already in use'.format(_DEFAULT_PORT))

@@ -928,6 +928,9 @@ class Remote(object):
   def __ne__(self, other):
     return not self.__eq__(other)
 
+  def __repr__(self):
+    return self.ToArg()
+
 
 class KeygenCommand(object):
   """Platform independent SSH client key generation command.
@@ -1383,6 +1386,14 @@ class FileReference(object):
     else:
       return cls(path=path)
 
+  def __eq__(self, other):
+    return type(self) is type(other) and self.ToArg() == other.ToArg()
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+  def __repr__(self):
+    return self.ToArg()
 
 # A remote path has three parts [user@]host:path, where @user and path are
 # optional.

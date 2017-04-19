@@ -1669,7 +1669,7 @@
           "description": "The format of the variant data being imported. If unspecified, defaults to\nto `VCF`.",
           "enumDescriptions": [
             "",
-            "VCF (Variant Call Format). The VCF files may be gzip compressed. gVCF is\nalso supported.",
+            "VCF (Variant Call Format). The VCF files may be gzip compressed. gVCF is\nalso supported. Disclaimer: gzip VCF imports are currently much slower\nthan equivalent uncompressed VCF imports. For this reason, uncompressed\nVCF is currently recommended for imports with more than 1GB combined\nuncompressed size, or for time sensitive imports.",
             "Complete Genomics masterVarBeta format. The masterVarBeta files may\nbe bzip2 compressed."
           ],
           "type": "string",

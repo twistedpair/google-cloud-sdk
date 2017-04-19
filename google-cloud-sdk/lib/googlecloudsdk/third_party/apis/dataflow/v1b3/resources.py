@@ -34,6 +34,12 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'location', u'jobId']
   )
+  PROJECTS_LOCATIONS_TEMPLATES = (
+      'projects.locations.templates',
+      'projects/{projectId}/locations/{location}/templates:get',
+      {},
+      [u'projectId', u'location']
+  )
   PROJECTS_TEMPLATES = (
       'projects.templates',
       'projects/{projectId}/templates:get',

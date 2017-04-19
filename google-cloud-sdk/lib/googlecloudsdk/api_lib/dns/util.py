@@ -26,3 +26,5 @@ ZONE_FLAG = base.Argument(
     completion_resource='dns.managedZones',
     help='Name of the managed-zone whose record-sets you want to manage.',
     required=True)
+
+CHANGES_FORMAT = 'table(id, startTime, status)'

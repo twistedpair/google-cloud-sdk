@@ -25,6 +25,7 @@ def Get(config):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instanceConfigs')
   req = msgs.SpannerProjectsInstanceConfigsGetRequest(
       name=ref.RelativeName())
@@ -36,7 +37,7 @@ def List():
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstanceConfigsListRequest(
-      parent='projects/'+properties.VALUES.core.project.Get(required=True))
+      parent='projects/'+properties.VALUES.core.project.GetOrFail())
   return list_pager.YieldFromList(
       client.projects_instanceConfigs,
       req,

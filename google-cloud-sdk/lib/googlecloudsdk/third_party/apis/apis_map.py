@@ -79,6 +79,12 @@ MAP = {
             messages_modulepath='appengine_v1_messages',
             default_version=True
         ),
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.appengine.v1beta',
+            client_classpath='appengine_v1beta_client.AppengineV1beta',
+            messages_modulepath='appengine_v1beta_messages',
+            default_version=False
+        ),
     },
     'bigquery': {
         'v2': APIDef(

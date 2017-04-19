@@ -39,6 +39,9 @@ apis:
     v1:
       discovery_doc: apikeys_v1.json
   appengine:
+    v1beta:
+      discovery_doc: appengine_v1beta.json
+      default: false
     v1:
       discovery_doc: appengine_v1.json
       default: true

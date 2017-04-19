@@ -19,7 +19,10 @@ from googlecloudsdk.core import resources
 
 def ParseModel(model):
   """Parses a model ID into a model resource object."""
-  return resources.REGISTRY.Parse(model, collection='ml.projects.models')
+  return resources.REGISTRY.Parse(
+      model,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.models')
 
 
 def Create(models_client, model, regions=None, enable_logging=None):
@@ -39,6 +42,6 @@ def Delete(models_client, operations_client, model):
 
 def List(models_client):
   project_ref = resources.REGISTRY.Parse(
-      properties.VALUES.core.project.Get(required=True),
+      properties.VALUES.core.project.GetOrFail(),
       collection='ml.projects')
   return models_client.List(project_ref)

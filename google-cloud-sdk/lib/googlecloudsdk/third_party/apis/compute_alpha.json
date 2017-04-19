@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170405",
+ "revision": "20170409",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3058,11 +3058,11 @@
     },
     "portRange": {
      "type": "string",
-     "description": "Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nThis field is not used for internal load balancing."
+     "description": "This field is used for external load balancing and VPN.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetSslProxy: 443 \n- TargetVpnGateway: 500, 4500\n-"
     },
     "ports": {
      "type": "array",
-     "description": "This field is not used for external load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
+     "description": "This field is only used for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
      "items": {
       "type": "string"
      }
@@ -4833,6 +4833,10 @@
      "type": "string",
      "description": "Service account will be used as credentials for all operations performed by managed instance group on instances. The service accounts needs all permissions required to create and delete instances. When not specified, the service account {projectNumber}@cloudservices.gserviceaccount.com will be used."
     },
+    "statefulPolicy": {
+     "$ref": "InstanceGroupManagerStatefulPolicy",
+     "description": "Stateful configuration for this Instanced Group Manager"
+    },
     "targetPools": {
      "type": "array",
      "description": "The URLs for all TargetPool resources to which instances in the instanceGroup field are added. The target pools automatically apply to all of the instances in the managed instance group.",
@@ -5022,6 +5026,29 @@
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are pending to be restarted.",
      "format": "int32"
+    }
+   }
+  },
+  "InstanceGroupManagerStatefulPolicy": {
+   "id": "InstanceGroupManagerStatefulPolicy",
+   "type": "object",
+   "properties": {
+    "preservedDisks": {
+     "type": "array",
+     "description": "Disks created on the instances that will be preserved on instance delete, resize down, etc.",
+     "items": {
+      "$ref": "InstanceGroupManagerStatefulPolicyDiskPolicy"
+     }
+    }
+   }
+  },
+  "InstanceGroupManagerStatefulPolicyDiskPolicy": {
+   "id": "InstanceGroupManagerStatefulPolicyDiskPolicy",
+   "type": "object",
+   "properties": {
+    "deviceName": {
+     "type": "string",
+     "description": "Device name of the disk to be preserved"
     }
    }
   },
@@ -15076,7 +15103,7 @@
      "id": "compute.globalForwardingRules.delete",
      "path": "{project}/global/forwardingRules/{forwardingRule}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified ForwardingRule resource.",
+     "description": "Deletes the specified GlobalForwardingRule resource.",
      "parameters": {
       "forwardingRule": {
        "type": "string",
@@ -15114,7 +15141,7 @@
      "id": "compute.globalForwardingRules.get",
      "path": "{project}/global/forwardingRules/{forwardingRule}",
      "httpMethod": "GET",
-     "description": "Returns the specified ForwardingRule resource. Get a list of available forwarding rules by making a list() request.",
+     "description": "Returns the specified GlobalForwardingRule resource. Get a list of available forwarding rules by making a list() request.",
      "parameters": {
       "forwardingRule": {
        "type": "string",
@@ -15148,7 +15175,7 @@
      "id": "compute.globalForwardingRules.insert",
      "path": "{project}/global/forwardingRules",
      "httpMethod": "POST",
-     "description": "Creates a ForwardingRule resource in the specified project and region using the data included in the request.",
+     "description": "Creates a GlobalForwardingRule resource in the specified project using the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -15181,7 +15208,7 @@
      "id": "compute.globalForwardingRules.list",
      "path": "{project}/global/forwardingRules",
      "httpMethod": "GET",
-     "description": "Retrieves a list of ForwardingRule resources available to the specified project.",
+     "description": "Retrieves a list of GlobalForwardingRule resources available to the specified project.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -15308,7 +15335,7 @@
      "id": "compute.globalForwardingRules.setTarget",
      "path": "{project}/global/forwardingRules/{forwardingRule}/setTarget",
      "httpMethod": "POST",
-     "description": "Changes target URL for forwarding rule. The new target should be of the same type as the old target.",
+     "description": "Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.",
      "parameters": {
       "forwardingRule": {
        "type": "string",
@@ -17095,7 +17122,7 @@
      "httpMethod": "POST",
      "description": "Creates an image in the specified project using the data included in the request.",
      "parameters": {
-      "forceCreation": {
+      "forceCreate": {
        "type": "boolean",
        "description": "Force image creation if true.",
        "location": "query"

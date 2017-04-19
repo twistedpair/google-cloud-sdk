@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for the container images commands."""
 
+import itertools
+
 from apitools.base.py import list_pager
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
@@ -33,6 +35,12 @@ from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 from googlecloudsdk.core.util import times
+
+
+# The maximum number of resource URLs by which to filter when showing
+# occurrences. This is required since filtering by too many causes the
+# API request to be too large. Instead, the requests are chunkified.
+_MAXIMUM_RESOURCE_URL_CHUNK_SIZE = 5
 
 
 class UtilError(exceptions.Error):
@@ -132,23 +140,52 @@ def _FullyqualifiedDigest(digest):
   return 'https://{digest}'.format(digest=digest)
 
 
-def _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter=None):
+def _MakeOccurrenceRequest(
+    project_id, resource_filter, occurrence_filter=None, resource_urls=None):
   """Helper function to make Fetch Occurrence Request."""
   client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
   messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
+  base_filter = resource_filter
   if occurrence_filter:
-    resource_filter = '({occurrence_filter}) AND ({resource_filter})'.format(
-        occurrence_filter=occurrence_filter, resource_filter=resource_filter)
+    base_filter = (
+        '({occurrence_filter}) AND ({base_filter})'.format(
+            occurrence_filter=occurrence_filter,
+            base_filter=base_filter))
   project_ref = resources.REGISTRY.Parse(
       project_id, collection='cloudresourcemanager.projects')
-  occurrences = list_pager.YieldFromList(
-      client.projects_occurrences,
-      request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-          parent=project_ref.RelativeName(), filter=resource_filter),
-      field='occurrences',
-      batch_size=1000,
-      batch_size_attribute='pageSize')
-  return occurrences
+
+  if not resource_urls:
+    # When there are no resource_urls to filter don't need to do chunkifying
+    # logic or add anything to the base filter.
+    return list_pager.YieldFromList(
+        client.projects_occurrences,
+        request=messages.ContaineranalysisProjectsOccurrencesListRequest(
+            parent=project_ref.RelativeName(), filter=base_filter),
+        field='occurrences',
+        batch_size=1000,
+        batch_size_attribute='pageSize')
+
+  # Occurrences are filtered by resource URLs. If there are more than roughly
+  # _MAXIMUM_RESOURCE_URL_CHUNK_SIZE resource urls in the API request, the
+  # request becomes too big and will be rejected. This block chunkifies the
+  # resource URLs list and issues multiple API requests to circumvent this
+  # limit. The resulting generators (from YieldFromList) are chained together in
+  # the final output.
+  occurrence_generators = []
+  for index in range(0, len(resource_urls), _MAXIMUM_RESOURCE_URL_CHUNK_SIZE):
+    chunk = resource_urls[index : (index + _MAXIMUM_RESOURCE_URL_CHUNK_SIZE)]
+    url_filter = '%s AND (%s)' % (
+        base_filter,
+        ' OR '.join(['resource_url="%s"' % url for url in chunk]))
+    occurrence_generators.append(
+        list_pager.YieldFromList(
+            client.projects_occurrences,
+            request=messages.ContaineranalysisProjectsOccurrencesListRequest(
+                parent=project_ref.RelativeName(), filter=url_filter),
+            field='occurrences',
+            batch_size=1000,
+            batch_size_attribute='pageSize'))
+  return itertools.chain(*occurrence_generators)
 
 
 def FetchOccurrencesForResource(digest, occurrence_filter=None):
@@ -168,7 +205,7 @@ def TransformContainerAnalysisData(image_name, occurrence_filter=None):
   return analysis_obj
 
 
-def FetchOccurrences(repository, occurrence_filter=None):
+def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
   """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
 
@@ -177,7 +214,7 @@ def FetchOccurrences(repository, occurrence_filter=None):
       repo=_UnqualifiedResourceUrl(repository))
 
   occurrences = _MakeOccurrenceRequest(project_id, resource_filter,
-                                       occurrence_filter)
+                                       occurrence_filter, resource_urls)
   occurrences_by_resources = {}
   for occ in occurrences:
     if occ.resourceUrl not in occurrences_by_resources:
@@ -186,8 +223,9 @@ def FetchOccurrences(repository, occurrence_filter=None):
   return occurrences_by_resources
 
 
-def TransformManifests(manifests, repository,
-                       show_occurrences=True, occurrence_filter=None):
+def TransformManifests(
+    manifests, repository, show_occurrences=True, occurrence_filter=None,
+    resource_urls=None):
   """Transforms the manifests returned from the server."""
   if not manifests:
     return []
@@ -196,7 +234,8 @@ def TransformManifests(manifests, repository,
   occurrences = {}
   if show_occurrences:
     occurrences = FetchOccurrences(
-        repository, occurrence_filter=occurrence_filter)
+        repository, occurrence_filter=occurrence_filter,
+        resource_urls=resource_urls)
 
   # Attach each occurrence to the resource to which it applies.
   results = []

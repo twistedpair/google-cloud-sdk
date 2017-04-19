@@ -2,12 +2,55 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
-## 151.0.1 (2017-04-14)
+## 152.0.0 (2017/04/19)
 
-### Cloud SDK
+### Breaking Changes
 
-*  Fixed issue in which some users could not use the Windows installer or
-   "bundled python" version of the Cloud SDK for installation.
+*   (Compute Engine) The `--force-creation` flag is no longer supported in
+    `gcloud compute images create`.
+
+### Container Registry
+
+*   `gcloud container images` is now globally available.
+
+### Compute Engine
+
+*   The `--force-creation` flag is no longer supported in `gcloud compute images
+    create`.
+*   The `gcloud compute instance-groups managed
+    <abandon|delete|recreate>-instances` commands now support more than 1000
+    instances.
+*   Custom cache keys are now v1, adding the following flags to `gcloud compute
+    backend-services <create|update>`:
+    *    `--cache-key-include-host`
+    *    `--cache-key-include-protocol`
+    *    `--cache-key-include-query-string`
+    *    `--cache-key-query-string-blacklist`
+    *    `--cache-key-query-string-whitelist`
+*   (Alpha, Beta) Added the `gcloud <alpha|beta> compute disks
+    <add-labels|remove-labels|update>` commands to support labels for Compute
+    Engine disk resources.
+
+### Cloud SQL
+
+*   Starting on 2017-06-30, the `--instance` flag in `gcloud sql operations
+    wait` and `gcloud sql operations describe` will no longer be supported. You
+    can still run the same command by omitting this flag.
+
+### Cloud Containers
+
+*   Added the `--start-ip-rotation` and `--complete-ip-rotation` flags to
+    `gcloud container clusters update`.
+*   Improved the performance of `gcloud container images list-tags` in certain
+    cases.
+
+### Miscellaneous
+
+*   (Cloud BigTable Emulator) The BigTable Emulator no longer crashes when not
+    configured with a host_port.
+*   (Cloud SDK) Fixed a bug in the fish shell $PATH script that caused the $PWD
+    to change (<https://issuetracker.google.com/issues/35906130>).
+
 
 ## 151.0.0 (2017-04-12)
 

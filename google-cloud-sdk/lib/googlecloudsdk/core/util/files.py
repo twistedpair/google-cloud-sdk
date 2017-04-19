@@ -900,3 +900,25 @@ def GetFileContents(path):
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise Error(u'Unable to read file [{0}]'.format(path))
+
+
+def WriteFileContents(path, content, overwrite=True):
+  """Writes content to the specified file.
+
+  Args:
+    path: str, The path of the file to write.
+    content: str, The content to write to the file.
+    overwrite: bool, Whether or not to overwrite the file if it exists.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  try:
+    if not overwrite and os.path.exists(path):
+      raise Error(u'File [{0}] already exists and overwrite=False'.format(path))
+    with open(path, 'w') as out_file:
+      out_file.write(content)
+  except EnvironmentError:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error(u'Unable to write file [{0}]'.format(path))

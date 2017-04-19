@@ -15,6 +15,7 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -32,6 +33,7 @@ def Create(instance, database, ddl):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   instance_ref = resources.REGISTRY.Parse(
       instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(
       parent=instance_ref.RelativeName(),
@@ -57,7 +59,10 @@ def Delete(instance, database):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesDropDatabaseRequest(
       database=ref.RelativeName())
@@ -79,7 +84,10 @@ def Get(instance, database):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesGetRequest(
       name=ref.RelativeName())
@@ -92,7 +100,10 @@ def GetDdl(instance, database):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'instancesId': instance,
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesGetDdlRequest(
       database=ref.RelativeName())
@@ -105,6 +116,7 @@ def List(instance):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesDatabasesListRequest(
       parent=ref.RelativeName())
@@ -121,7 +133,10 @@ def UpdateDdl(instance, database, ddl):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   instance_ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesUpdateDdlRequest(
       database=instance_ref.RelativeName(),

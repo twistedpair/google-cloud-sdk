@@ -22,7 +22,9 @@ class AccessConfig(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: Name of this access configuration.
+    name: The name of this access configuration. The default and recommended
+      name is External NAT but you can use any arbitrary string you would
+      like. For example, My external IP or Network Access.
     natIP: An external IP address associated with this instance. Specify an
       unused static external IP address available to the project or leave this
       field undefined to use an IP from a shared ephemeral IP address pool. If
@@ -1615,14 +1617,14 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   """A ComputeAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
     zone: Name of the zone for this request.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
@@ -1735,7 +1737,7 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   """A ComputeBackendBucketsPatchRequest object.
 
   Fields:
-    backendBucket: Name of the BackendBucket resource to update.
+    backendBucket: Name of the BackendBucket resource to patch.
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -1918,7 +1920,7 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   """A ComputeBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -2925,7 +2927,7 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
   """A ComputeHealthChecksPatchRequest object.
 
   Fields:
-    healthCheck: Name of the HealthCheck resource to update.
+    healthCheck: Name of the HealthCheck resource to patch.
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
@@ -3042,7 +3044,7 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpHealthChecksPatchRequest object.
 
   Fields:
-    httpHealthCheck: Name of the HttpHealthCheck resource to update.
+    httpHealthCheck: Name of the HttpHealthCheck resource to patch.
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -3159,7 +3161,7 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
   """A ComputeHttpsHealthChecksPatchRequest object.
 
   Fields:
-    httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to patch.
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -4699,14 +4701,14 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
   """A ComputeRegionAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler to update.
+    autoscaler: Name of the autoscaler to patch.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  autoscaler = _messages.StringField(1, required=True)
+  autoscaler = _messages.StringField(1)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
@@ -4846,7 +4848,7 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
   """A ComputeRegionBackendServicesPatchRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to update.
+    backendService: Name of the BackendService resource to patch.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -5554,7 +5556,7 @@ class ComputeRoutersPatchRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    router: Name of the Router resource to update.
+    router: Name of the Router resource to patch.
     routerResource: A Router resource to be passed as the request body.
   """
 
@@ -6002,6 +6004,24 @@ class ComputeSubnetworksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A ComputeSubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource.
+    subnetworksSetPrivateIpGoogleAccessRequest: A
+      SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 4)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -7009,7 +7029,7 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    urlMap: Name of the UrlMap resource to update.
+    urlMap: Name of the UrlMap resource to patch.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
 
@@ -8093,7 +8113,7 @@ class FirewallList(_messages.Message):
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
-  [IPAddress, IPProtocol, portRange] tuple.
+  [IPAddress, IPProtocol, ports] tuple.
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -8148,17 +8168,19 @@ class ForwardingRule(_messages.Message):
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
-    portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
-      packets addressed to ports in the specified range will be forwarded to
-      target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
-      have disjoint port ranges.  This field is not used for internal load
-      balancing.
-    ports: This field is not used for external load balancing.  When the load
+    portRange: This field is used for external load balancing and VPN.
+      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
+      addressed to ports in the specified range will be forwarded to target.
+      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
+      disjoint port ranges.  Some types of forwarding target have constraints
+      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetSslProxy: 443  - TargetVpnGateway: 500,
+      4500 -
+    ports: This field is only used for internal load balancing.  When the load
       balancing scheme is INTERNAL, a single port or a comma separated list of
       ports can be configured. Only packets addressed to these ports will be
-      forwarded to the backends configured with this forwarding rule. If the
-      port list is not provided then all ports are allowed to pass through.
-      You may specify a maximum of up to 5 ports.
+      forwarded to the backends configured with this forwarding rule.  You may
+      specify a maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -8172,9 +8194,8 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For example, TargetHttpProxy requires
-      HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.  This field
-      is not used for internal load balancing.
+      appropriate to the target object.  This field is not used for internal
+      load balancing.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -9073,7 +9094,7 @@ class Instance(_messages.Message):
       specifies how this interface is configured to interact with other
       network services, such as connecting to the internet. Only one interface
       is supported per instance.
-    scheduling: Scheduling options for this instance.
+    scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
       authorized for this instance. Only one service account per VM instance
@@ -9507,8 +9528,9 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A InstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to abandon from the managed
-      instance group.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -9518,8 +9540,8 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A InstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The list of instances to delete from this managed instance
-      group. Specify one or more instance URLs.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -9540,7 +9562,9 @@ class InstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A InstanceGroupManagersRecreateInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -11497,7 +11521,9 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to abandon.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -11507,7 +11533,8 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to delete.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -11527,7 +11554,9 @@ class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
   """A RegionInstanceGroupManagersRecreateRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -12034,13 +12063,15 @@ class RouterStatus(_messages.Message):
 
   Fields:
     bestRoutes: Best routes for this router's network.
+    bestRoutesForRouter: Best routes learned by this router.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     network: URI of the network to which this router belongs.
   """
 
   bestRoutes = _messages.MessageField('Route', 1, repeated=True)
-  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 2, repeated=True)
-  network = _messages.StringField(3)
+  bestRoutesForRouter = _messages.MessageField('Route', 2, repeated=True)
+  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 3, repeated=True)
+  network = _messages.StringField(4)
 
 
 class RouterStatusBgpPeerStatus(_messages.Message):
@@ -12267,12 +12298,16 @@ class Scheduling(_messages.Message):
     automaticRestart: Specifies whether the instance should be automatically
       restarted if it is terminated by Compute Engine (not terminated by a
       user). You can only set the automatic restart option for standard
-      instances. Preemptible instances cannot be automatically restarted.
+      instances. Preemptible instances cannot be automatically restarted.  By
+      default, this is set to true so an instance is automatically restarted
+      if it is terminated by Compute Engine.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
       information, see Setting Instance Scheduling Options.
-    preemptible: Whether the instance is preemptible.
+    preemptible: Defines whether the instance is preemptible. This can only be
+      set during instance creation, it cannot be set or changed after the
+      instance has been created.
   """
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
@@ -12799,6 +12834,16 @@ class SubnetworksScopedList(_messages.Message):
 
   subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A SubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    privateIpGoogleAccess: A boolean attribute.
+  """
+
+  privateIpGoogleAccess = _messages.BooleanField(1)
 
 
 class TCPHealthCheck(_messages.Message):

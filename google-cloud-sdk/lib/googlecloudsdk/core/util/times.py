@@ -17,7 +17,7 @@
 This module supports round-trip conversions between strings, datetime objects
 and timestamps:
 
-         => ParseDateTime =>           => GetTimeSTampFromDateTime =>
+         => ParseDateTime =>           => GetTimeStampFromDateTime =>
   string                      datetime                                timestamp
          <= FormatDateTime <=          <= GetDateTimeFromTimeStamp <=
 
@@ -35,6 +35,9 @@ ISO 8601 duration/period conversions are also supported:
          <= FormatDuration <=
 
   timedelta => GetDurationFromTimeDelta => Duration
+
+This module is biased to the local timezone by default. To operate on timezone
+naiive datetimes specify tzinfo=None in all calls that have a timezone kwarg.
 
 The datetime and/or dateutil modules should have covered all of this.
 """
@@ -339,7 +342,7 @@ class _TzInfoOrOffsetGetter(object):
     return self._timezone_was_specified
 
 
-def ParseDateTime(string, fmt=None, tzinfo=None):
+def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
   """Parses a date/time string and returns a datetime.datetime object.
 
   Args:
@@ -359,7 +362,9 @@ def ParseDateTime(string, fmt=None, tzinfo=None):
   # Check explicit format first.
   if fmt:
     dt = _StrPtime(string, fmt)
-    return dt.replace(tzinfo=tzinfo or LOCAL)
+    if tzinfo and not dt.tzinfo:
+      dt = dt.replace(tzinfo=tzinfo)
+    return dt
 
   # Use tzgetter to determine if string contains an explicit timezone name or
   # offset.
@@ -386,14 +391,13 @@ def ParseDateTime(string, fmt=None, tzinfo=None):
     raise exc(unicode(e))
 
 
-def GetDateTimeFromTimeStamp(timestamp, tzinfo=None):
+def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):
   """Returns the datetime object for a UNIX timestamp.
 
   Args:
     timestamp: A UNIX timestamp in int or float seconds since the epoch
       (1970-01-01T00:00:00.000000Z).
-    tzinfo: A tzinfo object for the timestamp timezone or None for the local
-      timezone.
+    tzinfo: A tzinfo object for the timestamp timezone, None for naive.
 
   Raises:
     DateTimeValueError: A date/time numeric constant exceeds its range.
@@ -407,21 +411,23 @@ def GetDateTimeFromTimeStamp(timestamp, tzinfo=None):
     raise DateTimeValueError(unicode(e))
 
 
-def GetTimeStampFromDateTime(dt):
+def GetTimeStampFromDateTime(dt, tzinfo=LOCAL):
   """Returns the float UNIX timestamp (with microseconds) for dt.
 
   Args:
     dt: The datetime object to convert from.
+    tzinfo: Use this tzinfo if dt is naiive.
 
   Returns:
     The float UNIX timestamp (with microseconds) for dt.
   """
-  tzinfo = UTC if dt.tzinfo else None
-  delta = dt - datetime.datetime.fromtimestamp(0, tzinfo)
+  if not dt.tzinfo and tzinfo:
+    dt = dt.replace(tzinfo=tzinfo)
+  delta = dt - datetime.datetime.fromtimestamp(0, UTC)
   return iso_duration.GetTotalSecondsFromTimeDelta(delta)
 
 
-def LocalizeDateTime(dt, tzinfo=None):
+def LocalizeDateTime(dt, tzinfo=LOCAL):
   """Returns a datetime object localized to the timezone tzinfo.
 
   Args:
@@ -432,11 +438,11 @@ def LocalizeDateTime(dt, tzinfo=None):
   Returns:
     A datetime object localized to the timezone tzinfo.
   """
-  ts = GetTimeStampFromDateTime(dt)
+  ts = GetTimeStampFromDateTime(dt, tzinfo=tzinfo)
   return GetDateTimeFromTimeStamp(ts, tzinfo=tzinfo)
 
 
-def Now(tzinfo=None):
+def Now(tzinfo=LOCAL):
   """Returns a timezone aware datetime object for the current time.
 
   Args:
@@ -449,7 +455,7 @@ def Now(tzinfo=None):
   return datetime.datetime.now(tzinfo)
 
 
-def GetDateTimeDefaults(tzinfo=None):
+def GetDateTimeDefaults(tzinfo=LOCAL):
   """Returns a datetime object of default values for parsing partial datetimes.
 
   The year, month and day default to today (right now), and the hour, minute,

@@ -22,7 +22,6 @@ import re
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
@@ -65,19 +64,6 @@ def _GetApiNameFromCollection(collection):
 def GetApiCollection(resource_type):
   """Coverts a resource type to a collection."""
   return 'compute.' + resource_type
-
-
-def HasApiParamDefaultValue(api_resources, resource_type, param):
-  """Returns whether the param has a default value."""
-  collection = GetApiCollection(resource_type)
-  api = _GetApiNameFromCollection(collection)
-  try:
-    return api_resources.GetParamDefault(
-        api=api,
-        collection=resource_type,
-        param=param) is not None
-  except properties.RequiredPropertyError:
-    return False
 
 
 def NormalizeGoogleStorageUri(uri):

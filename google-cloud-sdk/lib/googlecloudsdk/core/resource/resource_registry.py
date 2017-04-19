@@ -18,57 +18,6 @@ from googlecloudsdk.core.resource import resource_info
 
 RESOURCE_REGISTRY = {
 
-    # appengine
-    'appengine.instances':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            service:sort=1,
-            version:sort=2,
-            id:sort=3,
-            instance.vmStatus.yesno(no="N/A"),
-            instance.vmDebugEnabled.yesno(yes="YES", no=""):label=DEBUG_MODE
-          )
-        """,),
-    'appengine.module_versions':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            module,
-            version,
-            traffic_split.format("{0:.2f}", .)
-          )
-        """,),
-    'appengine.regions':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-           region:sort=1,
-           standard.yesno(yes="YES", no="NO"):label='SUPPORTS STANDARD',
-           flexible.yesno(yes="YES", no="NO"):label='SUPPORTS FLEXIBLE'
-          )
-        """,),
-    'appengine.services':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id:label=SERVICE:sort=1,
-            versions.len():label=NUM_VERSIONS
-          )
-        """,),
-    'appengine.versions':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            service,
-            id:label=VERSION,
-            traffic_split.format("{0:.2f}", .),
-            last_deployed_time.date("%Y-%m-%dT%H:%M:%S%Oz", undefined="-")
-              :label=LAST_DEPLOYED,
-            version.servingStatus:label=SERVING_STATUS
-          )
-        """,),
-
     # cloud billing
     'cloudbilling.billingAccounts':
         resource_info.ResourceInfo(
@@ -929,37 +878,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # dns
-    'dns.changes':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            startTime,
-            status
-          )
-        """,),
-    'dns.managedZones':
-        resource_info.ResourceInfo(
-            cache_command='dns managed-zones list',
-            list_format="""
-          table(
-            name,
-            dnsName,
-            description
-          )
-        """,),
-    'dns.resourceRecordSets':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-                name,
-                type,
-                ttl,
-                rrdatas.list():label=DATA
-              )
-        """,),
-
     # functions
     'functions.projects.locations':
         resource_info.ResourceInfo(
@@ -987,89 +905,6 @@ RESOURCE_REGISTRY = {
           table(
             displayName:label=NAME,
             email
-          )
-        """,),
-    'iam.service_accounts.keys':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.scope(keys):label=KEY_ID,
-            validAfterTime:label=CREATED_AT,
-            validBeforeTime:label=EXPIRES_AT
-          )
-        """,),
-
-    # logging
-    'logging.logs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.scope(logs):label=ID
-          )
-        """,),
-    'logging.metrics':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name,
-            description,
-            filter,
-            version
-          )
-        """,),
-    'logging.resourceDescriptors':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            type,
-            description,
-            labels[].key.list()
-          )
-        """,),
-    'logging.sinks':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name,
-            destination,
-            type,
-            format,
-            filter
-          )
-        """,),
-
-    # ml
-    'ml.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name
-          )
-        """,),
-    'ml.beta.jobs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            jobId.basename(),
-            state:label=STATUS,
-            createTime.date(tz=LOCAL):label=CREATED
-          )
-        """,),
-    'ml.models.versions':
-        resource_info.ResourceInfo(
-            async_collection='ml.operations',
-            list_format="""
-          table(
-            name.basename(),
-            deploymentUri
-          )
-        """,),
-    'ml.models':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            defaultVersion.name.basename()
           )
         """,),
 
@@ -1130,25 +965,6 @@ RESOURCE_REGISTRY = {
             createTime.date(),
             waiter_status(),
             error.message
-          )
-        """,),
-
-    # service management (inception)
-    'servicemanagement-v1.services':
-        resource_info.ResourceInfo(
-            bypass_cache=True,
-            list_format="""
-          table(
-            serviceName:label=NAME,
-            serviceConfig.title
-          )
-        """,),
-    'servicemanagement-v1.serviceConfigs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id:label=CONFIG_ID,
-            name:label=SERVICE_NAME
           )
         """,),
 

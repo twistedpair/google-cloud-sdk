@@ -588,6 +588,13 @@ class LogSink(_messages.Message):
       filter. The filter must use the log entry format specified by the
       output_version_format parameter. For example, in the v2 format:
       logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
+    includeChildren: Optional. This field presently applies only to sinks in
+      organizations and folders. If true, then logs from children of this
+      entity will also be available to this sink for export. Whether
+      particular log entries from the children are exported depends on the
+      sink's filter expression. For example, if this sink is associated with
+      an organization, then logs from all projects in the organization as well
+      as from the organization itself will be available for export.
     name: Required. The client-assigned sink identifier, unique within the
       project. Example: "my-syslog-errors-to-pubsub". Sink identifiers are
       limited to 100 characters and can include only the following characters:
@@ -631,10 +638,11 @@ class LogSink(_messages.Message):
   destination = _messages.StringField(1)
   endTime = _messages.StringField(2)
   filter = _messages.StringField(3)
-  name = _messages.StringField(4)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 5)
-  startTime = _messages.StringField(6)
-  writerIdentity = _messages.StringField(7)
+  includeChildren = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
+  startTime = _messages.StringField(7)
+  writerIdentity = _messages.StringField(8)
 
 
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):

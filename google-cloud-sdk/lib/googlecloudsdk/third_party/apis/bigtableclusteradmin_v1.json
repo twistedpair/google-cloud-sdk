@@ -5,7 +5,7 @@
  "name": "bigtableclusteradmin",
  "canonicalName": "Bigtable Cluster Admin",
  "version": "v1",
- "revision": "20170215",
+ "revision": "20170329",
  "title": "Google Cloud Bigtable Cluster Admin API",
  "description": "This is a OnePlatform service.",
  "ownerDomain": "google.com",
@@ -69,6 +69,12 @@
  "auth": {
   "oauth2": {
    "scopes": {
+    "https://www.googleapis.com/auth/cloud-bigtable.admin": {
+     "description": "Administer your Cloud Bigtable tables and clusters"
+    },
+    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster": {
+     "description": "Administer your Cloud Bigtable clusters"
+    },
     "https://www.googleapis.com/auth/cloud-platform": {
      "description": "View and manage your data across Google Cloud Platform services"
     },
@@ -289,6 +295,8 @@
       "$ref": "Empty"
      },
      "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
       "https://www.googleapis.com/auth/cloud-platform"
      ]
     },
@@ -311,6 +319,8 @@
       "$ref": "Empty"
      },
      "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
       "https://www.googleapis.com/auth/cloud-platform"
      ]
     },
@@ -333,6 +343,8 @@
       "$ref": "Operation"
      },
      "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
       "https://www.googleapis.com/auth/cloud-platform"
      ]
     },
@@ -368,6 +380,8 @@
       "$ref": "ListOperationsResponse"
      },
      "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
       "https://www.googleapis.com/auth/cloud-platform"
      ]
     }
@@ -398,6 +412,8 @@
           "$ref": "ListClustersResponse"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         }
@@ -426,6 +442,8 @@
         "$ref": "ListZonesResponse"
        },
        "scopes": [
+        "https://www.googleapis.com/auth/cloud-bigtable.admin",
+        "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
         "https://www.googleapis.com/auth/cloud-platform"
        ]
       }
@@ -455,6 +473,8 @@
           "$ref": "Cluster"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         },
@@ -477,6 +497,8 @@
           "$ref": "Empty"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         },
@@ -499,6 +521,8 @@
           "$ref": "Cluster"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform",
           "https://www.googleapis.com/auth/cloud-platform.read-only"
          ]
@@ -525,6 +549,8 @@
           "$ref": "Cluster"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         },
@@ -547,6 +573,8 @@
           "$ref": "Operation"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         },
@@ -572,6 +600,8 @@
           "$ref": "Cluster"
          },
          "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         }

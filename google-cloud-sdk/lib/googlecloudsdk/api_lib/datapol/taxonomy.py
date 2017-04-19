@@ -72,8 +72,8 @@ def Delete(name):
     name: Resource name of the taxonomy.
 
   Returns:
-    An Operation message which can be used to check on the progress of the
-    project creation.
+    An Operation message which can be used to check on the progress of taxonomy
+    deletion.
   """
   return _GetService().Delete(
       utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesDeleteRequest(

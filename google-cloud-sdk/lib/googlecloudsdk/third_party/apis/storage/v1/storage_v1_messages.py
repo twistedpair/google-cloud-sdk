@@ -846,10 +846,10 @@ class RewriteResponse(_messages.Message):
 
   done = _messages.BooleanField(1)
   kind = _messages.StringField(2, default=u'storage#rewriteResponse')
-  objectSize = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  objectSize = _messages.IntegerField(3)
   resource = _messages.MessageField('Object', 4)
   rewriteToken = _messages.StringField(5)
-  totalBytesRewritten = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  totalBytesRewritten = _messages.IntegerField(6)
 
 
 class ServiceAccount(_messages.Message):

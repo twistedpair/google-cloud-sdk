@@ -288,9 +288,7 @@ class ScopePrompter(object):
       else:
         resource_refs.append(resource_ref)
 
-    has_default = utils.HasApiParamDefaultValue(
-        self.resources, resource_type, scope_name)
-    if ambiguous_names and not scope_arg and not has_default:
+    if ambiguous_names and not scope_arg:
       # We need to prompt.
       resource_refs += self._PromptForScope(
           ambiguous_names=ambiguous_names,

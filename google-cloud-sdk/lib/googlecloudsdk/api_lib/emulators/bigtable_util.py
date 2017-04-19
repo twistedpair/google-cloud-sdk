@@ -52,6 +52,6 @@ def GetEnv(args):
 def Start(args):
   bigtable_args = BuildStartArgs(util.BuildArgsList(args))
   log.status.Print('Executing: {0}'.format(' '.join(bigtable_args)))
-  bigtable_process = util.Exec(bigtable_args)
-  util.WriteEnvYaml(GetEnv(args), GetDataDir())
-  util.PrefixOutput(bigtable_process, BIGTABLE)
+  with util.Exec(bigtable_args) as bigtable_process:
+    util.WriteEnvYaml(GetEnv(args), GetDataDir())
+    util.PrefixOutput(bigtable_process, BIGTABLE)

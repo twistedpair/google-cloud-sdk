@@ -2240,7 +2240,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified ForwardingRule resource.
+      """Deletes the specified GlobalForwardingRule resource.
 
       Args:
         request: (ComputeGlobalForwardingRulesDeleteRequest) input message
@@ -2266,7 +2266,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified ForwardingRule resource. Get a list of available forwarding rules by making a list() request.
+      """Returns the specified GlobalForwardingRule resource. Get a list of available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -2292,7 +2292,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a ForwardingRule resource in the specified project and region using the data included in the request.
+      """Creates a GlobalForwardingRule resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeGlobalForwardingRulesInsertRequest) input message
@@ -2318,7 +2318,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Retrieves a list of ForwardingRule resources available to the specified project.
+      """Retrieves a list of GlobalForwardingRule resources available to the specified project.
 
       Args:
         request: (ComputeGlobalForwardingRulesListRequest) input message
@@ -2396,7 +2396,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -3603,7 +3603,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.images.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'forceCreation', u'requestId'],
+        query_params=[u'forceCreate', u'requestId'],
         relative_path=u'projects/{project}/global/images',
         request_field=u'image',
         request_type_name=u'ComputeImagesInsertRequest',

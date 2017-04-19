@@ -197,6 +197,20 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
 
 
+class CloudfunctionsProjectsLocationsGenerateUploadUrlRequest(_messages.Message):
+  """A CloudfunctionsProjectsLocationsGenerateUploadUrlRequest object.
+
+  Fields:
+    generateUploadUrlRequest: A GenerateUploadUrlRequest resource to be passed
+      as the request body.
+    location: The project and location in which the URL should be generated,
+      specified in the format `projects/*/locations/*
+  """
+
+  generateUploadUrlRequest = _messages.MessageField('GenerateUploadUrlRequest', 1)
+  location = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   """A CloudfunctionsProjectsLocationsListRequest object.
 
@@ -235,6 +249,22 @@ class EventTrigger(_messages.Message):
 
   eventType = _messages.StringField(1)
   resource = _messages.StringField(2)
+
+
+class GenerateUploadUrlRequest(_messages.Message):
+  """Request of `GenerateSourceUploadUrl` method."""
+
+
+class GenerateUploadUrlResponse(_messages.Message):
+  """Response of `GenerateSourceUploadUrl` method.
+
+  Fields:
+    uploadUrl: The generated signed URL that should be used for a function
+      source code upload. The uploaded file should be a zip archive which
+      contains a function.
+  """
+
+  uploadUrl = _messages.StringField(1)
 
 
 class HTTPSTrigger(_messages.Message):

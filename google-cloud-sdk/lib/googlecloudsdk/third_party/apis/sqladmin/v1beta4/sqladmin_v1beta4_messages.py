@@ -567,11 +567,11 @@ class IpMapping(_messages.Message):
 
 
 class Labels(_messages.Message):
-  """User defined labels for Cloud SQL instances.
+  """Reserved for future use.
 
   Fields:
-    key: The key of the label.
-    value: The value of the label.
+    key: Reserved for future use.
+    value: Reserved for future use.
   """
 
   key = _messages.StringField(1)
@@ -834,7 +834,7 @@ class Settings(_messages.Message):
       to the instance. The IPv4 address cannot be disabled for Second
       Generation instances.
     kind: This is always sql#settings.
-    labels: User defined labels.
+    labels: Reserved for future use.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or GCE zone for better performance. App Engine co-location is only
@@ -1117,7 +1117,7 @@ class SqlInstancesListRequest(_messages.Message):
   """A SqlInstancesListRequest object.
 
   Fields:
-    filter: A filter expression for filtering listed instances.
+    filter: Reserved for future use.
     maxResults: The maximum number of results to return per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.

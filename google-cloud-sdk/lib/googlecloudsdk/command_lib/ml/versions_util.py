@@ -15,6 +15,7 @@
 from googlecloudsdk.command_lib.ml import models_util
 from googlecloudsdk.command_lib.ml import uploads
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -26,7 +27,11 @@ class InvalidArgumentCombinationError(exceptions.Error):
 def ParseVersion(model, version):
   """Parses a model/version ID into a version resource object."""
   return resources.REGISTRY.Parse(
-      version, params={'modelsId': model},
+      version,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'modelsId': model
+      },
       collection='ml.projects.models.versions')
 
 

@@ -16,6 +16,7 @@
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -37,7 +38,10 @@ def Cancel(instance, operation):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.operations')
   req = msgs.SpannerProjectsInstancesOperationsCancelRequest(
       name=ref.RelativeName())
@@ -50,7 +54,10 @@ def Get(instance, operation):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.operations')
   req = msgs.SpannerProjectsInstancesOperationsGetRequest(
       name=ref.RelativeName())
@@ -63,6 +70,7 @@ def List(instance):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesOperationsListRequest(
       name=ref.RelativeName()+'/operations')

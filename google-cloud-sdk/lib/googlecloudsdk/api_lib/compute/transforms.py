@@ -185,6 +185,22 @@ def TransformOperationHttpStatus(r, undefined=''):
   return undefined
 
 
+def TransformProject(r, undefined=''):
+  """Returns a project name from a selfLink.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    A project name for selfLink from r.
+  """
+  project = resource_transform.TransformScope(
+      resource_transform.GetKeyValue(r, 'selfLink', ''),
+      'projects').split('/')[0]
+  return project or undefined
+
+
 def TransformQuota(r, undefined=''):
   """Formats a quota as usage/limit.
 
@@ -228,6 +244,21 @@ def TransformStatus(r, undefined=''):
   return status or undefined
 
 
+def TransformZone(r, undefined=''):
+  """Returns a zone name from a selfLink.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    A zone name for selfLink from r.
+  """
+  project = resource_transform.TransformScope(
+      resource_transform.GetKeyValue(r, 'selfLink', ''), 'zones').split('/')[0]
+  return project or undefined
+
+
 _TRANSFORMS = {
 
     'firewall_rule': TransformFirewallRule,
@@ -237,8 +268,10 @@ _TRANSFORMS = {
     'machine_type': TransformMachineType,
     'next_maintenance': TransformNextMaintenance,
     'operation_http_status': TransformOperationHttpStatus,
+    'project': TransformProject,
     'quota': TransformQuota,
     'status': TransformStatus,
+    'zone': TransformZone,
 }
 
 

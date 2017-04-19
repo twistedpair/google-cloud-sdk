@@ -13,6 +13,7 @@
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
 import abc
+from apitools.base.py import encoding
 import enum
 
 from googlecloudsdk.api_lib.compute import base_classes
@@ -46,6 +47,9 @@ INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
         group named 'example-instance-group' in the ``us-central1-a'' zone.
         """,
 }
+
+# max_langth limit of instances field in InstanceGroupManagers*InstancesRequest
+INSTANCES_MAX_LENGTH = 1000
 
 
 def IsZonalGroup(group_ref):
@@ -427,6 +431,92 @@ def CreateInstanceReferences(
             or instance_ref.instance in instance_names]
 
 
+def SplitInstancesInRequest(request,
+                            request_field,
+                            max_length=INSTANCES_MAX_LENGTH):
+  """Split request into parts according to max_length limit.
+
+  Example:
+    requests = SplitInstancesInRequest(
+          self.messages.
+          ComputeInstanceGroupManagersAbandonInstancesRequest(
+              instanceGroupManager=igm_ref.Name(),
+              instanceGroupManagersAbandonInstancesRequest=(
+                  self.messages.InstanceGroupManagersAbandonInstancesRequest(
+                      instances=instances,
+                  )
+              ),
+              project=igm_ref.project,
+              zone=igm_ref.zone,
+          ), 'instanceGroupManagersAbandonInstancesRequest')
+
+  Then:
+    return client.MakeRequests(LiftRequestsList(service, method, requests))
+
+  Args:
+    request: _messages.Message, request to split
+    request_field: str, name of property inside request holding instances field
+    max_length: int, max_length of instances property
+
+  Returns:
+    List of requests with instances field length limited by max_length.
+  """
+  result = []
+  all_instances = getattr(request, request_field).instances or []
+  n = len(all_instances)
+  for i in xrange(0, n, max_length):
+    request_part = encoding.CopyProtoMessage(request)
+    field = getattr(request_part, request_field)
+    field.instances = all_instances[i:i+max_length]
+    result.append(request_part)
+  return result
+
+
+def GenerateRequestTuples(service, method, requests):
+  """(a, b, [c]) -> [(a, b, c)]."""
+  for request in requests:
+    yield (service, method, request)
+
+
+# TODO(b/36799480) Parallelize instance_groups_utils.MakeRequestsList
+def MakeRequestsList(client, requests, field_name):
+  """Make list of *-instances requests returning actionable feedback.
+
+  Args:
+    client: Compute client.
+    requests: [(service, method, request)].
+    field_name: name of field inside request holding list of instances.
+
+  Yields:
+    Dictionaries with link to instance keyed with 'selfLink' and string
+    indicating if operation succeeded keyed with 'status'.
+  """
+  errors_to_propagate = []
+  result = []
+
+  for service, method, request in requests:
+    # Using batching here because otherwise all tests would have to be
+    # rewritten.
+    errors = []
+    # Result is synthesized, API response is unused.
+    client.MakeRequests([(service, method, request)], errors)
+    if errors:
+      # Operation failed for all instances.
+      errors_to_propagate.extend(errors)
+      status = 'FAIL'
+    else:
+      status = 'SUCCESS'
+    for instance in getattr(request, field_name).instances:
+      # Cannot yield here - only last dict will be printed
+      result.append({'selfLink': instance, 'status': status})
+
+  for record in result:
+    yield record
+
+  if errors_to_propagate:
+    raise utils.RaiseToolException(errors_to_propagate)
+
+
 class InstanceGroupFilteringMode(enum.Enum):
   """Filtering mode for Instance Groups based on dynamic properties."""
   ALL_GROUPS = 1
@@ -527,4 +617,3 @@ def ComputeInstanceGroupManagerMembership(
     results.append(item)
 
   return results
-

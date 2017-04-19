@@ -97,6 +97,31 @@ class Namespace(argparse.Namespace):
           'No registered arg for destination [{}].'.format(dest))
     return dest in self._specified_args
 
+  def MakeGetOrRaise(self, flag_name):
+    """Returns a function to get given flag value or raise if it is not set.
+
+    This is useful when given flag becomes required when another flag
+    is present.
+
+    Args:
+      flag_name: str, The flag_name name for the arg to check.
+
+    Raises:
+      parser_errors.RequiredArgumentError: if flag is not specified.
+      UnknownDestinationException: If there is no registered arg for flag_name.
+
+    Returns:
+      Function for accessing given flag value.
+    """
+    def _Func():
+      flag = flag_name[2:] if flag_name.startswith('--') else flag_name
+      flag_value = getattr(self, flag)
+      if flag_value is None and not self.IsSpecified(flag):
+        raise parser_errors.RequiredArgumentError('is required', flag_name)
+      return flag_value
+
+    return _Func
+
 
 class ArgumentParser(argparse.ArgumentParser):
   """A custom subclass for arg parsing behavior.

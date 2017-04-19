@@ -36,6 +36,15 @@ PUBLIC_KEY_TYPES = (
 
 SERVICE_ACCOUNTS_COLLECTION = 'iam.projects.serviceAccounts'
 
+SERVICE_ACCOUNT_FORMAT = 'table(displayName:label=NAME, email)'
+SERVICE_ACCOUNT_KEY_FORMAT = """
+    table(
+        name.scope(keys):label=KEY_ID,
+        validAfterTime:label=CREATED_AT,
+        validBeforeTime:label=EXPIRES_AT
+    )
+"""
+
 
 class IamEtagReadError(core_exceptions.Error):
   """IamEtagReadError is raised when etag is badly formatted."""

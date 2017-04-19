@@ -256,6 +256,10 @@ class Cluster(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output only] The current status of this cluster.
 
+  Messages:
+    ResourceLabelsValue: The resource labels for the cluster to use to
+      annotate any related GCE resources.
+
   Fields:
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
@@ -378,6 +382,32 @@ class Cluster(_messages.Message):
     STOPPING = 4
     ERROR = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    """The resource labels for the cluster to use to annotate any related GCE
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
   clusterIpv4Cidr = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -403,7 +433,7 @@ class Cluster(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 23)
   nodeIpv4CidrSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 25, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabels', 26)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 26)
   selfLink = _messages.StringField(27)
   servicesIpv4Cidr = _messages.StringField(28)
   status = _messages.EnumField('StatusValueValuesEnum', 29)
@@ -1158,19 +1188,6 @@ class ImageReviewStatus(_messages.Message):
   reason = _messages.StringField(2)
 
 
-class Item(_messages.Message):
-  """A label to be applied to Google Compute Engine resources. It must comply
-  with RFC1035 for each key and value.
-
-  Fields:
-    key: The Key for this label.
-    value: The Value for this label.
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
 class LegacyAbac(_messages.Message):
   """Configuration for the legacy Attribute Based Access Control authorization
   mode.
@@ -1670,19 +1687,6 @@ class ResourceAttributes(_messages.Message):
   version = _messages.StringField(7)
 
 
-class ResourceLabels(_messages.Message):
-  """The set of Google Compute Engine labels that will be applied to any
-  underlying resources that the Google Container Cluster creates or uses.
-  These are merely metadata on the resources, and do not change the behavior
-  of the cluster.
-
-  Fields:
-    items: The list of labels.
-  """
-
-  items = _messages.MessageField('Item', 1, repeated=True)
-
-
 class RollbackNodePoolUpgradeRequest(_messages.Message):
   """RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or Failed
   NodePool upgrade. This will be an no-op if the last upgrade successfully
@@ -1717,6 +1721,9 @@ class SetLabelsRequest(_messages.Message):
   Container Engine cluster, which will in turn set them for Google Compute
   Engine resources used by that cluster
 
+  Messages:
+    ResourceLabelsValue: The labels to set for that cluster.
+
   Fields:
     labelFingerprint: The fingerprint of the previous set of labels for this
       resource, used to detect conflicts. The fingerprint is initially
@@ -1727,8 +1734,33 @@ class SetLabelsRequest(_messages.Message):
     resourceLabels: The labels to set for that cluster.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    """The labels to set for that cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   labelFingerprint = _messages.StringField(1)
-  resourceLabels = _messages.MessageField('ResourceLabels', 2)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 2)
 
 
 class SetLegacyAbacRequest(_messages.Message):

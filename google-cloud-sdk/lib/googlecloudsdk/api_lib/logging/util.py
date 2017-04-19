@@ -101,15 +101,15 @@ def GetCurrentProjectParent():
 
 def GetSinkReference(sink_name, log, service):
   """Returns the appropriate sink resource based on args."""
+  params = {'projectsId': properties.VALUES.core.project.GetOrFail}
   if log:
     collection = 'logging.projects.logs.sinks'
-    params = {'logsId': log}
+    params['logsId'] = log
   elif service:
     collection = 'logging.projects.logServices.sinks'
-    params = {'logServicesId': service}
+    params['logServicesId'] = service
   else:
     collection = 'logging.projects.sinks'
-    params = {}
 
   return resources.REGISTRY.Parse(
       sink_name, params=params, collection=collection)

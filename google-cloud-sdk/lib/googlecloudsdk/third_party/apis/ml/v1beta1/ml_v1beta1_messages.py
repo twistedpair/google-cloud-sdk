@@ -111,7 +111,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       engine/reference/rest/v1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
       deployed, the model version is hosted by the prediction service, so this
-      location is useful only as a historical record.
+      location is useful only as a historical record. The total number of
+      model files can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
     isDefault: Output only. If true, this version will be used to handle
@@ -707,7 +708,8 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       also includes   four GPUs.   </dd> </dl>  You must set this value when
       `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
-      with the training program and any additional dependencies.
+      with the training program and any additional dependencies. The maximum
+      number of package URIs is 100.
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
@@ -824,7 +826,8 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       engine/reference/rest/v1beta1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
       deployed, the model version is hosted by the prediction service, so this
-      location is useful only as a historical record.
+      location is useful only as a historical record. The total number of
+      model files can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
     isDefault: Output only. If true, this version will be used to handle

@@ -248,7 +248,9 @@ class AccessConfig(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: Name of this access configuration.
+    name: The name of this access configuration. The default and recommended
+      name is External NAT but you can use any arbitrary string you would
+      like. For example, My external IP or Network Access.
     natIP: An external IP address associated with this instance. Specify an
       unused static external IP address available to the project or leave this
       field undefined to use an IP from a shared ephemeral IP address pool. If
@@ -748,13 +750,13 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted. Example Policy with
-  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices"
+  exempted_members in each AuditConfig are exempted.  Example Policy with
+  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
-  "ADMIN_READ", } ] }, { "service": "fooservice@googleapis.com"
+  "ADMIN_READ", } ] }, { "service": "fooservice.googleapis.com"
   "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
-  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] } For
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
   bar@gmail.com from DATA_WRITE logging.
@@ -2835,56 +2837,6 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
-
-
-class ComputeCommitmentsAggregatedListRequest(_messages.Message):
-  """A ComputeCommitmentsAggregatedListRequest object.
-
-  Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  You can filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  To filter on multiple expressions, provide each
-      separate expression within parentheses. For example,
-      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
-      expressions are treated as AND expressions, meaning that resources must
-      match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests. Acceptable values are 0 to
-      500, inclusive. (Default: 500)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
 
 
 class ComputeDiskTypesAggregatedListRequest(_messages.Message):
@@ -5337,6 +5289,61 @@ class ComputeInstancesInsertRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesListReferrersRequest(_messages.Message):
+  """A ComputeInstancesListReferrersRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    instance: Name of the target instance scoping this request, or '-' if the
+      request should span over all instances in the container.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
+
+
 class ComputeInstancesListRequest(_messages.Message):
   """A ComputeInstancesListRequest object.
 
@@ -6334,6 +6341,56 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
@@ -10312,7 +10369,7 @@ class FirewallList(_messages.Message):
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
-  [IPAddress, IPProtocol, portRange] tuple.
+  [IPAddress, IPProtocol, ports] tuple.
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -10373,17 +10430,19 @@ class ForwardingRule(_messages.Message):
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
-    portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
-      packets addressed to ports in the specified range will be forwarded to
-      target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
-      have disjoint port ranges.  This field is not used for internal load
-      balancing.
-    ports: This field is not used for external load balancing.  When the load
+    portRange: This field is used for external load balancing and VPN.
+      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
+      addressed to ports in the specified range will be forwarded to target.
+      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
+      disjoint port ranges.  Some types of forwarding target have constraints
+      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetSslProxy: 443  - TargetVpnGateway: 500,
+      4500 -
+    ports: This field is only used for internal load balancing.  When the load
       balancing scheme is INTERNAL, a single port or a comma separated list of
       ports can be configured. Only packets addressed to these ports will be
-      forwarded to the backends configured with this forwarding rule. If the
-      port list is not provided then all ports are allowed to pass through.
-      You may specify a maximum of up to 5 ports.
+      forwarded to the backends configured with this forwarding rule.  You may
+      specify a maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -10397,9 +10456,8 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For example, TargetHttpProxy requires
-      HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.  This field
-      is not used for internal load balancing.
+      appropriate to the target object.  This field is not used for internal
+      load balancing.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -11434,7 +11492,7 @@ class Instance(_messages.Message):
       specifies how this interface is configured to interact with other
       network services, such as connecting to the internet. Only one interface
       is supported per instance.
-    scheduling: Scheduling options for this instance.
+    scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
       authorized for this instance. Only one service account per VM instance
@@ -11942,8 +12000,9 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A InstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to abandon from the managed
-      instance group.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -11953,8 +12012,8 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A InstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The list of instances to delete from this managed instance
-      group. Specify one or more instance URLs.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -11966,16 +12025,24 @@ class InstanceGroupManagersListManagedInstancesResponse(_messages.Message):
   Fields:
     managedInstances: [Output Only] The list of instances in the managed
       instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class InstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A InstanceGroupManagersRecreateInstancesRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -12372,6 +12439,30 @@ class InstanceList(_messages.Message):
   id = _messages.StringField(1)
   items = _messages.MessageField('Instance', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class InstanceListReferrers(_messages.Message):
+  """Contains a list of instance referrers.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of referrers.
+    kind: [Output Only] Type of resource. Always compute#instanceListReferrers
+      for lists of Instance referrers.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Reference', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#instanceListReferrers')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
 
@@ -14159,6 +14250,24 @@ class Quota(_messages.Message):
   usage = _messages.FloatField(3)
 
 
+class Reference(_messages.Message):
+  """Represents a reference to a resource.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#reference for
+      references.
+    referenceType: A description of the reference type with no implied
+      semantics. Possible values include:   - MEMBER_OF
+    referrer: URL of the resource which refers to the target.
+    target: URL of the resource to which this reference points.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#reference')
+  referenceType = _messages.StringField(2)
+  referrer = _messages.StringField(3)
+  target = _messages.StringField(4)
+
+
 class Region(_messages.Message):
   """Region resource.
 
@@ -14277,7 +14386,9 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersAbandonInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to abandon.
+    instances: The URLs of one or more instances to abandon. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -14287,7 +14398,8 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
-    instances: The names of one or more instances to delete.
+    instances: The URLs of one or more instances to delete. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -14298,16 +14410,24 @@ class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
 
   Fields:
     managedInstances: List of managed instances.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
   """A RegionInstanceGroupManagersRecreateRequest object.
 
   Fields:
-    instances: The URL for one or more instances to recreate.
+    instances: The URLs of one or more instances to recreate. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -15139,12 +15259,16 @@ class Scheduling(_messages.Message):
     automaticRestart: Specifies whether the instance should be automatically
       restarted if it is terminated by Compute Engine (not terminated by a
       user). You can only set the automatic restart option for standard
-      instances. Preemptible instances cannot be automatically restarted.
+      instances. Preemptible instances cannot be automatically restarted.  By
+      default, this is set to true so an instance is automatically restarted
+      if it is terminated by Compute Engine.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
       information, see Setting Instance Scheduling Options.
-    preemptible: Whether the instance is preemptible.
+    preemptible: Defines whether the instance is preemptible. This can only be
+      set during instance creation, it cannot be set or changed after the
+      instance has been created.
   """
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):

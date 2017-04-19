@@ -376,6 +376,24 @@
         }
       }
     },
+    "GenerateUploadUrlRequest": {
+      "id": "GenerateUploadUrlRequest",
+      "description": "Request of `GenerateSourceUploadUrl` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GenerateUploadUrlResponse": {
+      "id": "GenerateUploadUrlResponse",
+      "description": "Response of `GenerateSourceUploadUrl` method.",
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "description": "The generated signed URL that should be used for a function source code\nupload. The uploaded file should be a zip archive which contains a\nfunction.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -532,6 +550,34 @@
       "resources": {
         "locations": {
           "methods": {
+            "generateUploadUrl": {
+              "id": "cloudfunctions.projects.locations.generateUploadUrl",
+              "path": "v1beta2/{+location}:generateUploadUrl",
+              "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}:generateUploadUrl",
+              "httpMethod": "POST",
+              "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.",
+              "parameters": {
+                "location": {
+                  "description": "The project and location in which the URL should be generated, specified\nin the format `projects\/*\/locations\/*",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "location"
+              ],
+              "request": {
+                "$ref": "GenerateUploadUrlRequest"
+              },
+              "response": {
+                "$ref": "GenerateUploadUrlResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
             "list": {
               "id": "cloudfunctions.projects.locations.list",
               "path": "v1beta2/{+name}/locations",

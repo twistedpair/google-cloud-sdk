@@ -777,6 +777,8 @@ class TestMatrix(_messages.Message):
       INVALID_TEST_LOOP_LABELS: The specified scenario labels were not found.
       MALFORMED_TEST_LOOP_LABELS: There was a parsing error with the scenario
         labels.
+      SCENARIOS_NOT_DECLARED: The request contains scenarios that were not
+        declared in the manifest
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -792,6 +794,7 @@ class TestMatrix(_messages.Message):
     TEST_LOOP_INTENT_FILTER_NOT_FOUND = 11
     INVALID_TEST_LOOP_LABELS = 12
     MALFORMED_TEST_LOOP_LABELS = 13
+    SCENARIOS_NOT_DECLARED = 14
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

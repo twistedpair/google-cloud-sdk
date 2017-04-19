@@ -282,18 +282,36 @@ class Paths(object):
 
   @property
   def credentials_path(self):
-    """Gets the path to the file to store credentials in.
+    """Gets the path to the file to store Oauth2Client credentials in.
 
-    Credentials are always stored in global config, never the local workspace.
-    This is due to the fact that local workspaces are likely to be stored whole
-    in source control, and we don't want to accidentally publish credential
-    information.  We also want user credentials to be shared across workspaces
-    if they are for the same user.
+    This is oauth2client.contrib.multistore_file format file.
 
     Returns:
       str, The path to the credential file.
     """
     return os.path.join(self.global_config_dir, 'credentials')
+
+  @property
+  def credentials_db_path(self):
+    """Gets the path to the file to store credentials in.
+
+    This is generic key/value store format using sqlite.
+
+    Returns:
+      str, The path to the credential db file.
+    """
+    return os.path.join(self.global_config_dir, 'credentials.db')
+
+  @property
+  def access_token_db_path(self):
+    """Gets the path to the file to store cached access tokens in.
+
+    This is generic key/value store format using sqlite.
+
+    Returns:
+      str, The path to the access token db file.
+    """
+    return os.path.join(self.global_config_dir, 'access_tokens.db')
 
   @property
   def logs_dir(self):

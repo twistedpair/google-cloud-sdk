@@ -10,11 +10,13 @@ begin
   if [ "$apparent_sdk_dir" = "$script_link" ]
     set apparent_sdk_dir .
   end
+  set old_dir (pwd)
   # No "cd -P" in fish. It always resolves symlinks to their canonical location,
   # though, when you "cd" in.
   # Also, cd is  cd is *both* a shell builtin and shell wrapper function (to
   # implement "cd -") in fish, so "command cd" won't work. "builtin cd" will.
   set sdk_dir (builtin cd "$apparent_sdk_dir" > /dev/null; and pwd)
+  builtin cd "$old_dir"
   set bin_path "$sdk_dir/bin"
   # -gx for global (not limited to this begin/end block) and exportable (part of
   # the environment for child processes)

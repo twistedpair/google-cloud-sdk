@@ -14,8 +14,8 @@
 
 """Library for obtaining API clients and messages.
 
-This should only be called by api_lib.util.apis, core.resources, and
-module tests.
+This should only be called by api_lib.util.apis, core.resources, gcloud meta
+commands, and module tests.
 """
 
 from googlecloudsdk.api_lib.util import apis_util
@@ -105,7 +105,18 @@ def _GetClientClass(api_name, api_version):
     base_api.BaseApiClient, Client class for the specified API.
   """
   api_def = _GetApiDef(api_name, api_version)
+  return _GetClientClassFromDef(api_def)
 
+
+def _GetClientClassFromDef(api_def):
+  """Returns the client class for the API definition specified in the args.
+
+  Args:
+    api_def: apis_map.APIDef, The definition of the API.
+
+  Returns:
+    base_api.BaseApiClient, Client class for the specified API.
+  """
   module_path, client_class_name = api_def.client_full_classpath.rsplit('.', 1)
   module_obj = __import__(module_path, fromlist=[client_class_name])
   return getattr(module_obj, client_class_name)

@@ -15,11 +15,15 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
 def _ParseModel(model_id):
-  return resources.REGISTRY.Parse(model_id, collection='ml.projects.models')
+  return resources.REGISTRY.Parse(
+      model_id,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.models')
 
 
 def ModelsClient(version='v1beta1'):

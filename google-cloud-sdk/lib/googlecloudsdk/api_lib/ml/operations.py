@@ -16,6 +16,7 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -98,6 +99,7 @@ class OperationsClient(object):
 
     operation_ref = resources.REGISTRY.Parse(
         operation.name,
+        params={'projectsId': properties.VALUES.core.project.GetOrFail},
         collection='ml.projects.operations')
     if message is None:
       message = 'Waiting for operation [{}]'.format(operation_ref.Name())

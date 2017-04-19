@@ -57,13 +57,29 @@ ALL_IAM_PERMISSIONS = [
 ]
 
 
-class OperationErrorException(core_exceptions.Error):
+class Error(core_exceptions.Error):
+  """Base Error class for this module."""
+
+
+class EnableServicePermissionDeniedException(Error):
+
+  def __init__(self, message):
+    super(EnableServicePermissionDeniedException, self).__init__(message)
+
+
+class ListServicesPermissionDeniedException(Error):
+
+  def __init__(self, message):
+    super(ListServicesPermissionDeniedException, self).__init__(message)
+
+
+class OperationErrorException(Error):
 
   def __init__(self, message):
     super(OperationErrorException, self).__init__(message)
 
 
-class ServiceDeployErrorException(core_exceptions.Error):
+class ServiceDeployErrorException(Error):
 
   def __init__(self, message):
     super(ServiceDeployErrorException, self).__init__(message)
@@ -331,7 +347,9 @@ def CreateServiceIfNew(service_name, project):
   try:
     client.services.Get(get_request)
   except apitools_exceptions.HttpError as error:
-    if error.status_code == 404:
+    # Older versions of service management backend return a 404 when service is
+    # new, but more recent versions return a 403. Check for either one for now.
+    if error.status_code in [403, 404]:
       # create service
       create_request = messages.ManagedService(
           serviceName=service_name,
@@ -423,7 +441,6 @@ def ProcessOperationResult(result, async=False):
     log.status.Print('Operation finished successfully. '
                      'The following command can describe '
                      'the Operation details:\n {0}'.format(cmd))
-
   return op
 
 

@@ -16,6 +16,7 @@
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -36,7 +37,10 @@ def Cancel(instance, database, operation):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
-      params={'instancesId': instance, 'databasesId': database},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+          'databasesId': database},
       collection='spanner.projects.instances.databases.operations')
   req = msgs.SpannerProjectsInstancesDatabasesOperationsCancelRequest(
       name=ref.RelativeName())
@@ -49,7 +53,11 @@ def Get(instance, database, operation):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       operation,
-      params={'instancesId': instance, 'databasesId': database},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+          'databasesId': database,
+      },
       collection='spanner.projects.instances.databases.operations')
   req = msgs.SpannerProjectsInstancesDatabasesOperationsGetRequest(
       name=ref.RelativeName())
@@ -62,7 +70,10 @@ def List(instance, database):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   ref = resources.REGISTRY.Parse(
       database,
-      params={'instancesId': instance},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance
+      },
       collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesOperationsListRequest(
       name=ref.RelativeName()+'/operations')

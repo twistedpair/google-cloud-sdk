@@ -413,3 +413,37 @@ info."""
       default=None,
       hidden=hidden,
       help=help_text)
+
+
+def AddStartIpRotationFlag(parser, hidden=False):
+  """Adds a --start-ip-rotation flag to parser."""
+  help_text = """\
+Start the rotation of this cluster to a new IP. For example:
+
+  $ {command} example-cluster --start-ip-rotation
+
+This causes the cluster to serve on two IPs, and will initiate a node upgrade \
+to point to the new IP."""
+  parser.add_argument(
+      '--start-ip-rotation',
+      action='store_true',
+      default=False,
+      hidden=hidden,
+      help=help_text)
+
+
+def AddCompleteIpRotationFlag(parser, hidden=False):
+  """Adds a --complete-ip-rotation flag to parser."""
+  help_text = """\
+Complete the IP rotation for this cluster. For example:
+
+  $ {command} example-cluster --complete-ip-rotation
+
+This causes the cluster to stop serving its old IP, and return to a single IP \
+state."""
+  parser.add_argument(
+      '--complete-ip-rotation',
+      action='store_true',
+      default=False,
+      hidden=hidden,
+      help=help_text)

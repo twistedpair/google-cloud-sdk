@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20170320",
+ "revision": "20170407",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -791,15 +791,15 @@
   "Labels": {
    "id": "Labels",
    "type": "object",
-   "description": "User defined labels for Cloud SQL instances.",
+   "description": "Reserved for future use.",
    "properties": {
     "key": {
      "type": "string",
-     "description": "The key of the label."
+     "description": "Reserved for future use."
     },
     "value": {
      "type": "string",
-     "description": "The value of the label."
+     "description": "Reserved for future use."
     }
    }
   },
@@ -1156,7 +1156,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "User defined labels.",
+     "description": "Reserved for future use.",
      "items": {
       "$ref": "Labels"
      }
@@ -2105,7 +2105,7 @@
      "parameters": {
       "filter": {
        "type": "string",
-       "description": "A filter expression for filtering listed instances.",
+       "description": "Reserved for future use.",
        "location": "query"
       },
       "maxResults": {

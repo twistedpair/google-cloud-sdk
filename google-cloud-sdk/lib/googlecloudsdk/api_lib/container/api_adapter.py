@@ -256,6 +256,12 @@ class APIAdapter(object):
   def SetMasterAuth(self, cluster_ref, options):
     raise NotImplementedError('SetMasterAuth requires a v1 client.')
 
+  def StartIpRotation(self, cluster_ref):
+    raise NotImplementedError('StartIpRotation requires a v1 client.')
+
+  def CompleteIpRotation(self, cluster_ref):
+    raise NotImplementedError('CompleteIpRotation requires a v1 client.')
+
   def GetOperation(self, operation_ref):
     return self.client.projects_zones_operations.Get(
         self.messages.ContainerProjectsZonesOperationsGetRequest(
@@ -778,6 +784,22 @@ class V1Adapter(APIAdapter):
         setMasterAuthRequest=request)
     op = self.client.projects_zones_clusters.SetMasterAuth(req)
     return self.ParseOperation(op.name)
+
+  def StartIpRotation(self, cluster_ref):
+    operation = self.client.projects_zones_clusters.StartIpRotation(
+        self.messages.ContainerProjectsZonesClustersStartIpRotationRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId))
+    return self.ParseOperation(operation.name)
+
+  def CompleteIpRotation(self, cluster_ref):
+    operation = self.client.projects_zones_clusters.CompleteIpRotation(
+        self.messages.ContainerProjectsZonesClustersCompleteIpRotationRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId))
+    return self.ParseOperation(operation.name)
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_zones_clusters.Delete(

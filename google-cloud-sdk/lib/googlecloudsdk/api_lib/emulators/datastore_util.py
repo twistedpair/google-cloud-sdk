@@ -15,6 +15,7 @@
 """Utility functions for gcloud datastore emulator."""
 
 import os
+import tempfile
 from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -106,19 +107,19 @@ def PrepareGCDDataDir(args):
   exec_args = ArgsForGCDEmulator(gcd_create_args, args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))
-  process = util.Exec(exec_args)
-  util.PrefixOutput(process, DATASTORE)
-  failed = process.poll()
+  with util.Exec(exec_args) as process:
+    util.PrefixOutput(process, DATASTORE)
+    failed = process.poll()
+    if failed:
+      raise UnableToPrepareDataDir()
 
-  if failed:
-    raise UnableToPrepareDataDir()
 
-
-def StartGCDEmulator(args):
+def StartGCDEmulator(args, log_file=None):
   """Starts the datastore emulator with the given arguments.
 
   Args:
     args: Arguments passed to the start command.
+    log_file: optional file argument to reroute process's output.
 
   Returns:
     process, The handle of the child process running the datastore emulator.
@@ -133,7 +134,7 @@ def StartGCDEmulator(args):
   exec_args = ArgsForGCDEmulator(gcd_start_args, args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))
-  return util.Exec(exec_args)
+  return util.Exec(exec_args, log_file=log_file)
 
 
 def WriteGCDEnvYaml(args):
@@ -159,3 +160,83 @@ def GetDataDir():
 
 def GetHostPort():
   return util.GetHostPort(DATASTORE)
+
+
+class DatastoreEmulator(util.Emulator):
+  """Represents the ability to start and route datastore emulator."""
+
+  def Start(self, port):
+    args = util.AttrDict({
+        'host_port': {
+            'host': 'localhost',
+            'port': port,
+        },
+        'store_on_disk': True,
+        'consistency': 0.9,
+        'data_dir': tempfile.mkdtemp(),
+        'legacy': False
+    })
+    PrepareGCDDataDir(args)
+    return StartGCDEmulator(args, self._GetLogNo())
+
+  @property
+  def prefixes(self):
+    # Taken Jan 1, 2017 from:
+    # https://cloud.google.com/datastore/docs/reference/rpc/google.datastore.v1
+    # Note that this should probably be updated to just be based off of the
+    # prefix, without enumerating all of the types.
+    return [
+        'google.datastore.v1.Datastore',
+        'google.datastore.v1.AllocateIdsRequest',
+        'google.datastore.v1.AllocateIdsResponse',
+        'google.datastore.v1.ArrayValue',
+        'google.datastore.v1.BeginTransactionRequest',
+        'google.datastore.v1.BeginTransactionResponse',
+        'google.datastore.v1.CommitRequest',
+        'google.datastore.v1.CommitRequest.Mode',
+        'google.datastore.v1.CommitResponse',
+        'google.datastore.v1.CompositeFilter',
+        'google.datastore.v1.CompositeFilter.Operator',
+        'google.datastore.v1.Entity',
+        'google.datastore.v1.EntityResult',
+        'google.datastore.v1.EntityResult.ResultType',
+        'google.datastore.v1.Filter',
+        'google.datastore.v1.GqlQuery',
+        'google.datastore.v1.GqlQueryParameter',
+        'google.datastore.v1.Key',
+        'google.datastore.v1.Key.PathElement',
+        'google.datastore.v1.KindExpression',
+        'google.datastore.v1.LookupRequest',
+        'google.datastore.v1.LookupResponse',
+        'google.datastore.v1.Mutation',
+        'google.datastore.v1.MutationResult',
+        'google.datastore.v1.PartitionId',
+        'google.datastore.v1.Projection',
+        'google.datastore.v1.PropertyFilter',
+        'google.datastore.v1.PropertyFilter.Operator',
+        'google.datastore.v1.PropertyOrder',
+        'google.datastore.v1.PropertyOrder.Direction',
+        'google.datastore.v1.PropertyReference',
+        'google.datastore.v1.Query',
+        'google.datastore.v1.QueryResultBatch',
+        'google.datastore.v1.QueryResultBatch.MoreResultsType',
+        'google.datastore.v1.ReadOptions',
+        'google.datastore.v1.ReadOptions.ReadConsistency'
+        'google.datastore.v1.RollbackRequest',
+        'google.datastore.v1.RollbackResponse',
+        'google.datastore.v1.RunQueryRequest',
+        'google.datastore.v1.RunQueryResponse',
+        'google.datastore.v1.Value',
+    ]
+
+  @property
+  def service_name(self):
+    return DATASTORE
+
+  @property
+  def emulator_title(self):
+    return DATASTORE_TITLE
+
+  @property
+  def emulator_component(self):
+    return 'cloud-datastore-emulator'

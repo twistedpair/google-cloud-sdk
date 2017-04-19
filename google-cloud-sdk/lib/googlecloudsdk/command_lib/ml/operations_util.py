@@ -18,31 +18,39 @@ from googlecloudsdk.core import resources
 
 def Cancel(operations_client, operation):
   operation_ref = resources.REGISTRY.Parse(
-      operation, collection='ml.projects.operations')
+      operation,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.operations')
   return operations_client.Cancel(operation_ref)
 
 
 def Delete(operations_client, operation):
   operation_ref = resources.REGISTRY.Parse(
-      operation, collection='ml.projects.operations')
+      operation,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.operations')
   return operations_client.Delete(operation_ref)
 
 
 def Describe(operations_client, operation):
   operation_ref = resources.REGISTRY.Parse(
-      operation, collection='ml.projects.operations')
+      operation,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.operations')
   return operations_client.Get(operation_ref)
 
 
 def List(operations_client):
   project_ref = resources.REGISTRY.Parse(
-      properties.VALUES.core.project.Get(required=True),
+      properties.VALUES.core.project.GetOrFail(),
       collection='ml.projects')
   return operations_client.List(project_ref)
 
 
 def Wait(operations_client, operation):
   operation_ref = resources.REGISTRY.Parse(
-      operation, collection='ml.projects.operations')
+      operation,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='ml.projects.operations')
   operation = operations_client.Get(operation_ref)
   return operations_client.WaitForOperation(operation)

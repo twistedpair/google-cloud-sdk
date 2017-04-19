@@ -39,7 +39,6 @@ class ComputeBeta(base_api.BaseApiClient):
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
-    self.commitments = self.CommitmentsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
     self.firewalls = self.FirewallsService(self)
@@ -965,42 +964,6 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class CommitmentsService(base_api.BaseApiService):
-    """Service class for the commitments resource."""
-
-    _NAME = u'commitments'
-
-    def __init__(self, client):
-      super(ComputeBeta.CommitmentsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of commitments.
-
-      Args:
-        request: (ComputeCommitmentsAggregatedListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CommitmentAggregatedList) The response message.
-      """
-      config = self.GetMethodConfig('AggregatedList')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'compute.commitments.aggregatedList',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-        relative_path=u'projects/{project}/aggregated/commitments',
-        request_field='',
-        request_type_name=u'ComputeCommitmentsAggregatedListRequest',
-        response_type_name=u'CommitmentAggregatedList',
-        supports_download=False,
-    )
-
   class DiskTypesService(base_api.BaseApiService):
     """Service class for the diskTypes resource."""
 
@@ -1500,7 +1463,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request.
+      """Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -1868,7 +1831,7 @@ class ComputeBeta(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified ForwardingRule resource.
+      """Deletes the specified GlobalForwardingRule resource.
 
       Args:
         request: (ComputeGlobalForwardingRulesDeleteRequest) input message
@@ -1894,7 +1857,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified ForwardingRule resource. Get a list of available forwarding rules by making a list() request.
+      """Returns the specified GlobalForwardingRule resource. Get a list of available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -1920,7 +1883,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a ForwardingRule resource in the specified project and region using the data included in the request.
+      """Creates a GlobalForwardingRule resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeGlobalForwardingRulesInsertRequest) input message
@@ -1946,7 +1909,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Retrieves a list of ForwardingRule resources available to the specified project.
+      """Retrieves a list of GlobalForwardingRule resources available to the specified project.
 
       Args:
         request: (ComputeGlobalForwardingRulesListRequest) input message
@@ -1972,7 +1935,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -2946,6 +2909,8 @@ If an empty request body is given, clears the deprecation status instead.
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeInstanceGroupManagersAbandonInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3024,6 +2989,8 @@ If an empty request body is given, clears the deprecation status instead.
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeInstanceGroupManagersDeleteInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3075,6 +3042,8 @@ If an empty request body is given, clears the deprecation status instead.
 
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+A managed instance group can have up to 1000 VM instances per group.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -3152,7 +3121,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patchd. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -3179,6 +3148,8 @@ If an empty request body is given, clears the deprecation status instead.
 
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersRecreateInstancesRequest) input message
@@ -3362,7 +3333,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdateRequest) input message
@@ -4067,8 +4038,34 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def ListReferrers(self, request, global_params=None):
+      """Retrieves the list of referrers to instances contained within the specified zone.
+
+      Args:
+        request: (ComputeInstancesListReferrersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceListReferrers) The response message.
+      """
+      config = self.GetMethodConfig('ListReferrers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListReferrers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.listReferrers',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/referrers',
+        request_field='',
+        request_type_name=u'ComputeInstancesListReferrersRequest',
+        response_type_name=u'InstanceListReferrers',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
-      """Performs a hard reset on the instance.
+      """Performs a reset on the instance. For more information, see Resetting an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message
@@ -5489,6 +5486,32 @@ If you increase the size of the instance group, the group creates new instances 
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of commitments.
+
+      Args:
+        request: (ComputeRegionCommitmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CommitmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionCommitments.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/commitments',
+        request_field='',
+        request_type_name=u'ComputeRegionCommitmentsAggregatedListRequest',
+        response_type_name=u'CommitmentAggregatedList',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns the specified commitment resource. Get a list of available commitments by making a list() request.
 
@@ -5580,6 +5603,8 @@ If you increase the size of the instance group, the group creates new instances 
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -5632,6 +5657,8 @@ If you increase the size of the instance group, the group creates new instances 
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+You can specify a maximum of 1000 instances with this method per request.
+
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -5683,6 +5710,8 @@ If you increase the size of the instance group, the group creates new instances 
 
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+A regional managed instance group can contain up to 2000 instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
@@ -5760,7 +5789,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group have not yet been patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -5787,6 +5816,8 @@ If you increase the size of the instance group, the group creates new instances 
 
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message

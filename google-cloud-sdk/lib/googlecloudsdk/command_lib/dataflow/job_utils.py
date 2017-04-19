@@ -14,6 +14,7 @@
 """Helpers for writing commands interacting with jobs and their IDs.
 """
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -45,7 +46,10 @@ def ExtractJobRef(job):
   Returns:
     A Job resource.
   """
-  return resources.REGISTRY.Parse(job, collection='dataflow.projects.jobs')
+  return resources.REGISTRY.Parse(
+      job,
+      params={'projectId': properties.VALUES.core.project.GetOrFail},
+      collection='dataflow.projects.jobs')
 
 
 def ExtractJobRefs(jobs):
@@ -57,4 +61,6 @@ def ExtractJobRefs(jobs):
     A list of job resources.
   """
   return [resources.REGISTRY.Parse(
-      job, collection='dataflow.projects.jobs') for job in jobs]
+      job,
+      params={'projectId': properties.VALUES.core.project.GetOrFail},
+      collection='dataflow.projects.jobs') for job in jobs]

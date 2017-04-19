@@ -207,7 +207,7 @@ def GetArgDetails(arg):
       one_of = 'one of'
     else:
       # TBD I guess?
-      one_of = '(currenly only one value is supported)'
+      one_of = '(currently only one value is supported)'
     if isinstance(choices, dict):
       extra_help.append(
           '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(

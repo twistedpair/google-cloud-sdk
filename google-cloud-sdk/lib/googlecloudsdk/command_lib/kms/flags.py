@@ -14,6 +14,7 @@
 """Helpers for parsing flags and arguments."""
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
@@ -90,22 +91,31 @@ def AddNextRotationTimeFlag(parser):
 
 # Parsing.
 def ParseLocationName(args):
-  return resources.REGISTRY.Parse(args.location,
-                                  collection=LOCATION_COLLECTION)
+  return resources.REGISTRY.Parse(
+      args.location,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=LOCATION_COLLECTION)
 
 
 def ParseKeyRingName(args):
-  return resources.REGISTRY.Parse(args.keyring, collection=KEY_RING_COLLECTION)
+  return resources.REGISTRY.Parse(
+      args.keyring,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=KEY_RING_COLLECTION)
 
 
 def ParseCryptoKeyName(args):
   return resources.REGISTRY.Parse(
-      args.key, collection=CRYPTO_KEY_COLLECTION)
+      args.key,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=CRYPTO_KEY_COLLECTION)
 
 
 def ParseCryptoKeyVersionName(args):
   return resources.REGISTRY.Parse(
-      args.version, collection=CRYPTO_KEY_VERSION_COLLECTION)
+      args.version,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=CRYPTO_KEY_VERSION_COLLECTION)
 
 
 # Set proto fields from flags.

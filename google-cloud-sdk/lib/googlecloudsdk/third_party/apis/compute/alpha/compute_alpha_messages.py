@@ -5240,14 +5240,14 @@ class ComputeImagesInsertRequest(_messages.Message):
   """A ComputeImagesInsertRequest object.
 
   Fields:
-    forceCreation: Force image creation if true.
+    forceCreate: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
     requestId: begin_interface: MixerMutationRequestBuilder Request ID to
       support idempotency.
   """
 
-  forceCreation = _messages.BooleanField(1)
+  forceCreate = _messages.BooleanField(1)
   image = _messages.MessageField('Image', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
@@ -12884,12 +12884,15 @@ class ForwardingRule(_messages.Message):
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM , SELECT.
       If this field is not specified, it is assumed to be PREMIUM.
-    portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
-      packets addressed to ports in the specified range will be forwarded to
-      target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
-      have disjoint port ranges.  This field is not used for internal load
-      balancing.
-    ports: This field is not used for external load balancing.  When the load
+    portRange: This field is used for external load balancing and VPN.
+      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
+      addressed to ports in the specified range will be forwarded to target.
+      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
+      disjoint port ranges.  Some types of forwarding target have constraints
+      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetSslProxy: 443  - TargetVpnGateway: 500,
+      4500 -
+    ports: This field is only used for internal load balancing.  When the load
       balancing scheme is INTERNAL, a single port or a comma separated list of
       ports can be configured. Only packets addressed to these ports will be
       forwarded to the backends configured with this forwarding rule.  You may
@@ -14923,6 +14926,7 @@ class InstanceGroupManager(_messages.Message):
       accounts needs all permissions required to create and delete instances.
       When not specified, the service account
       {projectNumber}@cloudservices.gserviceaccount.com will be used.
+    statefulPolicy: Stateful configuration for this Instanced Group Manager
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -14972,11 +14976,12 @@ class InstanceGroupManager(_messages.Message):
   region = _messages.StringField(16)
   selfLink = _messages.StringField(17)
   serviceAccount = _messages.StringField(18)
-  targetPools = _messages.StringField(19, repeated=True)
-  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
-  zone = _messages.StringField(23)
+  statefulPolicy = _messages.MessageField('InstanceGroupManagerStatefulPolicy', 19)
+  targetPools = _messages.StringField(20, repeated=True)
+  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -15149,6 +15154,27 @@ class InstanceGroupManagerPendingActionsSummary(_messages.Message):
   deleting = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   recreating = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerStatefulPolicy(_messages.Message):
+  """A InstanceGroupManagerStatefulPolicy object.
+
+  Fields:
+    preservedDisks: Disks created on the instances that will be preserved on
+      instance delete, resize down, etc.
+  """
+
+  preservedDisks = _messages.MessageField('InstanceGroupManagerStatefulPolicyDiskPolicy', 1, repeated=True)
+
+
+class InstanceGroupManagerStatefulPolicyDiskPolicy(_messages.Message):
+  """A InstanceGroupManagerStatefulPolicyDiskPolicy object.
+
+  Fields:
+    deviceName: Device name of the disk to be preserved
+  """
+
+  deviceName = _messages.StringField(1)
 
 
 class InstanceGroupManagerUpdatePolicy(_messages.Message):

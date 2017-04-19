@@ -13,12 +13,39 @@
 # limitations under the License.
 """Common flags for some of the SQL commands."""
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 
 INSTANCE_FLAG = base.Argument(
     '--instance',
     '-i',
     required=True,
+    completion_resource='sql.instances',
+    help='Cloud SQL instance ID.')
+
+DEPRECATED_INSTANCE_FLAG_REQUIRED = base.Argument(
+    '--instance',
+    '-i',
+    action=actions.DeprecationAction(
+        '--instance',
+        removed=False,
+        warn=('Starting on 2017-06-30, --instance will no longer be a valid '
+              'flag: Run the same command but omit this flag.'),
+    ),
+    required=True,
+    completion_resource='sql.instances',
+    help='Cloud SQL instance ID.')
+
+DEPRECATED_INSTANCE_FLAG = base.Argument(
+    '--instance',
+    '-i',
+    action=actions.DeprecationAction(
+        '--instance',
+        removed=False,
+        warn=('Starting on 2017-06-30, --instance will no longer be a valid '
+              'flag: Run the same command but omit this flag.'),
+    ),
+    required=False,
     completion_resource='sql.instances',
     help='Cloud SQL instance ID.')
 
