@@ -15,7 +15,6 @@
 """Util for billing."""
 
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import resources
 
 ACCOUNT_ID_ARG_PARAMS = dict(
     metavar='ACCOUNT_ID',
@@ -48,21 +47,3 @@ def GetClient():
     a cloudbilling client
   """
   return apis.GetClientInstance('cloudbilling', 'v1')
-
-
-def MessageToResource(message, collection):
-  """Convert a protorpclite Message to a gcloud Resource.
-
-  Args:
-    message: a protorpclite message
-    collection: a collection from the resource_registry
-  Returns:
-    a resource of type Collection
-  """
-  return resources.Create(
-      collection,
-      **dict([
-          (field.name, message.get_assigned_value(field.name))
-          for field in message.__class__.all_fields()
-      ])
-  )

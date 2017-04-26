@@ -808,7 +808,7 @@ class Snapshot(_messages.Message):
   """A snapshot resource.
 
   Fields:
-    expirationTime: The snapshot is guaranteed to exist up until this time. A
+    expireTime: The snapshot is guaranteed to exist up until this time. A
       newly-created snapshot expires no later than 7 days from the time of its
       creation. Its exact lifetime is determined at creation by the existing
       backlog in the source subscription. Specifically, the lifetime of the
@@ -822,7 +822,7 @@ class Snapshot(_messages.Message):
       messages.
   """
 
-  expirationTime = _messages.StringField(1)
+  expireTime = _messages.StringField(1)
   name = _messages.StringField(2)
   topic = _messages.StringField(3)
 

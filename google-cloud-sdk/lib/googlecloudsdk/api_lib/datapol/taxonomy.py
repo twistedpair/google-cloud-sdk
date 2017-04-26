@@ -14,29 +14,8 @@
 """Helpers to interact with the Taxonomy serivce via the Cloud Datapol API."""
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.datapol import utils
-from googlecloudsdk.command_lib.projects import util as projects_util
-from googlecloudsdk.core import properties
-
-# Organization Id place holder for projects that do not belong to any
-# organizations.
-_ORG_ID_PLACE_HOLDER = '_NO_ORGS_'
-
-
-def _GetProjectName():
-  """Gets name of the current project."""
-  return properties.VALUES.core.project.Get(required=True)
-
-
-def _GetOrganizationId():
-  """Gets id of current organization."""
-  proj = projects_api.Get(projects_util.ParseProject(_GetProjectName()))
-  return (proj.parent.id if proj.parent and proj.parent.type == 'organization'
-          else _ORG_ID_PLACE_HOLDER)
-
-
-_ORG_PATTERN = 'orgs/{0}'
+from googlecloudsdk.core import resources
 
 
 def _GetService():
@@ -56,20 +35,21 @@ def Create(taxonomy_name, description):
     A Taxonomy message.
   """
   messages = utils.GetMessagesModule()
-  org_id = _GetOrganizationId()
+  org_id = utils.GetOrganizationId()
   return _GetService().Create(
       messages.DatapolOrgsPolicyTaxonomiesCreateRequest(
-          parent=_ORG_PATTERN.format(org_id),
+          parent=resources.REGISTRY.Create('datapol.org', orgsId=org_id)
+          .RelativeName(),
           policyTaxonomy=messages.PolicyTaxonomy(
               orgId=org_id, taxonomyName=taxonomy_name, description=
               description)))
 
 
-def Delete(name):
+def Delete(taxonomy_name):
   """Makes an API call to delete a taxonomy.
 
   Args:
-    name: Resource name of the taxonomy.
+    taxonomy_name: Name of the taxonomy.
 
   Returns:
     An Operation message which can be used to check on the progress of taxonomy
@@ -77,20 +57,21 @@ def Delete(name):
   """
   return _GetService().Delete(
       utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesDeleteRequest(
-          name=name))
+          name=utils.GetTaxonomyResource(taxonomy_name)))
 
 
-def Get(name):
+def Get(taxonomy_name):
   """Makes an API call to get the definition of a taxonomy.
 
   Args:
-    name: Resource name of the taxonomy.
+    taxonomy_name: Name of the taxonomy.
 
   Returns:
     A Taxonomy message.
   """
   return _GetService().Get(utils.GetMessagesModule()
-                           .DatapolOrgsPolicyTaxonomiesGetRequest(name=name))
+                           .DatapolOrgsPolicyTaxonomiesGetRequest(
+                               name=utils.GetTaxonomyResource(taxonomy_name)))
 
 
 def List(limit=None):
@@ -103,7 +84,8 @@ def List(limit=None):
     Generator that yields taxonomies
   """
   request = utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesListRequest(
-      parent=_ORG_PATTERN.format(_GetOrganizationId()))
+      parent=resources.REGISTRY.Create(
+          'datapol.org', orgsId=utils.GetOrganizationId()).RelativeName())
   return list_pager.YieldFromList(
       _GetService(),
       request,
@@ -112,11 +94,11 @@ def List(limit=None):
       batch_size_attribute='pageSize')
 
 
-def GetIamPolicy(resource):
+def GetIamPolicy(taxonomy_name):
   """Gets IAM policy for a given taxonomy.
 
   Args:
-    resource: Resource name of the taxonomy.
+    taxonomy_name: Name of the taxonomy.
 
   Returns:
     An IamPolicy message.
@@ -124,15 +106,15 @@ def GetIamPolicy(resource):
   messages = utils.GetMessagesModule()
   return _GetService().GetIamPolicy(
       messages.DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest(
-          resource=resource, getIamPolicyRequest=
-          messages.GetIamPolicyRequest()))
+          resource=utils.GetTaxonomyResource(taxonomy_name),
+          getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
 
-def SetIamPolicy(resource, policy):
+def SetIamPolicy(taxonomy_name, policy):
   """Sets IAM policy, for a given taxonomy.
 
   Args:
-    resource: Resource name of the taxonomy.
+    taxonomy_name: Name of the taxonomy.
     policy: An IamPolicy message.
 
   Returns:
@@ -141,5 +123,5 @@ def SetIamPolicy(resource, policy):
   messages = utils.GetMessagesModule()
   return _GetService().SetIamPolicy(
       messages.DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest(
-          resource=resource,
+          resource=utils.GetTaxonomyResource(taxonomy_name),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

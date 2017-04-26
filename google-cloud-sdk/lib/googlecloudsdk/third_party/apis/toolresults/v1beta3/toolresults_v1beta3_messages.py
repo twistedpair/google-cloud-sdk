@@ -78,28 +78,32 @@ class BasicPerfSampleSeries(_messages.Message):
 
     Values:
       cpu: <no description>
+      graphics: <no description>
       memory: <no description>
       network: <no description>
       perfMetricTypeUnspecified: <no description>
     """
     cpu = 0
-    memory = 1
-    network = 2
-    perfMetricTypeUnspecified = 3
+    graphics = 1
+    memory = 2
+    network = 3
+    perfMetricTypeUnspecified = 4
 
   class PerfUnitValueValuesEnum(_messages.Enum):
     """PerfUnitValueValuesEnum enum type.
 
     Values:
       bytesPerSecond: <no description>
+      framesPerSecond: <no description>
       kibibyte: <no description>
       percent: <no description>
       perfUnitUnspecified: <no description>
     """
     bytesPerSecond = 0
-    kibibyte = 1
-    percent = 2
-    perfUnitUnspecified = 3
+    framesPerSecond = 1
+    kibibyte = 2
+    percent = 3
+    perfUnitUnspecified = 4
 
   class SampleSeriesLabelValueValuesEnum(_messages.Enum):
     """SampleSeriesLabelValueValuesEnum enum type.
@@ -108,6 +112,7 @@ class BasicPerfSampleSeries(_messages.Message):
       cpuKernel: <no description>
       cpuTotal: <no description>
       cpuUser: <no description>
+      graphicsFrameRate: <no description>
       memoryRssPrivate: <no description>
       memoryRssShared: <no description>
       memoryRssTotal: <no description>
@@ -121,15 +126,16 @@ class BasicPerfSampleSeries(_messages.Message):
     cpuKernel = 0
     cpuTotal = 1
     cpuUser = 2
-    memoryRssPrivate = 3
-    memoryRssShared = 4
-    memoryRssTotal = 5
-    memoryTotal = 6
-    networkReceived = 7
-    networkSent = 8
-    ntBytesReceived = 9
-    ntBytesTransferred = 10
-    sampleSeriesTypeUnspecified = 11
+    graphicsFrameRate = 3
+    memoryRssPrivate = 4
+    memoryRssShared = 5
+    memoryRssTotal = 6
+    memoryTotal = 7
+    networkReceived = 8
+    networkSent = 9
+    ntBytesReceived = 10
+    ntBytesTransferred = 11
+    sampleSeriesTypeUnspecified = 12
 
   perfMetricType = _messages.EnumField('PerfMetricTypeValueValuesEnum', 1)
   perfUnit = _messages.EnumField('PerfUnitValueValuesEnum', 2)
@@ -567,14 +573,16 @@ class PerfMetricsSummary(_messages.Message):
 
     Values:
       cpu: <no description>
+      graphics: <no description>
       memory: <no description>
       network: <no description>
       perfMetricTypeUnspecified: <no description>
     """
     cpu = 0
-    memory = 1
-    network = 2
-    perfMetricTypeUnspecified = 3
+    graphics = 1
+    memory = 2
+    network = 3
+    perfMetricTypeUnspecified = 4
 
   executionId = _messages.StringField(1)
   historyId = _messages.StringField(2)
@@ -1434,14 +1442,16 @@ class ToolresultsProjectsHistoriesExecutionsStepsPerfSampleSeriesListRequest(_me
 
     Values:
       cpu: <no description>
+      graphics: <no description>
       memory: <no description>
       network: <no description>
       perfMetricTypeUnspecified: <no description>
     """
     cpu = 0
-    memory = 1
-    network = 2
-    perfMetricTypeUnspecified = 3
+    graphics = 1
+    memory = 2
+    network = 3
+    perfMetricTypeUnspecified = 4
 
   executionId = _messages.StringField(1, required=True)
   filter = _messages.EnumField('FilterValueValuesEnum', 2, repeated=True)

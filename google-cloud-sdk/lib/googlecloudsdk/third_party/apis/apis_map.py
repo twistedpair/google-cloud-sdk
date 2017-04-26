@@ -307,6 +307,12 @@ MAP = {
             messages_modulepath='dns_v1beta1_messages',
             default_version=False
         ),
+        'v2beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dns.v2beta1',
+            client_classpath='dns_v2beta1_client.DnsV2beta1',
+            messages_modulepath='dns_v2beta1_messages',
+            default_version=False
+        ),
     },
     'genomics': {
         'v1': APIDef(
@@ -435,6 +441,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.spanner.v1',
             client_classpath='spanner_v1_client.SpannerV1',
             messages_modulepath='spanner_v1_messages',
+            default_version=True
+        ),
+    },
+    'speech': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.speech.v1',
+            client_classpath='speech_v1_client.SpeechV1',
+            messages_modulepath='speech_v1_messages',
             default_version=True
         ),
     },

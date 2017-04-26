@@ -508,24 +508,6 @@
         }
       }
     },
-    "ListLogServiceIndexesResponse": {
-      "id": "ListLogServiceIndexesResponse",
-      "description": "Result returned from ListLogServiceIndexesRequest.",
-      "type": "object",
-      "properties": {
-        "serviceIndexPrefixes": {
-          "description": "A list of log service index values. Each index value has the form \"\/value1\/value2\/...\", where value1 is a value in the primary index, value2 is a value in the secondary index, and so forth.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "nextPageToken": {
-          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of indexes, use the value of nextPageToken as pageToken in the next call of ListLogServiceIndexes. If nextPageToken is empty, then there are no more results.",
-          "type": "string"
-        }
-      }
-    },
     "ListLogSinksResponse": {
       "id": "ListLogSinksResponse",
       "description": "Result returned from ListLogSinks.",
@@ -648,43 +630,6 @@
           "items": {
             "$ref": "LogSink"
           }
-        }
-      }
-    },
-    "ListLogMetricsResponse": {
-      "id": "ListLogMetricsResponse",
-      "description": "Result returned from ListLogMetrics.",
-      "type": "object",
-      "properties": {
-        "metrics": {
-          "description": "The list of metrics that was requested.",
-          "type": "array",
-          "items": {
-            "$ref": "LogMetric"
-          }
-        },
-        "nextPageToken": {
-          "description": "If there are more results, then nextPageToken is returned in the response. To get the next batch of entries, use the value of nextPageToken as pageToken in the next call of ListLogMetrics. If nextPageToken is empty, then there are no more results.",
-          "type": "string"
-        }
-      }
-    },
-    "LogMetric": {
-      "id": "LogMetric",
-      "description": "Describes a logs-based metric. The value of the metric is the number of log entries in your project that match a logs filter.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The client-assigned name for this metric, such as \"severe_errors\". Metric names are limited to 1000 characters and can include only the following characters: A-Z, a-z, 0-9, and the special characters _-.,+!*',()%\/\\. The slash character (\/) denotes a hierarchy of name pieces, and it cannot be the first character of the name.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. A description of this metric.",
-          "type": "string"
-        },
-        "filter": {
-          "description": "Required. An advanced logs filter. Example: \"log=syslog AND metadata.severity>=ERROR\". The maximum length of the filter is 20000 characters.",
-          "type": "string"
         }
       }
     },
@@ -1125,41 +1070,6 @@
                     "https://www.googleapis.com/auth/logging.read"
                   ]
                 },
-                "create": {
-                  "id": "logging.projects.logs.sinks.create",
-                  "path": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks",
-                  "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks",
-                  "httpMethod": "POST",
-                  "description": "Creates a log sink. All log entries for a specified log are written to the destination.",
-                  "parameters": {
-                    "projectsId": {
-                      "description": "Part of `logName`. Required. The resource name of the log to which to the sink is bound.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "logsId": {
-                      "description": "Part of `logName`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectsId",
-                    "logsId"
-                  ],
-                  "request": {
-                    "$ref": "LogSink"
-                  },
-                  "response": {
-                    "$ref": "LogSink"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ]
-                },
                 "update": {
                   "id": "logging.projects.logs.sinks.update",
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}",
@@ -1375,66 +1285,6 @@
           }
           ,
           "resources": {
-            "indexes": {
-              "methods": {
-                "list": {
-                  "id": "logging.projects.logServices.indexes.list",
-                  "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/indexes",
-                  "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/indexes",
-                  "httpMethod": "GET",
-                  "description": "Lists the current index values for a log service.",
-                  "parameters": {
-                    "projectsId": {
-                      "description": "Part of `serviceName`. The resource name of a log service whose service indexes are requested. Example: \"projects\/my-project-id\/logServices\/appengine.googleapis.com\".",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "logServicesId": {
-                      "description": "Part of `serviceName`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "indexPrefix": {
-                      "description": "Restricts the index values returned to be those with a specified prefix for each index key. This field has the form \"\/prefix1\/prefix2\/...\", in order corresponding to the LogService indexKeys. Non-empty prefixes must begin with \/. For example, App Engine's two keys are the module ID and the version ID. Following is the effect of using various values for indexPrefix:\n\"\/Mod\/\" retrieves \/Mod\/10 and \/Mod\/11 but not \/ModA\/10.\n\"\/Mod retrieves \/Mod\/10, \/Mod\/11 and \/ModA\/10 but not \/XXX\/33.\n\"\/Mod\/1\" retrieves \/Mod\/10 and \/Mod\/11 but not \/ModA\/10.\n\"\/Mod\/10\/\" retrieves \/Mod\/10 only.\nAn empty prefix or \"\/\" retrieves all values.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "depth": {
-                      "description": "A non-negative integer that limits the number of levels of the index hierarchy that are returned. If depth is 1 (default), only the first index key value is returned. If depth is 2, both primary and secondary key values are returned. If depth is 0, the depth is the number of slash-separators in the indexPrefix field, not counting a slash appearing as the last character of the prefix. If the indexPrefix field is empty, the default depth is 1. It is an error for depth to be any positive value less than the number of components in indexPrefix.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of log service index resources to return in one operation.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "An opaque token, returned as nextPageToken by a prior ListLogServiceIndexes operation. If pageToken is supplied, then the other fields of this request are ignored, and instead the previous ListLogServiceIndexes operation is continued.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectsId",
-                    "logServicesId"
-                  ],
-                  "response": {
-                    "$ref": "ListLogServiceIndexesResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud-platform.read-only",
-                    "https://www.googleapis.com/auth/logging.admin",
-                    "https://www.googleapis.com/auth/logging.read"
-                  ]
-                }
-              }
-            },
             "sinks": {
               "methods": {
                 "list": {
@@ -1510,41 +1360,6 @@
                     "https://www.googleapis.com/auth/cloud-platform.read-only",
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
-                  ]
-                },
-                "create": {
-                  "id": "logging.projects.logServices.sinks.create",
-                  "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks",
-                  "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks",
-                  "httpMethod": "POST",
-                  "description": "Creates a log service sink. All log entries from a specified log service are written to the destination.",
-                  "parameters": {
-                    "projectsId": {
-                      "description": "Part of `serviceName`. Required. The resource name of the log service to which the sink is bound.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "logServicesId": {
-                      "description": "Part of `serviceName`. See documentation of `projectsId`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectsId",
-                    "logServicesId"
-                  ],
-                  "request": {
-                    "$ref": "LogSink"
-                  },
-                  "response": {
-                    "$ref": "LogSink"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
                   ]
                 },
                 "update": {
@@ -1695,34 +1510,6 @@
                 "https://www.googleapis.com/auth/logging.read"
               ]
             },
-            "create": {
-              "id": "logging.projects.sinks.create",
-              "path": "v1beta3/projects/{projectsId}/sinks",
-              "flatPath": "v1beta3/projects/{projectsId}/sinks",
-              "httpMethod": "POST",
-              "description": "Creates a project sink. A logs filter determines which log entries are written to the destination.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `projectName`. Required. The resource name of the project to which the sink is bound.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId"
-              ],
-              "request": {
-                "$ref": "LogSink"
-              },
-              "response": {
-                "$ref": "LogSink"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ]
-            },
             "update": {
               "id": "logging.projects.sinks.update",
               "path": "v1beta3/projects/{projectsId}/sinks/{sinksId}",
@@ -1788,180 +1575,6 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
-            }
-          }
-        },
-        "metrics": {
-          "methods": {
-            "list": {
-              "id": "logging.projects.metrics.list",
-              "path": "v1beta3/projects/{projectsId}/metrics",
-              "flatPath": "v1beta3/projects/{projectsId}/metrics",
-              "httpMethod": "GET",
-              "description": "Lists the logs-based metrics associated with a project.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `projectName`. Required. The resource name for the project whose metrics are wanted.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "pageToken": {
-                  "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "parameterOrder": [
-                "projectsId"
-              ],
-              "response": {
-                "$ref": "ListLogMetricsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ]
-            },
-            "get": {
-              "id": "logging.projects.metrics.get",
-              "path": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "flatPath": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "httpMethod": "GET",
-              "description": "Gets a logs-based metric.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `metricName`. The resource name of the desired metric.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "metricsId": {
-                  "description": "Part of `metricName`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "metricsId"
-              ],
-              "response": {
-                "$ref": "LogMetric"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ]
-            },
-            "create": {
-              "id": "logging.projects.metrics.create",
-              "path": "v1beta3/projects/{projectsId}/metrics",
-              "flatPath": "v1beta3/projects/{projectsId}/metrics",
-              "httpMethod": "POST",
-              "description": "Creates a logs-based metric.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project in which to create the metric.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId"
-              ],
-              "request": {
-                "$ref": "LogMetric"
-              },
-              "response": {
-                "$ref": "LogMetric"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.write"
-              ]
-            },
-            "update": {
-              "id": "logging.projects.metrics.update",
-              "path": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "flatPath": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "httpMethod": "PUT",
-              "description": "Creates or updates a logs-based metric.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `metricName`. The resource name of the metric to update.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "metricsId": {
-                  "description": "Part of `metricName`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "metricsId"
-              ],
-              "request": {
-                "$ref": "LogMetric"
-              },
-              "response": {
-                "$ref": "LogMetric"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.write"
-              ]
-            },
-            "delete": {
-              "id": "logging.projects.metrics.delete",
-              "path": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "flatPath": "v1beta3/projects/{projectsId}/metrics/{metricsId}",
-              "httpMethod": "DELETE",
-              "description": "Deletes a logs-based metric.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `metricName`. The resource name of the metric to delete.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "metricsId": {
-                  "description": "Part of `metricName`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "metricsId"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.write"
               ]
             }
           }

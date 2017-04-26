@@ -34,12 +34,6 @@ class Collections(enum.Enum):
       {},
       [u'projectsId', u'logsId', u'sinksId']
   )
-  PROJECTS_METRICS = (
-      'projects.metrics',
-      'projects/{projectsId}/metrics/{metricsId}',
-      {},
-      [u'projectsId', u'metricsId']
-  )
   PROJECTS_SINKS = (
       'projects.sinks',
       'projects/{projectsId}/sinks/{sinksId}',

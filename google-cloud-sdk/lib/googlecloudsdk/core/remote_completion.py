@@ -652,9 +652,6 @@ def _GetResourceLink(parms, collection_name):
       if param in parms:
         new_params[param] = parms[param]
       else:
-        param_default = resources.REGISTRY.GetParamDefault(
-            collection_info.api_name, collection_info.name, param)
-        if param_default is None:
-          new_params[param] = u'*'
+        new_params[param] = u'*'
   return resources.REGISTRY.Parse('+', new_params, collection_name).SelfLink()
 

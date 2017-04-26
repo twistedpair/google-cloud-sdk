@@ -16,7 +16,6 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
-from googlecloudsdk.command_lib.compute.forwarding_rules import flags as forwarding_flags
 
 
 def AddressArgument(required=True):
@@ -53,10 +52,22 @@ def AddAddresses(parser):
       """)
 
 
+def AddIpVersionGroup(parser):
+  """Adds IP versions flag in a mutually exclusive group."""
+  parser.add_argument(
+      '--ip-version',
+      choices=['IPV4', 'IPV6'],
+      type=lambda x: x.upper(),
+      help="""\
+      The version of the IP address to be allocated and reserved if
+      --addresses is not used.  The default is IPv4.
+      """)
+
+
 def AddAddressesAndIPVersions(parser, required=True):
   """Adds Addresses and IP versions flag."""
   group = parser.add_mutually_exclusive_group(required=required)
-  forwarding_flags.AddIpVersionGroup(group)
+  AddIpVersionGroup(group)
   AddAddresses(group)
 
 

@@ -384,17 +384,15 @@ _KNOWN_ERRORS = {
 }
 
 
-def _GetExceptionName(exc):
-  """Returns the exception name used as index into _KNOWN_ERRORS."""
-  if isinstance(exc, type):
-    name = exc.__module__ + '.' + exc.__name__
-  else:
-    name = exc.__class__.__module__ + '.' + exc.__class__.__name__
-  return name
+def _GetExceptionName(cls):
+  """Returns the exception name used as index into _KNOWN_ERRORS from type."""
+  return cls.__module__ + '.' + cls.__name__
 
 
 def ConvertKnownError(exc):
   """Convert the given exception into an alternate type if it is known.
+
+  Searches backwards through Exception type hierarchy until it finds a match.
 
   Args:
     exc: Exception, the exception to convert.
@@ -403,9 +401,23 @@ def ConvertKnownError(exc):
     None if this is not a known type, otherwise a new exception that should be
     logged.
   """
-  convert_to_known_err = _KNOWN_ERRORS.get(_GetExceptionName(exc))
-  if not convert_to_known_err:
+  classes = [type(exc)]
+  processed = set([])  # To avoid circular dependencies
+  while classes:
+    cls = classes.pop(0)
+    processed.add(cls)
+    name = _GetExceptionName(cls)
+    known_err = _KNOWN_ERRORS.get(name)
+    if known_err:
+      break
+
+    bases = [bc for bc in cls.__bases__
+             if bc not in processed and issubclass(bc, Exception)]
+    classes.extend([base for base in bases if base is not Exception])
+
+  if not known_err:
     # This is not a known error type
     return None
+
   # If there is no known exception just return the original exception.
-  return convert_to_known_err(exc) or exc
+  return known_err(exc) or exc

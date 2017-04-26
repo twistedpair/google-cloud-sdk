@@ -588,13 +588,18 @@ class LogSink(_messages.Message):
       filter. The filter must use the log entry format specified by the
       output_version_format parameter. For example, in the v2 format:
       logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
-    includeChildren: Optional. This field presently applies only to sinks in
-      organizations and folders. If true, then logs from children of this
-      entity will also be available to this sink for export. Whether
-      particular log entries from the children are exported depends on the
-      sink's filter expression. For example, if this sink is associated with
-      an organization, then logs from all projects in the organization as well
-      as from the organization itself will be available for export.
+    includeChildren: Optional. This field applies only to sinks owned by
+      organizations and folders. If the field is false, the default, only the
+      logs owned by the sink's parent resource are availble for export. If the
+      field is true, then logs from all the projects, folders, and billing
+      accounts contained in the sink's parent resource are also available for
+      export. Whether a particular log entry from the children is exported
+      depends on the sink's filter expression. For example, if this field is
+      true, then the filter resource.type=gce_instance would export all
+      Compute Engine VM instance log entries from all projects in the sink's
+      parent. To only export entries from certain child projects, filter on
+      the project part of the log name: logName:("projects/test-project-a/" OR
+      "projects/test-project-b/") AND resource.type=gce_instance
     name: Required. The client-assigned sink identifier, unique within the
       project. Example: "my-syslog-errors-to-pubsub". Sink identifiers are
       limited to 100 characters and can include only the following characters:

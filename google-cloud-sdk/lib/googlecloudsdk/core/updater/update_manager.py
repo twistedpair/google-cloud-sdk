@@ -460,7 +460,8 @@ version [{1}].  To clear your fixed version setting, run:
     versions = {}
     installed_components = current_state.InstalledComponents()
     for component_id, component in installed_components.iteritems():
-      if component.ComponentDefinition().is_configuration:
+      component_def = component.ComponentDefinition()
+      if component_def.is_configuration or component_def.is_hidden:
         continue
       versions[component_id] = component.VersionString()
     return versions

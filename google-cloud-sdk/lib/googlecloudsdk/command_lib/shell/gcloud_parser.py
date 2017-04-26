@@ -128,28 +128,54 @@ def TokenIsFlag(token):
   return TokenIsArgument(token) and token.value.startswith('-')
 
 
+def TokenIsTerminator(token):
+  """Checks whether a given token is a terminator.
+
+  Args:
+    token: a lexer.ShellToken
+
+  Returns:
+    True if the token is of type lexer.ShellTokenType.TERMINATOR, False
+    otherwise.
+  """
+  return token.lex == lexer.ShellTokenType.TERMINATOR
+
+
 def ParseLine(line):
   """Parse a gcloud command line.
 
   Args:
-    line: a string containing a gcloud command
+    line: a string containing one or more gcloud invocations
 
   Returns:
-    A list of ArgTokens.
+    A list of lists of ArgTokens, one for each invocation in the line (delimited
+    by terminators).
   """
   sh_tokens = lexer.GetShellTokens(line)
   if not sh_tokens:
     return []
 
-  # Cut off at first non-arg token
-  i = 0
-  while i < len(sh_tokens):
-    if not TokenIsArgument(sh_tokens[i]):
-      break
-    i += 1
-  sh_tokens = sh_tokens[:i]
+  parsed_line = []
+  current_invocation = []
 
-  return ParseArgs(sh_tokens)
+  # Separate parsed line into invocations based on terminators
+  while sh_tokens:
+    current_token = sh_tokens.pop(0)
+    if TokenIsArgument(current_token):
+      current_invocation.append(current_token)
+    elif TokenIsTerminator(current_token):
+      parsed_line.append(ParseArgs(current_invocation))
+      current_invocation = []
+    else:
+      # Ignore the rest of the current invocation if the token is not of type
+      # ShellTokenType.ARG (that is, if it's of type IO, REDIRECTION, FILE or
+      # TRAILING_BACKSLASH)
+      while sh_tokens:
+        if TokenIsTerminator(sh_tokens.pop(0)):
+          break
+  # Add the last current_invocation
+  parsed_line.append(ParseArgs(current_invocation))
+  return parsed_line
 
 
 def ParseArgs(ts):
@@ -206,7 +232,6 @@ def ParseArgs(ts):
             value, ArgTokenType.POSITIONAL, tree, current_token.start,
             current_token.end))
         positionals_seen += 1
-
       else:
         ret.append(ArgToken(
             value, ArgTokenType.UNKNOWN, cur, current_token.start,

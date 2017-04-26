@@ -32,15 +32,6 @@ RESOURCE_REGISTRY = {
             open
           )
         """,),
-    'cloudbilling.projectBillingInfo':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            projectId,
-            billingAccountName.basename():label=BILLING_ACCOUNT_ID,
-            billingEnabled
-          )
-        """,),
 
     # cloud build
     'cloudbuild.projects.builds':
@@ -703,36 +694,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # dataproc
-    'dataproc.clusters':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            clusterName:label=NAME,
-            config.workerConfig.numInstances:label=WORKER_COUNT,
-            status.state:label=STATUS,
-            config.gceClusterConfig.zoneUri.scope(zone):label=ZONE
-          )
-        """,),
-    'dataproc.jobs':
-        resource_info.ResourceInfo(
-            async_collection='dataproc.operations',
-            list_format="""
-          table(
-            reference.jobId,
-            type.yesno(no="-"),
-            status.state:label=STATUS
-          )
-        """,),
-    'dataproc.operations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name:label=OPERATION_NAME,
-            done
-          )
-        """,),
-
     # debug
     'debug.logpoints':
         resource_info.ResourceInfo(
@@ -907,37 +868,6 @@ RESOURCE_REGISTRY = {
             email
           )
         """,),
-
-    # projects
-    'developerprojects.projects':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            projectId,
-            title,
-            projectNumber
-          )
-        """,),
-
-    'replicapoolupdater.rollingUpdates':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id,
-            instanceGroupManager.basename():label=GROUP_NAME,
-            instanceTemplate.basename():label=TEMPLATE_NAME,
-            status,
-            statusMessage
-          )
-        """,),
-    'replicapoolupdater.rollingUpdates.instanceUpdates':
-        resource_info.ResourceInfo(
-            list_format="""
-              table(
-                instance.basename():label=INSTANCE_NAME,
-                status
-              )
-            """,),
 
     # runtime config
     'runtimeconfig.configurations':

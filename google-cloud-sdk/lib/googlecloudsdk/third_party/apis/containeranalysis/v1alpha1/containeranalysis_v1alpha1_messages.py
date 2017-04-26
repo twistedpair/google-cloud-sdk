@@ -73,7 +73,7 @@ class Artifact(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConifg must have one or more
+  are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
@@ -472,6 +472,36 @@ class Condition(_messages.Message):
   sys = _messages.EnumField('SysValueValuesEnum', 4)
   value = _messages.StringField(5)
   values = _messages.StringField(6, repeated=True)
+
+
+class ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest(_messages.Message):
+  """A ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsAcknowledgmentsSetIamPolicyRequest(_messages.Message):
+  """A ContaineranalysisProjectsAcknowledgmentsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):

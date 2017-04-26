@@ -171,8 +171,9 @@ class TextRenderer(renderer.Renderer):
     else:
       mask = 1 << attr
       self._font ^= mask
-    code = self._attr.GetFontCode(self._font & (1 << renderer.BOLD),
-                                  self._font & (1 << renderer.ITALIC))
+    bold = self._font & ((1 << renderer.BOLD) | (1 << renderer.CODE))
+    italic = self._font & (1 << renderer.ITALIC)
+    code = self._attr.GetFontCode(bold=bold, italic=italic)
     if out:
       out.write(code)
     return code

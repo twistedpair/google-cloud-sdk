@@ -22,3 +22,15 @@ def GetDnsZoneArg(help_text):
       'dns_zone', metavar='ZONE_NAME',
       completion_resource='dns.managedZones',
       help=help_text)
+
+
+def GetZoneArg():
+  return base.Argument(
+      '--zone',
+      '-z',
+      completion_resource='dns.managedZones',
+      help='Name of the managed-zone whose record-sets you want to manage.',
+      required=True)
+
+
+CHANGES_FORMAT = 'table(id, startTime, status)'

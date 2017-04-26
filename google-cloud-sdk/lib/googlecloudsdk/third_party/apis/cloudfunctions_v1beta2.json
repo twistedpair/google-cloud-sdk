@@ -227,12 +227,16 @@
           "type": "string"
         },
         "sourceArchiveUrl": {
-          "description": "The URL, starting with gs:\/\/, pointing to the zip archive which contains\nthe function.",
+          "description": "The Google Cloud Storage URL, starting with gs:\/\/, pointing to the zip\narchive which contains the function.",
           "type": "string"
         },
         "sourceRepository": {
           "description": "The hosted repository where the function is defined.",
           "$ref": "SourceRepository"
+        },
+        "sourceUploadUrl": {
+          "description": "The Google Cloud Storage signed URL used for source uploading, generated\nby google.cloud.functions.v1beta2.GenerateUploadUrl",
+          "type": "string"
         },
         "httpsTrigger": {
           "description": "An HTTPS endpoint type of source that can be triggered via URL.",
@@ -286,6 +290,10 @@
           "description": "Output only. The last update timestamp of a Cloud Function.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "deployedSourceDownloadUrl": {
+          "description": "Output only. The Google Cloud Storage signed URL generated for downloading\nthe current deployed source code.",
+          "type": "string"
         }
       }
     },
@@ -389,7 +397,7 @@
       "type": "object",
       "properties": {
         "uploadUrl": {
-          "description": "The generated signed URL that should be used for a function source code\nupload. The uploaded file should be a zip archive which contains a\nfunction.",
+          "description": "The generated Google Cloud Storage signed URL that should be used for a\nfunction source code upload. The uploaded file should be a zip archive\nwhich contains a function.",
           "type": "string"
         }
       }
@@ -558,7 +566,7 @@
               "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.",
               "parameters": {
                 "location": {
-                  "description": "The project and location in which the URL should be generated, specified\nin the format `projects\/*\/locations\/*",
+                  "description": "The project and location in which the Google Cloud Storage signed URL\nshould be generated, specified in the format `projects\/*\/locations\/*",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",

@@ -27,6 +27,10 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
   This handler makes urllib2 use httplib2.HTTPSConnectionWithTimeout. The
   httplib2 connections can handle both HTTP and SOCKS proxies, passed via the
   ProxyInfo object. It also has CA_CERTS files and validates SSL certificates.
+
+  The handler also IDNA encodes the host it's connecting to. socks library with
+  socks5 proxy throws an odd encode exception even for ANSII hostnames if encode
+  is not called.
   """
 
   def http_open(self, req):
@@ -35,7 +39,7 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
       if callable(proxy_info):
         proxy_info = proxy_info('http')
       return httplib2.HTTPConnectionWithTimeout(
-          host,
+          host.encode('idna'),
           proxy_info=proxy_info,
           **kwargs)
     return self.do_open(build, req)
@@ -47,7 +51,7 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
         proxy_info = proxy_info('https')
       ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
       return httplib2.HTTPSConnectionWithTimeout(
-          host,
+          host.encode('idna'),
           proxy_info=proxy_info,
           ca_certs=ca_certs,
           **kwargs)

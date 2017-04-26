@@ -439,7 +439,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "Optional The properties to set on daemon config files.Property keys are specified in prefix:property format, such as core:fs.defaultFS. The following are supported prefixes and their mappings:\ncore: core-site.xml\nhdfs: hdfs-site.xml\nmapred: mapred-site.xml\nyarn: yarn-site.xml\nhive: hive-site.xml\npig: pig.properties\nspark: spark-defaults.conf",
+          "description": "Optional The properties to set on daemon config files.Property keys are specified in prefix:property format, such as core:fs.defaultFS. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xml",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1559,7 +1559,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required Specifies the path, relative to <code>Cluster<\/code>, of the field to update. For example, to change the number of workers in a cluster to 5, the <code>update_mask<\/code> parameter would be specified as <code>config.worker_config.num_instances<\/code>, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the <code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> Currently, <code>config.worker_config.num_instances<\/code> and <code>config.secondary_worker_config.num_instances<\/code> are the only fields that can be updated.",
+                      "description": "Required Specifies the path, relative to <code>Cluster<\/code>, of the field to update. For example, to change the number of workers in a cluster to 5, the <code>update_mask<\/code> parameter would be specified as <code>config.worker_config.num_instances<\/code>, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the <code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> currently only some fields can be updated: |Mask|Purpose| |labels|Updates labels| |config.worker_config.num_instances|Resize primary worker group| |config.secondary_worker_config.num_instances|Resize secondary worker group|",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

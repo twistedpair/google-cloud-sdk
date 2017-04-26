@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20170408",
+ "revision": "20170413",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -103,11 +103,13 @@
      "type": "string",
      "enum": [
       "cpu",
+      "graphics",
       "memory",
       "network",
       "perfMetricTypeUnspecified"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -118,11 +120,13 @@
      "type": "string",
      "enum": [
       "bytesPerSecond",
+      "framesPerSecond",
       "kibibyte",
       "percent",
       "perfUnitUnspecified"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -135,6 +139,7 @@
       "cpuKernel",
       "cpuTotal",
       "cpuUser",
+      "graphicsFrameRate",
       "memoryRssPrivate",
       "memoryRssShared",
       "memoryRssTotal",
@@ -146,6 +151,7 @@
       "sampleSeriesTypeUnspecified"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -577,11 +583,13 @@
       "type": "string",
       "enum": [
        "cpu",
+       "graphics",
        "memory",
        "network",
        "perfMetricTypeUnspecified"
       ],
       "enumDescriptions": [
+       "",
        "",
        "",
        "",
@@ -1863,11 +1871,13 @@
                "description": "Specify one or more PerfMetricType values such as CPU to filter the result",
                "enum": [
                 "cpu",
+                "graphics",
                 "memory",
                 "network",
                 "perfMetricTypeUnspecified"
                ],
                "enumDescriptions": [
+                "",
                 "",
                 "",
                 "",

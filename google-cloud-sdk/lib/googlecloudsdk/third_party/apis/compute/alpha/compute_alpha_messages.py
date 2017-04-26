@@ -868,7 +868,7 @@ class AttachedDiskInitializeParams(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConifg must have one or more
+  are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
@@ -1431,7 +1431,7 @@ class Backend(_messages.Message):
       For RATE mode, either maxRate or maxRatePerInstance must be set.  This
       cannot be used for internal load balancing.
     maxRatePerInstance: The max requests per second (RPS) that a single
-      backend instance can handle.This is used to calculate the capacity of
+      backend instance can handle. This is used to calculate the capacity of
       the group. Can be used in either balancing mode. For RATE mode, either
       maxRate or maxRatePerInstance must be set.  This cannot be used for
       internal load balancing.
@@ -12884,19 +12884,21 @@ class ForwardingRule(_messages.Message):
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM , SELECT.
       If this field is not specified, it is assumed to be PREMIUM.
-    portRange: This field is used for external load balancing and VPN.
-      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
-      addressed to ports in the specified range will be forwarded to target.
-      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
-      disjoint port ranges.  Some types of forwarding target have constraints
-      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
-      TargetHttpsProxy: 443  - TargetSslProxy: 443  - TargetVpnGateway: 500,
-      4500 -
-    ports: This field is only used for internal load balancing.  When the load
-      balancing scheme is INTERNAL, a single port or a comma separated list of
-      ports can be configured. Only packets addressed to these ports will be
-      forwarded to the backends configured with this forwarding rule.  You may
-      specify a maximum of up to 5 ports.
+    portRange: This field is used along with the target field for
+      TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
+      TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
+      IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the
+      specified range will be forwarded to target. Forwarding rules with the
+      same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
+      types of forwarding target have constraints on the acceptable ports:   -
+      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetSslProxy:
+      443  - TargetVpnGateway: 500, 4500 -
+    ports: This field is used along with the backend_service field for
+      internal load balancing.  When the load balancing scheme is INTERNAL, a
+      single port or a comma separated list of ports can be configured. Only
+      packets addressed to these ports will be forwarded to the backends
+      configured with this forwarding rule.  You may specify a maximum of up
+      to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.

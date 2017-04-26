@@ -14,7 +14,6 @@
 
 """Tools for launching a browser."""
 
-
 import os
 import subprocess
 import webbrowser
@@ -57,11 +56,16 @@ def _GetReferenceURL(line, pos=None):
   if pos is None:
     pos = len(line)
 
-  tokens = gcloud_parser.ParseLine(line)
+  prefix = u'https://cloud.google.com/sdk/gcloud/reference/'
+
+  invocations = gcloud_parser.ParseLine(line)
+  if not invocations:
+    return prefix
+
+  tokens = invocations[-1]
   tokens = [x for x in tokens if x.start < pos]
   invocation = gcloud_parser.GcloudInvocation(tokens)
 
-  prefix = u'https://cloud.google.com/sdk/gcloud/reference/'
   cmd = invocation.GetCommandOrGroup()
   if not cmd:
     return prefix

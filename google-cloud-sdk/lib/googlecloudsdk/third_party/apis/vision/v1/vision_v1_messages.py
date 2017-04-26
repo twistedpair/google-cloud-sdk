@@ -1271,9 +1271,8 @@ class WebDetection(_messages.Message):
   """Relevant information for the image from the Internet.
 
   Fields:
-    fullMatchingImages: Fully matching images from the Internet. They're
-      definite neardups and most often a copy of the query image with merely a
-      size change.
+    fullMatchingImages: Fully matching images from the Internet. Can include
+      resized copies of the query image.
     pagesWithMatchingImages: Web pages containing the matching images from the
       Internet.
     partialMatchingImages: Partial matching images from the Internet. Those

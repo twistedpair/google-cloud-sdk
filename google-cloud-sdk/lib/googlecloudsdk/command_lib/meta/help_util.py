@@ -21,6 +21,7 @@ import shutil
 from googlecloudsdk.calliope import walker_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import text
 
@@ -254,7 +255,12 @@ class HelpTextUpdater(object):
   def _Update(self):
     """Update() helper method. Returns the number of changed help text files."""
     with file_utils.TemporaryDirectory() as temp_dir:
-      walker_util.HelpTextGenerator(self._cli, temp_dir).Walk(hidden=True)
+      pb = console_io.ProgressBar(label='Generating Help Docs')
+      walker = walker_util.HelpTextGenerator(
+          self._cli, temp_dir, pb.SetProgress)
+      pb.Start()
+      walker.Walk(hidden=True)
+      pb.Finish()
       diff = HelpTextAccumulator()
       DirDiff(self._help_dir, temp_dir, diff)
       if diff.invalid_file_count:

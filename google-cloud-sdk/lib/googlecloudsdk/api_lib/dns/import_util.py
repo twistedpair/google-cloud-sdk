@@ -22,8 +22,6 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 import yaml
 
-messages = core_apis.GetMessagesModule('dns', 'v1')
-
 
 def _AddressTranslation(rdata, unused_origin):
   """Returns the address of the given rdata.
@@ -154,21 +152,55 @@ def _QuotedTextTranslation(rdata, unused_origin=None):
   return ' '.join([QuotedText(string) for string in rdata.strings])
 
 
-# Map of functions for translating rdata for various record types from zone
-# format to Cloud DNS format.
-RDATA_TRANSLATIONS = {
-    rdatatype.A: _AddressTranslation,
-    rdatatype.AAAA: _AddressTranslation,
-    rdatatype.CAA: _CAATranslation,
-    rdatatype.CNAME: _TargetTranslation,
-    rdatatype.MX: _MXTranslation,
-    rdatatype.PTR: _TargetTranslation,
-    rdatatype.SOA: _SOATranslation,
-    rdatatype.SPF: _QuotedTextTranslation,
-    rdatatype.SRV: _SRVTranslation,
-    rdatatype.TXT: _QuotedTextTranslation,
-    rdatatype.NS: _TargetTranslation,
-}
+def _NullTranslation(rdata, origin=None):
+  """Returns the given rdata as text (formatted by its .to_text() method).
+
+  Args:
+    rdata: Rdata, The data to be translated.
+    origin: Name, The origin domain name.
+
+  Returns:
+    str, The textual presentation form of the given rdata.
+  """
+  return rdata.to_text(origin=origin)
+
+
+def GetRdataTranslation(rr_type):
+  """Returns the rdata translation function for a record type.
+
+  Args:
+    rr_type: The record type
+
+  Returns:
+    The record type's translation function.
+  """
+  rdata_translations = {
+      rdatatype.A: _AddressTranslation,
+      rdatatype.AAAA: _AddressTranslation,
+      rdatatype.CNAME: _TargetTranslation,
+      rdatatype.DNSKEY: _NullTranslation,
+      rdatatype.DS: _NullTranslation,
+      rdatatype.IPSECKEY: _NullTranslation,
+      rdatatype.MX: _MXTranslation,
+      rdatatype.PTR: _TargetTranslation,
+      rdatatype.SOA: _SOATranslation,
+      rdatatype.SPF: _QuotedTextTranslation,
+      rdatatype.SRV: _SRVTranslation,
+      rdatatype.SSHFP: _NullTranslation,
+      rdatatype.TXT: _QuotedTextTranslation,
+      rdatatype.TLSA: _NullTranslation,
+      rdatatype.NAPTR: _NullTranslation,
+      rdatatype.NS: _TargetTranslation,
+  }
+  # This is needed for the rest of gcloud to work when dnspython doesn't support
+  # CAA records.  Otherwise, this fails when we try to access the rdatatype.CAA
+  # attribute, making anything that calls this code fail.
+  try:
+    rdata_translations[rdatatype.CAA] = _CAATranslation
+  except AttributeError:
+    pass
+
+  return rdata_translations.get(rr_type)
 
 
 def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
@@ -203,9 +235,10 @@ def _RecordSetFromZoneRecord(name, rdset, origin):
     The ResourceRecordSet equivalent for the given zone record, or None for
     unsupported record types.
   """
-  if rdset.rdtype not in RDATA_TRANSLATIONS:
+  if GetRdataTranslation(rdset.rdtype) is None:
     return None
 
+  messages = core_apis.GetMessagesModule('dns', 'v1')
   record_set = messages.ResourceRecordSet()
   # Need to assign kind to default value for useful equals comparisons.
   record_set.kind = record_set.kind
@@ -214,7 +247,7 @@ def _RecordSetFromZoneRecord(name, rdset, origin):
   record_set.type = rdatatype.to_text(rdset.rdtype)
   rdatas = []
   for rdata in rdset:
-    rdatas.append(RDATA_TRANSLATIONS[rdset.rdtype](rdata, origin))
+    rdatas.append(GetRdataTranslation(rdset.rdtype)(rdata, origin))
   record_set.rrdatas = rdatas
   return record_set
 
@@ -256,11 +289,12 @@ def RecordSetsFromYamlFile(yaml_file):
     provided by Cloud DNS.
   """
   record_sets = {}
+  messages = core_apis.GetMessagesModule('dns', 'v1')
 
   yaml_record_sets = yaml.safe_load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
     rdata_type = rdatatype.from_text(yaml_record_set['type'])
-    if rdata_type not in RDATA_TRANSLATIONS:
+    if GetRdataTranslation(rdata_type) is None:
       continue
 
     record_set = messages.ResourceRecordSet()
@@ -290,6 +324,7 @@ def _RecordSetCopy(record_set):
   Returns:
     Returns a copy of the given record-set.
   """
+  messages = core_apis.GetMessagesModule('dns', 'v1')
   copy = messages.ResourceRecordSet()
   copy.kind = record_set.kind
   copy.name = record_set.name
@@ -409,6 +444,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
     A Change that describes the actions required to import the given
     record-sets.
   """
+  messages = core_apis.GetMessagesModule('dns', 'v1')
   change = messages.Change()
   change.additions = []
   change.deletions = []

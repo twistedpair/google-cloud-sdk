@@ -689,7 +689,8 @@ class MarkdownGenerator(object):
     Args:
       disable_header: Disable printing the section header if True.
     """
-    if self._is_hidden or self._release_track.help_note:
+    notes = self._sections.get('NOTES')
+    if notes or self._is_hidden or self._release_track.help_note:
       if not disable_header:
         self.PrintSectionHeader('NOTES')
       if self._is_hidden:
@@ -697,6 +698,8 @@ class MarkdownGenerator(object):
                   'change or disappear without notice.\n\n')
       if self._release_track.help_note:
         self._out(self._release_track.help_note + '\n\n')
+      if notes:
+        self._out(notes + '\n\n')
 
   def GetArgDetails(self, arg):
     """Returns the detailed help message for the given arg."""

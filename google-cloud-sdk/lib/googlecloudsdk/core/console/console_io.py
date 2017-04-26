@@ -635,9 +635,9 @@ class ProgressBar(object):
       right = self._box.d_dl if self._first else self._box.d_vl
       rule = u'{left}{middle}{right}\n'.format(
           left=left, middle=self._box.d_h * self._total_ticks, right=right)
-      self._stream.write(rule)
-    self._stream.write(self._label + '\n')
-    self._stream.write(self._box.d_ur)
+      self._Write(rule)
+    self._Write(self._label + '\n')
+    self._Write(self._box.d_ur)
     self._ticks_written = 0
 
   def SetProgress(self, progress_factor):
@@ -655,16 +655,19 @@ class ProgressBar(object):
     new_ticks = min(new_ticks, self._total_ticks - self._ticks_written)
 
     if new_ticks > 0:
-      self._stream.write(self._box.d_h * new_ticks)
+      self._Write(self._box.d_h * new_ticks)
       self._ticks_written += new_ticks
       if expected_ticks == self._total_ticks:
         end = '\n' if self._last or not self._redraw else '\r'
-        self._stream.write(self._box.d_ul + end)
+        self._Write(self._box.d_ul + end)
       self._stream.flush()
 
   def Finish(self):
     """Mark the progress as done."""
     self.SetProgress(1)
+
+  def _Write(self, msg):
+    self._stream.write(msg)
 
   def __enter__(self):
     self.Start()

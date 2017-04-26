@@ -129,38 +129,6 @@ class ListLogEntriesResponse(_messages.Message):
   searchedThroughTimestamp = _messages.StringField(4)
 
 
-class ListLogMetricsResponse(_messages.Message):
-  """Result returned from ListLogMetrics.
-
-  Fields:
-    metrics: The list of metrics that was requested.
-    nextPageToken: If there are more results, then nextPageToken is returned
-      in the response. To get the next batch of entries, use the value of
-      nextPageToken as pageToken in the next call of ListLogMetrics. If
-      nextPageToken is empty, then there are no more results.
-  """
-
-  metrics = _messages.MessageField('LogMetric', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListLogServiceIndexesResponse(_messages.Message):
-  """Result returned from ListLogServiceIndexesRequest.
-
-  Fields:
-    nextPageToken: If there are more results, then nextPageToken is returned
-      in the response. To get the next batch of indexes, use the value of
-      nextPageToken as pageToken in the next call of ListLogServiceIndexes. If
-      nextPageToken is empty, then there are no more results.
-    serviceIndexPrefixes: A list of log service index values. Each index value
-      has the form "/value1/value2/...", where value1 is a value in the
-      primary index, value2 is a value in the secondary index, and so forth.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  serviceIndexPrefixes = _messages.StringField(2, repeated=True)
-
-
 class ListLogServiceSinksResponse(_messages.Message):
   """Result returned from ListLogServiceSinks.
 
@@ -550,27 +518,6 @@ class LogLine(_messages.Message):
   time = _messages.StringField(4)
 
 
-class LogMetric(_messages.Message):
-  """Describes a logs-based metric. The value of the metric is the number of
-  log entries in your project that match a logs filter.
-
-  Fields:
-    description: Optional. A description of this metric.
-    filter: Required. An advanced logs filter. Example: "log=syslog AND
-      metadata.severity>=ERROR". The maximum length of the filter is 20000
-      characters.
-    name: Required. The client-assigned name for this metric, such as
-      "severe_errors". Metric names are limited to 1000 characters and can
-      include only the following characters: A-Z, a-z, 0-9, and the special
-      characters _-.,+!*',()%/\. The slash character (/) denotes a hierarchy
-      of name pieces, and it cannot be the first character of the name.
-  """
-
-  description = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  name = _messages.StringField(3)
-
-
 class LogService(_messages.Message):
   """Output only. Describes a service that writes log entries.
 
@@ -671,48 +618,6 @@ class LoggingProjectsLogEntriesListRequest(_messages.Message):
   projectsId = _messages.StringField(5, required=True)
 
 
-class LoggingProjectsLogServicesIndexesListRequest(_messages.Message):
-  """A LoggingProjectsLogServicesIndexesListRequest object.
-
-  Fields:
-    depth: A non-negative integer that limits the number of levels of the
-      index hierarchy that are returned. If depth is 1 (default), only the
-      first index key value is returned. If depth is 2, both primary and
-      secondary key values are returned. If depth is 0, the depth is the
-      number of slash-separators in the indexPrefix field, not counting a
-      slash appearing as the last character of the prefix. If the indexPrefix
-      field is empty, the default depth is 1. It is an error for depth to be
-      any positive value less than the number of components in indexPrefix.
-    indexPrefix: Restricts the index values returned to be those with a
-      specified prefix for each index key. This field has the form
-      "/prefix1/prefix2/...", in order corresponding to the LogService
-      indexKeys. Non-empty prefixes must begin with /. For example, App
-      Engine's two keys are the module ID and the version ID. Following is the
-      effect of using various values for indexPrefix: "/Mod/" retrieves
-      /Mod/10 and /Mod/11 but not /ModA/10. "/Mod retrieves /Mod/10, /Mod/11
-      and /ModA/10 but not /XXX/33. "/Mod/1" retrieves /Mod/10 and /Mod/11 but
-      not /ModA/10. "/Mod/10/" retrieves /Mod/10 only. An empty prefix or "/"
-      retrieves all values.
-    logServicesId: Part of `serviceName`. See documentation of `projectsId`.
-    pageSize: The maximum number of log service index resources to return in
-      one operation.
-    pageToken: An opaque token, returned as nextPageToken by a prior
-      ListLogServiceIndexes operation. If pageToken is supplied, then the
-      other fields of this request are ignored, and instead the previous
-      ListLogServiceIndexes operation is continued.
-    projectsId: Part of `serviceName`. The resource name of a log service
-      whose service indexes are requested. Example: "projects/my-project-
-      id/logServices/appengine.googleapis.com".
-  """
-
-  depth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  indexPrefix = _messages.StringField(2)
-  logServicesId = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  projectsId = _messages.StringField(6, required=True)
-
-
 class LoggingProjectsLogServicesListRequest(_messages.Message):
   """A LoggingProjectsLogServicesListRequest object.
 
@@ -729,21 +634,6 @@ class LoggingProjectsLogServicesListRequest(_messages.Message):
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
-
-
-class LoggingProjectsLogServicesSinksCreateRequest(_messages.Message):
-  """A LoggingProjectsLogServicesSinksCreateRequest object.
-
-  Fields:
-    logServicesId: Part of `serviceName`. See documentation of `projectsId`.
-    logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `serviceName`. Required. The resource name of the log
-      service to which the sink is bound.
-  """
-
-  logServicesId = _messages.StringField(1, required=True)
-  logSink = _messages.MessageField('LogSink', 2)
   projectsId = _messages.StringField(3, required=True)
 
 
@@ -867,21 +757,6 @@ class LoggingProjectsLogsListRequest(_messages.Message):
   serviceName = _messages.StringField(5)
 
 
-class LoggingProjectsLogsSinksCreateRequest(_messages.Message):
-  """A LoggingProjectsLogsSinksCreateRequest object.
-
-  Fields:
-    logSink: A LogSink resource to be passed as the request body.
-    logsId: Part of `logName`. See documentation of `projectsId`.
-    projectsId: Part of `logName`. Required. The resource name of the log to
-      which to the sink is bound.
-  """
-
-  logSink = _messages.MessageField('LogSink', 1)
-  logsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-
-
 class LoggingProjectsLogsSinksDeleteRequest(_messages.Message):
   """A LoggingProjectsLogsSinksDeleteRequest object.
 
@@ -940,92 +815,6 @@ class LoggingProjectsLogsSinksUpdateRequest(_messages.Message):
   logsId = _messages.StringField(2, required=True)
   projectsId = _messages.StringField(3, required=True)
   sinksId = _messages.StringField(4, required=True)
-
-
-class LoggingProjectsMetricsCreateRequest(_messages.Message):
-  """A LoggingProjectsMetricsCreateRequest object.
-
-  Fields:
-    logMetric: A LogMetric resource to be passed as the request body.
-    projectsId: Part of `projectName`. The resource name of the project in
-      which to create the metric.
-  """
-
-  logMetric = _messages.MessageField('LogMetric', 1)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class LoggingProjectsMetricsDeleteRequest(_messages.Message):
-  """A LoggingProjectsMetricsDeleteRequest object.
-
-  Fields:
-    metricsId: Part of `metricName`. See documentation of `projectsId`.
-    projectsId: Part of `metricName`. The resource name of the metric to
-      delete.
-  """
-
-  metricsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class LoggingProjectsMetricsGetRequest(_messages.Message):
-  """A LoggingProjectsMetricsGetRequest object.
-
-  Fields:
-    metricsId: Part of `metricName`. See documentation of `projectsId`.
-    projectsId: Part of `metricName`. The resource name of the desired metric.
-  """
-
-  metricsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class LoggingProjectsMetricsListRequest(_messages.Message):
-  """A LoggingProjectsMetricsListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    projectsId: Part of `projectName`. Required. The resource name for the
-      project whose metrics are wanted.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  projectsId = _messages.StringField(3, required=True)
-
-
-class LoggingProjectsMetricsUpdateRequest(_messages.Message):
-  """A LoggingProjectsMetricsUpdateRequest object.
-
-  Fields:
-    logMetric: A LogMetric resource to be passed as the request body.
-    metricsId: Part of `metricName`. See documentation of `projectsId`.
-    projectsId: Part of `metricName`. The resource name of the metric to
-      update.
-  """
-
-  logMetric = _messages.MessageField('LogMetric', 1)
-  metricsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-
-
-class LoggingProjectsSinksCreateRequest(_messages.Message):
-  """A LoggingProjectsSinksCreateRequest object.
-
-  Fields:
-    logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `projectName`. Required. The resource name of the
-      project to which the sink is bound.
-  """
-
-  logSink = _messages.MessageField('LogSink', 1)
-  projectsId = _messages.StringField(2, required=True)
 
 
 class LoggingProjectsSinksDeleteRequest(_messages.Message):

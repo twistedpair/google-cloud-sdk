@@ -42,23 +42,19 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
   Returns:
     Relative resource name to use in EventTrigger field.
   """
-  project = properties.VALUES.core.project.Get(required=True)
   resource_type = util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type
-  resources.REGISTRY.SetParamDefault(api='cloudresourcemanager',
-                                     collection=None,
-                                     param='projectId',
-                                     resolver=project)
-  resources.REGISTRY.SetParamDefault(api='pubsub',
-                                     collection=None,
-                                     param='projectsId',
-                                     resolver=project)
-  resources.REGISTRY.SetParamDefault(api='cloudfunctions',
-                                     collection=None,
-                                     param='projectId',
-                                     resolver=project)
+  params = {}
+  if resource_type.value.collection_id == 'cloudresourcemanager.projects':
+    params['projectId'] = properties.VALUES.core.project.GetOrFail
+  elif resource_type.value.collection_id == 'pubsub.projects.topics':
+    params['projectsId'] = properties.VALUES.core.project.GetOrFail
+  elif resource_type.value.collection_id == 'cloudfunctions.projects.buckets':
+    pass
+
   ref = resources.REGISTRY.Parse(
       trigger_resource,
+      params,
       collection=resource_type.value.collection_id,
   )
   return ref.RelativeName()

@@ -235,3 +235,26 @@ def CreateDefaultBootAttachedDiskMessage(
           diskType=disk_type),
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+
+
+def CreateAcceleratorConfigMessages(messages, accelerator):
+  """Returns a list of accelerator config messages for Instance Templates.
+
+  Args:
+    messages: tracked GCE API messages.
+    accelerator: accelerator object with the following properties:
+        * type: the accelerator's type.
+        * count: the number of accelerators to attach. Optional, defaults to 1.
+
+  Returns:
+    a list of accelerator config messages that specify the type and number of
+    accelerators to attach to an instance.
+  """
+  if accelerator is None:
+    return []
+
+  accelerator_type = accelerator['type']
+  accelerator_count = int(accelerator.get('count', 1))
+  accelerator_config = messages.AcceleratorConfig(
+      acceleratorType=accelerator_type, acceleratorCount=accelerator_count)
+  return [accelerator_config]

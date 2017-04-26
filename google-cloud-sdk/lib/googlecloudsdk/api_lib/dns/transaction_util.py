@@ -107,7 +107,7 @@ def CreateRecordSetFromArgs(args):
     ResourceRecordSet, the record-set created from the given args.
   """
   rd_type = rdatatype.from_text(args.type)
-  if rd_type not in import_util.RDATA_TRANSLATIONS:
+  if import_util.GetRdataTranslation(rd_type) is None:
     raise exceptions.ToolException(
         'unsupported record-set type [{0}]'.format(args.type))
 

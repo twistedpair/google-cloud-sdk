@@ -25,7 +25,7 @@ class Ancestor(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConifg must have one or more
+  are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
@@ -284,8 +284,8 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       rules are case insensitive. The fields eligible for filtering are:  +
       `name` + `id` + <code>labels.<em>key</em></code> where *key* is the name
       of a label  Some examples of using labels as filters:
-      |Filter|Description| |------|-----------| |name:*|The project has a
-      name.| |name:Howl|The project's name is `Howl` or `howl`.|
+      |Filter|Description| |------|-----------| |name:how*|The project's name
+      starts with "how".| |name:Howl|The project's name is `Howl` or `howl`.|
       |name:HOWL|Equivalent to above.| |NAME:howl|Equivalent to above.|
       |labels.color:*|The project has the label `color`.|
       |labels.color:red|The project's label `color` has the value `red`.|

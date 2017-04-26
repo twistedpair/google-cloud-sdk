@@ -555,9 +555,13 @@ class Command(_Common):
 
   def __init__(self, cli, context):
     super(Command, self).__init__()
-    self.cli = cli
+    self._cli = cli
     self.context = context
     self._uri_cache_enabled = False
+
+  @property
+  def cli(self):
+    return self._cli
 
   def ExecuteCommand(self, args):
     self.cli.Execute(args, call_arg_complete=False)

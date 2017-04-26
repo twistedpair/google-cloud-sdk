@@ -41,7 +41,7 @@ def RunLanguageCommand(feature, content_file=None, content=None,
   """
   client = util.LanguageClient()
   source = util.GetContentSource(content, content_file)
-  return client.Annotate(feature, content_source=source, language=language,
+  return client.Annotate(feature, source=source, language=language,
                          content_type=content_type, encoding_type=encoding_type)
 
 

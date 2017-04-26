@@ -32,6 +32,11 @@ _REPLACEMENT_DISK_DETAILED_HELP = """\
 
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION
 
+IMAGE_ARG = compute_flags.ResourceArgument(
+    resource_name='image',
+    completion_resource_id='compute.images',
+    global_collection='compute.images')
+
 DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',
     completion_resource_id='compute.images',

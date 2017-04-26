@@ -16,7 +16,7 @@ package = 'spanner'
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConifg must have one or more
+  are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
@@ -643,7 +643,9 @@ class Instance(_messages.Message):
       changed after the instance is created. Values are of the form
       `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
       name must be between 6 and 30 characters in length.
-    nodeCount: Required. The number of nodes allocated to this instance.
+    nodeCount: Required. The number of nodes allocated to this instance. This
+      may be zero in API responses for instances that are not yet in state
+      `READY`.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.

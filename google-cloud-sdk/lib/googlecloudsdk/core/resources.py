@@ -22,7 +22,6 @@ code.
 
 import collections
 import copy
-import functools
 import re
 import types
 import urllib
@@ -135,14 +134,12 @@ class InvalidCollectionException(UserError):
 class _ResourceParser(object):
   """Class that turns command-line arguments into a cloud resource message."""
 
-  def __init__(self, params_defaults_func, collection_info):
+  def __init__(self, collection_info):
     """Create a _ResourceParser for a given collection.
 
     Args:
-      params_defaults_func: func(param)->value.
       collection_info: resource_util.CollectionInfo, description for collection.
     """
-    self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
 
   def ParseRelativeName(
@@ -220,8 +217,10 @@ class _ResourceParser(object):
     # Sanity check that Parse was called with right backup parameters.
     if not set(kwargs.keys()).issubset(params):
       raise ValueError(
-          'Provided params {} is not subset of the resource parameters {}'
-          .format(sorted(kwargs.keys()), sorted(params)))
+          'Provided params {} is not subset of the resource parameters {} for '
+          'collection {}'
+          .format(sorted(kwargs.keys()), sorted(params),
+                  self.collection_info.full_name))
 
     if properties.VALUES.core.enable_gri.GetBool():
       # Also ensures that the collection specified in the GRI matches ours.
@@ -249,10 +248,6 @@ class _ResourceParser(object):
       resolver = kwargs.get(param)
       if resolver:
         param_values[param] = resolver() if callable(resolver) else resolver
-      else:
-        # Then try the registered defaults, can raise errors like
-        # properties.RequiredPropertyError if property was tied to parameter.
-        param_values[param] = self.params_defaults_func(param)
 
     ref = Resource(self.collection_info, subcollection, param_values,
                    base_url)
@@ -622,50 +617,23 @@ class Registry(object):
         and each key after that is one of the remaining tokens which can be
         either a constant or a parameter name. At the end, a key of None
         indicates the value is a _ResourceParser.
-    default_param_funcs: Triply-nested dict. The first key is the param name,
-        the second is the api name, and the third is the collection name. The
-        value is a function that can be called to find values for params that
-        aren't specified already. If the collection key is None, it matches
-        all collections.
     registered_apis: {str: list}, All the api versions that have been
         registered, in order of registration.
         For instance, {'compute': ['v1', 'beta', 'alpha']}.
   """
 
   def __init__(self, parsers_by_collection=None, parsers_by_url=None,
-               default_param_funcs=None, registered_apis=None):
+               registered_apis=None):
     self.parsers_by_collection = parsers_by_collection or {}
     self.parsers_by_url = parsers_by_url or {}
-    self.default_param_funcs = default_param_funcs or {}
     self.registered_apis = registered_apis or collections.defaultdict(list)
 
   def Clone(self):
     """Fully clones this registry."""
-    reg = Registry(
+    return Registry(
         parsers_by_collection=_CopyNestedDictSpine(self.parsers_by_collection),
         parsers_by_url=_CopyNestedDictSpine(self.parsers_by_url),
-        default_param_funcs=_CopyNestedDictSpine(self.default_param_funcs),
         registered_apis=copy.deepcopy(self.registered_apis))
-    for _, version_collections in reg.parsers_by_collection.iteritems():
-      for _, collection_parsers in version_collections.iteritems():
-        for _, parser in collection_parsers.iteritems():
-          parser.params_defaults_func = functools.partial(
-              reg.GetParamDefault,
-              parser.collection_info.api_name,
-              parser.collection_info.name)
-
-    def _UpdateParser(dict_or_parser):
-      if isinstance(dict_or_parser, types.DictType):
-        for _, val in dict_or_parser.iteritems():
-          _UpdateParser(val)
-      else:
-        _, parser = dict_or_parser
-        parser.params_defaults_func = functools.partial(
-            reg.GetParamDefault,
-            parser.collection_info.api_name,
-            parser.collection_info.name)
-    _UpdateParser(reg.parsers_by_url)
-    return reg
 
   def RegisterApiByName(self, api_name, api_version=None):
     """Register the given API if it has not been registered already.
@@ -708,9 +676,7 @@ class Registry(object):
     """
     api_name = collection_info.api_name
     api_version = collection_info.api_version
-    parser = _ResourceParser(
-        functools.partial(self.GetParamDefault, api_name, collection_info.name),
-        collection_info)
+    parser = _ResourceParser(collection_info)
 
     collection_parsers = (self.parsers_by_collection.setdefault(api_name, {})
                           .setdefault(api_version, {}))
@@ -753,67 +719,6 @@ class Registry(object):
       raise AmbiguousResourcePath(cur_level[None], parser)
 
     cur_level[None] = subcollection, parser
-
-  def SetParamDefault(self, api, collection, param, resolver):
-    """Provide a function that will be used to fill in missing values.
-
-    Args:
-      api: str, The name of the API that func will apply to.
-      collection: str, The name of the collection that func will apploy to. Can
-          be None to indicate all collections within the API.
-      param: str, The param that can be satisfied with func, if no value is
-          provided by the path.
-      resolver: str or func()->str, A function that returns a string or raises
-          an exception that tells the user how to fix the problem, or the value
-          itself.
-
-    Raises:
-      ValueError: If api or param is None.
-    """
-    if not api:
-      raise ValueError('provided api cannot be None')
-    if not param:
-      raise ValueError('provided param cannot be None')
-    if param not in self.default_param_funcs:
-      self.default_param_funcs[param] = {}
-    api_collection_funcs = self.default_param_funcs[param]
-    if api not in api_collection_funcs:
-      api_collection_funcs[api] = {}
-    collection_funcs = api_collection_funcs[api]
-    collection_funcs[collection] = resolver
-
-  def GetParamDefault(self, api, collection, param):
-    """Return the default value for the specified parameter.
-
-    Args:
-      api: str, The name of the API that param is part of.
-      collection: str, The name of the collection to query. Can be None to
-          indicate all collections within the API.
-      param: str, The param to return a default for.
-
-    Raises:
-      ValueError: If api or param is None.
-
-    Returns:
-      The default value for a parameter or None if there is no default.
-    """
-    if not api:
-      raise ValueError('provided api cannot be None')
-    if not param:
-      raise ValueError('provided param cannot be None')
-    api_collection_funcs = self.default_param_funcs.get(param)
-    if not api_collection_funcs:
-      return None
-    collection_funcs = api_collection_funcs.get(api)
-    if not collection_funcs:
-      return None
-    if collection in collection_funcs:
-      resolver = collection_funcs[collection]
-    elif None in collection_funcs:
-      resolver = collection_funcs[None]
-    else:
-      return None
-    return resolver() if callable(resolver) else resolver
 
   def _GetParserForCollection(self, collection):
     # Register relevant API if necessary and possible
@@ -1097,7 +1002,6 @@ class Registry(object):
   def Clear(self):
     self.parsers_by_collection = {}
     self.parsers_by_url = {}
-    self.default_param_funcs = {}
     self.registered_apis = collections.defaultdict(list)
 
 

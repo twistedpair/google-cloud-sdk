@@ -34,6 +34,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_acknowledgments = self.ProjectsAcknowledgmentsService(self)
     self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
@@ -41,6 +42,93 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
     self.providers_notes_occurrences = self.ProvidersNotesOccurrencesService(self)
     self.providers_notes = self.ProvidersNotesService(self)
     self.providers = self.ProvidersService(self)
+
+  class ProjectsAcknowledgmentsService(base_api.BaseApiService):
+    """Service class for the projects_acknowledgments resource."""
+
+    _NAME = u'projects_acknowledgments'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1alpha1.ProjectsAcknowledgmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a note or occurrence resource.
+Requires "containeranalysis.notes.setIamPolicy" or
+"containeranalysis.occurrences.setIamPolicy" permission if the resource is
+a note or occurrence, respectively.
+Attempting this RPC on a resource without the needed permission will note
+in a PERMISSION_DENIED error.
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
+error if the user has list permission on the project,
+or a PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
+
+      Args:
+        request: (ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/acknowledgments/{acknowledgmentsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.acknowledgments.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified note or occurrence.
+resource.
+Requires "containeranalysis.notes.setIamPolicy" or
+"containeranalysis.occurrences.setIamPolicy" permission if the resource is
+a note or occurrence, respectively.
+Attempting this RPC on a resource without the needed permission will note
+in a PERMISSION_DENIED error.
+Attempting this RPC on a non-existent resource will result in a NOT_FOUND
+error if the user has list permission on the project, or a
+PERMISSION_DENIED error otherwise.
+The resource takes the following formats:
+projects/{projectid}/occurrences/{occurrenceid} for occurrences and
+projects/{projectid}/notes/{noteid} for notes
+
+      Args:
+        request: (ContaineranalysisProjectsAcknowledgmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/acknowledgments/{acknowledgmentsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.acknowledgments.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'ContaineranalysisProjectsAcknowledgmentsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
 
   class ProjectsNotesOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_notes_occurrences resource."""

@@ -45,6 +45,25 @@ class HelpWindowControl(controls.UIControl):
         default_char=self._default_char)
 
 
+def GetCurrentInvocation(invocations, pos):
+  """Determine the current invocation given a cursor position.
+
+  Args:
+    invocations: a list of list of gcloud_parser.ArgTokens
+    pos: an int giving the current cursor position
+
+  Returns:
+    The list corresponding to the gcloud invocation at that position or None.
+  """
+  for tokens in invocations:
+    if tokens:
+      start = tokens[0].start
+      end = tokens[-1].end
+      if start <= pos <= end:
+        return tokens
+  return None
+
+
 def GetCurrentToken(tokens, pos):
   """Determine the current token given a cursor position.
 
@@ -81,7 +100,12 @@ def GenerateHelpContent(cli, width):
   if width > 80:
     width = 80
   doc = cli.current_buffer.document
-  tok = GetCurrentToken(gcloud_parser.ParseLine(doc.text), doc.cursor_position)
+  tokens = GetCurrentInvocation(gcloud_parser.ParseLine(doc.text),
+                                doc.cursor_position)
+  if not tokens:
+    return []
+
+  tok = GetCurrentToken(tokens, doc.cursor_position)
   if not tok:
     return []
 

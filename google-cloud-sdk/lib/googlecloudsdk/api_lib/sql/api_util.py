@@ -14,8 +14,6 @@
 """Common utility functions for getting the SQL API."""
 
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 
 # API version constants
@@ -31,6 +29,3 @@ class SqlClient(object):
     self.sql_messages = self.sql_client.MESSAGES_MODULE
     self.resource_parser = resources.Registry()
     self.resource_parser.RegisterApiByName('sql', api_version)
-    self.resource_parser.SetParamDefault(
-        api='sql', collection=None, param='project',
-        resolver=resolvers.FromProperty(properties.VALUES.core.project))

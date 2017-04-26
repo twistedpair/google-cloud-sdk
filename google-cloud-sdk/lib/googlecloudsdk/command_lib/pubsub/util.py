@@ -306,7 +306,7 @@ def SnapshotDisplayDict(snapshot, error_msg=''):
   return {
       'snapshotId': snapshot.name,
       'topic': snapshot.topic,
-      'expirationTime': snapshot.expirationTime,
+      'expireTime': snapshot.expireTime,
       'success': not error_msg,
       'reason': error_msg or '',
   }

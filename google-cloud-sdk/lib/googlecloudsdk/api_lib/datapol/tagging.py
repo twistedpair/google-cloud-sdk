@@ -13,58 +13,79 @@
 # limitations under the License.
 """Helpers to interact with the Annotation serivce via the Cloud Datapol API."""
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.datapol import utils
+from googlecloudsdk.core import resources
 
 
 # TODO(b/36551117) Use parsed resource objects instead of resource name.
-def Apply(name, annotation_name):
+def Apply(data, taxonomy_name, annotation_name):
   """Applies an annotation to a data asset.
 
   Args:
-    name: Resource name of the annotation tag.
+    data: Name of the data to be annotated.
+    taxonomy_name: Name of the policy taxonomy.
     annotation_name: Name of the annotation. This annotation must belong to
-      the policy taxonomy specified in the resource name.
+      the policy taxonomy specified in taxonomy_name.
 
   Returns:
     An AnnotationTag message.
   """
   client = utils.GetClientInstance().data_orgs_policyTaxonomies
   messages = utils.GetMessagesModule()
-  return client.ApplyAnnotationTag(
-      messages.DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest(
-          name=name,
-          applyAnnotationTagRequest=messages.ApplyAnnotationTagRequest(
-              annotationName=annotation_name)))
+  name = resources.REGISTRY.Create(
+      'datapol.data.taxonomy',
+      data=data,
+      orgsId=utils.GetOrganizationId(),
+      policyTaxonomiesId=taxonomy_name).RelativeName()
+  try:
+    return client.ApplyAnnotationTag(
+        messages.DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest(
+            name=name,
+            applyAnnotationTagRequest=messages.ApplyAnnotationTagRequest(
+                annotationName=annotation_name)))
+  except apitools_exceptions.HttpError as e:
+    raise utils.ErrorWrapper(e, name)
 
 
-def Delete(name):
+def Delete(data, taxonomy_name):
   """Deletes an annotation on a data asset.
 
   Args:
-    name: Resource name of the annotation tag.
+    data: Name of the data to be annotated.
+    taxonomy_name: Name of the policy taxonomy.
 
   Returns:
     An Empty message.
   """
   client = utils.GetClientInstance().data_orgs_policyTaxonomies
-  return client.DeleteAnnotationTag(
-      utils.GetMessagesModule()
-      .DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest(name=name))
+  name = resources.REGISTRY.Create(
+      'datapol.data.tag',
+      data=data,
+      orgsId=utils.GetOrganizationId(),
+      policyTaxonomiesId=taxonomy_name).RelativeName()
+  try:
+    return client.DeleteAnnotationTag(
+        utils.GetMessagesModule()
+        .DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest(
+            name=name))
+  except apitools_exceptions.HttpError as e:
+    raise utils.ErrorWrapper(e, name)
 
 
 def ListTags(data, limit=None):
   """Lists all annotation tags on a data asset.
 
   Args:
-    data: Resource name of the data.
+    data: Name of the data.
     limit: The number of annotation tags to limit the resutls to.
 
   Returns:
     Generator that yields annnotation tags.
   """
   request = utils.GetMessagesModule().DatapolDataOrgsAnnotationTagsListRequest(
-      parent=data)
+      parent='data/{data}'.format(data=data))
   return list_pager.YieldFromList(
       utils.GetClientInstance().data_orgs_annotationTags,
       request,

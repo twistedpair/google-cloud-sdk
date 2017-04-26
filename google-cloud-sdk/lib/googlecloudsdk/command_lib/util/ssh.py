@@ -1168,7 +1168,8 @@ class SCPCommand(object):
     self.options = options or {}
     self.extra_flags = extra_flags or []
 
-  def Verify(self, env=None):
+  @classmethod
+  def Verify(cls, sources, destination, single_remote=False, env=None):
     """Verify that the source- and destination config is sound.
 
     Checks that sources are remote if destination is local and vice versa,
@@ -1176,36 +1177,40 @@ class SCPCommand(object):
     supported by `pscp`.
 
     Args:
-      env: Environment, to construct the command for (or current if None).
+      sources: [FileReference], see SCPCommand.sources.
+      destination: FileReference, see SCPCommand.destination.
+      single_remote: bool, if True, enforce that all remote sources refer
+        to the same Remote (user and host).
+      env: Environment, the current environment.
 
     Raises:
-      MissingCommandError: If SCP command(s) required were not found.
       InvalidConfigurationError: The source/destination configuration is
         invalid.
     """
     env = env or Environment.Current()
-    if not env.scp:
-      raise MissingCommandError('The current environment lacks an SCP (secure '
-                                'copy) client.')
 
-    if not self.sources:
-      raise InvalidConfigurationError('No sources provided.', self.sources,
-                                      self.destination)
+    if not sources:
+      raise InvalidConfigurationError('No sources provided.', sources,
+                                      destination)
 
-    if self.destination.remote:  # local -> remote
-      if any([src.remote for src in self.sources]):
+    if destination.remote:  # local -> remote
+      if any([src.remote for src in sources]):
         raise InvalidConfigurationError(
             'All sources must be local files when destination is remote.',
-            self.sources, self.destination)
+            sources, destination)
     else:  # remote -> local
-      if env.suite is Suite.PUTTY and len(self.sources) != 1:
+      if env.suite is Suite.PUTTY and len(sources) != 1:
         raise InvalidConfigurationError(
             'Multiple remote sources not supported by PuTTY.',
-            self.sources, self.destination)
-      if not all([src.remote for src in self.sources]):
+            sources, destination)
+      if not all([src.remote for src in sources]):
         raise InvalidConfigurationError(
             'Source(s) must be remote when destination is local.',
-            self.sources, self.destination)
+            sources, destination)
+      if single_remote and len(set([src.remote for src in sources])) != 1:
+        raise InvalidConfigurationError(
+            'All sources must refer to the same remote when destination is '
+            'local.', sources, destination)
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -1222,7 +1227,10 @@ class SCPCommand(object):
       [str], the command args (where the first arg is the command itself).
     """
     env = env or Environment.Current()
-    self.Verify(env)
+    if not env.scp:
+      raise MissingCommandError('The current environment lacks an SCP (secure '
+                                'copy) client.')
+    self.Verify(self.sources, self.destination, env=env)
 
     args = [env.scp]
 

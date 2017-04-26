@@ -1106,9 +1106,6 @@ class DataflowProjectsLocationsTemplatesLaunchRequest(_messages.Message):
   """A DataflowProjectsLocationsTemplatesLaunchRequest object.
 
   Fields:
-    dryRun: Whether or not the job should actually be executed after
-      validating parameters. Defaults to false. Validation errors do not cause
-      the HTTP request to fail if true.
     gcsPath: Required. A Cloud Storage path to the template from which to
       create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
@@ -1116,13 +1113,15 @@ class DataflowProjectsLocationsTemplatesLaunchRequest(_messages.Message):
     location: The location to which to direct the request.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
+    validateOnly: If true, the request is validated but not actually executed.
+      Defaults to false.
   """
 
-  dryRun = _messages.BooleanField(1)
-  gcsPath = _messages.StringField(2)
-  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 3)
-  location = _messages.StringField(4, required=True)
-  projectId = _messages.StringField(5, required=True)
+  gcsPath = _messages.StringField(1)
+  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 2)
+  location = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class DataflowProjectsLocationsWorkerMessagesRequest(_messages.Message):
@@ -1188,9 +1187,6 @@ class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
   """A DataflowProjectsTemplatesLaunchRequest object.
 
   Fields:
-    dryRun: Whether or not the job should actually be executed after
-      validating parameters. Defaults to false. Validation errors do not cause
-      the HTTP request to fail if true.
     gcsPath: Required. A Cloud Storage path to the template from which to
       create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
@@ -1198,13 +1194,15 @@ class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
     location: The location to which to direct the request.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
+    validateOnly: If true, the request is validated but not actually executed.
+      Defaults to false.
   """
 
-  dryRun = _messages.BooleanField(1)
-  gcsPath = _messages.StringField(2)
-  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 3)
-  location = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
+  gcsPath = _messages.StringField(1)
+  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 2)
+  location = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class DataflowProjectsWorkerMessagesRequest(_messages.Message):

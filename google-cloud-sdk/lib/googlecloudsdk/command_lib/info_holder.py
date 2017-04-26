@@ -100,14 +100,17 @@ class InstallationInfo(object):
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
     self.additional_repos = repos.split(',') if repos else []
-    self.path = encoding.GetEncodedValue(os.environ, 'PATH', '')
+    # Keep it as array for structured output.
+    self.path = encoding.GetEncodedValue(
+        os.environ, 'PATH', '').split(os.pathsep)
+    self.python_path = sys.path
 
     if self.sdk_root:
       manager = update_manager.UpdateManager()
       self.components = manager.GetCurrentVersionsInformation()
       self.old_tool_paths = manager.FindAllOldToolsOnPath()
       self.duplicate_tool_paths = manager.FindAllDuplicateToolsOnPath()
-      paths = [os.path.realpath(p) for p in self.path.split(os.pathsep)]
+      paths = [os.path.realpath(p) for p in self.path]
       this_path = os.path.realpath(
           os.path.join(self.sdk_root,
                        update_manager.UpdateManager.BIN_DIR_NAME))
@@ -141,7 +144,8 @@ class InstallationInfo(object):
       out.write(u'Installed Components:\n  {0}\n'.format(
           u'\n  '.join(components)))
 
-    out.write(u'System PATH: [{0}]\n'.format(self.path))
+    out.write(u'System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
+    out.write(u'Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
     out.write(u'Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
     out.write(u'Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
 

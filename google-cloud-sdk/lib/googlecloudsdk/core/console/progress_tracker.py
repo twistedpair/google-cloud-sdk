@@ -110,7 +110,9 @@ class ProgressTracker(object):
       sys.stderr.write(message or display_message + '\n')
       return
 
-    console_width = console_attr.ConsoleAttr().GetTermSize()[0]
+    console_width = console_attr.ConsoleAttr().GetTermSize()[0] - 1
+    if console_width < 0:
+      console_width = 0
     # The whole message will fit in the current console width and the previous
     # line was not a multiline display so we can overwrite.
     # If the previous and current messages are same we have multiline display

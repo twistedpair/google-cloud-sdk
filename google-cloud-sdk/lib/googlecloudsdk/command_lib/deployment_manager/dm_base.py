@@ -16,7 +16,6 @@
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 
 
@@ -33,9 +32,4 @@ def GetProject():
 
 
 def GetResources():
-  resolver = resolvers.FromProperty(properties.VALUES.core.project)
-  resources.REGISTRY.SetParamDefault('deploymentmanager',
-                                     None,
-                                     'project',
-                                     resolver)
   return resources.REGISTRY

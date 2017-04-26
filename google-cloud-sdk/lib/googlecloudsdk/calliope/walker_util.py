@@ -146,14 +146,17 @@ class HelpTextGenerator(walker.Walker):
     _directory: The help text output directory.
   """
 
-  def __init__(self, cli, directory):
+  def __init__(self, cli, directory, progress_callback=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       directory: The help text output directory path name.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
     """
-    super(HelpTextGenerator, self).__init__(cli)
+    super(HelpTextGenerator, self).__init__(
+        cli, progress_callback=progress_callback)
     self._directory = directory
     files.MakeDir(self._directory)
 
@@ -212,7 +215,7 @@ class DocumentGenerator(walker.Walker):
     files.MakeDir(self._directory)
 
   def Visit(self, node, parent, is_group):
-    """Renders an HTML manpage doc for each node in the CLI tree.
+    """Renders document file for each node in the CLI tree.
 
     Args:
       node: group/command CommandCommon info.

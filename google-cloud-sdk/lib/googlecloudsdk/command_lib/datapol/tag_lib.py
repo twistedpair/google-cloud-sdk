@@ -14,22 +14,26 @@
 
 """CLI implementation for datapol tag."""
 
-from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.datapol import tagging
 from googlecloudsdk.api_lib.util import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
-def TagDataAsset(data_asset, annotation, load_from, remove):
+class Error(core_exceptions.Error):
+  pass
+
+
+def TagDataAsset(data_asset, taxonomy_annotation, load_from, remove):
   """Tag a data asset with annotation or remove existing annotation.
 
   Args:
     data_asset: list of data asset resource names.
-    annotation: full annotation <taxonomy::annotation>.
+    taxonomy_annotation: full taxonomy and annotation <taxonomy::annotation>.
     load_from: path to a file with (dataasset,annotation) pairs
     remove: if true, remove existing annotation instead.
 
   Raises:
-    exceptions.HttpException: on unknown errors.
+    Error: on taxonomy_annotation malformed or other unknown errors.
 
   Returns:
     It always returns 0 if no exceptions raised.
@@ -42,16 +46,21 @@ def TagDataAsset(data_asset, annotation, load_from, remove):
     raise NotImplementedError()
 
   try:
-    for data_asset_path in data_asset:
-      tagging.Apply(data_asset_path, annotation)
-  except apitools_exceptions.HttpError as e:
-    exc = exceptions.HttpException(e)
-    if exc.payload.status_code == 404:
-      # status_code specific error message
-      exc.error_format = '{api_name}: {resource_name} not found.'
-    else:
-      # override default error message
-      exc.error_format = 'Unknown error. Status code {status_code}.'
-    raise exc
+    taxonomy, annotation = taxonomy_annotation.split('::', 1)
+  except ValueError:
+    raise Error(
+        'TAXONOMY_ANNOTATION should be in the format taxonomy::annotation')
+
+  exc_list = []
+  for data_asset_path in data_asset:
+    try:
+      tagging.Apply(data_asset_path, taxonomy, annotation)
+    except exceptions.HttpException as e:
+      exc_list.append('"{data_asset_path}": {err}'.format(
+          data_asset_path=data_asset_path, err=e.message))
+
+  if exc_list:
+    raise Error('Apply tag failed on following data assets:\n' +
+                '\n'.join(exc_list))
 
   return 0

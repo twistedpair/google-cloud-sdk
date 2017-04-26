@@ -811,6 +811,12 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If provided, this API key is attached to all outgoing '
         'API calls.')
+    self.should_prompt_to_enable_api = self._AddBool(
+        'should_prompt_to_enable_api',
+        default=True,
+        hidden=True,
+        help_text='If true, will prompt to enable an API if a command fails due'
+        ' to the API not being enabled.')
 
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:

@@ -19,6 +19,7 @@ import time
 import urlparse
 
 from googlecloudsdk.api_lib.firebase.test import exceptions
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 
@@ -93,14 +94,53 @@ def GetToolResultsIds(matrix, matrix_monitor,
           break
 
       if matrix.state in matrix_monitor.completed_matrix_states:
-        raise exceptions.BadMatrixError(
-            '\nMatrix [{m}] unexpectedly reached final status {s} without '
-            'returning a URL to any test results in the Firebase console. '
-            'Please re-check the validity of your APK file(s) and test '
-            'parameters and try again.'
-            .format(m=matrix.testMatrixId, s=matrix.state))
+        raise exceptions.BadMatrixError(_ErrorFromInvalidMatrix(matrix))
 
       time.sleep(status_interval)
       matrix = matrix_monitor.GetTestMatrixStatus()
 
   return ToolResultsIds(history_id=history_id, execution_id=execution_id)
+
+
+def _ErrorFromInvalidMatrix(matrix):
+  """Produces a human-readable error message from an invalid matrix."""
+  messages = apis.GetMessagesModule('testing', 'v1')
+  enum_values = messages.TestMatrix.InvalidMatrixDetailsValueValuesEnum
+  error_dict = {
+      enum_values.MALFORMED_APK:
+          'The app APK is not a valid Android application',
+      enum_values.MALFORMED_TEST_APK:
+          'The test APK is not a valid Android instrumentation test',
+      enum_values.NO_MANIFEST:
+          'The app APK is missing the manifest file',
+      enum_values.NO_PACKAGE_NAME:
+          'The APK manifest file is missing the package name',
+      enum_values.TEST_SAME_AS_APP:
+          'The test APK is the same as the app APK',
+      enum_values.NO_INSTRUMENTATION:
+          'The test APK declares no instrumentation tags in the manifest',
+      enum_values.NO_LAUNCHER_ACTIVITY:
+          'The app APK does not specify a main launcher activity',
+      enum_values.FORBIDDEN_PERMISSIONS:
+          'The app declares one or more permissions that are not allowed',
+      enum_values.INVALID_ROBO_DIRECTIVES:
+          'Cannot have multiple robo-directives with the same resource name',
+      enum_values.TEST_LOOP_INTENT_FILTER_NOT_FOUND:
+          'The app does not have a correctly formatted game-loop intent filter',
+      enum_values.SCENARIO_LABEL_NOT_DECLARED:
+          'A scenario-label was not declared in the manifest file',
+      enum_values.SCENARIO_LABEL_MALFORMED:
+          'A scenario-label in the manifest includes invalid numbers or ranges',
+      enum_values.SCENARIO_NOT_DECLARED:
+          'A scenario-number was not declared in the manifest file'
+  }
+  details_enum = matrix.invalidMatrixDetails
+  if details_enum in error_dict:
+    return ('\nMatrix [{m}] failed during validation: {e}.'.format(
+        m=matrix.testMatrixId, e=error_dict[details_enum]))
+  # Use a generic message if the enum is unknown or unspecified/unavailable.
+  return (
+      '\nMatrix [{m}] unexpectedly reached final status {s} without returning '
+      'a URL to any test results in the Firebase console. Please re-check the '
+      'validity of your APK file(s) and test parameters and try again.'.format(
+          m=matrix.testMatrixId, s=matrix.state))

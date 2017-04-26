@@ -100,21 +100,33 @@ def ParseLocationName(args):
 def ParseKeyRingName(args):
   return resources.REGISTRY.Parse(
       args.keyring,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'locationsId': args.MakeGetOrRaise('--location'),
+      },
       collection=KEY_RING_COLLECTION)
 
 
 def ParseCryptoKeyName(args):
   return resources.REGISTRY.Parse(
       args.key,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      params={
+          'keyRingsId': args.MakeGetOrRaise('--keyring'),
+          'locationsId': args.MakeGetOrRaise('--location'),
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
       collection=CRYPTO_KEY_COLLECTION)
 
 
 def ParseCryptoKeyVersionName(args):
   return resources.REGISTRY.Parse(
       args.version,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      params={
+          'cryptoKeysId': args.MakeGetOrRaise('--key'),
+          'keyRingsId': args.MakeGetOrRaise('--keyring'),
+          'locationsId': args.MakeGetOrRaise('--location'),
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
       collection=CRYPTO_KEY_VERSION_COLLECTION)
 
 

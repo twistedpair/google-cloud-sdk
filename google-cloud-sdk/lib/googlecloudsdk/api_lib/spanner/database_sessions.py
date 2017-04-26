@@ -44,8 +44,18 @@ def Delete(session):
   return client.projects_instances_databases_sessions.Delete(req)
 
 
-def ExecuteSql(session, sql):
-  """Execute an SQL command."""
+def ExecuteSql(session, sql, query_mode):
+  """Execute an SQL command.
+
+  Args:
+    session: Session, Indicates that the repo should be created if
+        it does not exist.
+    sql: String, The SQL to execute.
+    query_mode: String, The mode in which to run the query. Must be one
+        of 'NORMAL', 'PLAN', or 'PROFILE'
+  Returns:
+    (Repo) The capture repository.
+  """
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
 
@@ -63,6 +73,8 @@ def ExecuteSql(session, sql):
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
       session=session.name,
       executeSqlRequest=msgs.ExecuteSqlRequest(
-          sql=sql))
+          sql=sql,
+          queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(
+              query_mode)))
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
   return resp

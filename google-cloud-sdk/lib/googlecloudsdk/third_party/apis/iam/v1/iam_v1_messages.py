@@ -83,20 +83,6 @@ class BindingDelta(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CreateRoleRequest(_messages.Message):
-  """The request to create a new role. The resource name of the parent
-  resource in one of the following formats: `organizations/{ORGANIZATION_ID}`
-  `projects/{PROJECT_ID}`
-
-  Fields:
-    role: The Role resource to create.
-    roleId: The role id to use for this role.
-  """
-
-  role = _messages.MessageField('Role', 1)
-  roleId = _messages.StringField(2)
-
-
 class CreateServiceAccountKeyRequest(_messages.Message):
   """The service account key create request.
 
@@ -172,216 +158,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class IamOrganizationsRolesCreateRequest(_messages.Message):
-  """A IamOrganizationsRolesCreateRequest object.
-
-  Fields:
-    createRoleRequest: A CreateRoleRequest resource to be passed as the
-      request body.
-    parent: A string attribute.
-  """
-
-  createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class IamOrganizationsRolesDeleteRequest(_messages.Message):
-  """A IamOrganizationsRolesDeleteRequest object.
-
-  Fields:
-    etag: Used to perform a consistent read-modify-write.
-    name: The resource name of the role in one of the following formats:
-      `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-  """
-
-  etag = _messages.BytesField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class IamOrganizationsRolesGetRequest(_messages.Message):
-  """A IamOrganizationsRolesGetRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `roles/{ROLE_NAME}` `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamOrganizationsRolesListRequest(_messages.Message):
-  """A IamOrganizationsRolesListRequest object.
-
-  Enums:
-    ViewValueValuesEnum: Optional view for the returned Role objects.
-
-  Fields:
-    pageSize: Optional limit on the number of roles to include in the
-      response.
-    pageToken: Optional pagination token returned in an earlier
-      ListRolesResponse.
-    parent: The resource name of the parent resource in one of the following
-      formats: `` (empty string) -- this refers to curated roles.
-      `organizations/{ORGANIZATION_ID}` `projects/{PROJECT_ID}`
-    showDeleted: Include Roles that have been deleted.
-    view: Optional view for the returned Role objects.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
-
-    Values:
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    BASIC = 0
-    FULL = 1
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  showDeleted = _messages.BooleanField(4)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
-
-
-class IamOrganizationsRolesPatchRequest(_messages.Message):
-  """A IamOrganizationsRolesPatchRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `roles/{ROLE_NAME}` `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-    role: A Role resource to be passed as the request body.
-    updateMask: A mask describing which fields in the Role have changed.
-  """
-
-  name = _messages.StringField(1, required=True)
-  role = _messages.MessageField('Role', 2)
-  updateMask = _messages.StringField(3)
-
-
-class IamOrganizationsRolesUndeleteRequest(_messages.Message):
-  """A IamOrganizationsRolesUndeleteRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-    undeleteRoleRequest: A UndeleteRoleRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  undeleteRoleRequest = _messages.MessageField('UndeleteRoleRequest', 2)
-
-
-class IamProjectsRolesCreateRequest(_messages.Message):
-  """A IamProjectsRolesCreateRequest object.
-
-  Fields:
-    createRoleRequest: A CreateRoleRequest resource to be passed as the
-      request body.
-    parent: A string attribute.
-  """
-
-  createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class IamProjectsRolesDeleteRequest(_messages.Message):
-  """A IamProjectsRolesDeleteRequest object.
-
-  Fields:
-    etag: Used to perform a consistent read-modify-write.
-    name: The resource name of the role in one of the following formats:
-      `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-  """
-
-  etag = _messages.BytesField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class IamProjectsRolesGetRequest(_messages.Message):
-  """A IamProjectsRolesGetRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `roles/{ROLE_NAME}` `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsRolesListRequest(_messages.Message):
-  """A IamProjectsRolesListRequest object.
-
-  Enums:
-    ViewValueValuesEnum: Optional view for the returned Role objects.
-
-  Fields:
-    pageSize: Optional limit on the number of roles to include in the
-      response.
-    pageToken: Optional pagination token returned in an earlier
-      ListRolesResponse.
-    parent: The resource name of the parent resource in one of the following
-      formats: `` (empty string) -- this refers to curated roles.
-      `organizations/{ORGANIZATION_ID}` `projects/{PROJECT_ID}`
-    showDeleted: Include Roles that have been deleted.
-    view: Optional view for the returned Role objects.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
-
-    Values:
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    BASIC = 0
-    FULL = 1
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  showDeleted = _messages.BooleanField(4)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
-
-
-class IamProjectsRolesPatchRequest(_messages.Message):
-  """A IamProjectsRolesPatchRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `roles/{ROLE_NAME}` `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-    role: A Role resource to be passed as the request body.
-    updateMask: A mask describing which fields in the Role have changed.
-  """
-
-  name = _messages.StringField(1, required=True)
-  role = _messages.MessageField('Role', 2)
-  updateMask = _messages.StringField(3)
-
-
-class IamProjectsRolesUndeleteRequest(_messages.Message):
-  """A IamProjectsRolesUndeleteRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-    undeleteRoleRequest: A UndeleteRoleRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  undeleteRoleRequest = _messages.MessageField('UndeleteRoleRequest', 2)
 
 
 class IamProjectsServiceAccountsCreateRequest(_messages.Message):
@@ -622,66 +398,6 @@ class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class IamRolesGetRequest(_messages.Message):
-  """A IamRolesGetRequest object.
-
-  Fields:
-    name: The resource name of the role in one of the following formats:
-      `roles/{ROLE_NAME}` `organizations/{ORGANIZATION_ID}/roles/{ROLE_NAME}`
-      `projects/{PROJECT_ID}/roles/{ROLE_NAME}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamRolesListRequest(_messages.Message):
-  """A IamRolesListRequest object.
-
-  Enums:
-    ViewValueValuesEnum: Optional view for the returned Role objects.
-
-  Fields:
-    pageSize: Optional limit on the number of roles to include in the
-      response.
-    pageToken: Optional pagination token returned in an earlier
-      ListRolesResponse.
-    parent: The resource name of the parent resource in one of the following
-      formats: `` (empty string) -- this refers to curated roles.
-      `organizations/{ORGANIZATION_ID}` `projects/{PROJECT_ID}`
-    showDeleted: Include Roles that have been deleted.
-    view: Optional view for the returned Role objects.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
-
-    Values:
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    BASIC = 0
-    FULL = 1
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  showDeleted = _messages.BooleanField(4)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
-
-
-class ListRolesResponse(_messages.Message):
-  """The response containing the roles defined under a resource.
-
-  Fields:
-    nextPageToken: To retrieve the next page of results, set
-      `ListRolesRequest.page_token` to this value.
-    roles: The Roles defined on this resource.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  roles = _messages.MessageField('Role', 2, repeated=True)
-
-
 class ListServiceAccountKeysResponse(_messages.Message):
   """The service account keys list response.
 
@@ -703,23 +419,6 @@ class ListServiceAccountsResponse(_messages.Message):
 
   accounts = _messages.MessageField('ServiceAccount', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class Permission(_messages.Message):
-  """A permission which can be included by a role.
-
-  Fields:
-    description: A brief description of what this Permission is used for.
-    name: The name of this Permission.
-    onlyInPredefinedRoles: This permission can ONLY be used in predefined
-      roles.
-    title: The title of this Permission.
-  """
-
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  onlyInPredefinedRoles = _messages.BooleanField(3)
-  title = _messages.StringField(4)
 
 
 class Policy(_messages.Message):
@@ -771,9 +470,6 @@ class PolicyDelta(_messages.Message):
 class QueryGrantableRolesRequest(_messages.Message):
   """The grantable role query request.
 
-  Enums:
-    ViewValueValuesEnum:
-
   Fields:
     fullResourceName: Required. The full resource name to query from the list
       of grantable roles.  The name follows the Google Cloud Platform resource
@@ -783,24 +479,11 @@ class QueryGrantableRolesRequest(_messages.Message):
       response.
     pageToken: Optional pagination token returned in an earlier
       QueryGrantableRolesResponse.
-    view: A ViewValueValuesEnum attribute.
   """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    """ViewValueValuesEnum enum type.
-
-    Values:
-      BASIC: Omits the `included_permissions` field. This is the default
-        value.
-      FULL: Returns all fields.
-    """
-    BASIC = 0
-    FULL = 1
 
   fullResourceName = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class QueryGrantableRolesResponse(_messages.Message):
@@ -816,84 +499,23 @@ class QueryGrantableRolesResponse(_messages.Message):
   roles = _messages.MessageField('Role', 2, repeated=True)
 
 
-class QueryTestablePermissionsRequest(_messages.Message):
-  """A request to get permissions which can be tested on a resource.
-
-  Fields:
-    fullResourceName: Required. The full resource name to query from the list
-      of testable permissions.  The name follows the Google Cloud Platform
-      resource format. For example, a Cloud Platform project with id `my-
-      project` will be named `//cloudresourcemanager.googleapis.com/projects
-      /my-project`.
-    pageSize: Optional limit on the number of permissions to include in the
-      response.
-    pageToken: Optional pagination token returned in an earlier
-      QueryTestablePermissionsRequest.
-  """
-
-  fullResourceName = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-
-
-class QueryTestablePermissionsResponse(_messages.Message):
-  """The response containing permissions which can be tested on a resource.
-
-  Fields:
-    nextPageToken: To retrieve the next page of results, set
-      `QueryTestableRolesRequest.page_token` to this value.
-    permissions: The Permissions testable on the requested resource.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  permissions = _messages.MessageField('Permission', 2, repeated=True)
-
-
 class Role(_messages.Message):
   """A role in the Identity and Access Management API.
 
-  Enums:
-    StageValueValuesEnum:
-
   Fields:
-    deleted: A boolean attribute.
     description: Optional.  A human-readable description for the role.
-    etag: A byte attribute.
-    includedPermissions: A string attribute.
     name: The name of the role.  When Role is used in CreateRole, the role
       name must not be set.  When Role is used in output and other input such
       as UpdateRole, the role name is the complete path, e.g.,
       roles/logging.viewer for curated roles and
       organizations/{ORGANIZATION_ID}/roles/logging.viewer for custom roles.
-    stage: A StageValueValuesEnum attribute.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """
 
-  class StageValueValuesEnum(_messages.Enum):
-    """StageValueValuesEnum enum type.
-
-    Values:
-      ALPHA: The user has indicated this role is currently in an alpha phase.
-      BETA: The user has indicated this role is currently in a beta phase.
-      GA: The user has indicated this role is generally available.
-      DEPRECATED: The user has indicated this role is being deprecated.
-      DISABLED: This role is disabled and will not contribute permissions to
-        any members it is granted to in policies.
-    """
-    ALPHA = 0
-    BETA = 1
-    GA = 2
-    DEPRECATED = 3
-    DISABLED = 4
-
-  deleted = _messages.BooleanField(1)
-  description = _messages.StringField(2)
-  etag = _messages.BytesField(3)
-  includedPermissions = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  stage = _messages.EnumField('StageValueValuesEnum', 6)
-  title = _messages.StringField(7)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  title = _messages.StringField(3)
 
 
 class ServiceAccount(_messages.Message):
@@ -1162,16 +784,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class UndeleteRoleRequest(_messages.Message):
-  """The request to undelete an existing role.
-
-  Fields:
-    etag: Used to perform a consistent read-modify-write.
-  """
-
-  etag = _messages.BytesField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

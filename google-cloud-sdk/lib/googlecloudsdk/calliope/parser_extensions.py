@@ -123,6 +123,25 @@ class Namespace(argparse.Namespace):
     return _Func
 
 
+class _ErrorContext(object):
+  """Context from the most recent ArgumentParser.error() call.
+
+  The context can be saved and used to reproduce the error() method call later
+  in the execution.  Used to probe argparse errors for different argument
+  combinations.
+
+  Attributes:
+    message: The error message string.
+    parser: The parser where the error occurred.
+    error: The sys.exc_info()[1] error value.
+  """
+
+  def __init__(self, message, parser, error):
+    self.message = message
+    self.parser = parser
+    self.error = error
+
+
 class ArgumentParser(argparse.ArgumentParser):
   """A custom subclass for arg parsing behavior.
 
@@ -131,7 +150,10 @@ class ArgumentParser(argparse.ArgumentParser):
   Attributes:
     _calliope_command: base._Command, The Calliope command or group for this
       parser.
+    _error_context: The most recent self.error() method _ErrorContext.
     _is_group: bool, True if _calliope_command is a group.
+    _probe_error: bool, True when parse_known_args() is probing argparse errors
+      captured in the self.error() method.
     _remainder_action: action, The argument action for a -- ... remainder
       argument, added by AddRemainderArgument.
     _specified_args: {dest: arg-name}, A map of dest names for known args
@@ -148,6 +170,8 @@ class ArgumentParser(argparse.ArgumentParser):
     self._is_group = hasattr(self._calliope_command, 'commands')
     self._remainder_action = None
     self._specified_args = {}
+    self._error_context = None
+    self._probe_error = False
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   def AddRemainderArgument(self, *args, **kwargs):
@@ -179,72 +203,12 @@ class ArgumentParser(argparse.ArgumentParser):
     """Returns the scrubbed names for args specified on the comman line."""
     return sorted(self._specified_args.values())
 
-  def parse_known_args(self, args=None, namespace=None):
-    """Overrides argparse.ArgumentParser's .parse_known_args method."""
-    if args is None:
-      args = sys.argv[1:]
-    if namespace is None:
-      namespace = Namespace()
-    try:
-      if self._remainder_action:
-        # Remove remainder_action so it is not parsed regularly.
-        self._actions.remove(self._remainder_action)
-        # Split on first -- if it exists
-        namespace, args = self._remainder_action.ParseKnownArgs(args, namespace)
-      self._specified_args = {}
-      namespace, unknown_args = super(
-          ArgumentParser, self).parse_known_args(args, namespace)
-      # Update the namespace _specified_args with the specified arg dests and
-      # names for this subparser.
-      # pylint: disable=protected-access
-      namespace._specified_args.update(self._specified_args)
-    finally:
-      # Replace action for help message and ArgumentErrors.
-      if self._remainder_action:
-        self._actions.append(self._remainder_action)
-
-    # Pass back a reference to the deepest parser used in the parse as part of
-    # the returned args.
-    # pylint: disable=protected-access
-    if not namespace._deepest_parser:
-      namespace._deepest_parser = self
-    return (namespace, unknown_args)
-
-  def parse_args(self, args=None, namespace=None):
-    """Overrides argparse.ArgumentParser's .parse_args method."""
-    namespace, unknown_args = self.parse_known_args(args, namespace)
-    if not unknown_args:
-      return namespace
-
-    # Content of these lines differs from argparser's parse_args().
-    # pylint:disable=protected-access
-    deepest_parser = namespace._deepest_parser or self
-    deepest_parser._specified_args = namespace._specified_args
-    if deepest_parser._remainder_action:
-      # Assume the user wanted to pass all arguments after last recognized
-      # arguments into _remainder_action. Either do this with a warning or
-      # fail depending on strictness.
-      # pylint:disable=protected-access
-      try:
-        namespace, unknown_args = (
-            deepest_parser._remainder_action.ParseRemainingArgs(
-                unknown_args, namespace, args))
-        # There still may be unknown_args that came before the last known arg.
-        if not unknown_args:
-          return namespace
-      except parser_errors.UnrecognizedArgumentsError as e:
-        # In the case of UnrecognizedArgumentsError, we want to just let it
-        # continue so that we can get the nicer error handling.
-        pass
-
-    # There is at least one parsing error. Add a message for each unknown
-    # argument.  For each, try to come up with a suggestion based on text
-    # distance.  If one is close enough, print a 'did you mean' message along
-    # with that argument.
+  def _Suggest(self, unknown_args):
+    """Error out with a suggestion based on text distance for each unknown."""
     messages = []
     suggester = usage_text.TextChoiceSuggester()
     # pylint:disable=protected-access, This is an instance of this class.
-    for flag in deepest_parser._calliope_command.GetAllAvailableFlags():
+    for flag in self._calliope_command.GetAllAvailableFlags():
       options = flag.option_strings
       if options:
         # This is a flag, add all its names as choices.
@@ -277,13 +241,119 @@ class ArgumentParser(argparse.ArgumentParser):
       raise parser_errors.UnrecognizedArgumentsError(
           u'unrecognized arguments:{0}{1}'.format(separator,
                                                   separator.join(messages)),
-          parser=deepest_parser,
+          parser=self,
           total_unrecognized=len(unknown_args),
           total_suggestions=len(suggestions),
           suggestions=suggestions,
       )
     except argparse.ArgumentError as e:
-      deepest_parser.error(e.message)
+      self.error(e.message)
+
+  def _DeduceBetterError(self, args, namespace):
+    """There is an argparse error in _error_context, see if we can do better.
+
+    We are committed to an argparse error. See if we can do better by
+    isolating each flag arg to determine if the argparse error complained
+    about a flag arg value instead of a positional.  Accumulate required
+    flag args to ensure that all valid flag args are checked.
+
+    Args:
+      args: The subset of the command lines args that triggered the argparse
+        error in self._error_context.
+      namespace: The namespace for the current parser.
+    """
+    self._probe_error = True
+    context = self._error_context
+    required = []
+    skip = False
+    for arg in args:
+      if skip:
+        skip = False
+        required.append(arg)
+        continue
+      if not arg.startswith('-'):
+        break
+      self._error_context = None
+      self.parse_known_args(required + [arg], namespace)
+      if not self._error_context:
+        continue
+      elif 'is required' in self._error_context.message:
+        required.append(arg)
+        if '=' in arg:
+          skip = True
+      elif 'too few arguments' not in self._error_context.message:
+        context = self._error_context
+        break
+    self._probe_error = False
+    context.parser.error(context=context)
+
+  def parse_known_args(self, args=None, namespace=None):
+    """Overrides argparse.ArgumentParser's .parse_known_args method."""
+    if args is None:
+      args = sys.argv[1:]
+    if namespace is None:
+      namespace = Namespace()
+    try:
+      if self._remainder_action:
+        # Remove remainder_action so it is not parsed regularly.
+        self._actions.remove(self._remainder_action)
+        # Split on first -- if it exists
+        namespace, args = self._remainder_action.ParseKnownArgs(args, namespace)
+      self._specified_args = {}
+      namespace, unknown_args = (
+          super(ArgumentParser, self).parse_known_args(args, namespace) or
+          (namespace, []))
+      if unknown_args:
+        self._Suggest(unknown_args)
+      elif self._error_context:
+        if self._probe_error:
+          return
+        self._DeduceBetterError(args, namespace)
+      # Update the namespace _specified_args with the specified arg dests and
+      # names for this subparser.
+      # pylint: disable=protected-access
+      namespace._specified_args.update(self._specified_args)
+    finally:
+      # Replace action for help message and ArgumentErrors.
+      if self._remainder_action:
+        self._actions.append(self._remainder_action)
+
+    # Pass back a reference to the deepest parser used in the parse as part of
+    # the returned args.
+    # pylint: disable=protected-access
+    if not namespace._deepest_parser:
+      namespace._deepest_parser = self
+    return (namespace, unknown_args)
+
+  def parse_args(self, args=None, namespace=None):
+    """Overrides argparse.ArgumentParser's .parse_args method."""
+    namespace, unknown_args = (self.parse_known_args(args, namespace) or
+                               (namespace, []))
+    if not unknown_args:
+      return namespace
+
+    # Content of these lines differs from argparser's parse_args().
+    # pylint:disable=protected-access
+    deepest_parser = namespace._deepest_parser or self
+    deepest_parser._specified_args = namespace._specified_args
+    if deepest_parser._remainder_action:
+      # Assume the user wanted to pass all arguments after last recognized
+      # arguments into _remainder_action. Either do this with a warning or
+      # fail depending on strictness.
+      # pylint:disable=protected-access
+      try:
+        namespace, unknown_args = (
+            deepest_parser._remainder_action.ParseRemainingArgs(
+                unknown_args, namespace, args))
+        # There still may be unknown_args that came before the last known arg.
+        if not unknown_args:
+          return namespace
+      except parser_errors.UnrecognizedArgumentsError:
+        # In the case of UnrecognizedArgumentsError, we want to just let it
+        # continue so that we can get the nicer error handling.
+        pass
+
+    deepest_parser._Suggest(unknown_args)
 
   def _check_value(self, action, value):
     """Overrides argparse.ArgumentParser's ._check_value(action, value) method.
@@ -482,19 +552,46 @@ class ArgumentParser(argparse.ArgumentParser):
     self._ReportErrorMetricsHelper(dotted_command_path,
                                    parser_errors.OtherParsingError)
 
-  def error(self, message):
+  def error(self, message=None, context=None):
     """Overrides argparse.ArgumentParser's .error(message) method.
 
     Specifically, it avoids reprinting the program name and the string "error:".
 
     Args:
       message: str, The error message to print.
+      context: _ErrorContext, A previous intercepted error context to reproduce.
     """
-    _, error, _ = sys.exc_info()
-    parser = self
-    if isinstance(error, parser_errors.ArgumentError):
-      # This associates the error with the correct parser.
-      parser = error.parser or self
+    if context:
+      # Reproduce a previous call to this method from the info in context.
+      message = context.message
+      parser = context.parser
+      error = context.error
+      if error:
+        # argparse calls this method as the result of an exception that can be
+        # checked in sys.exc_info()[1].  A side effect of this try-except is to
+        # set sys.exc_info()[1] to context.error from the original call that was
+        # saved below in self._error_context.  This value might be checked later
+        # in the execution (the test harness in particular checks it).
+        try:
+          raise error  # pylint: disable=raising-bad-type
+        except type(error):
+          pass
+      else:
+        error = sys.exc_info()[1]
+    else:
+      error = sys.exc_info()[1]
+      parser = self
+      if '_ARGCOMPLETE' not in os.environ and (
+          self._probe_error or
+          'too few arguments' in message or
+          'Invalid choice' in message):
+        # Save this context for later. We may be able to decuce a better error
+        # message. For instance, argparse might complain about an invalid
+        # command choice 'flag-value' for '--unknown-flag flag-value', but
+        # with a little finagling in parse_known_args() we can verify that
+        # '--unknown-flag' is in fact an unknwon flag and error out on that.
+        self._error_context = _ErrorContext(message, parser, error)
+        return
     parser.ReportErrorMetrics(error, message)
 
     # No need to output help/usage text if we are in completion mode. However,

@@ -471,10 +471,11 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       <code>config.secondary_worker_config.num_instances</code>, and the PATCH
       request body would be set as follows: {   "config":{
       "secondaryWorkerConfig":{       "numInstances":"5"     }   } }
-      <strong>Note:</strong> Currently,
-      <code>config.worker_config.num_instances</code> and
-      <code>config.secondary_worker_config.num_instances</code> are the only
-      fields that can be updated.
+      <strong>Note:</strong> currently only some fields can be updated:
+      |Mask|Purpose| |labels|Updates labels|
+      |config.worker_config.num_instances|Resize primary worker group|
+      |config.secondary_worker_config.num_instances|Resize secondary worker
+      group|
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -1759,9 +1760,10 @@ class SoftwareConfig(_messages.Message):
     PropertiesValue: Optional The properties to set on daemon config
       files.Property keys are specified in prefix:property format, such as
       core:fs.defaultFS. The following are supported prefixes and their
-      mappings: core: core-site.xml hdfs: hdfs-site.xml mapred: mapred-
-      site.xml yarn: yarn-site.xml hive: hive-site.xml pig: pig.properties
-      spark: spark-defaults.conf
+      mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
+      distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
+      mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
+      yarn: yarn-site.xml
 
   Fields:
     imageVersion: Optional The version of software inside the cluster. It must
@@ -1769,18 +1771,21 @@ class SoftwareConfig(_messages.Message):
       to the latest version (see Cloud Dataproc Versioning).
     properties: Optional The properties to set on daemon config files.Property
       keys are specified in prefix:property format, such as core:fs.defaultFS.
-      The following are supported prefixes and their mappings: core: core-
-      site.xml hdfs: hdfs-site.xml mapred: mapred-site.xml yarn: yarn-site.xml
-      hive: hive-site.xml pig: pig.properties spark: spark-defaults.conf
+      The following are supported prefixes and their mappings: capacity-
+      scheduler: capacity-scheduler.xml core: core-site.xml distcp: distcp-
+      default.xml hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-
+      site.xml pig: pig.properties spark: spark-defaults.conf yarn: yarn-
+      site.xml
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     """Optional The properties to set on daemon config files.Property keys are
     specified in prefix:property format, such as core:fs.defaultFS. The
-    following are supported prefixes and their mappings: core: core-site.xml
-    hdfs: hdfs-site.xml mapred: mapred-site.xml yarn: yarn-site.xml hive:
-    hive-site.xml pig: pig.properties spark: spark-defaults.conf
+    following are supported prefixes and their mappings: capacity-scheduler:
+    capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
+    hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-site.xml pig:
+    pig.properties spark: spark-defaults.conf yarn: yarn-site.xml
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

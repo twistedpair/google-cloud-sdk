@@ -374,11 +374,11 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint.",
+          "description": "The username to use for HTTP basic authentication to the master endpoint.\nIf an empty username is provided, basic authentication is disabled for the\ncluster (for clusters v1.6.0 and above).",
           "type": "string"
         },
         "password": {
-          "description": "The password to use for HTTP basic authentication to the master endpoint.\nBecause the master endpoint is open to the Internet, you should create a\nstrong password.",
+          "description": "The password to use for HTTP basic authentication to the master endpoint.\nBecause the master endpoint is open to the Internet, you should create a\nstrong password.  If a password is provided for cluster creation, username\nmust be non-empty.",
           "type": "string"
         },
         "clusterCaCertificate": {

@@ -16,6 +16,7 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
 CREATE_LABELS_FLAG = base.Argument(
@@ -130,3 +131,27 @@ def UpdateLabels(labels, labels_value, update_labels=None, remove_labels=None):
   return labels_value(additionalProperties=[
       labels_value.AdditionalProperty(key=key, value=value)
       for key, value in sorted(new_labels.iteritems())])
+
+
+def GetAndValidateOpsFromArgs(parsed_args):
+  """Validates and returns labels specific args.
+
+  At least one of --update-labels, --labels or --remove-labels must be present.
+
+  Args:
+    parsed_args: The parsed args.
+  Returns:
+    (update_labels and remove_labels)
+    update_labels contains values from --labels or --update-labels flag.
+    remove_labels contains values from --remove-labels flag
+  Raise:
+    RequiredArgumentException if all labels arguments are absent.
+  """
+  update_labels = GetUpdateLabelsDictFromArgs(parsed_args)
+  remove_labels = GetRemoveLabelsListFromArgs(parsed_args)
+  if update_labels is None and remove_labels is None:
+    raise calliope_exceptions.RequiredArgumentException(
+        'LABELS',
+        'At least one of --update-labels or --remove-labels must be specified.')
+
+  return update_labels, remove_labels

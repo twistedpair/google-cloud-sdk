@@ -42,7 +42,6 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
@@ -74,7 +73,6 @@ class ComputeApiHolder(object):
   def resources(self):
     """Specifies the resources parser for compute resources."""
     if self._resources is None:
-      _SetResourceParamDefaults()
       self._resources = resources.REGISTRY.Clone()
       self._resources.RegisterApiByName('compute', self._api_version)
     return self._resources
@@ -103,11 +101,6 @@ class ComputeUserAccountsApiHolder(object):
   def resources(self):
     """Specifies the resources parser for compute resources."""
     if self._resources is None:
-      resources.REGISTRY.SetParamDefault(
-          api='clouduseraccounts',
-          collection=None,
-          param='project',
-          resolver=resolvers.FromProperty(properties.VALUES.core.project))
       self._resources = resources.REGISTRY.Clone()
       self._resources.RegisterApiByName('clouduseraccounts', self._api_version)
     return self._resources
@@ -1793,21 +1786,3 @@ class BaseEdit(BaseCommand):
             transformations=self.transformations))
     for resource in resource_list:
       yield resource
-
-
-def _SetResourceParamDefaults():
-  """Sets resource parsing default parameters to point to properties."""
-  core_values = properties.VALUES.core
-  compute_values = properties.VALUES.compute
-  for api, param, prop in (
-      ('compute', 'project', core_values.project),
-      ('resourceviews', 'projectName', core_values.project),
-      ('compute', 'zone', compute_values.zone),
-      ('resourceviews', 'zone', compute_values.zone),
-      ('compute', 'region', compute_values.region),
-      ('resourceviews', 'region', compute_values.region)):
-    resources.REGISTRY.SetParamDefault(
-        api=api,
-        collection=None,
-        param=param,
-        resolver=resolvers.FromProperty(prop))

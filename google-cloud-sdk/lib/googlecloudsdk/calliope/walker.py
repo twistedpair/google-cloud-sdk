@@ -14,21 +14,37 @@
 
 """A module for walking the Cloud SDK CLI tree."""
 
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
+
 
 class Walker(object):
   """Base class for walking the Cloud SDK CLI tree.
 
   Attributes:
-    _cli: The Cloud SDK CLI object.
+    _root: The root element of the CLI tree.
+    _num_nodes: The total number of nodes in the tree.
+    _num_visited: The count of visited nodes so far.
+    _progress_callback: The progress bar function to call to update progress.
   """
 
-  def __init__(self, cli):
+  def __init__(self, cli, progress_callback=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
     """
-    self._cli = cli
+    self._root = cli._TopElement()  # pylint: disable=protected-access
+    if progress_callback:
+      with progress_tracker.ProgressTracker('Loading CLI Tree'):
+        self._num_nodes = 1.0 + self._root.LoadAllSubElements(recursive=True)
+    else:
+      self._num_nodes = 1.0 + self._root.LoadAllSubElements(recursive=True)
+    self._num_visited = 0
+    self._progress_callback = (progress_callback or
+                               console_io.ProgressBar.DEFAULT_CALLBACK)
 
   def Walk(self, hidden=False, restrict=None):
     """Calls self.Visit() on each node in the CLI tree.
@@ -77,7 +93,7 @@ class Walker(object):
       Returns:
         The return value of the outer Visit() call.
       """
-      parent = self.Visit(node, parent, is_group=True)
+      parent = self._Visit(node, parent, is_group=True)
       commands_and_groups = []
       if node.commands:
         for name, command in node.commands.iteritems():
@@ -91,14 +107,18 @@ class Walker(object):
         if is_group:
           _Walk(command, parent)
         else:
-          self.Visit(command, parent, is_group=False)
+          self._Visit(command, parent, is_group=False)
       return parent
 
-    root = self._cli._TopElement()  # pylint: disable=protected-access
-    root.LoadAllSubElements(recursive=True)
-    parent = _Walk(root, self.Init())
+    self._num_visited = 0
+    parent = _Walk(self._root, self.Init())
     self.Done()
     return parent
+
+  def _Visit(self, node, parent, is_group):
+    self._num_visited += 1
+    self._progress_callback(self._num_visited/self._num_nodes)
+    return self.Visit(node, parent, is_group)
 
   def Visit(self, node, parent, is_group):
     """Visits each node in the CLI command tree.

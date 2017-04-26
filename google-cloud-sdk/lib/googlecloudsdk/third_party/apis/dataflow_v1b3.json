@@ -4180,8 +4180,8 @@
                   "required": true,
                   "type": "string"
                 },
-                "dryRun": {
-                  "description": "Whether or not the job should actually be executed after\nvalidating parameters. Defaults to false. Validation errors do\nnot cause the HTTP request to fail if true.",
+                "validateOnly": {
+                  "description": "If true, the request is validated but not actually executed.\nDefaults to false.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -4880,8 +4880,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "dryRun": {
-                      "description": "Whether or not the job should actually be executed after\nvalidating parameters. Defaults to false. Validation errors do\nnot cause the HTTP request to fail if true.",
+                    "validateOnly": {
+                      "description": "If true, the request is validated but not actually executed.\nDefaults to false.",
                       "location": "query",
                       "type": "boolean"
                     },

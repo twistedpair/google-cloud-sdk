@@ -718,7 +718,9 @@ def AddAddressArgs(parser, instances=True,
     )
 
 
-def AddMachineTypeArgs(parser, required=False):
+def AddMachineTypeArgs(parser, required=False, unspecified_help=None):
+  if unspecified_help is None:
+    unspecified_help = ' If unspecified, the default type is n1-standard-1.'
   parser.add_argument(
       '--machine-type',
       completion_resource='compute.machineTypes',
@@ -726,8 +728,8 @@ def AddMachineTypeArgs(parser, required=False):
       help="""\
       Specifies the machine type used for the instances. To get a
       list of available machine types, run 'gcloud compute
-      machine-types list'. If unspecified, the default type is n1-standard-1.
-      """)
+      machine-types list'.{}""".format(unspecified_help)
+  )
 
 
 def AddMinCpuPlatformArgs(parser, required=False):

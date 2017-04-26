@@ -13,18 +13,6 @@
 # limitations under the License.
 """Common utility functions for the dns tool."""
 
-from googlecloudsdk.calliope import base
-
 
 def AppendTrailingDot(name):
   return name if not name or name.endswith('.') else name + '.'
-
-
-ZONE_FLAG = base.Argument(
-    '--zone',
-    '-z',
-    completion_resource='dns.managedZones',
-    help='Name of the managed-zone whose record-sets you want to manage.',
-    required=True)
-
-CHANGES_FORMAT = 'table(id, startTime, status)'

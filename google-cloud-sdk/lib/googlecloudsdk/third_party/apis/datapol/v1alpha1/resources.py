@@ -22,6 +22,25 @@ BASE_URL = 'https://datapol.googleapis.com/v1alpha1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  DATA_TAG = (
+      'data.tag',
+      'data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/'
+      'annotationTag',
+      {},
+      ['data', 'orgsId', 'policyTaxonomiesId']
+  )
+  DATA_TAXONOMY = (
+      'data.taxonomy',
+      'data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}',
+      {},
+      ['data', 'orgsId', 'policyTaxonomiesId']
+  )
+  ORG = (
+      'org',
+      'orgs/{orgsId}',
+      {},
+      ['orgsId']
+  )
   ORGS_POLICYTAXONOMIES = (
       'orgs.policyTaxonomies',
       '{+name}',

@@ -17,8 +17,7 @@ from __future__ import unicode_literals
 
 import re
 
-from googlecloudsdk.command_lib.shell import gcloud_parser
-from googlecloudsdk.command_lib.shell import shell_lexer as lexer
+from googlecloudsdk.command_lib.shell import gcloud_parser as parser
 from googlecloudsdk.command_lib.shell.gcloud_tree import gcloud_tree
 from googlecloudsdk.core import properties
 from prompt_toolkit.completion import Completer
@@ -46,75 +45,66 @@ class ShellCliCompleter(Completer):
     Yields:
       Completion instances for doc.
     """
-    tokens = lexer.GetShellTokens(doc.text_before_cursor)
+    commands = parser.ParseLine(doc.text_before_cursor)
+    if not commands:
+      return
+
+    tokens = commands[-1]
     if not tokens:
       return
     if tokens[0].value != 'gcloud':
-      gcloud_token = lexer.ShellToken(
-          'gcloud', lex=lexer.ShellTokenType.ARG, start=0, end=0)
+      gcloud_token = parser.ArgToken('gcloud', parser.ArgTokenType.GROUP,
+                                     gcloud_tree, 0, 0)
       tokens = ([gcloud_token] + tokens)
     node = self.root
     info = None
-    last = ''
+    last_token = tokens[-1]
     path = []
-    i = 0
 
     # Autocomplete commands and groups after spaces.
-    if doc.text_before_cursor and doc.text_before_cursor[-1].isspace():
+    if (last_token.token_type == parser.ArgTokenType.GROUP and
+        doc.cursor_position > last_token.end):
       for completion in CompleteCommandGroups(tokens):
         yield Completion(completion)
       return
 
-    # If there is a terminator, do not complete.
+    # Traverse the CLI tree.
     for token in tokens:
-      if token.lex == lexer.ShellTokenType.TERMINATOR:
-        return
-
-    # Traverse the cli tree.
-    while i < len(tokens):
-      token = tokens[i]
-      if token.lex == lexer.ShellTokenType.ARG and token.value.startswith('-'):
-        if i == len(tokens) - 1:
-          last = token.value
-      elif token.value in node:
+      if token.value in node:
         info = node[token.value]
         path.append(info)
         node = info.get('commands', {})
       else:
         break
-      i += 1
 
-    last = tokens[-1].value
-
-    offset = -len(last)
+    last_token_name = last_token.value
+    offset = -len(last_token_name)
 
     # Check for flags.
-    if last.startswith('-') and info:
+    if ((last_token_name.startswith('-') and info) or
+        (last_token.token_type == parser.ArgTokenType.FLAG_ARG)):
       # Collect all non-hidden flags of current command and parents into node.
       node = FilterHiddenFlags(info.get('flags', {}))
       for info in path:
         node.update(FilterHiddenFlags(info.get('flags', {})))
 
-      value = last.find('=')
-      if value > 0:
-        if doc.text_before_cursor[-1].isspace():
-          return
-        name = last[:value]
-      else:
-        name = last
-      if name in node:
-        info = node[name]
-        if info.get('type', None) != 'bool':
-          choices = info.get('choices', None)
-          if choices:
-            # A flag with static choices.
-            prefix = last
-            if value < 0:
-              prefix += '='
-              offset -= 1
-            for choice in choices:
-              yield Completion(name + '=' + choice, offset)
+      if doc.text_before_cursor[-1].isspace():
         return
+
+      if last_token.token_type == parser.ArgTokenType.FLAG_ARG:
+        flag_token = tokens[-2]
+        if flag_token.value in node:
+          choice_offset = doc.cursor_position - last_token.end
+          info = node[flag_token.value]
+          if info.get('type', None) != 'bool':
+            choices = info.get('choices', None)
+            if choices:
+              # A flag with static choices.
+              offset -= choice_offset
+              for choice in choices:
+                if choice.lower().startswith(last_token_name.lower()):
+                  yield Completion(choice, offset)
+          return
 
     def _MetaTextForChoice(choice):
       if (self.experimental_autocomplete_enabled and
@@ -128,7 +118,7 @@ class ShellCliCompleter(Completer):
       ranked_completions = sorted(node)
 
     for choice in ranked_completions:
-      if choice.startswith(last):
+      if choice.startswith(last_token_name):
         yield Completion(
             choice,
             offset,
@@ -300,14 +290,12 @@ def RankedCompletions(suggestions, doc):
   return _PrioritizedUnusedRequiredFlags(sorted(suggestions))
 
 
-def CompleteCommandGroups(ts):
+def CompleteCommandGroups(args):
   """Return possible commands and groups for completions."""
-  args = gcloud_parser.ParseArgs(ts)
-
   if not args:
     return []
 
-  if args[-1].token_type != gcloud_parser.ArgTokenType.GROUP:
+  if args[-1].token_type != parser.ArgTokenType.GROUP:
     return []
 
   return args[-1].tree['commands'].keys()

@@ -1253,9 +1253,11 @@ class MasterAuth(_messages.Message):
       is the root of trust for the cluster.
     password: The password to use for HTTP basic authentication to the master
       endpoint. Because the master endpoint is open to the Internet, you
-      should create a strong password.
+      should create a strong password.  If a password is provided for cluster
+      creation, username must be non-empty.
     username: The username to use for HTTP basic authentication to the master
-      endpoint.
+      endpoint. If an empty username is provided, basic authentication is
+      disabled for the cluster (for clusters v1.6.0 and above).
   """
 
   clientCertificate = _messages.StringField(1)

@@ -2,18 +2,86 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
-## 152.0.0 (2017/04/19)
+## 153.0.0 (2017-04-26)
+
+### Breaking Changes
+
+*    (Cloud SQL)`gcloud beta sql instances restore-backup` no longer accepts short flag
+     `-b`. Use `--backup-id` instead.
+
+### Google App Engine
+
+*    Components updated to 1.9.52.
+     *    Please visit the following release notes for details:
+          Python - https://cloud.google.com/appengine/docs/python/release-notes
+
+### Google BiqQuery
+
+*    Scope-related warnings when using `bq` with Google Compute Engine service
+     accounts have been fixed.
+*    Small improvements to error messages and flag descriptions in `bq`.
+
+### Google Cloud Dataproc
+
+*    `gcloud datapoc clusters create` now accepts the `--no-address` flag
+
+### Google Cloud SDK
+
+*     Added choice to enable the API and retry if attempting to contact
+      a disabled API.
+
+### Google Cloud Source Repositories
+
+*    `repos list` no longer reports repo size.
+
+### Google Cloud Spanner
+
+*    Different query modes (normal, plan, and profile) now supported.
+     *    A table with aggregate statistics for queries run in 'profile'
+          mode added.
+
+### Google Cloud SQL
+
+*    `gcloud sql databases` is now in GA.
+     *    The beta surface still remains and is identical.
+
+### Google Compute Engine
+
+*    alpha and beta `compute instances set-machine-type` commands now
+     require specifying the new machine type.
+*    Label support for `instance`, `snapshot` and `images` resources added.
+*    `gcloud beta compute instance-templates create` now accepts
+     the `--accelerator` flag.
+*    `compute addresses create` and `compute forwarding_rules create` flag
+     `--ip-version` is now in beta
+*    `gcloud compute networks peerings` commands are now in alpha and beta.
+     These commands allow you to manage peering connections in your
+     Google Compute Engine network.
+
+### Google Container Engine
+
+*    `kubctl` version is now 1.6.2 instead of 1.6.0
+
+### Google Service Management
+
+*    `gcloud beta service-management deploy` command will now scan for
+      potentially hazardous changes to service configurations and abort
+      if any actionable advice is returned. These can be overridden with
+      the new `--force` flag.
+
+
+## 152.0.0 (2017-04-19)
 
 ### Breaking Changes
 
 *   (Compute Engine) The `--force-creation` flag is no longer supported in
     `gcloud compute images create`.
 
-### Container Registry
+### Google Container Registry
 
 *   `gcloud container images` is now globally available.
 
-### Compute Engine
+### Google Compute Engine
 
 *   The `--force-creation` flag is no longer supported in `gcloud compute images
     create`.
@@ -31,13 +99,13 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     <add-labels|remove-labels|update>` commands to support labels for Compute
     Engine disk resources.
 
-### Cloud SQL
+### Google Cloud SQL
 
 *   Starting on 2017-06-30, the `--instance` flag in `gcloud sql operations
     wait` and `gcloud sql operations describe` will no longer be supported. You
     can still run the same command by omitting this flag.
 
-### Cloud Containers
+### Google Cloud Containers
 
 *   Added the `--start-ip-rotation` and `--complete-ip-rotation` flags to
     `gcloud container clusters update`.
@@ -50,6 +118,14 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     configured with a host_port.
 *   (Cloud SDK) Fixed a bug in the fish shell $PATH script that caused the $PWD
     to change (<https://issuetracker.google.com/issues/35906130>).
+
+
+## 151.0.1 (2017-04-14)
+
+### Cloud SDK
+
+*  Fixed issue in which some users could not use the Windows installer or
+   "bundled python" version of the Cloud SDK for installation.
 
 
 ## 151.0.0 (2017-04-12)

@@ -198,7 +198,10 @@ class CommandCommon(object):
         return re.sub(r'^(\s*)', r'\1' + tag, text)
 
       self.short_help = _InsertTag(self.short_help)
-      self.long_help = _InsertTag(self.long_help)
+      # If long_help starts with section markdown then it's not the implicit
+      # DESCRIPTION section and shouldn't have a tag inserted.
+      if not self.long_help.startswith('#'):
+        self.long_help = _InsertTag(self.long_help)
 
       # No need to tag DESCRIPTION if it starts with {description} or {index}
       # becase they are already tagged.
@@ -290,9 +293,18 @@ class CommandCommon(object):
     """
     return []
 
+  # pylint: disable=unused-argument
   def LoadAllSubElements(self, recursive=False):
-    """Load all the sub groups and commands of this group."""
-    pass
+    """Load all the sub groups and commands of this group.
+
+    Args:
+      recursive: bool, True to continue loading all sub groups, False, to just
+        load the elements under the group.
+
+    Returns:
+      int, The total number of elements loaded.
+    """
+    return 0
 
   def LoadSubElement(self, name, allow_empty=False):
     """Load a specific sub group or command.
@@ -611,11 +623,21 @@ class CommandGroup(CommandCommon):
     return bool(self.LoadSubElement(name))
 
   def LoadAllSubElements(self, recursive=False):
-    """Load all the sub groups and commands of this group."""
+    """Load all the sub groups and commands of this group.
+
+    Args:
+      recursive: bool, True to continue loading all sub groups, False, to just
+        load the elements under the group.
+
+    Returns:
+      int, The total number of elements loaded.
+    """
+    total = len(self.AllSubElements())
     for name in self.AllSubElements():
       element = self.LoadSubElement(name)
       if element and recursive:
-        element.LoadAllSubElements(recursive=recursive)
+        total += element.LoadAllSubElements(recursive=recursive)
+    return total
 
   def LoadSubElement(self, name, allow_empty=False):
     """Load a specific sub group or command.

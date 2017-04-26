@@ -20,8 +20,9 @@ import urllib2
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
 
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -86,23 +87,28 @@ class ServiceDeployErrorException(Error):
 
 
 def GetMessagesModule():
-  return apis.GetMessagesModule('servicemanagement', 'v1')
+  # pylint:disable=protected-access
+  return apis_internal._GetMessagesModule('servicemanagement', 'v1')
 
 
 def GetClientInstance():
-  return apis.GetClientInstance('servicemanagement', 'v1')
+  # pylint:disable=protected-access
+  return apis_internal._GetClientInstance('servicemanagement', 'v1')
 
 
 def GetApiKeysMessagesModule():
-  return apis.GetMessagesModule('apikeys', 'v1')
+  # pylint:disable=protected-access
+  return apis_internal._GetMessagesModule('apikeys', 'v1')
 
 
 def GetApiKeysClientInstance():
-  return apis.GetClientInstance('apikeys', 'v1')
+  # pylint:disable=protected-access
+  return apis_internal._GetClientInstance('apikeys', 'v1')
 
 
 def GetIamMessagesModule():
-  return apis.GetMessagesModule('iam', 'v1')
+  # pylint:disable=protected-access
+  return apis_internal._GetMessagesModule('iam', 'v1')
 
 
 def GetEndpointsServiceName():
@@ -183,6 +189,101 @@ def PrettyPrint(resource, print_format='json'):
       resources=[resource],
       print_format=print_format,
       out=log.out)
+
+
+def PushAdvisorChangeTypeToString(change_type):
+  """Convert a ConfigChange.ChangeType enum to a string.
+
+  Args:
+    change_type: The ConfigChange.ChangeType enum to convert.
+
+  Returns:
+    An easily readable string representing the ConfigChange.ChangeType enum.
+  """
+  messages = GetMessagesModule()
+  enums = messages.ConfigChange.ChangeTypeValueValuesEnum
+  if change_type in [enums.ADDED, enums.REMOVED, enums.MODIFIED]:
+    return str(change_type).lower()
+  else:
+    return '[unknown]'
+
+
+def PushAdvisorConfigChangeToString(config_change):
+  """Convert a ConfigChange message to a printable string.
+
+  Args:
+    config_change: The ConfigChange message to convert.
+
+  Returns:
+    An easily readable string representing the ConfigChange message.
+  """
+  result = ('Element [{element}] (old value = {old_value}, '
+            'new value = {new_value}) was {change_type}. Advice:\n').format(
+                element=config_change.element,
+                old_value=config_change.oldValue,
+                new_value=config_change.newValue,
+                change_type=PushAdvisorChangeTypeToString(
+                    config_change.changeType))
+
+  for advice in config_change.advices:
+    result += '\t* {0}'.format(advice.description)
+
+  return result
+
+
+def GetActiveRolloutForService(service):
+  """Return the latest Rollout for a service.
+
+  This function returns the most recent Rollout that has a status of SUCCESS
+  or IN_PROGRESS.
+
+  Args:
+    service: The name of the service for which to retrieve the active Rollout.
+
+  Returns:
+    The Rollout message corresponding to the active Rollout for the service.
+  """
+  client = GetClientInstance()
+  messages = GetMessagesModule()
+  statuses = messages.Rollout.StatusValueValuesEnum
+  allowed_statuses = [statuses.SUCCESS, statuses.IN_PROGRESS]
+
+  req = messages.ServicemanagementServicesRolloutsListRequest(
+      serviceName=service)
+
+  result = list(
+      list_pager.YieldFromList(
+          client.services_rollouts,
+          req,
+          predicate=lambda r: r.status in allowed_statuses,
+          limit=1,
+          batch_size_attribute='pageSize',
+          field='rollouts',
+      )
+  )
+
+  return result[0] if result else None
+
+
+def GetActiveServiceConfigIdsFromRollout(rollout):
+  """Get the active service config IDs from a Rollout message.
+
+  Args:
+    rollout: The rollout message to inspect.
+
+  Returns:
+    A list of active service config IDs as indicated in the rollout message.
+  """
+  if rollout and rollout.trafficPercentStrategy:
+    return [p.key for p in rollout.trafficPercentStrategy.percentages
+            .additionalProperties]
+  else:
+    return []
+
+
+def GetActiveServiceConfigIdsForService(service):
+  active_rollout = GetActiveRolloutForService(service)
+  return GetActiveServiceConfigIdsFromRollout(active_rollout)
 
 
 def FilenameMatchesExtension(filename, extensions):
@@ -475,7 +576,8 @@ def GetProcessedOperationResult(result, async=False):
     log.status.Print(
         'Waiting for async operation {0} to complete...'.format(op_name))
     result_dict = encoding.MessageToDict(WaitForOperation(
-        op_ref, apis.GetClientInstance('servicemanagement', 'v1')))
+        # pylint:disable=protected-access
+        op_ref, apis_internal._GetClientInstance('servicemanagement', 'v1')))
 
   # Convert metadata startTime to local time
   if 'metadata' in result_dict and 'startTime' in result_dict['metadata']:

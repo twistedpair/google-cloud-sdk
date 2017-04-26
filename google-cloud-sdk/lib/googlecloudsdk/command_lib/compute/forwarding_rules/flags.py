@@ -171,9 +171,9 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
     short_help='The external IP address that the forwarding rule will serve.',
     detailed_help="""\
-      The external IPv4 address in the format of 1.2.3.4 that the forwarding
-      rule will serve. All traffic sent to this IP address is directed to the
-      target pointed to by the forwarding rule. Assigned IP addresses can be
+      The external IP address that the forwarding rule will serve. All
+      traffic sent to this IP address is directed to the target
+      pointed to by the forwarding rule. Assigned IP addresses can be
       reserved or unreserved.
 
       If the address is reserved, it must either (1) reside in the global scope
@@ -236,7 +236,10 @@ def AddIpVersionGroup(parser):
       '--ip-version',
       choices=['IPV4', 'IPV6'],
       type=lambda x: x.upper(),
-      help='The IP version that the rule will serve. The default is IPv4.')
+      help="""\
+      The version of the IP address to be allocated if no --address is given.
+      The default is IPv4.
+      """)
 
 
 def AddAddressesAndIPVersions(parser, required=True):

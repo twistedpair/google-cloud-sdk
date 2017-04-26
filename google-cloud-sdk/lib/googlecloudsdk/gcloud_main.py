@@ -28,7 +28,7 @@ import sys
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
-from googlecloudsdk.command_lib.ml import flags
+from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
