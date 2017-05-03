@@ -61,6 +61,11 @@ class Kubeconfig(object):
       self._data['current-context'] = ''
 
   def SaveToFile(self):
+    """Save kubeconfig to file.
+
+    Raises:
+      Error: don't have the permission to open kubeconfig file.
+    """
     self._data['clusters'] = self.clusters.values()
     self._data['users'] = self.users.values()
     self._data['contexts'] = self.contexts.values()
@@ -68,7 +73,13 @@ class Kubeconfig(object):
     # the flags passed should mimic behavior of open(self._filename, 'w'),
     # which does write with truncate and creates file if not existing.
     flags = os.O_WRONLY | os.O_TRUNC | os.O_CREAT
-    with os.fdopen(os.open(self._filename, flags, 0o600), 'w') as fp:
+    try:
+      fd = os.open(self._filename, flags, 0o600)
+    except OSError as error:
+      raise Error(
+          'don\'t have the permission to open kubeconfig file {0}: {1}'.format(
+              self._filename, error))
+    with os.fdopen(fd, 'w') as fp:
       yaml.safe_dump(self._data, fp, default_flow_style=False)
 
   def SetCurrentContext(self, context):
@@ -82,9 +93,9 @@ class Kubeconfig(object):
       for key in ('clusters', 'users', 'contexts'):
         if not isinstance(data[key], list):
           raise Error(
-              'invalid type for %s: %s', data[key], type(data[key]))
+              'invalid type for {0}: {1}'.format(data[key], type(data[key])))
     except KeyError as error:
-      raise Error('expected key %s not found', error)
+      raise Error('expected key {0} not found'.format(error))
 
   @classmethod
   def LoadFromFile(cls, filename):
@@ -94,15 +105,16 @@ class Kubeconfig(object):
         cls._Validate(data)
         return cls(data, filename)
     except yaml.YAMLError as error:
-      raise Error('unable to load kubeconfig for %s: %s', filename, error)
+      raise Error('unable to load kubeconfig for {0}: {1}'.format(
+          filename, error))
 
   @classmethod
   def LoadOrCreate(cls, filename):
     try:
       return cls.LoadFromFile(filename)
     except (Error, IOError) as error:
-      log.debug('unable to load default kubeconfig: %s; recreating %s',
-                error, filename)
+      log.debug('unable to load default kubeconfig: {0}; recreating {1}'.format(
+          error, filename))
       file_utils.MakeDir(os.path.dirname(filename))
       kubeconfig = cls(EmptyKubeconfig(), filename)
       kubeconfig.SaveToFile()

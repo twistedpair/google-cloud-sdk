@@ -56,13 +56,31 @@ class GcloudInvocation(object):
 
   def GetCommandOrGroup(self):
     """Get the command or last group."""
-    if self.command is not None:
+    if self.command:
       return self.command
 
     if self.groups:
       return self.groups[-1]
 
     return None
+
+  def GetPossibleFlags(self):
+    """Get all the flags for the groups and command of this invocation."""
+    flags = {}
+    for group in self.groups:
+      flags.update(group.tree.get('flags', {}))
+
+    if self.command:
+      flags.update(self.command.tree.get('flags', {}))
+
+    return flags
+
+  def GetPossibleCommandGroups(self):
+    """Get all the possible commands for the current group."""
+    if (not self.tokens) or (self.tokens[-1].token_type != ArgTokenType.GROUP):
+      return []
+    group = self.tokens[-1]
+    return group.tree.get('commands', {}).keys()
 
 
 class ArgTokenType(enum.Enum):
@@ -148,8 +166,8 @@ def ParseLine(line):
     line: a string containing one or more gcloud invocations
 
   Returns:
-    A list of lists of ArgTokens, one for each invocation in the line (delimited
-    by terminators).
+    A list of GcloudInvocations, one for each command in the line (delimited by
+    terminators).
   """
   sh_tokens = lexer.GetShellTokens(line)
   if not sh_tokens:
@@ -164,7 +182,7 @@ def ParseLine(line):
     if TokenIsArgument(current_token):
       current_invocation.append(current_token)
     elif TokenIsTerminator(current_token):
-      parsed_line.append(ParseArgs(current_invocation))
+      parsed_line.append(GcloudInvocation(ParseArgs(current_invocation)))
       current_invocation = []
     else:
       # Ignore the rest of the current invocation if the token is not of type
@@ -174,7 +192,7 @@ def ParseLine(line):
         if TokenIsTerminator(sh_tokens.pop(0)):
           break
   # Add the last current_invocation
-  parsed_line.append(ParseArgs(current_invocation))
+  parsed_line.append(GcloudInvocation(ParseArgs(current_invocation)))
   return parsed_line
 
 
@@ -252,7 +270,6 @@ def ParseFlag(cur, expected_flags, ts):
   Returns:
     A tuple containing the number of ShellTokens used and a list of ArgTokens.
   """
-
   tok_str = ts[0].UnquotedValue()
   tokens_used = 1
   flag = tok_str
@@ -274,16 +291,16 @@ def ParseFlag(cur, expected_flags, ts):
         tok_str, ArgTokenType.UNKNOWN, cur, ts[0].start, ts[0].end)]
 
   flag_def = expected_flags[flag]
-
-  if flag_def['type'] != 'bool' and value is None and len(ts) >= 2:
-    # next arg is the flag value
-    tokens_used = 2
-    value = ts[1].UnquotedValue()
-    value_start = ts[1].start
-    value_end = ts[1].end
-
   token_list = [
       ArgToken(flag, ArgTokenType.FLAG, flag_def, name_start, name_end)]
+
+  if flag_def['type'] != 'bool':
+    if value is None and len(ts) >= 2:
+      # next arg is the flag value
+      tokens_used = 2
+      value = ts[1].UnquotedValue()
+      value_start = ts[1].start
+      value_end = ts[1].end
 
   if value is not None:
     token_list.append(ArgToken(

@@ -119,11 +119,13 @@ def RecoverProjectId(repository):
   """Recovers the project-id from a GCR repository."""
   if repository.registry in constants.MIRROR_REGISTRIES:
     return constants.MIRROR_PROJECT
+  if repository.registry in constants.LAUNCHER_REGISTRIES:
+    return constants.LAUNCHER_PROJECT
   parts = repository.repository.split('/')
   if '.' not in parts[0]:
     return parts[0]
   elif len(parts) > 1:
-    return parts[1] + ':' + parts[0]
+    return parts[0] + ':' + parts[1]
   else:
     raise ValueError('Domain-scoped app missing project name: %s', parts[0])
 

@@ -57,7 +57,7 @@ def Delete(taxonomy_name):
   """
   return _GetService().Delete(
       utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesDeleteRequest(
-          name=utils.GetTaxonomyResource(taxonomy_name)))
+          name=utils.GetTaxonomyRelativeName(taxonomy_name)))
 
 
 def Get(taxonomy_name):
@@ -69,9 +69,9 @@ def Get(taxonomy_name):
   Returns:
     A Taxonomy message.
   """
-  return _GetService().Get(utils.GetMessagesModule()
-                           .DatapolOrgsPolicyTaxonomiesGetRequest(
-                               name=utils.GetTaxonomyResource(taxonomy_name)))
+  return _GetService().Get(
+      utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesGetRequest(
+          name=utils.GetTaxonomyRelativeName(taxonomy_name)))
 
 
 def List(limit=None):
@@ -106,7 +106,7 @@ def GetIamPolicy(taxonomy_name):
   messages = utils.GetMessagesModule()
   return _GetService().GetIamPolicy(
       messages.DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest(
-          resource=utils.GetTaxonomyResource(taxonomy_name),
+          resource=utils.GetTaxonomyRelativeName(taxonomy_name),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
 
@@ -123,5 +123,5 @@ def SetIamPolicy(taxonomy_name, policy):
   messages = utils.GetMessagesModule()
   return _GetService().SetIamPolicy(
       messages.DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest(
-          resource=utils.GetTaxonomyResource(taxonomy_name),
+          resource=utils.GetTaxonomyRelativeName(taxonomy_name),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

@@ -16,9 +16,9 @@
 
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
+from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.appengine.api import appinfo
 
 
 def OpenURL(url):

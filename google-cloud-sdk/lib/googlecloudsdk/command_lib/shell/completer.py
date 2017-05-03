@@ -15,8 +15,6 @@
 
 from __future__ import unicode_literals
 
-import re
-
 from googlecloudsdk.command_lib.shell import gcloud_parser as parser
 from googlecloudsdk.command_lib.shell.gcloud_tree import gcloud_tree
 from googlecloudsdk.core import properties
@@ -31,8 +29,6 @@ class ShellCliCompleter(Completer):
   """A prompt_toolkit shell CLI completer."""
 
   def __init__(self):
-    self.root = {'gcloud': gcloud_tree}
-    self.index = 0
     self.experimental_autocomplete_enabled = ExperimentalAutocompleteEnabled()
 
   def get_completions(self, doc, complete_event):
@@ -45,83 +41,100 @@ class ShellCliCompleter(Completer):
     Yields:
       Completion instances for doc.
     """
-    commands = parser.ParseLine(doc.text_before_cursor)
-    if not commands:
+    # Check there's at least one invocation
+    invocations = parser.ParseLine(doc.text_before_cursor)
+    if not invocations:
       return
+    invocation = invocations[-1]
 
-    tokens = commands[-1]
+    # Check there's at least one token in the invocation
+    tokens = invocation.tokens
     if not tokens:
       return
+
+    # Only allow gcloud-related commands
     if tokens[0].value != 'gcloud':
       gcloud_token = parser.ArgToken('gcloud', parser.ArgTokenType.GROUP,
                                      gcloud_tree, 0, 0)
       tokens = ([gcloud_token] + tokens)
-    node = self.root
-    info = None
+      invocation = parser.GcloudInvocation(tokens)
+
     last_token = tokens[-1]
-    path = []
-
-    # Autocomplete commands and groups after spaces.
-    if (last_token.token_type == parser.ArgTokenType.GROUP and
-        doc.cursor_position > last_token.end):
-      for completion in CompleteCommandGroups(tokens):
-        yield Completion(completion)
-      return
-
-    # Traverse the CLI tree.
-    for token in tokens:
-      if token.value in node:
-        info = node[token.value]
-        path.append(info)
-        node = info.get('commands', {})
-      else:
-        break
-
     last_token_name = last_token.value
     offset = -len(last_token_name)
+    suggestions = last_token.tree.get('commands', {})
 
-    # Check for flags.
-    if ((last_token_name.startswith('-') and info) or
-        (last_token.token_type == parser.ArgTokenType.FLAG_ARG)):
-      # Collect all non-hidden flags of current command and parents into node.
-      node = FilterHiddenFlags(info.get('flags', {}))
-      for info in path:
-        node.update(FilterHiddenFlags(info.get('flags', {})))
-
-      if doc.text_before_cursor[-1].isspace():
+    # Autocomplete commands and groups after spaces
+    if IsGroup(last_token):
+      if CursorAheadOfToken(doc.cursor_position, last_token):
+        offset = last_token.end - doc.cursor_position + 1
+        for completion in invocation.GetPossibleCommandGroups():
+          yield Completion(completion, offset)
         return
+    elif IsFlag(last_token_name):
+      suggestions = FilterHiddenFlags(invocation.GetPossibleFlags())
+      if CursorAheadOfToken(doc.cursor_position, last_token):
+        offset = 0
+        # Check if the flag has a set of choices to choose from
+        choices = suggestions.get(last_token.value, {}).get('choices', [])
+        for choice in choices:
+          yield Completion(choice, offset)
+        return
+    elif IsFlagArg(last_token):
+      suggestions = FilterHiddenFlags(invocation.GetPossibleFlags())
+      flag_token = tokens[-2]
+      if not CursorAheadOfToken(doc.cursor_position, last_token):
+        # Check if the flag has a set of choices to choose from
+        choices = suggestions.get(flag_token.value, {}).get('choices', [])
+        for choice in choices:
+          if choice.lower().startswith(last_token_name.lower()):
+            yield Completion(choice, offset)
+      return
 
-      if last_token.token_type == parser.ArgTokenType.FLAG_ARG:
-        flag_token = tokens[-2]
-        if flag_token.value in node:
-          choice_offset = doc.cursor_position - last_token.end
-          info = node[flag_token.value]
-          if info.get('type', None) != 'bool':
-            choices = info.get('choices', None)
-            if choices:
-              # A flag with static choices.
-              offset -= choice_offset
-              for choice in choices:
-                if choice.lower().startswith(last_token_name.lower()):
-                  yield Completion(choice, offset)
-          return
+    def _GetRankedCompletions():
+      if self.experimental_autocomplete_enabled:
+        return RankedCompletions(suggestions, invocation)
+      else:
+        return sorted(suggestions)
+
+    def _DisplayTextForChoice(choice):
+      """Returns the appropriate display text for the given choice.
+
+      If the choice is a non-bool flag and experimental autocomplete is enabled,
+      an equal sign followed by the flag's metavariables will be shown.
+      Otherwise, only the choice name will be shown.
+
+      Args:
+        choice: the choice for which to create the display text.
+
+      Returns:
+        The appropriate display text for the given choice.
+      """
+      display_text = choice
+      if self.experimental_autocomplete_enabled:
+        if IsFlag(choice):
+          flag_type = suggestions[choice].get('type', None)
+          if flag_type != 'bool':
+            display_text += '='
+            flag_arg_value = suggestions[choice].get('value', '')
+            if flag_type == 'list' or flag_type == 'dict':
+              display_text += '[' + flag_arg_value + ',...]'
+            else:
+              display_text += flag_arg_value
+      return display_text
 
     def _MetaTextForChoice(choice):
       if (self.experimental_autocomplete_enabled and
-          FlagIsRequired(node[choice])):
+          FlagIsRequired(suggestions[choice])):
         return 'required'
 
-    ranked_completions = []
-    if self.experimental_autocomplete_enabled:
-      ranked_completions = RankedCompletions(node, doc)
-    else:
-      ranked_completions = sorted(node)
-
+    ranked_completions = _GetRankedCompletions()
     for choice in ranked_completions:
       if choice.startswith(last_token_name):
         yield Completion(
             choice,
             offset,
+            display=_DisplayTextForChoice(choice),
             display_meta=_MetaTextForChoice(choice))
 
 
@@ -154,6 +167,19 @@ def FilterHiddenFlags(flags_dict):
         if no_flag_properties:
           res[no_flag] = no_flag_properties
   return res
+
+
+def CursorAheadOfToken(cursor_position, token):
+  """Returns whether the cursor is ahead of the given token.
+
+  Args:
+    cursor_position: the position of the cursor
+    token: the token to check
+
+  Returns:
+    True if the cursor is ahead of the given token, False otherwise.
+  """
+  return cursor_position > token.end
 
 
 def FlagIsHidden(flag_dict):
@@ -195,14 +221,49 @@ def IsFlag(string):
   return string.startswith('-')
 
 
-def RankedCompletions(suggestions, doc):
+def IsGroup(token):
+  """Returns whether the passed token is a group token.
+
+  Args:
+    token: the token to check.
+
+  Returns:
+    True if the passed token is a group, False otherwise.
+  """
+  return token.token_type == parser.ArgTokenType.GROUP
+
+
+def IsFlagArg(token):
+  """Returns whether the passed token is a flag argument token.
+
+  Args:
+    token: the token to check.
+
+  Returns:
+    True if the passed token is a flag argument, False otherwise.
+  """
+  return token.token_type == parser.ArgTokenType.FLAG_ARG
+
+
+def IsEmptyFlagArg(token):
+  """Returns whether the passed token is an empty-valued flag argument token.
+
+  Args:
+    token: the token to check.
+
+  Returns:
+    True if the passed token is an empty-valued flag argument, False otherwise.
+  """
+  return IsFlagArg(token) and not token.value
+
+
+def RankedCompletions(suggestions, invocation):
   """Ranks a dictionary of completions based on different priorities.
 
   Args:
     suggestions: A dictionary of all the autocomplete suggestions as they appear
     in the gcloud_tree.
-    doc: A Document instance containing the shell command line to complete,
-    and for which to rank the completions.
+    invocation: A GcloudInvocation for which to rank the completions.
 
   Returns:
     A sorted array with the keys of the input dictionary, ranked accordingly.
@@ -217,20 +278,19 @@ def RankedCompletions(suggestions, doc):
     Returns:
       True if the flag passed has been used, False otherwise.
     """
-    # TODO(b/36809101): remove regular expression checks on doc's
-    # text_before_cursor and save state instead
-    return flag in re.split('[= ]', doc.text_before_cursor)
+    return flag in [token.value for token in invocation.flags]
 
-  def _ShouldPrioritizeUnusedRequiredFlag(flag):
-    """Returns whether the passed flag is an unused required flag.
+  def _ShouldPrioritizeUnusedRequiredFlag(string):
+    """Returns whether the passed string is an unused required flag.
 
     Args:
-      flag: the flag to check.
+      string: the string to check.
 
     Returns:
-      True if the flag passed is an unused required flag, False otherwise.
+      True if the string passed is an unused required flag, False otherwise.
     """
-    return FlagIsRequired(suggestions[flag]) and not _FlagAlreadyUsed(flag)
+    return (IsFlag(string) and FlagIsRequired(suggestions[string]) and
+            not _FlagAlreadyUsed(string))
 
   def _FlagFromGroupAlreadyUsed(flag_group):
     """Return whether any of the flags belonging to the group has been used.
@@ -244,8 +304,8 @@ def RankedCompletions(suggestions, doc):
     """
     return any(_FlagAlreadyUsed(flag) for flag in flag_group)
 
-  def _ShouldPrioritizeUnusedLocationFlag(flag):
-    """Returns whether the passed flag is an unused location flag.
+  def _ShouldPrioritizeUnusedLocationFlag(string):
+    """Returns whether the passed string is an unused location flag.
 
     Unused in this particular context means not only that the actual flag being
     tested has been used, but also that no other location flag has been used
@@ -253,26 +313,13 @@ def RankedCompletions(suggestions, doc):
     prioritization).
 
     Args:
-      flag: the flag to check.
+      string: the flag to check.
 
     Returns:
-      True if the flag passed is an unused location flag, False otherwise.
+      True if the string passed is an unused location flag, False otherwise.
     """
-    return (flag in _LOCATION_FLAGS and
+    return (IsFlag(string) and string in _LOCATION_FLAGS and
             not _FlagFromGroupAlreadyUsed(_LOCATION_FLAGS))
-
-  def _ShouldPrioritizeFlag(string):
-    """Returns whether the passed string is a flag and should be prioritized.
-
-    Args:
-      string: the string to check.
-
-    Returns:
-      True if the string passed is a flag that should be prioritized, False
-      otherwise.
-    """
-    return IsFlag(string) and (_ShouldPrioritizeUnusedRequiredFlag(string) or
-                               _ShouldPrioritizeUnusedLocationFlag(string))
 
   def _PrioritizedUnusedRequiredFlags(keys):
     """Ranks completions based on whether they're unused required flags.
@@ -285,17 +332,7 @@ def RankedCompletions(suggestions, doc):
       A sorted array with the keys of the input dictionary with unused, required
       flags appearing first.
     """
-    return sorted(keys, key=_ShouldPrioritizeFlag, reverse=True)
+    res = sorted(keys, key=_ShouldPrioritizeUnusedLocationFlag, reverse=True)
+    return sorted(res, key=_ShouldPrioritizeUnusedRequiredFlag, reverse=True)
 
   return _PrioritizedUnusedRequiredFlags(sorted(suggestions))
-
-
-def CompleteCommandGroups(args):
-  """Return possible commands and groups for completions."""
-  if not args:
-    return []
-
-  if args[-1].token_type != parser.ArgTokenType.GROUP:
-    return []
-
-  return args[-1].tree['commands'].keys()

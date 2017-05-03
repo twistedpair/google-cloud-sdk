@@ -18,6 +18,7 @@ REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 BUCKET_REGISTRIES = ['b.gcr.io', 'bucket.gcr.io']
 APPENGINE_REGISTRY = 'appengine.gcr.io'
 LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']
+LAUNCHER_PROJECT = 'cloud-marketplace'
 SPECIALTY_REGISTRIES = (BUCKET_REGISTRIES + LAUNCHER_REGISTRIES +
                         [APPENGINE_REGISTRY])
 # GCR's regional demand-based mirrors of DockerHub.

@@ -217,6 +217,10 @@ def WriteDockerConfig(structure):
   with tempfile.NamedTemporaryFile(
       dir=os.path.dirname(cfg), delete=False) as tf:
     tf.write(contents)
+    # This was a user-submitted patch to fix a race condition that we couldn't
+    # reproduce. It may be due to the file being renamed before the OS's buffer
+    # flushes to disk.
+    tf.flush()
     # This pattern atomically writes the file on non-Windows systems.
     os.rename(tf.name, cfg)
 

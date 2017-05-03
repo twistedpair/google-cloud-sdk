@@ -46,7 +46,7 @@ apis:
       discovery_doc: appengine_v1.json
       default: true
       resources:
-        projects: "projects/{projectId}"
+        projects: projects/{projectId}
   bigquery:
     v2:
       discovery_doc: bigquery_v2.json
@@ -54,16 +54,15 @@ apis:
     v2:
       discovery_doc: bigtableadmin_v2.json
       resources:
-        projects: "projects/{projectId}"
+        projects: projects/{projectId}
   bigtableclusteradmin:
     v1:
       discovery_doc: bigtableclusteradmin_v1.json
       resources:
-         operations: "operations/{+operationId}"
-         projects: "projects/{projectId}"
-         projects.zones: "projects/{projectId}/zones/{zoneId}"
-         projects.zones.clusters:
-           "projects/{projectId}/zones/{zoneId}/clusters/{clusterId}"
+        operations: operations/{+operationId}
+        projects: projects/{projectId}
+        projects.zones: projects/{projectId}/zones/{zoneId}
+        projects.zones.clusters: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
   bio:
     v1:
       discovery_doc: bio_v1.json
@@ -72,14 +71,14 @@ apis:
     v1:
       discovery_doc: cloudbilling_v1.json
       unelidable_request_methods:
-        - cloudbilling.projects.updateBillingInfo
+      - cloudbilling.projects.updateBillingInfo
   cloudbuild:
     v1:
       discovery_doc: cloudbuild_v1.json
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of the CreateBuildRequest (project_id + build) into just a Build object.
       unelidable_request_methods:
-        - cloudbuild.projects.builds.create
+      - cloudbuild.projects.builds.create
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
@@ -87,16 +86,16 @@ apis:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
       resources:
-         projects: "projects/{projectId}"
+        projects: projects/{projectId}
   cloudfunctions:
     v1beta2:
       discovery_doc: cloudfunctions_v1beta2.json
       resources:
-        providers.event_types: "providers/{triggerProvider}/eventTypes/{triggerEvent}"
+        providers.event_types: providers/{triggerProvider}/eventTypes/{triggerEvent}
         # For now, we only accept global buckets, but should give them to the
         # EventTrigger API in the format that it expects (with the underscore).
-        projects.buckets: "projects/_/buckets/{bucketId}"
-        projects.locations: "projects/{projectsId}/locations/{locationsId}"
+        projects.buckets: projects/_/buckets/{bucketId}
+        projects.locations: projects/{projectsId}/locations/{locationsId}
   cloudkms:
     v1beta1:
       discovery_doc: cloudkms_v1beta1.json
@@ -112,7 +111,7 @@ apis:
       # Explicitly specifying the Liens service because it does not expose a
       # Get method.
       resources:
-        liens: "liens/{liensId}"
+        liens: liens/{liensId}
     v2alpha1:
       discovery_doc: cloudresourcemanager_v2alpha1.json
   cloudresourcesearch:
@@ -130,7 +129,7 @@ apis:
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
-        - compute.disks.resize
+      - compute.disks.resize
     v1:
       discovery_doc: compute_v1.json
       default: true
@@ -161,6 +160,11 @@ apis:
       default: true
     v2beta:
       discovery_doc: deploymentmanager_v2beta.json
+  discovery:
+    v1:
+      discovery_doc: discovery_v1.json
+      resources:
+        apis.versions: '{api}/{version}'
   dns:
     v1:
       discovery_doc: dns_v1.json
@@ -184,9 +188,9 @@ apis:
   logging:
     v1beta3:
       discovery_doc: logging_v1beta3.json
-      default: true
     v2:
       discovery_doc: logging_v2.json
+      default: true
   manager:
     v1beta2:
       discovery_doc: manager_v1beta2.json
@@ -194,12 +198,12 @@ apis:
     v1beta1:
       discovery_doc: ml_v1beta1.json
       resources:
-        projects: "projects/{projectsId}"
+        projects: projects/{projectsId}
       default: true
     v1:
       discovery_doc: ml_v1.json
       resources:
-        projects: "projects/{projectsId}"
+        projects: projects/{projectsId}
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -222,7 +226,7 @@ apis:
     v1:
       discovery_doc: sourcerepo_v1.json
       resources:
-        projects: "projects/{projectsId}"
+        projects: projects/{projectsId}
   spanner:
     v1:
       discovery_doc: spanner_v1.json
@@ -248,7 +252,7 @@ apis:
       # url and the value in the request body should be different and the
       # request message is still needed.
       unelidable_request_methods:
-        - testing.projects.testMatrices.create
+      - testing.projects.testMatrices.create
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json

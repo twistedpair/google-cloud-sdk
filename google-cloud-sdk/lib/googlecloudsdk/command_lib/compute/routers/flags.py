@@ -37,3 +37,17 @@ def RouterArgumentForVpnTunnel(required=True):
       regional_collection='compute.routers',
       short_help='The Router to use for dynamic routing.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
+def RouterArgumentForOtherResources(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='router',
+      name='--router',
+      completion_resource_id='compute.routers',
+      plural=False,
+      required=required,
+      regional_collection='compute.routers',
+      short_help='The Router to use for dynamic routing.',
+      region_explanation='Should be the same as --region, if not specified, '
+                         'it will be inherited from --region.')
+

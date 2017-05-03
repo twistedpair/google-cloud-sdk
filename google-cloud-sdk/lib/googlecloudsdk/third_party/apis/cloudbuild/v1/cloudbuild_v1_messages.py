@@ -61,6 +61,7 @@ class Build(_messages.Message):
       @OutputOnly
     steps: Describes the operations to be performed on the workspace.
     substitutions: Substitutions data for Build resource.
+    tags: Tags for annotation of a Build. These are not docker tags.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be TIMEOUT.  Default time is ten
@@ -131,7 +132,8 @@ class Build(_messages.Message):
   statusDetail = _messages.StringField(15)
   steps = _messages.MessageField('BuildStep', 16, repeated=True)
   substitutions = _messages.MessageField('SubstitutionsValue', 17)
-  timeout = _messages.StringField(18)
+  tags = _messages.StringField(18, repeated=True)
+  timeout = _messages.StringField(19)
 
 
 class BuildOperationMetadata(_messages.Message):

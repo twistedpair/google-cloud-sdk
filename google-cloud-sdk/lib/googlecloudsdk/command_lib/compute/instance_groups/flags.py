@@ -16,11 +16,14 @@
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 
-ZONAL_INSTANCE_GROUP_ARG = flags.ResourceArgument(
-    resource_name='instance group',
-    completion_resource_id='compute.instanceGroups',
-    zonal_collection='compute.instanceGroups',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
+
+def MakeZonalInstanceGroupArg(plural=False):
+  return flags.ResourceArgument(
+      resource_name='instance group',
+      completion_resource_id='compute.instanceGroups',
+      plural=plural,
+      zonal_collection='compute.instanceGroups',
+      zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
 MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     resource_name='instance group',

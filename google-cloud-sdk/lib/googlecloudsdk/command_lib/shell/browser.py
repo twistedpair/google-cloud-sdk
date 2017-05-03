@@ -62,7 +62,7 @@ def _GetReferenceURL(line, pos=None):
   if not invocations:
     return prefix
 
-  tokens = invocations[-1]
+  tokens = invocations[-1].tokens
   tokens = [x for x in tokens if x.start < pos]
   invocation = gcloud_parser.GcloudInvocation(tokens)
 

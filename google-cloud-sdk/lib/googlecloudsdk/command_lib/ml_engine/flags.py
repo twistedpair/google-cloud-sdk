@@ -143,17 +143,6 @@ be relative to the *parent* directory of `--package-path`.
 
 
 VERSION_NAME = base.Argument('version', help='Name of the model version.')
-VERSION_DATA = base.Argument(
-    '--origin',
-    required=True,
-    help="""\
-Location of ```model/``` "directory" (as output by
-https://www.tensorflow.org/versions/r0.12/api_docs/python/state_ops.html#Saver).
-
-Can be a Google Cloud Storage (`gs://`) path or local file path (no prefix). In
-the latter case the files will be uploaded to Google Cloud Storage and a
-`--staging-bucket` argument is required.
-""")
 _SCALE_TIER_CHOICES = {
     'BASIC': ('A single worker instance. This tier is suitable for learning '
               'how to use Cloud ML Engine, and for experimenting with new '

@@ -245,7 +245,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     dt = LocalizeDateTime(dt, tzinfo)
   if not fmt:
     fmt = '%Y-%m-%dT%H:%M:%S.%3f%Ez'
-  extension = re.compile('%[1-9]?[EO]?[fz]')
+  extension = re.compile('%[1-9]?[EO]?[fsz]')
   m = extension.search(fmt)
   if not m:
     return encoding.Decode(_StrFtime(dt, fmt))
@@ -259,8 +259,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       # Format the preceeding standard part.
       parts.append(encoding.Decode(_StrFtime(dt, fmt[start:match])))
 
-    # Format the standard variant of the exetended spec. The extensions only
-    # have one modifier char.
+    # The extensions only have one modifier char.
     match += 1
     if fmt[match].isdigit():
       n = int(fmt[match])
@@ -274,10 +273,10 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       alternate = None
     spec = fmt[match]
     std_fmt = '%' + spec
-    val = _StrFtime(dt, std_fmt)
 
     if spec == 'f':
       # Round the fractional part to n digits.
+      val = _StrFtime(dt, std_fmt)
       if n and n < len(val):
         round_format = '{{0:0{n}.0f}}'.format(n=n)
         rounded = round_format.format(float(val) / 10 ** (len(val) - n))
@@ -285,8 +284,12 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
           val = rounded
         else:
           val = val[:n]
+    elif spec == 's':
+      # datetime.strftime('%s') botches tz aware dt!
+      val = GetTimeStampFromDateTime(dt)
     elif spec == 'z':
       # Convert the time zone offset to RFC 3339 format.
+      val = _StrFtime(dt, std_fmt)
       if alternate:
         if alternate == 'E' and val == '+0000':
           val = 'Z'

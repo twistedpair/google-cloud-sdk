@@ -54,19 +54,28 @@ def WaitForOpMaybe(operations_client, op, async_=False, message=None):
   return operations_client.WaitForOperation(op, message=message).response
 
 
-def Create(versions_client, operations_client, version,
+def Create(versions_client, operations_client, version_id,
            model=None, origin=None, staging_bucket=None, runtime_version=None,
-           async_=None):
+           config_file=None, async_=None):
   """Create a version, optionally waiting for creation to finish."""
-  try:
-    origin = uploads.UploadDirectoryIfNecessary(origin, staging_bucket)
-  except uploads.MissingStagingBucketException:
-    raise InvalidArgumentCombinationError(
-        'If --origin is provided as a local path, --staging-bucket must be '
-        'given as well.')
+  if origin:
+    try:
+      origin = uploads.UploadDirectoryIfNecessary(origin, staging_bucket)
+    except uploads.MissingStagingBucketException:
+      raise InvalidArgumentCombinationError(
+          'If --origin is provided as a local path, --staging-bucket must be '
+          'given as well.')
 
   model_ref = models_util.ParseModel(model)
-  op = versions_client.Create(model_ref, version, origin, runtime_version)
+  version = versions_client.BuildVersion(version_id,
+                                         path=config_file,
+                                         deployment_uri=origin,
+                                         runtime_version=runtime_version)
+  if not version.deploymentUri:
+    raise InvalidArgumentCombinationError(
+        'Either `--origin` must be provided or `deploymentUri` must be '
+        'provided in the file given by `--config`.')
+  op = versions_client.Create(model_ref, version)
   return WaitForOpMaybe(
       operations_client, op, async_=async_,
       message='Creating version (this might take a few minutes)...')

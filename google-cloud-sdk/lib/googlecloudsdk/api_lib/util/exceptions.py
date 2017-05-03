@@ -28,6 +28,12 @@ from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 
 
+# The underlying formatter treats bare : specially. It is escaped before passing
+# to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted before
+# being used by the extended formatter.
+_ESCAPED_COLON = '?COLON?'
+
+
 class _JsonSortedDict(dict):
   """A dict with a sorted JSON string representation."""
 
@@ -63,7 +69,7 @@ class HttpErrorPayload(string.Formatter):
       https://dotcom/foo/bar
       <content.debugInfo in yaml print format>
 
-    'Error: {status_code} {details?\n\ndetails{?COLON?}\n{?}}'
+    'Error: {status_code} {details?\n\ndetails:\n{?}}'
 
       Error: 404
 
@@ -102,8 +108,7 @@ class HttpErrorPayload(string.Formatter):
         name - the value of name in the payload, '' if undefined
         name?FORMAT - if name is non-empty then re-formats with FORMAT, where
           {?} is the value of name. For example, if name=NAME then
-          {name?\nname is "{?}".} expands to '\nname is "NAME".'. ':' may not
-          appear in FORMAT, use {?COLON?} instead.
+          {name?\nname is "{?}".} expands to '\nname is "NAME".'.
         .a.b.c - the value of a.b.c in the JSON decoded payload contents.
           For example, '{.errors.reason?[{?}]}' expands to [REASON] if
           .errors.reason is defined.
@@ -116,7 +121,7 @@ class HttpErrorPayload(string.Formatter):
     if field_name.startswith('?'):
       if field_name == '?':
         return self._value, field_name
-      if field_name == '?COLON?':
+      if field_name == _ESCAPED_COLON:
         return ':', field_name
     parts = field_name.split('?', 1)
     name = parts.pop(0)
@@ -259,7 +264,8 @@ class HttpException(core_exceptions.Error):
       error_format = '{message}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
-    return self.payload.format(unicode(error_format))
+    return self.payload.format(unicode(error_format).replace(
+        ':', '{' + _ESCAPED_COLON + '}'))
 
   @property
   def message(self):

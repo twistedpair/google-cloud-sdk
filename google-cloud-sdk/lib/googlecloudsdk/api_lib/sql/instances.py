@@ -154,7 +154,11 @@ class _BaseInstances(object):
             args.authorized_networks, clear_authorized_networks]):
       settings.ipConfiguration = sql_messages.IpConfiguration()
       if args.assign_ip is not None:
-        settings.ipConfiguration.enabled = args.assign_ip
+        if hasattr(settings.ipConfiguration, 'enabled'):
+          # v1beta3 is being used; use 'enabled' instead of 'ipv4Enabled'.
+          settings.ipConfiguration.enabled = args.assign_ip
+        else:
+          settings.ipConfiguration.ipv4Enabled = args.assign_ip
 
       if args.authorized_networks:
         # AclEntry is only available in the v1beta4 version of the API. If it is

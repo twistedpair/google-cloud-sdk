@@ -162,12 +162,14 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
+def CreatePersistentCreateDiskMessages(client, resources, user_project,
+                                       create_disks):
   """Returns a list of AttachedDisk messages.
 
   Args:
-    scope_prompter: Scope prompter object,
-    messages: GCE API messages,
+    client: Compute client adapter
+    resources: Compute resources registry
+    user_project: name of user project
     create_disks: disk objects - contains following properties
              * name - the name of disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
@@ -189,32 +191,31 @@ def CreatePersistentCreateDiskMessages(scope_prompter, messages, create_disks):
     # Resolves the mode.
     mode_value = disk.get('mode', 'rw')
     if mode_value == 'rw':
-      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+      mode = client.messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
     else:
-      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
+      mode = client.messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
 
     auto_delete = disk.get('auto-delete') == 'yes'
     disk_size_gb = utils.BytesToGb(disk.get('size'))
-    image_expander = image_utils.ImageExpander(scope_prompter.compute_client,
-                                               scope_prompter.resources)
+    image_expander = image_utils.ImageExpander(client, resources)
     image_uri, _ = image_expander.ExpandImageFlag(
-        user_project=scope_prompter.project,
+        user_project=user_project,
         image=disk.get('image'),
         image_family=disk.get('image-family'),
         image_project=disk.get('image-project'),
         return_image_resource=False)
 
-    create_disk = messages.AttachedDisk(
+    create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
         deviceName=disk.get('device-name'),
-        initializeParams=messages.AttachedDiskInitializeParams(
+        initializeParams=client.messages.AttachedDiskInitializeParams(
             diskName=name,
             sourceImage=image_uri,
             diskSizeGb=disk_size_gb,
             diskType=disk.get('type')),
         mode=mode,
-        type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+        type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
 
     disks_messages.append(create_disk)
 

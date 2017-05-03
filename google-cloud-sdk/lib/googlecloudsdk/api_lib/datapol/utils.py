@@ -48,12 +48,21 @@ def GetOrganizationId():
           else _ORG_ID_PLACE_HOLDER)
 
 
-def GetTaxonomyResource(taxonomy_name):
-  """Gets the taxonomy resource from a taxonomy name."""
+def GetTaxonomyRelativeName(taxonomy_name):
+  """Gets the taxonomy resource name from a taxonomy name."""
   return resources.REGISTRY.Create(
       'datapol.orgs.policyTaxonomies',
       orgsId=GetOrganizationId(),
       policyTaxonomiesId=taxonomy_name).RelativeName()
+
+
+def GetAnnotationRelativeName(taxonomy_name, annotation_name):
+  """Gets the annotation resource name from taxonomy and annotation name."""
+  return resources.REGISTRY.Create(
+      'datapol.orgs.policyTaxonomies.annotations',
+      orgsId=GetOrganizationId(),
+      policyTaxonomiesId=taxonomy_name,
+      annotationsId=annotation_name).RelativeName()
 
 
 def ErrorWrapper(err, resource_name):

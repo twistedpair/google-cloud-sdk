@@ -15,7 +15,18 @@
 
 from googlecloudsdk.command_lib.compute import flags
 
-INSTANCE_TEMPLATE_ARG = flags.ResourceArgument(
-    resource_name='instance template',
-    completion_resource_id='compute.instanceTemplates',
-    global_collection='compute.instanceTemplates')
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      properties.machineType.machine_type(),
+      properties.scheduling.preemptible.yesno(yes=true, no=''),
+      creationTimestamp
+    )"""
+
+
+def MakeInstanceTemplateArg(plural=False):
+  return flags.ResourceArgument(
+      resource_name='instance template',
+      completion_resource_id='compute.instanceTemplates',
+      plural=plural,
+      global_collection='compute.instanceTemplates')

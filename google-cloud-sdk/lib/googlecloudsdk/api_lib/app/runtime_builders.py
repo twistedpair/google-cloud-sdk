@@ -29,10 +29,9 @@ Dockerfile.
 Flex runtime builders are a per-runtime pipeline that covers the full journey
 from source directory to docker image. They are stored as templated .yaml files
 representing CloudBuild Build messages. These .yaml files contain a series of
-CloudBuild build steps. Additionally, the runtime root stores a
-`<runtime>.version` file which indicates the current default version. That is,
-if `python-v1.yaml` is the current active pipeline, `python.version` will
-contain `v1`.
+CloudBuild build steps. Additionally, the runtime root stores a `runtimes.yaml`
+file which contains a list of runtime names and mappings to the corresponding
+builder yaml files.
 
 Such a builder will look something like this (note that <angle_brackets> denote
 values to be filled in by the builder author, and $DOLLAR_SIGNS denote a
@@ -48,9 +47,13 @@ To test this out in the context of a real deployment, do something like the
 following (ls/grep steps just for illustrating where files are):
 
     $ ls /tmp/runtime-root
-    python.version python-v1.yaml
-    $ cat /tmp/runtime-root
-    v1
+    runtimes.yaml python-v1.yaml
+    $ cat /tmp/runtime-root/runtimes.yaml
+    schema_version: 1
+    runtimes:
+      python:
+        target:
+          file: python-v1.yaml
     $ gcloud config set app/use_runtime_builders true
     $ gcloud config set app/runtime_builders_root file:///tmp/runtime-root
     $ cd $MY_APP_DIR
@@ -79,9 +82,9 @@ Or (even easier) use a 'custom' runtime:
     runtime: custom
     $ gcloud beta app deploy
 """
-import abc
 import contextlib
 import os
+import urllib2
 
 import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -92,10 +95,18 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+import yaml
 
 
-CLOUDBUILD_FILE = 'cloudbuild.yaml'
-WHITELISTED_RUNTIMES = ['aspnetcore']
+WHITELISTED_RUNTIMES = ['aspnetcore', 'nodejs']
+
+
+class FileReadError(exceptions.Error):
+  """Error indicating a file read operation failed."""
+
+
+class ManifestError(exceptions.Error):
+  """Error indicating the a problem parsing or using the manifest."""
 
 
 class CloudBuildLoadError(exceptions.Error):
@@ -106,15 +117,19 @@ class CloudBuildFileNotFound(CloudBuildLoadError):
   """Error indicating a missing Cloud Build file."""
 
 
-class InvalidRuntimeBuilderPath(CloudBuildLoadError):
-  """Error indicating that the runtime builder path format wasn't recognized."""
+class InvalidRuntimeBuilderURI(CloudBuildLoadError):
+  """Error indicating that the runtime builder URI format wasn't recognized."""
 
-  def __init__(self, path):
-    super(InvalidRuntimeBuilderPath, self).__init__(
-        '[{}] is not a valid runtime builder path. '
-        'Please set the app/runtime_builders_root property to a URL with '
+  def __init__(self, uri):
+    super(InvalidRuntimeBuilderURI, self).__init__(
+        '[{}] is not a valid runtime builder URI. '
+        'Please set the app/runtime_builders_root property to a URI with '
         'either the Google Cloud Storage (`gs://`) or local file (`file://`) '
-        'protocol.'.format(path))
+        'protocol.'.format(uri))
+
+
+class BuilderResolveError(exceptions.Error):
+  """Error indicating that a build file could not be resolved."""
 
 
 class RuntimeBuilderStrategy(enum.Enum):
@@ -161,16 +176,14 @@ class RuntimeBuilderStrategy(enum.Enum):
 
 
 def _Join(*args):
-  """Join parts of a Cloud Storage or local path."""
-  if args[0].startswith('gs://'):
-    # Cloud Storage always uses '/' as separator, regardless of local platform
-    return '/'.join([arg.strip('/') for arg in args])
-  else:
-    return os.path.join(*args)
+  """Join parts of a gs:// Cloud Storage or local file:// path."""
+  # URIs always uses '/' as separator, regardless of local platform.
+  return '/'.join([arg.strip('/') for arg in args])
 
 
-def _Read(path):
-  """Read a file/object (local or on Cloud Storage).
+@contextlib.contextmanager
+def _Read(uri):
+  """Read a file/object (local file:// or gs:// Cloud Storage path).
 
   >>> with _Read('gs://builder/object.txt') as f:
   ...   assert f.read() == 'foo'
@@ -178,35 +191,55 @@ def _Read(path):
   ...   assert f.read() == 'bar'
 
   Args:
-    path: str, the path to the file/object to read. Must begin with 'file://' or
+    uri: str, the path to the file/object to read. Must begin with 'file://' or
       'gs://'
 
-  Returns:
+  Yields:
     a file-like context manager.
 
   Raises:
-    IOError: if the file is local and open()ing it raises this error.
-    OSError: if the file is local and open()ing it raises this error.
-    calliope_exceptions.BadFileException: if the remote file read failed.
-    InvalidRuntimeBuilderPath: if the path is invalid (doesn't begin with an
-        appropriate prefix.
+    FileReadError: If opening or reading the file failed.
+    InvalidRuntimeBuilderPath: If the path is invalid (doesn't begin with an
+        appropriate prefix).
   """
-  if path.startswith('file://'):
-    return open(path[len('file://'):])
-  elif path.startswith('gs://'):
-    storage_client = storage_api.StorageClient()
-    object_ = storage_util.ObjectReference.FromUrl(path)
-    return contextlib.closing(storage_client.ReadObject(object_))
-  else:
-    raise InvalidRuntimeBuilderPath(path)
+  try:
+    if uri.startswith('file://'):
+      with contextlib.closing(urllib2.urlopen(uri)) as req:
+        yield req
+    elif uri.startswith('gs://'):
+      storage_client = storage_api.StorageClient()
+      object_ = storage_util.ObjectReference.FromUrl(uri)
+      with contextlib.closing(storage_client.ReadObject(object_)) as f:
+        yield f
+    else:
+      raise InvalidRuntimeBuilderURI(uri)
+  except (urllib2.HTTPError, urllib2.URLError,
+          calliope_exceptions.BadFileException) as e:
+    log.debug('', exc_info=True)
+    raise FileReadError(str(e))
 
 
-class RuntimeBuilderVersion(object):
-  __metaclass__ = abc.ABCMeta
+class BuilderReference(object):
+  """A reference to a specific cloudbuild.yaml file to use."""
 
-  @abc.abstractmethod
+  def __init__(self, runtime, build_file_uri, deprecation_message=None):
+    """Constructs a BuilderReference.
+
+    Args:
+      runtime: str, The runtime this builder corresponds to.
+      build_file_uri: str, The full URI of the build configuration or None if
+        this runtime existed but no longer can be built (deprecated).
+      deprecation_message: str, A message to print when using this builder or
+        None if not deprecated.
+    """
+    # TODO(b/37542869): We need the Admin API to be able to accept arbitrary
+    # runtimes names. Until then, just mark them as 'custom'.
+    self.runtime = 'custom' if runtime.startswith('gs://') else runtime
+    self.build_file_uri = build_file_uri
+    self.deprecation_message = deprecation_message
+
   def LoadCloudBuild(self, params):
-    """Loads the Cloud Build configuration file for this runtime version.
+    """Loads the Cloud Build configuration file for this builder reference.
 
     Args:
       params: dict, a dictionary of values to be substituted in to the
@@ -218,181 +251,331 @@ class RuntimeBuilderVersion(object):
         file.
 
     Raises:
-      CloudBuildLoadError: if the Cloud Build configuration file could not be
-        loaded.
+      CloudBuildLoadError: If the Cloud Build configuration file is unknown.
+      FileReadError: If reading the configuration file fails.
+      InvalidRuntimeBuilderPath: If the path of the configuration file is
+        invalid.
     """
-    raise NotImplementedError()
+    if not self.build_file_uri:
+      raise CloudBuildLoadError(
+          'There is no build file associated with runtime [{runtime}]'
+          .format(runtime=self.runtime))
+    messages = cloudbuild_util.GetMessagesModule()
+    with _Read(self.build_file_uri) as data:
+      return cloudbuild_config.LoadCloudbuildConfigFromStream(
+          data, messages=messages, params=params)
 
-
-class CannedBuilderVersion(RuntimeBuilderVersion):
-  """A runtime/version pair representing the runtime version to use."""
-
-  def __init__(self, runtime, version=None):
-    self.runtime = runtime
-    self.version = version
-
-  def ToYamlFileName(self):
-    """Returns the YAML filename corresponding to this runtime version.
-
-    >>> CannedBuilderVersion('nodejs', 'v1').ToYamlFileName()
-    'nodejs-v1.yaml'
-
-    Returns:
-      str, the name of the YAML file within the runtime root corresponding to
-      this version.
-
-    Raises:
-      ValueError: if this CannedBuilderVersion doesn't have an explicit
-          version.
-    """
-    if not self.version:
-      raise ValueError('Only CannedBuilderVersions with explicit versions have '
-                       'a YAML filename.')
-    return '-'.join([self.runtime, self.version]) + '.yaml'
-
-  def ToVersionFileName(self):
-    """Returns name of the file containing the default version of the runtime.
-
-    >>> CannedBuilderVersion('nodejs').ToVersionFileName()
-    'nodejs.version'
-    >>> CannedBuilderVersion('nodejs', 'v1').ToYamlFileName()
-    'nodejs.version'
-
-    Returns:
-      str, the name of the YAML file within the runtime root corresponding to
-      this version.
-    """
-    return self.runtime + '.version'
+  def WarnIfDeprecated(self):
+    """Warns that this runtime is deprecated (if it has been marked as such)."""
+    if self.deprecation_message:
+      log.warn(self.deprecation_message)
 
   def __eq__(self, other):
-    return (self.runtime, self.version) == (other.runtime, other.version)
+    return (self.runtime == other.runtime and
+            self.build_file_uri == other.build_file_uri and
+            self.deprecation_message == other.deprecation_message)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
-  def _CreateCloudBuildNotFoundException(self, path):
-    msg = ('Could not find Cloud Build config [{path}]. '
-           'Please ensure that your app/runtime_builders_root property is set '
-           'correctly and that ')
-    if self.version:
-      msg += ('[{version}] is a valid version of the builder for runtime '
-              '[{runtime}].')
-    else:
-      msg += 'runtime [{runtime}] is valid.'
-    return CloudBuildFileNotFound(
-        msg.format(path=path, runtime=self.runtime, version=self.version))
 
-  def LoadCloudBuild(self, params):
-    """Loads the Cloud Build configuration file for this runtime version.
+class Manifest(object):
+  """Loads and parses a runtimes.yaml manifest.
 
-    Pulls the file from the app/runtime_builders_root value. Supported protocols
-    are Cloud Storage ('gs://') and local filesystem ('file://').
+  To resolve a builder configuration file to use, a given runtime name is
+  looked up in this manifest. For each runtime, it either points to a
+  configuration file directly, or to another runtime. If it points to a runtime,
+  resolution continues until a configuration file is reached.
 
-    If this RuntimeBuilderVersion has a version, this loads the file from
+  The following is the proto-ish spec for the yaml schema of the mainfest:
+
+  # Used to determine if this client can parse this manifest. If the number is
+  # less than or equal to the version this client knows about, it is compatible.
+  int schema_version; # Required
+
+  # The registry of all the runtimes that this manifest defines. The key of the
+  # map is the runtime name that appears in app.yaml.
+  <string, Runtime> runtimes {
+
+    # Determines which builder this runtime points to.
+    Target target {
+
+      oneof {
+        # A path relative to the manifest's location of the builder spec to use.
+        string file;
+
+        # Another runtime registered in this file that should be resolved and
+        # used for this runtime.
+        string runtime;
+      }
+    }
+
+    # Specifies deprecation information about this runtime.
+    Deprecation deprecation {
+
+      # A message to be displayed to the user on use of this runtime.
+      string message;
+    }
+  }
+  """
+  SCHEMA_VERSION = 1
+
+  @classmethod
+  def LoadFromURI(cls, uri):
+    """Loads a manifest from a gs:// or file:// path.
+
+    Args:
+      uri: str, A gs:// or file:// URI
+
+    Returns:
+      Manifest, the loaded manifest.
+    """
+    log.debug('Loading runtimes manifest from [%s]', uri)
+    with _Read(uri) as f:
+      data = yaml.load(f)
+    return cls(uri, data)
+
+  def __init__(self, uri, data):
+    """Use LoadFromFile, not this constructor directly."""
+    self._uri = uri
+    self._data = data
+    required_version = self._data.get('schema_version', None)
+    if required_version is None:
+      raise ManifestError(
+          'Unable to parse the runtimes manifest: [{}]'.format(uri))
+    if required_version > Manifest.SCHEMA_VERSION:
+      raise ManifestError(
+          'Unable to parse the runtimes manifest. Your client supports schema '
+          'version [{supported}] but requires [{required}]. Please update your '
+          'SDK to a later version.'.format(supported=Manifest.SCHEMA_VERSION,
+                                           required=required_version))
+
+  def Runtimes(self):
+    """Get all registered runtimes in the manifest.
+
+    Returns:
+      [str], The runtime names.
+    """
+    return self._data.get('runtimes', {}).keys()
+
+  def GetBuilderReference(self, runtime):
+    """Gets the associated reference for the given runtime.
+
+    Args:
+      runtime: str, The name of the runtime.
+
+    Returns:
+      BuilderReference, The reference pointed to by the manifest, or None if the
+      runtime is not registered.
+
+    Raises:
+      ManifestError: if a problem occurred parsing the manifest.
+    """
+    runtimes = self._data.get('runtimes', {})
+    current_runtime = runtime
+    seen = {current_runtime}
+
+    while True:
+      runtime_def = runtimes.get(current_runtime, None)
+      if not runtime_def:
+        log.debug('Runtime [%s] not found in manifest [%s]',
+                  current_runtime, self._uri)
+        return None
+
+      new_runtime = runtime_def.get('target', {}).get('runtime', None)
+      if new_runtime:
+        # Runtime is an alias for another runtime, resolve the alias.
+        log.debug('Runtime [%s] is an alias for [%s]',
+                  current_runtime, new_runtime)
+        if new_runtime in seen:
+          raise ManifestError(
+              'A circular dependency was found while resolving the builder for '
+              'runtime [{runtime}]'.format(runtime=runtime))
+        seen.add(new_runtime)
+        current_runtime = new_runtime
+        continue
+
+      deprecation_msg = runtime_def.get('deprecation', {}).get('message', None)
+      build_file = runtime_def.get('target', {}).get('file', None)
+      if build_file:
+        # This points to a build configuration file, create the reference.
+        full_build_uri = _Join(os.path.dirname(self._uri), build_file)
+        log.debug('Resolved runtime [%s] as build configuration [%s]',
+                  current_runtime, full_build_uri)
+        return BuilderReference(
+            current_runtime, full_build_uri, deprecation_msg)
+
+      # There is no alias or build file. This means the runtime exists, but
+      # cannot be used. There might still be a deprecation message we can show
+      # to the user.
+      log.debug('Resolved runtime [%s] has no build configuration',
+                current_runtime)
+      return BuilderReference(current_runtime, None, deprecation_msg)
+
+
+class Resolver(object):
+  """Resolves the location of a builder configuration for a runtime.
+
+  There are several possible locations that builder configuration can be found
+  for a given runtime, and they are checked in order. Check GetBuilderReference
+  for the locations checked.
+  """
+
+  # The name of the manifest in the builders root that registers the runtimes.
+  MANIFEST_NAME = 'runtimes.yaml'
+  # The name of the file in your local source for when you are using custom.
+  CLOUDBUILD_FILE = 'cloudbuild.yaml'
+
+  def __init__(self, runtime, source_dir, legacy_runtime_version):
+    """Instantiates a resolver.
+
+    Args:
+      runtime: str, The name of the runtime to be resolved.
+      source_dir: str, The local path of the source code being deployed.
+      legacy_runtime_version: str, The value from runtime_config.runtime_version
+        in app.yaml. This is only used in legacy mode.
+
+    Returns:
+      Resolver, The instantiated resolver.
+    """
+    self.runtime = runtime
+    self.source_dir = os.path.abspath(source_dir)
+    self.legacy_runtime_version = legacy_runtime_version
+    self.build_file_root = properties.VALUES.app.runtime_builders_root.Get(
+        required=True)
+    log.debug('Using runtime builder root [%s]', self.build_file_root)
+
+  def GetBuilderReference(self):
+    """Resolve the builder reference.
+
+    Returns:
+      BuilderReference, The reference to the builder configuration.
+
+    Raises:
+      BuilderResolveError: if this fails to resolve a builder.
+    """
+    # Try builder resolution in the following order, stopping once one is found.
+    builder_def = (
+        self._GetReferenceCustom() or
+        self._GetReferencePinned() or
+        self._GetReferenceFromManifest() or
+        self._GetReferenceFromLegacy()
+    )
+    if not builder_def:
+      raise BuilderResolveError(
+          'Unable to resolve a builder for runtime: [{runtime}]'
+          .format(runtime=self.runtime))
+    return builder_def
+
+  def _GetReferenceCustom(self):
+    """Tries to resolve the reference for runtime: custom.
+
+    If the user has an app.yaml with runtime: custom we will look in the root
+    of their source directory for a custom build pipeline named cloudbuild.yaml.
+
+    This should only be called if there is *not* a Dockerfile in the source
+    root since that means they just want to build and deploy that Docker image.
+
+    Returns:
+      BuilderReference or None
+    """
+    if self.runtime == 'custom':
+      log.debug('Using local cloud build file [%s] for custom runtime.',
+                Resolver.CLOUDBUILD_FILE)
+      return BuilderReference(
+          self.runtime,
+          _Join('file:///' + self.source_dir.replace('\\', '/').strip('/'),
+                Resolver.CLOUDBUILD_FILE))
+    return None
+
+  def _GetReferencePinned(self):
+    """Tries to resolve the reference for when a runtime is pinned.
+
+    Usually a runtime is looked up in the manifest and resolved to a
+    configuration file. The user does have the option of 'pinning' their build
+    to a specific configuration by specifying the absolute path to a builder
+    in the runtime field.
+
+    Returns:
+      BuilderReference or None
+    """
+    if self.runtime.startswith('gs://'):
+      log.debug('Using pinned cloud build file [%s].', self.runtime)
+      return BuilderReference(self.runtime, self.runtime)
+    return None
+
+  def _GetReferenceFromManifest(self):
+    """Tries to resolve the reference by looking up the runtime in the manifest.
+
+    Calculate the location of the manifest based on the builder root and load
+    that data. Then try to resolve a reference based on the contents of the
+    manifest.
+
+    Returns:
+      BuilderReference or None
+    """
+    manifest_uri = _Join(self.build_file_root, Resolver.MANIFEST_NAME)
+    try:
+      manifest = Manifest.LoadFromURI(manifest_uri)
+      return manifest.GetBuilderReference(self.runtime)
+    except FileReadError:
+      log.debug('', exc_info=True)
+      return None
+
+  def _GetReferenceFromLegacy(self):
+    """Tries to resolve the reference by the legacy resolution process.
+
+    TODO(b/37542861): This can be removed after all runtimes have been migrated
+    to publish their builders in the manifest instead of <runtime>.version
+    files.
+
+    If the runtime is not found in the manifest, use legacy resolution. If the
+    app.yaml contains a runtime_config.runtime_version, this loads the file from
     '<runtime>-<version>.yaml' in the runtime builders root. Otherwise, it
     checks '<runtime>.version' to get the default version, and loads the
     configuration for that version.
 
-    Args:
-      params: dict, a dictionary of values to be substituted in to the
-        Cloud Build configuration template corresponding to this runtime
-        version.
-
     Returns:
-      Build message, the parsed and parameterized Cloud Build configuration
-        file.
-
-    Raises:
-      CloudBuildLoadError: if the Cloud Build configuration file could not be
-        loaded.
+      BuilderReference or None
     """
-    build_file_root = properties.VALUES.app.runtime_builders_root.Get(
-        required=True)
-    log.debug('Using runtime builder root [%s]', build_file_root)
+    if self.legacy_runtime_version:
+      # We already have a pinned version specified, just use that file.
+      return self._GetReferenceFromLegacyWithVersion(
+          self.legacy_runtime_version)
 
-    if self.version is None:
-      log.debug('Fetching version for runtime [%s]...', self.runtime)
-      version_file_path = _Join(build_file_root, self.ToVersionFileName())
-      try:
-        with _Read(version_file_path) as f:
-          version = f.read().strip()
-      except (IOError, OSError, calliope_exceptions.BadFileException):
-        raise self._CreateCloudBuildNotFoundException(version_file_path)
-      log.info('Using version [%s] for runtime [%s].', version, self.runtime)
-      builder_version = CannedBuilderVersion(self.runtime, version)
-      return builder_version.LoadCloudBuild(params)
-
-    messages = cloudbuild_util.GetMessagesModule()
-    build_file_name = self.ToYamlFileName()
-    build_file_path = _Join(build_file_root, build_file_name)
+    log.debug('Fetching version for runtime [%s] in legacy mode', self.runtime)
+    version_file_name = self.runtime + '.version'
+    version_file_uri = _Join(self.build_file_root, version_file_name)
     try:
-      with _Read(build_file_path) as data:
-        return cloudbuild_config.LoadCloudbuildConfigFromStream(
-            data, messages=messages, params=params)
-    except (IOError, OSError, calliope_exceptions.BadFileException):
-      raise self._CreateCloudBuildNotFoundException(build_file_path)
+      with _Read(version_file_uri) as f:
+        version = f.read().strip()
+    except FileReadError:
+      log.debug('', exc_info=True)
+      return None
 
+    # Now that we resolved the default version, use that for the file.
+    log.debug('Using version [%s] for runtime [%s] in legacy mode',
+              version, self.runtime)
+    return self._GetReferenceFromLegacyWithVersion(version)
 
-class CustomBuilderVersion(RuntimeBuilderVersion):
-  """A 'custom' runtime version.
-
-  Loads its Cloud Build configuration from `cloudbuild.yaml` in the application
-  source directory.
-  """
-
-  CLOUDBUILD_FILE = 'cloudbuild.yaml'
-
-  def __init__(self, source_dir):
-    self.source_dir = source_dir
-
-  def __eq__(self, other):
-    # Needed for tests
-    return self.source_dir == other.source_dir
-
-  def __ne__(self, other):
-    # Needed for tests
-    return not self.__eq__(other)
-
-  def _CreateCloudBuildNotFoundException(self):
-    return CloudBuildFileNotFound(
-        'Could not find Cloud Build config [{}] in directory [{}].'.format(
-            CLOUDBUILD_FILE, self.source_dir))
-
-  def LoadCloudBuild(self, params):
-    """Loads the Cloud Build configuration file for this runtime version.
-
-    Pulls the file from the app/runtime_builders_root value. Supported protocols
-    are Cloud Storage ('gs://') and local filesystem ('file://').
+  def _GetReferenceFromLegacyWithVersion(self, version):
+    """Gets the name of configuration file to use for legacy mode.
 
     Args:
-      params: dict, a dictionary of values to be substituted in to the
-        Cloud Build configuration template corresponding to this runtime
-        version.
+      version: str, The pinned version of the configuration file.
 
     Returns:
-      Build message, the parsed and parameterized Cloud Build configuration
-        file.
-
-    Raises:
-      CloudBuildLoadError: if the Cloud Build configuration file could not be
-        loaded.
+      BuilderReference
     """
-    messages = cloudbuild_util.GetMessagesModule()
-    build_file_path = os.path.join(self.source_dir, self.CLOUDBUILD_FILE)
-    try:
-      with open(build_file_path) as data:
-        return cloudbuild_config.LoadCloudbuildConfigFromStream(
-            data, messages=messages, params=params)
-    except (IOError, OSError, calliope_exceptions.BadFileException):
-      raise self._CreateCloudBuildNotFoundException()
+    file_name = '-'.join([self.runtime, version]) + '.yaml'
+    file_uri = _Join(self.build_file_root, file_name)
+    log.debug('Calculated builder definition using legacy version [%s]',
+              file_uri)
+    return BuilderReference(self.runtime, file_uri)
 
 
 def FromServiceInfo(service, source_dir):
-  """Constructs a RuntimeBuilderVersion from a ServiceYamlInfo.
-
-  If the service runtime is 'custom', then uses a CustomBuilderVersion (which
-  reads from a local 'cloudbuild.yaml' file. Otherwise, uses a
-  CannedBuilderVersion, which reads from the runtime_builders_root.
+  """Constructs a BuilderReference from a ServiceYamlInfo.
 
   Args:
     service: ServiceYamlInfo, The parsed service config.
@@ -401,9 +584,8 @@ def FromServiceInfo(service, source_dir):
   Returns:
     RuntimeBuilderVersion for the service.
   """
-  if service.runtime == 'custom':
-    return CustomBuilderVersion(source_dir)
-  else:
-    runtime_config = service.parsed.runtime_config
-    version = runtime_config.get('runtime_version') if runtime_config else None
-    return CannedBuilderVersion(service.runtime, version)
+  runtime_config = service.parsed.runtime_config
+  legacy_version = (runtime_config.get('runtime_version', None)
+                    if runtime_config else None)
+  resolver = Resolver(service.runtime, source_dir, legacy_version)
+  return resolver.GetBuilderReference()

@@ -46,7 +46,11 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 
 
-class VersionPromotionError(core_exceptions.Error):
+class Error(core_exceptions.Error):
+  """Base error for this module."""
+
+
+class VersionPromotionError(Error):
 
   def __init__(self, err):
     super(VersionPromotionError, self).__init__(
@@ -306,7 +310,8 @@ def ArgsDeploy(parser):
 
 def RunDeploy(
     args, enable_endpoints=False, use_beta_stager=False,
-    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
+    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
+    use_service_management=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -318,6 +323,8 @@ def RunDeploy(
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
+    use_service_management: bool, whether to use servicemanagement API to
+      enable the Appengine Flexible API for a Flexible deployment.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -377,7 +384,10 @@ def RunDeploy(
 
     # Prepare Flex if any service is going to deploy an image.
     if any([m.RequiresImage() for m in services.values()]):
-      deploy_command_util.DoPrepareManagedVms(ac_client)
+      if use_service_management:
+        deploy_command_util.PossiblyEnableFlex(project)
+      else:
+        deploy_command_util.DoPrepareManagedVms(ac_client)
 
     all_services = dict([(s.id, s) for s in api_client.ListServices()])
   else:

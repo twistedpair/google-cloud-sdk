@@ -2,6 +2,54 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 154.0.0 (2017-05-03)
+
+### Cloud SDK
+
+*   Added support for project creation during the `gcloud init` flow.
+
+### Google Cloud Logging
+
+*   BUG FIX: gcloud beta logging sinks update would remove any start time or end time from a sink
+
+*   gcloud beta logging sinks describe now reports values of start_time, end_time and include_children
+
+*   The `--include-children` flag is now available for `gcloud beta logging sinks create` to create sinks that apply to an organization or folder and also to all of its child projects and folders.
+
+### Google Compute Engine
+
+*   Workaround problems with alpha and beta versions of compute ssh command fail an attempt to use clouduseraccounts APIs.
+
+
+### Google Container Engine
+
+*    Promote --cluster-version from beta to GA in gcloud container clusters create.
+
+*    '--no-source' flag for 'gcloud container builds submit' allows builds with no source input.
+
+### Google Cloud ML Engine
+
+*   Added --config parameter to `gcloud ml-engine versions create`; this parameter allows specifying scaling settings for a version.
+
+### Google Cloud Speech
+
+*   The `gcloud ml speech` commands to recognize spoken words in recorded speech using the Cloud Speech API are now available in beta. Please run `gcloud beta ml speech --help` or visit https://cloud.google.com/speech/docs/ to learn more.
+
+### Google App Engine
+
+*   `gcloud beta app deploy` now attempts to use the Service Management API to enable the Appengine Flexible Environment API for Flexible deployments, if needed. Before deploying a Flexible app, please ensure that the Flexible Environment API is enabled on the app's project.
+
+*   The new Node.js Runtime Builder pipeline will now be used to deploy apps when using `gcloud beta app deploy`.
+
+### Google Cloud SQL
+
+*   Promote `gcloud sql operations` to GA. The beta surface still remains and is identical.
+
+### Google Cloud Source Repositories
+
+*    Add a source repos describe command to describe a repository to the beta track.
+
+
 ## 153.0.0 (2017-04-26)
 
 ### Breaking Changes
@@ -56,7 +104,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
      `--ip-version` is now in beta
 *    `gcloud compute networks peerings` commands are now in alpha and beta.
      These commands allow you to manage peering connections in your
-     Google Compute Engine network.
+     Google Cloud Platform VPC network.
 
 ### Google Container Engine
 

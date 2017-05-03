@@ -382,10 +382,10 @@ def AddCustomMachineTypeArgs(parser):
       type=arg_parsers.BinarySize(),
       help="""\
       A whole number value indicating how much memory is desired in the custom
-      machine type. A size unit should be provided (eg. 3072MiB or 9GiB) - if
-      no units are specified, GiB is assumed. Both --custom-cpu and
-      --custom-memory must be specified if a custom machine type is desired,
-      and the --machine-type flag must be omitted.
+      machine type. A size unit should be provided (eg. 3072MB or 9GB) - if no
+      units are specified, GB is assumed. Both --custom-cpu and --custom-memory
+      must be specified if a custom machine type is desired, and the
+      --machine-type flag must be omitted.
       """)
 
 

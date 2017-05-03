@@ -27,18 +27,23 @@ from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
+from googlecloudsdk.api_lib.service_management import enable_api
+from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.credentials import creds
+from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
 
 DEFAULT_DOMAIN = 'appspot.com'
@@ -52,7 +57,39 @@ MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
 _WINDOWS_MAX_PATH = 256
 
 
-class WindowMaxPathError(exceptions.Error):
+FLEXIBLE_SERVICE_VERIFY_WARNING = (
+    'Unable to verify that the Appengine Flexible API is enabled for project '
+    '[{}]. You may not have permission to list enabled services on this '
+    'project. If it is not enabled, this may cause problems in running your '
+    'deployment. Please ask the project owner to ensure that the Appengine '
+    'Flexible API has been enabled and that this account has permission to '
+    'list enabled APIs.')
+
+
+FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT = (
+    'Note: When deploying with a service account, the Service Management API '
+    'needs to be enabled in order to verify that the Appengine Flexible API '
+    'is enabled. Please ensure the Service Management API has been enabled '
+    'on this project by the project owner.')
+
+
+PREPARE_FAILURE_MSG = (
+    'Enabling the Appengine Flexible API failed on project [{}]. You '
+    'may not have permission to enable APIs on this project. Please ask '
+    'the project owner to enable the Appengine Flexible API on this project.')
+
+
+class Error(exceptions.Error):
+  """Base error for this module."""
+
+
+class PrepareFailureError(Error):
+
+  def __init__(self, msg):
+    super(PrepareFailureError, self).__init__(msg)
+
+
+class WindowMaxPathError(Error):
   """Raised if a file cannot be read because of the MAX_PATH limitation."""
 
   _WINDOWS_MAX_PATH_ERROR_TEMPLATE = """\
@@ -131,13 +168,13 @@ def _NeedsDockerfile(info, source_dir):
   has_dockerfile = os.path.exists(
       os.path.join(source_dir, config.DOCKERFILE))
   has_cloudbuild = os.path.exists(
-      os.path.join(source_dir, runtime_builders.CLOUDBUILD_FILE))
+      os.path.join(source_dir, runtime_builders.Resolver.CLOUDBUILD_FILE))
   if info.runtime == 'custom':
     if has_dockerfile and has_cloudbuild:
       raise CustomRuntimeFilesError(
           ('A custom runtime must have exactly one of [{}] and [{}] in the '
            'source directory; [{}] contains both').format(
-               config.DOCKERFILE, runtime_builders.CLOUDBUILD_FILE,
+               config.DOCKERFILE, runtime_builders.Resolver.CLOUDBUILD_FILE,
                source_dir))
     elif has_dockerfile:
       log.info('Using %s found in %s', config.DOCKERFILE, source_dir)
@@ -319,8 +356,15 @@ def BuildAndPushDockerImage(
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
 
   if use_runtime_builders:
-    builder_version = runtime_builders.FromServiceInfo(service, source_dir)
-    build = builder_version.LoadCloudBuild({'_OUTPUT_IMAGE': image.tagged_repo})
+    builder_reference = runtime_builders.FromServiceInfo(service, source_dir)
+    log.info('Using runtime builder [%s]', builder_reference.build_file_uri)
+    builder_reference.WarnIfDeprecated()
+    build = builder_reference.LoadCloudBuild(
+        {'_OUTPUT_IMAGE': image.tagged_repo})
+    # TODO(b/37542869) Remove this hack once the API can take the gs:// path
+    # as a runtime name.
+    service.runtime = builder_reference.runtime
+    service.parsed.SetEffectiveRuntime(builder_reference.runtime)
   else:
     build = cloud_build.GetDefaultBuild(image.tagged_repo)
 
@@ -350,6 +394,58 @@ def DoPrepareManagedVms(gae_client):
          'Engine Flexible Environment. If deployment fails, please check the '
          'following message and try again:\n') + str(err))
   metrics.CustomTimedEvent(metric_names.PREPARE_ENV)
+
+
+def PossiblyEnableFlex(project):
+  """Attempts to enable the Flexible Environment API on the project.
+
+  Possible scenarios:
+  -If Flexible Environment is already enabled, success.
+  -If Flexible Environment API is not yet enabled, attempts to enable it. If
+   that succeeds, success.
+  -If the account doesn't have permissions to confirm that the Flexible
+   Environment API is or isn't enabled on this project, succeeds with a warning.
+     -If the account is a service account, adds an additional warning that
+      the Service Management API may need to be enabled.
+  -If the Flexible Environment API is not enabled on the project and the attempt
+   to enable it fails, raises PrepareFailureError.
+
+  Args:
+    project: str, the project ID.
+
+  Raises:
+    PrepareFailureError: if enabling the API fails with a 403 or 404 error code.
+    googlecloudsdk.api_lib.util.exceptions.HttpException: miscellaneous errors
+        returned by server.
+  """
+  try:
+    log.warn('Checking the status of the Appengine Flexible Environment API '
+             'during Appengine Flexible deployments is currently in beta.')
+    enable_api.EnableServiceIfDisabled(project,
+                                       'appengineflex.googleapis.com')
+  except services_util.ListServicesPermissionDeniedException:
+    # If we can't find out whether the Flexible API is enabled, proceed with
+    # a warning.
+    warning = FLEXIBLE_SERVICE_VERIFY_WARNING.format(project)
+    # If user is using a service account, add more info about what might
+    # have gone wrong.
+    account = c_store.Load()
+    account_type = creds.CredentialType.FromCredentials(account)
+    if account_type in (creds.CredentialType.SERVICE_ACCOUNT,
+                        creds.CredentialType.P12_SERVICE_ACCOUNT):
+      warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
+    log.warn(warning)
+  except services_util.EnableServicePermissionDeniedException:
+    # If enabling the Flexible API fails due to a permissions error, the
+    # deployment fails.
+    raise PrepareFailureError(PREPARE_FAILURE_MSG.format(project))
+  except api_lib_exceptions.HttpException as err:
+    # The deployment should also fail if there are unforeseen errors in
+    # enabling the Flexible API. If so, display detailed information.
+    err.error_format = ('Error [{status_code}] {status_message}'
+                        '{error.details?'
+                        '\nDetailed error information:\n{?}}')
+    raise err
 
 
 def UseSsl(handlers):

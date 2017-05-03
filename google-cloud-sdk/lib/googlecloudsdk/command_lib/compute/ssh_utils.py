@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for subcommands that need to SSH into virtual machine guests."""
-import logging
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
@@ -24,17 +22,16 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.users import client as user_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import gaia
-from googlecloudsdk.command_lib.util import ssh
 from googlecloudsdk.command_lib.util import time_util
+from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.util import platforms
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
-_SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
+SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
 
 _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
@@ -53,8 +50,24 @@ class CommandError(core_exceptions.Error):
         exit_code=original_error.exit_code)
 
 
+class ArgumentError(core_exceptions.Error):
+  """Invalid combinations of, or malformed, arguments."""
+  pass
+
+
 class SetProjectMetadataError(core_exceptions.Error):
   pass
+
+
+class NetworkError(core_exceptions.Error):
+  """Indicates that an SSH connection couldn't be established right now."""
+
+  def __init__(self):
+    super(NetworkError, self).__init__(
+        'Could not SSH into the instance.  It is possible that your SSH key '
+        'has not propagated to the instance yet. Try running this command '
+        'again.  If you still cannot connect, verify that the firewall and '
+        'instance are set to accept ssh traffic.')
 
 
 def GetExternalIPAddress(instance_resource, no_raise=False):
@@ -279,6 +292,27 @@ class BaseSSHCommand(base_classes.BaseCommand):
     self.env = ssh.Environment.Current()
     self.env.RequireSSH()
 
+  def GetInstance(self, instance_ref):
+    """Fetch an instance based on the given instance_ref."""
+    request = (self.compute.instances,
+               'Get',
+               self.messages.ComputeInstancesGetRequest(
+                   instance=instance_ref.Name(),
+                   project=instance_ref.project,
+                   zone=instance_ref.zone))
+
+    errors = []
+    objects = list(request_helper.MakeRequests(
+        requests=[request],
+        http=self.http,
+        batch_url=self.batch_url,
+        errors=errors))
+    if errors:
+      utils.RaiseToolException(
+          errors,
+          error_message='Could not fetch instance:')
+    return objects[0]
+
   def GetProject(self, project):
     """Returns the project object.
 
@@ -440,118 +474,36 @@ class BaseSSHCommand(base_classes.BaseCommand):
       fetcher.UploadPublicKey(user, public_key)
     return True
 
-  @property
-  def resource_type(self):
-    return 'instances'
+  def EnsureSSHKeyExists(self, user, instance, project,
+                         use_account_service=False):
+    """Controller for EnsureSSHKey* variants.
 
-
-class BaseSSHCLICommand(BaseSSHCommand):
-  """Base class for subcommands that use ssh or scp."""
-
-  @staticmethod
-  def Args(parser):
-    """Args is called by calliope to gather arguments for this command.
-
-    Please add arguments in alphabetical order except for no- or a clear-
-    pair for that argument which can follow the argument itself.
-    Args:
-      parser: An argparse parser that you can use to add arguments that go
-          on the command line after this command. Positional arguments are
-          allowed.
-    """
-    BaseSSHCommand.Args(parser)
-
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help=('If provided, prints the command that would be run to standard '
-              'out instead of executing it.'))
-
-    parser.add_argument(
-        '--plain',
-        action='store_true',
-        help="""\
-        Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
-        is useful if you want to take care of authentication yourself or
-        use specific ssh/scp features.
-        """)
-
-    parser.add_argument(
-        '--strict-host-key-checking',
-        choices=['yes', 'no', 'ask'],
-        help="""\
-        Override the default behavior of StrictHostKeyChecking. By default,
-        StrictHostKeyChecking is set to 'no' the first time you connect to an
-        instance and will be set to 'yes' for all subsequent connections. Use
-        this flag to specify a value for the connection.
-        """)
-
-  def Run(self, args):
-    super(BaseSSHCLICommand, self).Run(args)
-    if not args.plain:
-      self.keys.EnsureKeysExist(args.force_key_file_overwrite)
-
-  def GetInstance(self, instance_ref):
-    """Fetch an instance based on the given instance_ref."""
-    request = (self.compute.instances,
-               'Get',
-               self.messages.ComputeInstancesGetRequest(
-                   instance=instance_ref.Name(),
-                   project=instance_ref.project,
-                   zone=instance_ref.zone))
-
-    errors = []
-    objects = list(request_helper.MakeRequests(
-        requests=[request],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
-    if errors:
-      utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch instance:')
-    return objects[0]
-
-  def ActuallyRun(self, args, cmd_args, user, instance, project, ip_address,
-                  strict_error_checking=True, use_account_service=False,
-                  wait_for_sshable=True, ignore_ssh_errors=False):
-    """Runs the scp/ssh command specified in cmd_args.
-
-    If the scp/ssh command exits non-zero, this command will exit with the same
-    exit code.
+    Sends the key to the project metadata, instance metadata or account service,
+    and signals whether the key was newly added.
 
     Args:
-      args: argparse.Namespace, The calling command invocation args.
-      cmd_args: [str], The argv for the command to execute.
       user: str, The user name.
-      instance: Instance, the instance to connect to
+      instance: Instance, the instance to connect to.
       project: str, the project instance is in
-      ip_address: str, IP address of the instance
-      strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
-        code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
-      wait_for_sshable: bool, when false skip the sshability check.
-      ignore_ssh_errors: bool, when true ignore all errors, including the 255
-        exit code.
-
-    Raises:
-      CommandError: If the scp/ssh command fails.
 
     Returns:
-      int, the exit code of the command that was run
+      bool, True if the key was newly added.
     """
-    cmd_args = ssh.LocalizeCommand(cmd_args, self.env)
-    if args.dry_run:
-      log.out.Print(' '.join(cmd_args))
-      return
-
-    if args.plain:
-      keys_newly_added = []
-    elif use_account_service:
+    if use_account_service:
+      log.status.Print('using accounts service')
       fetcher = user_client.UserResourceFetcher(
           self.clouduseraccounts, self.project, self.http, self.batch_url)
-      keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
-    else:
+      try:
+        keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
+      # TODO(b/37739425): find out what desired fallback mechanism is and
+      # implement it.
+      except  user_client.UserException as e:
+        log.info(
+            'Error when attempting to prepare keys using clouduaseraccounts '
+            'API, falling back to metadata keys: %s', e)
+        use_account_service = False
+    if not use_account_service:
       # There are two kinds of metadata: project-wide metadata and per-instance
       # metadata. There are four SSH-key related metadata keys:
       #
@@ -606,33 +558,137 @@ class BaseSSHCLICommand(BaseSSHCommand):
           log.info('Attempting to set instance metadata.')
           keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
                                                            iam_keys=True)
+    return keys_newly_added
 
-    if keys_newly_added and wait_for_sshable:
-      host_key_alias = HostKeyAlias(instance)
-      ssh.WaitUntilSSHable(
-          user, ip_address, self.env, self.keys.key_file,
-          host_key_alias, args.plain, args.strict_host_key_checking,
-          _SSH_KEY_PROPAGATION_TIMEOUT_SEC)
+  def GetConfig(self, host_key_alias, strict_host_key_checking=None):
+    """Returns a dict of default `ssh-config(5)` options on the OpenSSH format.
 
-    logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
+    Args:
+      host_key_alias: str, Alias of the host key in the known_hosts file.
+      strict_host_key_checking: str or None, whether to enforce strict host key
+        checking. If None, it will be determined by existence of host_key_alias
+        in the known hosts file. Accepted strings are 'yes', 'ask' and 'no'.
 
-    try:
-      return ssh.RunExecutable(cmd_args,
-                               strict_error_checking=strict_error_checking,
-                               ignore_ssh_errors=ignore_ssh_errors)
-    except ssh.CommandError as e:
-      raise CommandError(e)
+    Returns:
+      Dict with OpenSSH options.
+    """
+    config = {}
+    known_hosts = ssh.KnownHosts.FromDefaultFile()
+    config['UserKnownHostsFile'] = known_hosts.file_path
+    # Ensure our SSH key trumps any ssh_agent
+    config['IdentitiesOnly'] = 'yes'
+    config['CheckHostIP'] = 'no'
+
+    if not strict_host_key_checking:
+      if known_hosts.ContainsAlias(host_key_alias):
+        strict_host_key_checking = 'yes'
+      else:
+        strict_host_key_checking = 'no'
+    config['StrictHostKeyChecking'] = strict_host_key_checking
+    config['HostKeyAlias'] = host_key_alias
+    return config
+
+  @property
+  def resource_type(self):
+    return 'instances'
+
+
+class BaseSSHCLICommand(BaseSSHCommand):
+  """Base class for subcommands that use ssh or scp."""
+
+  def __init__(self, *args, **kwargs):
+    super(BaseSSHCLICommand, self).__init__(*args, **kwargs)
+    self._use_account_service = False
+    self._use_internal_ip = False
+
+  @staticmethod
+  def Args(parser):
+    """Args is called by calliope to gather arguments for this command.
+
+    Please add arguments in alphabetical order except for no- or a clear-
+    pair for that argument which can follow the argument itself.
+
+    Args:
+      parser: An argparse parser that you can use to add arguments that go
+          on the command line after this command. Positional arguments are
+          allowed.
+    """
+    super(BaseSSHCLICommand, BaseSSHCLICommand).Args(parser)
+
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help=('If provided, prints the command that would be run to standard '
+              'out instead of executing it.'))
+
+    parser.add_argument(
+        '--plain',
+        action='store_true',
+        help="""\
+        Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
+        is useful if you want to take care of authentication yourself or
+        use specific ssh/scp features.
+        """)
+
+    parser.add_argument(
+        '--strict-host-key-checking',
+        choices=['yes', 'no', 'ask'],
+        help="""\
+        Override the default behavior of StrictHostKeyChecking. By default,
+        StrictHostKeyChecking is set to 'no' the first time you connect to an
+        instance and will be set to 'yes' for all subsequent connections. Use
+        this flag to specify a value for the connection.
+        """)
+
+  def Run(self, args):
+    super(BaseSSHCLICommand, self).Run(args)
+    if not args.plain:
+      self.keys.EnsureKeysExist(args.force_key_file_overwrite,
+                                allow_passphrase=True)
+
+  def _PreliminarylyVerifyInstance(self, instance_id, remote, identity_file,
+                                   options, extra_flags):
+    """Verify the instance's identity by connecting and running a command.
+
+    Args:
+      instance_id: str, id of the compute instance.
+      remote: ssh.Remote, remote to connect to.
+      identity_file: str, optional key file.
+      options: dict, optional ssh options.
+      extra_flags: [str], optional extra flags on the invocation.
+
+    Raises:
+      ssh.CommandError: The ssh command failed.
+      core_exceptions.NetworkIssueError: The instance id does not match.
+    """
+    metadata_id_url = (
+        'http://metadata.google.internal/computeMetadata/v1/instance/id')
+    # Exit codes 255 and 1 are taken by OpenSSH and PuTTY.
+    # 23 chosen by fair dice roll.
+    remote_command = [
+        '[ `curl "{}" -H "Metadata-Flavor: Google" -q` = {} ] || exit 23'
+        .format(metadata_id_url, instance_id)]
+    cmd = ssh.SSHCommand(remote, identity_file=identity_file,
+                         options=options, remote_command=remote_command)
+    return_code = cmd.Run(self.env, force_connect=True)
+    if return_code == 0:
+      return
+    elif return_code == 23:
+      raise core_exceptions.NetworkIssueError(
+          'Established connection with host {} but was unable to '
+          'confirm ID of the instance.'.format(remote.host))
+    raise ssh.CommandError(cmd, return_code=return_code)
 
 
 def HostKeyAlias(instance):
   return 'compute.{0}'.format(instance.id)
 
 
-def GetUserAndInstance(user_host, use_accounts_service, http):
+def GetUserAndInstance(user_host, use_account_service, http):
   """Returns pair consiting of user name and instance name."""
   parts = user_host.split('@')
   if len(parts) == 1:
-    if use_accounts_service:  # Using Account Service.
+    if use_account_service:  # Using Account Service.
       user = gaia.GetDefaultAccountName(http)
     else:  # Uploading keys through metadata.
       user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
@@ -645,63 +701,36 @@ def GetUserAndInstance(user_host, use_accounts_service, http):
       .format(user_host))
 
 
-def _GetSharedSshArgs(args, user, instance, ip_address, env, keys):
-  """Returns list with ssh commands and shared arguments it."""
-  ssh_args = [env.ssh]
-  if not args.plain:
-    ssh_args.extend(ssh.GetDefaultFlags(keys.key_file))
-    # Allocates a tty if no command was provided and a container was provided.
-    if args.container and not args.command:
-      ssh_args.append('-t')
+def GetRemoteCommand(container, command):
+  """Assemble the remote command list given user-supplied args.
 
-  if args.ssh_flag:
-    for flag in args.ssh_flag:
-      for flag_part in flag.split():  # We want grouping here
-        dereferenced_flag = (
-            flag_part.replace('%USER%', user)
-            .replace('%INSTANCE%', ip_address))
-        ssh_args.append(dereferenced_flag)
+  If a container argument is supplied, we should run
+  `container_exec <container-name> <command>`.
 
-  host_key_alias = HostKeyAlias(instance)
-  ssh_args.extend(ssh.GetHostKeyArgs(host_key_alias, args.plain,
-                                     args.strict_host_key_checking))
+  Args:
+    container: str or None, name of container to enter during connection.
+    command: str or None, the remote command to execute.
 
-  ssh_args.append(ssh.UserHost(user, ip_address))
-  return ssh_args
+  Returns:
+    [str] or None, Remote command to run or None if no command.
+  """
+  if container:
+    # The `/bin/sh` call makes conatiner_exec listen to commands.
+    return ['container_exec', container, command or '/bin/sh']
+  if command:
+    return [command]
+  return None
 
 
-def GetSshArgs(args, user, instance, ip_address, env, keys):
-  """Returns list with argmuments for actually connecting."""
-  ssh_args = _GetSharedSshArgs(args, user, instance, ip_address, env, keys)
-  if args.ssh_args:
-    ssh_args.extend(args.ssh_args)
-  if args.container:
-    ssh_args.append('--')
-    ssh_args.append('container_exec')
-    ssh_args.append(args.container)
-    # Runs the given command inside the given container if --command was
-    # specified, otherwise runs /bin/sh.
-    if args.command:
-      ssh_args.append(args.command)
-    else:
-      ssh_args.append('/bin/sh')
+def GetTty(container, command):
+  """Determine the ssh command should be run in a TTY or not.
 
-  elif args.command:
-    if not platforms.OperatingSystem.IsWindows():
-      ssh_args.append('--')
-    ssh_args.append(args.command)
-  return ssh_args
+  Args:
+    container: str or None, name of container to enter during connection.
+    command: str or None, the remote command to execute.
 
+  Returns:
+    Bool or None, whether to enforce TTY or not, or None if "auto".
+  """
+  return True if container and not command else None
 
-def GetSshArgsForPreliminaryVerification(
-    args, user, instance, ip_address, env, keys):
-  """Returns list of argmuments for preliminary verification of the instance."""
-  ssh_args = _GetSharedSshArgs(args, user, instance, ip_address, env, keys)
-  if not platforms.OperatingSystem.IsWindows():
-    ssh_args.append('--')
-  metadata_id_url = (
-      'http://metadata.google.internal/computeMetadata/v1/instance/id')
-  ssh_args.append(
-      '`curl "{0}" -H "Metadata-Flavor: Google" -q` = {1} ] || exit 1'.format(
-          metadata_id_url, instance.id))
-  return ssh_args

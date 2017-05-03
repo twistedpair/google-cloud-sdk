@@ -22,7 +22,7 @@ def _GetService():
   return utils.GetClientInstance().orgs_policyTaxonomies_annotations
 
 
-def Create(parent,
+def Create(taxonomy_name,
            annotation_name,
            description,
            parent_annotation=None,
@@ -30,7 +30,7 @@ def Create(parent,
   """Makes an API call to create an annotation in the given taxonomy.
 
   Args:
-    parent: Resource name of a taxonomy.
+    taxonomy_name: Name of a taxonomy.
     annotation_name: Name of the annotation.
     description: a short description to the annotation.
     parent_annotation: Name of the parent annotation to this annotation.
@@ -42,20 +42,20 @@ def Create(parent,
   messages = utils.GetMessagesModule()
   return _GetService().Create(
       messages.DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest(
-          parent=parent,
+          parent=utils.GetTaxonomyRelativeName(taxonomy_name),
           annotation=messages.Annotation(
               annotationName=annotation_name,
               description=description,
               parentAnnotation=parent_annotation,
-              childAnnotations=child_annotations
-              if child_annotations else [])))
+              childAnnotations=child_annotations if child_annotations else [])))
 
 
-def Delete(name):
+def Delete(taxonomy_name, annotation_name):
   """Makes an API call to delete an annotation.
 
   Args:
-    name: Resource name of the annotation.
+    taxonomy_name: Name of a taxonomy.
+    annotation_name: Name of the annotation.
 
   Returns:
     An Operation message which can be used to check on the progress of the
@@ -63,35 +63,39 @@ def Delete(name):
   """
   return _GetService().Delete(
       utils.GetMessagesModule()
-      .DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest(name=name))
+      .DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest(
+          name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name)))
 
 
-def Get(name):
+def Get(taxonomy_name, annotation_name):
   """Makes an API call to get the definition of an annotation.
 
   Args:
-    name: Resource name of the annotation.
+    taxonomy_name: Name of a taxonomy.
+    annotation_name: Name of the annotation.
 
   Returns:
     An Annotation message.
   """
   return _GetService().Get(
       utils.GetMessagesModule()
-      .DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest(name=name))
+      .DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest(
+          name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name)))
 
 
-def List(parent, limit=None):
+def List(taxonomy_name, limit=None):
   """Makes API calls to list annotations under the given taxonomy.
 
   Args:
-    parent: Resource name of a taxonomy.
+    taxonomy_name: Name of a taxonomy.
     limit: The number of taxonomies to limit the resutls to.
 
   Returns:
     Generator that yields taxonomies
   """
   request = utils.GetMessagesModule(
-  ).DatapolOrgsPolicyTaxonomiesAnnotationsListRequest(parent=parent)
+  ).DatapolOrgsPolicyTaxonomiesAnnotationsListRequest(
+      parent=utils.GetTaxonomyRelativeName(taxonomy_name))
   return list_pager.YieldFromList(
       _GetService(),
       request,
@@ -100,11 +104,12 @@ def List(parent, limit=None):
       batch_size_attribute='pageSize')
 
 
-def Update(name, description):
+def Update(taxonomy_name, annotation_name, description):
   """Makes an API call to update an annotation.
 
   Args:
-    name: Resource name of the annotation.
+    taxonomy_name: Name of a taxonomy.
+    annotation_name: Name of the annotation.
     description: New description to be updated.
 
   Returns:
@@ -113,6 +118,6 @@ def Update(name, description):
   messages = utils.GetMessagesModule()
   return _GetService().Patch(
       messages.DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest(
-          name=name,
+          name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name),
           updateAnnotationRequest=messages.UpdateAnnotationRequest(
               description=description)))

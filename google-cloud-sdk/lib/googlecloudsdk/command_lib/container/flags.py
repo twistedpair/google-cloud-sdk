@@ -49,7 +49,7 @@ def AddClusterVersionFlag(parser, suppressed=False, help=None):  # pylint: disab
 The Kubernetes version to use for the master and nodes. Defaults to
 server-specified.
 
-The default Kubernetes version are available using the following command.
+The default Kubernetes version is available using the following command.
 
   $ gcloud container get-server-config
 """

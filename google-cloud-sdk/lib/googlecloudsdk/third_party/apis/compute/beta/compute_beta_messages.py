@@ -1169,18 +1169,17 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       GAUGE.
 
   Fields:
-    metric: The identifier of the Stackdriver Monitoring metric. The metric
-      cannot have negative values and should be a utilization metric, which
-      means that the number of virtual machines handling requests should
-      increase or decrease proportionally to the metric. The metric must also
-      have a label of compute.googleapis.com/resource_id with the value of the
-      instance's unique ID, although this alone does not guarantee that the
-      metric is valid.  For example, the following is a valid metric:
-      compute.googleapis.com/instance/network/received_bytes_count The
-      following is not a valid metric because it does not increase or decrease
-      based on usage: compute.googleapis.com/instance/cpu/reserved_cores
-    utilizationTarget: Target value of the metric which autoscaler should
-      maintain. Must be a positive value.
+    metric: The identifier (type) of the Stackdriver Monitoring metric. The
+      metric cannot have negative values and should be a utilization metric,
+      which means that the number of virtual machines handling requests should
+      increase or decrease proportionally to the metric.  The metric must have
+      a value type of INT64 or DOUBLE.
+    utilizationTarget: The target value of the metric that autoscaler should
+      maintain. This must be a positive value.  For example, a good metric to
+      use as a utilization_target is
+      compute.googleapis.com/instance/network/received_bytes_count. The
+      autoscaler will work to keep this value constant for each of the
+      instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
       DELTA_PER_MINUTE. If not specified, the default is GAUGE.
@@ -10229,7 +10228,7 @@ class Firewall(_messages.Message):
       sourceRanges OR sourceTags.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    kind: [Output Ony] Type of the resource. Always compute#firewall for
+    kind: [Output Only] Type of the resource. Always compute#firewall for
       firewall rules.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -11257,10 +11256,10 @@ class Image(_messages.Message):
       deprecated. The name of the image family must comply with RFC1035.
     guestOsFeatures: A list of features to enable on the guest OS. Applicable
       for bootable images only. Currently, only one feature can be enabled,
-      VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own
-      queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE
-      on images with driver version 1.2.0.1621 or higher. Linux images with
-      kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.
+      VIRTIO_SCSI_MULTIQUEUE, which allows each virtual CPU to have its own
+      queue. For Windows images, you can only enable VIRTIO_SCSI_MULTIQUEUE on
+      images with driver version 1.2.0.1621 or higher. Linux images with
+      kernel versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.
       For new Windows images, the server might also populate this field with
       the value WINDOWS, to indicate that this is a Windows image. This value
       is purely informational and does not enable or disable any features.

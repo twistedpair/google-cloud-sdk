@@ -24,6 +24,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 import enum
 from googlecloudsdk.api_lib.functions import exceptions
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core.util import encoding
@@ -55,6 +56,17 @@ _BUCKET_URI_ERROR = (
     'characters . _ -. It must start and end with a letter or digit '
     'and be from 3 to 232 characters long. You may optionally prepend the '
     'bucket name with gs:// and append / at the end.')
+
+_API_NAME = 'cloudfunctions'
+_API_VERSION = 'v1beta2'
+
+
+def GetApiClientInstance():
+  return apis.GetClientInstance(_API_NAME, _API_VERSION)
+
+
+def GetApiMessagesModule():
+  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
 
 @enum.unique

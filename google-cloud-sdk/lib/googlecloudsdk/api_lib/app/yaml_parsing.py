@@ -18,9 +18,9 @@ import collections
 import os
 
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import appinfo_includes
 from googlecloudsdk.third_party.appengine.api import croninfo
@@ -48,6 +48,13 @@ https://cloud.google.com/appengine/docs/flexible/migration.
 
 UPGRADE_FLEX_PYTHON_URL = (
     'https://cloud.google.com/appengine/docs/flexible/python/migrating')
+
+APP_ENGINE_APIS_DEPRECATION_WARNING = (
+    'Support for the compat runtimes and their base images '
+    '(enable_app_engine_apis: true) has been deprecated.  Please migrate to a '
+    'new base image, or use a Google managed runtime. Deployments using '
+    '`enable_app_engine_apis: true` will be decommissioned on May 15th, 2017. '
+    'To learn more, visit {}.').format(UPGRADE_FLEX_PYTHON_URL)
 
 # This is the equivalent of the following in app.yaml:
 # skip_files:
@@ -278,6 +285,10 @@ class ServiceYamlInfo(_YamlInfo):
 
     if parsed.vm:
       log.warn(MANAGED_VMS_DEPRECATION_WARNING)
+
+    if (util.IsFlex(parsed.env) and parsed.beta_settings and
+        parsed.beta_settings.get('enable_app_engine_apis')):
+      log.warn(APP_ENGINE_APIS_DEPRECATION_WARNING)
 
     if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(

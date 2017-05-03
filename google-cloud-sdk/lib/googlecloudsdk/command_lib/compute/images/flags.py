@@ -32,15 +32,22 @@ _REPLACEMENT_DISK_DETAILED_HELP = """\
 
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION
 
-IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='image',
-    completion_resource_id='compute.images',
-    global_collection='compute.images')
+LIST_FORMAT = """\
+    table(
+      name,
+      selfLink.map().scope(projects).segment(0):label=PROJECT,
+      family,
+      deprecated.state:label=DEPRECATED,
+      status
+    )"""
 
-DISK_IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='disk image',
-    completion_resource_id='compute.images',
-    global_collection='compute.images')
+
+def MakeDiskImageArg(plural=False):
+  return compute_flags.ResourceArgument(
+      resource_name='disk image',
+      completion_resource_id='compute.images',
+      plural=plural,
+      global_collection='compute.images')
 
 REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',

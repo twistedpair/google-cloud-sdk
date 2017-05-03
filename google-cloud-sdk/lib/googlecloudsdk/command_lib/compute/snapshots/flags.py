@@ -15,7 +15,10 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-SNAPSHOT_ARG = compute_flags.ResourceArgument(
-    resource_name='snapshot',
-    completion_resource_id='compute.snapshots',
-    global_collection='compute.snapshots')
+
+def MakeSnapshotArg(plural=False):
+  return compute_flags.ResourceArgument(
+      resource_name='snapshot',
+      completion_resource_id='compute.snapshots',
+      plural=plural,
+      global_collection='compute.snapshots')

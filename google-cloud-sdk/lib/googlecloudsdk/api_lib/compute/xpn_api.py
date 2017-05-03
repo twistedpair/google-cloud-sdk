@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for the API to configure cross-project networking (XPN)."""
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
@@ -82,13 +83,15 @@ class XpnClient(object):
     return self._MakeRequestSync(request_tuple, msg)
 
   def ListEnabledResources(self, project):
-    request_tuple = (
+    request = self.messages.ComputeProjectsGetXpnResourcesRequest(
+        project=project)
+    return list_pager.YieldFromList(
         self.client.projects,
-        'GetXpnResources',
-        self.messages.ComputeProjectsGetXpnResourcesRequest(project=project))
-    msg = ('list resources that are enabled to use project [{project}] as an '
-           'XPN host').format(project=project)
-    return self._MakeRequestSync(request_tuple, msg)
+        request,
+        method='GetXpnResources',
+        batch_size_attribute='maxResults',
+        batch_size=500,
+        field='resources')
 
   def ListOrganizationHostProjects(self, project, organization_id):
     """List the projects in an organization that are enabled as XPN hosts.
@@ -105,19 +108,13 @@ class XpnClient(object):
         project=project,
         projectsListXpnHostsRequest=self.messages.ProjectsListXpnHostsRequest(
             organization=organization_id))
-    if organization_id:
-      msg = ('list XPN hosts for organization [{0}] '
-             '(current project is [{1}])').format(organization_id, project)
-    else:
-      msg = ('list XPN hosts for organization inferred from project [{0}]'
-            ).format(project)
-    # TODO(b/29896285): Use apitools list_pager.YieldFromList when API fully
-    # supports paging
-    items = self._MakeRequestSync(
-        (self.client.projects, 'ListXpnHosts', request), msg).items
-    # Return a generator, since that's what will happend when we use
-    # YieldFromList
-    return iter(items)
+    return list_pager.YieldFromList(
+        self.client.projects,
+        request,
+        method='ListXpnHosts',
+        batch_size_attribute='maxResults',
+        batch_size=500,
+        field='items')
 
   def _EnableXpnAssociatedResource(self, host_project, associated_resource,
                                    xpn_resource_type):

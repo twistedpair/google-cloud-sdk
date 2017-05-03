@@ -322,6 +322,13 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "tags": {
+          "description": "Tags for annotation of a Build. These are not docker tags.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

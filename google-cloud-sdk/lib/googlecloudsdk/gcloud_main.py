@@ -119,6 +119,7 @@ def CreateCLI(surfaces):
                               exclude_commands=(
                                   r'gcloud\.beta\.ml\.vision\..*'
                                   r'|gcloud\.beta\.ml\.language\..*'
+                                  r'|gcloud\.beta\.ml\.speech\..*'
                                   r'|gcloud\.beta\.ml$'
                               ))
 

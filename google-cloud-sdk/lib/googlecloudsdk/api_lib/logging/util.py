@@ -102,17 +102,24 @@ def GetCurrentProjectParent():
 def GetSinkReference(sink_name, log, service):
   """Returns the appropriate sink resource based on args."""
   params = {'projectsId': properties.VALUES.core.project.GetOrFail}
-  if log:
-    collection = 'logging.projects.logs.sinks'
-    params['logsId'] = log
-  elif service:
-    collection = 'logging.projects.logServices.sinks'
-    params['logServicesId'] = service
+  if log or service:
+    registry = resources.REGISTRY.Clone()
+    registry.RegisterApiByName('logging', 'v1beta3')
   else:
-    collection = 'logging.projects.sinks'
+    registry = resources.REGISTRY
 
-  return resources.REGISTRY.Parse(
-      sink_name, params=params, collection=collection)
+  if log:
+    params['logsId'] = log
+    return registry.Parse(
+        sink_name, params=params, collection='logging.projects.logs.sinks')
+  elif service:
+    params['logServicesId'] = service
+    return registry.Parse(
+        sink_name, params=params,
+        collection='logging.projects.logServices.sinks')
+  else:
+    return registry.Parse(
+        sink_name, params=params, collection='logging.projects.sinks')
 
 
 def WarnOnUsingLogOrServiceArguments(args):

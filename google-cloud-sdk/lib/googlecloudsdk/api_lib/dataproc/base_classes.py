@@ -68,7 +68,8 @@ class JobSubmitter(base.Command):
 
     cluster = client.projects_regions_clusters.Get(request)
 
-    self._staging_dir = self.GetStagingDir(cluster, job_ref.jobId)
+    self._staging_dir = self.GetStagingDir(
+        cluster, job_ref.jobId, bucket=args.bucket)
     self.ValidateAndStageFiles()
 
     job = messages.Job(
@@ -138,11 +139,15 @@ class JobSubmitter(base.Command):
               self.files_to_stage, self._staging_dir))
       storage_helpers.Upload(self.files_to_stage, self._staging_dir)
 
-  def GetStagingDir(self, cluster, job_id):
+  def GetStagingDir(self, cluster, job_id, bucket=None):
     """Determine the GCS directory to stage job resources in."""
+    if bucket is None:
+      # If bucket is not provided, fall back to cluster's staging bucket.
+      bucket = cluster.config.configBucket
+
     staging_dir = (
         'gs://{bucket}/{prefix}/{uuid}/jobs/{job_id}/staging/'.format(
-            bucket=cluster.config.configBucket,
+            bucket=bucket,
             prefix=constants.GCS_METADATA_PREFIX,
             uuid=cluster.clusterUuid,
             job_id=job_id))

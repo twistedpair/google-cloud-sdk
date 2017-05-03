@@ -49,17 +49,19 @@ def GetCurrentInvocation(invocations, pos):
   """Determine the current invocation given a cursor position.
 
   Args:
-    invocations: a list of list of gcloud_parser.ArgTokens
+    invocations: a list of GcloudInvocations
     pos: an int giving the current cursor position
 
   Returns:
-    The list corresponding to the gcloud invocation at that position or None.
+    The corresponding GcloudInvocation at position pos, or None.
   """
-  for tokens in invocations:
+  for invocation in invocations:
+    tokens = invocation.tokens
     if tokens:
       start = tokens[0].start
       end = tokens[-1].end
-      if start <= pos <= end:
+      if ((start <= pos <= end) or
+          (invocations.index(invocation) == len(invocations)-1)):
         return tokens
   return None
 
@@ -76,12 +78,11 @@ def GetCurrentToken(tokens, pos):
   """
   i = 0
   while i < len(tokens):
-    if pos > tokens[i].start and pos < tokens[i].end:
+    if pos >= tokens[i].start and pos < tokens[i].end:
       return tokens[i]
     if pos < tokens[i].start:
       return tokens[i-1] if i > 0 else None
     i += 1
-
   return tokens[len(tokens)-1] if tokens else None
 
 
@@ -100,6 +101,7 @@ def GenerateHelpContent(cli, width):
   if width > 80:
     width = 80
   doc = cli.current_buffer.document
+
   tokens = GetCurrentInvocation(gcloud_parser.ParseLine(doc.text),
                                 doc.cursor_position)
   if not tokens:

@@ -4650,7 +4650,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def AttachDisk(self, request, global_params=None):
-      """Attaches a Disk resource to an instance.
+      """Attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
 
       Args:
         request: (ComputeInstancesAttachDiskRequest) input message

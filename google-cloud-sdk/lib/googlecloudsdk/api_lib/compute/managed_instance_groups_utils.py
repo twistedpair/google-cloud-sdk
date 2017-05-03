@@ -49,11 +49,14 @@ def ArgsSupportQueueScaling(args):
 
 def AddAutoscalerArgs(parser, queue_scaling_enabled=False):
   """Adds commandline arguments to parser."""
-  parser.add_argument('--cool-down-period', type=arg_parsers.Duration(),
-                      help='Number of seconds Autoscaler will wait between '
-                      'resizing collection. Note: The Autoscaler waits '
-                      '10 minutes before scaling down, the value entered here '
-                      'is in addition to the initial 10 minute period.')
+  parser.add_argument(
+      '--cool-down-period',
+      type=arg_parsers.Duration(),
+      help=('The time period that the autoscaler should wait before it starts '
+            'collecting information from a new instance. This prevents the '
+            'autoscaler from collecting information when the instance is '
+            'initializing, during which the collected usage would not be '
+            'reliable. The default is 60 seconds.'))
   parser.add_argument('--description', help='Notes about Autoscaler.')
   parser.add_argument('--min-num-replicas',
                       type=arg_parsers.BoundedInt(0, sys.maxint),
