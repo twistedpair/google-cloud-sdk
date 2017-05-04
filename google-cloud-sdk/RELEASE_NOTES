@@ -2,6 +2,12 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 151.0.1 (2017-05-04)
+
+### Cloud SDK
+
+*  Fixed issue in for gcloud init command. See https://issuetracker.google.com/37968909.
+
 ## 154.0.0 (2017-05-03)
 
 ### Cloud SDK
