@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Stackdriver Error Reporting API",
-  "description": "Stackdriver Error Reporting groups and counts similar errors from cloud services. The Stackdriver Error Reporting API provides a way to report new errors and read access to error groups and their associated errors.\n",
+  "description": "Groups and counts similar errors from cloud services and applications, reports new errors, and provides access to error groups and their associated errors.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -310,6 +310,13 @@
         "reportLocation": {
           "description": "The location in the source code where the decision was made to\nreport the error, usually the place where it was logged.\nFor a logged exception this would be the source line where the\nexception is logged, usually close to the place where it was\ncaught. This value is in contrast to `Exception.cause_location`,\nwhich describes the source line where the exception was thrown.",
           "$ref": "SourceLocation"
+        },
+        "sourceReferences": {
+          "description": "Source code that was used to build the executable which has\ncaused the given error message.",
+          "type": "array",
+          "items": {
+            "$ref": "SourceReference"
+          }
         }
       }
     },
@@ -361,6 +368,21 @@
         },
         "functionName": {
           "description": "Human-readable name of a function or method.\nThe value can include optional context like the class or package name.\nFor example, `my.package.MyClass.method` in case of Java.",
+          "type": "string"
+        }
+      }
+    },
+    "SourceReference": {
+      "id": "SourceReference",
+      "description": "A reference to a particular snapshot of the source tree used to build and\ndeploy an application.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "Optional. A URI string identifying the repository.\nExample: \"https:\/\/github.com\/GoogleCloudPlatform\/kubernetes.git\"",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "The canonical and persistent identifier of the deployed revision.\nExample (git): \"0035781c50ec7aa23385dc841529ce8a4b70db1b\"",
           "type": "string"
         }
       }

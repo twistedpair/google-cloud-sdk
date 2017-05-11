@@ -13,6 +13,7 @@
 # limitations under the License.
 """Provides common arguments for the ML Engine command surface."""
 import argparse
+import functools
 import itertools
 import sys
 
@@ -124,7 +125,8 @@ will be used instead.
 """
   return base.Argument(
       '--job-dir',
-      type=storage_util.ObjectReference.FromUrl,
+      type=functools.partial(storage_util.ObjectReference.FromArgument,
+                             allow_empty_object=True),
       help=help_)
 
 

@@ -241,7 +241,7 @@
           "type": "string"
         },
         "initialClusterVersion": {
-          "description": "[Output only] The software version of the master endpoint and kubelets used\nin the cluster when it was first created. The version can be upgraded over\ntime.",
+          "description": "The initial Kubernetes version for this cluster.  Valid versions are those\nfound in validMasterVersions returned by getServerConfig.  The version can\nbe upgraded over time; such upgrades are reflected in\ncurrentMasterVersion and currentNodeVersion.",
           "type": "string"
         },
         "currentMasterVersion": {
@@ -374,7 +374,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint.\nIf an empty username is provided, basic authentication is disabled for the\ncluster (for clusters v1.6.0 and above).",
+          "description": "The username to use for HTTP basic authentication to the master endpoint.\nFor clusters v1.6.0 and later, you can disable basic authentication by\nproviding an empty username.",
           "type": "string"
         },
         "password": {
@@ -1119,6 +1119,20 @@
         "creationTimestamp": {
           "description": "Timestamp representing the server time when this object was created.",
           "type": "string"
+        },
+        "labels": {
+          "description": "Key-value pairs that may be used to scope and select individual resources.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Unstructured key-value pairs that are not queryable and should be preserved\nwhen modifying objects.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

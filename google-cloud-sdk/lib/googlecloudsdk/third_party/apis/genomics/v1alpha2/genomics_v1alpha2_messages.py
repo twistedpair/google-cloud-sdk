@@ -178,6 +178,10 @@ class Disk(_messages.Message):
     name: Required. The name of the disk that can be used in the pipeline
       parameters. Must be 1 - 63 characters. The name "boot" is reserved for
       system use.
+    readOnly: Specifies how a sourced-base persistent disk will be mounted.
+      See https://cloud.google.com/compute/docs/disks/persistent-
+      disks#use_multi_instances for more details. Can only be set at create
+      time.
     sizeGb: The size of the disk. Defaults to 500 (GB). This field is not
       applicable for local SSD.
     source: The full or partial URL of the persistent disk to attach. See
@@ -208,9 +212,10 @@ class Disk(_messages.Message):
   autoDelete = _messages.BooleanField(1)
   mountPoint = _messages.StringField(2)
   name = _messages.StringField(3)
-  sizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  source = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  readOnly = _messages.BooleanField(4)
+  sizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  source = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class DockerExecutor(_messages.Message):

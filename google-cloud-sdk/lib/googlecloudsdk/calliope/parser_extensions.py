@@ -77,8 +77,19 @@ class Namespace(argparse.Namespace):
     return self._deepest_parser._calliope_command.ai.display_info
 
   def GetSpecifiedArgNames(self):
-    """Returns the scrubbed names for args specified on the comman line."""
+    """Returns the scrubbed names for args specified on the command line."""
     return sorted(self._specified_args.values())
+
+  def GetSpecifiedArgs(self):
+    """Gets the argument names and values that were actually specified.
+
+    Returns:
+      {str: str}, A mapping of argument name to value.
+    """
+    return {
+        name: getattr(self, dest, 'UNKNOWN')
+        for dest, name in self._specified_args.iteritems()
+    }
 
   def IsSpecified(self, dest):
     """Returns True if args.dest was specified on the command line.

@@ -28,7 +28,6 @@ from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
-from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import property_selector
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
@@ -1073,6 +1072,8 @@ class NoOutputAsyncMutator(base.SilentCommand, BaseAsyncMutator):
   """Base class for mutating subcommands that don't display resources."""
 
 
+# TODO(b/37764090) - Remove this mixin with refactoring of instance-groups
+# managed list command away from base_classes.BaseLister.
 class InstanceGroupManagerDynamicProperiesMixin(object):
   """Mixin class to compute dynamic information for instance groups."""
 
@@ -1083,10 +1084,8 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
     items = list(items)
     for mig in managed_instance_groups_utils.AddAutoscalersToMigs(
         migs_iterator=self.ComputeInstanceGroupSize(items=items),
+        client=self.compute_client,
         resources=self.resources,
-        compute=self.compute,
-        http=self.http,
-        batch_url=self.batch_url,
         fail_when_api_not_supported=False):
       if 'autoscaler' in mig and mig['autoscaler'] is not None:
         # status is present in autoscaler iff Autoscaler message has embedded
@@ -1363,201 +1362,6 @@ class ReadWriteCommand(BaseCommand):
   def Format(self, unused_args):
     # The none format does not print but it consumes the resource.
     return 'none'
-
-
-class BaseMetadataAdder(ReadWriteCommand):
-  """Base class for adding or modifying metadata entries."""
-
-  @staticmethod
-  def Args(parser):
-    metadata_utils.AddMetadataArgs(parser, required=True)
-
-  def Modify(self, args, existing):
-    new_object = encoding.CopyProtoMessage(existing)
-    existing_metadata = getattr(existing, self.metadata_field, None)
-    setattr(
-        new_object,
-        self.metadata_field,
-        metadata_utils.ConstructMetadataMessage(
-            self.messages,
-            metadata=args.metadata,
-            metadata_from_file=args.metadata_from_file,
-            existing_metadata=existing_metadata))
-
-    if metadata_utils.MetadataEqual(
-        existing_metadata,
-        getattr(new_object, self.metadata_field, None)):
-      return None
-    else:
-      return new_object
-
-  def Run(self, args):
-    if not args.metadata and not args.metadata_from_file:
-      raise calliope_exceptions.ToolException(
-          'At least one of [--metadata] or [--metadata-from-file] must be '
-          'provided.')
-
-    return super(BaseMetadataAdder, self).Run(args)
-
-
-class BaseMetadataRemover(ReadWriteCommand):
-  """Base class for removing metadata entries."""
-
-  @staticmethod
-  def Args(parser):
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        '--all',
-        action='store_true',
-        default=False,
-        help='If provided, all metadata entries are removed.')
-    group.add_argument(
-        '--keys',
-        type=arg_parsers.ArgList(min_length=1),
-        metavar='KEY',
-        help='The keys of the entries to remove.')
-
-  def Modify(self, args, existing):
-    new_object = encoding.CopyProtoMessage(existing)
-    existing_metadata = getattr(existing, self.metadata_field, None)
-    setattr(new_object,
-            self.metadata_field,
-            metadata_utils.RemoveEntries(
-                self.messages,
-                existing_metadata=existing_metadata,
-                keys=args.keys,
-                remove_all=args.all))
-
-    if metadata_utils.MetadataEqual(
-        existing_metadata,
-        getattr(new_object, self.metadata_field, None)):
-      return None
-    else:
-      return new_object
-
-  def Run(self, args):
-    if not args.all and not args.keys:
-      raise calliope_exceptions.ToolException(
-          'One of [--all] or [--keys] must be provided.')
-
-    return super(BaseMetadataRemover, self).Run(args)
-
-
-class InstanceMetadataMutatorMixin(ReadWriteCommand):
-  """Mixin for mutating instance metadata."""
-
-  @staticmethod
-  def Args(parser):
-    flags.AddZoneFlag(
-        parser,
-        resource_type='instance',
-        operation_type='set metadata on')
-    parser.add_argument(
-        'name',
-        metavar='NAME',
-        completion_resource='compute.instances',
-        help='The name of the instance whose metadata should be modified.')
-
-  @property
-  def resource_type(self):
-    return 'instances'
-
-  @property
-  def service(self):
-    return self.compute.instances
-
-  @property
-  def metadata_field(self):
-    return 'metadata'
-
-  def CreateReference(self, args):
-    return self.CreateZonalReference(args.name, args.zone)
-
-  def GetGetRequest(self, args):
-    return (self.service,
-            'Get',
-            self.messages.ComputeInstancesGetRequest(
-                instance=self.ref.Name(),
-                project=self.ref.project,
-                zone=self.ref.zone))
-
-  def GetSetRequest(self, args, replacement, existing):
-    return (self.service,
-            'SetMetadata',
-            self.messages.ComputeInstancesSetMetadataRequest(
-                instance=self.ref.Name(),
-                metadata=replacement.metadata,
-                project=self.ref.project,
-                zone=self.ref.zone))
-
-
-class InstanceTagsMutatorMixin(ReadWriteCommand):
-  """Mixin for mutating instance tags."""
-
-  @staticmethod
-  def Args(parser):
-    flags.AddZoneFlag(
-        parser,
-        resource_type='instance',
-        operation_type='set tags on')
-    parser.add_argument(
-        'name',
-        metavar='NAME',
-        completion_resource='compute.instances',
-        help='The name of the instance whose tags should be modified.')
-
-  @property
-  def resource_type(self):
-    return 'instances'
-
-  @property
-  def service(self):
-    return self.compute.instances
-
-  def CreateReference(self, args):
-    return self.CreateZonalReference(args.name, args.zone)
-
-  def GetGetRequest(self, args):
-    return (self.service,
-            'Get',
-            self.messages.ComputeInstancesGetRequest(
-                instance=self.ref.Name(),
-                project=self.ref.project,
-                zone=self.ref.zone))
-
-  def GetSetRequest(self, args, replacement, existing):
-    return (self.service,
-            'SetTags',
-            self.messages.ComputeInstancesSetTagsRequest(
-                instance=self.ref.Name(),
-                tags=replacement.tags,
-                project=self.ref.project,
-                zone=self.ref.zone))
-
-
-class ProjectMetadataMutatorMixin(ReadWriteCommand):
-  """Mixin for mutating project-level metadata."""
-
-  @property
-  def service(self):
-    return self.compute.projects
-
-  @property
-  def metadata_field(self):
-    return 'commonInstanceMetadata'
-
-  def GetGetRequest(self, args):
-    return (self.service,
-            'Get',
-            self.messages.ComputeProjectsGetRequest(
-                project=self.project))
-
-  def GetSetRequest(self, args, replacement, existing):
-    return (self.service,
-            'SetCommonInstanceMetadata',
-            self.messages.ComputeProjectsSetCommonInstanceMetadataRequest(
-                metadata=replacement.commonInstanceMetadata,
-                project=self.project))
 
 
 _HELP = textwrap.dedent("""\

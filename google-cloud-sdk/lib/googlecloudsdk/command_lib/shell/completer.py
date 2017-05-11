@@ -31,6 +31,65 @@ class ShellCliCompleter(Completer):
   def __init__(self):
     self.experimental_autocomplete_enabled = ExperimentalAutocompleteEnabled()
 
+  def _GetRankedCompletions(self, suggestions, invocation):
+    """Returns the list of suggestiong, ranked accordingly.
+
+    Args:
+      suggestions: the suggestions to rank. Each suggestion is a node from the
+      gcloud tree.
+      invocation: the invocation for which to get the ranked suggestions.
+
+    Returns:
+      A list of suggestions, ranked based on whether the experimental
+      autocomplete is enabled.
+    """
+    if self.experimental_autocomplete_enabled:
+      return RankedCompletions(suggestions, invocation)
+    else:
+      return sorted(suggestions)
+
+  def _DisplayTextForChoice(self, choice, choice_dict):
+    """Returns the appropriate display text for the given choice.
+
+    If the choice is a non-bool flag and experimental autocomplete is enabled,
+    an equal sign followed by the flag's metavariables will be shown.
+    Otherwise, only the choice name will be shown.
+
+    Args:
+      choice: the choice for which to create the display text.
+      choice_dict: the dictionary containing the properties of the chosen flag.
+
+    Returns:
+      The appropriate display text for the given choice.
+    """
+    display_text = [choice]
+    if self.experimental_autocomplete_enabled and IsFlag(choice):
+      flag_type = choice_dict.get('type', None)
+      if flag_type != 'bool':
+        display_text.append('=')
+        flag_arg_value = choice_dict.get('value', '')
+        if flag_type == 'list' or flag_type == 'dict':
+          display_text.append('[%s,...]' % (flag_arg_value))
+        else:
+          display_text.append(flag_arg_value)
+    return ''.join(display_text)
+
+  def _MetaTextForChoice(self, choice_dict, invocation):
+    """Returns the required meta text for the choice of the given dict.
+
+    Args:
+      choice_dict: the dictionary containing the properties of the chosen flag.
+      invocation: invocation to which the choice belongs.
+
+    Returns:
+      The required meta text for the given choice, if any.
+    """
+    if (self.experimental_autocomplete_enabled and
+        (FlagIsRequired(choice_dict) or
+         FlagBelongsToRequiredGroup(choice_dict,
+                                    invocation.GetPossibleFlagGroups()))):
+      return 'required'
+
   def get_completions(self, doc, complete_event):
     """Yields the completions for doc.
 
@@ -62,80 +121,43 @@ class ShellCliCompleter(Completer):
     last_token = tokens[-1]
     last_token_name = last_token.value
     offset = -len(last_token_name)
-    suggestions = last_token.tree.get('commands', {})
 
-    # Autocomplete commands and groups after spaces
-    if IsGroup(last_token):
-      if CursorAheadOfToken(doc.cursor_position, last_token):
-        offset = last_token.end - doc.cursor_position + 1
-        for completion in invocation.GetPossibleCommandGroups():
-          yield Completion(completion, offset)
-        return
-    elif IsFlag(last_token_name):
+    suggestions = last_token.tree.get('commands', {})
+    if IsFlag(last_token_name) or IsFlagArg(last_token):
       suggestions = FilterHiddenFlags(invocation.GetPossibleFlags())
-      if CursorAheadOfToken(doc.cursor_position, last_token):
-        offset = 0
-        # Check if the flag has a set of choices to choose from
-        choices = suggestions.get(last_token.value, {}).get('choices', [])
-        for choice in choices:
-          yield Completion(choice, offset)
-        return
+
+    cursor_ahead = CursorAheadOfToken(doc.cursor_position, last_token)
+    if IsGroup(last_token) and cursor_ahead:
+      # Autocomplete commands and groups after spaces
+      offset = last_token.end - doc.cursor_position + 1
+      for completion in invocation.GetPossibleCommandGroups():
+        yield Completion(completion, offset)
+    elif IsFlag(last_token_name) and cursor_ahead:
+      # Check if the flag has a set of choices to choose from
+      offset = 0
+      choices = suggestions.get(last_token.value, {}).get('choices', [])
+      for choice in choices:
+        yield Completion(choice, offset)
     elif IsFlagArg(last_token):
-      suggestions = FilterHiddenFlags(invocation.GetPossibleFlags())
-      flag_token = tokens[-2]
-      if not CursorAheadOfToken(doc.cursor_position, last_token):
+      if cursor_ahead:
+        return
+      else:
         # Check if the flag has a set of choices to choose from
+        flag_token = tokens[-2]
         choices = suggestions.get(flag_token.value, {}).get('choices', [])
         for choice in choices:
           if choice.lower().startswith(last_token_name.lower()):
             yield Completion(choice, offset)
-      return
-
-    def _GetRankedCompletions():
-      if self.experimental_autocomplete_enabled:
-        return RankedCompletions(suggestions, invocation)
-      else:
-        return sorted(suggestions)
-
-    def _DisplayTextForChoice(choice):
-      """Returns the appropriate display text for the given choice.
-
-      If the choice is a non-bool flag and experimental autocomplete is enabled,
-      an equal sign followed by the flag's metavariables will be shown.
-      Otherwise, only the choice name will be shown.
-
-      Args:
-        choice: the choice for which to create the display text.
-
-      Returns:
-        The appropriate display text for the given choice.
-      """
-      display_text = choice
-      if self.experimental_autocomplete_enabled:
-        if IsFlag(choice):
-          flag_type = suggestions[choice].get('type', None)
-          if flag_type != 'bool':
-            display_text += '='
-            flag_arg_value = suggestions[choice].get('value', '')
-            if flag_type == 'list' or flag_type == 'dict':
-              display_text += '[' + flag_arg_value + ',...]'
-            else:
-              display_text += flag_arg_value
-      return display_text
-
-    def _MetaTextForChoice(choice):
-      if (self.experimental_autocomplete_enabled and
-          FlagIsRequired(suggestions[choice])):
-        return 'required'
-
-    ranked_completions = _GetRankedCompletions()
-    for choice in ranked_completions:
-      if choice.startswith(last_token_name):
-        yield Completion(
-            choice,
-            offset,
-            display=_DisplayTextForChoice(choice),
-            display_meta=_MetaTextForChoice(choice))
+    else:
+      ranked_completions = self._GetRankedCompletions(suggestions, invocation)
+      for choice in ranked_completions:
+        if choice.startswith(last_token_name):
+          yield Completion(
+              choice,
+              offset,
+              display=self._DisplayTextForChoice(choice, suggestions[choice]),
+              display_meta=self._MetaTextForChoice(suggestions[choice],
+                                                   invocation))
 
 
 def ExperimentalAutocompleteEnabled():
@@ -209,16 +231,31 @@ def FlagIsRequired(flag_dict):
   return flag_dict.get('required', False)
 
 
-def IsFlag(string):
+def FlagBelongsToRequiredGroup(flag_dict, flag_groups):
+  """Returns whether the passed flag belongs to a required flag group.
+
+  Args:
+    flag_dict: a specific flag's dictionary as found in the gcloud_tree
+    flag_groups: a dictionary of flag groups as found in the gcloud_tree
+
+  Returns:
+    True if the flag belongs to a required group, False otherwise.
+  """
+  flag_group = flag_dict.get('group', None)
+  flag_group_properties = flag_groups.get(flag_group, {})
+  return flag_group_properties.get('is_required', False)
+
+
+def IsFlag(token_name):
   """Returns whether the passed string is a flag.
 
   Args:
-    string: the string to check.
+    token_name: the string to check.
 
   Returns:
     True if it's a flag, False otherwise.
   """
-  return string.startswith('-')
+  return token_name.startswith('-')
 
 
 def IsGroup(token):
@@ -280,20 +317,43 @@ def RankedCompletions(suggestions, invocation):
     """
     return flag in [token.value for token in invocation.flags]
 
-  def _ShouldPrioritizeUnusedRequiredFlag(string):
+  def _ShouldPrioritizeUnusedRequiredFlag(token_name):
     """Returns whether the passed string is an unused required flag.
 
+    This includes checking if it's a flag from a required flag group, and
+    supports mutually exclusive groups, which means that flags belonging to a
+    group containing another flag which has already been used in the current
+    invocation won't be prioritized.
+
     Args:
-      string: the string to check.
+      token_name: the string to check.
 
     Returns:
       True if the string passed is an unused required flag, False otherwise.
     """
-    return (IsFlag(string) and FlagIsRequired(suggestions[string]) and
-            not _FlagAlreadyUsed(string))
+    return (IsFlag(token_name) and
+            (FlagIsRequired(suggestions[token_name]) or
+             FlagBelongsToRequiredGroup(suggestions[token_name],
+                                        invocation.GetPossibleFlagGroups())) and
+            not _FlagAlreadyUsed(token_name) and
+            not _FlagFromMutexGroupUsed(token_name))
+
+  def _FlagFromMutexGroupUsed(flag):
+    """Returns whether the passed flags belongs to an already used mutex group.
+
+    Args:
+      flag: the flag to check.
+
+    Returns:
+      True if the flag belongs to the same mutex group an already used flag
+      belongs to, False otherwise.
+    """
+    flag_group = invocation.GetPossibleFlags().get(flag, {}).get('group', None)
+    return (flag_group in invocation.flag_groups and
+            invocation.flag_groups[flag_group].get('is_mutex', False))
 
   def _FlagFromGroupAlreadyUsed(flag_group):
-    """Return whether any of the flags belonging to the group has been used.
+    """Returns whether any of the flags belonging to the group has been used.
 
     Args:
       flag_group: an iterable containing strings with the names of the flags for
@@ -304,7 +364,7 @@ def RankedCompletions(suggestions, invocation):
     """
     return any(_FlagAlreadyUsed(flag) for flag in flag_group)
 
-  def _ShouldPrioritizeUnusedLocationFlag(string):
+  def _ShouldPrioritizeUnusedLocationFlag(token_name):
     """Returns whether the passed string is an unused location flag.
 
     Unused in this particular context means not only that the actual flag being
@@ -313,12 +373,12 @@ def RankedCompletions(suggestions, invocation):
     prioritization).
 
     Args:
-      string: the flag to check.
+      token_name: the flag to check.
 
     Returns:
       True if the string passed is an unused location flag, False otherwise.
     """
-    return (IsFlag(string) and string in _LOCATION_FLAGS and
+    return (IsFlag(token_name) and token_name in _LOCATION_FLAGS and
             not _FlagFromGroupAlreadyUsed(_LOCATION_FLAGS))
 
   def _PrioritizedUnusedRequiredFlags(keys):

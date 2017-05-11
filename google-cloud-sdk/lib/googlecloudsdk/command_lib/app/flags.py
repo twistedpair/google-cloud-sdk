@@ -25,25 +25,22 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 
-SERVER_FLAG = base.Argument(
-    '--server',
-    help=argparse.SUPPRESS)
+DOMAIN_FLAG = base.Argument(
+    'domain',
+    help=('A valid domain which may begin with a wildcard, such as: '
+          '`example.com` or `*.example.com`'))
+
+CERTIFICATE_ID_FLAG = base.Argument(
+    'id',
+    help=('The id of the certificate. This identifier is printed upon'
+          ' creation of a new certificate. Run `{parent_command}'
+          ' list` to view existing certificates.'))
 
 IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',
     default=False,
     help=argparse.SUPPRESS)
-
-SERVICE = base.Argument(
-    '--service', '-s',
-    help='Limit to specific service.',
-    required=False)
-
-VERSION = base.Argument(
-    '--version', '-v',
-    help='Limit to specific version.',
-    required=False)
 
 LEVEL = base.Argument(
     '--level',
@@ -61,6 +58,60 @@ LOGS = base.Argument(
     default=logs_util.DEFAULT_LOGS,
     metavar='APP_LOG',
     type=arg_parsers.ArgList(min_length=1))
+
+SERVER_FLAG = base.Argument('--server', help=argparse.SUPPRESS)
+
+SERVICE = base.Argument(
+    '--service', '-s', help='Limit to specific service.', required=False)
+
+VERSION = base.Argument(
+    '--version', '-v', help='Limit to specific version.', required=False)
+
+
+def AddCertificateIdFlag(parser, include_no_cert):
+  """Add the --certificate-id flag to a domain-mappings command."""
+
+  certificate_id = base.Argument(
+      '--certificate-id',
+      help=('A certificate id to use for this domain. Use the '
+            ' `gcloud app ssl-certificates list` to see available certificates'
+            ' for this app.'))
+
+  if include_no_cert:
+    group = parser.add_mutually_exclusive_group()
+    certificate_id.AddToParser(group)
+    group.add_argument(
+        '--no-certificate-id',
+        action='store_true',
+        help='Do not associate any certificate with this domain.')
+  else:
+    certificate_id.AddToParser(parser)
+
+
+def AddSslCertificateFlags(parser, required):
+  """Add the common flags to an ssl-certificates command."""
+
+  parser.add_argument(
+      '--display-name',
+      required=required,
+      help='A display name for this certificate.')
+  parser.add_argument(
+      '--certificate',
+      required=required,
+      metavar='LOCAL_FILE_PATH',
+      help="""\
+      The file path for the new certificate to upload. Must be in PEM
+      x.509 format including the header and footer.
+      """)
+  parser.add_argument(
+      '--private-key',
+      required=required,
+      metavar='LOCAL_FILE_PATH',
+      help="""\
+      The file path to a local RSA private key file. The private key must be
+      PEM encoded with header and footer and must be 2048 bits
+      or fewer.
+        """)
 
 
 def ValidateDockerBuildFlag(unused_value):

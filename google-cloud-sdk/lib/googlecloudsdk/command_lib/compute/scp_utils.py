@@ -57,7 +57,8 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
         help=('The zone of the instance to copy files to/from.\n\n' +
               flags.ZONE_PROPERTY_EXPLANATION))
 
-  def Run(self, args, port=None, recursive=False, extra_flags=None):
+  def Run(self, args, port=None, recursive=False, compress=False,
+          extra_flags=None):
     """SCP files between local and remote GCE instance.
 
     Run this method from subclasses' Run methods.
@@ -66,6 +67,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
       args: argparse.Namespace, the args the command was invoked with.
       port: str, int or None, Port number to use for SSH connection.
       recursive: bool, Whether to use recursive copying using -R flag.
+      compress: bool, Whether to use compression.
       extra_flags: [str] or None, extra flags to add to command invocation.
 
     Raises:
@@ -106,7 +108,8 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
 
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,
-        recursive=recursive, port=port, extra_flags=extra_flags)
+        recursive=recursive, compress=compress, port=port,
+        extra_flags=extra_flags)
 
     if args.dry_run:
       log.out.Print(' '.join(cmd.Build(self.env)))

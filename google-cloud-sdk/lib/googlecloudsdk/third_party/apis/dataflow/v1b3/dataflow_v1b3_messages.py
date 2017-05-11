@@ -2532,12 +2532,14 @@ class MetricUpdate(_messages.Message):
       aggregate value accumulated since the worker started working on this
       WorkItem. By default this is false, indicating that this metric is
       reported as a delta that is not associated with any WorkItem.
+    distribution: A struct value describing properties of a distribution of
+      numeric values.
     internal: Worker-computed aggregate value for internal use by the Dataflow
       service.
     kind: Metric aggregation kind.  The possible metric aggregation kinds are
-      "Sum", "Max", "Min", "Mean", "Set", "And", and "Or". The specified
-      aggregation kind is case-insensitive.  If omitted, this is not an
-      aggregated value but instead a single metric sample value.
+      "Sum", "Max", "Min", "Mean", "Set", "And", "Or", and "Distribution". The
+      specified aggregation kind is case-insensitive.  If omitted, this is not
+      an aggregated value but instead a single metric sample value.
     meanCount: Worker-computed aggregate value for the "Mean" aggregation
       kind. This holds the count of the aggregated values and is used in
       combination with mean_sum above to obtain the actual mean aggregate
@@ -2560,14 +2562,15 @@ class MetricUpdate(_messages.Message):
   """
 
   cumulative = _messages.BooleanField(1)
-  internal = _messages.MessageField('extra_types.JsonValue', 2)
-  kind = _messages.StringField(3)
-  meanCount = _messages.MessageField('extra_types.JsonValue', 4)
-  meanSum = _messages.MessageField('extra_types.JsonValue', 5)
-  name = _messages.MessageField('MetricStructuredName', 6)
-  scalar = _messages.MessageField('extra_types.JsonValue', 7)
-  set = _messages.MessageField('extra_types.JsonValue', 8)
-  updateTime = _messages.StringField(9)
+  distribution = _messages.MessageField('extra_types.JsonValue', 2)
+  internal = _messages.MessageField('extra_types.JsonValue', 3)
+  kind = _messages.StringField(4)
+  meanCount = _messages.MessageField('extra_types.JsonValue', 5)
+  meanSum = _messages.MessageField('extra_types.JsonValue', 6)
+  name = _messages.MessageField('MetricStructuredName', 7)
+  scalar = _messages.MessageField('extra_types.JsonValue', 8)
+  set = _messages.MessageField('extra_types.JsonValue', 9)
+  updateTime = _messages.StringField(10)
 
 
 class MountedDataDisk(_messages.Message):
@@ -2999,6 +3002,8 @@ class RuntimeEnvironment(_messages.Message):
   Fields:
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
+    machineType: The machine type to use for the job. Defaults to the value
+      from the template if not specified.
     maxWorkers: The maximum number of Google Compute Engine instances to be
       made available to your pipeline during execution, from 1 to 1000.
     serviceAccountEmail: The email address of the service account to run the
@@ -3011,10 +3016,11 @@ class RuntimeEnvironment(_messages.Message):
   """
 
   bypassTempDirValidation = _messages.BooleanField(1)
-  maxWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(3)
-  tempLocation = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  machineType = _messages.StringField(2)
+  maxWorkers = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(4)
+  tempLocation = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class SendDebugCaptureRequest(_messages.Message):

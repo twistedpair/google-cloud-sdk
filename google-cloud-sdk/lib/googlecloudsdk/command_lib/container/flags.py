@@ -141,7 +141,17 @@ def AddZoneFlag(parser):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
 
 
+def AddAsyncFlag(parser):
+  """Adds the --async flags to the given parser."""
+  parser.add_argument(
+      '--async',
+      action='store_true',
+      default=None,
+      help='Don\'t wait for the operation to complete.')
+
+
 def GetAsyncValueFromAsyncAndWaitFlags(async, wait):
+  # TODO(b/28523509): Remove this function after July 2017.
   """Derives --async value from --async and --wait flags for gcloud container.
 
   Args:
@@ -176,6 +186,7 @@ def GetAsyncValueFromAsyncAndWaitFlags(async, wait):
 
 
 def AddClustersWaitAndAsyncFlags(parser):
+  # TODO(b/28523509): Remove this function after July 2017.
   """Adds the --wait and --async flags to the given parser."""
   parser.add_argument(
       '--wait',
@@ -231,6 +242,7 @@ See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
 
   parser.add_argument(
       '--node-labels',
+      metavar='NODE_LABEL',
       type=arg_parsers.ArgDict(),
       help=help_text)
 
@@ -446,4 +458,70 @@ state."""
       action='store_true',
       default=False,
       hidden=hidden,
+      help=help_text)
+
+
+def AddLabelsFlag(parser, suppressed=False):
+  """Adds Labels related flags to parser.
+
+  Args:
+    parser: A given parser.
+    suppressed: Whether or not to suppress help text.
+  """
+
+  help_text = argparse.SUPPRESS if suppressed else """\
+Labels to apply to the Google Cloud resources in use by the Container Engine
+cluster. These are unrelated to Kubernetes labels.
+Example:
+
+  $ {command} example-cluster --labels=label_a=value1,label_b=,label_c=value3
+"""
+  parser.add_argument(
+      '--labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)
+
+
+def AddUpdateLabelsFlag(parser, suppressed=False):
+  """Adds Update Labels related flags to parser.
+
+  Args:
+    parser: A given parser.
+    suppressed: Whether or not to suppress help text.
+  """
+
+  help_text = argparse.SUPPRESS if suppressed else """\
+Labels to apply to the Google Cloud resources in use by the Container Engine
+cluster. These are unrelated to Kubernetes labels.
+Example:
+
+  $ {command} example-cluster --update-labels=label_a=value1,label_b=value2
+"""
+  parser.add_argument(
+      '--update-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)
+
+
+def AddRemoveLabelsFlag(parser, suppressed=False):
+  """Adds Remove Labels related flags to parser.
+
+  Args:
+    parser: A given parser.
+    suppressed: Whether or not to suppress help text.
+  """
+
+  help_text = argparse.SUPPRESS if suppressed else """\
+Labels to remove from the Google Cloud resources in use by the Container Engine
+cluster. These are unrelated to Kubernetes labels.
+Example:
+
+  $ {command} example-cluster --remove-labels=label_a,label_b
+"""
+  parser.add_argument(
+      '--remove-labels',
+      metavar='KEY',
+      type=arg_parsers.ArgList(),
       help=help_text)

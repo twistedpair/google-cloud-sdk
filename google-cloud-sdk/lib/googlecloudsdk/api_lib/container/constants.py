@@ -22,8 +22,8 @@ EXPIRE_WARNING = """
 
 KUBERNETES_ALPHA_PROMPT = (
     "This will create a cluster with all Kubernetes Alpha features enabled.\n"
-    "- This cluster will not covered by the Container Engine SLA and should "
-    "not be used for production workloads.\n"
+    "- This cluster will not be covered by the Container Engine SLA and should"
+    " not be used for production workloads.\n"
     "- You will not be able to upgrade the master or nodes.\n"
     "- The cluster will be deleted after 30 days.\n"
 )

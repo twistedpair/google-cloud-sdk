@@ -224,13 +224,15 @@ def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
     return False
 
 
-def _RecordSetFromZoneRecord(name, rdset, origin):
+def _RecordSetFromZoneRecord(name, rdset, origin, api_version='v1'):
   """Returns the Cloud DNS ResourceRecordSet for the given zone file record.
 
   Args:
     name: Name, Domain name of the zone record.
     rdset: Rdataset, The zone record object.
     origin: Name, The origin domain of the zone file.
+    api_version: [str], the api version to use for creating the records.
+
   Returns:
     The ResourceRecordSet equivalent for the given zone record, or None for
     unsupported record types.
@@ -238,7 +240,7 @@ def _RecordSetFromZoneRecord(name, rdset, origin):
   if GetRdataTranslation(rdset.rdtype) is None:
     return None
 
-  messages = core_apis.GetMessagesModule('dns', 'v1')
+  messages = core_apis.GetMessagesModule('dns', api_version)
   record_set = messages.ResourceRecordSet()
   # Need to assign kind to default value for useful equals comparisons.
   record_set.kind = record_set.kind
@@ -252,12 +254,13 @@ def _RecordSetFromZoneRecord(name, rdset, origin):
   return record_set
 
 
-def RecordSetsFromZoneFile(zone_file, domain):
+def RecordSetsFromZoneFile(zone_file, domain, api_version='v1'):
   """Returns record-sets for the given domain imported from the given zone file.
 
   Args:
     zone_file: file, The zone file with records for the given domain.
     domain: str, The domain for which record-sets should be obtained.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     A (name, type) keyed dict of ResourceRecordSets that were obtained from the
@@ -269,17 +272,19 @@ def RecordSetsFromZoneFile(zone_file, domain):
   zone_contents = zone.from_file(zone_file, domain, check_origin=False)
   record_sets = {}
   for name, rdset in zone_contents.iterate_rdatasets():
-    record_set = _RecordSetFromZoneRecord(name, rdset, zone_contents.origin)
+    record_set = _RecordSetFromZoneRecord(
+        name, rdset, zone_contents.origin, api_version=api_version)
     if record_set:
       record_sets[(record_set.name, record_set.type)] = record_set
   return record_sets
 
 
-def RecordSetsFromYamlFile(yaml_file):
+def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
   """Returns record-sets read from the given yaml file.
 
   Args:
     yaml_file: file, A yaml file with records.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     A (name, type) keyed dict of ResourceRecordSets that were obtained from the
@@ -289,7 +294,7 @@ def RecordSetsFromYamlFile(yaml_file):
     provided by Cloud DNS.
   """
   record_sets = {}
-  messages = core_apis.GetMessagesModule('dns', 'v1')
+  messages = core_apis.GetMessagesModule('dns', api_version)
 
   yaml_record_sets = yaml.safe_load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
@@ -315,16 +320,17 @@ def RecordSetsFromYamlFile(yaml_file):
   return record_sets
 
 
-def _RecordSetCopy(record_set):
+def _RecordSetCopy(record_set, api_version='v1'):
   """Returns a copy of the given record-set.
 
   Args:
     record_set: ResourceRecordSet, Record-set to be copied.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     Returns a copy of the given record-set.
   """
-  messages = core_apis.GetMessagesModule('dns', 'v1')
+  messages = core_apis.GetMessagesModule('dns', api_version)
   copy = messages.ResourceRecordSet()
   copy.kind = record_set.kind
   copy.name = record_set.name
@@ -334,39 +340,41 @@ def _RecordSetCopy(record_set):
   return copy
 
 
-def _SOAReplacement(current_record, record_to_be_imported):
+def _SOAReplacement(current_record, record_to_be_imported, api_version='v1'):
   """Returns the replacement SOA record with restored master NS name.
 
   Args:
     current_record: ResourceRecordSet, Current record-set.
     record_to_be_imported: ResourceRecordSet, Record-set to be imported.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     ResourceRecordSet, the replacement SOA record with restored master NS name.
   """
-  replacement = _RecordSetCopy(record_to_be_imported)
+  replacement = _RecordSetCopy(record_to_be_imported, api_version=api_version)
   replacement.rrdatas[0] = replacement.rrdatas[0].format(
       current_record.rrdatas[0].split()[0])
 
   if replacement == current_record:
     # There should always be a different 'next' SOA record.
-    return NextSOARecordSet(replacement)
+    return NextSOARecordSet(replacement, api_version)
   else:
     return replacement
 
 
-def _RDataReplacement(current_record, record_to_be_imported):
+def _RDataReplacement(current_record, record_to_be_imported, api_version='v1'):
   """Returns a record-set containing rrdata to be imported.
 
   Args:
     current_record: ResourceRecordSet, Current record-set.
     record_to_be_imported: ResourceRecordSet, Record-set to be imported.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     ResourceRecordSet, a record-set containing rrdata to be imported.
     None, if rrdata to be imported is identical to current rrdata.
   """
-  replacement = _RecordSetCopy(record_to_be_imported)
+  replacement = _RecordSetCopy(record_to_be_imported, api_version=api_version)
   if replacement == current_record:
     return None
   else:
@@ -380,53 +388,62 @@ _RDATA_REPLACEMENTS = {
     rdatatype.AAAA: _RDataReplacement,
     rdatatype.CAA: _RDataReplacement,
     rdatatype.CNAME: _RDataReplacement,
+    rdatatype.DNSKEY: _RDataReplacement,
+    rdatatype.DS: _RDataReplacement,
+    rdatatype.IPSECKEY: _RDataReplacement,
     rdatatype.MX: _RDataReplacement,
     rdatatype.PTR: _RDataReplacement,
     rdatatype.SOA: _SOAReplacement,
     rdatatype.SPF: _RDataReplacement,
     rdatatype.SRV: _RDataReplacement,
+    rdatatype.SSHFP: _RDataReplacement,
     rdatatype.TXT: _RDataReplacement,
+    rdatatype.TLSA: _RDataReplacement,
+    rdatatype.NAPTR: _RDataReplacement,
     rdatatype.NS: _RDataReplacement,
 }
 
 
-def NextSOARecordSet(soa_record_set):
+def NextSOARecordSet(soa_record_set, api_version='v1'):
   """Returns a new SOA record set with an incremented serial number.
 
   Args:
     soa_record_set: ResourceRecordSet, Current SOA record-set.
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     A a new SOA record-set with an incremented serial number.
   """
-  next_soa_record_set = _RecordSetCopy(soa_record_set)
+  next_soa_record_set = _RecordSetCopy(soa_record_set, api_version=api_version)
   rdata_parts = soa_record_set.rrdatas[0].split()
   # Increment the 32 bit serial number by one and wrap around if needed.
   rdata_parts[2] = str((long(rdata_parts[2]) + 1) % (1 << 32))
-  next_soa_record_set.rrdatas[0] = ' '.join(rdata_parts)
+  next_soa_record_set.rrdatas[0] = u' '.join(rdata_parts)
   return next_soa_record_set
 
 
-def IsOnlySOAIncrement(change):
+def IsOnlySOAIncrement(change, api_version='v1'):
   """Returns True if the change only contains an SOA increment, False otherwise.
 
   Args:
     change: Change, the change to be checked
+    api_version: [str], the api version to use for creating the records.
 
   Returns:
     True if the change only contains an SOA increment, False otherwise.
   """
-  return (len(change.additions) == len(change.deletions) == 1 and
-          rdatatype.from_text(change.deletions[0].type) is rdatatype.SOA and
-          NextSOARecordSet(change.deletions[0]) == change.additions[0])
+  return (
+      len(change.additions) == len(change.deletions) == 1 and
+      rdatatype.from_text(change.deletions[0].type) is rdatatype.SOA and
+      NextSOARecordSet(change.deletions[0], api_version) == change.additions[0])
 
 
 def _NameAndType(record):
-  return '{0} {1}'.format(record.name, record.type)
+  return u'{0} {1}'.format(record.name, record.type)
 
 
 def ComputeChange(current, to_be_imported, replace_all=False,
-                  origin=None, replace_origin_ns=False):
+                  origin=None, replace_origin_ns=False, api_version='v1'):
   """Returns a change for importing the given record-sets.
 
   Args:
@@ -436,6 +453,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
       current record-sets.
     origin: string, the name of the apex zone ex. "foo.com"
     replace_origin_ns: bool, Whether origin NS records should be imported.
+    api_version: [str], the api version to use for creating the records.
 
   Raises:
     ToolException: If conflicting CNAME records are found.
@@ -444,7 +462,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
     A Change that describes the actions required to import the given
     record-sets.
   """
-  messages = core_apis.GetMessagesModule('dns', 'v1')
+  messages = core_apis.GetMessagesModule('dns', api_version)
   change = messages.Change()
   change.additions = []
   change.deletions = []
@@ -467,7 +485,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
                             origin,
                             replace_origin_ns):
       replacement = _RDATA_REPLACEMENTS[rdtype](
-          current_record, record_to_be_imported)
+          current_record, record_to_be_imported, api_version=api_version)
       if replacement:
         change.deletions.append(current_record)
         change.additions.append(replacement)
@@ -480,7 +498,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
     rdtype = rdatatype.from_text(key[1])
     if rdtype is rdatatype.SOA:
       change.deletions.append(current_record)
-      change.additions.append(NextSOARecordSet(current_record))
+      change.additions.append(NextSOARecordSet(current_record, api_version))
     elif replace_all and not _FilterOutRecord(current_record.name,
                                               rdtype,
                                               origin,
@@ -488,7 +506,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
       change.deletions.append(current_record)
 
   # If the only change is an SOA increment, there is nothing to be done.
-  if IsOnlySOAIncrement(change):
+  if IsOnlySOAIncrement(change, api_version):
     return None
 
   change.additions.sort(key=_NameAndType)

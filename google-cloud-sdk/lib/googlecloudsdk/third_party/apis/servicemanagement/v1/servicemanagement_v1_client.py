@@ -287,6 +287,34 @@ Operation<response: SubmitConfigSourceResponse>
       self._upload_configs = {
           }
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (ServicemanagementServicesConsumersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'servicemanagement.services.consumers.getIamPolicy',
+        ordered_params=[u'servicesId', u'consumersId'],
+        path_params=[u'consumersId', u'servicesId'],
+        query_params=[],
+        relative_path=u'v1/services/{servicesId}/consumers/{consumersId}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'ServicemanagementServicesConsumersGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists consumer settings for managed services.
 To search across all services, specify {service_name} as '-'.
@@ -311,6 +339,65 @@ To search across all services, specify {service_name} as '-'.
         request_field='',
         request_type_name=u'ServicemanagementServicesConsumersListRequest',
         response_type_name=u'ListServiceConsumersResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+      Args:
+        request: (ServicemanagementServicesConsumersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'servicemanagement.services.consumers.setIamPolicy',
+        ordered_params=[u'servicesId', u'consumersId'],
+        path_params=[u'consumersId', u'servicesId'],
+        query_params=[],
+        relative_path=u'v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'ServicemanagementServicesConsumersSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
+      Args:
+        request: (ServicemanagementServicesConsumersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'servicemanagement.services.consumers.testIamPermissions',
+        ordered_params=[u'servicesId', u'consumersId'],
+        path_params=[u'consumersId', u'servicesId'],
+        query_params=[],
+        relative_path=u'v1/services/{servicesId}/consumers/{consumersId}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'ServicemanagementServicesConsumersTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

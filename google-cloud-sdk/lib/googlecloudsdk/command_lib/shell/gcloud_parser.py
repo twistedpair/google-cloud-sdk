@@ -42,6 +42,7 @@ class GcloudInvocation(object):
     self.command = None
     self.groups = []
     self.flags = []
+    self.flag_groups = {}
     self.positionals = []
 
     for token in tokens:
@@ -51,6 +52,11 @@ class GcloudInvocation(object):
         self.groups.append(token)
       elif token.token_type == ArgTokenType.FLAG:
         self.flags.append(token)
+        flag_group = token.tree.get('group', None)
+        if flag_group:
+          flag_group_properties = self.GetPossibleFlagGroups().get(flag_group)
+          if flag_group_properties:
+            self.flag_groups[flag_group] = flag_group_properties
       elif token.token_type == ArgTokenType.POSITIONAL:
         self.positionals.append(token)
 
@@ -74,6 +80,14 @@ class GcloudInvocation(object):
       flags.update(self.command.tree.get('flags', {}))
 
     return flags
+
+  def GetPossibleFlagGroups(self):
+    flag_groups = {}
+    for group in self.groups:
+      flag_groups.update(group.tree.get('groups', {}))
+    if self.command:
+      flag_groups.update(self.command.tree.get('groups', {}))
+    return flag_groups
 
   def GetPossibleCommandGroups(self):
     """Get all the possible commands for the current group."""
@@ -236,7 +250,7 @@ def ParseArgs(ts):
         cur = cur['commands'][value]
         expected_flags.update(cur['flags'])
 
-        if cur['commands']:
+        if cur.get('commands'):
           token_type = ArgTokenType.GROUP
         else:
           token_type = ArgTokenType.COMMAND

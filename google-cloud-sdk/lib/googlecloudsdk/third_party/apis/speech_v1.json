@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Speech API",
-  "description": "Google Cloud Speech API.",
+  "description": "Converts audio to text by applying powerful neural network models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

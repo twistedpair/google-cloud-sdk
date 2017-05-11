@@ -179,7 +179,7 @@ set.
         method_id=u'sourcerepo.projects.repos.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1/{+name}/repos',
         request_field='',
         request_type_name=u'SourcerepoProjectsReposListRequest',

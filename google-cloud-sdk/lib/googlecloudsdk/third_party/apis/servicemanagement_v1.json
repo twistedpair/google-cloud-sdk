@@ -899,6 +899,11 @@
           "description": "The number of seconds to wait for a response from a request.  The\ndefault depends on the deployment context.",
           "type": "number",
           "format": "double"
+        },
+        "minDeadline": {
+          "description": "Minimum deadline in seconds needed for this method. Calls having deadline\nvalue lower than this will be rejected.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -975,6 +980,10 @@
           "items": {
             "$ref": "HttpRule"
           }
+        },
+        "restCollection": {
+          "description": "Optional. The REST collection name is by default derived from the URL\npattern. If specified, this field overrides the default collection name.\nExample:\n\n    rpc AddressesAggregatedList(AddressesAggregatedListRequest)\n        returns (AddressesAggregatedListResponse) {\n      option (google.api.http) = {\n        get: \"\/v1\/projects\/{project_id}\/aggregated\/addresses\"\n        rest_collection: \"projects.addresses\"\n      };\n    }\n\nThis method has the automatically derived collection name\n\"projects.aggregated\". Because, semantically, this rpc is actually an\noperation on the \"projects.addresses\" collection, the `rest_collection`\nfield is configured to override the derived collection name.",
+          "type": "string"
         }
       }
     },
@@ -1151,6 +1160,10 @@
           "description": "The requirements for OAuth credentials.",
           "$ref": "OAuthRequirements"
         },
+        "customAuth": {
+          "description": "Configuration for custom authentication.",
+          "$ref": "CustomAuthRequirements"
+        },
         "allowWithoutCredential": {
           "description": "Whether to allow requests without a credential. The credential can be\nan OAuth token, Google cookies (first-party auth) or EndUserCreds.\n\nFor requests without credentials, if the service control environment is\nspecified, each incoming request **must** be associated with a service\nconsumer. This can be done by passing an API key that belongs to a consumer\nproject.",
           "type": "boolean"
@@ -1171,6 +1184,17 @@
       "properties": {
         "canonicalScopes": {
           "description": "The list of publicly documented OAuth scopes that are allowed access. An\nOAuth token containing any of these scopes will be accepted.\n\nExample:\n\n     canonical_scopes: https:\/\/www.googleapis.com\/auth\/calendar,\n                       https:\/\/www.googleapis.com\/auth\/calendar.read",
+          "type": "string"
+        }
+      }
+    },
+    "CustomAuthRequirements": {
+      "id": "CustomAuthRequirements",
+      "description": "Configuration for a custom authentication provider.",
+      "type": "object",
+      "properties": {
+        "provider": {
+          "description": "A configuration string containing connection information for the\nauthentication provider, typically formatted as a SmartService string\n(go\/smartservice).",
           "type": "string"
         }
       }
@@ -1787,6 +1811,13 @@
             "$ref": "QuotaLimitOverride"
           }
         },
+        "adminOverrides": {
+          "description": "Quota overrides set by an administrator of a consumer organization or\nfolder. The administrator of an organization or folder can set admin\noverrides for any folders or projects beneath it.\n\nWhen a project or folder moves out of the folder or organization that sets\nthe admin override, the admin override will be removed.\n\nThe key for this map is the same as the key for consumer_overrides.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "QuotaLimitOverride"
+          }
+        },
         "effectiveQuotas": {
           "description": "The effective quota limits for each group, derived from the service\ndefaults together with any producer or consumer overrides.\nFor each limit, the effective value is the minimum of the producer\nand consumer overrides if either is present, or else the service default\nif neither is present.\nDEPRECATED. Use effective_quota_groups instead.",
           "type": "object",
@@ -1830,6 +1861,10 @@
         "unlimited": {
           "description": "Indicates the override is to provide unlimited quota.  If true,\nany value set for limit will be ignored.\nDEPRECATED. Use a limit value of -1 instead.",
           "type": "boolean"
+        },
+        "requesterResource": {
+          "description": "The resource id of the ancestry folder or organization the administrator\nof which requested the override. For example: \"organizations\/12345\" or\n\"folders\/67890\".\n\nUsed by admin overrides only.",
+          "type": "string"
         }
       }
     },
@@ -2051,6 +2086,10 @@
           "items": {
             "$ref": "QuotaBucket"
           }
+        },
+        "allowAdminOverrides": {
+          "description": "whether admin overrides are allowed on this limit. Admin overrides are\nallowed if this limit is an organization level one, or if this limit is a\nproject level one and there is an identical organizational limit.",
+          "type": "boolean"
         }
       }
     },
@@ -2240,8 +2279,9 @@
             "The Rollout is in progress.",
             "The Rollout has completed successfully.",
             "The Rollout has been cancelled. This can happen if you have overlapping\nRollout pushes, and the previous ones will be cancelled.",
-            "The Rollout has failed. It is typically caused by configuration errors.",
-            "The Rollout has not started yet and is pending for execution."
+            "The Rollout has failed and the rollback attempt has failed too.",
+            "The Rollout has not started yet and is pending for execution.",
+            "The Rollout has failed and rolled back to the previous successful\nRollout."
           ],
           "type": "string",
           "enum": [
@@ -2250,7 +2290,8 @@
             "SUCCESS",
             "CANCELLED",
             "FAILED",
-            "PENDING"
+            "PENDING",
+            "FAILED_ROLLED_BACK"
           ]
         },
         "trafficPercentStrategy": {
@@ -3057,8 +3098,9 @@
             "The operation or step has completed without errors.",
             "The operation or step has not started yet.",
             "The operation or step is in progress.",
-            "The operation or step has completed with errors.",
-            "The operation or step has completed with cancellation."
+            "The operation or step has completed with errors. If the operation is\nrollbackable, the rollback completed with errors too.",
+            "The operation or step has completed with cancellation.",
+            "The operation has completed with errors but rolled back\nsuccessfully if the operation is rollbackable."
           ],
           "type": "string",
           "enum": [
@@ -3067,7 +3109,8 @@
             "NOT_STARTED",
             "IN_PROGRESS",
             "FAILED",
-            "CANCELLED"
+            "CANCELLED",
+            "FAILED_ROLLED_BACK"
           ]
         }
       }
@@ -3973,6 +4016,111 @@
               ],
               "response": {
                 "$ref": "ListServiceConsumersResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            },
+            "setIamPolicy": {
+              "id": "servicemanagement.services.consumers.setIamPolicy",
+              "path": "v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy",
+              "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy",
+              "httpMethod": "POST",
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
+              "parameters": {
+                "servicesId": {
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumersId": {
+                  "description": "Part of `resource`. See documentation of `servicesId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "servicesId",
+                "consumersId"
+              ],
+              "request": {
+                "$ref": "SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            },
+            "getIamPolicy": {
+              "id": "servicemanagement.services.consumers.getIamPolicy",
+              "path": "v1/services/{servicesId}/consumers/{consumersId}:getIamPolicy",
+              "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:getIamPolicy",
+              "httpMethod": "POST",
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
+              "parameters": {
+                "servicesId": {
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumersId": {
+                  "description": "Part of `resource`. See documentation of `servicesId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "servicesId",
+                "consumersId"
+              ],
+              "request": {
+                "$ref": "GetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "servicemanagement.services.consumers.testIamPermissions",
+              "path": "v1/services/{servicesId}/consumers/{consumersId}:testIamPermissions",
+              "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
+              "parameters": {
+                "servicesId": {
+                  "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "consumersId": {
+                  "description": "Part of `resource`. See documentation of `servicesId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "servicesId",
+                "consumersId"
+              ],
+              "request": {
+                "$ref": "TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "TestIamPermissionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",

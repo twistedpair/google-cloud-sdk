@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Natural Language API",
-  "description": "Google Cloud Natural Language API provides natural language understanding technologies to developers. Examples include sentiment analysis, entity recognition, and text annotations.",
+  "description": "Provides natural language understanding technologies to developers. Examples include sentiment analysis, entity recognition, entity sentiment analysis, and text annotations.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -125,7 +125,7 @@
       "type": "object",
       "properties": {
         "document": {
-          "description": "Input document. Currently, `analyzeSentiment` only supports English text\n(Document.language=\"EN\").",
+          "description": "Input document.",
           "$ref": "Document"
         },
         "encodingType": {
@@ -174,7 +174,7 @@
           "type": "string"
         },
         "language": {
-          "description": "The language of the document (if not specified, the language is\nautomatically detected). Both ISO and BCP-47 language codes are\naccepted.<br>\n**Current Language Restrictions:**\n\n * Only English, Spanish, and Japanese textual content are supported.\nIf the language (either specified by the caller or automatically detected)\nis not supported by the called API method, an `INVALID_ARGUMENT` error\nis returned.",
+          "description": "The language of the document (if not specified, the language is\nautomatically detected). Both ISO and BCP-47 language codes are\naccepted.<br>\n[Language Support](\/natural-language\/docs\/languages)\nlists currently supported languages for each API method.\nIf the language (either specified by the caller or automatically detected)\nis not supported by the called API method, an `INVALID_ARGUMENT` error\nis returned.",
           "type": "string"
         }
       }
@@ -189,7 +189,7 @@
           "$ref": "Sentiment"
         },
         "language": {
-          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee `Document.language` field for more details.",
+          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee Document.language field for more details.",
           "type": "string"
         },
         "sentences": {
@@ -289,7 +289,7 @@
           }
         },
         "language": {
-          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee `Document.language` field for more details.",
+          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee Document.language field for more details.",
           "type": "string"
         }
       }
@@ -420,7 +420,7 @@
           }
         },
         "language": {
-          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee `Document.language` field for more details.",
+          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee Document.language field for more details.",
           "type": "string"
         }
       }
@@ -970,7 +970,7 @@
           "$ref": "Sentiment"
         },
         "language": {
-          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee `Document.language` field for more details.",
+          "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee Document.language field for more details.",
           "type": "string"
         }
       }

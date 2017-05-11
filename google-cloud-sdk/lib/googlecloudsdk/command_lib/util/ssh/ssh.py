@@ -795,7 +795,8 @@ class SSHCommand(object):
   """
 
   def __init__(self, remote, port=None, identity_file=None,
-               options=None, extra_flags=None, remote_command=None, tty=None):
+               options=None, extra_flags=None, remote_command=None, tty=None,
+               remainder=None):
     """Construct a suite independent SSH command.
 
     Note that `extra_flags` and `remote_command` arguments are lists of strings:
@@ -813,6 +814,12 @@ class SSHCommand(object):
       remote_command: [str], command to run remotely.
       tty: bool, launch a terminal. If None, determine automatically based on
         presence of remote command.
+      remainder: [str], NOT RECOMMENDED. Arguments to be appended directly to
+        the native tool invocation, after the `[user@]host` part but prior to
+        the remote command. On PuTTY, this can only be a remote command. On
+        OpenSSH, this can be flags followed by a remote command. Cannot be
+        combined with `remote_command`. Use `extra_flags` and `remote_command`
+        instead.
     """
     self.remote = remote
     self.port = port
@@ -821,6 +828,7 @@ class SSHCommand(object):
     self.extra_flags = extra_flags or []
     self.remote_command = remote_command or []
     self.tty = tty
+    self.remainder = remainder
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -857,6 +865,12 @@ class SSHCommand(object):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
     args.extend(self.extra_flags)
     args.append(self.remote.ToArg())
+
+    # TODO(b/38179637): Remove when compute have separated flags from
+    # positionals.
+    if self.remainder:
+      args.extend(self.remainder)
+
     if self.remote_command:
       if env.suite is Suite.OPENSSH:  # Putty doesn't like double dash
         args.append('--')
@@ -904,6 +918,7 @@ class SCPCommand(object):
 
   In addition, it manages these flags:
   -r          Recursive copy
+  -C          Compression
   -P          Port
   -i          Identity file (private key)
   -o Key=Val  OpenSSH specific options that should be added, `options` arg.
@@ -913,8 +928,8 @@ class SCPCommand(object):
   validation. Specifically, do not add any of the above mentioned flags.
   """
 
-  def __init__(self, sources, destination, recursive=False, port=None,
-               identity_file=None, options=None, extra_flags=None):
+  def __init__(self, sources, destination, recursive=False, compress=False,
+               port=None, identity_file=None, options=None, extra_flags=None):
     """Construct a suite independent SCP command.
 
     Args:
@@ -924,6 +939,7 @@ class SCPCommand(object):
       destination: FileReference, the destination file or directory. If remote
         source, this must be local, and vice versa.
       recursive: bool, recursive directory copy.
+      compress: bool, enable compression.
       port: int, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
@@ -933,6 +949,7 @@ class SCPCommand(object):
     self.sources = [sources] if isinstance(sources, FileReference) else sources
     self.destination = destination
     self.recursive = recursive
+    self.compress = compress
     self.port = port
     self.identity_file = identity_file
     self.options = options or {}
@@ -1006,6 +1023,9 @@ class SCPCommand(object):
 
     if self.recursive:
       args.append('-r')
+
+    if self.compress:
+      args.append('-C')
 
     if self.port:
       args.extend(['-P', self.port])

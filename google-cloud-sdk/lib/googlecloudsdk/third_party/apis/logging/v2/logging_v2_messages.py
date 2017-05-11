@@ -1324,23 +1324,23 @@ class MonitoredResource(_messages.Message):
 
   Messages:
     LabelsValue: Required. Values for all of the labels listed in the
-      associated monitored resource descriptor. For example, Cloud SQL
-      databases use the labels "database_id" and "zone".
+      associated monitored resource descriptor. For example, Compute Engine VM
+      instances use the labels "project_id", "instance_id", and "zone".
 
   Fields:
     labels: Required. Values for all of the labels listed in the associated
-      monitored resource descriptor. For example, Cloud SQL databases use the
-      labels "database_id" and "zone".
+      monitored resource descriptor. For example, Compute Engine VM instances
+      use the labels "project_id", "instance_id", and "zone".
     type: Required. The monitored resource type. This field must match the
       type field of a MonitoredResourceDescriptor object. For example, the
-      type of a Cloud SQL database is "cloudsql_database".
+      type of a Compute Engine VM instance is gce_instance.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Required. Values for all of the labels listed in the associated
-    monitored resource descriptor. For example, Cloud SQL databases use the
-    labels "database_id" and "zone".
+    monitored resource descriptor. For example, Compute Engine VM instances
+    use the labels "project_id", "instance_id", and "zone".
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

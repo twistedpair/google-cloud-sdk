@@ -19,7 +19,6 @@ import re
 import shutil
 import StringIO
 import tempfile
-import threading
 import time
 
 from googlecloudsdk.core import config
@@ -27,6 +26,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_registry
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -50,65 +50,6 @@ _OPTIONAL_PARMS = {
         {'project': lambda parsed_args: parsed_args.project},
     ],
 }
-
-
-class CompletionProgressTracker(object):
-  """A context manager for telling the user about long-running completions."""
-
-  SPIN_MARKS = [
-      '|',
-      '/',
-      '-',
-      '\\',
-  ]
-
-  def __init__(self, ofile, timeout=3.0, autotick=True):
-    self._ticks = 0
-    self._autotick = autotick
-    self._done = False
-    self._lock = threading.Lock()
-    self.ofile = ofile
-    self.timeout = timeout
-    self.has_forked = False  # set when a child process is created
-
-  def __enter__(self):
-
-    if self._autotick:
-      def Ticker():
-        time.sleep(.2)
-        self.timeout -= .2
-        while True:
-          if self.timeout < 0:
-            self.ofile.write('?\b')
-            self.ofile.flush()
-            os.fork()
-            # the next line indicates that the tracker has forked() the process
-            self.has_forked = True
-            return
-          time.sleep(.1)
-          self.timeout -= .1
-          if self.Tick():
-            return
-      threading.Thread(target=Ticker).start()
-
-    return self
-
-  def Tick(self):
-    """Give a visual indication to the user that some progress has been made."""
-    with self._lock:
-      if not self._done:
-        self._ticks += 1
-        self.ofile.write(
-            CompletionProgressTracker.SPIN_MARKS[
-                self._ticks % len(CompletionProgressTracker.SPIN_MARKS)] + '\b')
-        self.ofile.flush()
-      return self._done
-
-  def __exit__(self, unused_type=None, unused_value=True,
-               unused_traceback=None):
-    with self._lock:
-      self.ofile.write(' \b')
-      self._done = True
 
 
 def Iterate(obj, resource_refs, fun):
@@ -507,9 +448,6 @@ class RemoteCompletion(object):
     Returns:
       The resource data list.
     """
-    pid = os.getpid()
-    ofile = RemoteCompletion.GetTickerStream()
-    tracker = CompletionProgressTracker(ofile)
     if parse_output:
       log_out = log.out
       out = StringIO.StringIO()
@@ -518,17 +456,12 @@ class RemoteCompletion(object):
       command.append('--format=none')
     else:
       command.append('--format=disable')
-    with tracker:
+    with progress_tracker.CompletionProgressTracker() as tracker:
       items = cli().Execute(command, call_arg_complete=False)
     if parse_output:
       log.out = log_out
-    if tracker.has_forked:
-      # The tracker has forked,
-      if os.getpid() == pid:
-        # This is the parent.
-        return []
-      # The parent already exited, so exit the child.
-      os.exit(0)
+    if tracker.timed_out:
+      return []
     if parse_output:
       return out.getvalue().rstrip('\n').split('\n')
     return list(items)
@@ -642,12 +575,13 @@ def _GetResourceLink(parms, collection_name):
   new_params = {}
   # Project is known by many different names in the cloud APIs, see which one
   # this API is using and set it.
+  collection_params = collection_info.GetParams('')
   for project_id in ('project', 'projectsId', 'projectId'):
-    if project_id in collection_info.params:
+    if project_id in collection_params:
       new_params[project_id] = properties.VALUES.core.project.GetOrFail
       break
 
-  for param in collection_info.params:
+  for param in collection_params:
     if param not in new_params:
       if param in parms:
         new_params[param] = parms[param]

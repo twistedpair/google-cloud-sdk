@@ -411,7 +411,19 @@ def GetDockerDigestFromPrefix(digest):
 
 
 def GcloudifyRecoverableV2Errors(err, err_str_for_status):
-  err_str = err_str_for_status.get(err.http_status_code, None)
+  """Filters err based on the existence of err.status in err_str_for_status.
+
+  Args:
+    err: The V2DiagnotsticException to filter based on .status.
+    err_str_for_status: a dict(int) -> string which maps HTTP status codes to a
+      helpful error string to display to the user.
+
+  Returns:
+    A googlecloudsdk.core.exceptions.Error with the helpful error string
+    specified in err_str_for_status, otherwise err. This prevents the gcloudSDK
+    from 'crashing' and helps the user recover.
+  """
+  err_str = err_str_for_status.get(err.status, None)
   if err_str:
     return UserRecoverableV2Error(err_str)
   return err

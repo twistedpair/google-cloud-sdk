@@ -191,6 +191,12 @@ MAP = {
             messages_modulepath='cloudresourcemanager_v2alpha1_messages',
             default_version=False
         ),
+        'v2beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v2beta1',
+            client_classpath='cloudresourcemanager_v2beta1_client.CloudresourcemanagerV2beta1',
+            messages_modulepath='cloudresourcemanager_v2beta1_messages',
+            default_version=False
+        ),
     },
     'cloudresourcesearch': {
         'v1': APIDef(
@@ -350,6 +356,12 @@ MAP = {
             client_classpath='language_v1_client.LanguageV1',
             messages_modulepath='language_v1_messages',
             default_version=True
+        ),
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.language.v1beta2',
+            client_classpath='language_v1beta2_client.LanguageV1beta2',
+            messages_modulepath='language_v1beta2_messages',
+            default_version=False
         ),
     },
     'logging': {

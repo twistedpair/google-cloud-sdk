@@ -2,7 +2,67 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
-## 151.0.1 (2017-05-04)
+## 155.0.0 (2017-05-11)
+
+### Google App Engine
+
+*   Added `gcloud beta domains` command group.
+
+*   Added `gcloud beta app domain-mappings` command group.
+
+*   Added `gcloud beta app ssl-certificates` command group.
+
+*   Added a goroot specific to Go 1.6 in preparation for the Go 1.8 beta.
+
+### Google Cloud Datalab
+
+*   Updated the datalab component.
+    This is a bugfix-only release. Details of the fixed issue are available
+    here:
+    https://github.com/googledatalab/datalab/issues/1356
+
+### Google Cloud DNS
+
+*   Added beta track for `gcloud dns` which uses the new v2beta1 API.
+
+### Google Cloud Logging
+
+*   BUG FIX: `gcloud beta logging sinks update` would remove any start time or
+    end time from a sink.
+
+### Google Cloud SDK
+
+*   Upgraded `gsutil` component to version 4.26.
+
+### Google Cloud SQL
+
+*   Promoted `gcloud sql users` to GA.
+
+### Google Compute Engine
+
+*   Modified `gcloud compute instances attach-disk` to output full urls of zones
+    and machine types instead of outputting just their names.
+
+*   Added `--force-create` flag to `gcloud compute images create`. Applicable to
+    alpha track only.
+
+### Google Container Engine
+
+*   Added `--async` flag and deprecated `--wait` flag in
+    `gcloud container node-pools delete`. Users should use `--async` in place of
+    `--wait`.
+
+*   Moved `gcloud container operations cancel` to beta.
+
+*   Moved `gcloud container node-pools rollback` to beta.
+
+*   Added ability to specify `--labels` when creating a Container Engine cluster
+    in gcloud alpha or beta. These labels can be changed by using the
+    `--update-labels` or `--remove-labels` flags now available in `gcloud
+    container clusters update`. Labels will then be applied to GCP resources
+    that the cluster creates.
+
+## 154.0.1 (2017-05-04)
 
 ### Cloud SDK
 
@@ -15,6 +75,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 *   Added support for project creation during the `gcloud init` flow.
 
 ### Google Cloud Logging
+
 
 *   BUG FIX: gcloud beta logging sinks update would remove any start time or end time from a sink
 

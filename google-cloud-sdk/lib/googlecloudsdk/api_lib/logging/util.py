@@ -32,6 +32,9 @@ class TypedLogSink(object):
     destination: present in both versions.
     filter: present in both versions.
     format: format of exported entries, only present in V2 sinks.
+    start_time: time at which the sink becomes active
+    end_time: time at which sink is no longer active
+    include_children: whether the sink applies to all children.
     type: one-of log/service/project.
     writer_identity: identity that needs to be granted write access
         to the destination, only present in V2 sinks.
@@ -48,6 +51,9 @@ class TypedLogSink(object):
     self.name = sink.name
     self.destination = sink.destination
     self.filter = None
+    self.start_time = sink.startTime if sink.startTime else '(no start time)'
+    self.end_time = sink.endTime if sink.endTime else '(no end time)'
+
     # Get sink type.
     if log_name:
       self.type = 'LOG: %s' % log_name
@@ -56,6 +62,8 @@ class TypedLogSink(object):
     else:
       self.type = 'PROJECT SINK'
       self.filter = sink.filter if sink.filter else '(empty filter)'
+      if hasattr(sink, 'includeChildren'):
+        self.include_children = sink.includeChildren
     # Get sink format.
     if hasattr(sink, 'outputVersionFormat'):
       if sink.outputVersionFormat is None:

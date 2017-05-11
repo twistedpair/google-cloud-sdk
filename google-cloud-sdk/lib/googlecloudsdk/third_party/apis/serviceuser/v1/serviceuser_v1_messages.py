@@ -164,6 +164,7 @@ class AuthenticationRule(_messages.Message):
       control environment is specified, each incoming request **must** be
       associated with a service consumer. This can be done by passing an API
       key that belongs to a consumer project.
+    customAuth: Configuration for custom authentication.
     oauth: The requirements for OAuth credentials.
     requirements: Requirements for additional authentication providers.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -171,9 +172,10 @@ class AuthenticationRule(_messages.Message):
   """
 
   allowWithoutCredential = _messages.BooleanField(1)
-  oauth = _messages.MessageField('OAuthRequirements', 2)
-  requirements = _messages.MessageField('AuthRequirement', 3, repeated=True)
-  selector = _messages.StringField(4)
+  customAuth = _messages.MessageField('CustomAuthRequirements', 2)
+  oauth = _messages.MessageField('OAuthRequirements', 3)
+  requirements = _messages.MessageField('AuthRequirement', 4, repeated=True)
+  selector = _messages.StringField(5)
 
 
 class AuthorizationConfig(_messages.Message):
@@ -208,13 +210,16 @@ class BackendRule(_messages.Message):
     address: The address of the API backend.
     deadline: The number of seconds to wait for a response from a request.
       The default depends on the deployment context.
+    minDeadline: Minimum deadline in seconds needed for this method. Calls
+      having deadline value lower than this will be rejected.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
 
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
-  selector = _messages.StringField(3)
+  minDeadline = _messages.FloatField(3)
+  selector = _messages.StringField(4)
 
 
 class Context(_messages.Message):
@@ -260,6 +265,18 @@ class Control(_messages.Message):
   """
 
   environment = _messages.StringField(1)
+
+
+class CustomAuthRequirements(_messages.Message):
+  """Configuration for a custom authentication provider.
+
+  Fields:
+    provider: A configuration string containing connection information for the
+      authentication provider, typically formatted as a SmartService string
+      (go/smartservice).
+  """
+
+  provider = _messages.StringField(1)
 
 
 class CustomError(_messages.Message):
@@ -731,6 +748,17 @@ class HttpRule(_messages.Message):
       optional. When not set, the response message will be used as HTTP body
       of response. NOTE: the referred field must be not a repeated field and
       must be present at the top-level of response message type.
+    restCollection: Optional. The REST collection name is by default derived
+      from the URL pattern. If specified, this field overrides the default
+      collection name. Example:      rpc
+      AddressesAggregatedList(AddressesAggregatedListRequest)         returns
+      (AddressesAggregatedListResponse) {       option (google.api.http) = {
+      get: "/v1/projects/{project_id}/aggregated/addresses"
+      rest_collection: "projects.addresses"       };     }  This method has
+      the automatically derived collection name "projects.aggregated".
+      Because, semantically, this rpc is actually an operation on the
+      "projects.addresses" collection, the `rest_collection` field is
+      configured to override the derived collection name.
     selector: Selects methods to which this rule applies.  Refer to selector
       for syntax details.
   """
@@ -746,7 +774,8 @@ class HttpRule(_messages.Message):
   post = _messages.StringField(9)
   put = _messages.StringField(10)
   responseBody = _messages.StringField(11)
-  selector = _messages.StringField(12)
+  restCollection = _messages.StringField(12)
+  selector = _messages.StringField(13)
 
 
 class LabelDescriptor(_messages.Message):
@@ -2105,8 +2134,11 @@ class Step(_messages.Message):
       DONE: The operation or step has completed without errors.
       NOT_STARTED: The operation or step has not started yet.
       IN_PROGRESS: The operation or step is in progress.
-      FAILED: The operation or step has completed with errors.
+      FAILED: The operation or step has completed with errors. If the
+        operation is rollbackable, the rollback completed with errors too.
       CANCELLED: The operation or step has completed with cancellation.
+      FAILED_ROLLED_BACK: The operation has completed with errors but rolled
+        back successfully if the operation is rollbackable.
     """
     STATUS_UNSPECIFIED = 0
     DONE = 1
@@ -2114,6 +2146,7 @@ class Step(_messages.Message):
     IN_PROGRESS = 3
     FAILED = 4
     CANCELLED = 5
+    FAILED_ROLLED_BACK = 6
 
   description = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)

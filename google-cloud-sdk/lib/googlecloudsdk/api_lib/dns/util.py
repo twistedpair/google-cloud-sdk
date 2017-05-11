@@ -13,6 +13,14 @@
 # limitations under the License.
 """Common utility functions for the dns tool."""
 
+from googlecloudsdk.core import resources
+
 
 def AppendTrailingDot(name):
   return name if not name or name.endswith('.') else name + '.'
+
+
+def GetRegistry(version):
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('dns', version)
+  return registry

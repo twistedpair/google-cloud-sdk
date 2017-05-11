@@ -86,7 +86,7 @@ def _WaitForOperation(client, get_request, message):
           'Operation {0} is taking too long'.format(get_request.name))
 
 
-def Wait(operation, messages, client):
+def Wait(operation, messages, client, notice=None):
   """Initialize waiting for operation to finish.
 
   Generate get request based on the operation and wait for an operation
@@ -96,10 +96,13 @@ def Wait(operation, messages, client):
     operation: The operation which we are waiting for.
     messages: GCF messages module.
     client: GCF client module.
+    notice: str, displayed when waiting for the operation to finish.
 
   Raises:
     FunctionsError: If the operation takes more than 360s.
   """
+  if notice is None:
+    notice = 'Waiting for operation to finish'
   request = messages.CloudfunctionsOperationsGetRequest()
   request.name = operation.name
-  _WaitForOperation(client, request, 'Waiting for operation to finish')
+  _WaitForOperation(client, request, notice)

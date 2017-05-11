@@ -402,13 +402,13 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
   return result
 
 
-def ParseDiskResource(resources, name, zone, type_):
+def ParseDiskResource(resources, name, project, zone, type_):
   if type_ == compute_scopes.ScopeEnum.REGION:
     return resources.Parse(
         name,
         collection='compute.regionDisks',
         params={
-            'project': properties.VALUES.core.project.GetOrFail,
+            'project': project,
             'region': utils.ZoneNameToRegionName(zone)
         })
   else:
@@ -416,7 +416,7 @@ def ParseDiskResource(resources, name, zone, type_):
         name,
         collection='compute.disks',
         params={
-            'project': properties.VALUES.core.project.GetOrFail,
+            'project': project,
             'zone': zone
         })
 
@@ -446,7 +446,8 @@ def CreatePersistentAttachedDiskMessages(
       scope = compute_scopes.ScopeEnum.REGION
     else:
       scope = compute_scopes.ScopeEnum.ZONE
-    disk_ref = ParseDiskResource(resources, name, instance_ref.zone, scope)
+    disk_ref = ParseDiskResource(resources, name, instance_ref.project,
+                                 instance_ref.zone, scope)
 
     if boot:
       boot_disk_ref = disk_ref

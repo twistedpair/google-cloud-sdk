@@ -19,7 +19,6 @@ import string
 import sys
 
 from googlecloudsdk.api_lib.compute import lister
-from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -261,17 +260,14 @@ def GroupByProject(locations):
   return result
 
 
-def AutoscalersForLocations(zones, regions,
-                            compute, http, batch_url,
+def AutoscalersForLocations(zones, regions, client,
                             fail_when_api_not_supported=True):
   """Finds all Autoscalers defined for a given project and locations.
 
   Args:
     zones: iterable of target zone references
     regions: iterable of target region references
-    compute: module representing compute api.
-    http: communication channel.
-    batch_url: batch url.
+    client: The compute client.
     fail_when_api_not_supported: If true, raise tool exception if API does not
         support autoscaling.
   Returns:
@@ -286,17 +282,17 @@ def AutoscalersForLocations(zones, regions,
   requests = []
   for project, zones in GroupByProject(zones).iteritems():
     requests += lister.FormatListRequests(
-        service=compute.autoscalers,
+        service=client.apitools_client.autoscalers,
         project=project,
         scopes=sorted(set([zone_ref.zone for zone_ref in zones])),
         scope_name='zone',
         filter_expr=None)
 
   if regions:
-    if hasattr(compute, 'regionAutoscalers'):
+    if hasattr(client.apitools_client, 'regionAutoscalers'):
       for project, regions in GroupByProject(regions).iteritems():
         requests += lister.FormatListRequests(
-            service=compute.regionAutoscalers,
+            service=client.apitools_client.regionAutoscalers,
             project=project,
             scopes=sorted(set([region_ref.region for region_ref in regions])),
             scope_name='region',
@@ -305,11 +301,9 @@ def AutoscalersForLocations(zones, regions,
       if fail_when_api_not_supported:
         errors.append((None, 'API does not support regional autoscaling'))
 
-  autoscalers = list(request_helper.MakeRequests(
+  autoscalers = client.MakeRequests(
       requests=requests,
-      http=http,
-      batch_url=batch_url,
-      errors=errors))
+      errors_to_collect=errors)
 
   if errors:
     utils.RaiseToolException(
@@ -372,8 +366,10 @@ def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
   return None
 
 
-def AddAutoscalersToMigs(migs_iterator, resources, compute, http,
-                         batch_url, fail_when_api_not_supported=True):
+def AddAutoscalersToMigs(migs_iterator,
+                         client,
+                         resources,
+                         fail_when_api_not_supported=True):
   """Add Autoscaler to each IGM object if autoscaling is enabled for it."""
   def ParseZone(zone_link):
     return resources.Parse(
@@ -395,9 +391,7 @@ def AddAutoscalersToMigs(migs_iterator, resources, compute, http,
   all_autoscalers = AutoscalersForLocations(
       zones=zones,
       regions=regions,
-      compute=compute,
-      http=http,
-      batch_url=batch_url,
+      client=client,
       fail_when_api_not_supported=fail_when_api_not_supported)
 
   for location in list(zones) + list(regions):
@@ -656,3 +650,100 @@ def ValidateVersions(igm_info, new_versions, force=False):
         'The only allowed transitions between versions are: '
         'X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y). '
         'Please check versions templates or use --force.')
+
+
+def AddAutoscaledPropertyToMigs(migs, client, resources):
+  """Add Autoscaler information if Autoscaler is defined for the MIGs.
+
+  Issue additional queries to detect if any given Instange Group Manager is
+  a target of some autoscaler and add this information to in 'autoscaled'
+  property.
+
+  Args:
+    migs: list of dicts, List of IGM resources converted to dictionaries
+    client: a GCE client
+    resources: a GCE resource registry
+
+  Returns:
+    Pair of:
+    - boolean - True iff any autoscaler has an error
+    - Copy of migs list with additional property 'autoscaled' set to 'No'/'Yes'/
+    'Yes (*)' for each MIG depending on look-up result.
+  """
+
+  augmented_migs = []
+  had_errors = False
+  for mig in AddAutoscalersToMigs(
+      migs_iterator=_ComputeInstanceGroupSize(migs, client, resources),
+      client=client,
+      resources=resources,
+      fail_when_api_not_supported=False):
+    if 'autoscaler' in mig and mig['autoscaler'] is not None:
+      # status is present in autoscaler iff Autoscaler message has embedded
+      # StatusValueValuesEnum defined.
+      if (getattr(mig['autoscaler'], 'status', False) and mig['autoscaler']
+          .status == client.messages.Autoscaler.StatusValueValuesEnum.ERROR):
+        mig['autoscaled'] = 'yes (*)'
+        had_errors = True
+      else:
+        mig['autoscaled'] = 'yes'
+    else:
+      mig['autoscaled'] = 'no'
+    augmented_migs.append(mig)
+  return (had_errors, augmented_migs)
+
+
+def _ComputeInstanceGroupSize(items, client, resources):
+  """Add information about Instance Group size."""
+  errors = []
+  zone_refs = [
+      resources.Parse(
+          mig['zone'],
+          params={'project': properties.VALUES.core.project.GetOrFail},
+          collection='compute.zones') for mig in items if 'zone' in mig
+  ]
+  region_refs = [
+      resources.Parse(
+          mig['region'],
+          params={'project': properties.VALUES.core.project.GetOrFail},
+          collection='compute.regions') for mig in items if 'region' in mig
+  ]
+
+  zonal_instance_groups = []
+  for project, zone_refs in GroupByProject(zone_refs).iteritems():
+    zonal_instance_groups.extend(
+        lister.GetZonalResources(
+            service=client.apitools_client.instanceGroups,
+            project=project,
+            requested_zones=set([zone.zone for zone in zone_refs]),
+            filter_expr=None,
+            http=client.apitools_client.http,
+            batch_url=client.batch_url,
+            errors=errors))
+
+  regional_instance_groups = []
+  if getattr(client.apitools_client, 'regionInstanceGroups', None):
+    for project, region_refs in GroupByProject(region_refs).iteritems():
+      regional_instance_groups.extend(
+          lister.GetRegionalResources(
+              service=client.apitools_client.regionInstanceGroups,
+              project=project,
+              requested_regions=set([region.region for region in region_refs]),
+              filter_expr=None,
+              http=client.apitools_client.http,
+              batch_url=client.batch_url,
+              errors=errors))
+
+  instance_groups = zonal_instance_groups + regional_instance_groups
+  instance_group_uri_to_size = {ig.selfLink: ig.size for ig in instance_groups}
+
+  if errors:
+    utils.RaiseToolException(errors)
+
+  for item in items:
+    self_link = item['selfLink']
+    gm_self_link = self_link.replace('/instanceGroupManagers/',
+                                     '/instanceGroups/')
+
+    item['size'] = str(instance_group_uri_to_size.get(gm_self_link, ''))
+    yield item

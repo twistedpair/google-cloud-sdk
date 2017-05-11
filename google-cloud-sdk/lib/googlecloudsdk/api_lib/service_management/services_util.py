@@ -49,7 +49,7 @@ ALL_IAM_PERMISSIONS = [
     'servicemanagement.services.getProjectSettings',
     'servicemanagement.services.delete',
     'servicemanagement.services.update',
-    'servicemanagement.services.use',
+    'servicemanagement.services.bind',
     'servicemanagement.services.updateProjectSettings',
     'servicemanagement.services.check',
     'servicemanagement.services.report',

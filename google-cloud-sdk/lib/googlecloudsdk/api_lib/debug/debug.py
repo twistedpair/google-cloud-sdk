@@ -1017,10 +1017,14 @@ def _FindLatestMinorVersion(debuggees):
     minor_version = d.labels.get('minorversion', 0)
     if not minor_version:
       return None
-    minor_version = int(minor_version)
-    if not best_version or minor_version > best_version:
-      best_version = minor_version
-      best = d
+    try:
+      minor_version = int(minor_version)
+      if not best_version or minor_version > best_version:
+        best_version = minor_version
+        best = d
+    except ValueError:
+      # Got a bogus minor version. We can't determine which is best.
+      return None
   return best
 
 

@@ -50,7 +50,7 @@ def ResourceDescription(name):
   _PROJECTION_:: A list of resource keys that selects the data listed. \
 {see_projection}
 
-  _resource keys_:: Keys are names for resource resource items. {see_key}
+  _resource keys_:: Keys are names for resource items. {see_key}
 
   Most *gcloud* *list* commands have a *--filter=*_EXPRESSION_ flag that
   selects resources to be listed. {see_filter}

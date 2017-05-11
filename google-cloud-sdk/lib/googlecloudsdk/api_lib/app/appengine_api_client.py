@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,28 +23,16 @@ from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
+from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.app.api import requests
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1
 
 import yaml
 
-API_VERSION = 'v1'
 
-
-class AppengineApiClient(object):
+class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
   """Client used by gcloud to communicate with the App Engine API."""
-
-  def __init__(self, client):
-    self.client = client
-    self.project = properties.VALUES.core.project.Get(required=True)
-
-  @property
-  def messages(self):
-    return self.client.MESSAGES_MODULE
 
   def GetApplication(self):
     """Retrieves the application resource.
@@ -409,11 +397,11 @@ class AppengineApiClient(object):
     """Describe the given version of the given service.
 
     Args:
-      service: str, the ID of the service for the version to describe
-      version: str, the ID of the version to describe
+      service: str, the ID of the service for the version to describe.
+      version: str, the ID of the version to describe.
 
     Returns:
-      Version resource object from the API
+      Version resource object from the API.
     """
     request = self.messages.AppengineAppsServicesVersionsGetRequest(
         name=self._FormatVersion(service, version),
@@ -498,7 +486,6 @@ class AppengineApiClient(object):
     Returns:
       A list of opeartion_util.Operation objects.
     """
-
     request = self.messages.AppengineAppsOperationsListRequest(
         name=self._FormatApp(),
         filter=op_filter)
@@ -569,45 +556,6 @@ class AppengineApiClient(object):
     version_resource.id = version_id
     return version_resource
 
-  def _FormatApp(self):
-    res = resources.REGISTRY.Parse(self.project,
-                                   params={},
-                                   collection='appengine.apps')
-    return res.RelativeName()
-
-  def _GetServiceRelativeName(self, service_name):
-    res = resources.REGISTRY.Parse(service_name,
-                                   params={'appsId': self.project},
-                                   collection='appengine.apps.services')
-    return res.RelativeName()
-
-  def _FormatVersion(self, service_name, version_id):
-    res = resources.REGISTRY.Parse(
-        version_id,
-        params={'appsId': self.project, 'servicesId': service_name},
-        collection='appengine.apps.services.versions')
-    return res.RelativeName()
-
-  def _FormatOperation(self, op_id):
-    res = resources.REGISTRY.Parse(op_id,
-                                   params={'appsId': self.project},
-                                   collection='appengine.apps.operations')
-    return res.RelativeName()
-
 
 def GetApiClient():
-  """Initializes an AppengineApiClient using the specified API version.
-
-  Uses the api_client_overrides/appengine property to determine which client
-  version to use. Additionally uses the api_endpoint_overrides/appengine
-  property to determine the server endpoint for the App Engine API.
-
-  Returns:
-    An AppengineApiClient used by gcloud to communicate with the App Engine API.
-
-  Raises:
-    ValueError: If default_version does not correspond to a supported version of
-      the API.
-  """
-  return AppengineApiClient(
-      core_apis.GetClientInstance('appengine', API_VERSION))
+  return AppengineApiClient.GetApiClient()

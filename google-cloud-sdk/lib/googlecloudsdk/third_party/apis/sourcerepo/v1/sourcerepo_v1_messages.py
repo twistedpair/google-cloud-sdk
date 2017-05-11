@@ -235,10 +235,14 @@ class ListReposResponse(_messages.Message):
   """Response for ListRepos.
 
   Fields:
+    nextPageToken: If non-empty, additional repositories exist within the
+      project. These can be retrieved by including this value in the next
+      ListReposRequest's page_token field.
     repos: The listed repos.
   """
 
-  repos = _messages.MessageField('Repo', 1, repeated=True)
+  nextPageToken = _messages.StringField(1)
+  repos = _messages.MessageField('Repo', 2, repeated=True)
 
 
 class LogConfig(_messages.Message):
@@ -332,7 +336,7 @@ class Repo(_messages.Message):
       service.
     name: Resource name of the repository, of the form
       `projects/<project>/repos/<repo>`.
-    size: The size in bytes of the repo.
+    size: The disk usage of the repo, in bytes. Only returned by GetRepo.
     url: URL to clone the repository from Google Cloud Source Repositories.
   """
 
@@ -466,9 +470,16 @@ class SourcerepoProjectsReposListRequest(_messages.Message):
   Fields:
     name: The project ID whose repos should be listed. Values are of the form
       `projects/<project>`.
+    pageSize: Maximum number of repositories to return; between 1 and 500. If
+      not set or zero, defaults to 100 at the server.
+    pageToken: Resume listing repositories where a prior ListReposResponse
+      left off. This is an opaque token that must be obtained from a recent,
+      prior ListReposResponse's next_page_token field.
   """
 
   name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class SourcerepoProjectsReposSetIamPolicyRequest(_messages.Message):

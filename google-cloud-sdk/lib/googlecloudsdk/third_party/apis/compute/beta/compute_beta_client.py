@@ -2909,6 +2909,8 @@ If an empty request body is given, clears the deprecation status instead.
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -2989,6 +2991,8 @@ You can specify a maximum of 1000 instances with this method per request.
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -3043,7 +3047,7 @@ You can specify a maximum of 1000 instances with this method per request.
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
-A managed instance group can have up to 1000 VM instances per group.
+A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -3149,6 +3153,8 @@ A managed instance group can have up to 1000 VM instances per group.
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -3177,6 +3183,8 @@ You can specify a maximum of 1000 instances with this method per request.
     def Resize(self, request, global_params=None):
       """Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
       Args:
         request: (ComputeInstanceGroupManagersResizeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -3204,6 +3212,8 @@ You can specify a maximum of 1000 instances with this method per request.
       """Resizes the managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method.
 
 If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
@@ -3552,6 +3562,8 @@ If you increase the size of the instance group, the group creates new instances 
 
     def RemoveInstances(self, request, global_params=None):
       """Removes one or more instances from the specified instance group, but does not delete those instances.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupsRemoveInstancesRequest) input message
@@ -4216,6 +4228,32 @@ If you increase the size of the instance group, the group creates new instances 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMetadata',
         request_field=u'metadata',
         request_type_name=u'ComputeInstancesSetMetadataRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMinCpuPlatform(self, request, global_params=None):
+      """Changes the minimum cpu/platform that this instance should be started as. This is called on a stopped instance.
+
+      Args:
+        request: (ComputeInstancesSetMinCpuPlatformRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMinCpuPlatform')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMinCpuPlatform.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setMinCpuPlatform',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMinCpuPlatform',
+        request_field=u'instancesSetMinCpuPlatformRequest',
+        request_type_name=u'ComputeInstancesSetMinCpuPlatformRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -5603,6 +5641,8 @@ If you increase the size of the instance group, the group creates new instances 
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -5656,6 +5696,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
 You can specify a maximum of 1000 instances with this method per request.
 
@@ -5817,6 +5859,8 @@ A regional managed instance group can contain up to 2000 instances.
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -5844,6 +5888,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def Resize(self, request, global_params=None):
       """Changes the intended size for the managed instance group. If you increase the size, the group schedules actions to create new instances using the current instance template. If you decrease the size, the group schedules delete actions on one or more instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
@@ -7199,7 +7245,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetPrivateIpGoogleAccess(self, request, global_params=None):
-      """Set whether VMs in this subnet can access Google services without assigning external IP addresses through Cloudpath.
+      """Set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
 
       Args:
         request: (ComputeSubnetworksSetPrivateIpGoogleAccessRequest) input message

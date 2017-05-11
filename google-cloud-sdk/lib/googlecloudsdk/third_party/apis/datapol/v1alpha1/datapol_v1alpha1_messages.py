@@ -72,6 +72,44 @@ class ApplyAnnotationTagRequest(_messages.Message):
   annotationName = _messages.StringField(1)
 
 
+class Asset(_messages.Message):
+  """A message that include data asset resource name and some auxiliary
+  information.
+
+  Enums:
+    TypeValueValuesEnum: Type of the data asset, if available.
+
+  Fields:
+    description: Description of the data asset, if available.
+    displayName: Display name of the data asset, if available.
+    name: Resource name of the data asset.
+    projectId: Id of the project that owns the data asset, if available.
+    type: Type of the data asset, if available.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type of the data asset, if available.
+
+    Values:
+      TYPE_UNSPECIFIED: Unknown type.
+      BIGQUERY_TABLE: BigQuery table.
+      BIGQUERY_DATASET: BigQuery dataset.
+      BIGQUERY_VIEW: BigQuery views.
+      BIGQUERY_EXTERNAL_TABLE: BigQuery external tables.
+    """
+    TYPE_UNSPECIFIED = 0
+    BIGQUERY_TABLE = 1
+    BIGQUERY_DATASET = 2
+    BIGQUERY_VIEW = 3
+    BIGQUERY_EXTERNAL_TABLE = 4
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -533,17 +571,20 @@ class ListAnnotationsResponse(_messages.Message):
 
 
 class ListAssetsResponse(_messages.Message):
-  """Response message for "DataPolicyAnnotationTagging.ListAssets".
+  """Response message for "DataPolicyAnnotationTagging.ListAssets". Next tag:
+  4
 
   Fields:
-    dataAssets: A list of resource names of data assets that are tagged with
-      the given annotation tag.
+    assets: A list of data asset resource names with auxiliary information.
+    dataAssets: [Deprecated] A list of resource names of data assets that are
+      tagged with the given annotation tag.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
 
-  dataAssets = _messages.StringField(1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  assets = _messages.MessageField('Asset', 1, repeated=True)
+  dataAssets = _messages.StringField(2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class ListPolicyTaxonomiesResponse(_messages.Message):

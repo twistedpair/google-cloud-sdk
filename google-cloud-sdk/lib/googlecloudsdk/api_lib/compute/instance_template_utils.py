@@ -27,7 +27,7 @@ EPHEMERAL_ADDRESS = object()
 # TODO(b/36056459): Add unit tests for utilities
 def CreateNetworkInterfaceMessage(
     resources, scope_lister, messages, network, region, subnet, address,
-    alias_ip_ranges_string=None):
+    alias_ip_ranges_string=None, network_tier=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -43,6 +43,10 @@ def CreateNetworkInterfaceMessage(
                * string - address name to be fetched from GCE API.
     alias_ip_ranges_string: command line string specifying a list of alias
         IP ranges.
+    network_tier: specify network tier for instance template
+               * None - no network tier
+               * PREMIUM - network tier being PREMIUM
+               * SELECT - network tier being SELECT
   Returns:
     network_interface: a NetworkInterface message object
   """
@@ -77,6 +81,10 @@ def CreateNetworkInterfaceMessage(
     if address != EPHEMERAL_ADDRESS:
       access_config.natIP = address
 
+    if network_tier is not None:
+      access_config.networkTier = (messages.AccessConfig.
+                                   NetworkTierValueValuesEnum(network_tier))
+
     network_interface.accessConfigs = [access_config]
 
   if alias_ip_ranges_string:
@@ -87,8 +95,9 @@ def CreateNetworkInterfaceMessage(
   return network_interface
 
 
-def CreateNetworkInterfaceMessages(
-    resources, scope_lister, messages, network_interface_arg, region):
+def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
+                                   network_interface_arg, region,
+                                   support_network_tier):
   """Create network interface messages.
 
   Args:
@@ -97,6 +106,7 @@ def CreateNetworkInterfaceMessages(
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
     region: region of the subnetwork.
+    support_network_tier: indicates if network tier is supported.
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -107,12 +117,20 @@ def CreateNetworkInterfaceMessages(
       # pylint: disable=g-explicit-bool-comparison
       if address == '':
         address = EPHEMERAL_ADDRESS
+
+      if support_network_tier:
+        network_tier = interface.get('network-tier',
+                                     constants.DEFAULT_NETWORK_TIER)
+      else:
+        network_tier = None
+
       result.append(CreateNetworkInterfaceMessage(
           resources, scope_lister, messages, interface.get('network', None),
           region,
           interface.get('subnet', None),
           address,
-          interface.get('aliases', None)))
+          interface.get('aliases', None),
+          network_tier))
   return result
 
 

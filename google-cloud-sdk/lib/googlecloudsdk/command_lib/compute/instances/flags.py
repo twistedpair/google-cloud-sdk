@@ -658,9 +658,9 @@ def AddAddressArgs(parser, instances=True,
         """
     if support_network_tier:
       network_interface_help += """
-        *network-tier*::: Specifies the network tier of the interface. It can
-        only take the following values: PREMIUM, SELECT. The default network
-        tier is PREMIUM.
+        *network-tier*::: Specifies the network tier of the interface. The
+        default network tier is PREMIUM. NETWORK_TIER must be one of: PREMIUM,
+        SELECT.
         """
     if instances:
       network_interface_help += """
@@ -925,14 +925,12 @@ def AddNetworkTierArgs(parser, instance=True):
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
-        It can only take the following values: PREMIUM, SELECT. The default
-        network tier is PREMIUM.
+        The default network tier is PREMIUM.
         """
   else:
     network_tier_help = """\
-        Specifies the network tier of the access configuration. It can only take
-        the following values: PREMIUM, SELECT. The default network tier is
-        PREMIUM.
+        Specifies the network tier of the access configuration. The default
+        network tier is PREMIUM.
         """
   parser.add_argument(
       '--network-tier',

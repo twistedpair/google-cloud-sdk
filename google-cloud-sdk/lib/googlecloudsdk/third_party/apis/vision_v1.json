@@ -881,8 +881,8 @@
             "Regular space.",
             "Sure space (very wide).",
             "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does",
-            "not co-occur with SPACE, LEADER_SPACE, or\nLINE_BREAK.\nLine break that ends a paragraph."
+            "End-line hyphen that is not present in text; does not co-occur with\n`SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
+            "Line break that ends a paragraph."
           ],
           "type": "string",
           "enum": [

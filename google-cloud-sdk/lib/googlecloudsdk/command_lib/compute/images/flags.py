@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _SOURCE_DISK_DETAILED_HELP = """\
@@ -48,6 +49,18 @@ def MakeDiskImageArg(plural=False):
       completion_resource_id='compute.images',
       plural=plural,
       global_collection='compute.images')
+
+
+def MakeForceCreateArg():
+  return base.Argument(
+      '--force-create',
+      action='store_true',
+      default=False,
+      help="""\
+          By default, image creation fails when it is created from a disk that
+          is attached to a running instance. When this flag is used, image
+          creation from disk will proceed even if the disk is in use.
+          """)
 
 REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',

@@ -17,7 +17,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 
-FOLDERS_API_VERSION = 'v2alpha1'
+FOLDERS_API_VERSION = 'v2beta1'
 
 
 def FoldersClient():

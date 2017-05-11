@@ -15,6 +15,14 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      zone.basename(),
+      instances.len():label=INSTANCES,
+      status
+    )"""
+
 
 def MakeHostArg(plural=False):
   return compute_flags.ResourceArgument(

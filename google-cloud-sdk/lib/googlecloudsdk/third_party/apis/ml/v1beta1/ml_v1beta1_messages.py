@@ -704,7 +704,7 @@ class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
       suppresswarning="true">standard</code> that   also includes a   <a href
       ="/ml-engine/docs/how-tos/using-gpus">   GPU that you can use in your
       trainer</a>.   </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine
-      equivalent to   <code suppresswarning="true">coplex_model_m</code> that
+      equivalent to   <code suppresswarning="true">complex_model_m</code> that
       also includes   four GPUs.   </dd> </dl>  You must set this value when
       `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages

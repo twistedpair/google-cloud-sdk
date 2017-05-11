@@ -797,6 +797,11 @@
           "description": "The number of seconds to wait for a response from a request.  The\ndefault depends on the deployment context.",
           "type": "number",
           "format": "double"
+        },
+        "minDeadline": {
+          "description": "Minimum deadline in seconds needed for this method. Calls having deadline\nvalue lower than this will be rejected.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -873,6 +878,10 @@
           "items": {
             "$ref": "HttpRule"
           }
+        },
+        "restCollection": {
+          "description": "Optional. The REST collection name is by default derived from the URL\npattern. If specified, this field overrides the default collection name.\nExample:\n\n    rpc AddressesAggregatedList(AddressesAggregatedListRequest)\n        returns (AddressesAggregatedListResponse) {\n      option (google.api.http) = {\n        get: \"\/v1\/projects\/{project_id}\/aggregated\/addresses\"\n        rest_collection: \"projects.addresses\"\n      };\n    }\n\nThis method has the automatically derived collection name\n\"projects.aggregated\". Because, semantically, this rpc is actually an\noperation on the \"projects.addresses\" collection, the `rest_collection`\nfield is configured to override the derived collection name.",
+          "type": "string"
         }
       }
     },
@@ -1049,6 +1058,10 @@
           "description": "The requirements for OAuth credentials.",
           "$ref": "OAuthRequirements"
         },
+        "customAuth": {
+          "description": "Configuration for custom authentication.",
+          "$ref": "CustomAuthRequirements"
+        },
         "allowWithoutCredential": {
           "description": "Whether to allow requests without a credential. The credential can be\nan OAuth token, Google cookies (first-party auth) or EndUserCreds.\n\nFor requests without credentials, if the service control environment is\nspecified, each incoming request **must** be associated with a service\nconsumer. This can be done by passing an API key that belongs to a consumer\nproject.",
           "type": "boolean"
@@ -1069,6 +1082,17 @@
       "properties": {
         "canonicalScopes": {
           "description": "The list of publicly documented OAuth scopes that are allowed access. An\nOAuth token containing any of these scopes will be accepted.\n\nExample:\n\n     canonical_scopes: https:\/\/www.googleapis.com\/auth\/calendar,\n                       https:\/\/www.googleapis.com\/auth\/calendar.read",
+          "type": "string"
+        }
+      }
+    },
+    "CustomAuthRequirements": {
+      "id": "CustomAuthRequirements",
+      "description": "Configuration for a custom authentication provider.",
+      "type": "object",
+      "properties": {
+        "provider": {
+          "description": "A configuration string containing connection information for the\nauthentication provider, typically formatted as a SmartService string\n(go\/smartservice).",
           "type": "string"
         }
       }
@@ -1744,8 +1768,9 @@
             "The operation or step has completed without errors.",
             "The operation or step has not started yet.",
             "The operation or step is in progress.",
-            "The operation or step has completed with errors.",
-            "The operation or step has completed with cancellation."
+            "The operation or step has completed with errors. If the operation is\nrollbackable, the rollback completed with errors too.",
+            "The operation or step has completed with cancellation.",
+            "The operation has completed with errors but rolled back\nsuccessfully if the operation is rollbackable."
           ],
           "type": "string",
           "enum": [
@@ -1754,7 +1779,8 @@
             "NOT_STARTED",
             "IN_PROGRESS",
             "FAILED",
-            "CANCELLED"
+            "CANCELLED",
+            "FAILED_ROLLED_BACK"
           ]
         }
       }

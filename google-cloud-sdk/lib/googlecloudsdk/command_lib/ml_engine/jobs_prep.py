@@ -543,5 +543,6 @@ def GetStagingLocation(job_id=None, staging_bucket=None, job_dir=None):
                                                     job_id)
   elif job_dir:
     staging_location = storage_util.ObjectReference(
-        job_dir.bucket_ref, '/'.join((job_dir.name.rstrip('/'), 'packages')))
+        job_dir.bucket_ref, '/'.join(filter(None, [job_dir.name.rstrip('/'),
+                                                   'packages'])))
   return staging_location

@@ -976,6 +976,7 @@ class BackendService(_messages.Message):
       health check can be specified, and a health check is required.  For
       internal load balancing, a URL to a HealthCheck resource must be
       specified instead.
+    iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -1071,17 +1072,18 @@ class BackendService(_messages.Message):
   enableCDN = _messages.BooleanField(7)
   fingerprint = _messages.BytesField(8)
   healthChecks = _messages.StringField(9, repeated=True)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(11, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(15)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
-  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  iap = _messages.MessageField('BackendServiceIAP', 10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(16)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
+  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1153,6 +1155,23 @@ class BackendServiceGroupHealth(_messages.Message):
 
   healthStatus = _messages.MessageField('HealthStatus', 1, repeated=True)
   kind = _messages.StringField(2, default=u'compute#backendServiceGroupHealth')
+
+
+class BackendServiceIAP(_messages.Message):
+  """Identity-Aware Proxy
+
+  Fields:
+    enabled: A boolean attribute.
+    oauth2ClientId: A string attribute.
+    oauth2ClientSecret: A string attribute.
+    oauth2ClientSecretSha256: [Output Only] SHA256 hash value for the field
+      oauth2_client_secret above.
+  """
+
+  enabled = _messages.BooleanField(1)
+  oauth2ClientId = _messages.StringField(2)
+  oauth2ClientSecret = _messages.StringField(3)
+  oauth2ClientSecretSha256 = _messages.StringField(4)
 
 
 class BackendServiceList(_messages.Message):
@@ -4541,6 +4560,52 @@ class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeProjectsDisableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsDisableXpnResourceRequest: A ProjectsDisableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsDisableXpnResourceRequest = _messages.MessageField('ProjectsDisableXpnResourceRequest', 2)
+
+
+class ComputeProjectsEnableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsEnableXpnResourceRequest: A ProjectsEnableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsEnableXpnResourceRequest = _messages.MessageField('ProjectsEnableXpnResourceRequest', 2)
+
+
 class ComputeProjectsGetRequest(_messages.Message):
   """A ComputeProjectsGetRequest object.
 
@@ -4549,6 +4614,55 @@ class ComputeProjectsGetRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnHostRequest(_messages.Message):
+  """A ComputeProjectsGetXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
+  """A ComputeProjectsGetXpnResourcesRequest object.
+
+  Fields:
+    filter: A string attribute.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeProjectsListXpnHostsRequest(_messages.Message):
+  """A ComputeProjectsListXpnHostsRequest object.
+
+  Fields:
+    filter: A string attribute.
+    maxResults: A integer attribute.
+    order_by: A string attribute.
+    pageToken: A string attribute.
+    project: Project ID for this request.
+    projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
+      passed as the request body.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  order_by = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 6)
 
 
 class ComputeProjectsMoveDiskRequest(_messages.Message):
@@ -8129,14 +8243,15 @@ class ForwardingRule(_messages.Message):
     IPAddress: The IP address that this forwarding rule is serving on behalf
       of.  For global forwarding rules, the address must be a global IP. For
       regional forwarding rules, the address must live in the same region as
-      the forwarding rule. By default, this field is empty and an ephemeral IP
-      from the same scope (global or regional) will be assigned.  When the
-      load balancing scheme is INTERNAL, this can only be an RFC 1918 IP
-      address belonging to the network/subnetwork configured for the
-      forwarding rule. A reserved address cannot be used. If the field is
-      empty, the IP address will be automatically allocated from the internal
-      IP range of the subnetwork or network configured for this forwarding
-      rule. Only IPv4 is supported.
+      the forwarding rule. By default, this field is empty and an ephemeral
+      IPv4 address from the same scope (global or regional) will be assigned.
+      A regional forwarding rule supports IPv4 only. A global forwarding rule
+      supports either IPv4 or IPv6.  When the load balancing scheme is
+      INTERNAL, this can only be an RFC 1918 IP address belonging to the
+      network/subnetwork configured for the forwarding rule. A reserved
+      address cannot be used. If the field is empty, the IP address will be
+      automatically allocated from the internal IP range of the subnetwork or
+      network configured for this forwarding rule.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid.
@@ -11275,6 +11390,11 @@ class Project(_messages.Message):
   Platform Console. Unless marked otherwise, values can only be modified in
   the console.
 
+  Enums:
+    XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
+      in a Cross Project Network (XPN) configuration. Currently only HOST
+      projects are differentiated.
+
   Fields:
     commonInstanceMetadata: Metadata key/value pairs available to all
       instances contained in this project. See Custom metadata for more
@@ -11296,7 +11416,21 @@ class Project(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     usageExportLocation: The naming prefix for daily usage reports and the
       Google Cloud Storage bucket where they are stored.
+    xpnProjectStatus: [Output Only] The role this project has in a Cross
+      Project Network (XPN) configuration. Currently only HOST projects are
+      differentiated.
   """
+
+  class XpnProjectStatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The role this project has in a Cross Project Network
+    (XPN) configuration. Currently only HOST projects are differentiated.
+
+    Values:
+      HOST: <no description>
+      UNSPECIFIED_XPN_PROJECT_STATUS: <no description>
+    """
+    HOST = 0
+    UNSPECIFIED_XPN_PROJECT_STATUS = 1
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
@@ -11309,6 +11443,58 @@ class Project(_messages.Message):
   quotas = _messages.MessageField('Quota', 9, repeated=True)
   selfLink = _messages.StringField(10)
   usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
+  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+
+
+class ProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsGetXpnResources(_messages.Message):
+  """A ProjectsGetXpnResources object.
+
+  Fields:
+    kind: [Output Only] Type of resource. Always
+      compute#projectsGetXpnResources for lists of XPN resources.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    resources: XPN resources attached to this project as their XPN host.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
+  nextPageToken = _messages.StringField(2)
+  resources = _messages.MessageField('XpnResourceId', 3, repeated=True)
+
+
+class ProjectsListXpnHostsRequest(_messages.Message):
+  """A ProjectsListXpnHostsRequest object.
+
+  Fields:
+    organization: Optional organization ID managed by Cloud Resource Manager,
+      for which to list XPN host projects. If not specified, the organization
+      will be inferred from the project.
+  """
+
+  organization = _messages.StringField(1)
 
 
 class Quota(_messages.Message):
@@ -12606,15 +12792,18 @@ class Subnetwork(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
-      property when you create the resource.
+      property when you create the resource. This field can be set only at
+      resource creation time.
     gatewayAddress: [Output Only] The gateway address for default routes to
-      reach destination addresses outside this subnetwork.
+      reach destination addresses outside this subnetwork. This field can be
+      set only at resource creation time.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network. Only IPv4 is supported.
+      overlapping within a network. Only IPv4 is supported. This field can be
+      set only at resource creation time.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     name: The name of the resource, provided by the client when initially
@@ -12626,10 +12815,14 @@ class Subnetwork(_messages.Message):
       which cannot be a dash.
     network: The URL of the network to which this subnetwork belongs, provided
       by the client when initially creating the subnetwork. Only networks that
-      are in the distributed mode can have subnetworks.
+      are in the distributed mode can have subnetworks. This field can be set
+      only at resource creation time.
     privateIpGoogleAccess: Whether the VMs in this subnet can access Google
-      services without assigned external IP addresses.
-    region: URL of the region where the Subnetwork resides.
+      services without assigned external IP addresses. This field can be both
+      set at resource creation time and updated using
+      setPrivateIpGoogleAccess.
+    region: URL of the region where the Subnetwork resides. This field can be
+      set only at resource creation time.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -14444,6 +14637,56 @@ class VpnTunnelsScopedList(_messages.Message):
 
   vpnTunnels = _messages.MessageField('VpnTunnel', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class XpnHostList(_messages.Message):
+  """A XpnHostList object.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of XPN host project URLs.
+    kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
+      of XPN hosts.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Project', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#xpnHostList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class XpnResourceId(_messages.Message):
+  """XpnResourceId
+
+  Enums:
+    TypeValueValuesEnum: The type of the XPN resource.
+
+  Fields:
+    id: The ID of the XPN resource. In the case of projects, this field
+      matches the project's name, not the canonical ID.
+    type: The type of the XPN resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of the XPN resource.
+
+    Values:
+      PROJECT: <no description>
+      XPN_RESOURCE_TYPE_UNSPECIFIED: <no description>
+    """
+    PROJECT = 0
+    XPN_RESOURCE_TYPE_UNSPECIFIED = 1
+
+  id = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Zone(_messages.Message):

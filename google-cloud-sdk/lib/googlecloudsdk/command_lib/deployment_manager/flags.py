@@ -28,7 +28,7 @@ def AddPropertiesFlag(parser):
 
   parser.add_argument(
       '--properties',
-      help='A comma seperated, key=value, map '
+      help='A comma separated, key:value, map '
       'to be used when deploying a template file directly.',
       type=arg_parsers.ArgDict(operators=dm_v2_util.NewParserDict()),
       dest='properties')

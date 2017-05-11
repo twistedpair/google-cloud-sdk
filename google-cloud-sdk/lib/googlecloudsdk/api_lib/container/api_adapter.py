@@ -49,6 +49,12 @@ Cannot use --master-authorized-networks \
 if --enable-master-authorized-networks is not \
 specified."""
 
+NO_SUCH_LABEL_ERROR_MSG = """\
+No label named '{name}' found on cluster '{cluster}'."""
+
+NO_LABELS_ON_CLUSTER_ERROR_MSG = """\
+Cluster '{cluster}' has no labels to remove."""
+
 MAX_NODES_PER_POOL = 1000
 
 
@@ -442,7 +448,8 @@ class CreateClusterOptions(object):
                service_account=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
-               enable_legacy_authorization=None):
+               enable_legacy_authorization=None,
+               labels=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -475,6 +482,7 @@ class CreateClusterOptions(object):
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
     self.enable_legacy_authorization = enable_legacy_authorization
+    self.labels = labels
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -679,6 +687,14 @@ class V1Adapter(APIAdapter):
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
+
+    if options.labels is not None:
+      labels = self.messages.Cluster.ResourceLabelsValue()
+      props = []
+      for k, v in sorted(options.labels.iteritems()):
+        props.append(labels.AdditionalProperty(key=k, value=v))
+      labels.additionalProperties = props
+      cluster.resourceLabels = labels
 
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 
@@ -979,6 +995,98 @@ class V1Adapter(APIAdapter):
     node_management.autoRepair = options.enable_autorepair
     node_management.autoUpgrade = options.enable_autoupgrade
     return node_management
+
+  def UpdateLabels(self, cluster_ref, update_labels):
+    """Update labels on a cluster.
+
+    Args:
+      cluster_ref: cluster to update.
+      update_labels: labels to set.
+    Returns:
+      Operation ref for label set operation.
+    """
+    clus = None
+    try:
+      clus = self.client.projects_zones_clusters.Get(
+          self.messages.ContainerProjectsZonesClustersGetRequest(
+              projectId=cluster_ref.projectId,
+              zone=cluster_ref.zone,
+              clusterId=cluster_ref.clusterId))
+    except apitools_exceptions.HttpError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
+        raise api_error
+
+    labels = self.messages.SetLabelsRequest.ResourceLabelsValue()
+    props = []
+    for k, v in sorted(update_labels.iteritems()):
+      props.append(labels.AdditionalProperty(key=k, value=v))
+    labels.additionalProperties = props
+
+    req = self.messages.SetLabelsRequest(
+        resourceLabels=labels, labelFingerprint=clus.labelFingerprint)
+
+    operation = self.client.projects_zones_clusters.ResourceLabels(
+        self.messages.ContainerProjectsZonesClustersResourceLabelsRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLabelsRequest=req))
+    return self.ParseOperation(operation.name)
+
+  def RemoveLabels(self, cluster_ref, remove_labels):
+    """Removes labels from a cluster.
+
+    Args:
+      cluster_ref: cluster to update.
+      remove_labels: labels to remove.
+    Returns:
+      Operation ref for label set operation.
+    """
+    clus = None
+    try:
+      clus = self.client.projects_zones_clusters.Get(
+          self.messages.ContainerProjectsZonesClustersGetRequest(
+              projectId=cluster_ref.projectId,
+              zone=cluster_ref.zone,
+              clusterId=cluster_ref.clusterId))
+    except apitools_exceptions.HttpError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
+        raise api_error
+
+    clus_labels = {}
+    if clus.resourceLabels:
+      for item in clus.resourceLabels.additionalProperties:
+        clus_labels[item.key] = str(item.value)
+
+    # if clusLabels empty, nothing to do
+    if not clus_labels:
+      raise util.Error(NO_LABELS_ON_CLUSTER_ERROR_MSG.format(cluster=clus.name))
+
+    for k in remove_labels:
+      try:
+        clus_labels.pop(k)
+      except KeyError as error:
+        # if at least one label not found on cluster, raise error
+        raise util.Error(
+            NO_SUCH_LABEL_ERROR_MSG.format(cluster=clus.name, name=k))
+
+    labels = self.messages.SetLabelsRequest.ResourceLabelsValue()
+    for k, v in sorted(clus_labels.iteritems()):
+      labels.additionalProperties.append(
+          labels.AdditionalProperty(key=k, value=v))
+
+    req = self.messages.SetLabelsRequest(
+        resourceLabels=labels, labelFingerprint=clus.labelFingerprint)
+
+    operation = self.client.projects_zones_clusters.ResourceLabels(
+        self.messages.ContainerProjectsZonesClustersResourceLabelsRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLabelsRequest=req))
+    return self.ParseOperation(operation.name)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

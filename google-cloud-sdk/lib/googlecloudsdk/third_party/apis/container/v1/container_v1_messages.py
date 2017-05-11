@@ -290,9 +290,10 @@ class Cluster(_messages.Message):
       this resource for username and password information.
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
-    initialClusterVersion: [Output only] The software version of the master
-      endpoint and kubelets used in the cluster when it was first created. The
-      version can be upgraded over time.
+    initialClusterVersion: The initial Kubernetes version for this cluster.
+      Valid versions are those found in validMasterVersions returned by
+      getServerConfig.  The version can be upgraded over time; such upgrades
+      are reflected in currentMasterVersion and currentNodeVersion.
     initialNodeCount: The number of nodes to create in this cluster. You must
       ensure that your Compute Engine <a href="/compute/docs/resource-
       quotas">resource quota</a> is sufficient for this number of instances.
@@ -1256,8 +1257,8 @@ class MasterAuth(_messages.Message):
       should create a strong password.  If a password is provided for cluster
       creation, username must be non-empty.
     username: The username to use for HTTP basic authentication to the master
-      endpoint. If an empty username is provided, basic authentication is
-      disabled for the cluster (for clusters v1.6.0 and above).
+      endpoint. For clusters v1.6.0 and later, you can disable basic
+      authentication by providing an empty username.
   """
 
   clientCertificate = _messages.StringField(1)
@@ -1563,11 +1564,21 @@ class ObjectMeta(_messages.Message):
   should consider following b/28297888 to enable "ignore_unknown_fields" in
   order to make this less brittle.
 
+  Messages:
+    AnnotationsValue: Unstructured key-value pairs that are not queryable and
+      should be preserved when modifying objects.
+    LabelsValue: Key-value pairs that may be used to scope and select
+      individual resources.
+
   Fields:
+    annotations: Unstructured key-value pairs that are not queryable and
+      should be preserved when modifying objects.
     creationTimestamp: Timestamp representing the server time when this object
       was created.
     generateName: An optional prefix, used by the server, to generate a unique
       name ONLY IF the name field has not been provided.
+    labels: Key-value pairs that may be used to scope and select individual
+      resources.
     name: The name of the resource, unique within a namespace.
     resourceVersion: An opaque value that represents the internal version of
       this object that can be used by clients to determine when objects have
@@ -1576,12 +1587,65 @@ class ObjectMeta(_messages.Message):
     uid: A unique identifier in time and space for this object.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  generateName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resourceVersion = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    """Unstructured key-value pairs that are not queryable and should be
+    preserved when modifying objects.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Key-value pairs that may be used to scope and select individual
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  creationTimestamp = _messages.StringField(2)
+  generateName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  resourceVersion = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  uid = _messages.StringField(8)
 
 
 class Operation(_messages.Message):

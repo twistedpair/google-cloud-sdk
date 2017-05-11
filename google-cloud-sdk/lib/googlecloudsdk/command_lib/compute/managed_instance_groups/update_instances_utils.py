@@ -123,10 +123,11 @@ def ValidateUpdateInstancesArgs(args):
           'Exactly one version must have the target-size specified.')
 
 
-def ParseVersion(flag_name, version_map, resources, messages):
+def ParseVersion(project, flag_name, version_map, resources, messages):
   """Retrieves version from input map.
 
   Args:
+    project: name of the project
     flag_name: name of the flag associated with the parsed string.
     version_map: map containing version data provided by the user.
     resources: provides reference for instance template resource.
@@ -140,7 +141,9 @@ def ParseVersion(flag_name, version_map, resources, messages):
                                               'template has to be specified.')
 
   template_ref = resources.Parse(
-      version_map[TEMPLATE_NAME], collection='compute.instanceTemplates')
+      version_map[TEMPLATE_NAME],
+      params={'project': project},
+      collection='compute.instanceTemplates')
 
   if TARGET_SIZE_NAME in version_map:
     target_size = ParseFixedOrPercent(flag_name, TARGET_SIZE_NAME,

@@ -2454,6 +2454,8 @@ If an empty request body is given, clears the deprecation status instead.
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -2534,6 +2536,8 @@ You can specify a maximum of 1000 instances with this method per request.
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -2588,7 +2592,7 @@ You can specify a maximum of 1000 instances with this method per request.
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
-A managed instance group can have up to 1000 VM instances per group.
+A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -2668,6 +2672,8 @@ A managed instance group can have up to 1000 VM instances per group.
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -2695,6 +2701,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def Resize(self, request, global_params=None):
       """Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeRequest) input message
@@ -2965,6 +2973,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def RemoveInstances(self, request, global_params=None):
       """Removes one or more instances from the specified instance group, but does not delete those instances.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupsRemoveInstancesRequest) input message
@@ -3933,6 +3943,110 @@ You can specify a maximum of 1000 instances with this method per request.
       self._upload_configs = {
           }
 
+    def DisableXpnHost(self, request, global_params=None):
+      """Disable this project as an XPN host project.
+
+      Args:
+        request: (ComputeProjectsDisableXpnHostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableXpnHost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.disableXpnHost',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/disableXpnHost',
+        request_field='',
+        request_type_name=u'ComputeProjectsDisableXpnHostRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DisableXpnResource(self, request, global_params=None):
+      """Disable an XPN resource associated with this host project.
+
+      Args:
+        request: (ComputeProjectsDisableXpnResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableXpnResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.disableXpnResource',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/disableXpnResource',
+        request_field=u'projectsDisableXpnResourceRequest',
+        request_type_name=u'ComputeProjectsDisableXpnResourceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def EnableXpnHost(self, request, global_params=None):
+      """Enable this project as an XPN host project.
+
+      Args:
+        request: (ComputeProjectsEnableXpnHostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableXpnHost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableXpnHost.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.enableXpnHost',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/enableXpnHost',
+        request_field='',
+        request_type_name=u'ComputeProjectsEnableXpnHostRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def EnableXpnResource(self, request, global_params=None):
+      """Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.
+
+      Args:
+        request: (ComputeProjectsEnableXpnResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableXpnResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableXpnResource.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.enableXpnResource',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/enableXpnResource',
+        request_field=u'projectsEnableXpnResourceRequest',
+        request_type_name=u'ComputeProjectsEnableXpnResourceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns the specified Project resource.
 
@@ -3956,6 +4070,84 @@ You can specify a maximum of 1000 instances with this method per request.
         request_field='',
         request_type_name=u'ComputeProjectsGetRequest',
         response_type_name=u'Project',
+        supports_download=False,
+    )
+
+    def GetXpnHost(self, request, global_params=None):
+      """Get the XPN host project that this project links to. May be empty if no link exists.
+
+      Args:
+        request: (ComputeProjectsGetXpnHostRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Project) The response message.
+      """
+      config = self.GetMethodConfig('GetXpnHost')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetXpnHost.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.projects.getXpnHost',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/getXpnHost',
+        request_field='',
+        request_type_name=u'ComputeProjectsGetXpnHostRequest',
+        response_type_name=u'Project',
+        supports_download=False,
+    )
+
+    def GetXpnResources(self, request, global_params=None):
+      """Get XPN resources associated with this host project.
+
+      Args:
+        request: (ComputeProjectsGetXpnResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectsGetXpnResources) The response message.
+      """
+      config = self.GetMethodConfig('GetXpnResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetXpnResources.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.projects.getXpnResources',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
+        relative_path=u'projects/{project}/getXpnResources',
+        request_field='',
+        request_type_name=u'ComputeProjectsGetXpnResourcesRequest',
+        response_type_name=u'ProjectsGetXpnResources',
+        supports_download=False,
+    )
+
+    def ListXpnHosts(self, request, global_params=None):
+      """List all XPN host projects visible to the user in an organization.
+
+      Args:
+        request: (ComputeProjectsListXpnHostsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (XpnHostList) The response message.
+      """
+      config = self.GetMethodConfig('ListXpnHosts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListXpnHosts.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.listXpnHosts',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'order_by', u'pageToken'],
+        relative_path=u'projects/{project}/listXpnHosts',
+        request_field=u'projectsListXpnHostsRequest',
+        request_type_name=u'ComputeProjectsListXpnHostsRequest',
+        response_type_name=u'XpnHostList',
         supports_download=False,
     )
 
@@ -4434,6 +4626,8 @@ You can specify a maximum of 1000 instances with this method per request.
     def AbandonInstances(self, request, global_params=None):
       """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -4487,6 +4681,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def DeleteInstances(self, request, global_params=None):
       """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
 You can specify a maximum of 1000 instances with this method per request.
 
@@ -4622,6 +4818,8 @@ A regional managed instance group can contain up to 2000 instances.
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
 You can specify a maximum of 1000 instances with this method per request.
 
       Args:
@@ -4649,6 +4847,8 @@ You can specify a maximum of 1000 instances with this method per request.
 
     def Resize(self, request, global_params=None):
       """Changes the intended size for the managed instance group. If you increase the size, the group schedules actions to create new instances using the current instance template. If you decrease the size, the group schedules delete actions on one or more instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
+
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
@@ -5718,7 +5918,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetPrivateIpGoogleAccess(self, request, global_params=None):
-      """Set whether VMs in this subnet can access Google services without assigning external IP addresses through Cloudpath.
+      """Set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
 
       Args:
         request: (ComputeSubnetworksSetPrivateIpGoogleAccessRequest) input message

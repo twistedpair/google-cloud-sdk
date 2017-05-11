@@ -30,7 +30,8 @@ from googlecloudsdk.core.util import platforms
 
 
 GSUTIL_BUCKET_PREFIX = 'gs://'
-GSUTIL_OBJECT_REGEX = r'^(?P<bucket>gs://[^/]+)/(?P<object>.*)'
+GSUTIL_OBJECT_REGEX = r'^(?P<bucket>gs://[^/]+)/(?P<object>.+)'
+GSUTIL_BUCKET_REGEX = r'^(?P<bucket>gs://[^/]+)/?'
 
 
 LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
@@ -195,7 +196,7 @@ class ObjectReference(object):
     Raises:
       InvalidObjectNameError: if the given bucket name is invalid
     """
-    if not 1 <= len(self.name.encode('utf8')) <= 1024:
+    if not 0 <= len(self.name.encode('utf8')) <= 1024:
       raise InvalidObjectNameError(self.name, VALID_OBJECT_LENGTH_MESSAGE)
     if '\r' in self.name or '\n' in self.name:
       raise InvalidObjectNameError(self.name, VALID_OBJECT_CHARS_MESSAGE)
@@ -205,12 +206,26 @@ class ObjectReference(object):
     return self.bucket_ref.bucket
 
   @classmethod
-  def FromUrl(cls, url):
+  def FromUrl(cls, url, allow_empty_object=False):
+    """Parse an object URL ('gs://' required) into an ObjectReference."""
     match = re.match(GSUTIL_OBJECT_REGEX, url, re.DOTALL)
-    if not match:
-      raise ValueError('Must be of form gs://bucket/object')
-    return cls(BucketReference.FromBucketUrl(match.group('bucket')),
-               match.group('object'))
+    if match:
+      return cls(BucketReference.FromBucketUrl(match.group('bucket')),
+                 match.group('object'))
+    match = re.match(GSUTIL_BUCKET_REGEX, url, re.DOTALL)
+    if match:
+      if allow_empty_object:
+        return cls(BucketReference.FromBucketUrl(match.group('bucket')), '')
+      else:
+        raise InvalidObjectNameError('', 'Empty object name is not allowed')
+    raise ValueError('Must be of form gs://bucket/object')
+
+  @classmethod
+  def FromArgument(cls, url, allow_empty_object=False):
+    try:
+      return cls.FromUrl(url, allow_empty_object=allow_empty_object)
+    except (InvalidObjectNameError, ValueError) as err:
+      raise argparse.ArgumentTypeError(str(err))
 
   @classmethod
   def IsStorageUrl(cls, path):

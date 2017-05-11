@@ -17,6 +17,7 @@
 import abc
 import base64
 import json
+import os
 
 import enum
 
@@ -25,7 +26,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
-import oauth2client
 from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
@@ -261,8 +261,10 @@ def GetCredentialStore(store_file=None, access_token_file=None):
   """
 
   if properties.VALUES.auth.use_sqlite_store.GetBool():
+    _MigrateMultistore2Sqlite()
     return _GetSqliteStore(store_file, access_token_file)
 
+  _MigrateSqlite2Multistore()
   return Oauth2ClientCredentialStore(
       store_file or config.Paths().credentials_path)
 
@@ -378,6 +380,14 @@ def ToJson(credentials):
         'client_secret': credentials.client_secret,
         'refresh_token': credentials.refresh_token
     }
+    # These fields are optionally serialized as they are not required for
+    # credentials to be usable, these are used by Oauth2client.
+    for field in ('id_token', 'invalid', 'revoke_uri', 'token_response',
+                  'token_uri', 'user_agent'):
+      value = getattr(credentials, field)
+      if value:
+        creds_dict[field] = value
+
   elif creds_type == CredentialType.SERVICE_ACCOUNT:
     creds_dict = credentials.serialization_data
   elif creds_type == CredentialType.P12_SERVICE_ACCOUNT:
@@ -403,14 +413,20 @@ def FromJson(json_value):
         json_key, scopes=config.CLOUDSDK_SCOPES)
     cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
   elif cred_type == CredentialType.USER_ACCOUNT:
-    cred = client.GoogleCredentials(
+    cred = client.OAuth2Credentials(
         access_token=None,
         client_id=json_key['client_id'],
         client_secret=json_key['client_secret'],
         refresh_token=json_key['refresh_token'],
         token_expiry=None,
-        token_uri=oauth2client.GOOGLE_TOKEN_URI,
-        user_agent=config.CLOUDSDK_USER_AGENT)
+        token_uri=json_key.get('token_uri'),
+        user_agent=json_key.get('user_agent'),
+        revoke_uri=json_key.get('revoke_uri'),
+        id_token=json_key.get('id_token'),
+        token_response=json_key.get('token_response'),
+        scopes=json_key.get('scopes'),
+        token_info_uri=json_key.get('token_info_uri'),
+    )
   elif cred_type == CredentialType.P12_SERVICE_ACCOUNT:
     # pylint: disable=protected-access
     cred = service_account.ServiceAccountCredentials._from_p12_keyfile_contents(
@@ -430,3 +446,34 @@ def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
   access_token_cache = AccessTokenCache(
       sqlite_access_token_file or config.Paths().access_token_db_path)
   return CredentialStoreWithCache(credential_store, access_token_cache)
+
+
+def _MigrateMultistore2Sqlite():
+  multistore_file_path = config.Paths().credentials_path
+  if os.path.isfile(multistore_file_path):
+    multistore = Oauth2ClientCredentialStore(multistore_file_path)
+    credential_db_file = config.Paths().credentials_db_path
+    sqlite_store = _GetSqliteStore(credential_db_file)
+
+    for account_id in multistore.GetAccounts():
+      credential = multistore.Load(account_id)
+      sqlite_store.Store(account_id, credential)
+
+    os.remove(multistore_file_path)
+
+
+def _MigrateSqlite2Multistore():
+  credential_db_file = config.Paths().credentials_db_path
+  if os.path.isfile(credential_db_file):
+    multistore = Oauth2ClientCredentialStore(config.Paths().credentials_path)
+    access_token_file = config.Paths().access_token_db_path
+    sqlite_store = _GetSqliteStore(credential_db_file,
+                                   access_token_file)
+
+    for account_id in sqlite_store.GetAccounts():
+      credential = sqlite_store.Load(account_id)
+      multistore.Store(account_id, credential)
+
+    os.remove(credential_db_file)
+    os.remove(access_token_file)
+

@@ -695,7 +695,7 @@ class Operation(_messages.Message):
     status: The status of an operation. Valid values are PENDING, RUNNING,
       DONE, UNKNOWN.
     targetId: Name of the database instance related to this operation.
-    targetLink: The URI of the instance related to the operation.
+    targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
       operation.
     user: The email address of the user who initiated this operation.

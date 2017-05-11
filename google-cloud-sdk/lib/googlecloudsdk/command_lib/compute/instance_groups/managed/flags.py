@@ -16,6 +16,19 @@
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      location():label=LOCATION,
+      location_scope():label=SCOPE,
+      baseInstanceName,
+      size,
+      targetSize,
+      instanceTemplate.basename(),
+      autoscaled
+    )
+"""
+
 
 def AddTypeArg(parser):
   parser.add_argument(

@@ -18,7 +18,7 @@ import os
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import util
-from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import resource_printer
@@ -26,7 +26,6 @@ import yaml
 
 
 DEFAULT_PATH = 'transaction.yaml'
-messages = core_apis.GetMessagesModule('dns', 'v1')
 
 
 class CorruptedTransactionFileError(core_exceptions.Error):
@@ -47,10 +46,11 @@ def WriteToYamlFile(yaml_file, change):
   resource_printer.Print([change], print_format='yaml', out=yaml_file)
 
 
-def _RecordSetsFromDictionaries(record_set_dictionaries):
+def _RecordSetsFromDictionaries(messages, record_set_dictionaries):
   """Converts list of record-set dictionaries into list of ResourceRecordSets.
 
   Args:
+    messages: Messages object for the API with Record Sets to be created.
     record_set_dictionaries: [{str:str}], list of record-sets as dictionaries.
 
   Returns:
@@ -69,11 +69,12 @@ def _RecordSetsFromDictionaries(record_set_dictionaries):
   return record_sets
 
 
-def ChangeFromYamlFile(yaml_file):
+def ChangeFromYamlFile(yaml_file, api_version='v1'):
   """Returns the change contained in the given yaml file.
 
   Args:
     yaml_file: file, A yaml file with change.
+    api_version: [str], the api version to use for creating the change object.
 
   Returns:
     Change, the change contained in the given yaml file.
@@ -81,6 +82,7 @@ def ChangeFromYamlFile(yaml_file):
   Raises:
     CorruptedTransactionFileError: if the record_set_dictionaries are invalid
   """
+  messages = apis.GetMessagesModule('dns', api_version)
   try:
     change_dict = yaml.safe_load(yaml_file) or {}
   except yaml.error.YAMLError:
@@ -89,16 +91,19 @@ def ChangeFromYamlFile(yaml_file):
       change_dict.get('deletions') is None):
     raise CorruptedTransactionFileError()
   change = messages.Change()
-  change.additions = _RecordSetsFromDictionaries(change_dict['additions'])
-  change.deletions = _RecordSetsFromDictionaries(change_dict['deletions'])
+  change.additions = _RecordSetsFromDictionaries(
+      messages, change_dict['additions'])
+  change.deletions = _RecordSetsFromDictionaries(
+      messages, change_dict['deletions'])
   return change
 
 
-def CreateRecordSetFromArgs(args):
+def CreateRecordSetFromArgs(args, api_version='v1'):
   """Creates and returns a record-set from the given args.
 
   Args:
     args: The arguments to use to create the record-set.
+    api_version: [str], the api version to use for creating the RecordSet.
 
   Raises:
     ToolException: If given record-set type is not supported
@@ -106,6 +111,7 @@ def CreateRecordSetFromArgs(args):
   Returns:
     ResourceRecordSet, the record-set created from the given args.
   """
+  messages = apis.GetMessagesModule('dns', api_version)
   rd_type = rdatatype.from_text(args.type)
   if import_util.GetRdataTranslation(rd_type) is None:
     raise exceptions.ToolException(

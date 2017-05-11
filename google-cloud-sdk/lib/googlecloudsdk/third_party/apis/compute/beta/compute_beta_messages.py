@@ -1579,7 +1579,8 @@ class BackendServiceIAP(_messages.Message):
     enabled: A boolean attribute.
     oauth2ClientId: A string attribute.
     oauth2ClientSecret: A string attribute.
-    oauth2ClientSecretSha256: A string attribute.
+    oauth2ClientSecretSha256: [Output Only] SHA256 hash value for the field
+      oauth2_client_secret above.
   """
 
   enabled = _messages.BooleanField(1)
@@ -5492,6 +5493,26 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   metadata = _messages.MessageField('Metadata', 2)
   project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A ComputeInstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMinCpuPlatformRequest = _messages.MessageField('InstancesSetMinCpuPlatformRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetSchedulingRequest(_messages.Message):
@@ -10388,14 +10409,15 @@ class ForwardingRule(_messages.Message):
     IPAddress: The IP address that this forwarding rule is serving on behalf
       of.  For global forwarding rules, the address must be a global IP. For
       regional forwarding rules, the address must live in the same region as
-      the forwarding rule. By default, this field is empty and an ephemeral IP
-      from the same scope (global or regional) will be assigned.  When the
-      load balancing scheme is INTERNAL, this can only be an RFC 1918 IP
-      address belonging to the network/subnetwork configured for the
-      forwarding rule. A reserved address cannot be used. If the field is
-      empty, the IP address will be automatically allocated from the internal
-      IP range of the subnetwork or network configured for this forwarding
-      rule. Only IPv4 is supported.
+      the forwarding rule. By default, this field is empty and an ephemeral
+      IPv4 address from the same scope (global or regional) will be assigned.
+      A regional forwarding rule supports IPv4 only. A global forwarding rule
+      supports either IPv4 or IPv6.  When the load balancing scheme is
+      INTERNAL, this can only be an RFC 1918 IP address belonging to the
+      network/subnetwork configured for the forwarding rule. A reserved
+      address cannot be used. If the field is empty, the IP address will be
+      automatically allocated from the internal IP range of the subnetwork or
+      network configured for this forwarding rule.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid.
@@ -11495,6 +11517,8 @@ class Instance(_messages.Message):
       read the Specifications for custom machine types.
     metadata: The metadata key/value pairs assigned to this instance. This
       includes custom metadata and predefined keys.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. We may
+      schedule on the specified or later cpu/platform.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -11586,15 +11610,16 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   machineType = _messages.StringField(11)
   metadata = _messages.MessageField('Metadata', 12)
-  name = _messages.StringField(13)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 14, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 15)
-  selfLink = _messages.StringField(16)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  tags = _messages.MessageField('Tags', 20)
-  zone = _messages.StringField(21)
+  minCpuPlatform = _messages.StringField(13)
+  name = _messages.StringField(14)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 15, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 16)
+  selfLink = _messages.StringField(17)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  tags = _messages.MessageField('Tags', 21)
+  zone = _messages.StringField(22)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -12530,6 +12555,8 @@ class InstanceProperties(_messages.Message):
       created from this template. These pairs can consist of custom metadata
       or predefined keys. See Project and instance metadata for more
       information.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
+      instance may be scheduled on the specified or later cpu/platform.
     networkInterfaces: An array of network access configurations for this
       interface.
     scheduling: Specifies the scheduling options for the instances that are
@@ -12575,10 +12602,11 @@ class InstanceProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   machineType = _messages.StringField(6)
   metadata = _messages.MessageField('Metadata', 7)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 8, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 9)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 10, repeated=True)
-  tags = _messages.MessageField('Tags', 11)
+  minCpuPlatform = _messages.StringField(8)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 10)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
+  tags = _messages.MessageField('Tags', 12)
 
 
 class InstanceReference(_messages.Message):
@@ -12853,6 +12881,16 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class InstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A InstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    minCpuPlatform: Minimum cpu/platform this instance should be started at.
+  """
+
+  minCpuPlatform = _messages.StringField(1)
 
 
 class InstancesSetServiceAccountRequest(_messages.Message):
@@ -15620,15 +15658,18 @@ class Subnetwork(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
-      property when you create the resource.
+      property when you create the resource. This field can be set only at
+      resource creation time.
     gatewayAddress: [Output Only] The gateway address for default routes to
-      reach destination addresses outside this subnetwork.
+      reach destination addresses outside this subnetwork. This field can be
+      set only at resource creation time.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
-      overlapping within a network. Only IPv4 is supported.
+      overlapping within a network. Only IPv4 is supported. This field can be
+      set only at resource creation time.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     name: The name of the resource, provided by the client when initially
@@ -15640,10 +15681,14 @@ class Subnetwork(_messages.Message):
       which cannot be a dash.
     network: The URL of the network to which this subnetwork belongs, provided
       by the client when initially creating the subnetwork. Only networks that
-      are in the distributed mode can have subnetworks.
+      are in the distributed mode can have subnetworks. This field can be set
+      only at resource creation time.
     privateIpGoogleAccess: Whether the VMs in this subnet can access Google
-      services without assigned external IP addresses.
-    region: URL of the region where the Subnetwork resides.
+      services without assigned external IP addresses. This field can be both
+      set at resource creation time and updated using
+      setPrivateIpGoogleAccess.
+    region: URL of the region where the Subnetwork resides. This field can be
+      set only at resource creation time.
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
@@ -17694,6 +17739,8 @@ class Zone(_messages.Message):
       DOWN.
 
   Fields:
+    availableCpuPlatforms: [Output Only] Available cpu/platform selections for
+      the zone.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -17719,15 +17766,16 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#zone')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  availableCpuPlatforms = _messages.StringField(1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#zone')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class ZoneList(_messages.Message):

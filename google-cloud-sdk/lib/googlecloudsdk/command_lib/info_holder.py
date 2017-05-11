@@ -313,7 +313,7 @@ class LogData(object):
   TRACEBACK_MARKER = 'BEGIN CRASH STACKTRACE\n'
 
   # This shows the command run in the log file
-  COMMAND_REGEXP = r'Running (gcloud(?:\.[a-z-]+)*)'
+  COMMAND_REGEXP = r'Running \[(gcloud(?:\.[a-z-]+)*)\]'
 
   def __init__(self, filename, command, contents, traceback):
     self.filename = filename

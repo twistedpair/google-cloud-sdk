@@ -137,14 +137,17 @@ class Argument(object):
       *args: The positional args to parser.add_argument.
       **kwargs: The keyword args to parser.add_argument.
     """
-    self.__args = args
-    self.__kwargs = kwargs
+    self.args = args
+    self.kwargs = kwargs
+
+  @property
+  def name(self):
+    return self.args[0]
 
   def __GetFlag(self, parser):
     """Returns the flag object in parser."""
-    name = self.__args[0]
     for flag in parser.flag_args:
-      if name in flag.option_strings:
+      if self.name in flag.option_strings:
         return flag
     return None
 
@@ -157,7 +160,7 @@ class Argument(object):
     Returns:
       The result of parser.add_argument().
     """
-    return parser.add_argument(*self.__args, **self.__kwargs)
+    return parser.add_argument(*self.args, **self.kwargs)
 
   def RemoveFromParser(self, parser):
     """Removes this flag from the given parser.

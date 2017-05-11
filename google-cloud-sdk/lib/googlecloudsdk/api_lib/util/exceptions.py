@@ -13,12 +13,13 @@
 # limitations under the License.
 
 """A module that converts API exceptions to core exceptions."""
-
 import json
 import logging
 import string
 import StringIO
+import sys
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -29,8 +30,9 @@ from googlecloudsdk.core.util import encoding
 
 
 # The underlying formatter treats bare : specially. It is escaped before passing
-# to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted before
-# being used by the extended formatter.
+# to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted either as a
+# formatter variable named _ESCAPED_COLON or as the literal string
+# '{'+_ESCAPED_COLON+'}'.
 _ESCAPED_COLON = '?COLON?'
 
 
@@ -76,6 +78,13 @@ class HttpErrorPayload(string.Formatter):
       details:
       - foo
       - bar
+
+     'Error [{status_code}] {status_message}\n'
+     '{.:value(details.detail.list(separator="\n"))}'
+
+       Error [400] Invalid request.
+       foo
+       bar
   """
 
   def __init__(self, http_error):
@@ -123,9 +132,11 @@ class HttpErrorPayload(string.Formatter):
         return self._value, field_name
       if field_name == _ESCAPED_COLON:
         return ':', field_name
-    parts = field_name.split('?', 1)
-    name = parts.pop(0)
-    fmt = parts.pop(0) if parts else None
+    parts = field_name.replace('{' + _ESCAPED_COLON + '}', ':').split('?', 1)
+    subparts = parts.pop(0).split(':', 1)
+    name = subparts.pop(0)
+    printer_format = subparts.pop(0) if subparts else None
+    recursive_format = parts.pop(0) if parts else None
     if '.' in name:
       if name.startswith('.'):
         # Only check self.content.
@@ -147,13 +158,14 @@ class HttpErrorPayload(string.Formatter):
       value = ''
     if not value and not isinstance(value, (int, float)):
       return '', name
-    if not isinstance(value, (basestring, int, float)):
+    if printer_format or not isinstance(value, (basestring, int, float)):
       buf = StringIO.StringIO()
-      resource_printer.Print(value, 'default', out=buf, single=True)
+      resource_printer.Print(
+          value, printer_format or 'default', out=buf, single=True)
       value = buf.getvalue().strip()
-    if fmt:
+    if recursive_format:
       self._value = value
-      value = self.format(fmt)
+      value = self.format(recursive_format)
     return value, name
 
   def _ExtractResponseAndJsonContent(self, http_error):
@@ -248,7 +260,7 @@ class HttpException(core_exceptions.Error):
 
   Attributes:
     error: The original HttpError.
-    error_format: .format() string on payload Attributes.
+    error_format: An HttpErrorPayload format string.
     payload: The HttpErrorPayload object.
   """
 
@@ -275,3 +287,39 @@ class HttpException(core_exceptions.Error):
     if isinstance(other, HttpException):
       return self.message == other.message
     return False
+
+
+def CatchHTTPErrorRaiseHTTPException(format_str):
+  """Decorator that catches an HttpError and returns a custom error message.
+
+  It catches the raw Http Error and runs it through the given format string to
+  get the desired message.
+
+  Args:
+    format_str: An HttpErrorPayload format string. Note that any properties that
+    are accessed here are on the HTTPErrorPayload object, and not the raw
+    object returned from the server.
+
+  Returns:
+    A custom error message.
+
+  Example:
+    @CatchHTTPErrorRaiseHTTPException('Error [{status_code}]')
+    def some_func_that_might_throw_an_error():
+      ...
+  """
+
+  def CatchHTTPErrorRaiseHTTPExceptionDecorator(run_func):
+    # Need to define a secondary wrapper to get an argument to the outer
+    # decorator.
+    def Wrapper(*args, **kwargs):
+      try:
+        return run_func(*args, **kwargs)
+      except apitools_exceptions.HttpError as error:
+        exc = HttpException(error, format_str)
+        unused_type, unused_value, traceback = sys.exc_info()
+        raise HttpException, unicode(exc), traceback
+
+    return Wrapper
+
+  return CatchHTTPErrorRaiseHTTPExceptionDecorator

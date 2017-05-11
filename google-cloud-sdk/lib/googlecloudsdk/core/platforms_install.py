@@ -247,7 +247,7 @@ class _RcUpdater(object):
 
     if not self.completion_update:
       _TraceAction(
-          '==> Source [{rc}]in your profile to enable shell command '
+          '==> Source [{rc}] in your profile to enable shell command '
           'completion for gcloud.'.format(rc=self.completion))
 
     if not self.path_update:
@@ -267,6 +267,8 @@ def _GetPreferredShell(path, default='bash'):
   Returns:
     The preferred user shell name or default if none can be determined.
   """
+  if not path:
+    return default
   name = os.path.basename(path)
   for shell in ('bash', 'zsh', 'ksh', 'fish'):
     if shell in name:
@@ -299,6 +301,47 @@ def _GetShellRcFileName(shell, host_os):
   return '.bashrc'
 
 
+def _GetAndUpdateRcPath(completion_update, path_update, rc_path, host_os):
+  """Returns an rc path based on the default rc path or user input.
+
+  Gets default rc path based on environment. If prompts are enabled,
+  allows user to update to preferred file path. Otherwise, prints a warning
+  that the default rc path will be updated.
+
+  Args:
+    completion_update: bool, Whether or not to do command completion.
+    path_update: bool, Whether or not to update PATH.
+    rc_path: str, the rc path given by the user, from --rc-path arg.
+    host_os: str, The host os identification string.
+
+  Returns:
+    str, A path to the rc file to update.
+  """
+  # If we aren't updating the RC file for either completions or PATH, there's
+  # no point.
+  if not (completion_update or path_update):
+    return None
+  if rc_path:
+    return rc_path
+  # A first guess at user preferred shell.
+  preferred_shell = _GetPreferredShell(os.environ.get('SHELL', '/bin/sh'))
+  default_rc_path = os.path.join(platforms.GetHomePath(),
+                                 _GetShellRcFileName(preferred_shell, host_os))
+  # If in quiet mode, we'll use default path.
+  if not console_io.CanPrompt():
+    _TraceAction('You specified that you wanted to update your rc file. The '
+                 'default file will be updated: [{rc_path}]'
+                 .format(rc_path=default_rc_path))
+    return default_rc_path
+  rc_path_update = console_io.PromptResponse((
+      'The Google Cloud SDK installer will now prompt you to update an rc '
+      'file to bring the Google Cloud CLIs into your environment.\n\n'
+      'Enter a path to an rc file to update, or leave blank to use '
+      '[{rc_path}]:  ').format(rc_path=default_rc_path))
+  return (os.path.expanduser(rc_path_update) if rc_path_update
+          else default_rc_path)
+
+
 def _GetRcUpdater(completion_update, path_update, rc_path, sdk_root, host_os):
   """Returns an _RcUpdater object for the preferred user shell.
 
@@ -312,50 +355,67 @@ def _GetRcUpdater(completion_update, path_update, rc_path, sdk_root, host_os):
   Returns:
     An _RcUpdater() object for the preferred user shell.
   """
-
-  # An initial guess on the preferred user shell based on the environment.
-  preferred_shell = _GetPreferredShell(os.environ.get('SHELL', '/bin/sh'))
-  if not completion_update and not path_update:
-    # If we aren't updating the RC file for either completions or PATH, there's
-    # no point.
-    rc_path = None
-  elif not console_io.CanPrompt():
-    # If we can't ask the user to confirm the RC file to update, don't assume
-    # for them. They're installing non-interactively and can do this part later.
-    rc_path = None
-  elif not rc_path:
-    file_name = _GetShellRcFileName(preferred_shell, host_os)
-    rc_path = os.path.join(platforms.GetHomePath(), file_name)
-
-    rc_path_update = console_io.PromptResponse((
-        'The Google Cloud SDK installer will now prompt you to update an rc '
-        'file to bring the Google Cloud CLIs into your environment.\n\n'
-        'Enter a path to an rc file to update, or leave blank to use '
-        '[{rc_path}]:  ').format(rc_path=rc_path))
-    if rc_path_update:
-      rc_path = os.path.expanduser(rc_path_update)
-
-  if rc_path:
-    # Check the rc_path for a better hint at the user preferred shell.
-    preferred_shell = _GetPreferredShell(rc_path, default=preferred_shell)
-
+  rc_path = _GetAndUpdateRcPath(completion_update, path_update, rc_path,
+                                host_os)
+  # Check the rc_path for a better hint at the user preferred shell.
+  preferred_shell = _GetPreferredShell(rc_path,
+                                       default=_GetPreferredShell(
+                                           os.environ.get('SHELL', '/bin/sh')))
   return _RcUpdater(completion_update, path_update, preferred_shell, rc_path,
                     sdk_root)
+
+
+_PATH_PROMPT = 'update your $PATH'
+_COMPLETION_PROMPT = 'enable shell command completion'
+
+
+def _PromptToUpdate(path_update, completion_update):
+  """Prompt the user to update path or command completion if unspecified.
+
+  Args:
+    path_update: bool, Value of the --update-path arg.
+    completion_update: bool, Value of the --command-completion arg.
+
+  Returns:
+    (path_update, completion_update) (bool, bool) Whether to update path and
+        enable completion, respectively, after prompting the user.
+  """
+  # If both were specified, no need to prompt.
+  if path_update is not None and completion_update is not None:
+    return path_update, completion_update
+
+  # Ask the user only one question to see if they want to do any unspecified
+  # updates.
+  actions = []
+  if path_update is None:
+    actions.append(_PATH_PROMPT)
+  if completion_update is None:
+    actions.append(_COMPLETION_PROMPT)
+  prompt = '\nModify profile to {}?'.format(' and '.join(actions))
+  response = console_io.PromptContinue(prompt)
+
+  # Update unspecified values to equal user response.
+  path_update = response if path_update is None else path_update
+  completion_update = (response if completion_update is None
+                       else completion_update)
+
+  return path_update, completion_update
 
 
 def UpdateRC(completion_update, path_update, rc_path, bin_path, sdk_root):
   """Update the system path to include bin_path.
 
   Args:
-    completion_update: bool, Whether or not to do command completion. If None,
-      ask.
-    path_update: bool, Whether or not to update PATH. If None, ask.
-    rc_path: str, The path to the rc file to update. If None, ask.
+    completion_update: bool, Whether or not to do command completion. From
+      --command-completion arg during install. If None, ask.
+    path_update: bool, Whether or not to update PATH. From --path-update arg
+      during install. If None, ask.
+    rc_path: str, The path to the rc file to update. From --rc-path during
+      install. If None, ask.
     bin_path: str, The absolute path to the directory that will contain
       Cloud SDK binaries.
     sdk_root: str, The path to the Cloud SDK root.
   """
-
   host_os = platforms.OperatingSystem.Current()
   if host_os == platforms.OperatingSystem.WINDOWS:
     if path_update is None:
@@ -365,19 +425,16 @@ def UpdateRC(completion_update, path_update, rc_path, bin_path, sdk_root):
       _UpdatePathForWindows(bin_path)
     return
 
-  if completion_update is None:
-    if path_update is None:  # Ask only one question if both were not set.
-      path_update = console_io.PromptContinue(
-          prompt_string=('\nModify profile to update your $PATH '
-                         'and enable shell command completion?'))
-      completion_update = path_update
-    else:
-      completion_update = console_io.PromptContinue(
-          prompt_string=('\nModify profile to enable shell command '
-                         'completion?'))
-  elif path_update is None:
-    path_update = console_io.PromptContinue(
-        prompt_string=('\nModify profile to update your $PATH?'))
+  if console_io.CanPrompt():
+    path_update, completion_update = _PromptToUpdate(path_update,
+                                                     completion_update)
+  elif rc_path and (path_update is None and completion_update is None):
+    # In quiet mode, if the user gave a path to the RC and didn't specify what
+    # updates are desired, assume both.
+    path_update = True
+    completion_update = True
+    _TraceAction('Profile will be modified to {} and {}.'
+                 .format(_PATH_PROMPT, _COMPLETION_PROMPT))
 
   _GetRcUpdater(
       completion_update, path_update, rc_path, sdk_root, host_os).Update()

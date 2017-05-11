@@ -114,6 +114,8 @@ apis:
         liens: liens/{liensId}
     v2alpha1:
       discovery_doc: cloudresourcemanager_v2alpha1.json
+    v2beta1:
+      discovery_doc: cloudresourcemanager_v2beta1.json
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json
@@ -183,8 +185,11 @@ apis:
     v1:
       discovery_doc: iam_v1.json
   language:
+    v1beta2:
+      discovery_doc: language_v1beta2.json
     v1:
       discovery_doc: language_v1.json
+      default: true
   logging:
     v1beta3:
       discovery_doc: logging_v1beta3.json

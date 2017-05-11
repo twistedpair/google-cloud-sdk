@@ -669,19 +669,67 @@
     },
     "ListAssetsResponse": {
       "id": "ListAssetsResponse",
-      "description": "Response message for \"DataPolicyAnnotationTagging.ListAssets\".",
+      "description": "Response message for \"DataPolicyAnnotationTagging.ListAssets\".\nNext tag: 4",
       "type": "object",
       "properties": {
         "dataAssets": {
-          "description": "A list of resource names of data assets that are tagged with the given\nannotation tag.",
+          "description": "[Deprecated] A list of resource names of data assets that are tagged with\nthe given annotation tag.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
+        "assets": {
+          "description": "A list of data asset resource names with auxiliary information.",
+          "type": "array",
+          "items": {
+            "$ref": "Asset"
+          }
+        },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
           "type": "string"
+        }
+      }
+    },
+    "Asset": {
+      "id": "Asset",
+      "description": "A message that include data asset resource name and some auxiliary\ninformation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of the data asset.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Id of the project that owns the data asset, if available.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the data asset, if available.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the data asset, if available.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the data asset, if available.",
+          "enumDescriptions": [
+            "Unknown type.",
+            "BigQuery table.",
+            "BigQuery dataset.",
+            "BigQuery views.",
+            "BigQuery external tables."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "BIGQUERY_TABLE",
+            "BIGQUERY_DATASET",
+            "BIGQUERY_VIEW",
+            "BIGQUERY_EXTERNAL_TABLE"
+          ]
         }
       }
     }

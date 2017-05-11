@@ -24,13 +24,63 @@ def GetDnsZoneArg(help_text):
       help=help_text)
 
 
-def GetZoneArg():
+def GetZoneArg(
+    help_text='Name of the managed-zone whose record-sets you want to manage.'
+):
   return base.Argument(
       '--zone',
       '-z',
       completion_resource='dns.managedZones',
-      help='Name of the managed-zone whose record-sets you want to manage.',
+      help=help_text,
       required=True)
+
+
+def GetManagedZonesDnsNameArg():
+  return base.Argument(
+      '--dns-name',
+      required=True,
+      help='The DNS name suffix that will be managed with the created zone.')
+
+
+def GetManagedZonesDescriptionArg(required=False):
+  return base.Argument(
+      '--description',
+      required=required,
+      help='Short description for the managed-zone.')
+
+
+def AddCommonManagedZonesDnssecArgs(parser):
+  """Add Common DNSSEC flags for the managed-zones group."""
+  parser.add_argument(
+      '--dnssec-state',
+      choices={
+          'off': 'Disable DNSSEC for the managed zone.',
+          'on': 'Enable DNSSEC for the managed zone.',
+          'transfer': 'Enable DNSSEC and allow transfering a signed zone in '
+                      'or out.'},
+      help='The DNSSEC state for this managed zone.')
+  parser.add_argument(
+      '--denial-of-existence',
+      choices=['NSEC', 'NSEC3'],
+      help='Requires DNSSEC enabled.')
+  parser.add_argument(
+      '--ksk-algorithm',
+      help='String mnemonic specifying the DNSSEC algorithm of the '
+           'key-signing key. Requires DNSSEC enabled. Example algorithms: '
+           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
+  parser.add_argument(
+      '--zsk-algorithm',
+      help='String mnemonic specifying the DNSSEC algorithm of the '
+           'zone-signing key. Requires DNSSEC enabled. Example algorithms: '
+           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
+  parser.add_argument(
+      '--ksk-key-length',
+      type=int,
+      help='Length of the key-signing key in bits. Requires DNSSEC enabled.')
+  parser.add_argument(
+      '--zsk-key-length',
+      type=int,
+      help='Length of the zone-signing key in bits. Requires DNSSEC enabled.')
 
 
 CHANGES_FORMAT = 'table(id, startTime, status)'

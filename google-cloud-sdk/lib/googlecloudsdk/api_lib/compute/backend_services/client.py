@@ -15,6 +15,7 @@
 """Backend service."""
 
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import exceptions
 
 
 class BackendService(object):
@@ -35,40 +36,33 @@ class BackendService(object):
   def _MakeGetRequestTuple(self):
     region = getattr(self.ref, 'region', None)
     if region is not None:
-      return (self._client.regionBackendServices,
-              'Get',
+      return (self._client.regionBackendServices, 'Get',
               self._messages.ComputeRegionBackendServicesGetRequest(
                   project=self.ref.project,
                   region=region,
                   backendService=self.ref.Name()))
     else:
-      return (self._client.backendServices,
-              'Get',
+      return (self._client.backendServices, 'Get',
               self._messages.ComputeBackendServicesGetRequest(
-                  project=self.ref.project,
-                  backendService=self.ref.Name()))
+                  project=self.ref.project, backendService=self.ref.Name()))
 
   def _MakeDeleteRequestTuple(self):
     region = getattr(self.ref, 'region', None)
     if region is not None:
-      return (self._client.regionBackendServices,
-              'Delete',
+      return (self._client.regionBackendServices, 'Delete',
               self._messages.ComputeRegionBackendServicesDeleteRequest(
                   project=self.ref.project,
                   region=region,
                   backendService=self.ref.Name()))
     else:
-      return (self._client.backendServices,
-              'Delete',
+      return (self._client.backendServices, 'Delete',
               self._messages.ComputeBackendServicesDeleteRequest(
-                  project=self.ref.project,
-                  backendService=self.ref.Name()))
+                  project=self.ref.project, backendService=self.ref.Name()))
 
   def _MakeGetHealthRequestTuple(self, group):
     region = getattr(self.ref, 'region', None)
     if region is not None:
-      return (self._client.regionBackendServices,
-              'GetHealth',
+      return (self._client.regionBackendServices, 'GetHealth',
               self._messages.ComputeRegionBackendServicesGetHealthRequest(
                   resourceGroupReference=self._messages.ResourceGroupReference(
                       group=group),
@@ -76,13 +70,26 @@ class BackendService(object):
                   region=region,
                   backendService=self.ref.Name()))
     else:
-      return (self._client.backendServices,
-              'GetHealth',
+      return (self._client.backendServices, 'GetHealth',
               self._messages.ComputeBackendServicesGetHealthRequest(
                   resourceGroupReference=self._messages.ResourceGroupReference(
                       group=group),
                   project=self.ref.project,
                   backendService=self.ref.Name()))
+
+  def _MakeSetSecurityPolicyRequestTuple(self, security_policy):
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      raise exceptions.InvalidArgumentException(
+          'region', 'Can only set security policy for global backend services.')
+
+    return (
+        self._client.backendServices, 'SetSecurityPolicy',
+        self._messages.ComputeBackendServicesSetSecurityPolicyRequest(
+            securityPolicyReference=self._messages.SecurityPolicyReference(
+                securityPolicy=security_policy),
+            project=self.ref.project,
+            backendService=self.ref.Name()))
 
   def Delete(self, only_generate_request=False):
     requests = [self._MakeDeleteRequestTuple()]
@@ -130,6 +137,11 @@ class BackendService(object):
 
     if errors:
       utils.RaiseToolException(
-          errors,
-          error_message='Could not get health for some groups:')
+          errors, error_message='Could not get health for some groups:')
 
+  def SetSecurityPolicy(self, security_policy='', only_generate_request=False):
+    """Sets the security policy for the backend service."""
+    requests = [self._MakeSetSecurityPolicyRequestTuple(security_policy)]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests

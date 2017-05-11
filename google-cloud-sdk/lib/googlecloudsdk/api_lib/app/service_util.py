@@ -14,6 +14,7 @@
 
 """Utilities for dealing with service resources."""
 
+from googlecloudsdk.api_lib.app import exceptions as app_exceptions
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
@@ -106,20 +107,26 @@ def GetMatchingServices(all_services, args_services):
   """Return a list of services to act on based on user arguments.
 
   Args:
-    all_services: list of Service representing all services in the project.
-    args_services: list of string, service IDs to filter for.
-      If empty, match all services.
+    all_services: list of Services representing all services in the project.
+    args_services: list of string, service IDs to filter for, from arguments
+      given by the user to the command line. If empty, match all services.
 
   Returns:
-    list of matching Service
+    list of matching Services sorted by the order they were given to the
+      command line.
 
   Raises:
     ServiceValidationError: If an improper combination of arguments is given
   """
   if not args_services:
-    args_services = [s.id for s in all_services]
-  _ValidateServicesAreSubset(args_services, [s.id for s in all_services])
-  return [s for s in all_services if s.id in args_services]
+    args_services = sorted(s.id for s in all_services)
+  else:
+    _ValidateServicesAreSubset(args_services, [s.id for s in all_services])
+  matching_services = []
+  # Match the order to the order of arguments.
+  for service_id in args_services:
+    matching_services += [s for s in all_services if s.id == service_id]
+  return matching_services
 
 
 def ParseTrafficAllocations(args_allocations, split_method):
@@ -171,7 +178,7 @@ def DeleteServices(api_client, services):
           'Deleting [{0}]'.format(service.id)):
         api_client.DeleteService(service.id)
     except (calliope_exceptions.HttpException, operations_util.OperationError,
-            operations_util.OperationTimeoutError) as err:
+            operations_util.OperationTimeoutError, app_exceptions.Error) as err:
       errors[service.id] = str(err)
 
   if errors:

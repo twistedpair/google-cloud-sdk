@@ -19,24 +19,32 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 
 
-class NotFoundError(exceptions.Error):
+class Error(exceptions.Error):
+  """Base error for this module."""
+
+
+class NotFoundError(Error):
   """Raised when the requested resource does not exist."""
 
+  def __init__(self):
+    super(exceptions.Error,
+          self).__init__('The requested resource was not found.')
 
-class ConflictError(exceptions.Error):
+
+class ConflictError(Error):
   """Raised when a new resource already exists."""
 
+  def __init__(self):
+    super(exceptions.Error,
+          self).__init__('The requested resource already exists.')
 
-class ConfigError(exceptions.Error):
+
+class ConfigError(Error):
   """Raised when unable to parse a config file."""
 
-
-class StorageError(exceptions.Error):
-  """Raised when the syncing with storage errors."""
-
-
-class DeleteError(exceptions.Error):
-  """Raised when deletes fail."""
+  def __init__(self, message=None, **kwargs):
+    message = message or 'Config Error.'
+    super(ConfigError, self).__init__(message, **kwargs)
 
 
 # TODO(b/34516298): use generic HttpException when compatible with v2.

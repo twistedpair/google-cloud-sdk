@@ -212,6 +212,14 @@ def User(name, token=None, username=None, password=None, auth_provider=None,
   }
 
 
+SDK_BIN_PATH_NOT_FOUND = '''\
+Path to sdk installation not found. Please switch to application default
+credentials using one of
+
+$ gcloud config set container/use_application_default_credentials true
+$ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
+
+
 def _AuthProvider(name='gcp'):
   """Generate and return an auth provider config.
 
@@ -225,6 +233,12 @@ def _AuthProvider(name='gcp'):
     name: auth provider name
   Returns:
     dict, valid auth provider config entry.
+  Raises:
+    Error: Path to sdk installation not found. Please switch to application
+    default credentials using one of
+
+    $ gcloud config set container/use_application_default_credentials true
+    $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true.
   """
   provider = {'name': name}
   if (name == 'gcp' and not
@@ -232,9 +246,13 @@ def _AuthProvider(name='gcp'):
     bin_name = 'gcloud'
     if platforms.OperatingSystem.IsWindows():
       bin_name = 'gcloud.cmd'
+    sdk_bin_path = config.Paths().sdk_bin_path
+    if sdk_bin_path is None:
+      log.error(SDK_BIN_PATH_NOT_FOUND)
+      raise Error(SDK_BIN_PATH_NOT_FOUND)
     cfg = {
         # Command for gcloud credential helper
-        'cmd-path': os.path.join(config.Paths().sdk_bin_path, bin_name),
+        'cmd-path': os.path.join(sdk_bin_path, bin_name),
         # Args for gcloud credential helper
         'cmd-args': 'config config-helper --format=json',
         # JSONpath to the field that is the raw access token

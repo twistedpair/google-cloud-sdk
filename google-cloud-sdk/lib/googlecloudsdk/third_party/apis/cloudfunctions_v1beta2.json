@@ -234,6 +234,10 @@
           "description": "The hosted repository where the function is defined.",
           "$ref": "SourceRepository"
         },
+        "sourceRepositoryUrl": {
+          "description": "The URL pointing to the hosted repository where the function is defined.\nThere are supported Cloud Source Repository URLs in the following\nformats:\n\nTo refer to a specific commit:\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/revisions\/*\/paths\/*`\nTo refer to a moveable alias (branch):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/aliases\/movable\/*\/paths\/*`\nIn particular, to refer to HEAD use `master` moveable alias.\nTo refer to a specific fixed alias (tag):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/aliases\/fixed\/*\/paths\/*`\n\nYou may omit `paths\/*` if you want to use the main directory.",
+          "type": "string"
+        },
         "sourceUploadUrl": {
           "description": "The Google Cloud Storage signed URL used for source uploading, generated\nby google.cloud.functions.v1beta2.GenerateUploadUrl",
           "type": "string"
@@ -351,6 +355,21 @@
         "resource": {
           "description": "Which instance of the source's service should send events. E.g. for Pub\/Sub\nthis would be a Pub\/Sub topic at `projects\/*\/topics\/*`. For Google Cloud\nStorage this would be a bucket at `projects\/*\/buckets\/*`. For any source\nthat only supports one instance per-project, this should be the name of the\nproject (`projects\/*`)",
           "type": "string"
+        },
+        "retryPolicy": {
+          "description": "Specifies retry policy for failed executions.",
+          "$ref": "RetryPolicy"
+        }
+      }
+    },
+    "RetryPolicy": {
+      "id": "RetryPolicy",
+      "description": "Described the retry policy in case of function's execution failure.",
+      "type": "object",
+      "properties": {
+        "retryOnFailure": {
+          "description": "If set to false (default), then a failed function execution will not be\nretried.\nIf set to true, then a function execution will be retried on any failure.\nA failed event will be retried up to 7 days with an exponential backoff\n(capped at 10 seconds).\nRetried execution is charged as any other execution.",
+          "type": "boolean"
         }
       }
     },
