@@ -2,6 +2,133 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 156.0.0 (2017-05-24)
+
+### Breaking Changes
+
+*   `gcloud container builds submit` will host build logs in a bucket owned
+    by the Container Builder team by default, rather than one owned by the
+    customer. If the customer does specify a bucket,
+    The command `gcloud container builds submit` will no longer create that
+    bucket if it does not already exist.
+
+*   `gcloud sql instances set-root-password` is now deprecated and will be
+    removed in version 162.0.0. Please use `gcloud sql users set-password`
+    as an alternative.
+
+*   `gcloud computes copy-files` is now deprecated. Use `gcloud compute scp`
+    instead. Note that recursive copy is not turned on by default for `scp`.
+    Add `--recurse` to the invocation to turn it on.
+
+*   Added `--async` flag and deprecated `--wait` flag in
+    `gcloud container node-pools delete`. Users should use `--async` in place of
+    `--wait`.
+
+*   The ISO time string format for the `DUE_TIME` argument to retrieve a backup
+    in `gcloud beta sql backups describe` is now deprecated in favor of
+    integer format (now known as the `ID` argument). Instead of running:
+
+    $ gcloud beta sql backups describe 2017-05-24T00:00:00.000Z --instance a1
+
+    please run:
+
+    $ gcloud beta sql backups describe 1490238000769 --instance a1
+
+### Google App Engine
+
+*   Google App Engine components have been updated to 1.9.53.
+    Please visit the following release notes for details:
+    *   Python: https://cloud.google.com/appengine/docs/python/release-notes
+    *   Java: https://cloud.google.com/appengine/docs/java/release-notes
+
+*   `gcloud beta app instances ssh` now accepts remote commands in the
+    following fashion: `gcloud beta app instances ssh -- echo hello world`.
+
+### Google Cloud Bigtable
+
+*   Add versioning information to the `cbt` commandline tool. The tool
+    version is displayed in help output and by the new `cbt version` command.
+
+### Google Cloud Bigtable Emulator
+
+*   The Cloud Bigtable Emulator is now supported on Windows hosts.
+
+### Google Cloud Container Builder
+
+*   Update Google Container Engine's kubectl from version 1.6.2 to 1.6.3.
+
+### Google Cloud Logging
+
+*   Print the correct resource name in `gcloud logging beta sinks create` for
+    non-project resources.
+
+### Google Cloud Resources
+
+*   The new `gcloud alpha resources list` command lists all indexed resources
+    accessible from your account.
+
+### Google Cloud Source Repositories
+
+*   The `gcloud source repos` command group is now available in the GA release
+    track.
+
+*   The `gcloud source repos list` command is now paginated.
+
+### Google Cloud SQL
+
+*   All functionality  from `gcloud beta sql instances` commands is now
+    available in `gcloud sql instances`.
+
+*   Promoted `gcloud sql backups` to the GA release track.
+
+### Google Cloud Storage
+
+*   `gcloud config set proxy/*` settings are now propagated to gsutil. Users
+    no longer need to update gsutil .boto file with these settings.
+
+### Google Compute Engine
+
+*   The `--container` flag in `gcloud compute ssh` uses `docker exec` command
+    instead of `nsenter` in order to attach to container. The `--container`
+    flag can be used with any VM instance that has docker installed.
+
+*   Promoted Identity-Aware Proxy support to the GA release track for
+    `gcloud compute backend-services`.
+
+*   Add the `suse-sap-cloud` project to the default public image list.
+
+*   Fixed a bug in `gcloud compute ssh` where SSH commands were incorrectly
+    assembled when using `-- [SSH_ARGS]` for passing extra arguments and
+    commands.
+
+*   Promoted `gcloud compute scp` to the GA release track.
+
+*   Add the `--custom-extensions` flag to
+    `gcloud beta compute <instances create|instances set-machine-type|instance-templates create`
+
+### Firebase Test Lab
+
+*   Firebase Test Lab now has beta support for testing Android game apps
+    that include game test loops. You run tests as follows:
+
+      $ gcloud beta firebase test android run --type game-loop ...
+
+    To learn more, see https://firebase.google.com/docs/test-lab/game-loop.
+
+*   Added support for network shaping to alpha and beta release tracks
+    for Firebase Test Lab. You can add a network profile to your tests with
+    the `--network-profile` flag, followed by the name of the network profile
+    you would like to use. Firebase Test Lab provides information about the
+    network profiles available for network shaping through the `list` and
+    `describe` commands. You can use them as follows:
+    *   $ gcloud beta firebase test network-profiles --help
+    *   $ gcloud beta firebase test network-profiles list
+    *   $ gcloud beta firebase test network-profiles describe PROFILE_ID
+
+### Go SDK
+
+*   Go SDK has been upgraded to go1.6.4.
+
 ## 155.0.0 (2017-05-11)
 
 ### Google App Engine
@@ -48,10 +175,6 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 ### Google Container Engine
 
-*   Added `--async` flag and deprecated `--wait` flag in
-    `gcloud container node-pools delete`. Users should use `--async` in place of
-    `--wait`.
-
 *   Moved `gcloud container operations cancel` to beta.
 
 *   Moved `gcloud container node-pools rollback` to beta.
@@ -59,8 +182,8 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 *   Added ability to specify `--labels` when creating a Container Engine cluster
     in gcloud alpha or beta. These labels can be changed by using the
     `--update-labels` or `--remove-labels` flags now available in `gcloud
-    container clusters update`. Labels will then be applied to GCP resources
-    that the cluster creates.
+    container clusters update`. Labels will then be applied to Google Cloud
+    Platform resources that the cluster creates.
 
 ## 154.0.1 (2017-05-04)
 

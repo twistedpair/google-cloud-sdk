@@ -696,7 +696,7 @@ class ArgDict(ArgList):
   """
 
   def __init__(self, value_type=None, spec=None, min_length=0, max_length=None,
-               allow_key_only=False, operators=None):
+               allow_key_only=False, required_keys=None, operators=None):
     """Initialize an ArgDict.
 
     Args:
@@ -709,6 +709,7 @@ class ArgDict(ArgList):
       min_length: int, The minimum number of keys in the dict.
       max_length: int, The maximum number of keys in the dict.
       allow_key_only: bool, Allow empty values.
+      required_keys: [str], Required keys in the dict.
       operators: operator_char -> value_type, Define multiple single character
         operators, each with its own value_type converter. Use value_type==None
         for no conversion. The default value is {'=': value_type}
@@ -725,6 +726,7 @@ class ArgDict(ArgList):
       raise ValueError('cannot have both spec and sub_type')
     self.spec = spec
     self.allow_key_only = allow_key_only
+    self.required_keys = required_keys or []
     if not operators:
       operators = {'=': value_type}
     for op in operators.keys():
@@ -772,6 +774,12 @@ class ArgDict(ArgList):
       if self.spec:
         value = self._ApplySpec(key, value)
       arg_dict[key] = value
+
+    for required_key in self.required_keys:
+      if required_key not in arg_dict:
+        raise ArgumentTypeError(
+            'Key [{0}] required in dict arg but not provided'.format(
+                required_key))
 
     return arg_dict
 

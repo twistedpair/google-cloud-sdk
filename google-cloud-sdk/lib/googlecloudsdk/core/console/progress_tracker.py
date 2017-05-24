@@ -88,8 +88,12 @@ class ProgressTracker(object):
           self._ticks += 1
           self._Print(_SPIN_MARKS[self._ticks % len(_SPIN_MARKS)])
         else:
-          sys.stderr.write('.')
+          self._PrintDot()
     return self._done
+
+  def _PrintDot(self):
+    """Print dots when not in a tty."""
+    sys.stderr.write('.')
 
   def _Print(self, message=''):
     """Reprints the prefix followed by an optional message.

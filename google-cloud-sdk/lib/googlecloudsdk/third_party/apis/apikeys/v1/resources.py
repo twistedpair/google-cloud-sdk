@@ -22,6 +22,12 @@ BASE_URL = 'https://apikeys.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
   PROJECTS_APIKEYS = (
       'projects.apiKeys',
       'projects/{projectId}/apiKeys/{keyId}',

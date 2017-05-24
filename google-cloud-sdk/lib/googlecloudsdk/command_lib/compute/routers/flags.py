@@ -15,6 +15,13 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      network.basename()
+    )"""
+
 
 def RouterArgument(required=True):
   return compute_flags.ResourceArgument(

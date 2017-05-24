@@ -30,17 +30,17 @@ LENGTH = 200
 DOT = '.'
 
 
-def RunSearch(table_path, terms, cli):
+def RunSearch(terms, cli):
   """Runs search-help by opening and reading help table, finding commands.
 
   Args:
-    table_path: str, the path to the help table.
     terms: [str], list of strings that must be found in the command.
     cli: the Calliope CLI object
 
   Returns:
     a list of json objects representing gcloud commands.
   """
+  table_path = table.IndexPath()
   if not os.path.exists(table_path):
     with progress_tracker.ProgressTracker('Updating command help index...'):
       table.Update(cli)

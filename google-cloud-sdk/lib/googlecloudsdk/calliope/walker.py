@@ -28,20 +28,25 @@ class Walker(object):
     _progress_callback: The progress bar function to call to update progress.
   """
 
-  def __init__(self, cli, progress_callback=None):
+  def __init__(self, cli, progress_callback=None, ignore_load_errors=False):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       progress_callback: f(float), The function to call to update the progress
         bar or None for no progress bar.
+      ignore_load_errors: bool, True to ignore command load failures. This
+        should only be used when it is not critical that all data is returned,
+        like for optimizations like static tab completion.
     """
     self._root = cli._TopElement()  # pylint: disable=protected-access
     if progress_callback:
       with progress_tracker.ProgressTracker('Loading CLI Tree'):
-        self._num_nodes = 1.0 + self._root.LoadAllSubElements(recursive=True)
+        self._num_nodes = 1.0 + self._root.LoadAllSubElements(
+            recursive=True, ignore_load_errors=ignore_load_errors)
     else:
-      self._num_nodes = 1.0 + self._root.LoadAllSubElements(recursive=True)
+      self._num_nodes = 1.0 + self._root.LoadAllSubElements(
+          recursive=True, ignore_load_errors=ignore_load_errors)
     self._num_visited = 0
     self._progress_callback = (progress_callback or
                                console_io.ProgressBar.DEFAULT_CALLBACK)

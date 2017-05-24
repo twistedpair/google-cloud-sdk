@@ -123,6 +123,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'cos-cloud',
     'rhel-cloud',
     'suse-cloud',
+    'suse-sap-cloud',
     'ubuntu-os-cloud',
 ] + WINDOWS_IMAGE_PROJECTS
 PREVIEW_IMAGE_PROJECTS = []

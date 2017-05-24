@@ -1544,7 +1544,7 @@ class Status(_messages.Message):
   facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package google.rpc which can be used for common error
+  detail types in the package google.rpc that can be used for common error
   conditions.Language mappingThe Status message is the logical representation
   of the error model, but it is not necessarily the actual wire format. When
   the Status message is exposed in different client libraries and different
@@ -1556,11 +1556,11 @@ class Status(_messages.Message):
   of this error model include: Partial errors. If a service needs to return
   partial errors to the client, it may embed the Status in the normal response
   to indicate the partial errors. Workflow errors. A typical workflow has
-  multiple steps. Each step may have a Status message for error reporting
-  purpose. Batch operations. If a client uses batch request and batch
-  response, the Status message should be used directly inside batch response,
-  one for each error sub-response. Asynchronous operations. If an API call
-  embeds asynchronous operation results in its response, the status of those
+  multiple steps. Each step may have a Status message for error reporting.
+  Batch operations. If a client uses batch request and batch response, the
+  Status message should be used directly inside batch response, one for each
+  error sub-response. Asynchronous operations. If an API call embeds
+  asynchronous operation results in its response, the status of those
   operations should be represented directly using the Status message. Logging.
   If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.

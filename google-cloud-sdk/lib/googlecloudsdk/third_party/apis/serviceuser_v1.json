@@ -902,7 +902,7 @@
     },
     "MediaUpload": {
       "id": "MediaUpload",
-      "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
+      "description": "Defines the Media configuration for a service in case of an upload.\nUse this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -910,14 +910,42 @@
           "type": "boolean"
         },
         "uploadService": {
-          "description": "DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the upload service if one is used for upload.",
+          "description": "DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the upload service if one is used for upload.",
           "type": "string"
+        },
+        "dropzone": {
+          "description": "Name of the Scotty dropzone to use for the current API.",
+          "type": "string"
+        },
+        "mimeTypes": {
+          "description": "An array of mimetype patterns. Esf will only accept uploads that match one\nof the given patterns.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxSize": {
+          "description": "Optional maximum acceptable size for an upload.\nThe size is specified in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "startNotification": {
+          "description": "Whether to receive a notification on the start of media upload.",
+          "type": "boolean"
+        },
+        "progressNotification": {
+          "description": "Whether to receive a notification for progress changes of media upload.",
+          "type": "boolean"
+        },
+        "completeNotification": {
+          "description": "A boolean that determines whether a notification for the completion of an\nupload should be sent to the backend. These notifications will not be seen\nby the client and will not consume quota.",
+          "type": "boolean"
         }
       }
     },
     "MediaDownload": {
       "id": "MediaDownload",
-      "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
+      "description": "Defines the Media configuration for a service in case of a download.\nUse this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -925,8 +953,25 @@
           "type": "boolean"
         },
         "downloadService": {
-          "description": "DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the download service if one is used for download.",
+          "description": "DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the download service if one is used for download.",
           "type": "string"
+        },
+        "dropzone": {
+          "description": "Name of the Scotty dropzone to use for the current API.",
+          "type": "string"
+        },
+        "completeNotification": {
+          "description": "A boolean that determines whether a notification for the completion of a\ndownload should be sent to the backend.",
+          "type": "boolean"
+        },
+        "useDirectDownload": {
+          "description": "A boolean that determines if direct download from ESF should be used for\ndownload of this media.",
+          "type": "boolean"
+        },
+        "maxDirectDownloadSize": {
+          "description": "Optional maximum acceptable size for direct download.\nThe size is specified in bytes.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1267,7 +1312,7 @@
           }
         },
         "apis": {
-          "description": "The list of APIs served by this endpoint.",
+          "description": "The list of APIs served by this endpoint.\n\nIf no APIs are specified this translates to \"all APIs\" exported by the\nservice, as defined in the top-level service configuration.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1671,7 +1716,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -1769,8 +1814,7 @@
             "The operation or step has not started yet.",
             "The operation or step is in progress.",
             "The operation or step has completed with errors. If the operation is\nrollbackable, the rollback completed with errors too.",
-            "The operation or step has completed with cancellation.",
-            "The operation has completed with errors but rolled back\nsuccessfully if the operation is rollbackable."
+            "The operation or step has completed with cancellation."
           ],
           "type": "string",
           "enum": [
@@ -1779,8 +1823,7 @@
             "NOT_STARTED",
             "IN_PROGRESS",
             "FAILED",
-            "CANCELLED",
-            "FAILED_ROLLED_BACK"
+            "CANCELLED"
           ]
         }
       }

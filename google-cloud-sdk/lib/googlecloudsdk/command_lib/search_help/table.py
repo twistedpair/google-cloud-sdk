@@ -46,7 +46,8 @@ def Update(cli):
   Args:
     cli: Calliope CLI object for generating the help search table.
   """
-  help_text = HelpIndexGenerator(cli).Walk(hidden=False)
+  help_text = HelpIndexGenerator(
+      cli, ignore_load_errors=True).Walk(hidden=False)
   def SerializeCommand(command):
     return resource_projector.Compile().Evaluate(command)
 
@@ -72,13 +73,17 @@ class HelpIndexGenerator(walker.Walker):
     _cli: The Cloud SDK CLI object
   """
 
-  def __init__(self, cli):
+  def __init__(self, cli, ignore_load_errors=False):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
+      ignore_load_errors: bool, True to ignore command load failures. This
+        should only be used when it is not critical that all data is returned,
+        like for optimizations like static tab completion.
     """
-    super(HelpIndexGenerator, self).__init__(cli)
+    super(HelpIndexGenerator, self).__init__(
+        cli, ignore_load_errors=ignore_load_errors)
 
   def Visit(self, node, parent, is_group):
     """Implements the Visit method in calliope.walker.Walker.

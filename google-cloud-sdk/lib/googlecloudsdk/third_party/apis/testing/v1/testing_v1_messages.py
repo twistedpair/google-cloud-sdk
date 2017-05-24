@@ -487,6 +487,31 @@ class Locale(_messages.Message):
   tags = _messages.StringField(4, repeated=True)
 
 
+class NetworkConfiguration(_messages.Message):
+  """A NetworkConfiguration object.
+
+  Fields:
+    downRule: The emulation rule applying to the download traffic
+    id: The unique opaque id for this network traffic configuration
+      @OutputOnly
+    upRule: The emulation rule applying to the upload traffic
+  """
+
+  downRule = _messages.MessageField('TrafficRule', 1)
+  id = _messages.StringField(2)
+  upRule = _messages.MessageField('TrafficRule', 3)
+
+
+class NetworkConfigurationCatalog(_messages.Message):
+  """A NetworkConfigurationCatalog object.
+
+  Fields:
+    configurations: A NetworkConfiguration attribute.
+  """
+
+  configurations = _messages.MessageField('NetworkConfiguration', 1, repeated=True)
+
+
 class ObbFile(_messages.Message):
   """An opaque binary blob file to install on the device before the test
   starts
@@ -643,9 +668,11 @@ class TestEnvironmentCatalog(_messages.Message):
   Fields:
     androidDeviceCatalog: Android devices suitable for running Android
       Instrumentation Tests.
+    networkConfigurationCatalog: Supported network configurations
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
+  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 2)
 
 
 class TestExecution(_messages.Message):
@@ -866,12 +893,15 @@ class TestSetup(_messages.Message):
     environmentVariables: Environment variables to set for the test (only
       applicable for instrumentation tests).
     filesToPush: Optional
+    networkProfile: The network traffic profile used for running the test.
+      Optional
   """
 
   account = _messages.MessageField('Account', 1)
   directoriesToPull = _messages.StringField(2, repeated=True)
   environmentVariables = _messages.MessageField('EnvironmentVariable', 3, repeated=True)
   filesToPush = _messages.MessageField('DeviceFile', 4, repeated=True)
+  networkProfile = _messages.StringField(5)
 
 
 class TestSpecification(_messages.Message):
@@ -960,9 +990,11 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: <no description>
       ANDROID: <no description>
+      NETWORK_CONFIGURATION: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
+    NETWORK_CONFIGURATION = 2
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
 
@@ -1010,6 +1042,24 @@ class ToolResultsStep(_messages.Message):
   historyId = _messages.StringField(2)
   projectId = _messages.StringField(3)
   stepId = _messages.StringField(4)
+
+
+class TrafficRule(_messages.Message):
+  """Network emulation parameters
+
+  Fields:
+    bandwidth: Bandwidth in kbits/second
+    burst: Burst size in kbits
+    delay: Packet delay, must be >= 0
+    packetDuplicationRatio: Packet duplication ratio (0.0 - 1.0)
+    packetLossRatio: Packet loss ratio (0.0 - 1.0)
+  """
+
+  bandwidth = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  burst = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  delay = _messages.StringField(3)
+  packetDuplicationRatio = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  packetLossRatio = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 encoding.AddCustomJsonFieldMapping(

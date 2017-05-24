@@ -81,7 +81,7 @@ OPERATOR_CHARS = ':=!<>~()'
 
 # Reserved operator characters. Resource keys cannot contain unquoted reverved
 # operator characters. This prevents key/operator clashes in expressions.
-_RESERVED_OPERATOR_CHARS = OPERATOR_CHARS + '[].{},+*/%&|^@#;?'
+_RESERVED_OPERATOR_CHARS = OPERATOR_CHARS + '[].{},+*/%&|^#;?'
 
 
 class _TransformCall(object):
@@ -139,6 +139,7 @@ class _Transform(object):
   def __str__(self):
     return '[{0}]'.format('.'.join(map(str, self._transforms)))
 
+  # TODO(b/38445579): Add explicit unit tests for these properties.
   @property
   def active(self):
     """The transform active level or None if always active."""
@@ -148,6 +149,27 @@ class _Transform(object):
   def conditional(self):
     """The if() transform conditional expression string."""
     return self._conditional
+
+  @property
+  def global_restriction(self):
+    """The global restriction string or None if not a global restriction.
+
+    Terms in a fiter expression are sometimes called "restrictions" because
+    they restrict or constrain values.  A regular restriction is of the form
+    "attribute<op>operand".  A "global restriction" is a term that has no
+    attribute or <op>.  It is a bare string that is matched against every
+    attribute value in the resource object being filtered.  The global
+    restriction matches if any of those values contains the string using case
+    insensitive string match.
+
+    Returns:
+      The global restriction string or None if not a global restriction.
+    """
+    if (len(self._transforms) != 1 or
+        (self._transforms[0].name !=
+         resource_projection_spec.GLOBAL_RESTRICTION_NAME)):
+      return None
+    return self._transforms[0].args[0]
 
   @property
   def name(self):
@@ -516,8 +538,12 @@ class Lexer(object):
     """Parses a resource key from the expression.
 
     A resource key is a '.' separated list of names with optional [] slice or
-    [NUMBER] array indices. A parsed key is encoded as an ordered list of
-    tokens, where each token may be:
+    [NUMBER] array indices. Names containing _RESERVED_OPERATOR_CHARS must be
+    quoted. For example, "k.e.y".value has two name components, 'k.e.y' and
+    'value'.
+
+    A parsed key is encoded as an ordered list of tokens, where each token may
+    be:
 
       KEY VALUE   PARSED VALUE  DESCRIPTION
       ---------   ------------  -----------
@@ -816,7 +842,7 @@ def GetKeyName(key, quote=True):
       if parts:
         parts[-1] += part
         continue
-    elif quote and re.search(r'\W', part):
+    elif quote and re.search(r'[^\w@]', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
       part = u'"{part}"'.format(part=part)

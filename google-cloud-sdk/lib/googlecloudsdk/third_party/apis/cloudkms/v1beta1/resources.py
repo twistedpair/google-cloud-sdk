@@ -22,6 +22,12 @@ BASE_URL = 'https://cloudkms.googleapis.com/v1beta1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       '{+name}',

@@ -107,8 +107,9 @@ def GetCurrentProjectParent():
   return project_ref.RelativeName()
 
 
-def GetSinkReference(sink_name, log, service):
+def GetSinkReference(sink_name, log, service, args):
   """Returns the appropriate sink resource based on args."""
+  # TODO(b/30276338): Remove this function altogether
   params = {'projectsId': properties.VALUES.core.project.GetOrFail}
   if log or service:
     registry = resources.REGISTRY.Clone()
@@ -127,7 +128,9 @@ def GetSinkReference(sink_name, log, service):
         collection='logging.projects.logServices.sinks')
   else:
     return registry.Parse(
-        sink_name, params=params, collection='logging.projects.sinks')
+        sink_name,
+        params={GetIdFromArgs(args): GetParentResourceFromArgs(args).Name()},
+        collection=GetCollectionFromArgs(args, 'sinks'))
 
 
 def WarnOnUsingLogOrServiceArguments(args):
@@ -220,6 +223,33 @@ def AddNonProjectArgs(parser, help_string):
       help='{0} associated with this billing account.'.format(help_string))
 
 
+def GetParentResourceFromArgs(args):
+  """Returns the parent resource derived from the given args.
+
+  Args:
+    args: command line args.
+
+  Returns:
+    The parent resource.
+  """
+  if args.organization:
+    return resources.REGISTRY.Parse(
+        args.organization,
+        collection='cloudresourcemanager.organizations')
+  elif args.folder:
+    return folders.FoldersRegistry().Parse(
+        args.folder,
+        collection='cloudresourcemanager.folders')
+  elif args.billing_account:
+    return resources.REGISTRY.Parse(
+        args.billing_account,
+        collection='cloudbilling.billingAccounts')
+  else:
+    return resources.REGISTRY.Parse(
+        properties.VALUES.core.project.Get(required=True),
+        collection='cloudresourcemanager.projects')
+
+
 def GetParentFromArgs(args):
   """Returns the relative path to the parent from args.
 
@@ -229,23 +259,47 @@ def GetParentFromArgs(args):
   Returns:
     The relative path. e.g. 'projects/foo', 'folders/1234'.
   """
+  return GetParentResourceFromArgs(args).RelativeName()
+
+
+def GetIdFromArgs(args):
+  """Returns the id to be used for constructing resource paths.
+
+  Args:
+    args: command line args.
+
+  Returns:
+    The id to be used..
+  """
   if args.organization:
-    org_ref = resources.REGISTRY.Parse(
-        args.organization,
-        collection='cloudresourcemanager.organizations')
-    return org_ref.RelativeName()
+    return 'organizationsId'
   elif args.folder:
-    folder_ref = folders.FoldersRegistry().Parse(
-        args.folder,
-        collection='cloudresourcemanager.folders')
-    return folder_ref.RelativeName()
+    return 'foldersId'
   elif args.billing_account:
-    billing_account_ref = resources.REGISTRY.Parse(
-        args.billing_account,
-        collection='cloudbilling.billingAccounts')
-    return billing_account_ref.RelativeName()
+    return 'billingAccountsId'
   else:
-    return GetCurrentProjectParent()
+    return 'projectsId'
+
+
+def GetCollectionFromArgs(args, collection_suffix):
+  """Returns the collection derived from args and the suffix.
+
+  Args:
+    args: command line args.
+    collection_suffix: suffix of collection
+
+  Returns:
+    The collection.
+  """
+  if args.organization:
+    prefix = 'logging.organizations'
+  elif args.folder:
+    prefix = 'logging.folders'
+  elif args.billing_account:
+    prefix = 'logging.billingAccounts'
+  else:
+    prefix = 'logging.projects'
+  return '{0}.{1}'.format(prefix, collection_suffix)
 
 
 def CreateResourceName(parent, collection, resource_id):

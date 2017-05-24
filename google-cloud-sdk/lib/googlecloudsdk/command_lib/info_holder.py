@@ -68,6 +68,7 @@ class BasicInfo(object):
     self.version = config.CLOUD_SDK_VERSION
     self.operating_system = platform.operating_system
     self.architecture = platform.architecture
+    self.python_location = sys.executable and encoding.Decode(sys.executable)
     self.python_version = sys.version
     self.site_packages = 'site' in sys.modules
 
@@ -85,7 +86,7 @@ class BasicInfo(object):
                 if self.operating_system else 'unknown'),
             arch=self.architecture.name if self.architecture else 'unknown',
             uname=system_platform.uname(),
-            python_location=sys.executable,
+            python_location=self.python_location,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))
 
@@ -103,7 +104,7 @@ class InstallationInfo(object):
     # Keep it as array for structured output.
     self.path = encoding.GetEncodedValue(
         os.environ, 'PATH', '').split(os.pathsep)
-    self.python_path = sys.path
+    self.python_path = [encoding.Decode(path_elem) for path_elem in sys.path]
 
     if self.sdk_root:
       manager = update_manager.UpdateManager()

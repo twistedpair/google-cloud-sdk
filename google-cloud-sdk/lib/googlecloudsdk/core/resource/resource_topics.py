@@ -40,20 +40,20 @@ def ResourceDescription(name):
   description = """\
   Most *gcloud* commands return a list of resources on success. By default they
   are pretty-printed on the standard output. The
-  *--format=*_NAME_[_ATTRIBUTES_]*(*_PROJECTION_*)* flag changes the default
-  output:
+  *--format=*_NAME_[_ATTRIBUTES_]*(*_PROJECTION_*)* and
+  *--filter=*_EXPRESSION_ flags along with projections can be used to format and
+  change the default output to a more meaningful result.
 
-  _NAME_:: The format name.
+  To change the default output format of a command, use the --format flag. \
+  {see_format}
 
-  _ATTRIBUTES_:: Format specific attributes. {see_format}
+  To select resources to be listed, use the --filter flag. {see_filter}
 
-  _PROJECTION_:: A list of resource keys that selects the data listed. \
-{see_projection}
+  To reach resource items through a unique path of names from the root,
+  use resource-keys. {see_key}
 
-  _resource keys_:: Keys are names for resource items. {see_key}
-
-  Most *gcloud* *list* commands have a *--filter=*_EXPRESSION_ flag that
-  selects resources to be listed. {see_filter}
+  To list a subset of resource keys in a resource, use projections. \
+  {see_projection}
   """
   # topic <name> => gcloud topic <command>
   topics = {

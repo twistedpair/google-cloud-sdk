@@ -22,15 +22,14 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.service_management import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.core.util import times
 
 import yaml
 
@@ -56,34 +55,6 @@ ALL_IAM_PERMISSIONS = [
     'servicemanagement.services.setIamPolicy',
     'servicemanagement.services.getIamPolicy',
 ]
-
-
-class Error(core_exceptions.Error):
-  """Base Error class for this module."""
-
-
-class EnableServicePermissionDeniedException(Error):
-
-  def __init__(self, message):
-    super(EnableServicePermissionDeniedException, self).__init__(message)
-
-
-class ListServicesPermissionDeniedException(Error):
-
-  def __init__(self, message):
-    super(ListServicesPermissionDeniedException, self).__init__(message)
-
-
-class OperationErrorException(Error):
-
-  def __init__(self, message):
-    super(OperationErrorException, self).__init__(message)
-
-
-class ServiceDeployErrorException(Error):
-
-  def __init__(self, message):
-    super(ServiceDeployErrorException, self).__init__(message)
 
 
 def GetMessagesModule():
@@ -217,8 +188,8 @@ def PushAdvisorConfigChangeToString(config_change):
   Returns:
     An easily readable string representing the ConfigChange message.
   """
-  result = ('Element [{element}] (old value = {old_value}, '
-            'new value = {new_value}) was {change_type}. Advice:\n').format(
+  result = (u'Element [{element}] (old value = {old_value}, '
+            u'new value = {new_value}) was {change_type}. Advice:\n').format(
                 element=config_change.element,
                 old_value=config_change.oldValue,
                 new_value=config_change.newValue,
@@ -226,7 +197,7 @@ def PushAdvisorConfigChangeToString(config_change):
                     config_change.changeType))
 
   for advice in config_change.advices:
-    result += '\t* {0}'.format(advice.description)
+    result += u'\t* {0}'.format(advice.description)
 
   return result
 
@@ -313,7 +284,7 @@ def ReadServiceConfigFile(file_path):
     with open(file_path, mode) as f:
       return f.read()
   except IOError as ex:
-    raise exceptions.BadFileException(
+    raise calliope_exceptions.BadFileException(
         'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 
 
@@ -399,7 +370,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
     exception_msg = ('{0} diagnostic error{1} found in service configuration '
                      'deployment. See log for details.').format(
                          num_errors, 's' if num_errors > 1 else '')
-    raise ServiceDeployErrorException(exception_msg)
+    raise exceptions.ServiceDeployErrorException(exception_msg)
 
   return response
 
@@ -461,28 +432,6 @@ def CreateServiceIfNew(service_name, project):
       raise error
 
 
-def ConvertUTCDateTimeStringToLocalTimeString(utc_string):
-  """Returns a string representation of the given UTC string in local time.
-
-  Args:
-    utc_string: The string representation of the UTC datetime.
-
-  Returns:
-    A string representing the input time in local time. The format will follow
-    '%Y-%m-%d %H:%M:%S %Z'.
-  """
-  try:
-    utc_dt = times.ParseDateTime(utc_string)
-  except ValueError:
-    log.warn('Failed to parse UTC string %s', utc_string)
-    return utc_string
-  except OverflowError:
-    log.warn('Parsed UTC date exceeds largest valid C integer on this system')
-    return utc_string
-  return times.FormatDateTime(
-      utc_dt, '%Y-%m-%d %H:%M:%S %Z', tzinfo=times.LOCAL)
-
-
 def GetByteStringFromFingerprint(fingerprint):
   """Helper function to create a byte string from a SHA fingerprint.
 
@@ -494,7 +443,7 @@ def GetByteStringFromFingerprint(fingerprint):
     The fingerprint converted to a byte string (excluding the colons).
   """
   if not ValidateFingerprint(fingerprint):
-    raise exceptions.ToolException('Invalid fingerprint')
+    raise exceptions.FingerprintError('Invalid fingerprint')
   byte_tokens = fingerprint.split(':')
   return str(bytearray([int(b, 16) for b in byte_tokens]))
 
@@ -579,12 +528,6 @@ def GetProcessedOperationResult(result, async=False):
         # pylint:disable=protected-access
         op_ref, apis_internal._GetClientInstance('servicemanagement', 'v1')))
 
-  # Convert metadata startTime to local time
-  if 'metadata' in result_dict and 'startTime' in result_dict['metadata']:
-    result_dict['metadata']['startTime'] = (
-        ConvertUTCDateTimeStringToLocalTimeString(
-            result_dict['metadata']['startTime']))
-
   return result_dict
 
 
@@ -613,7 +556,7 @@ def WaitForOperation(operation_ref, client):
     client: The client object that contains the GetOperation request object.
 
   Raises:
-    ToolException: if the operation does not complete in time.
+    TimeoutError: if the operation does not complete in time.
     OperationErrorException: if the operation fails.
 
   Returns:
@@ -643,13 +586,13 @@ def WaitForOperation(operation_ref, client):
                       _CheckOperation, [operation_id], should_retry_if=False,
                       sleep_ms=1500)
   except retry.MaxRetrialsException:
-    raise exceptions.ToolException('Timed out while waiting for '
-                                   'operation {0}. Note that the operation '
-                                   'is still pending.'.format(operation_id))
+    raise exceptions.TimeoutError('Timed out while waiting for '
+                                  'operation {0}. Note that the operation '
+                                  'is still pending.'.format(operation_id))
 
   # Check to see if the operation resulted in an error
   if WaitForOperation.operation_response.error is not None:
-    raise OperationErrorException(
+    raise exceptions.OperationErrorException(
         'The operation with ID {0} resulted in a failure.'.format(operation_id))
 
   # If we've gotten this far, the operation completed successfully,

@@ -101,6 +101,18 @@ class MatrixCreator(object):
         roboDirectives=robo_directives)
     return spec
 
+  def _BuildAndroidGameLoopTestSpec(self):
+    """Build a TestSpecification for an AndroidTestLoop."""
+    spec = self._BuildGenericTestSpec()
+    spec.androidTestLoop = self._messages.AndroidTestLoop(
+        appApk=self._BuildFileReference(self._args.app),
+        appPackageId=self._args.app_package)
+    if self._args.scenario_numbers:
+      spec.androidTestLoop.scenarios = self._args.scenario_numbers
+    if self._args.scenario_labels:
+      spec.androidTestLoop.scenarioLabels = self._args.scenario_labels
+    return spec
+
   def _BuildGenericTestSpec(self):
     """Build a generic TestSpecification without test-type specifics."""
     device_files = []
@@ -127,7 +139,8 @@ class MatrixCreator(object):
         filesToPush=device_files,
         account=account,
         environmentVariables=environment_variables,
-        directoriesToPull=directories_to_pull)
+        directoriesToPull=directories_to_pull,
+        networkProfile=getattr(self._args, 'network_profile', None))
 
     return self._messages.TestSpecification(
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
@@ -139,6 +152,8 @@ class MatrixCreator(object):
       return self._BuildAndroidInstrumentationTestSpec()
     elif test_type == 'robo':
       return self._BuildAndroidRoboTestSpec()
+    elif test_type == 'game-loop':
+      return self._BuildAndroidGameLoopTestSpec()
     else:  # It's a bug in our arg validation if we ever get here.
       raise exceptions.InvalidArgumentException(
           'type', 'Unknown test type "{}".'.format(test_type))

@@ -838,9 +838,7 @@ class LatLng(_messages.Message):
   NormalizeLatLng(-180.0, 10.0)     assert (0.0, -170.0) ==
   NormalizeLatLng(180.0, 10.0)     assert (-90.0, 10.0) ==
   NormalizeLatLng(270.0, 10.0)     assert (90.0, 10.0) ==
-  NormalizeLatLng(-270.0, 10.0)  The code in
-  logs/storage/validator/logs_validator_traits.cc treats this type as if it
-  were annotated as ST_LOCATION.
+  NormalizeLatLng(-270.0, 10.0)
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
@@ -1138,7 +1136,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -1151,8 +1149,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should

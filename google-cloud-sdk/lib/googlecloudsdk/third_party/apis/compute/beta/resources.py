@@ -161,6 +161,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'network']
   )
+  NEXTHOPGATEWAYS = (
+      'nextHopGateways',
+      'projects/{project}/global/gateways/{nextHopGateway}',
+      {},
+      ['project', 'nextHopGateway']
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',

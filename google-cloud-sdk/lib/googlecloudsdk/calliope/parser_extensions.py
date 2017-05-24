@@ -41,12 +41,15 @@ The intercepted args namespace object passed to the Command.Run() method adds
 methods to access/modify info collected during the parse.
 """
 
+import abc
 import argparse
+import itertools
 import os
 import re
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import config
@@ -418,7 +421,7 @@ class ArgumentParser(argparse.ArgumentParser):
     if is_subparser:
       # We are going to show the usage anyway, which requires loading
       # everything.  Do this here so that choices gets populated.
-      self._calliope_command.LoadAllSubElements()
+      action.LoadAllChoices()
 
     # Command is not valid, see what we can suggest as a fix...
     message = u"Invalid choice: '{0}'.".format(value)
@@ -439,31 +442,34 @@ class ArgumentParser(argparse.ArgumentParser):
           suggestions=existing_alternatives)
 
     # See if the spelling was close to something else that exists here.
-    else:
-      choices = sorted(action.choices)
-      suggester = usage_text.TextChoiceSuggester(choices)
-      suggester.AddSynonyms()
-      suggestion = suggester.GetSuggestion(value)
-      if suggestion:
-        message += " Did you mean '{0}'?".format(suggestion)
-      elif not isinstance(action, CloudSDKSubParsersAction):
-        # Command group choices will be displayed in the usage message.
-        message += '\n\nValid choices are [{0}].'.format(', '.join(choices))
+    choices = sorted(action.choices)
+    suggester = usage_text.TextChoiceSuggester(choices)
+    suggester.AddSynonyms()
+    if is_subparser:
+      # Add command suggestions if the group registered any.
+      cmd_suggestions = self._calliope_command._common_type.CommandSuggestions()
+      cli_name = self._calliope_command.GetPath()[0]
+      for cmd, suggestion in cmd_suggestions.iteritems():
+        suggester.AddAliases([cmd], cli_name + ' ' + suggestion)
+    suggestion = suggester.GetSuggestion(value)
+    if suggestion:
+      message += " Did you mean '{0}'?".format(suggestion)
+    elif not is_subparser:
+      # Command group choices will be displayed in the usage message.
+      message += '\n\nValid choices are [{0}].'.format(', '.join(choices))
 
-      # Log to analytics the attempt to execute a command.
-      # We don't know if the user entered 'value' is a mistyped command or
-      # some resource name that the user entered and we incorrectly thought it's
-      # a command. We can't include it since it might be PII.
+    # Log to analytics the attempt to execute a command.
+    # We don't know if the user entered 'value' is a mistyped command or
+    # some resource name that the user entered and we incorrectly thought it's
+    # a command. We can't include it since it might be PII.
 
-      raise parser_errors.UnknownCommandError(
-          message,
-          argument=action.option_strings[0] if action.option_strings else None,
-          total_unrecognized=1,
-          total_suggestions=1 if suggestion else 0,
-          suggestions=[suggestion] if suggestion else choices,
-      )
-
-    raise argparse.ArgumentError(action, message)
+    raise parser_errors.UnknownCommandError(
+        message,
+        argument=action.option_strings[0] if action.option_strings else None,
+        total_unrecognized=1,
+        total_suggestions=1 if suggestion else 0,
+        suggestions=[suggestion] if suggestion else choices,
+    )
 
   def _ExistingAlternativeReleaseTracks(self, value):
     """Gets the path of alternatives for the command in other release tracks.
@@ -704,20 +710,12 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
 
   While the above ArgumentParser overrides behavior for parsing the flags
   associated with a specific group or command, this class overrides behavior
-  for loading those sub parsers.  We use this to intercept the parsing right
-  before it needs to start parsing args for sub groups and we then load the
-  specific sub group it needs.
+  for loading those sub parsers.
   """
 
-  def __init__(self, *args, **kwargs):
-    self._calliope_command = kwargs.pop('calliope_command')
-    super(CloudSDKSubParsersAction, self).__init__(*args, **kwargs)
+  __metaclass__ = abc.ABCMeta
 
-  def add_parser(self, name, **kwargs):
-    # Pass the same flag collection down to any sub parsers that are created.
-    # Pass the same abbreviated flags down to any sub parsers that are created.
-    return super(CloudSDKSubParsersAction, self).add_parser(name, **kwargs)
-
+  @abc.abstractmethod
   def IsValidChoice(self, choice):
     """Determines if the given arg is a valid sub group or command.
 
@@ -727,6 +725,26 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
     Returns:
       bool, True if the given item is a valid sub element, False otherwise.
     """
+    pass
+
+  @abc.abstractmethod
+  def LoadAllChoices(self):
+    """Load all the choices because we need to know the full set."""
+    pass
+
+
+class CommandGroupAction(CloudSDKSubParsersAction):
+  """A subparser for loading calliope command groups on demand.
+
+  We use this to intercept the parsing right before it needs to start parsing
+  args for sub groups and we then load the specific sub group it needs.
+  """
+
+  def __init__(self, *args, **kwargs):
+    self._calliope_command = kwargs.pop('calliope_command')
+    super(CommandGroupAction, self).__init__(*args, **kwargs)
+
+  def IsValidChoice(self, choice):
     # When using tab completion, argcomplete monkey patches various parts of
     # argparse and interferes with the normal argument parsing flow.  Usually
     # it is sufficient to check if the given choice is valid here, but delay
@@ -738,6 +756,9 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
       self._calliope_command.LoadSubElement(choice)
     return self._calliope_command.IsValidSubElement(choice)
 
+  def LoadAllChoices(self):
+    self._calliope_command.LoadAllSubElements()
+
   def __call__(self, parser, namespace, values, option_string=None):
     # This is the name of the arg that is the sub element that needs to be
     # loaded.
@@ -746,5 +767,108 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
     # loaded and normal error handling will take over.
     if self._calliope_command:
       self._calliope_command.LoadSubElement(parser_name)
-    super(CloudSDKSubParsersAction, self).__call__(
+    super(CommandGroupAction, self).__call__(
+        parser, namespace, values, option_string=option_string)
+
+
+class DynamicPositionalAction(CloudSDKSubParsersAction):
+  """An argparse action that adds new flags to the parser when it is called.
+
+  We need to use a subparser for this because for a given parser, argparse
+  collects all the arg information before it starts parsing. Adding in new flags
+  on the fly doesn't work. With a subparser, it is independent so we can load
+  flags into here on the fly before argparse loads this particular parser.
+  """
+
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, *args, **kwargs):
+    self._parent_ai = kwargs.pop('parent_ai')
+    super(DynamicPositionalAction, self).__init__(*args, **kwargs)
+
+  def IsValidChoice(self, choice):
+    # We need to actually create the parser or else check_value will fail if the
+    # given choice is not present. We just add it no matter what it is because
+    # we don't have access to the namespace to be able to figure out if the
+    # choice is actually valid. Invalid choices will raise exceptions once
+    # called. We also don't actually care what the values are in here because we
+    # register an explicit completer to use for completions, so the list of
+    # parsers is not actually used other than to bypass the check_value
+    # validation.
+    self._AddParser(choice)
+    # By default, don't do any checking of the argument. If it is bad, raise
+    # an exception when it is called. We don't need to do any on-demand loading
+    # here because there are no subparsers of this one, so the above argcomplete
+    # issue doesn't matter.
+    return True
+
+  def LoadAllChoices(self):
+    # We don't need to do this because we will use an explicit completer to
+    # complete the names of the options rather than relying on correctly
+    # populating the choices.
+    pass
+
+  def _AddParser(self, choice):
+    # Create a new parser and pass in the calliope_command of the original so
+    # that things like help and error reporting continue to work.
+    return self.add_parser(
+        choice, add_help=False, prog=self._parent_ai.parser.prog,
+        calliope_command=self._parent_ai.parser._calliope_command)
+
+  @abc.abstractmethod
+  def GenerateArgs(self, namespace, choice):
+    pass
+
+  @abc.abstractmethod
+  def Completions(self, prefix, parsed_args, **kwargs):
+    pass
+
+  def __call__(self, parser, namespace, values, option_string=None):
+    choice = values[0]
+    args = self.GenerateArgs(namespace, choice)
+    sub_parser = self._name_parser_map[choice]
+
+    # This is tricky. When we create a new parser above, that parser does not
+    # have any of the flags from the parent command. We need to propagate them
+    # all down to this parser like we do in calliope. We also want to add new
+    # flags. In order for those to show up in the help, they need to be
+    # registered with an ArgumentInterceptor. Here, we create one and seed it
+    # with the data of the parent. This actually means that every flag we add
+    # to our new parser will show up in the help of the parent parser, even
+    # though those flags are not actually on that parser. This is ok because
+    # help is always run on the parent ArgumentInterceptor and we want it to
+    # show the full set of args.
+    ai = parser_arguments.ArgumentInterceptor(
+        sub_parser, is_root=False, cli_generator=None,
+        allow_positional=True, data=self._parent_ai.data)
+
+    for flag in itertools.chain(self._parent_ai.flag_args,
+                                self._parent_ai.ancestor_flag_args):
+      # Propagate the flags down except the ones we are not supposed to. Note
+      # that we *do* copy the help action unlike we usually do because this
+      # subparser is going to share the help action of the parent.
+      if flag.do_not_propagate or flag.required:
+        continue
+      # We add the flags directly to the parser instead of the
+      # ArgumentInterceptor because if we didn't the flags would be duplicated
+      # in the help, since we reused the data object from the parent.
+      sub_parser._add_action(flag)
+    # Update parent display_info in children, children take precedence.
+    ai.display_info.AddLowerDisplayInfo(self._parent_ai.display_info)
+
+    # Add args to the parser and remove any collisions if arguments are
+    # already registered with the same name.
+    for _, arg in args.iteritems():
+      arg.RemoveFromParser(ai)
+      added_arg = arg.AddToParser(ai)
+      # Argcomplete patches parsers and actions before call() is called. Since
+      # we generate these args at call() time, they have not been patched and
+      # causes completion to fail. Since we know that we are not going to be
+      # adding any subparsers (the only thing that actually needs to be patched)
+      # we fake it here to make argcomplete think it did the patching so it
+      # doesn't crash.
+      if '_ARGCOMPLETE' in os.environ and not hasattr(added_arg, '_orig_class'):
+        added_arg._orig_class = added_arg.__class__
+
+    super(DynamicPositionalAction, self).__call__(
         parser, namespace, values, option_string=option_string)

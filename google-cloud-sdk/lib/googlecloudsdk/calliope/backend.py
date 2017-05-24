@@ -294,12 +294,15 @@ class CommandCommon(object):
     return []
 
   # pylint: disable=unused-argument
-  def LoadAllSubElements(self, recursive=False):
+  def LoadAllSubElements(self, recursive=False, ignore_load_errors=False):
     """Load all the sub groups and commands of this group.
 
     Args:
       recursive: bool, True to continue loading all sub groups, False, to just
         load the elements under the group.
+      ignore_load_errors: bool, True to ignore command load failures. This
+        should only be used when it is not critical that all data is returned,
+        like for optimizations like static tab completion.
 
     Returns:
       int, The total number of elements loaded.
@@ -598,7 +601,7 @@ class CommandGroup(CommandCommon):
     if not self._sub_parser:
       # pylint: disable=protected-access
       self._sub_parser = self._parser.add_subparsers(
-          action=parser_extensions.CloudSDKSubParsersAction,
+          action=parser_extensions.CommandGroupAction,
           calliope_command=self)
     return self._sub_parser
 
@@ -622,21 +625,33 @@ class CommandGroup(CommandCommon):
     """
     return bool(self.LoadSubElement(name))
 
-  def LoadAllSubElements(self, recursive=False):
+  def LoadAllSubElements(self, recursive=False, ignore_load_errors=False):
     """Load all the sub groups and commands of this group.
 
     Args:
       recursive: bool, True to continue loading all sub groups, False, to just
         load the elements under the group.
+      ignore_load_errors: bool, True to ignore command load failures. This
+        should only be used when it is not critical that all data is returned,
+        like for optimizations like static tab completion.
 
     Returns:
       int, The total number of elements loaded.
     """
-    total = len(self.AllSubElements())
+    total = 0
     for name in self.AllSubElements():
-      element = self.LoadSubElement(name)
+      try:
+        element = self.LoadSubElement(name)
+        total += 1
+      # pylint:disable=bare-except, We are in a mode where accuracy doesn't
+      # matter. Just ignore any errors in loading a command.
+      except:
+        element = None
+        if not ignore_load_errors:
+          raise
       if element and recursive:
-        total += element.LoadAllSubElements(recursive=recursive)
+        total += element.LoadAllSubElements(
+            recursive=recursive, ignore_load_errors=ignore_load_errors)
     return total
 
   def LoadSubElement(self, name, allow_empty=False):

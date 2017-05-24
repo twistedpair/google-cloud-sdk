@@ -29,6 +29,7 @@ DOCKERIGNORE = textwrap.dedent("""\
     .git
     .hg
     .svn
+    app.yaml
     """)
 DOCKERFILE_JAVA8_PREAMBLE = 'FROM gcr.io/google_appengine/openjdk8\n'
 DOCKERFILE_JETTY9_PREAMBLE = 'FROM gcr.io/google_appengine/jetty9\n'

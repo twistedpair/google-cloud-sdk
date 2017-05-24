@@ -31,6 +31,12 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
   PROJECTS_BUILDS = (
       'projects.builds',
       'projects/{projectId}/builds/{id}',

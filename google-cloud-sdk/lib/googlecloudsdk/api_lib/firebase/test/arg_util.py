@@ -21,6 +21,7 @@ from googlecloudsdk.core import log
 
 ANDROID_INSTRUMENTATION_TEST = 'ANDROID INSTRUMENTATION TEST'
 ANDROID_ROBO_TEST = 'ANDROID ROBO TEST'
+ANDROID_GAME_LOOP_TEST = 'ANDROID GAME-LOOP TEST'
 DEPRECATED_DEVICE_DIMENSIONS = 'DEPRECATED DEVICE DIMENSIONS'
 
 
@@ -41,11 +42,6 @@ def AddCommonTestRunArgs(parser):
       'arg:value pairs to use. Run *$ gcloud topic arg-files* for more '
       'information and examples.')
 
-  parser.add_argument(
-      '--type',
-      category=base.COMMONLY_USED_FLAGS,
-      choices=['instrumentation', 'robo'],
-      help='The type of test to run.')
   parser.add_argument(
       '--app',
       category=base.COMMONLY_USED_FLAGS,
@@ -110,7 +106,7 @@ def AddAndroidTestArgs(parser):
       type=arg_parsers.ArgList(),
       metavar='DIR_TO_PULL',
       help='A list of paths that will be copied from the device\'s storage to '
-      'the designated results bucket after the test is complete. (ex. '
+      'the designated results bucket after the test is complete. (For example '
       '--directories-to-pull /sdcard/tempDir1,/data/tempDir2)')
   parser.add_argument(
       '--environment-variables',
@@ -197,6 +193,66 @@ def AddAndroidTestArgs(parser):
       'that are not associated with real users. For more information, see '
       # pylint: disable=line-too-long
       'https://firebase.google.com/docs/test-lab/command-line#custom_login_and_text_input_with_robo_test.')
+
+
+def AddGaArgs(parser):
+  """Register args which are only available in the GA run command.
+
+  Args:
+    parser: An argparse parser used to add args that follow a command.
+  """
+  parser.add_argument(
+      '--type',
+      category=base.COMMONLY_USED_FLAGS,
+      choices=['instrumentation', 'robo'],
+      help='The type of test to run.')
+
+
+def AddBetaArgs(parser):
+  """Register args which are only available in the beta run command.
+
+  Args:
+    parser: An argparse parser used to add args that follow a command.
+  """
+  parser.add_argument(
+      '--type',
+      category=base.COMMONLY_USED_FLAGS,
+      choices=['instrumentation', 'robo', 'game-loop'],
+      help='The type of test to run.')
+
+  parser.add_argument(
+      '--scenario-numbers',
+      metavar='int',
+      type=arg_parsers.ArgList(element_type=int, min_length=1, max_length=1024),
+      category=ANDROID_GAME_LOOP_TEST,
+      help='A list of game-loop scenario numbers which will be run as part of '
+      'the test (default: all scenarios). A maximum of 1024 scenarios may be '
+      'specified in one test matrix, but the maximum number may also be '
+      'limited by the overall test *--timeout* setting.')
+
+  parser.add_argument(
+      '--scenario-labels',
+      metavar='LABEL',
+      type=arg_parsers.ArgList(min_length=1),
+      category=ANDROID_GAME_LOOP_TEST,
+      help='A list of game-loop scenario labels (default: None). '
+      'Each game-loop scenario may be labeled in the APK manifest file with '
+      'one or more arbitrary strings, creating logical groupings (e.g. '
+      'GPU_COMPATIBILITY_TESTS). If *--scenario-numbers* and '
+      '*--scenario-labels* are specified together, Firebase Test Lab will '
+      'first execute each scenario from *--scenario-numbers*. It will then '
+      'expand each given scenario label into a list of scenario numbers marked '
+      'with that label, and execute those scenarios.')
+
+  # TODO(b/36366322): use {grandparent_command} once available
+  parser.add_argument(
+      '--network-profile',
+      metavar='PROFILE_ID',
+      help='The name of the network traffic profile, for example '
+      '--network-profile=LTE, which consists of a set of parameters to emulate '
+      'network conditions when running the test (default: no network shaping; '
+      'see available profiles listed by the `$ gcloud beta firebase test '
+      'network-profiles list` command).')
 
 
 def AddMatrixArgs(parser):
@@ -288,9 +344,13 @@ def GetSetOfAllTestArgs(type_rules, shared_rules):
   Returns:
     A set of strings for every gcloud-test argument.
   """
-  all_test_args_list = shared_rules['required'] + shared_rules['optional']
+  all_test_args_list = (shared_rules['required'] +
+                        shared_rules['optional'] +
+                        shared_rules['defaults'].keys())
   for type_dict in type_rules.values():
-    all_test_args_list += type_dict['required'] + type_dict['optional']
+    all_test_args_list += (type_dict['required'] +
+                           type_dict['optional'] +
+                           type_dict['defaults'].keys())
   return set(all_test_args_list)
 
 

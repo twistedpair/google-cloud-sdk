@@ -34,6 +34,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'groupName']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{project}',
+      {},
+      [u'project']
+  )
   USERS = (
       'users',
       'projects/{project}/global/users/{user}',

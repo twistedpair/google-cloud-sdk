@@ -28,7 +28,6 @@ from apitools.base.py import list_pager
 from apitools.base.py import transfer
 
 from googlecloudsdk.api_lib.storage import storage_util
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -41,8 +40,6 @@ LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
 OUTPUT_LINE_CHAR = '-'
 GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
-
-STORAGE_MESSAGES = core_apis.GetMessagesModule('storage', 'v1')
 
 
 class Error(Exception):
@@ -306,6 +303,15 @@ class StorageClient(object):
     self.client.objects.Delete(self.messages.StorageObjectsDeleteRequest(
         bucket=bucket_ref.bucket,
         object=object_path))
+
+  def DeleteBucket(self, bucket_ref):
+    """Delete the specified bucket.
+
+    Args:
+      bucket_ref: storage_util.BucketReference to the bucket of the object
+    """
+    self.client.buckets.Delete(
+        self.messages.StorageBucketsDeleteRequest(bucket=bucket_ref.bucket))
 
 
 def Rsync(source_dir, dest_dir, exclude_pattern=None):

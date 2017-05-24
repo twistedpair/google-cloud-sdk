@@ -231,6 +231,7 @@ class _Sections(object):
     self.component_manager = _SectionComponentManager()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
+    self.dataproc = _SectionDataproc()
     self.devshell = _SectionDevshell()
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
@@ -245,7 +246,7 @@ class _Sections(object):
         (section.name, section) for section in
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.core, self.component_manager, self.compute,
-         self.container, self.devshell, self.emulator,
+         self.container, self.dataproc, self.devshell, self.emulator,
          self.experimental, self.functions, self.metrics, self.ml_engine,
          self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
@@ -983,6 +984,26 @@ class _SectionMlEngine(_Section):
         help_text=('The interval (in seconds) at which to poll logs from your '
                    'Cloud ML Engine jobs. Note that making it much faster than '
                    'the default (60) will quickly use all of your quota.'))
+
+
+class _SectionDataproc(_Section):
+  """Contains the properties for the 'ml_engine' section."""
+
+  def __init__(self):
+    # TODO(b/37750432): Unhide when --region leaves beta.
+    super(_SectionDataproc, self).__init__('dataproc', hidden=True)
+    self.region = self._Add(
+        'region',
+        default='global',
+        help_text=(
+            'Specifies the Dataproc region to use. Each Dataproc region '
+            'constitutes an independent resource namespace constrained to '
+            'deploying instances into GCE zones inside the region. The '
+            'default value of "global" is a special multi-region namespace '
+            'which is capable of deploying instances into all GCE zones '
+            'globally, and is disjoint from other Dataproc regions. This '
+            'region parameter corresponds to the /regions/<region> segment '
+            'of the Dataproc resource URIs being referenced.'))
 
 
 class _SectionProxy(_Section):

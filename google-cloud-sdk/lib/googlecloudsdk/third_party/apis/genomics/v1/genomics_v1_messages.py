@@ -250,8 +250,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -2634,7 +2634,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -2647,8 +2647,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should

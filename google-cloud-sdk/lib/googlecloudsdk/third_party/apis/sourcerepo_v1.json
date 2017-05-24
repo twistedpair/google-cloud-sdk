@@ -121,7 +121,7 @@
   "schemas": {
     "ListReposResponse": {
       "id": "ListReposResponse",
-      "description": "Response for ListRepos.",
+      "description": "Response for ListRepos.  The size is not set in the returned repositories.",
       "type": "object",
       "properties": {
         "repos": {
@@ -143,7 +143,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the repository, of the form\n`projects\/<project>\/repos\/<repo>`.",
+          "description": "Resource name of the repository, of the form\n`projects\/<project>\/repos\/<repo>`.  The repo name may contain slashes.\neg, `projects\/myproject\/repos\/name\/with\/slash`",
           "type": "string"
         },
         "size": {
@@ -255,7 +255,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -508,6 +508,20 @@
       "description": "Write a Cloud Audit log",
       "type": "object",
       "properties": {
+        "logName": {
+          "description": "The log_name to populate in the Cloud Audit Record.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_LOG_NAME",
+            "ADMIN_ACTIVITY",
+            "DATA_ACCESS"
+          ]
+        }
       }
     },
     "TestIamPermissionsRequest": {
@@ -549,7 +563,7 @@
               "path": "v1/{+name}/repos",
               "flatPath": "v1/projects/{projectsId}/repos",
               "httpMethod": "GET",
-              "description": "Returns all repos belonging to a project.",
+              "description": "Returns all repos belonging to a project. The sizes of the repos are\nnot set by ListRepos.  To get the size of a repo, use GetRepo.",
               "parameters": {
                 "name": {
                   "description": "The project ID whose repos should be listed. Values are of the form\n`projects\/<project>`.",
@@ -610,7 +624,7 @@
               "path": "v1/{+parent}/repos",
               "flatPath": "v1/projects/{projectsId}/repos",
               "httpMethod": "POST",
-              "description": "Creates a repo in the given project with the given name..\n\nIf the named repository already exists, `CreateRepo` returns\n`ALREADY_EXISTS`.",
+              "description": "Creates a repo in the given project with the given name.\n\nIf the named repository already exists, `CreateRepo` returns\n`ALREADY_EXISTS`.",
               "parameters": {
                 "parent": {
                   "description": "The project in which to create the repo. Values are of the form\n`projects\/<project>`.",

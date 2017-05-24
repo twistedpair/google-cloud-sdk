@@ -543,10 +543,8 @@ class Git(object):
           if _HasSystemCredHelper():
             log.warn(
                 textwrap.dedent("""\
-            Your system's credential.helper setting will interfere with gcloud's
-            credential.helper.  To use gcloud's credential helper, unset the
-            system credential helper by running the following command.
-            $ git config --system --unset credential.helper"""))
+            If your system's credential.helper requests a password, choose
+            cancel."""))
           cmd = ['git', 'clone', self._uri, abs_repository_path,
                  '--config',
                  # Use git alias "!shell command" syntax so we can configure

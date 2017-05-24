@@ -971,7 +971,7 @@ class Registry(object):
                 kwargs={'bucket': bucket, 'object': objectpath})
           raise
         # TODO(b/35870652): consider not doing this here.
-        # Validation of the argument is a distict concern.
+        # Validation of the argument is a distinct concern.
         if (enforce_collection and collection and
             ref.Collection() != collection):
           raise WrongResourceCollectionException(

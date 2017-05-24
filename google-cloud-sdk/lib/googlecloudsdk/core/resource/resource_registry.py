@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -671,29 +671,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # dataflow
-    'dataflow.jobs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            id:label=JOB_ID,
-            name:label=NAME,
-            type:label=TYPE,
-            creationTime.yesno(no="-"),
-            state
-          )
-        """,),
-    'dataflow.logs':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[no-heading,pad=1](
-            messageImportance.enum(dataflow.JobMessage),
-            time.date(tz=LOCAL):label=TIME,
-            id,
-            messageText:label=TEXT
-          )
-        """,),
-
     # debug
     'debug.logpoints':
         resource_info.ResourceInfo(
@@ -839,24 +816,6 @@ RESOURCE_REGISTRY = {
           )
         """,),
 
-    # functions
-    'functions.projects.locations':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name
-          )
-        """,),
-    'functions.projects.locations.functions':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            name.basename(),
-            status,
-            trigger():label=TRIGGER
-          )
-        """,),
-
     # iam
     'iam.service_accounts':
         resource_info.ResourceInfo(
@@ -962,6 +921,22 @@ RESOURCE_REGISTRY = {
             list_format="""
           value(format(
             'Final test results will be available at [{0}].', [])
+          )
+        """,),
+    'firebase.test.network-profiles':
+        resource_info.ResourceInfo(
+            list_format="""
+          table[box](
+            id:label=PROFILE_ID,
+            synthesize((rule:up, upRule),(rule:down, downRule)):
+              format="table[box](
+                rule,
+                delay,
+                packetLossRatio:label=LOSS_RATIO,
+                packetDuplicationRatio:label=DUPLICATION_RATIO,
+                bandwidth,
+                burst
+              )"
           )
         """,),
 

@@ -159,6 +159,26 @@ def _ValidateNonNegativeInteger(arg_internal_name, arg_value):
   raise InvalidArgException(arg_internal_name, arg_value)
 
 
+def _ValidatePositiveIntList(arg_internal_name, arg_value):
+  """Validates an arg whose value should be a list of ints > 0.
+
+  Args:
+    arg_internal_name: the internal form of the arg name.
+    arg_value: the argument's value parsed from yaml file.
+
+  Returns:
+    The validated argument value.
+
+  Raises:
+    InvalidArgException: the argument's value is not valid.
+  """
+  if isinstance(arg_value, int):  # convert single int to an int list
+    arg_value = [arg_value]
+  if isinstance(arg_value, list):
+    return [_ValidatePositiveInteger(arg_internal_name, v) for v in arg_value]
+  raise InvalidArgException(arg_internal_name, arg_value)
+
+
 def _ValidateOrientationList(arg_internal_name, arg_value):
   """Validates that 'orientations' only contains 'portrait' and 'landscape'."""
   arg_value = ValidateStringList(arg_internal_name, arg_value)
@@ -233,6 +253,8 @@ _FILE_ARG_VALIDATORS = {
     'max_steps': _ValidateNonNegativeInteger,
     'max_depth': _ValidatePositiveInteger,
     'robo_directives': _ValidateKeyValueStringPairs,
+    'scenario_labels': ValidateStringList,
+    'scenario_numbers': _ValidatePositiveIntList,
     'environment_variables': _ValidateKeyValueStringPairs,
     'directories_to_pull': ValidateStringList,
 }
@@ -419,6 +441,14 @@ def ValidateDirectoriesToPullList(args):
     if not _DIRECTORIES_TO_PULL_PATH_REGEX.match(file_path):
       raise InvalidArgException('directories_to_pull',
                                 'Invalid path "{0}"'.format(file_path))
+
+
+def ValidateScenarioNumbers(args):
+  """Validates list of game-loop scenario numbers, which must be > 0."""
+  if args.type != 'game-loop' or not args.scenario_numbers:
+    return
+  args.scenario_numbers = [_ValidatePositiveInteger('scenario_numbers', num)
+                           for num in args.scenario_numbers]
 
 
 def ValidateDeviceList(args, catalog_mgr):

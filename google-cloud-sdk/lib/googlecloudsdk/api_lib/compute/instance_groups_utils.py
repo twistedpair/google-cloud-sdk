@@ -159,7 +159,7 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
 
     return _GetUri
 
-  def Format(self, unused_args):
+  def DeprecatedFormat(self, unused_args):
     return 'table(instance.basename():label=NAME, status)'
 
   detailed_help = {

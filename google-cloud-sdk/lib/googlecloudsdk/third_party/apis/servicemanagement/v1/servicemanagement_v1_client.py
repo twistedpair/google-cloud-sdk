@@ -659,7 +659,7 @@ service, from the newest to the oldest.
         method_id=u'servicemanagement.services.rollouts.list',
         ordered_params=[u'serviceName'],
         path_params=[u'serviceName'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/services/{serviceName}/rollouts',
         request_field='',
         request_type_name=u'ServicemanagementServicesRolloutsListRequest',

@@ -381,6 +381,7 @@ _KNOWN_ERRORS = {
     'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
     'ssl.SSLError': core_exceptions.NetworkIssueError,
+    'socket.error': core_exceptions.NetworkIssueError,
 }
 
 

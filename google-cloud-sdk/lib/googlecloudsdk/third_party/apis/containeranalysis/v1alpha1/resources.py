@@ -22,6 +22,12 @@ BASE_URL = 'https://containeranalysis.googleapis.com/v1alpha1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_NOTES = (
       'projects.notes',
       '{+name}',
@@ -39,6 +45,12 @@ class Collections(enum.Enum):
               'projects/{projectsId}/occurrences/{occurrencesId}',
       },
       [u'name']
+  )
+  PROVIDERS = (
+      'providers',
+      'providers/{providersId}',
+      {},
+      [u'providersId']
   )
   PROVIDERS_NOTES = (
       'providers.notes',

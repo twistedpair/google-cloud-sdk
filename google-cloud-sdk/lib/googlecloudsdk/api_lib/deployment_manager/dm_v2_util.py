@@ -18,6 +18,8 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.deployment_manager import dm_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 
@@ -95,6 +97,29 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
     return (results, return_token)
   except apitools_exceptions.HttpError as error:
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
+
+
+def GetOperation(operation, project):
+  """Helper method gets an operation by name, or raises our custom error.
+
+  Args:
+    operation: The operation to get.
+    project: The project in which to look for the operation.
+
+  Returns:
+    The specified operation with up-to-date fields.
+  """
+  try:
+    new_operation = dm_base.GetClient().operations.Get(
+        dm_base.GetMessages().DeploymentmanagerOperationsGetRequest(
+            project=project,
+            operation=operation.name,
+        )
+    )
+
+    return new_operation
+  except apitools_exceptions.HttpError as error:
+    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
 def ExtractManifestName(deployment_response):
@@ -219,7 +244,8 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
         outputs = FlattenLayoutOutputs(manifest_response.layout)
 
     # TODO(b/36049939): Pagination b/28298504
-    return ResourcesAndOutputs(resources, outputs)
+    return_val = ResourcesAndOutputs(resources, outputs)
+    return return_val
   except apitools_exceptions.HttpError as error:
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 

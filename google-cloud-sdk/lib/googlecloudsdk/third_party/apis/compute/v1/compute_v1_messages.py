@@ -2261,6 +2261,23 @@ class ComputeDisksResizeRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeDisksSetLabelsRequest(_messages.Message):
+  """A ComputeDisksSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 4)
+
+
 class ComputeFirewallsDeleteRequest(_messages.Message):
   """A ComputeFirewallsDeleteRequest object.
 
@@ -3318,6 +3335,21 @@ class ComputeImagesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeImagesSetLabelsRequest(_messages.Message):
+  """A ComputeImagesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A ComputeInstanceGroupManagersAbandonInstancesRequest object.
 
@@ -4204,6 +4236,23 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   instance = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstancesSetLabelsRequest(_messages.Message):
+  """A ComputeInstancesSetLabelsRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetLabelsRequest = _messages.MessageField('InstancesSetLabelsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesSetMachineTypeRequest(_messages.Message):
@@ -5871,6 +5920,21 @@ class ComputeSnapshotsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeSnapshotsSetLabelsRequest(_messages.Message):
+  """A ComputeSnapshotsSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
   """A ComputeSslCertificatesDeleteRequest object.
 
@@ -6891,6 +6955,127 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
   targetSslProxy = _messages.StringField(3, required=True)
 
 
+class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetTcpProxiesGetRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetTcpProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxy: A TargetTcpProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 2)
+
+
+class ComputeTargetTcpProxiesListRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesSetBackendServiceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxiesSetBackendServiceRequest: A
+      TargetTcpProxiesSetBackendServiceRequest resource to be passed as the
+      request body.
+    targetTcpProxy: Name of the TargetTcpProxy resource whose BackendService
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxiesSetBackendServiceRequest = _messages.MessageField('TargetTcpProxiesSetBackendServiceRequest', 2)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
+  """A ComputeTargetTcpProxiesSetProxyHeaderRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetTcpProxiesSetProxyHeaderRequest: A
+      TargetTcpProxiesSetProxyHeaderRequest resource to be passed as the
+      request body.
+    targetTcpProxy: Name of the TargetTcpProxy resource whose ProxyHeader is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetTcpProxiesSetProxyHeaderRequest = _messages.MessageField('TargetTcpProxiesSetProxyHeaderRequest', 2)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -7573,6 +7758,10 @@ class Disk(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
 
+  Messages:
+    LabelsValue: Labels to apply to this disk. These can be later modified by
+      the setLabels method.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -7589,6 +7778,8 @@ class Disk(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
+    labels: Labels to apply to this disk. These can be later modified by the
+      setLabels method.
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
@@ -7667,28 +7858,54 @@ class Disk(_messages.Message):
     READY = 2
     RESTORING = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this disk. These can be later modified by the
+    setLabels method.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#disk')
-  lastAttachTimestamp = _messages.StringField(6)
-  lastDetachTimestamp = _messages.StringField(7)
-  licenses = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  options = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sizeGb = _messages.IntegerField(12)
-  sourceImage = _messages.StringField(13)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceImageId = _messages.StringField(15)
-  sourceSnapshot = _messages.StringField(16)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceSnapshotId = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  type = _messages.StringField(20)
-  users = _messages.StringField(21, repeated=True)
-  zone = _messages.StringField(22)
+  labels = _messages.MessageField('LabelsValue', 6)
+  lastAttachTimestamp = _messages.StringField(7)
+  lastDetachTimestamp = _messages.StringField(8)
+  licenses = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  options = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  sizeGb = _messages.IntegerField(13)
+  sourceImage = _messages.StringField(14)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceImageId = _messages.StringField(16)
+  sourceSnapshot = _messages.StringField(17)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceSnapshotId = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  type = _messages.StringField(21)
+  users = _messages.StringField(22, repeated=True)
+  zone = _messages.StringField(23)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -8544,6 +8761,70 @@ class ForwardingRulesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class GlobalSetLabelsRequest(_messages.Message):
+  """A GlobalSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: A list of labels to apply for this resource. Each label key &
+      value must comply with RFC1035. Specifically, the name must be 1-63
+      characters long and match the regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash. For
+      example, "webserver-frontend": "images". A label value can also be empty
+      (e.g. "my-label": "").
+
+  Fields:
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash
+      when updating or changing labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: A list of labels to apply for this resource. Each label key &
+      value must comply with RFC1035. Specifically, the name must be 1-63
+      characters long and match the regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash. For
+      example, "webserver-frontend": "images". A label value can also be empty
+      (e.g. "my-label": "").
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """A list of labels to apply for this resource. Each label key & value
+    must comply with RFC1035. Specifically, the name must be 1-63 characters
+    long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which
+    means the first character must be a lowercase letter, and all following
+    characters must be a dash, lowercase letter, or digit, except the last
+    character, which cannot be a dash. For example, "webserver-frontend":
+    "images". A label value can also be empty (e.g. "my-label": "").
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+
+
 class GuestOsFeature(_messages.Message):
   """Guest OS features.
 
@@ -8992,6 +9273,8 @@ class Image(_messages.Message):
       Possible values are FAILED, PENDING, or READY.
 
   Messages:
+    LabelsValue: Labels to apply to this image. These can be later modified by
+      the setLabels method.
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
@@ -9028,6 +9311,8 @@ class Image(_messages.Message):
       using an automatically generated key and you do not need to provide a
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
+    labels: Labels to apply to this image. These can be later modified by the
+      setLabels method.
     licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -9082,6 +9367,31 @@ class Image(_messages.Message):
     PENDING = 1
     READY = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this image. These can be later modified by the
+    setLabels method.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   class RawDiskValue(_messages.Message):
     """The parameters of the raw disk image.
 
@@ -9127,15 +9437,16 @@ class Image(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
   kind = _messages.StringField(10, default=u'compute#image')
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  rawDisk = _messages.MessageField('RawDiskValue', 13)
-  selfLink = _messages.StringField(14)
-  sourceDisk = _messages.StringField(15)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceDiskId = _messages.StringField(17)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 18, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  labels = _messages.MessageField('LabelsValue', 11)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  rawDisk = _messages.MessageField('RawDiskValue', 14)
+  selfLink = _messages.StringField(15)
+  sourceDisk = _messages.StringField(16)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDiskId = _messages.StringField(18)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 19, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
 
 
 class ImageList(_messages.Message):
@@ -9169,6 +9480,10 @@ class Instance(_messages.Message):
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
       SUSPENDING, SUSPENDED, and TERMINATED.
 
+  Messages:
+    LabelsValue: Labels to apply to this instance. These can be later modified
+      by the setLabels method.
+
   Fields:
     canIpForward: Allows this instance to send and receive packets with non-
       matching destination or source IPs. This is required if you plan to use
@@ -9185,6 +9500,8 @@ class Instance(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
+    labels: Labels to apply to this instance. These can be later modified by
+      the setLabels method.
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
@@ -9217,6 +9534,8 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    startRestricted: [Output Only] Whether a VM has been restricted for start
+      because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
@@ -9253,6 +9572,31 @@ class Instance(_messages.Message):
     SUSPENDING = 6
     TERMINATED = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this instance. These can be later modified by the
+    setLabels method.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   canIpForward = _messages.BooleanField(1)
   cpuPlatform = _messages.StringField(2)
   creationTimestamp = _messages.StringField(3)
@@ -9260,17 +9604,19 @@ class Instance(_messages.Message):
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default=u'compute#instance')
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('Metadata', 9)
-  name = _messages.StringField(10)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  selfLink = _messages.StringField(13)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  tags = _messages.MessageField('Tags', 17)
-  zone = _messages.StringField(18)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('Metadata', 10)
+  name = _messages.StringField(11)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  selfLink = _messages.StringField(14)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 15, repeated=True)
+  startRestricted = _messages.BooleanField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  tags = _messages.MessageField('Tags', 19)
+  zone = _messages.StringField(20)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -10066,18 +10412,22 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   """InstanceProperties message type.
 
+  Messages:
+    LabelsValue: Labels to apply to instances that are created from this
+      template.
+
   Fields:
     canIpForward: Enables instances created based on this template to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the Enable IP forwarding for instances documentation for more
-      information.
+      false. See the Enable IP forwarding documentation for more information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    labels: Labels to apply to instances that are created from this template.
     machineType: The machine type to use for instances that are created from
       this template.
     metadata: The metadata key/value pairs to assign to instances that are
@@ -10098,15 +10448,40 @@ class InstanceProperties(_messages.Message):
       within the list must comply with RFC1035.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to instances that are created from this template.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  machineType = _messages.StringField(4)
-  metadata = _messages.MessageField('Metadata', 5)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 6, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 7)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 8, repeated=True)
-  tags = _messages.MessageField('Tags', 9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineType = _messages.StringField(5)
+  metadata = _messages.MessageField('Metadata', 6)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 8)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 9, repeated=True)
+  tags = _messages.MessageField('Tags', 10)
 
 
 class InstanceReference(_messages.Message):
@@ -10317,6 +10692,47 @@ class InstancesScopedList(_messages.Message):
 
   instances = _messages.MessageField('Instance', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class InstancesSetLabelsRequest(_messages.Message):
+  """A InstancesSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    labelFingerprint: Fingerprint of the previous set of labels for this
+      resource, used to prevent conflicts. Provide the latest fingerprint
+      value when making a request to add or change labels.
+    labels: A LabelsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class InstancesSetMachineTypeRequest(_messages.Message):
@@ -12563,6 +12979,10 @@ class Snapshot(_messages.Message):
       the size of the snapshot is being updated, or UP_TO_DATE, meaning the
       size of the snapshot is up-to-date.
 
+  Messages:
+    LabelsValue: Labels to apply to this snapshot. These can be later modified
+      by the setLabels method. Label values may be empty.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -12573,6 +12993,8 @@ class Snapshot(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
       Snapshot resources.
+    labels: Labels to apply to this snapshot. These can be later modified by
+      the setLabels method. Label values may be empty.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -12642,21 +13064,47 @@ class Snapshot(_messages.Message):
     UPDATING = 0
     UP_TO_DATE = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this snapshot. These can be later modified by the
+    setLabels method. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#snapshot')
-  licenses = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  sourceDisk = _messages.StringField(10)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
-  sourceDiskId = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  storageBytes = _messages.IntegerField(14)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
+  labels = _messages.MessageField('LabelsValue', 6)
+  licenses = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  sourceDisk = _messages.StringField(11)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
+  sourceDiskId = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  storageBytes = _messages.IntegerField(15)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 16)
 
 
 class SnapshotList(_messages.Message):
@@ -13951,6 +14399,117 @@ class TargetSslProxyList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class TargetTcpProxiesSetBackendServiceRequest(_messages.Message):
+  """A TargetTcpProxiesSetBackendServiceRequest object.
+
+  Fields:
+    service: The URL of the new BackendService resource for the
+      targetTcpProxy.
+  """
+
+  service = _messages.StringField(1)
+
+
+class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
+  """A TargetTcpProxiesSetProxyHeaderRequest object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: The new type of proxy header to append before
+      sending data to the backend. NONE or PROXY_V1 are allowed.
+
+  Fields:
+    proxyHeader: The new type of proxy header to append before sending data to
+      the backend. NONE or PROXY_V1 are allowed.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """The new type of proxy header to append before sending data to the
+    backend. NONE or PROXY_V1 are allowed.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 1)
+
+
+class TargetTcpProxy(_messages.Message):
+  """A TargetTcpProxy resource. This resource defines a TCP proxy.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#targetTcpProxy
+      for target TCP proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    service: URL to the BackendService resource.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetTcpProxy')
+  name = _messages.StringField(5)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  service = _messages.StringField(8)
+
+
+class TargetTcpProxyList(_messages.Message):
+  """Contains a list of TargetTcpProxy resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of TargetTcpProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetTcpProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetTcpProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class TargetVpnGateway(_messages.Message):
   """Represents a Target VPN gateway resource.
 
@@ -14754,5 +15313,49 @@ class ZoneList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#zoneList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class ZoneSetLabelsRequest(_messages.Message):
+  """A ZoneSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: The labels to set for this resource.
+
+  Fields:
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash in
+      order to update or change labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The labels to set for this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 

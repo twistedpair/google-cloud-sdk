@@ -1948,7 +1948,7 @@ class Binding(_messages.Message):
       `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
       that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group. For example, `admins@example.com`.  *
+      that represents a Google group. For example, `admins@example.com`.    *
       `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -2003,17 +2003,21 @@ class CacheKeyPolicy(_messages.Message):
 
 
 class Commitment(_messages.Message):
-  """A usage-commitment with a start / end time. Users create commitments for
-  particular resources (e.g. memory). Actual usage is first deducted from
-  available commitments made prior, perhaps at a reduced price (as laid out in
-  the commitment).
+  """Represents a Commitment resource. Creating a Commitment resource means
+  that you are purchasing a committed use contract with an explicit start and
+  end time. You can create commitments based on vCPUs and memory usage and
+  receive discounted rates. For full details, read Signing Up for Committed
+  Use Discounts.  Committed use discounts are subject to Google Cloud
+  Platform's Service Specific Terms. By purchasing a committed use discount,
+  you agree to these terms. Committed use discounts will not renew, so you
+  must purchase a new commitment to continue receiving discounts.
 
   Enums:
     PlanValueValuesEnum: The plan for this commitment, which determines
       duration and discount rate. The currently supported plans are
       TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
     StatusValueValuesEnum: [Output Only] Status of the commitment with regards
-      to eventual expiration (each commitment has an end-date defined). One of
+      to eventual expiration (each commitment has an end date defined). One of
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
 
   Fields:
@@ -2043,7 +2047,7 @@ class Commitment(_messages.Message):
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
-      expiration (each commitment has an end-date defined). One of the
+      expiration (each commitment has an end date defined). One of the
       following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
@@ -2065,7 +2069,7 @@ class Commitment(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] Status of the commitment with regards to eventual
-    expiration (each commitment has an end-date defined). One of the following
+    expiration (each commitment has an end date defined). One of the following
     values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
 
     Values:
@@ -2445,8 +2449,14 @@ class ComputeAddressesDeleteRequest(_messages.Message):
     address: Name of the address resource to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   address = _messages.StringField(1, required=True)
@@ -2476,8 +2486,14 @@ class ComputeAddressesInsertRequest(_messages.Message):
     address: A Address resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   address = _messages.MessageField('Address', 1)
@@ -2546,8 +2562,14 @@ class ComputeAddressesSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     resource: Name of the resource for this request.
   """
 
@@ -2631,8 +2653,14 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
   Fields:
     autoscaler: Name of the autoscaler to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: Name of the zone for this request.
   """
 
@@ -2662,8 +2690,14 @@ class ComputeAutoscalersInsertRequest(_messages.Message):
   Fields:
     autoscaler: A Autoscaler resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: Name of the zone for this request.
   """
 
@@ -2733,8 +2767,14 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: Name of the zone for this request.
   """
 
@@ -2770,8 +2810,14 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: Name of the zone for this request.
   """
 
@@ -2789,8 +2835,14 @@ class ComputeBackendBucketsAddSignedUrlKeyRequest(_messages.Message):
     backendBucket: Name of the BackendBucket resource to which the Signed URL
       Key should be added. The name should conform to RFC1035.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     signedUrlKey: A SignedUrlKey resource to be passed as the request body.
   """
 
@@ -2806,8 +2858,14 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   Fields:
     backendBucket: Name of the BackendBucket resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2823,8 +2881,14 @@ class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
       Key should be added. The name should conform to RFC1035.
     keyName: The name of the Signed URL Key to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2863,8 +2927,14 @@ class ComputeBackendBucketsInsertRequest(_messages.Message):
   Fields:
     backendBucket: A BackendBucket resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendBucket = _messages.MessageField('BackendBucket', 1)
@@ -2930,8 +3000,14 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2977,8 +3053,14 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2994,8 +3076,14 @@ class ComputeBackendServicesAddSignedUrlKeyRequest(_messages.Message):
     backendService: Name of the BackendService resource to which the Signed
       URL Key should be added. The name should conform to RFC1035.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     signedUrlKey: A SignedUrlKey resource to be passed as the request body.
   """
 
@@ -3061,8 +3149,14 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
   Fields:
     backendService: Name of the BackendService resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3078,8 +3172,14 @@ class ComputeBackendServicesDeleteSignedUrlKeyRequest(_messages.Message):
       URL Key should be added. The name should conform to RFC1035.
     keyName: The name of the Signed URL Key to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3123,8 +3223,14 @@ class ComputeBackendServicesInsertRequest(_messages.Message):
     backendService: A BackendService resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.MessageField('BackendService', 1)
@@ -3190,8 +3296,14 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3207,8 +3319,14 @@ class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
     backendService: Name of the BackendService resource to which the security
       policy should be set. The name should conform to RFC1035.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     securityPolicyReference: A SecurityPolicyReference resource to be passed
       as the request body.
   """
@@ -3242,8 +3360,14 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
     backendServiceResource: A BackendService resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3440,8 +3564,14 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
     disk: Name of the persistent disk to snapshot.
     guestFlush: A boolean attribute.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     snapshot: A Snapshot resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -3460,8 +3590,14 @@ class ComputeDisksDeleteRequest(_messages.Message):
   Fields:
     disk: Name of the persistent disk to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -3505,8 +3641,14 @@ class ComputeDisksInsertRequest(_messages.Message):
   Fields:
     disk: A Disk resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     sourceImage: Optional. Source image to restore onto a disk.
     zone: The name of the zone for this request.
   """
@@ -3578,8 +3720,14 @@ class ComputeDisksResizeRequest(_messages.Message):
     disksResizeRequest: A DisksResizeRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -3611,8 +3759,14 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     resource: Name of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
@@ -3649,8 +3803,14 @@ class ComputeFirewallsDeleteRequest(_messages.Message):
   Fields:
     firewall: Name of the firewall rule to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -3676,8 +3836,14 @@ class ComputeFirewallsInsertRequest(_messages.Message):
   Fields:
     firewall: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   firewall = _messages.MessageField('Firewall', 1)
@@ -3742,8 +3908,14 @@ class ComputeFirewallsPatchRequest(_messages.Message):
     firewall: Name of the firewall rule to patch.
     firewallResource: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -3774,8 +3946,14 @@ class ComputeFirewallsUpdateRequest(_messages.Message):
     firewall: Name of the firewall rule to update.
     firewallResource: A Firewall resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -3841,8 +4019,14 @@ class ComputeForwardingRulesDeleteRequest(_messages.Message):
     forwardingRule: Name of the ForwardingRule resource to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -3873,8 +4057,14 @@ class ComputeForwardingRulesInsertRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
@@ -3944,8 +4134,14 @@ class ComputeForwardingRulesPatchRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -3963,8 +4159,14 @@ class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     resource: Name of the resource for this request.
   """
 
@@ -3983,8 +4185,14 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
       be set.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -4019,8 +4227,14 @@ class ComputeGlobalAddressesDeleteRequest(_messages.Message):
   Fields:
     address: Name of the address resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   address = _messages.StringField(1, required=True)
@@ -4046,8 +4260,14 @@ class ComputeGlobalAddressesInsertRequest(_messages.Message):
   Fields:
     address: A Address resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   address = _messages.MessageField('Address', 1)
@@ -4141,8 +4361,14 @@ class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
   Fields:
     forwardingRule: Name of the ForwardingRule resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4169,8 +4395,14 @@ class ComputeGlobalForwardingRulesInsertRequest(_messages.Message):
     forwardingRule: A ForwardingRule resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
@@ -4236,8 +4468,14 @@ class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
     forwardingRuleResource: A ForwardingRule resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4268,8 +4506,14 @@ class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
     forwardingRule: Name of the ForwardingRule resource in which target is to
       be set.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -4429,8 +4673,14 @@ class ComputeHealthChecksDeleteRequest(_messages.Message):
   Fields:
     healthCheck: Name of the HealthCheck resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4456,8 +4706,14 @@ class ComputeHealthChecksInsertRequest(_messages.Message):
   Fields:
     healthCheck: A HealthCheck resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   healthCheck = _messages.MessageField('HealthCheck', 1)
@@ -4523,8 +4779,14 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4556,8 +4818,14 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4738,8 +5006,14 @@ class ComputeHostsDeleteRequest(_messages.Message):
   Fields:
     host: Name of the Host resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -4783,8 +5057,14 @@ class ComputeHostsInsertRequest(_messages.Message):
   Fields:
     host: A Host resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -4885,8 +5165,14 @@ class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
   Fields:
     httpHealthCheck: Name of the HttpHealthCheck resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -4913,8 +5199,14 @@ class ComputeHttpHealthChecksInsertRequest(_messages.Message):
     httpHealthCheck: A HttpHealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpHealthCheck = _messages.MessageField('HttpHealthCheck', 1)
@@ -4980,8 +5272,14 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -5013,8 +5311,14 @@ class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -5029,8 +5333,14 @@ class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
   Fields:
     httpsHealthCheck: Name of the HttpsHealthCheck resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5057,8 +5367,14 @@ class ComputeHttpsHealthChecksInsertRequest(_messages.Message):
     httpsHealthCheck: A HttpsHealthCheck resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpsHealthCheck = _messages.MessageField('HttpsHealthCheck', 1)
@@ -5124,8 +5440,14 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5157,8 +5479,14 @@ class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5173,8 +5501,14 @@ class ComputeImagesDeleteRequest(_messages.Message):
   Fields:
     image: Name of the image resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   image = _messages.StringField(1, required=True)
@@ -5190,8 +5524,14 @@ class ComputeImagesDeprecateRequest(_messages.Message):
       request body.
     image: Image name.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   deprecationStatus = _messages.MessageField('DeprecationStatus', 1)
@@ -5243,8 +5583,14 @@ class ComputeImagesInsertRequest(_messages.Message):
     forceCreate: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   forceCreate = _messages.BooleanField(1)
@@ -5356,8 +5702,14 @@ class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
       InstanceGroupManagersAbandonInstancesRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5427,8 +5779,14 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
       InstanceGroupManagersDeleteInstancesRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5445,8 +5803,14 @@ class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
   Fields:
     instanceGroupManager: The name of the managed instance group to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5477,8 +5841,14 @@ class ComputeInstanceGroupManagersInsertRequest(_messages.Message):
     instanceGroupManager: A InstanceGroupManager resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5571,8 +5941,14 @@ class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
     instanceGroupManagerResource: A InstanceGroupManager resource to be passed
       as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5593,8 +5969,14 @@ class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
       InstanceGroupManagersRecreateInstancesRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5614,8 +5996,14 @@ class ComputeInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
       InstanceGroupManagersResizeAdvancedRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5632,8 +6020,14 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
   Fields:
     instanceGroupManager: The name of the managed instance group.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     size: The number of running instances that the managed instance group
       should maintain at any given time. The group automatically adds or
       removes instances to maintain the number of instances specified by this
@@ -5657,8 +6051,14 @@ class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Messag
       InstanceGroupManagersSetAutoHealingRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5678,8 +6078,14 @@ class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
       InstanceGroupManagersSetInstanceTemplateRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5699,8 +6105,14 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
       InstanceGroupManagersSetTargetPoolsRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5736,8 +6148,14 @@ class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
     instanceGroupManagerResource: A InstanceGroupManager resource to be passed
       as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5758,8 +6176,14 @@ class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
     instanceGroupsAddInstancesRequest: A InstanceGroupsAddInstancesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -5826,8 +6250,14 @@ class ComputeInstanceGroupsDeleteRequest(_messages.Message):
   Fields:
     instanceGroup: The name of the instance group to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -5857,8 +6287,14 @@ class ComputeInstanceGroupsInsertRequest(_messages.Message):
   Fields:
     instanceGroup: A InstanceGroup resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where you want to create the instance group.
   """
 
@@ -5988,8 +6424,14 @@ class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
       InstanceGroupsRemoveInstancesRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6009,8 +6451,14 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
     instanceGroupsSetNamedPortsRequest: A InstanceGroupsSetNamedPortsRequest
       resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6044,8 +6492,14 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   Fields:
     instanceTemplate: The name of the instance template to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceTemplate = _messages.StringField(1, required=True)
@@ -6072,8 +6526,14 @@ class ComputeInstanceTemplatesInsertRequest(_messages.Message):
     instanceTemplate: A InstanceTemplate resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
@@ -6155,8 +6615,14 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
     networkInterface: The name of the network interface to add to this
       instance.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6227,8 +6693,14 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
       attached to another instance. This is only available for regional disks.
     instance: The instance name for this request.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6248,8 +6720,14 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
     instance: The instance name for this request.
     networkInterface: The name of the network interface.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6267,8 +6745,14 @@ class ComputeInstancesDeleteRequest(_messages.Message):
   Fields:
     instance: Name of the instance resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6285,8 +6769,14 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
     deviceName: Disk device name to detach.
     instance: Instance name.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6353,8 +6843,14 @@ class ComputeInstancesInsertRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6477,8 +6973,14 @@ class ComputeInstancesResetRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6496,8 +6998,14 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
     deviceName: The device name of the disk to modify.
     instance: The instance name.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6533,8 +7041,14 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
     instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
       passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6553,8 +7067,14 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
     instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6573,8 +7093,14 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
     instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
       to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6592,8 +7118,14 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
     instance: Name of the instance scoping this request.
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6612,8 +7144,14 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
     instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
       resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6630,8 +7168,14 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   Fields:
     instance: Instance name.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     scheduling: A Scheduling resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -6651,8 +7195,14 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
     instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
       resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6669,8 +7219,14 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     tags: A Tags resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -6702,8 +7258,14 @@ class ComputeInstancesStartRequest(_messages.Message):
   Fields:
     instance: Name of the instance resource to start.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6722,8 +7284,14 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
       InstancesStartWithEncryptionKeyRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6742,8 +7310,14 @@ class ComputeInstancesStopRequest(_messages.Message):
       partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6762,8 +7336,14 @@ class ComputeInstancesSuspendRequest(_messages.Message):
       partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6800,8 +7380,14 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
     networkInterface: The name of the network interface where the access
       config is attached.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6822,8 +7408,14 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
     networkInterfaceResource: A NetworkInterface resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     zone: The name of the zone for this request.
   """
 
@@ -6892,8 +7484,14 @@ class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
     interconnectAttachment: Name of the interconnect attachment to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   interconnectAttachment = _messages.StringField(1, required=True)
@@ -6938,8 +7536,14 @@ class ComputeInterconnectAttachmentsInsertRequest(_messages.Message):
       the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
@@ -7100,8 +7704,14 @@ class ComputeInterconnectsDeleteRequest(_messages.Message):
   Fields:
     interconnect: Name of the interconnect to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   interconnect = _messages.StringField(1, required=True)
@@ -7127,8 +7737,14 @@ class ComputeInterconnectsInsertRequest(_messages.Message):
   Fields:
     interconnect: A Interconnect resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   interconnect = _messages.MessageField('Interconnect', 1)
@@ -7194,8 +7810,14 @@ class ComputeInterconnectsPatchRequest(_messages.Message):
     interconnectResource: A Interconnect resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   interconnect = _messages.StringField(1, required=True)
@@ -7225,13 +7847,10 @@ class ComputeLicensesDeleteRequest(_messages.Message):
   Fields:
     license: Name of the license resource to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
   """
 
   license = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
 
 
 class ComputeLicensesGetRequest(_messages.Message):
@@ -7252,8 +7871,14 @@ class ComputeLicensesInsertRequest(_messages.Message):
   Fields:
     license: A License resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   license = _messages.MessageField('License', 1)
@@ -7435,8 +8060,14 @@ class ComputeNetworksAddPeeringRequest(_messages.Message):
     networksAddPeeringRequest: A NetworksAddPeeringRequest resource to be
       passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   network = _messages.StringField(1, required=True)
@@ -7451,8 +8082,14 @@ class ComputeNetworksDeleteRequest(_messages.Message):
   Fields:
     network: Name of the network to delete.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   network = _messages.StringField(1, required=True)
@@ -7478,8 +8115,14 @@ class ComputeNetworksInsertRequest(_messages.Message):
   Fields:
     network: A Network resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   network = _messages.MessageField('Network', 1)
@@ -7537,6 +8180,29 @@ class ComputeNetworksListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeNetworksPatchRequest(_messages.Message):
+  """A ComputeNetworksPatchRequest object.
+
+  Fields:
+    network: Name of the network to update.
+    networkResource: A Network resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
+  """
+
+  network = _messages.StringField(1, required=True)
+  networkResource = _messages.MessageField('Network', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class ComputeNetworksRemovePeeringRequest(_messages.Message):
   """A ComputeNetworksRemovePeeringRequest object.
 
@@ -7545,8 +8211,14 @@ class ComputeNetworksRemovePeeringRequest(_messages.Message):
     networksRemovePeeringRequest: A NetworksRemovePeeringRequest resource to
       be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   network = _messages.StringField(1, required=True)
@@ -7561,8 +8233,14 @@ class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
   Fields:
     network: Name of the network to be updated.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   network = _messages.StringField(1, required=True)
@@ -7590,8 +8268,14 @@ class ComputeProjectsDisableXpnHostRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7605,8 +8289,14 @@ class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
     project: Project ID for this request.
     projectsDisableXpnResourceRequest: A ProjectsDisableXpnResourceRequest
       resource to be passed as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7619,8 +8309,14 @@ class ComputeProjectsEnableXpnHostRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7634,8 +8330,14 @@ class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
     project: Project ID for this request.
     projectsEnableXpnResourceRequest: A ProjectsEnableXpnResourceRequest
       resource to be passed as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7709,8 +8411,14 @@ class ComputeProjectsMoveDiskRequest(_messages.Message):
     diskMoveRequest: A DiskMoveRequest resource to be passed as the request
       body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   diskMoveRequest = _messages.MessageField('DiskMoveRequest', 1)
@@ -7725,8 +8433,14 @@ class ComputeProjectsMoveInstanceRequest(_messages.Message):
     instanceMoveRequest: A InstanceMoveRequest resource to be passed as the
       request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceMoveRequest = _messages.MessageField('InstanceMoveRequest', 1)
@@ -7740,8 +8454,14 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
   Fields:
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   metadata = _messages.MessageField('Metadata', 1)
@@ -7757,8 +8477,14 @@ class ComputeProjectsSetDefaultServiceAccountRequest(_messages.Message):
     projectsSetDefaultServiceAccountRequest: A
       ProjectsSetDefaultServiceAccountRequest resource to be passed as the
       request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7771,8 +8497,14 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     usageExportLocation: A UsageExportLocation resource to be passed as the
       request body.
   """
@@ -7789,8 +8521,14 @@ class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
     autoscaler: Name of the autoscaler to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   autoscaler = _messages.StringField(1, required=True)
@@ -7820,8 +8558,14 @@ class ComputeRegionAutoscalersInsertRequest(_messages.Message):
     autoscaler: A Autoscaler resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   autoscaler = _messages.MessageField('Autoscaler', 1)
@@ -7891,8 +8635,14 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   autoscaler = _messages.StringField(1)
@@ -7928,8 +8678,14 @@ class ComputeRegionAutoscalersUpdateRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   autoscaler = _messages.StringField(1)
@@ -7946,8 +8702,14 @@ class ComputeRegionBackendServicesDeleteRequest(_messages.Message):
     backendService: Name of the BackendService resource to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -7996,8 +8758,14 @@ class ComputeRegionBackendServicesInsertRequest(_messages.Message):
       body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.MessageField('BackendService', 1)
@@ -8067,8 +8835,14 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -8104,8 +8878,14 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -8186,8 +8966,14 @@ class ComputeRegionCommitmentsInsertRequest(_messages.Message):
     commitment: A Commitment resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   commitment = _messages.MessageField('Commitment', 1)
@@ -8339,8 +9125,14 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
     guestFlush: A boolean attribute.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     snapshot: A Snapshot resource to be passed as the request body.
   """
 
@@ -8359,8 +9151,14 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
     disk: Name of the regional persistent disk to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   disk = _messages.StringField(1, required=True)
@@ -8390,8 +9188,14 @@ class ComputeRegionDisksInsertRequest(_messages.Message):
     disk: A Disk resource to be passed as the request body.
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     sourceImage: Optional. Source image to restore onto a disk.
   """
 
@@ -8463,8 +9267,14 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
     region: Name of the region for this request.
     regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
       as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   disk = _messages.StringField(1, required=True)
@@ -8482,8 +9292,14 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     resource: Name of the resource for this request.
   """
 
@@ -8521,8 +9337,14 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
     regionInstanceGroupManagersAbandonInstancesRequest: A
       RegionInstanceGroupManagersAbandonInstancesRequest resource to be passed
       as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8542,8 +9364,14 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
     regionInstanceGroupManagersDeleteInstancesRequest: A
       RegionInstanceGroupManagersDeleteInstancesRequest resource to be passed
       as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8560,8 +9388,14 @@ class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
     instanceGroupManager: Name of the managed instance group to delete.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8592,8 +9426,14 @@ class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
       request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.MessageField('InstanceGroupManager', 1)
@@ -8685,8 +9525,14 @@ class ComputeRegionInstanceGroupManagersPatchRequest(_messages.Message):
       as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8706,8 +9552,14 @@ class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Messa
     regionInstanceGroupManagersRecreateRequest: A
       RegionInstanceGroupManagersRecreateRequest resource to be passed as the
       request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8724,8 +9576,14 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
     instanceGroupManager: Name of the managed instance group.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     size: Number of instances that should exist in this instance group
       manager.
   """
@@ -8747,8 +9605,14 @@ class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.
     regionInstanceGroupManagersSetAutoHealingRequest: A
       RegionInstanceGroupManagersSetAutoHealingRequest resource to be passed
       as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8768,8 +9632,14 @@ class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Mes
     regionInstanceGroupManagersSetTemplateRequest: A
       RegionInstanceGroupManagersSetTemplateRequest resource to be passed as
       the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8789,8 +9659,14 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
     regionInstanceGroupManagersSetTargetPoolsRequest: A
       RegionInstanceGroupManagersSetTargetPoolsRequest resource to be passed
       as the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8826,8 +9702,14 @@ class ComputeRegionInstanceGroupManagersUpdateRequest(_messages.Message):
       as the request body.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -8973,8 +9855,14 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
     regionInstanceGroupsSetNamedPortsRequest: A
       RegionInstanceGroupsSetNamedPortsRequest resource to be passed as the
       request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
   """
 
   instanceGroup = _messages.StringField(1, required=True)
@@ -9203,8 +10091,14 @@ class ComputeRoutersDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     router: Name of the Router resource to delete.
   """
 
@@ -9248,8 +10142,14 @@ class ComputeRoutersInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     router: A Router resource to be passed as the request body.
   """
 
@@ -9317,8 +10217,14 @@ class ComputeRoutersPatchRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     router: Name of the Router resource to patch.
     routerResource: A Router resource to be passed as the request body.
   """
@@ -9369,8 +10275,14 @@ class ComputeRoutersUpdateRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     router: Name of the Router resource to update.
     routerResource: A Router resource to be passed as the request body.
   """
@@ -9387,8 +10299,14 @@ class ComputeRoutesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     route: Name of the Route resource to delete.
   """
 
@@ -9414,8 +10332,14 @@ class ComputeRoutesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     route: A Route resource to be passed as the request body.
   """
 
@@ -9494,8 +10418,14 @@ class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     securityPolicy: Name of the security policy to delete.
   """
 
@@ -9521,8 +10451,14 @@ class ComputeSecurityPoliciesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     securityPolicy: A SecurityPolicy resource to be passed as the request
       body.
   """
@@ -9587,8 +10523,14 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
@@ -9620,8 +10562,14 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     snapshot: Name of the Snapshot resource to delete.
   """
 
@@ -9753,8 +10701,14 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -9780,8 +10734,14 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -9912,8 +10872,14 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     subnetwork: Name of the Subnetwork resource to delete.
   """
 
@@ -9929,8 +10895,14 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     subnetwork: Name of the Subnetwork resource to update.
     subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
       resource to be passed as the request body.
@@ -9977,8 +10949,14 @@ class ComputeSubnetworksInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     subnetwork: A Subnetwork resource to be passed as the request body.
   """
 
@@ -10062,8 +11040,14 @@ class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     subnetwork: Name of the Subnetwork resource.
     subnetworksSetPrivateIpGoogleAccessRequest: A
       SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
@@ -10099,8 +11083,14 @@ class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpProxy: Name of the TargetHttpProxy resource to delete.
   """
 
@@ -10126,8 +11116,14 @@ class ComputeTargetHttpProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpProxy: A TargetHttpProxy resource to be passed as the request
       body.
   """
@@ -10192,8 +11188,14 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpProxy: Name of the TargetHttpProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
@@ -10225,8 +11227,14 @@ class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
@@ -10252,8 +11260,14 @@ class ComputeTargetHttpsProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
@@ -10318,8 +11332,14 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpsProxiesSetSslCertificatesRequest: A
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -10338,8 +11358,14 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
       to be set.
     urlMapReference: A UrlMapReference resource to be passed as the request
@@ -10422,8 +11448,14 @@ class ComputeTargetInstancesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetInstance: Name of the TargetInstance resource to delete.
     zone: Name of the zone scoping this request.
   """
@@ -10453,8 +11485,14 @@ class ComputeTargetInstancesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetInstance: A TargetInstance resource to be passed as the request
       body.
     zone: Name of the zone scoping this request.
@@ -10541,8 +11579,14 @@ class ComputeTargetPoolsAddHealthCheckRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the target pool to add a health check to.
     targetPoolsAddHealthCheckRequest: A TargetPoolsAddHealthCheckRequest
       resource to be passed as the request body.
@@ -10561,8 +11605,14 @@ class ComputeTargetPoolsAddInstanceRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the TargetPool resource to add instances to.
     targetPoolsAddInstanceRequest: A TargetPoolsAddInstanceRequest resource to
       be passed as the request body.
@@ -10631,8 +11681,14 @@ class ComputeTargetPoolsDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the TargetPool resource to delete.
   """
 
@@ -10680,8 +11736,14 @@ class ComputeTargetPoolsInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: A TargetPool resource to be passed as the request body.
   """
 
@@ -10749,8 +11811,14 @@ class ComputeTargetPoolsRemoveHealthCheckRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the target pool to remove health checks from.
     targetPoolsRemoveHealthCheckRequest: A TargetPoolsRemoveHealthCheckRequest
       resource to be passed as the request body.
@@ -10769,8 +11837,14 @@ class ComputeTargetPoolsRemoveInstanceRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the TargetPool resource to remove instances from.
     targetPoolsRemoveInstanceRequest: A TargetPoolsRemoveInstanceRequest
       resource to be passed as the request body.
@@ -10790,8 +11864,14 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
     failoverRatio: New failoverRatio value for the target pool.
     project: Project ID for this request.
     region: Name of the region scoping this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetPool: Name of the TargetPool resource to set a backup pool for.
     targetReference: A TargetReference resource to be passed as the request
       body.
@@ -10827,8 +11907,14 @@ class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetSslProxy: Name of the TargetSslProxy resource to delete.
   """
 
@@ -10854,8 +11940,14 @@ class ComputeTargetSslProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetSslProxy: A TargetSslProxy resource to be passed as the request
       body.
   """
@@ -10920,8 +12012,14 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetSslProxiesSetBackendServiceRequest: A
       TargetSslProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -10940,8 +12038,14 @@ class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetSslProxiesSetProxyHeaderRequest: A
       TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -10960,8 +12064,14 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetSslProxiesSetSslCertificatesRequest: A
       TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -10995,8 +12105,14 @@ class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetTcpProxy: Name of the TargetTcpProxy resource to delete.
   """
 
@@ -11022,8 +12138,14 @@ class ComputeTargetTcpProxiesInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetTcpProxy: A TargetTcpProxy resource to be passed as the request
       body.
   """
@@ -11088,8 +12210,14 @@ class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetTcpProxiesSetBackendServiceRequest: A
       TargetTcpProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -11108,8 +12236,14 @@ class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetTcpProxiesSetProxyHeaderRequest: A
       TargetTcpProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -11194,8 +12328,14 @@ class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetVpnGateway: Name of the target VPN gateway to delete.
   """
 
@@ -11225,8 +12365,14 @@ class ComputeTargetVpnGatewaysInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     targetVpnGateway: A TargetVpnGateway resource to be passed as the request
       body.
   """
@@ -11311,8 +12457,14 @@ class ComputeUrlMapsDeleteRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     urlMap: Name of the UrlMap resource to delete.
   """
 
@@ -11338,8 +12490,14 @@ class ComputeUrlMapsInsertRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     urlMap: A UrlMap resource to be passed as the request body.
   """
 
@@ -11355,8 +12513,14 @@ class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
     cacheInvalidationRule: A CacheInvalidationRule resource to be passed as
       the request body.
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     urlMap: Name of the UrlMap scoping this request.
   """
 
@@ -11421,8 +12585,14 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     urlMap: Name of the UrlMap resource to patch.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -11453,8 +12623,14 @@ class ComputeUrlMapsUpdateRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -11536,8 +12712,14 @@ class ComputeVpnTunnelsDeleteRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     vpnTunnel: Name of the VpnTunnel resource to delete.
   """
 
@@ -11567,8 +12749,14 @@ class ComputeVpnTunnelsInsertRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: Name of the region for this request.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     vpnTunnel: A VpnTunnel resource to be passed as the request body.
   """
 
@@ -11638,8 +12826,14 @@ class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
     region: The region for this request.
     regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
       the request body.
-    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
-      support idempotency.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
     resource: Name of the resource for this request.
   """
 
@@ -12053,6 +13247,12 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    physicalBlockSizeBytes: Physical block size of the persistent disk, in
+      bytes. If not present in a request, a default value is used. Initially
+      only 4096 is supported, but other powers of two may be added. If an
+      unsupported value is requested, the error message will list the
+      supported values, but even a supported value may be allowed for only
+      some projects.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources.
     replicaZones: URLs of the zones where the disk should be replicated to.
@@ -12170,21 +13370,22 @@ class Disk(_messages.Message):
   licenses = _messages.StringField(10, repeated=True)
   name = _messages.StringField(11)
   options = _messages.StringField(12)
-  region = _messages.StringField(13)
-  replicaZones = _messages.StringField(14, repeated=True)
-  selfLink = _messages.StringField(15)
-  sizeGb = _messages.IntegerField(16)
-  sourceImage = _messages.StringField(17)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceImageId = _messages.StringField(19)
-  sourceSnapshot = _messages.StringField(20)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceSnapshotId = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 24)
-  type = _messages.StringField(25)
-  users = _messages.StringField(26, repeated=True)
-  zone = _messages.StringField(27)
+  physicalBlockSizeBytes = _messages.IntegerField(13)
+  region = _messages.StringField(14)
+  replicaZones = _messages.StringField(15, repeated=True)
+  selfLink = _messages.StringField(16)
+  sizeGb = _messages.IntegerField(17)
+  sourceImage = _messages.StringField(18)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceImageId = _messages.StringField(20)
+  sourceSnapshot = _messages.StringField(21)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  sourceSnapshotId = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 25)
+  type = _messages.StringField(26)
+  users = _messages.StringField(27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -15802,8 +17003,7 @@ class InstanceProperties(_messages.Message):
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the Enable IP forwarding for instances documentation for more
-      information.
+      false. See the Enable IP forwarding documentation for more information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -16195,7 +17395,7 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 
 class Interconnect(_messages.Message):
   """Protocol definitions for Mixer API to support Interconnect. Next
-  available tag: 20
+  available tag: 21
 
   Enums:
     InterconnectTypeValueValuesEnum:
@@ -16604,9 +17804,21 @@ class InterconnectList(_messages.Message):
 class InterconnectLocation(_messages.Message):
   """Protocol definitions for Mixer API to support InterconnectLocation.
 
+  Enums:
+    ContinentValueValuesEnum: Continent for this location. Used by the
+      location picker in the Interconnect UI.
+
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
       line in the address is separated by a newline character.
+    availabilityZone: Availability zone for this location. Within a city,
+      maintenance will not be simultaneously scheduled in more than one
+      availability zone. Example: "zone1" or "zone2".
+    city: City designator used by the Interconnect UI to locate this
+      InterconnectLocation within the Continent. For example: "Chicago, IL",
+      "Amsterdam, Netherlands".
+    continent: Continent for this location. Used by the location picker in the
+      Interconnect UI.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: [Output Only] An optional description of the resource.
@@ -16627,17 +17839,37 @@ class InterconnectLocation(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
+  class ContinentValueValuesEnum(_messages.Enum):
+    """Continent for this location. Used by the location picker in the
+    Interconnect UI.
+
+    Values:
+      C_AFRICA: <no description>
+      C_ASIA_PAC: <no description>
+      C_EUROPE: <no description>
+      C_NORTH_AMERICA: <no description>
+      C_SOUTH_AMERICA: <no description>
+    """
+    C_AFRICA = 0
+    C_ASIA_PAC = 1
+    C_EUROPE = 2
+    C_NORTH_AMERICA = 3
+    C_SOUTH_AMERICA = 4
+
   address = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  facilityProvider = _messages.StringField(4)
-  facilityProviderFacilityId = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#interconnectLocation')
-  name = _messages.StringField(8)
-  peeringdbFacilityId = _messages.StringField(9)
-  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 10, repeated=True)
-  selfLink = _messages.StringField(11)
+  availabilityZone = _messages.StringField(2)
+  city = _messages.StringField(3)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  facilityProvider = _messages.StringField(7)
+  facilityProviderFacilityId = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#interconnectLocation')
+  name = _messages.StringField(11)
+  peeringdbFacilityId = _messages.StringField(12)
+  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
+  selfLink = _messages.StringField(14)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -16700,8 +17932,8 @@ class License(_messages.Message):
   """A license resource.
 
   Fields:
-    chargesUseFee: [Output Only] If true, the customer will be charged license
-      fee for running software that contains this license on an instance.
+    chargesUseFee: [Output Only] Deprecated. This field no longer reflects
+      whether a license charges a usage fee.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional textual description of the resource; provided by
@@ -16771,10 +18003,38 @@ class LogConfig(_messages.Message):
   """Specifies what kind of log the caller must write
 
   Fields:
+    cloudAudit: Cloud audit options.
     counter: Counter options.
   """
 
-  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('LogConfigCounterOptions', 2)
+
+
+class LogConfigCloudAuditOptions(_messages.Message):
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      ADMIN_ACTIVITY: <no description>
+      DATA_ACCESS: <no description>
+      UNSPECIFIED_LOG_NAME: <no description>
+    """
+    ADMIN_ACTIVITY = 0
+    DATA_ACCESS = 1
+    UNSPECIFIED_LOG_NAME = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class LogConfigCounterOptions(_messages.Message):
@@ -17070,6 +18330,7 @@ class ManagedInstance(_messages.Message):
       }.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    override: [Output Only] Override defined for this instance.
     standbyMode: [Output Only] Standby mode of the instance. This field is
       non-empty iff the instance is a standby.
     tag: [Output Only] Tag describing the version.
@@ -17155,9 +18416,10 @@ class ManagedInstance(_messages.Message):
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
   instanceTemplate = _messages.StringField(5)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
-  standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 7)
-  tag = _messages.StringField(8)
-  version = _messages.MessageField('ManagedInstanceVersion', 9)
+  override = _messages.MessageField('ManagedInstanceOverride', 7)
+  standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 8)
+  tag = _messages.StringField(9)
+  version = _messages.MessageField('ManagedInstanceVersion', 10)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -17201,6 +18463,50 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstanceOverride(_messages.Message):
+  """Overrides of stateful properties for a given instance
+
+  Fields:
+    disks: The disk overrides defined for this instance
+    instance: The URL of the instance.
+  """
+
+  disks = _messages.MessageField('ManagedInstanceOverrideDiskOverride', 1, repeated=True)
+  instance = _messages.StringField(2)
+
+
+class ManagedInstanceOverrideDiskOverride(_messages.Message):
+  """A ManagedInstanceOverrideDiskOverride object.
+
+  Enums:
+    ModeValueValuesEnum: The mode in which to attach this disk, either
+      READ_WRITE or READ_ONLY. If not specified, the default is to attach the
+      disk in READ_WRITE mode.
+
+  Fields:
+    deviceName: The name of the device on the VM
+    mode: The mode in which to attach this disk, either READ_WRITE or
+      READ_ONLY. If not specified, the default is to attach the disk in
+      READ_WRITE mode.
+    source: The disk that is/will be mounted
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    """The mode in which to attach this disk, either READ_WRITE or READ_ONLY.
+    If not specified, the default is to attach the disk in READ_WRITE mode.
+
+    Values:
+      READ_ONLY: <no description>
+      READ_WRITE: <no description>
+    """
+    READ_ONLY = 0
+    READ_WRITE = 1
+
+  deviceName = _messages.StringField(1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  source = _messages.StringField(3)
 
 
 class ManagedInstanceVersion(_messages.Message):
@@ -18161,6 +19467,7 @@ class Quota(_messages.Message):
     """[Output Only] Name of the quota metric.
 
     Values:
+      AMD_S9300_GPUS: <no description>
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
@@ -18200,44 +19507,45 @@ class Quota(_messages.Message):
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
-    AUTOSCALERS = 0
-    BACKEND_BUCKETS = 1
-    BACKEND_SERVICES = 2
-    COMMITMENTS = 3
-    CPUS = 4
-    CPUS_ALL_REGIONS = 5
-    DISKS_TOTAL_GB = 6
-    FIREWALLS = 7
-    FORWARDING_RULES = 8
-    HEALTH_CHECKS = 9
-    IMAGES = 10
-    INSTANCES = 11
-    INSTANCE_GROUPS = 12
-    INSTANCE_GROUP_MANAGERS = 13
-    INSTANCE_TEMPLATES = 14
-    IN_USE_ADDRESSES = 15
-    LOCAL_SSD_TOTAL_GB = 16
-    NETWORKS = 17
-    NVIDIA_K80_GPUS = 18
-    PREEMPTIBLE_CPUS = 19
-    REGIONAL_AUTOSCALERS = 20
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 21
-    ROUTERS = 22
-    ROUTES = 23
-    SNAPSHOTS = 24
-    SSD_TOTAL_GB = 25
-    SSL_CERTIFICATES = 26
-    STATIC_ADDRESSES = 27
-    SUBNETWORKS = 28
-    TARGET_HTTPS_PROXIES = 29
-    TARGET_HTTP_PROXIES = 30
-    TARGET_INSTANCES = 31
-    TARGET_POOLS = 32
-    TARGET_SSL_PROXIES = 33
-    TARGET_TCP_PROXIES = 34
-    TARGET_VPN_GATEWAYS = 35
-    URL_MAPS = 36
-    VPN_TUNNELS = 37
+    AMD_S9300_GPUS = 0
+    AUTOSCALERS = 1
+    BACKEND_BUCKETS = 2
+    BACKEND_SERVICES = 3
+    COMMITMENTS = 4
+    CPUS = 5
+    CPUS_ALL_REGIONS = 6
+    DISKS_TOTAL_GB = 7
+    FIREWALLS = 8
+    FORWARDING_RULES = 9
+    HEALTH_CHECKS = 10
+    IMAGES = 11
+    INSTANCES = 12
+    INSTANCE_GROUPS = 13
+    INSTANCE_GROUP_MANAGERS = 14
+    INSTANCE_TEMPLATES = 15
+    IN_USE_ADDRESSES = 16
+    LOCAL_SSD_TOTAL_GB = 17
+    NETWORKS = 18
+    NVIDIA_K80_GPUS = 19
+    PREEMPTIBLE_CPUS = 20
+    REGIONAL_AUTOSCALERS = 21
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 22
+    ROUTERS = 23
+    ROUTES = 24
+    SNAPSHOTS = 25
+    SSD_TOTAL_GB = 26
+    SSL_CERTIFICATES = 27
+    STATIC_ADDRESSES = 28
+    SUBNETWORKS = 29
+    TARGET_HTTPS_PROXIES = 30
+    TARGET_HTTP_PROXIES = 31
+    TARGET_INSTANCES = 32
+    TARGET_POOLS = 33
+    TARGET_SSL_PROXIES = 34
+    TARGET_TCP_PROXIES = 35
+    TARGET_VPN_GATEWAYS = 36
+    URL_MAPS = 37
+    VPN_TUNNELS = 38
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -18644,15 +19952,20 @@ class ResourceCommitment(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Type of resource for which this commitment applies.
+      Possible values are VCPU and MEMORY
 
   Fields:
     amount: The amount of the resource purchased (in a type-dependent unit,
-      such as bytes).
-    type: Type of resource for which this commitment applies.
+      such as bytes). For vCPUs, this can just be an integer. For memory, this
+      must be provided in MB. Memory must be a multiple of 256 MB, with up to
+      6.5GB of memory per every vCPU.
+    type: Type of resource for which this commitment applies. Possible values
+      are VCPU and MEMORY
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Type of resource for which this commitment applies.
+    """Type of resource for which this commitment applies. Possible values are
+    VCPU and MEMORY
 
     Values:
       LOCAL_SSD: <no description>
@@ -18684,7 +19997,7 @@ class Route(_messages.Message):
   """Represents a Route resource. A route specifies how certain packets should
   be handled by the network. Routes are associated with instances by tags and
   the set of routes for a particular instance is called its routing table.
-  For each packet leaving a instance, the system searches that instance's
+  For each packet leaving an instance, the system searches that instance's
   routing table for a single best matching route. Routes match packets by
   destination IP address, preferring smaller or more specific ranges over
   larger ones. If there is a tie, the system selects the route with the
@@ -19549,8 +20862,9 @@ class SecurityPolicyRule(_messages.Message):
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding ?action? is enforced.
     preview: If set to true, the specified action is not enforced.
-    priority: An integer indicating the priority of a rule in the list. Rules
-      are evaluated in the increasing order of priority.
+    priority: An integer indicating the priority of a rule in the list. The
+      priority must be a positive value between 0 and 2147483647. Rules are
+      evaluated in the increasing order of priority.
   """
 
   action = _messages.StringField(1)
@@ -19558,7 +20872,7 @@ class SecurityPolicyRule(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
   preview = _messages.BooleanField(5)
-  priority = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):

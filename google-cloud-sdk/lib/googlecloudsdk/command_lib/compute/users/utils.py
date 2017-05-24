@@ -14,6 +14,13 @@
 
 """Common functions for users."""
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      owner,
+      description
+    )"""
+
 
 def AddUserArgument(parser, operation_type, custom_help=None):
   """Adds a user positional argument for users commands."""

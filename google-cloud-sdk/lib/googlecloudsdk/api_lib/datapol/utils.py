@@ -13,19 +13,16 @@
 # limitations under the License.
 """Common utilities for the Cloud Datapol API."""
 
-from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
-from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 _DATAPOL_API_NAME = 'datapol'
 _DATAPOL_API_VERSION = 'v1alpha1'
 
-# Organization Id place holder for projects that do not belong to any
-# organizations.
-_ORG_ID_PLACE_HOLDER = '_NO_ORGS_'
+# Temporary taxonomy store id holder.
+_STORE_ID_PLACE_HOLDER = 111
 
 
 def GetMessagesModule():
@@ -41,27 +38,25 @@ def GetProjectName():
   return properties.VALUES.core.project.Get(required=True)
 
 
-def GetOrganizationId():
-  """Gets id of current organization."""
-  proj = projects_api.Get(projects_util.ParseProject(GetProjectName()))
-  return (proj.parent.id if proj.parent and proj.parent.type == 'organization'
-          else _ORG_ID_PLACE_HOLDER)
+def GetTaxonomyStoresId():
+  """Gets id of current taxonomy store."""
+  return _STORE_ID_PLACE_HOLDER
 
 
 def GetTaxonomyRelativeName(taxonomy_name):
   """Gets the taxonomy resource name from a taxonomy name."""
   return resources.REGISTRY.Create(
-      'datapol.orgs.policyTaxonomies',
-      orgsId=GetOrganizationId(),
-      policyTaxonomiesId=taxonomy_name).RelativeName()
+      'datapol.taxonomyStores.dataTaxonomies',
+      taxonomyStoresId=GetTaxonomyStoresId(),
+      dataTaxonomiesId=taxonomy_name).RelativeName()
 
 
 def GetAnnotationRelativeName(taxonomy_name, annotation_name):
   """Gets the annotation resource name from taxonomy and annotation name."""
   return resources.REGISTRY.Create(
-      'datapol.orgs.policyTaxonomies.annotations',
-      orgsId=GetOrganizationId(),
-      policyTaxonomiesId=taxonomy_name,
+      'datapol.taxonomyStores.dataTaxonomies.annotations',
+      taxonomyStoresId=GetTaxonomyStoresId(),
+      dataTaxonomiesId=taxonomy_name,
       annotationsId=annotation_name).RelativeName()
 
 

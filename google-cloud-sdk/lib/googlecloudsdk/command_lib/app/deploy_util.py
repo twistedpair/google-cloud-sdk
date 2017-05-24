@@ -31,8 +31,8 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.app import flags
@@ -63,6 +63,15 @@ class VersionPromotionError(Error):
         '`gcloud app services set-traffic --splits <version>=1` command to '
         'redirect traffic to your newly deployed version.\n\n'
         'Original error: ' + str(err))
+
+
+class StoppedApplicationError(Error):
+  """Error if deployment fails because application is stopped/disabled."""
+
+  def __init__(self, app):
+    super(StoppedApplicationError, self).__init__(
+        'Unable to deploy to application [{}] with status [{}]: Deploying '
+        'to stopped apps is not allowed.'.format(app.id, app.servingStatus))
 
 
 class DeployOptions(object):
@@ -186,7 +195,7 @@ class ServiceDeployer(object):
         version_util.PromoteVersion(
             all_services, new_version, self.api_client,
             self.deploy_options.stop_previous_version)
-      except calliope_exceptions.HttpException as err:
+      except core_api_exceptions.HttpException as err:
         raise VersionPromotionError(err)
     elif self.deploy_options.stop_previous_version:
       log.info('Not stopping previous version because new version was '
@@ -311,7 +320,7 @@ def ArgsDeploy(parser):
 def RunDeploy(
     args, enable_endpoints=False, use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    use_service_management=False):
+    use_service_management=False, check_for_stopped=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -325,6 +334,8 @@ def RunDeploy(
       externalized runtimes).
     use_service_management: bool, whether to use servicemanagement API to
       enable the Appengine Flexible API for a Flexible deployment.
+    check_for_stopped: bool, whether to check if the app is stopped before
+      deploying.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -367,6 +378,8 @@ def RunDeploy(
       args.server, args.ignore_bad_certs)
 
   app = _PossiblyCreateApp(api_client, project)
+  if check_for_stopped:
+    _RaiseIfStopped(api_client, app)
   app = _PossiblyRepairApp(api_client, app)
 
   # Tell the user what is going to happen, and ask them to confirm.
@@ -534,3 +547,19 @@ def _PossiblyRepairApp(api_client, app):
       api_client.RepairApplication()
       app = api_client.GetApplication()
   return app
+
+
+def _RaiseIfStopped(api_client, app):
+  """Checks if app is disabled and raises error if so.
+
+  Deploying to a disabled app is not allowed.
+
+  Args:
+    api_client: Admin API client.
+    app: App object (including status).
+
+  Raises:
+    StoppedApplicationError: if the app is currently disabled.
+  """
+  if api_client.IsStopped(app):
+    raise StoppedApplicationError(app)

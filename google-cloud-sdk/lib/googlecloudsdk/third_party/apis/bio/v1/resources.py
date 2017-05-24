@@ -22,6 +22,12 @@ BASE_URL = 'https://bio.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_OPERATIONS = (
       'projects.operations',
       '{+name}',

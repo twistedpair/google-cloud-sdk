@@ -15,9 +15,16 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      defaultService
+    )"""
+
 
 def UrlMapArgument(required=True):
   return compute_flags.ResourceArgument(
+      name='url_map_name',
       resource_name='url map',
       completion_resource_id='compute.urlMaps',
       plural=False,

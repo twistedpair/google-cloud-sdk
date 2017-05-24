@@ -34,8 +34,6 @@ class LoggingV1beta3(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
-    self.projects_entries = self.ProjectsEntriesService(self)
-    self.projects_logEntries = self.ProjectsLogEntriesService(self)
     self.projects_logServices_sinks = self.ProjectsLogServicesSinksService(self)
     self.projects_logServices = self.ProjectsLogServicesService(self)
     self.projects_logs_entries = self.ProjectsLogsEntriesService(self)
@@ -43,78 +41,6 @@ class LoggingV1beta3(base_api.BaseApiClient):
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsEntriesService(base_api.BaseApiService):
-    """Service class for the projects_entries resource."""
-
-    _NAME = u'projects_entries'
-
-    def __init__(self, client):
-      super(LoggingV1beta3.ProjectsEntriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      """Lists log entries in the specified project.
-
-      Args:
-        request: (LoggingProjectsEntriesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLogEntriesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'logging.projects.entries.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
-        query_params=[],
-        relative_path=u'v1beta3/projects/{projectsId}/entries:list',
-        request_field=u'listLogEntriesRequest',
-        request_type_name=u'LoggingProjectsEntriesListRequest',
-        response_type_name=u'ListLogEntriesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLogEntriesService(base_api.BaseApiService):
-    """Service class for the projects_logEntries resource."""
-
-    _NAME = u'projects_logEntries'
-
-    def __init__(self, client):
-      super(LoggingV1beta3.ProjectsLogEntriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      """Lists log entries in the specified project.
-
-      Args:
-        request: (LoggingProjectsLogEntriesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLogEntriesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'logging.projects.logEntries.list',
-        ordered_params=[u'projectsId'],
-        path_params=[u'projectsId'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta3/projects/{projectsId}/logEntries',
-        request_field='',
-        request_type_name=u'LoggingProjectsLogEntriesListRequest',
-        response_type_name=u'ListLogEntriesResponse',
-        supports_download=False,
-    )
 
   class ProjectsLogServicesSinksService(base_api.BaseApiService):
     """Service class for the projects_logServices_sinks resource."""

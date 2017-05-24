@@ -5577,7 +5577,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      """Creates an commitment in the specified project using the data included in the request.
+      """Creates a commitment in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionCommitmentsInsertRequest) input message

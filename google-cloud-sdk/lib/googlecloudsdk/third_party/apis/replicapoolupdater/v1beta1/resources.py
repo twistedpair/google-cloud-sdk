@@ -22,6 +22,12 @@ BASE_URL = 'https://www.googleapis.com/replicapoolupdater/v1beta1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{project}',
+      {},
+      [u'project']
+  )
   ROLLINGUPDATES = (
       'rollingUpdates',
       'projects/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}',
@@ -39,6 +45,12 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/operations/{operation}',
       {},
       [u'project', u'zone', u'operation']
+  )
+  ZONES = (
+      'zones',
+      'projects/{project}/zones/{zone}',
+      {},
+      [u'project', u'zone']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

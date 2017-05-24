@@ -41,11 +41,26 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       An app resource representing the project's app.
 
     Raises:
-      googlecloudsdk.api_lib.app.exceptions.NotFoundError if app doens't exist
+      googlecloudsdk.api_lib.app.exceptions.NotFoundError if app doesn't exist
     """
     request = self.messages.AppengineAppsGetRequest(
         name=self._FormatApp())
     return requests.MakeRequest(self.client.apps.Get, request)
+
+  def IsStopped(self, app):
+    """Checks application resource to get serving status.
+
+    Args:
+      app: appengine_v1_messages.Application, the application to check.
+
+    Returns:
+      bool, whether the application is currently disabled. If serving or not
+        set, returns False.
+    """
+    stopped = app.servingStatus in [
+        self.messages.Application.ServingStatusValueValuesEnum.USER_DISABLED,
+        self.messages.Application.ServingStatusValueValuesEnum.SYSTEM_DISABLED]
+    return stopped
 
   def RepairApplication(self):
     """Creates missing app resources.

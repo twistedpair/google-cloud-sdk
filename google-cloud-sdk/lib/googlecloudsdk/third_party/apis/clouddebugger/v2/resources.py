@@ -22,6 +22,12 @@ BASE_URL = 'https://clouddebugger.googleapis.com/v2/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  DEBUGGER_DEBUGGEES = (
+      'debugger.debuggees',
+      'debugger/debuggees/{debuggeeId}',
+      {},
+      [u'debuggeeId']
+  )
   DEBUGGER_DEBUGGEES_BREAKPOINTS = (
       'debugger.debuggees.breakpoints',
       'debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',

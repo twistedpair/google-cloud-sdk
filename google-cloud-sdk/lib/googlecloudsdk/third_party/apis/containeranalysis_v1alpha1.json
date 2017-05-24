@@ -1100,12 +1100,30 @@
       "type": "object",
       "properties": {
         "publicKey": {
-          "description": "Public key of the builder which can be used to verify that related\nFindings are valid and unchanged. To verify the signature, place the\ncontents of this field into a file (public.pem). The signature field is\nbase64-decoded into its binary representation in signature.bin, and the\nprovenance bytes from BuildDetails are base64-decoded into a binary\nrepresentation in signed.bin. Openssl can then verify the signature:\n'openssl sha256 -verify public.pem -signature signature.bin signed.bin'",
+          "description": "Public key of the builder which can be used to verify that related\nFindings are valid and unchanged.  If `key_type` is empty this defaults\nto PEM encoded public keys.\n\nThis field may be empty if `key_id` references an external key.\n\nFor Cloud Container Builder based signatures this is a PEM encoded public\nkey. To verify the Cloud Container Builder signature, place the contents of\nthis field into a file (public.pem). The signature field is base64-decoded\ninto its binary representation in signature.bin, and the provenance bytes\nfrom BuildDetails are base64-decoded into a binary representation in\nsigned.bin. OpenSSL can then verify the signature:\n`openssl sha256 -verify public.pem -signature signature.bin signed.bin`",
           "type": "string"
         },
         "signature": {
           "description": "Signature of the related BuildProvenance, encoded in a base64 string.",
           "type": "string"
+        },
+        "keyId": {
+          "description": "An ID for the key used to sign.  This could be either an ID for the key\nstored in `public_key` (e.g., the ID or fingerprint for a PGP key, or the\nCN for a cert), or a reference to an external key (e.g., a reference to a\nkey in Cloud KMS).",
+          "type": "string"
+        },
+        "keyType": {
+          "description": "The type of the key, either stored in `public_key` or referenced in\n`key_id`",
+          "enumDescriptions": [
+            "KeyType is not set.",
+            "PGP ASCII Armored public key.",
+            "PKIX PEM public key."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSET",
+            "PGP_ASCII_ARMORED",
+            "PKIX_PEM"
+          ]
         }
       }
     },
@@ -1302,7 +1320,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -1555,6 +1573,20 @@
       "description": "Write a Cloud Audit log",
       "type": "object",
       "properties": {
+        "logName": {
+          "description": "The log_name to populate in the Cloud Audit Record.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_LOG_NAME",
+            "ADMIN_ACTIVITY",
+            "DATA_ACCESS"
+          ]
+        }
       }
     },
     "GetIamPolicyRequest": {

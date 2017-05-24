@@ -19,7 +19,7 @@ A scrubbed expression has all operands replaced by X.
 To scrub filter_expression_string:
 
   scrubber = resource_filter_scrub.Backend()
-  scrubbed_expression_string = scrubber.Rewrite(filter_expression_string)
+  _, scrubbed_expression_string = scrubber.Rewrite(filter_expression_string)
 """
 
 from googlecloudsdk.core.resource import resource_expr_rewrite

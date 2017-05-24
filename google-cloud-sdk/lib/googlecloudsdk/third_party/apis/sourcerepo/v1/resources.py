@@ -26,7 +26,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      ['projectsId']
+      [u'projectsId']
   )
   PROJECTS_REPOS = (
       'projects.repos',

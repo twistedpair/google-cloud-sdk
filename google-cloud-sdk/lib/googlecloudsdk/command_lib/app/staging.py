@@ -107,7 +107,7 @@ class _Command(object):
                                                            msg=msg)
 
 # Path to the go-app-stager binary
-_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot', 'bin')
+_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot-1.6', 'bin')
 
 # STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
 # path relative to Cloud SDK Root; it should look something like the following:

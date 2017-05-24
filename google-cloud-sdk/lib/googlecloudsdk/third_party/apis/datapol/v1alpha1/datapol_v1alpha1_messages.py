@@ -13,9 +13,8 @@ package = 'datapol'
 
 
 class Annotation(_messages.Message):
-  """An annotation in Data Policy API. An annotation is one data type in a
-  policy taxonomy (e.g. ssn). Annotations can be defined in a hierarchy for at
-  most two levels. For example, consider the following hierachy:
+  """An annotation is one data type in a data taxonomy (e.g. ssn). Annotations
+  can be defined in a hierarchy. For example, consider the following hierachy:
   Geolocation                    |   ------------------------------------   |
   |                 | LatLong          City              ZipCode Annotation
   "Geolocation" contains three child annotations: "LatLong", "City", and
@@ -27,8 +26,9 @@ class Annotation(_messages.Message):
     childAnnotations: Names of child annotations of this annotation.
     description: Description of the annotation. Length of the description is
       limited to 1000 characters.
-    name: Resource name of the annotation, which has the format of "orgs/{org_
-      id}/policyTaxonomies/{taxonomy_name}/annotations/{annotation_name}".
+    name: Resource name of the annotation, which has the format of "taxonomySt
+      ores/{store_id}/dataTaxonomies/{taxonomy_name}/annotations/{annotation_n
+      ame}".
     parentAnnotation: Name of the parent annotation to this annotation. If
       empty, it means this annotation is a top level annotation.
   """
@@ -51,9 +51,9 @@ class AnnotationTag(_messages.Message):
       annotation.The annotation must be a member of the taxonomy included in
       the resource name.
     name: Resource name of the annotation tag, which has the format of "data/{
-      resource_name_of_the_data}/orgs/{org_id}/policyTaxonomies/{taxonomy_name
-      }/annotationTag" Resouce name of the data asset should be RFC3986
-      escaped.
+      resource_name_of_the_data}/taxonomyStores/{store_id}/dataTaxonomies/{tax
+      onomy_name}/annotationTag" Resouce name of the data asset should be
+      RFC3986 escaped.
   """
 
   annotationName = _messages.StringField(1)
@@ -61,12 +61,12 @@ class AnnotationTag(_messages.Message):
 
 
 class ApplyAnnotationTagRequest(_messages.Message):
-  """Request message for "DataPolicyAnnotationTagging.ApplyAnnotationTag".
+  """Request message for "DataAnnotationTagging.ApplyAnnotationTag".
 
   Fields:
     annotationName: [Required] Name of the annotation tag. The annotation must
-      be a valid annotation defined in the data policy taxonomy that is
-      specified in the resource name.
+      be a valid annotation defined in the data taxonomy that is specified in
+      the resource name.
   """
 
   annotationName = _messages.StringField(1)
@@ -195,8 +195,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -207,7 +207,29 @@ class Binding(_messages.Message):
 
 
 class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class Condition(_messages.Message):
@@ -328,6 +350,25 @@ class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log"""
 
 
+class DataTaxonomy(_messages.Message):
+  """A taxonomy is a set of data types of business significance, typically
+  associated with the substance of the data (e.g. credit card, SSN), or how it
+  is used (e.g. account name, user ID).
+
+  Fields:
+    description: Description of the datapol taxonomy. Length of the
+      description is limited to 1000 characters.
+    name: Resource name of the datapol taxonomy, which has the format of
+      "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_name}".
+    taxonomyName: Name of the taxonomy. Should be no more than 100 characters
+      with only letters, numbers, -, and _.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  taxonomyName = _messages.StringField(3)
+
+
 class DatapolDataAssetsListResourceNamesRequest(_messages.Message):
   """A DatapolDataAssetsListResourceNamesRequest object.
 
@@ -352,8 +393,8 @@ class DatapolDataAssetsListResourceNamesRequest(_messages.Message):
   pageToken = _messages.StringField(6)
 
 
-class DatapolDataOrgsAnnotationTagsListRequest(_messages.Message):
-  """A DatapolDataOrgsAnnotationTagsListRequest object.
+class DatapolDataTaxonomyStoresAnnotationTagsListRequest(_messages.Message):
+  """A DatapolDataTaxonomyStoresAnnotationTagsListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -367,8 +408,9 @@ class DatapolDataOrgsAnnotationTagsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest(_messages.Message):
-  """A DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest object.
+class DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest(_messages.Message):
+  """A DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest
+  object.
 
   Fields:
     applyAnnotationTagRequest: A ApplyAnnotationTagRequest resource to be
@@ -380,8 +422,9 @@ class DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest(_messages.Message
   name = _messages.StringField(2, required=True)
 
 
-class DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest(_messages.Message):
-  """A DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest object.
+class DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest(_messages.Message):
+  """A DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest
+  object.
 
   Fields:
     name: [Required] Resource name of the tag to be deleted.
@@ -390,8 +433,18 @@ class DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest object.
+class DatapolProjectsGetDefaultTaxonomyStoreRequest(_messages.Message):
+  """A DatapolProjectsGetDefaultTaxonomyStoreRequest object.
+
+  Fields:
+    name: [Required] Resource name of the taxonomy store.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest object.
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
@@ -403,8 +456,8 @@ class DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesAnnotationsDeleteRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsDeleteRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be deleted.
@@ -413,8 +466,8 @@ class DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesAnnotationsGetRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsGetRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be returned.
@@ -423,8 +476,8 @@ class DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesAnnotationsListRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesAnnotationsListRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesAnnotationsListRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -438,8 +491,8 @@ class DatapolOrgsPolicyTaxonomiesAnnotationsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be updated.
@@ -451,22 +504,21 @@ class DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest(_messages.Message):
   updateAnnotationRequest = _messages.MessageField('UpdateAnnotationRequest', 2)
 
 
-class DatapolOrgsPolicyTaxonomiesCreateRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesCreateRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesCreateRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesCreateRequest object.
 
   Fields:
-    parent: [Required] Resource name of the organization that the newly
+    dataTaxonomy: A DataTaxonomy resource to be passed as the request body.
+    parent: [Required] Resource name of the taxonomy store that the newly
       created taxonomy belongs to.
-    policyTaxonomy: A PolicyTaxonomy resource to be passed as the request
-      body.
   """
 
-  parent = _messages.StringField(1, required=True)
-  policyTaxonomy = _messages.MessageField('PolicyTaxonomy', 2)
+  dataTaxonomy = _messages.MessageField('DataTaxonomy', 1)
+  parent = _messages.StringField(2, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesDeleteRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesDeleteRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesDeleteRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesDeleteRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be deleted.
@@ -475,8 +527,8 @@ class DatapolOrgsPolicyTaxonomiesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -490,8 +542,8 @@ class DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesGetRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesGetRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesGetRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesGetRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be returned.
@@ -500,14 +552,14 @@ class DatapolOrgsPolicyTaxonomiesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesListRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesListRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesListRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: [Required] Resource name of a org.
+    parent: [Required] Resource name of a taxonomy store.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -515,8 +567,38 @@ class DatapolOrgsPolicyTaxonomiesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest(_messages.Message):
-  """A DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest object.
+class DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatapolTaxonomyStoresGetIamPolicyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DatapolTaxonomyStoresSetIamPolicyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -545,7 +627,7 @@ class GetIamPolicyRequest(_messages.Message):
 
 
 class ListAnnotationTagsResponse(_messages.Message):
-  """Response message for "DataPolicyAnnotationTagging.ListAnnotationTags".
+  """Response message for "DataAnnotationTagging.ListAnnotationTags".
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
@@ -558,7 +640,7 @@ class ListAnnotationTagsResponse(_messages.Message):
 
 
 class ListAnnotationsResponse(_messages.Message):
-  """Response message for "DataPolicyAnnotation.ListAnnotations".
+  """Response message for "DataAnnotation.ListAnnotations".
 
   Fields:
     annotations: Annotations that are in this taxonomy.
@@ -571,8 +653,7 @@ class ListAnnotationsResponse(_messages.Message):
 
 
 class ListAssetsResponse(_messages.Message):
-  """Response message for "DataPolicyAnnotationTagging.ListAssets". Next tag:
-  4
+  """Response message for "DataAnnotationTagging.ListAssets". Next tag: 4
 
   Fields:
     assets: A list of data asset resource names with auxiliary information.
@@ -587,17 +668,17 @@ class ListAssetsResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
-class ListPolicyTaxonomiesResponse(_messages.Message):
-  """Response message for "DataPolicyTaxonomy.ListPolicyTaxonomies".
+class ListDataTaxonomiesResponse(_messages.Message):
+  """Response message for "DataTaxonomyService.ListDataTaxonomies".
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    taxonomies: Taxonomies that the org owns.
+    taxonomies: Taxonomies that the taxonomy store contains.
   """
 
   nextPageToken = _messages.StringField(1)
-  taxonomies = _messages.MessageField('PolicyTaxonomy', 2, repeated=True)
+  taxonomies = _messages.MessageField('DataTaxonomy', 2, repeated=True)
 
 
 class LogConfig(_messages.Message):
@@ -769,36 +850,6 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
-class PolicyTaxonomy(_messages.Message):
-  """A taxonomy in DataPolicy API. A taxonomy is a set of data types of
-  business significance, typically associated with the substance of the data
-  (e.g. credit card, SSN), or how it is used (e.g. account name, user ID).
-  There are three IAM roles on each taxonomy:   - role/administrator: use all
-  service APIs above.   - role/annotator: use all APIs in service
-  DataPolicyAnnotationTagging, and       Get* APIs in service
-  DataPolicyTaxonomy and DataPolicyAnnotation.   - role/reader: use Get* and
-  List* APIs. When a PolicyTaxonomy is created, the API caller will be added
-  to each of those IAM roles above..
-
-  Fields:
-    description: Description of the datapol taxonomy. Length of the
-      description is limited to 1000 characters.
-    name: Resource name of the datapol taxonomy, which has the format of
-      "orgs/{org_id}/policyTaxonomies/{taxonomy_name}".
-    orgId: Id of the cloud organization that this taxonomy belongs to. If the
-      project does not have an organization ID, use the "project:project_id"
-      instead, and the scope of the defined taxonomy is limited to this
-      project only.
-    taxonomyName: Name of the taxonomy. Should be no more than 100 characters
-      with only letters, numbers, -, and _.
-  """
-
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  orgId = _messages.StringField(3)
-  taxonomyName = _messages.StringField(4)
-
-
 class Rule(_messages.Message):
   """A rule to be applied in a Policy.
 
@@ -950,7 +1001,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -963,8 +1014,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should
@@ -1015,8 +1066,21 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TaxonomyStore(_messages.Message):
+  """A taxonomy store keeps a collection of data taxonomies. Each organization
+  or each project that does not belong to any organization can have at most
+  one taxonomy store.
+
+  Fields:
+    name: Resource name of the taxonomy store, which has the format of
+      "taxonomyStores/{store_id}".
+  """
+
+  name = _messages.StringField(1)
+
+
 class UpdateAnnotationRequest(_messages.Message):
-  """Request message for "DataPolicyAnnotation.UpdateAnnotation".
+  """Request message for "DataAnnotation.UpdateAnnotation".
 
   Fields:
     description: New description of the annotation.

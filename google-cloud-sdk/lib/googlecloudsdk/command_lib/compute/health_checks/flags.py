@@ -16,6 +16,12 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      type:label=PROTOCOL
+    )"""
+
 
 def HealthCheckArgument(protocol_string, required=True):
   return compute_flags.ResourceArgument(

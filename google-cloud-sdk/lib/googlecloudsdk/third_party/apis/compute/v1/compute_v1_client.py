@@ -73,6 +73,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.targetInstances = self.TargetInstancesService(self)
     self.targetPools = self.TargetPoolsService(self)
     self.targetSslProxies = self.TargetSslProxiesService(self)
+    self.targetTcpProxies = self.TargetTcpProxiesService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
     self.urlMaps = self.UrlMapsService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
@@ -1071,6 +1072,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/resize',
         request_field=u'disksResizeRequest',
         request_type_name=u'ComputeDisksResizeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
+
+      Args:
+        request: (ComputeDisksSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.disks.setLabels',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setLabels',
+        request_field=u'zoneSetLabelsRequest',
+        request_type_name=u'ComputeDisksSetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -2441,6 +2468,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
+
+      Args:
+        request: (ComputeImagesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.images.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/images/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeImagesSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class InstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the instanceGroupManagers resource."""
 
@@ -3457,6 +3510,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setDiskAutoDelete',
         request_field='',
         request_type_name=u'ComputeInstancesSetDiskAutoDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
+
+      Args:
+        request: (ComputeInstancesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setLabels',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setLabels',
+        request_field=u'instancesSetLabelsRequest',
+        request_type_name=u'ComputeInstancesSetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -5637,6 +5716,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
+
+      Args:
+        request: (ComputeSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.snapshots.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/snapshots/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeSnapshotsSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class SslCertificatesService(base_api.BaseApiService):
     """Service class for the sslCertificates resource."""
 
@@ -6873,6 +6978,172 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
         request_field=u'targetSslProxiesSetSslCertificatesRequest',
         request_type_name=u'ComputeTargetSslProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class TargetTcpProxiesService(base_api.BaseApiService):
+    """Service class for the targetTcpProxies resource."""
+
+    _NAME = u'targetTcpProxies'
+
+    def __init__(self, client):
+      super(ComputeV1.TargetTcpProxiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified TargetTcpProxy resource.
+
+      Args:
+        request: (ComputeTargetTcpProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.targetTcpProxies.delete',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified TargetTcpProxy resource. Get a list of available target TCP proxies by making a list() request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.get',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesGetRequest',
+        response_type_name=u'TargetTcpProxy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a TargetTcpProxy resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field=u'targetTcpProxy',
+        request_type_name=u'ComputeTargetTcpProxiesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of TargetTcpProxy resources available to the specified project.
+
+      Args:
+        request: (ComputeTargetTcpProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesListRequest',
+        response_type_name=u'TargetTcpProxyList',
+        supports_download=False,
+    )
+
+    def SetBackendService(self, request, global_params=None):
+      """Changes the BackendService for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetBackendServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetBackendService')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetBackendService.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setBackendService',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService',
+        request_field=u'targetTcpProxiesSetBackendServiceRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetBackendServiceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetProxyHeader(self, request, global_params=None):
+      """Changes the ProxyHeaderType for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetProxyHeaderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetProxyHeader')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetProxyHeader.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setProxyHeader',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader',
+        request_field=u'targetTcpProxiesSetProxyHeaderRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetProxyHeaderRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

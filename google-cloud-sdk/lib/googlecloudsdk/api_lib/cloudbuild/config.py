@@ -25,6 +25,12 @@ import yaml
 import yaml.parser
 
 
+# Don't apply camel case to keys for dict or list values with these field names.
+# These correspond to map fields in our proto message, where we expect keys to
+# be sent exactly as the user typed them, without transformation to camelCase.
+_SKIP_CAMEL_CASE = ['secretEnv', 'secret_env']
+
+
 class NotFoundException(exceptions.Error):
 
   def __init__(self, path):
@@ -99,16 +105,19 @@ def _SnakeToCamelString(field_name):
 def _SnakeToCamel(msg):
   """Transform all dict field names that are snake_case to camelCase.
 
+  If a field is in _SKIP_CAMEL_CASE then its value is not further transformed.
+
   Args:
     msg: dict, list, or other. If 'other', the function returns immediately.
 
   Returns:
-    Same type as message, except all field names that were snake_case are
-    now camelCase.
+    Same type as message, except all field names except "secrets" that were
+    snake_case are now camelCase.
   """
   if isinstance(msg, dict):
     return {
-        _SnakeToCamelString(key): _SnakeToCamel(val)
+        _SnakeToCamelString(key):
+        _SnakeToCamel(val) if key not in _SKIP_CAMEL_CASE else val
         for key, val in msg.iteritems()
     }
   elif isinstance(msg, list):

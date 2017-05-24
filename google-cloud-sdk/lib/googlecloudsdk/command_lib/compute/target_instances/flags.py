@@ -15,6 +15,14 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      zone.basename(),
+      instance.basename(),
+      natPolicy
+    )"""
+
 
 def TargetInstanceArgument(required=True):
   return compute_flags.ResourceArgument(

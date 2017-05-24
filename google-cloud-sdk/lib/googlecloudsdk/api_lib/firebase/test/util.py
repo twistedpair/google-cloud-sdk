@@ -108,6 +108,31 @@ def GetAndroidCatalog(context=None):
   return _GetCatalog(client, messages, env_type).androidDeviceCatalog
 
 
+def GetNetworkProfileCatalog(context=None):
+  """Gets the network profile catalog from the TestEnvironmentDiscoveryService.
+
+  Args:
+    context: {str:object}, The current context, which is a set of key-value
+      pairs that can be used for common initialization among commands.
+
+  Returns:
+    The network profile catalog.
+
+  Raises:
+    calliope_exceptions.HttpException: If it could not connect to the service.
+  """
+  if context:
+    client = context['testing_client']
+    messages = context['testing_messages']
+  else:
+    client = apis.GetClientInstance('testing', 'v1')
+    messages = apis.GetMessagesModule('testing', 'v1')
+
+  env_type = (messages.TestingTestEnvironmentCatalogGetRequest.
+              EnvironmentTypeValueValuesEnum.NETWORK_CONFIGURATION)
+  return _GetCatalog(client, messages, env_type).networkConfigurationCatalog
+
+
 def _GetCatalog(client, messages, environment_type):
   """Gets a test environment catalog from the TestEnvironmentDiscoveryService.
 

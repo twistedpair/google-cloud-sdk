@@ -95,7 +95,6 @@ apis:
         # For now, we only accept global buckets, but should give them to the
         # EventTrigger API in the format that it expects (with the underscore).
         projects.buckets: projects/_/buckets/{bucketId}
-        projects.locations: projects/{projectsId}/locations/{locationsId}
   cloudkms:
     v1beta1:
       discovery_doc: cloudkms_v1beta1.json
@@ -128,13 +127,19 @@ apis:
   compute:
     alpha:
       discovery_doc: compute_alpha.json
+      resources:
+        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
       - compute.disks.resize
+      resources:
+        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
     v1:
       discovery_doc: compute_v1.json
       default: true
+      resources:
+        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
   container:
     v1:
       discovery_doc: container_v1.json
@@ -148,12 +153,14 @@ apis:
     v1alpha1:
       discovery_doc: datapol_v1alpha1.json
       resources:
-         org: "orgs/{orgsId}"
-         data.taxonomy: "data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}"
-         data.tag: "data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotationTag"
+         data.taxonomy: "data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}"
+         data.tag: "data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotationTag"
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
+      resources:
+         projects.regions: "projects/{projectId}/regions/{regionId}"
+         projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
   deploymentmanager:
     alpha:
       discovery_doc: deploymentmanager_alpha.json
@@ -202,13 +209,9 @@ apis:
   ml:
     v1beta1:
       discovery_doc: ml_v1beta1.json
-      resources:
-        projects: projects/{projectsId}
       default: true
     v1:
       discovery_doc: ml_v1.json
-      resources:
-        projects: projects/{projectsId}
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -230,8 +233,6 @@ apis:
   sourcerepo:
     v1:
       discovery_doc: sourcerepo_v1.json
-      resources:
-        projects: projects/{projectsId}
   spanner:
     v1:
       discovery_doc: spanner_v1.json

@@ -43,6 +43,18 @@ DISK_METAVAR_ZONAL_OR_REGIONAL = (
     'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
     '[auto-delete={yes,no}] [scope={zonal,regional}]')
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      zone.basename(),
+      machineType.machine_type().basename(),
+      scheduling.preemptible.yesno(yes=true, no=''),
+      networkInterfaces[].networkIP.notnull().list():label=INTERNAL_IP,
+      networkInterfaces[].accessConfigs[0].natIP.notnull().list()\
+      :label=EXTERNAL_IP,
+      status
+    )"""
+
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     completion_resource_id='compute.instances',
@@ -453,15 +465,20 @@ def ExpandAddressFlag(resources, compute_client, address, region):
     pass
 
   # Lookup the address.
-  address_ref = resources.Parse(
+  address_ref = GetAddressRef(resources, address, region)
+  res = _GetAddress(compute_client, address_ref)
+  return res.address
+
+
+def GetAddressRef(resources, address, region):
+  """Generates an address reference from the specified address and region."""
+  return resources.Parse(
       address,
       collection='compute.addresses',
       params={
           'project': properties.VALUES.core.project.GetOrFail,
           'region': region
       })
-  res = _GetAddress(compute_client, address_ref)
-  return res.address
 
 
 def ValidateDiskFlags(args):

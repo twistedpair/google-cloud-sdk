@@ -46,16 +46,16 @@ class Backend(resource_expr_rewrite.BackendBase):
 
   def Rewrite(self, expr, defaults=None):
     """Add a project id restriction to the backend rewrite."""
-    rewrite = super(Backend, self).Rewrite(expr, defaults=defaults)
+    frontend, backend = super(Backend, self).Rewrite(expr, defaults=defaults)
 
     # Add a project id restriction.
-    if rewrite:
-      rewrite += ' AND '
+    if backend:
+      backend += ' AND '
     else:
-      rewrite = ''
-    rewrite += 'projectId={0}'.format(genomics_util.GetProjectId())
+      backend = ''
+    backend += 'projectId={0}'.format(genomics_util.GetProjectId())
 
-    return rewrite
+    return frontend, backend
 
   def RewriteAND(self, left, right):
     """Rewrites <left AND right>."""

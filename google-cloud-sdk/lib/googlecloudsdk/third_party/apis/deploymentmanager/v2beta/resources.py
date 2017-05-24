@@ -47,6 +47,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'operation']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{project}',
+      {},
+      [u'project']
+  )
   RESOURCES = (
       'resources',
       'projects/{project}/global/deployments/{deployment}/resources/'

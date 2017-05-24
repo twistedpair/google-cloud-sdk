@@ -28,6 +28,18 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'region', u'deploymentName']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
+  REGIONS = (
+      'regions',
+      'projects/{projectId}/regions/{region}',
+      {},
+      [u'projectId', u'region']
+  )
   TEMPLATES = (
       'templates',
       'projects/{projectId}/templates/{templateName}',

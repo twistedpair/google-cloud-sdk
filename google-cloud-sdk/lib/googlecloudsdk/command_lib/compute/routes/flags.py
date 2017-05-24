@@ -15,6 +15,33 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      network.basename(),
+      destRange,
+      firstof(
+          nextHopInstance,
+          nextHopGateway,
+          nextHopIp,
+          nextHopVpnTunnel,
+          nextHopPeering).scope()
+        :label=NEXT_HOP,
+      priority
+    )"""
+
+NEXT_HOP_GATEWAY_ARG = compute_flags.ResourceArgument(
+    name='--next-hop-gateway',
+    resource_name='next hop gateway',
+    completion_resource_id='compute.nextHopGateways',
+    required=False,
+    global_collection='compute.nextHopGateways',
+    short_help=(
+        'Specifies the gateway that should handle matching packets. '
+        'Currently, the only acceptable value is '
+        '`default-internet-gateway` which is a gateway operated by Google '
+        'Compute Engine.'))
+
 
 def RouteArgument(required=True):
   return compute_flags.ResourceArgument(

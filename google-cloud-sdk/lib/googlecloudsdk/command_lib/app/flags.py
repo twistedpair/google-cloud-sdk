@@ -68,6 +68,25 @@ VERSION = base.Argument(
     '--version', '-v', help='Limit to specific version.', required=False)
 
 
+def AddServiceVersionSelectArgs(parser, short_flags=False):
+  """Add arguments to a parser for selecting service and version.
+
+  Args:
+    parser: An argparse.ArgumentParser.
+    short_flags: bool, whether to add short flags `-s` and `-v` for service
+      and version respectively.
+  """
+
+  parser.add_argument(
+      '--service', *['-s'] if short_flags else [],
+      required=True,
+      help='The service ID.')
+  parser.add_argument(
+      '--version', *['-v'] if short_flags else [],
+      required=True,
+      help='The version ID.')
+
+
 def AddCertificateIdFlag(parser, include_no_cert):
   """Add the --certificate-id flag to a domain-mappings command."""
 

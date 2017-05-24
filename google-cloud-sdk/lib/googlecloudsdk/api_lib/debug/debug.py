@@ -42,7 +42,8 @@ def SplitLogExpressions(format_string):
 
   Each substring of the form {expression} will be extracted into an array, and
   each {expression} substring will be replaced with $N, where N is the index
-  of the extraced expression in the array.
+  of the extraced expression in the array. Any '$' sequence outside an
+  expression will be escaped with '$$'.
 
   For example, given the input:
     'a={a}, b={b}'
@@ -73,7 +74,18 @@ def SplitLogExpressions(format_string):
         # New expression
         current_expression = ''
       brace_count += 1
-    elif brace_count:
+    elif not brace_count:
+      if c == '}':
+        # Unbalanced left brace.
+        raise errors.InvalidLogFormatException(
+            'There are too many "}" characters in the log format string')
+      elif c == '$':
+        # Escape '$'
+        log_format += '$$'
+      else:
+        # Not in or starting an expression.
+        log_format += c
+    else:
       # Currently reading an expression.
       if c != '}':
         current_expression += c
@@ -94,9 +106,7 @@ def SplitLogExpressions(format_string):
       else:
         # Closing a nested brace
         current_expression += c
-    else:
-      # Not in or starting an expression.
-      log_format += c
+
   if brace_count:
     # Unbalanced left brace.
     raise errors.InvalidLogFormatException(
@@ -119,7 +129,14 @@ def MergeLogExpressions(log_format, expressions):
   Returns:
     The combined string.
   """
-  return re.sub(r'\$([0-9]+)', r'{{{\1}}}', log_format).format(*expressions)
+  def GetExpression(m):
+    try:
+      return '{{{0}}}'.format(expressions[int(m.group(0)[1:])])
+    except IndexError:
+      return m.group(0)
+
+  parts = log_format.split('$$')
+  return '$'.join(re.sub(r'\$\d+', GetExpression, part) for part in parts)
 
 
 def DebugViewUrl(breakpoint):

@@ -75,60 +75,6 @@ class HttpRequest(_messages.Message):
   userAgent = _messages.StringField(14)
 
 
-class ListLogEntriesRequest(_messages.Message):
-  """The parameters to ListLogEntries.
-
-  Fields:
-    filter: An advanced logs filter. The response includes only entries that
-      match the filter. If filter is empty, then all entries in all logs are
-      retrieved. The maximum length of the filter is 20000 characters.
-    orderBy: Sort order of the results, consisting of a LogEntry field
-      optionally followed by a space and desc. Examples: "metadata.timestamp",
-      "metadata.timestamp desc". The only LogEntry field supported for sorting
-      is metadata.timestamp. The default sort order is ascending (from older
-      to newer entries) unless desc is appended.
-    pageSize: The maximum number of entries to return per request. Fewer
-      entries may be returned, but that is not an indication that there are no
-      more entries.
-    pageToken: An opaque token, returned as nextPageToken by a prior
-      ListLogEntries operation. If a page token is specified, other request
-      parameters must match the parameters from the request that generated the
-      page token.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(4)
-
-
-class ListLogEntriesResponse(_messages.Message):
-  """Result returned from ListLogEntries.
-
-  Fields:
-    entries: A list of log entries. Fewer than pageSize entries may be
-      returned, but that is not an indication that there are no more entries.
-    lastObservedEntryTimestamp: The timestamp of the last log entry that was
-      examined before returning this response. This can be used to observe
-      progress between successive queries, in particular when only a page
-      token is returned. Deprecated: use searched_through_timestamp.
-    nextPageToken: If there are more results, then nextPageToken is returned
-      in the response. To get the next batch of entries, use the value of
-      nextPageToken as pageToken in the next call of ListLogEntries. If
-      nextPageToken is empty, then there are no more results.
-    searchedThroughTimestamp: The furthest point in time through which the
-      search has progressed. All future entries returned using next_page_token
-      are guaranteed to have a timestamp at or past this point in time in the
-      direction of the search. This can be used to observe progress between
-      successive queries, in particular when only a page token is returned.
-  """
-
-  entries = _messages.MessageField('LogEntry', 1, repeated=True)
-  lastObservedEntryTimestamp = _messages.StringField(2)
-  nextPageToken = _messages.BytesField(3)
-  searchedThroughTimestamp = _messages.StringField(4)
-
-
 class ListLogServiceSinksResponse(_messages.Message):
   """Result returned from ListLogServiceSinks.
 
@@ -568,54 +514,6 @@ class LogSink(_messages.Message):
   filter = _messages.StringField(4)
   name = _messages.StringField(5)
   startTime = _messages.StringField(6)
-
-
-class LoggingProjectsEntriesListRequest(_messages.Message):
-  """A LoggingProjectsEntriesListRequest object.
-
-  Fields:
-    listLogEntriesRequest: A ListLogEntriesRequest resource to be passed as
-      the request body.
-    projectsId: Part of `projectName`. The resource name of the project from
-      which to retrieve log entries. The log service or log containing the
-      entries is specified in the filter parameter. Example:
-      projects/my_project_id.
-  """
-
-  listLogEntriesRequest = _messages.MessageField('ListLogEntriesRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class LoggingProjectsLogEntriesListRequest(_messages.Message):
-  """A LoggingProjectsLogEntriesListRequest object.
-
-  Fields:
-    filter: An advanced logs filter. The response includes only entries that
-      match the filter. If filter is empty, then all entries in all logs are
-      retrieved. The maximum length of the filter is 20000 characters.
-    orderBy: Sort order of the results, consisting of a LogEntry field
-      optionally followed by a space and desc. Examples: "metadata.timestamp",
-      "metadata.timestamp desc". The only LogEntry field supported for sorting
-      is metadata.timestamp. The default sort order is ascending (from older
-      to newer entries) unless desc is appended.
-    pageSize: The maximum number of entries to return per request. Fewer
-      entries may be returned, but that is not an indication that there are no
-      more entries.
-    pageToken: An opaque token, returned as nextPageToken by a prior
-      ListLogEntries operation. If a page token is specified, other request
-      parameters must match the parameters from the request that generated the
-      page token.
-    projectsId: Part of `projectName`. The resource name of the project from
-      which to retrieve log entries. The log service or log containing the
-      entries is specified in the filter parameter. Example:
-      projects/my_project_id.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(4)
-  projectsId = _messages.StringField(5, required=True)
 
 
 class LoggingProjectsLogServicesListRequest(_messages.Message):
@@ -1077,7 +975,7 @@ class Status(_messages.Message):
   facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package google.rpc which can be used for common error
+  detail types in the package google.rpc that can be used for common error
   conditions.Language mappingThe Status message is the logical representation
   of the error model, but it is not necessarily the actual wire format. When
   the Status message is exposed in different client libraries and different
@@ -1089,11 +987,11 @@ class Status(_messages.Message):
   of this error model include: Partial errors. If a service needs to return
   partial errors to the client, it may embed the Status in the normal response
   to indicate the partial errors. Workflow errors. A typical workflow has
-  multiple steps. Each step may have a Status message for error reporting
-  purpose. Batch operations. If a client uses batch request and batch
-  response, the Status message should be used directly inside batch response,
-  one for each error sub-response. Asynchronous operations. If an API call
-  embeds asynchronous operation results in its response, the status of those
+  multiple steps. Each step may have a Status message for error reporting.
+  Batch operations. If a client uses batch request and batch response, the
+  Status message should be used directly inside batch response, one for each
+  error sub-response. Asynchronous operations. If an API call embeds
+  asynchronous operation results in its response, the status of those
   operations should be represented directly using the Status message. Logging.
   If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.

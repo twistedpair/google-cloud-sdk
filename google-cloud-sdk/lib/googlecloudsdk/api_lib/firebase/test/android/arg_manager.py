@@ -27,8 +27,8 @@ def TypedArgRules():
   collection issues during unit tests.
 
   Returns:
-    A dict keyed by whether shared args are required or optional, and with a
-    nested dict containing any default values for those shared args.
+    A dict keyed by whether type-specific args are required or optional, and
+    with a nested dict containing any default values for those args.
   """
   return {
       'instrumentation': {
@@ -46,6 +46,11 @@ def TypedArgRules():
               'max_depth': 50,
               'max_steps': -1,  # interpreted as 'no limit'
           },
+      },
+      'game-loop': {
+          'required': [],
+          'optional': ['scenario_numbers', 'scenario_labels'],
+          'defaults': {},
       },
   }
 
@@ -66,7 +71,7 @@ def SharedArgRules():
           'device', 'device_ids', 'os_version_ids', 'locales', 'orientations',
           'app_package', 'async', 'auto_google_login', 'obb_files',
           'results_bucket', 'results_dir', 'results_history_name', 'timeout',
-          'environment_variables', 'directories_to_pull'
+          'environment_variables', 'directories_to_pull', 'network_profile'
       ],
       'defaults': {
           'async': False,
@@ -144,6 +149,7 @@ class AndroidArgsManager(object):
     arg_validate.ValidateRoboDirectivesList(args)
     arg_validate.ValidateEnvironmentVariablesList(args)
     arg_validate.ValidateDirectoriesToPullList(args)
+    arg_validate.ValidateScenarioNumbers(args)
 
   def GetTestTypeOrRaise(self, args):
     """If the test type is not user-specified, infer the most reasonable value.

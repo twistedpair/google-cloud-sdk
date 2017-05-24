@@ -18,7 +18,7 @@ These classes are alternate resource_filter.Compile backends that rewrite
 expressions instead of evaluating them. To rewrite a filter expression string:
 
   rewriter = resource_expr_rewrite.Backend()
-  rewritten_expression_string = rewriter.Rewrite(filter_expression_string)
+  frontend_expr, backend_expr = rewriter.Rewrite(filter_expression_string)
 
 It is possible for a rewritten expression to collapse to None. This means that
 there is no equivalent server-side expression, i.e., no server-side pruning is
@@ -63,20 +63,42 @@ class BackendBase(object):
 
   All rewrites default to None. Use this class for target expressions that
   implement a small subset of OnePlatform expressions.
+
+  Attributes:
+    partial_rewrite: True if the most recent Rewrite() backend_expression is
+      a partial rewrite of the original expression. False means that the entire
+      original expression was rewritten and that frontend_expression can be
+      ignored.
   """
 
+  def __init__(self):
+    self.partial_rewrite = False
+
   def Rewrite(self, expression, defaults=None):
-    """Returns the rewrite of expression.
+    """Returns (frontend_expression, backend_expression) for expression.
+
+    There are 3 outcomes:
+      (None, backend) -- only need to apply the backend expression
+      (frontend, None) -- only need to apply the frontend expression
+      (frontend, backend) -- must apply both frontend and backend expressions
 
     Args:
       expression: The expression string to rewrite.
       defaults: resource_projection_spec.ProjectionSpec defaults.
 
     Returns:
-      The rewritten expression string, None if the rewrite collapses to nothing.
+      Returns (frontend_expression, backend_expression) for expression.
     """
-    return resource_filter.Compile(
+    self.partial_rewrite = False
+    backend_expression = resource_filter.Compile(
         expression, backend=self, defaults=defaults).Rewrite()
+    frontend_expression = expression if self.partial_rewrite else None
+    return frontend_expression, backend_expression
+
+  def Expr(self, expr):
+    if not expr:
+      self.partial_rewrite = True
+    return _Expr(expr)
 
   def RewriteAND(self, unused_left, unused_right):
     """Rewrites <left AND right>."""
@@ -175,8 +197,9 @@ class BackendBase(object):
 
   def Term(self, key, op, operand, transform, args):
     if transform or args:
-      return _Expr(None)
-    return _Expr(self.RewriteTerm(resource_lex.GetKeyName(key), op, operand))
+      return self.Expr(None)
+    return self.Expr(
+        self.RewriteTerm(resource_lex.GetKeyName(key), op, operand))
 
   def ExprTRUE(self):
     return _Expr(None)
@@ -189,11 +212,13 @@ class BackendBase(object):
       right = right.Rewrite()
     # None AND x => x
     if not left:
-      return _Expr(right) if right else None
+      self.partial_rewrite = True
+      return self.Expr(right) if right else None
     # x AND None => x
     if not right:
-      return _Expr(left)
-    return _Expr(self.RewriteAND(left, right))
+      self.complete = False
+      return self.Expr(left)
+    return self.Expr(self.RewriteAND(left, right))
 
   def ExprOR(self, left, right):
     """Returns an OR expression node."""
@@ -201,23 +226,23 @@ class BackendBase(object):
       left = left.Rewrite()
     # None OR x => None
     if not left:
-      return _Expr(None)
+      return self.Expr(None)
     # x OR None => None
     if right:
       right = right.Rewrite()
     if not right:
-      return _Expr(None)
-    return _Expr(self.RewriteOR(left, right))
+      return self.Expr(None)
+    return self.Expr(self.RewriteOR(left, right))
 
   def ExprNOT(self, expr):
     if expr:
       expr = expr.Rewrite()
     if not expr:
-      return _Expr(None)
-    return _Expr(self.RewriteNOT(expr))
+      return self.Expr(None)
+    return self.Expr(self.RewriteNOT(expr))
 
   def ExprGlobal(self, call):
-    return _Expr(self.RewriteGlobal(call))
+    return self.Expr(self.RewriteGlobal(call))
 
   def ExprOperand(self, value):
     return value

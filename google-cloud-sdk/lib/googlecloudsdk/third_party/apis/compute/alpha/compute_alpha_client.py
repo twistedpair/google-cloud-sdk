@@ -320,7 +320,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an Address. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeAddressesSetLabelsRequest) input message
@@ -1576,7 +1576,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -1986,7 +1986,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -2178,7 +2178,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalAddressesSetLabelsRequest) input message
@@ -2370,7 +2370,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the specified resource. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -3664,7 +3664,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -5000,7 +5000,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -5889,7 +5889,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.licenses.delete',
         ordered_params=[u'project', u'license'],
         path_params=[u'license', u'project'],
-        query_params=[u'requestId'],
+        query_params=[],
         relative_path=u'projects/{project}/global/licenses/{license}',
         request_field='',
         request_type_name=u'ComputeLicensesDeleteRequest',
@@ -6200,6 +6200,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNetworksListRequest',
         response_type_name=u'NetworkList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified network with the data included in the request.
+
+      Args:
+        request: (ComputeNetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.networks.patch',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/networks/{network}',
+        request_field=u'networkResource',
+        request_type_name=u'ComputeNetworksPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -7102,7 +7128,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      """Creates an commitment in the specified project using the data included in the request.
+      """Creates a commitment in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionCommitmentsInsertRequest) input message
@@ -8884,7 +8910,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
@@ -11152,7 +11178,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeVpnTunnelsSetLabelsRequest) input message

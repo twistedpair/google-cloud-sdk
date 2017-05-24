@@ -22,6 +22,12 @@ BASE_URL = 'https://www.googleapis.com/toolresults/v1beta3/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
   PROJECTS_HISTORIES = (
       'projects.histories',
       'projects/{projectId}/histories/{historyId}',

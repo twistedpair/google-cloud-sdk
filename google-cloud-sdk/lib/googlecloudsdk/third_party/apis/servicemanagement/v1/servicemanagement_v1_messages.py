@@ -319,8 +319,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -347,7 +347,29 @@ class ChangeReport(_messages.Message):
 
 
 class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class CompositeOperationMetadata(_messages.Message):
@@ -1143,7 +1165,9 @@ class Endpoint(_messages.Message):
       backends served from this endpoint to receive and respond to HTTP
       OPTIONS requests. The response will be used by the browser to determine
       whether the subsequent cross-origin request is allowed to proceed.
-    apis: The list of APIs served by this endpoint.
+    apis: The list of APIs served by this endpoint.  If no APIs are specified
+      this translates to "all APIs" exported by the service, as defined in the
+      top-level service configuration.
     features: The list of features enabled on this endpoint.
     name: The canonical name of this endpoint.
     target: The specification of an Internet routable address of API frontend
@@ -1861,33 +1885,65 @@ class ManagedService(_messages.Message):
 
 
 class MediaDownload(_messages.Message):
-  """Use this only for Scotty Requests. Do not use this for media support
-  using Bytestream, add instead [][google.bytestream.RestByteStream] as an API
-  to your configuration for Bytestream methods.
+  """Defines the Media configuration for a service in case of a download. Use
+  this only for Scotty Requests. Do not use this for media support using
+  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
+  your configuration for Bytestream methods.
 
   Fields:
-    downloadService: DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.
-      Specify name of the download service if one is used for download.
+    completeNotification: A boolean that determines whether a notification for
+      the completion of a download should be sent to the backend.
+    downloadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
+      REMOVED.  Specify name of the download service if one is used for
+      download.
+    dropzone: Name of the Scotty dropzone to use for the current API.
     enabled: Whether download is enabled.
+    maxDirectDownloadSize: Optional maximum acceptable size for direct
+      download. The size is specified in bytes.
+    useDirectDownload: A boolean that determines if direct download from ESF
+      should be used for download of this media.
   """
 
-  downloadService = _messages.StringField(1)
-  enabled = _messages.BooleanField(2)
+  completeNotification = _messages.BooleanField(1)
+  downloadService = _messages.StringField(2)
+  dropzone = _messages.StringField(3)
+  enabled = _messages.BooleanField(4)
+  maxDirectDownloadSize = _messages.IntegerField(5)
+  useDirectDownload = _messages.BooleanField(6)
 
 
 class MediaUpload(_messages.Message):
-  """Use this only for Scotty Requests. Do not use this for media support
-  using Bytestream, add instead [][google.bytestream.RestByteStream] as an API
-  to your configuration for Bytestream methods.
+  """Defines the Media configuration for a service in case of an upload. Use
+  this only for Scotty Requests. Do not use this for media support using
+  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
+  your configuration for Bytestream methods.
 
   Fields:
+    completeNotification: A boolean that determines whether a notification for
+      the completion of an upload should be sent to the backend. These
+      notifications will not be seen by the client and will not consume quota.
+    dropzone: Name of the Scotty dropzone to use for the current API.
     enabled: Whether upload is enabled.
-    uploadService: DO NOT USE THIS FIELD UNTIL THIS WARNING IS REMOVED.
-      Specify name of the upload service if one is used for upload.
+    maxSize: Optional maximum acceptable size for an upload. The size is
+      specified in bytes.
+    mimeTypes: An array of mimetype patterns. Esf will only accept uploads
+      that match one of the given patterns.
+    progressNotification: Whether to receive a notification for progress
+      changes of media upload.
+    startNotification: Whether to receive a notification on the start of media
+      upload.
+    uploadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
+      REMOVED.  Specify name of the upload service if one is used for upload.
   """
 
-  enabled = _messages.BooleanField(1)
-  uploadService = _messages.StringField(2)
+  completeNotification = _messages.BooleanField(1)
+  dropzone = _messages.StringField(2)
+  enabled = _messages.BooleanField(3)
+  maxSize = _messages.IntegerField(4)
+  mimeTypes = _messages.StringField(5, repeated=True)
+  progressNotification = _messages.BooleanField(6)
+  startNotification = _messages.BooleanField(7)
+  uploadService = _messages.StringField(8)
 
 
 class Method(_messages.Message):
@@ -3918,6 +3974,12 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
   """A ServicemanagementServicesRolloutsListRequest object.
 
   Fields:
+    filter: Use `filter` to return subset of rollouts. The following filters
+      are supported:   -- To limit the results to only those in
+      [status](google.api.servicemanagement.v1.RolloutStatus) 'SUCCESS',
+      use filter='status=SUCCESS'   -- To limit the results to those in
+      [status](google.api.servicemanagement.v1.RolloutStatus) 'CANCELLED'
+      or 'FAILED', use filter='status=CANCELLED OR status=FAILED'
     pageSize: The max number of items to include in the response list.
     pageToken: The token of the page to retrieve.
     serviceName: The name of the service.  See the [overview](/service-
@@ -3925,9 +3987,10 @@ class ServicemanagementServicesRolloutsListRequest(_messages.Message):
       `example.googleapis.com`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  serviceName = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  serviceName = _messages.StringField(4, required=True)
 
 
 class ServicemanagementServicesSetIamPolicyRequest(_messages.Message):
@@ -4141,7 +4204,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -4154,8 +4217,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should
@@ -4228,8 +4291,6 @@ class Step(_messages.Message):
       FAILED: The operation or step has completed with errors. If the
         operation is rollbackable, the rollback completed with errors too.
       CANCELLED: The operation or step has completed with cancellation.
-      FAILED_ROLLED_BACK: The operation has completed with errors but rolled
-        back successfully if the operation is rollbackable.
     """
     STATUS_UNSPECIFIED = 0
     DONE = 1
@@ -4237,7 +4298,6 @@ class Step(_messages.Message):
     IN_PROGRESS = 3
     FAILED = 4
     CANCELLED = 5
-    FAILED_ROLLED_BACK = 6
 
   description = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)

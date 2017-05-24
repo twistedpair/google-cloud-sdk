@@ -103,7 +103,7 @@ class Binding(_messages.Message):
       `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
       that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group. For example, `admins@example.com`.  *
+      that represents a Google group. For example, `admins@example.com`.    *
       `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -808,10 +808,38 @@ class LogConfig(_messages.Message):
   """Specifies what kind of log the caller must write
 
   Fields:
+    cloudAudit: Cloud audit options.
     counter: Counter options.
   """
 
-  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('LogConfigCounterOptions', 2)
+
+
+class LogConfigCloudAuditOptions(_messages.Message):
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      ADMIN_ACTIVITY: <no description>
+      DATA_ACCESS: <no description>
+      UNSPECIFIED_LOG_NAME: <no description>
+    """
+    ADMIN_ACTIVITY = 0
+    DATA_ACCESS = 1
+    UNSPECIFIED_LOG_NAME = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class LogConfigCounterOptions(_messages.Message):

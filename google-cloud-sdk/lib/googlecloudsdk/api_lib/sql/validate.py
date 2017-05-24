@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common sql utility functions for validating."""
 
 from googlecloudsdk.calliope import exceptions
@@ -20,7 +19,7 @@ from googlecloudsdk.calliope import exceptions
 def ValidateInstanceName(instance_name):
   if ':' in instance_name:
     possible_project = instance_name[:instance_name.rindex(':')]
-    possible_instance = instance_name[instance_name.rindex(':')+1:]
+    possible_instance = instance_name[instance_name.rindex(':') + 1:]
     raise exceptions.ToolException("""\
 Instance names cannot contain the ':' character. If you meant to indicate the
 project for [{instance}], use only '{instance}' for the argument, and either add

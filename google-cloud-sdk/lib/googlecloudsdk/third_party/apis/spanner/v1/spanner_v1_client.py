@@ -11,7 +11,7 @@ class SpannerV1(base_api.BaseApiClient):
   BASE_URL = u'https://spanner.googleapis.com/'
 
   _PACKAGE = u'spanner'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/spanner.admin', u'https://www.googleapis.com/auth/spanner.data']
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

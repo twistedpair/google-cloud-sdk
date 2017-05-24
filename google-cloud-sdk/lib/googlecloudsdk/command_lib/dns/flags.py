@@ -58,29 +58,35 @@ def AddCommonManagedZonesDnssecArgs(parser):
           'on': 'Enable DNSSEC for the managed zone.',
           'transfer': 'Enable DNSSEC and allow transfering a signed zone in '
                       'or out.'},
-      help='The DNSSEC state for this managed zone.')
+      help='The DNSSEC state for this managed zone.',
+      hidden=True)
   parser.add_argument(
       '--denial-of-existence',
       choices=['NSEC', 'NSEC3'],
-      help='Requires DNSSEC enabled.')
+      help='Requires DNSSEC enabled.',
+      hidden=True)
   parser.add_argument(
       '--ksk-algorithm',
       help='String mnemonic specifying the DNSSEC algorithm of the '
            'key-signing key. Requires DNSSEC enabled. Example algorithms: '
-           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
+           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384',
+      hidden=True)
   parser.add_argument(
       '--zsk-algorithm',
       help='String mnemonic specifying the DNSSEC algorithm of the '
            'zone-signing key. Requires DNSSEC enabled. Example algorithms: '
-           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
+           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384',
+      hidden=True)
   parser.add_argument(
       '--ksk-key-length',
       type=int,
-      help='Length of the key-signing key in bits. Requires DNSSEC enabled.')
+      help='Length of the key-signing key in bits. Requires DNSSEC enabled.',
+      hidden=True)
   parser.add_argument(
       '--zsk-key-length',
       type=int,
-      help='Length of the zone-signing key in bits. Requires DNSSEC enabled.')
+      help='Length of the zone-signing key in bits. Requires DNSSEC enabled.',
+      hidden=True)
 
 
 CHANGES_FORMAT = 'table(id, startTime, status)'

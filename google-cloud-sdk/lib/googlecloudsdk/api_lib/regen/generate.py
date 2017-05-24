@@ -185,7 +185,8 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
   if discovery_doc.api_name != api_name:
     raise WrongDiscoveryDoc('api name {0}, expected {1}'
                             .format(discovery_doc.api_name, api_name))
-  resource_collections = discovery_doc.GetResourceCollections(api_version)
+  resource_collections = discovery_doc.GetResourceCollections(
+      custom_resources, api_version)
   if custom_resources:
     # Check if this is redefining one of the existing collections.
     matched_resources = set([])

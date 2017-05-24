@@ -16,6 +16,14 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      x_gcloud_mode:label=MODE,
+      IPv4Range:label=IPV4_RANGE,
+      gatewayIPv4
+    )"""
+
 
 def NetworkArgument(required=True):
   return compute_flags.ResourceArgument(

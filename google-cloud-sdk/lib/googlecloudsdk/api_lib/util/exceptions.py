@@ -243,8 +243,12 @@ class HttpErrorPayload(string.Formatter):
         return u'{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
-        return u'{0} [{1}] is the subject of a conflict'.format(
-            self.resource_item.capitalize(), self.instance_name)
+        if self.resource_item == 'project':
+          return (u'Resource in project [{0}] '
+                  u'is the subject of a conflict').format(self.instance_name)
+        else:
+          return u'{0} [{1}] is the subject of a conflict'.format(
+              self.resource_item.capitalize(), self.instance_name)
 
     description = self.status_description
     if description:

@@ -32,16 +32,17 @@ def Apply(data, taxonomy_name, annotation_name):
   Returns:
     An AnnotationTag message.
   """
-  client = utils.GetClientInstance().data_orgs_policyTaxonomies
+  client = utils.GetClientInstance().data_taxonomyStores_dataTaxonomies
   messages = utils.GetMessagesModule()
   name = resources.REGISTRY.Create(
       'datapol.data.taxonomy',
       data=data,
-      orgsId=utils.GetOrganizationId(),
-      policyTaxonomiesId=taxonomy_name).RelativeName()
+      taxonomyStoresId=utils.GetTaxonomyStoresId(),
+      dataTaxonomiesId=taxonomy_name).RelativeName()
   try:
     return client.ApplyAnnotationTag(
-        messages.DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest(
+        messages.
+        DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest(
             name=name,
             applyAnnotationTagRequest=messages.ApplyAnnotationTagRequest(
                 annotationName=annotation_name)))
@@ -59,16 +60,16 @@ def Delete(data, taxonomy_name):
   Returns:
     An Empty message.
   """
-  client = utils.GetClientInstance().data_orgs_policyTaxonomies
+  client = utils.GetClientInstance().data_taxonomyStores_dataTaxonomies
   name = resources.REGISTRY.Create(
       'datapol.data.tag',
       data=data,
-      orgsId=utils.GetOrganizationId(),
-      policyTaxonomiesId=taxonomy_name).RelativeName()
+      taxonomyStoresId=utils.GetTaxonomyStoresId(),
+      dataTaxonomiesId=taxonomy_name).RelativeName()
   try:
     return client.DeleteAnnotationTag(
         utils.GetMessagesModule()
-        .DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest(
+        .DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest(
             name=name))
   except apitools_exceptions.HttpError as e:
     raise utils.ErrorWrapper(e, name)
@@ -84,10 +85,11 @@ def ListTags(data, limit=None):
   Returns:
     Generator that yields annnotation tags.
   """
-  request = utils.GetMessagesModule().DatapolDataOrgsAnnotationTagsListRequest(
+  request = utils.GetMessagesModule(
+  ).DatapolDataTaxonomyStoresAnnotationTagsListRequest(
       parent='data/{data}'.format(data=data))
   return list_pager.YieldFromList(
-      utils.GetClientInstance().data_orgs_annotationTags,
+      utils.GetClientInstance().data_taxonomyStores_annotationTags,
       request,
       limit=limit,
       field='tags',

@@ -48,7 +48,7 @@ class SourcerepoV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a repo in the given project with the given name..
+      """Creates a repo in the given project with the given name.
 
 If the named repository already exists, `CreateRepo` returns
 `ALREADY_EXISTS`.
@@ -161,7 +161,8 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Returns all repos belonging to a project.
+      """Returns all repos belonging to a project. The sizes of the repos are.
+not set by ListRepos.  To get the size of a repo, use GetRepo.
 
       Args:
         request: (SourcerepoProjectsReposListRequest) input message

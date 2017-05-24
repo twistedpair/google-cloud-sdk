@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utility functions for sql operations."""
 
 import time
@@ -70,21 +69,21 @@ class _BaseOperations(object):
     with console_progress_tracker.ProgressTracker(
         message, autotick=False) as pt:
       time.sleep(_BaseOperations._PRE_START_SLEEP_SEC)
-      retryer = retry.Retryer(exponential_sleep_multiplier=2,
-                              max_wait_ms=_BaseOperations._MAX_WAIT_MS,
-                              wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
+      retryer = retry.Retryer(
+          exponential_sleep_multiplier=2,
+          max_wait_ms=_BaseOperations._MAX_WAIT_MS,
+          wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
       try:
-        retryer.RetryOnResult(cls.GetOperationStatus,
-                              [sql_client, operation_ref],
-                              {'progress_tracker': pt},
-                              should_retry_if=ShouldRetryFunc,
-                              sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
+        retryer.RetryOnResult(
+            cls.GetOperationStatus, [sql_client, operation_ref],
+            {'progress_tracker': pt},
+            should_retry_if=ShouldRetryFunc,
+            sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
       except retry.WaitException:
         raise errors.OperationError(
             ('Operation {0} is taking longer than expected. You can continue '
              'waiting for the operation by running `{1}`').format(
-                 operation_ref,
-                 cls.GetOperationWaitCommand(operation_ref)))
+                 operation_ref, cls.GetOperationWaitCommand(operation_ref)))
 
 
 class OperationsV1Beta3(_BaseOperations):
@@ -159,8 +158,7 @@ class OperationsV1Beta4(_BaseOperations):
     try:
       op = sql_client.operations.Get(
           sql_client.MESSAGES_MODULE.SqlOperationsGetRequest(
-              project=operation_ref.project,
-              operation=operation_ref.operation))
+              project=operation_ref.project, operation=operation_ref.operation))
     except Exception as e:  # pylint:disable=broad-except
       # Since we use this function in a retryer.RetryOnResult block, where we
       # retry for different exceptions up to different amounts of time, we

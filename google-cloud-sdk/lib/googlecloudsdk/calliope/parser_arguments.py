@@ -338,6 +338,29 @@ class ArgumentInterceptor(object):
                                data=self.data,
                                mutex_group_id=id(new_parser))
 
+  def AddDynamicPositional(self, name, action, **kwargs):
+    """Add a positional argument that adds new args on the fly when called.
+
+    Args:
+      name: The name/dest of the positional argument.
+      action: The argparse Action to use. It must be a subclass of
+        parser_extensions.DynamicPositionalAction.
+      **kwargs: Passed verbatim to the argparse.ArgumentParser.add_subparsers
+        method.
+
+    Returns:
+      argparse.Action, The added action.
+    """
+    kwargs['dest'] = name
+    if 'metavar' not in kwargs:
+      kwargs['metavar'] = name.upper()
+    kwargs['parent_ai'] = self
+
+    action = self.parser.add_subparsers(action=action, **kwargs)
+    action.completer = action.Completions
+    self.positional_args.append(action)
+    return action
+
   def AddFlagActionFromAncestors(self, action):
     """Add a flag action to this parser, but segregate it from the others.
 

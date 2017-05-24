@@ -198,7 +198,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
       "type": "object",
       "properties": {
         "code": {
@@ -397,6 +397,65 @@
         },
         "nextPageToken": {
           "description": "Set if not all clusters could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
+          "type": "string"
+        }
+      }
+    },
+    "AppProfile": {
+      "id": "AppProfile",
+      "description": "A configuration object describing how Cloud Bigtable should treat traffic\nfrom a particular end user application.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "(`OutputOnly`)\nThe unique name of the app profile. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/_a-zA-Z0-9*`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The descriptive name for this app profile as it appears in UIs.\nCan be changed at any time, but should be kept unique within an instance\nto avoid confusion.",
+          "type": "string"
+        },
+        "highAvailabilityRouting": {
+          "description": "Use a high availability routing policy.",
+          "$ref": "HighAvailabilityRouting"
+        },
+        "singleClusterRouting": {
+          "description": "Use a single cluster routing policy.",
+          "$ref": "SingleClusterRouting"
+        }
+      }
+    },
+    "HighAvailabilityRouting": {
+      "id": "HighAvailabilityRouting",
+      "description": "Read\/write requests may be routed to any cluster in the instance, and will\nfail over to another cluster in the event of transient errors or delays.\nChoosing this option sacrifices read-your-writes consistency to improve\navailability.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SingleClusterRouting": {
+      "id": "SingleClusterRouting",
+      "description": "Unconditionally routes all read\/write requests to a specific cluster.\nThis option preserves read-your-writes consistency, but does not improve\navailability.",
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "description": "The cluster to which read\/write requests should be routed.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAppProfilesResponse": {
+      "id": "ListAppProfilesResponse",
+      "description": "Response message for BigtableInstanceAdmin.ListAppProfiles.",
+      "type": "object",
+      "properties": {
+        "appProfiles": {
+          "description": "The list of requested app profiles.",
+          "type": "array",
+          "items": {
+            "$ref": "AppProfile"
+          }
+        },
+        "nextPageToken": {
+          "description": "Set if not all app profiles could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
           "type": "string"
         }
       }
@@ -1148,6 +1207,143 @@
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                }
+              }
+            },
+            "appProfiles": {
+              "methods": {
+                "create": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.create",
+                  "path": "v2/{+parent}/appProfiles",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles",
+                  "httpMethod": "POST",
+                  "description": "Creates an app profile within an instance.",
+                  "parameters": {
+                    "parent": {
+                      "description": "The unique name of the instance in which to create the new app profile.\nValues are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "appProfileId": {
+                      "description": "The ID to be used when referring to the new app profile within its\ninstance, e.g., just `myprofile` rather than\n`projects\/myproject\/instances\/myinstance\/appProfiles\/myprofile`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AppProfile"
+                  },
+                  "response": {
+                    "$ref": "AppProfile"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "get": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}",
+                  "httpMethod": "GET",
+                  "description": "Gets information about an app profile.",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the requested app profile. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/<app_profile>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AppProfile"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "list": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.list",
+                  "path": "v2/{+parent}/appProfiles",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles",
+                  "httpMethod": "GET",
+                  "description": "Lists information about app profiles in an instance.",
+                  "parameters": {
+                    "parent": {
+                      "description": "The unique name of the instance for which a list of app profiles is\nrequested. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "The value of `next_page_token` returned by a previous call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAppProfilesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "delete": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}",
+                  "httpMethod": "DELETE",
+                  "description": "Deletes an app profile from an instance.",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the app profile to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/<app_profile>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
                       "type": "string"
                     }
                   },

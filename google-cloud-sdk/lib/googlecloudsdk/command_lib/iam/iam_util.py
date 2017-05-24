@@ -90,7 +90,9 @@ def AddArgsForAddIamPolicyBinding(
                    completion_resource_arg, completion_resource_collection)
   parser.add_argument(
       '--member', required=True,
-      help='The member to add to the binding.')
+      help='The member to add to the binding. '
+      'Should be of the form `user:user_email` '
+      '(e.g. `user:test-user@gmail.com.`)')
 
 
 def AddArgsForRemoveIamPolicyBinding(
@@ -113,7 +115,9 @@ def AddArgsForRemoveIamPolicyBinding(
                    completion_resource_arg, completion_resource_collection)
   parser.add_argument(
       '--member', required=True,
-      help='The member to remove from the binding.')
+      help='The member to add to the binding. '
+      'Should be of the form `user:user_email` '
+      '(e.g. `user:test-user@gmail.com.`)')
 
 
 def AddBindingToIamPolicy(messages, policy, member, role):
@@ -565,7 +569,7 @@ def AddServiceAccountNameArg(parser, help_text):
   """
 
   parser.add_argument('name',
-                      metavar='IAM-ACCOUNT',
+                      metavar='IAM_ACCOUNT',
                       completion_resource='iam.service_accounts',
                       list_command_path='iam.service_accounts',
                       help=help_text)

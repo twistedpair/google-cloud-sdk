@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20170501",
+ "revision": "20170512",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -551,7 +551,7 @@
     },
     "errors": {
      "type": "array",
-     "description": "[Output-only] All errors and warnings encountered during the running of the job. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
+     "description": "[Output-only] The first errors or warnings encountered during the running of the job. The final message includes the number of errors that caused the process to stop. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
      "items": {
       "$ref": "ErrorProto"
      }
@@ -895,7 +895,7 @@
     },
     "query": {
      "type": "string",
-     "description": "[Required] BigQuery SQL query to execute."
+     "description": "[Required] SQL query text to execute. The useLegacySql field can be used to indicate whether the query uses legacy SQL or standard SQL."
     },
     "queryParameters": {
      "type": "array",
@@ -1205,7 +1205,7 @@
     },
     "errors": {
      "type": "array",
-     "description": "[Output-only] All errors encountered during the running of the job. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
+     "description": "[Output-only] The first errors encountered during the running of the job. The final message includes the number of errors that caused the process to stop. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
      "items": {
       "$ref": "ErrorProto"
      }
@@ -1443,7 +1443,7 @@
     },
     "errors": {
      "type": "array",
-     "description": "[Output-only] All errors and warnings encountered during the running of the job. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
+     "description": "[Output-only] The first errors or warnings encountered during the running of the job. The final message includes the number of errors that caused the process to stop. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
      "items": {
       "$ref": "ErrorProto"
      }
@@ -1732,7 +1732,7 @@
    "properties": {
     "description": {
      "type": "string",
-     "description": "[Optional] The field description. The maximum length is 16K characters."
+     "description": "[Optional] The field description. The maximum length is 1,024 characters."
     },
     "fields": {
      "type": "array",

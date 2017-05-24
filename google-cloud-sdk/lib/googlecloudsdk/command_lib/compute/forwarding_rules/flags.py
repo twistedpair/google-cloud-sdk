@@ -263,7 +263,7 @@ def AddPortsAndPortRange(parser):
   ports_scope = parser.add_mutually_exclusive_group()
   ports_scope.add_argument(
       '--ports',
-      metavar='[PORT | PORT-PORT]',
+      metavar='[PORT | START_PORT-END_PORT]',
       type=arg_parsers.ArgList(
           min_length=1, element_type=arg_parsers.Range.Parse),
       default=[],
@@ -280,7 +280,7 @@ def AddPortsAndPortRange(parser):
   ports_scope.add_argument(
       '--port-range',
       type=arg_parsers.Range.Parse,
-      metavar='[PORT | PORT-PORT]',
+      metavar='[PORT | START_PORT-END_PORT]',
       help="""\
       DEPRECATED, use --ports. If specified, only packets addressed to ports in
       the specified range will be forwarded. If not specified for regional

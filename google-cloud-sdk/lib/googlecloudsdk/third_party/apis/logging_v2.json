@@ -227,6 +227,11 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "receiveTimestamp": {
+          "description": "Output only. The time the log entry was received by Stackdriver Logging.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "severity": {
           "description": "Optional. The severity of the log entry. The default value is LogSeverity.DEFAULT.",
           "enumDescriptions": [
@@ -605,7 +610,7 @@
           "type": "string"
         },
         "includeChildren": {
-          "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are availble for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name:\nlogName:(\"projects\/test-project-a\/\" OR \"projects\/test-project-b\/\") AND\nresource.type=gce_instance\n",
+          "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name:\nlogName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND\nresource.type=gce_instance\n",
           "type": "boolean"
         },
         "startTime": {

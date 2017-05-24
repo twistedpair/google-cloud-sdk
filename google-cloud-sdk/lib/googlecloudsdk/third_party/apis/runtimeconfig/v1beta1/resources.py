@@ -22,6 +22,12 @@ BASE_URL = 'https://runtimeconfig.googleapis.com/v1beta1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_CONFIGS = (
       'projects.configs',
       '{+name}',

@@ -52,8 +52,7 @@ UPGRADE_FLEX_PYTHON_URL = (
 APP_ENGINE_APIS_DEPRECATION_WARNING = (
     'Support for the compat runtimes and their base images '
     '(enable_app_engine_apis: true) has been deprecated.  Please migrate to a '
-    'new base image, or use a Google managed runtime. Deployments using '
-    '`enable_app_engine_apis: true` will be decommissioned on May 15th, 2017. '
+    'new base image, or use a Google managed runtime. '
     'To learn more, visit {}.').format(UPGRADE_FLEX_PYTHON_URL)
 
 # This is the equivalent of the following in app.yaml:

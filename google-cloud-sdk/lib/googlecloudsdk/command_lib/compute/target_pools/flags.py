@@ -15,6 +15,15 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      sessionAffinity,
+      backupPool.basename():label=BACKUP,
+      healthChecks[].map().basename().list():label=HEALTH_CHECKS
+    )"""
+
 
 def TargetPoolArgument(required=True, help_suffix='.'):
   return compute_flags.ResourceArgument(

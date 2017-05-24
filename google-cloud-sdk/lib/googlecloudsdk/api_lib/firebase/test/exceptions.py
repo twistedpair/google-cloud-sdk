@@ -46,6 +46,14 @@ class VersionNotFoundError(TestingError):
         "'{v}' is not a valid OS version".format(v=version))
 
 
+class NetworkProfileNotFoundError(TestingError):
+  """Failed to find a network profile in the test environment catalog."""
+
+  def __init__(self, profile_id):
+    super(NetworkProfileNotFoundError, self).__init__(
+        "Could not find network profile ID '{id}'".format(id=profile_id))
+
+
 class LocaleNotFoundError(TestingError):
   """Failed to find a locale in the test environment catalog."""
 

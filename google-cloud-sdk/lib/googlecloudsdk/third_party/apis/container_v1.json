@@ -210,7 +210,7 @@
           "type": "boolean"
         },
         "resourceLabels": {
-          "description": "The resource labels for the cluster to use to annotate any related GCE\nresources.",
+          "description": "The resource labels for the cluster to use to annotate any related\nGoogle Compute Engine resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -363,8 +363,31 @@
           }
         },
         "preemptible": {
-          "description": "Whether the nodes are created as preemptible VM instances. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible for more\ninforamtion about preemptible VM instances.",
+          "description": "Whether the nodes are created as preemptible VM instances. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible for more\ninformation about preemptible VM instances.",
           "type": "boolean"
+        },
+        "accelerators": {
+          "description": "A list of hardware accelerators to be attached to each node.\nSee https:\/\/cloud.google.com\/compute\/docs\/gpus for more information about\nsupport for GPUs.",
+          "type": "array",
+          "items": {
+            "$ref": "AcceleratorConfig"
+          }
+        }
+      }
+    },
+    "AcceleratorConfig": {
+      "id": "AcceleratorConfig",
+      "description": "AcceleratorConfig represents a Hardware Accelerator request.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "The number of the accelerator cards exposed to an instance.",
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "description": "The accelerator type resource name. List of supported accelerators\n[here](\/compute\/docs\/gpus\/#Introduction)",
+          "type": "string"
         }
       }
     },
@@ -562,7 +585,7 @@
     },
     "MasterAuthorizedNetworks": {
       "id": "MasterAuthorizedNetworks",
-      "description": "Configuration options for the master authorized networks feature. Enabled\nmaster authorized networks will disallow all external traffic to access\nKubernetes master through HTTPS except traffic from the given CIDR blocks,\nGCE Public IPs and Google Prod IPs.",
+      "description": "Configuration options for the master authorized networks feature. Enabled\nmaster authorized networks will disallow all external traffic to access\nKubernetes master through HTTPS except traffic from the given CIDR blocks,\nGoogle Compute Engine Public IPs and Google Prod IPs.",
       "type": "object",
       "properties": {
         "enabled": {

@@ -269,30 +269,32 @@ def WaitForJobTermination(
 
 
 def ParseCluster(name, context):
+  """Parse Cluster name, ID, or URL into Cloud SDK reference."""
   resources = context['resources']
-  region = context['dataproc_region']
-  projectid_callback = properties.VALUES.core.project.GetOrFail
+  region_callback = properties.VALUES.dataproc.region.GetOrFail
+  project_callback = properties.VALUES.core.project.GetOrFail
 
   ref = resources.Parse(
       name,
-      params={'region': region, 'projectId': projectid_callback},
+      params={'region': region_callback, 'projectId': project_callback},
       collection='dataproc.projects.regions.clusters')
   return ref
 
 
 def ParseJob(job_id, context):
+  """Parse Job name, ID, or URL into Cloud SDK reference."""
   resources = context['resources']
+  region_callback = properties.VALUES.dataproc.region.GetOrFail
+  project_callback = properties.VALUES.core.project.GetOrFail
   ref = resources.Parse(
       job_id,
-      params={
-          'region': context['dataproc_region'],
-          'projectId': properties.VALUES.core.project.GetOrFail
-      },
+      params={'region': region_callback, 'projectId': project_callback},
       collection='dataproc.projects.regions.jobs')
   return ref
 
 
 def ParseOperation(operation, context):
+  """Parse Operation name, ID, or URL into Cloud SDK reference."""
   resources = context['resources']
   collection = 'dataproc.projects.regions.operations'
   # Dataproc usually refers to Operations by relative name, which must be
@@ -301,12 +303,11 @@ def ParseOperation(operation, context):
   url = urlparse.urlparse(operation)
   if not url.scheme and '/' in url.path and not url.path.startswith('/'):
     return resources.ParseRelativeName(operation, collection=collection)
+  region_callback = properties.VALUES.dataproc.region.GetOrFail
+  project_callback = properties.VALUES.core.project.GetOrFail
   return resources.Parse(
       operation,
-      params={
-          'regionsId': context['dataproc_region'],
-          'projectsId': properties.VALUES.core.project.GetOrFail
-      },
+      params={'regionsId': region_callback, 'projectsId': project_callback},
       collection=collection)
 
 

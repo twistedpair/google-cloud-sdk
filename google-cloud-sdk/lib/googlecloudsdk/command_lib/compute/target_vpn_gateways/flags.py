@@ -15,6 +15,13 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      network.basename(),
+      region.basename()
+    )"""
+
 
 def TargetVpnGatewayArgument(required=True):
   return compute_flags.ResourceArgument(

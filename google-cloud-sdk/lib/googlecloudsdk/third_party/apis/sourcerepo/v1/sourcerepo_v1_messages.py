@@ -96,8 +96,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -108,7 +108,29 @@ class Binding(_messages.Message):
 
 
 class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class Condition(_messages.Message):
@@ -232,7 +254,8 @@ class Empty(_messages.Message):
 
 
 class ListReposResponse(_messages.Message):
-  """Response for ListRepos.
+  """Response for ListRepos.  The size is not set in the returned
+  repositories.
 
   Fields:
     nextPageToken: If non-empty, additional repositories exist within the
@@ -335,7 +358,8 @@ class Repo(_messages.Message):
     mirrorConfig: How this repository mirrors a repository managed by another
       service.
     name: Resource name of the repository, of the form
-      `projects/<project>/repos/<repo>`.
+      `projects/<project>/repos/<repo>`.  The repo name may contain slashes.
+      eg, `projects/myproject/repos/name/with/slash`
     size: The disk usage of the repo, in bytes. Only returned by GetRepo.
     url: URL to clone the repository from Google Cloud Source Repositories.
   """

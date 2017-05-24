@@ -30,8 +30,7 @@ DEPRECATED_INSTANCE_FLAG_REQUIRED = base.Argument(
         '--instance',
         removed=False,
         warn=('Starting on 2017-06-30, --instance will no longer be a valid '
-              'flag: Run the same command but omit this flag.'),
-    ),
+              'flag: Run the same command but omit this flag.'),),
     required=True,
     completion_resource='sql.instances',
     help='Cloud SQL instance ID.')
@@ -43,8 +42,7 @@ DEPRECATED_INSTANCE_FLAG = base.Argument(
         '--instance',
         removed=False,
         warn=('Starting on 2017-06-30, --instance will no longer be a valid '
-              'flag: Run the same command but omit this flag.'),
-    ),
+              'flag: Run the same command but omit this flag.'),),
     required=False,
     completion_resource='sql.instances',
     help='Cloud SQL instance ID.')

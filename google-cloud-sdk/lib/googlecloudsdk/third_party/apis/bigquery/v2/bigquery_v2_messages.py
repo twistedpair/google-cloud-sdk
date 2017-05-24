@@ -881,9 +881,10 @@ class GetQueryResultsResponse(_messages.Message):
 
   Fields:
     cacheHit: Whether the query result was fetched from the query cache.
-    errors: [Output-only] All errors and warnings encountered during the
-      running of the job. Errors here do not necessarily mean that the job has
-      completed or was unsuccessful.
+    errors: [Output-only] The first errors or warnings encountered during the
+      running of the job. The final message includes the number of errors that
+      caused the process to stop. Errors here do not necessarily mean that the
+      job has completed or was unsuccessful.
     etag: A hash of this response.
     jobComplete: Whether the query has completed or not. If rows or totalRows
       are present, this will always be true. If this is false, totalRows will
@@ -1252,7 +1253,8 @@ class JobConfigurationQuery(_messages.Message):
     preserveNulls: [Deprecated] This property is deprecated.
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
-    query: [Required] BigQuery SQL query to execute.
+    query: [Required] SQL query text to execute. The useLegacySql field can be
+      used to indicate whether the query uses legacy SQL or standard SQL.
     queryParameters: Query parameters for standard SQL queries.
     schemaUpdateOptions: [Experimental] Allows the schema of the destination
       table to be updated as a side effect of the query job. Schema update
@@ -1536,9 +1538,10 @@ class JobStatus(_messages.Message):
   Fields:
     errorResult: [Output-only] Final error result of the job. If present,
       indicates that the job has completed and was unsuccessful.
-    errors: [Output-only] All errors encountered during the running of the
-      job. Errors here do not necessarily mean that the job has completed or
-      was unsuccessful.
+    errors: [Output-only] The first errors encountered during the running of
+      the job. The final message includes the number of errors that caused the
+      process to stop. Errors here do not necessarily mean that the job has
+      completed or was unsuccessful.
     state: [Output-only] Running state of the job.
   """
 
@@ -1779,9 +1782,10 @@ class QueryResponse(_messages.Message):
 
   Fields:
     cacheHit: Whether the query result was fetched from the query cache.
-    errors: [Output-only] All errors and warnings encountered during the
-      running of the job. Errors here do not necessarily mean that the job has
-      completed or was unsuccessful.
+    errors: [Output-only] The first errors or warnings encountered during the
+      running of the job. The final message includes the number of errors that
+      caused the process to stop. Errors here do not necessarily mean that the
+      job has completed or was unsuccessful.
     jobComplete: Whether the query has completed or not. If rows or totalRows
       are present, this will always be true. If this is false, totalRows will
       not be available.
@@ -2097,7 +2101,7 @@ class TableFieldSchema(_messages.Message):
   """A TableFieldSchema object.
 
   Fields:
-    description: [Optional] The field description. The maximum length is 16K
+    description: [Optional] The field description. The maximum length is 1,024
       characters.
     fields: [Optional] Describes the nested schema fields if the type property
       is set to RECORD.

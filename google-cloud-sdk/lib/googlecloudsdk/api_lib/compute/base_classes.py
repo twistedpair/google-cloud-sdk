@@ -1165,7 +1165,7 @@ class BaseAsyncCreator(BaseAsyncMutator):
   This class is a base.Command with base.ListCommand formatting.
   """
 
-  def Format(self, args):
+  def DeprecatedFormat(self, args):
     return self.ListFormat(args)
 
 
@@ -1359,12 +1359,12 @@ class ReadWriteCommand(BaseCommand):
           errors,
           error_message='There was a problem modifying the resource:')
 
-  def Format(self, unused_args):
+  def DeprecatedFormat(self, unused_args):
     # The none format does not print but it consumes the resource.
     return 'none'
 
 
-_HELP = textwrap.dedent("""\
+HELP = textwrap.dedent("""\
     You can edit the resource below. Lines beginning with "#" are
     ignored.
 
@@ -1380,7 +1380,7 @@ _HELP = textwrap.dedent("""\
     """)
 
 
-def _SerializeDict(value, fmt):
+def SerializeDict(value, fmt):
   """Serializes value to either JSON or YAML."""
   if fmt == 'json':
     return json.dumps(
@@ -1400,7 +1400,7 @@ def _SerializeDict(value, fmt):
         width=70)
 
 
-def _DeserializeValue(value, fmt):
+def DeserializeValue(value, fmt):
   """Parses the given JSON or YAML value."""
   if fmt == 'json':
     return json.loads(value)
@@ -1408,7 +1408,7 @@ def _DeserializeValue(value, fmt):
     return yaml.load(value)
 
 
-def _WriteResourceInCommentBlock(serialized_resource, title, buf):
+def WriteResourceInCommentBlock(serialized_resource, title, buf):
   """Outputs a comment block with the given serialized resource."""
   buf.write('# ')
   buf.write(title)
@@ -1467,8 +1467,8 @@ class BaseEdit(BaseCommand):
         ' ' * len(line) if line.startswith('#') else line
         for line in file_contents.splitlines())
 
-    modified_record = _DeserializeValue(non_comment_lines,
-                                        args.format or BaseEdit.DEFAULT_FORMAT)
+    modified_record = DeserializeValue(non_comment_lines,
+                                       args.format or BaseEdit.DEFAULT_FORMAT)
 
     # Normalizes all of the fields that refer to other
     # resource. (i.e., translates short names to URIs)
@@ -1531,7 +1531,7 @@ class BaseEdit(BaseCommand):
     self.modifiable_record = field_selector.Apply(self.original_record)
 
     buf = cStringIO.StringIO()
-    for line in _HELP.splitlines():
+    for line in HELP.splitlines():
       buf.write('#')
       if line:
         buf.write(' ')
@@ -1539,20 +1539,20 @@ class BaseEdit(BaseCommand):
       buf.write('\n')
 
     buf.write('\n')
-    buf.write(_SerializeDict(self.modifiable_record,
-                             args.format or BaseEdit.DEFAULT_FORMAT))
+    buf.write(SerializeDict(self.modifiable_record,
+                            args.format or BaseEdit.DEFAULT_FORMAT))
     buf.write('\n')
 
-    example = _SerializeDict(
+    example = SerializeDict(
         encoding.MessageToDict(self.example_resource),
         args.format or BaseEdit.DEFAULT_FORMAT)
-    _WriteResourceInCommentBlock(example, 'Example resource:', buf)
+    WriteResourceInCommentBlock(example, 'Example resource:', buf)
 
     buf.write('#\n')
 
-    original = _SerializeDict(self.original_record,
-                              args.format or BaseEdit.DEFAULT_FORMAT)
-    _WriteResourceInCommentBlock(original, 'Original resource:', buf)
+    original = SerializeDict(self.original_record,
+                             args.format or BaseEdit.DEFAULT_FORMAT)
+    WriteResourceInCommentBlock(original, 'Original resource:', buf)
 
     file_contents = buf.getvalue()
     while True:

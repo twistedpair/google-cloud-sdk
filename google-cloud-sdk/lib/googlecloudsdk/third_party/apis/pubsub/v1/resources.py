@@ -22,6 +22,12 @@ BASE_URL = 'https://pubsub.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_SUBSCRIPTIONS = (
       'projects.subscriptions',
       '{+subscription}',

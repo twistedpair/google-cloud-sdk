@@ -24,7 +24,7 @@ class ScopeEnum(enum.Enum):
   """Enum representing GCE scope."""
 
   ZONE = ('zone', 'a ', properties.VALUES.compute.zone.Get)
-  REGION = ('region', 'a ', properties.VALUES.compute.zone.Get)
+  REGION = ('region', 'a ', properties.VALUES.compute.region.Get)
   GLOBAL = ('global', '', lambda: None)
 
   def __init__(self, flag_name, prefix, property_func):

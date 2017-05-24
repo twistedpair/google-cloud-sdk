@@ -217,8 +217,8 @@ def GetDataDir(prefix):
   """If present, returns the configured data dir, else returns the default.
 
   Args:
-    prefix: Either pubsub or datastore. The prefix for the *_data_dir property
-    of the emulators section.
+    prefix: pubsub, datastore, bigtable, etc. The prefix for the *_data_dir
+    property of the emulators section.
 
   Returns:
     str, The configured or default data_dir path.

@@ -22,6 +22,12 @@ BASE_URL = 'https://dataproc.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS_REGIONS = (
+      'projects.regions',
+      'projects/{projectId}/regions/{regionId}',
+      {},
+      ['projectId', 'regionId']
+  )
   PROJECTS_REGIONS_CLUSTERS = (
       'projects.regions.clusters',
       'projects/{projectId}/regions/{region}/clusters/{clusterName}',
@@ -43,6 +49,12 @@ class Collections(enum.Enum):
               '{operationsId}',
       },
       [u'name']
+  )
+  PROJECTS_REGIONS_OPERATIONS_LIST = (
+      'projects.regions.operations_list',
+      'projects/{projectId}/regions/{regionId}/operations',
+      {},
+      ['projectId', 'regionId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

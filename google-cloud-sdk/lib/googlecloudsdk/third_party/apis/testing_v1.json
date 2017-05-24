@@ -128,6 +128,10 @@
         "androidDeviceCatalog": {
           "description": "Android devices suitable for running Android Instrumentation Tests.",
           "$ref": "AndroidDeviceCatalog"
+        },
+        "networkConfigurationCatalog": {
+          "description": "Supported network configurations",
+          "$ref": "NetworkConfigurationCatalog"
         }
       }
     },
@@ -380,6 +384,71 @@
         }
       }
     },
+    "NetworkConfigurationCatalog": {
+      "id": "NetworkConfigurationCatalog",
+
+      "type": "object",
+      "properties": {
+        "configurations": {
+
+          "type": "array",
+          "items": {
+            "$ref": "NetworkConfiguration"
+          }
+        }
+      }
+    },
+    "NetworkConfiguration": {
+      "id": "NetworkConfiguration",
+
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique opaque id for this network traffic configuration\n@OutputOnly",
+          "type": "string"
+        },
+        "upRule": {
+          "description": "The emulation rule applying to the upload traffic",
+          "$ref": "TrafficRule"
+        },
+        "downRule": {
+          "description": "The emulation rule applying to the download traffic",
+          "$ref": "TrafficRule"
+        }
+      }
+    },
+    "TrafficRule": {
+      "id": "TrafficRule",
+      "description": "Network emulation parameters",
+      "type": "object",
+      "properties": {
+        "delay": {
+          "description": "Packet delay, must be >= 0",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "packetLossRatio": {
+          "description": "Packet loss ratio (0.0 - 1.0)",
+          "type": "number",
+          "format": "float"
+        },
+        "packetDuplicationRatio": {
+          "description": "Packet duplication ratio (0.0 - 1.0)",
+          "type": "number",
+          "format": "float"
+        },
+        "bandwidth": {
+          "description": "Bandwidth in kbits\/second",
+          "type": "number",
+          "format": "float"
+        },
+        "burst": {
+          "description": "Burst size in kbits",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "TestMatrix": {
       "id": "TestMatrix",
       "description": "A group of one or more TestExecutions, built by taking a\nproduct of values over a pre-defined set of axes.",
@@ -556,6 +625,10 @@
         "account": {
           "description": "The device will be logged in on this account for the duration of the test.\nOptional",
           "$ref": "Account"
+        },
+        "networkProfile": {
+          "description": "The network traffic profile used for running the test.\nOptional",
+          "type": "string"
         },
         "environmentVariables": {
           "description": "Environment variables to set for the test (only applicable for\ninstrumentation tests).",
@@ -1079,7 +1152,8 @@
               "type": "string",
               "enum": [
                 "ENVIRONMENT_TYPE_UNSPECIFIED",
-                "ANDROID"
+                "ANDROID",
+                "NETWORK_CONFIGURATION"
               ]
             }
           },

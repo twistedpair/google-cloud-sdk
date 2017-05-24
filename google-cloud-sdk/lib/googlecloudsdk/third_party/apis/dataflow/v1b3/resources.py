@@ -22,11 +22,23 @@ BASE_URL = 'https://dataflow.googleapis.com/v1b3/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
   PROJECTS_JOBS = (
       'projects.jobs',
       'projects/{projectId}/jobs/{jobId}',
       {},
       [u'projectId', u'jobId']
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectId}/locations/{location}',
+      {},
+      [u'projectId', u'location']
   )
   PROJECTS_LOCATIONS_JOBS = (
       'projects.locations.jobs',

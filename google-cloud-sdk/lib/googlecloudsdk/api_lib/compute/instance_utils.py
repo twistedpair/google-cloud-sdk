@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+import ipaddr
 
 
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
@@ -245,7 +246,7 @@ def CreateSchedulingMessage(
 
 
 def CreateMachineTypeUris(
-    resources, compute_client, project,
+    resources, compute_client,
     machine_type, custom_cpu, custom_memory, ext, instance_refs):
   """Create machine type URIs for given args and instance references."""
   # The element at index i is the machine type URI for instance
@@ -263,7 +264,7 @@ def CreateMachineTypeUris(
   for instance_ref in instance_refs:
     # Check to see if the custom machine type ratio is supported
     CheckCustomCpuRamRatio(compute_client,
-                           project,
+                           instance_ref.project,
                            instance_ref.zone,
                            machine_type_name)
     machine_type_uris.append(
@@ -326,7 +327,14 @@ def CreateNetworkInterfaceMessage(resources,
     network_interface.network = network_ref.SelfLink()
 
   if private_network_ip is not None:
-    network_interface.networkIP = private_network_ip
+    # Try interpreting the address as IPv4 or IPv6.
+    try:
+      ipaddr.IPAddress(private_network_ip)
+      network_interface.networkIP = private_network_ip
+    except ValueError:
+      # ipaddr could not resolve as an IPv4 or IPv6 address.
+      network_interface.networkIP = flags.GetAddressRef(
+          resources, private_network_ip, region).SelfLink()
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (

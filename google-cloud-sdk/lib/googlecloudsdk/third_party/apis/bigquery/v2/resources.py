@@ -34,6 +34,12 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'jobId']
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectId}',
+      {},
+      [u'projectId']
+  )
   TABLES = (
       'tables',
       'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',

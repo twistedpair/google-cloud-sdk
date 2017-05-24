@@ -20,7 +20,7 @@ from googlecloudsdk.core import resources
 
 def _GetService():
   """Gets the data policy taxonomiy service."""
-  return utils.GetClientInstance().orgs_policyTaxonomies
+  return utils.GetClientInstance().taxonomyStores_dataTaxonomies
 
 
 def Create(taxonomy_name, description):
@@ -35,14 +35,13 @@ def Create(taxonomy_name, description):
     A Taxonomy message.
   """
   messages = utils.GetMessagesModule()
-  org_id = utils.GetOrganizationId()
   return _GetService().Create(
-      messages.DatapolOrgsPolicyTaxonomiesCreateRequest(
-          parent=resources.REGISTRY.Create('datapol.org', orgsId=org_id)
-          .RelativeName(),
-          policyTaxonomy=messages.PolicyTaxonomy(
-              orgId=org_id, taxonomyName=taxonomy_name, description=
-              description)))
+      messages.DatapolTaxonomyStoresDataTaxonomiesCreateRequest(
+          parent=resources.REGISTRY.Create(
+              'datapol.taxonomyStores',
+              taxonomyStoresId=utils.GetTaxonomyStoresId()).RelativeName(),
+          dataTaxonomy=messages.DataTaxonomy(
+              taxonomyName=taxonomy_name, description=description)))
 
 
 def Delete(taxonomy_name):
@@ -55,9 +54,9 @@ def Delete(taxonomy_name):
     An Operation message which can be used to check on the progress of taxonomy
     deletion.
   """
-  return _GetService().Delete(
-      utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesDeleteRequest(
-          name=utils.GetTaxonomyRelativeName(taxonomy_name)))
+  return _GetService().Delete(utils.GetMessagesModule(
+  ).DatapolTaxonomyStoresDataTaxonomiesDeleteRequest(
+      name=utils.GetTaxonomyRelativeName(taxonomy_name)))
 
 
 def Get(taxonomy_name):
@@ -70,7 +69,7 @@ def Get(taxonomy_name):
     A Taxonomy message.
   """
   return _GetService().Get(
-      utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesGetRequest(
+      utils.GetMessagesModule().DatapolTaxonomyStoresDataTaxonomiesGetRequest(
           name=utils.GetTaxonomyRelativeName(taxonomy_name)))
 
 
@@ -83,9 +82,11 @@ def List(limit=None):
   Returns:
     Generator that yields taxonomies
   """
-  request = utils.GetMessagesModule().DatapolOrgsPolicyTaxonomiesListRequest(
+  request = utils.GetMessagesModule(
+  ).DatapolTaxonomyStoresDataTaxonomiesListRequest(
       parent=resources.REGISTRY.Create(
-          'datapol.org', orgsId=utils.GetOrganizationId()).RelativeName())
+          'datapol.taxonomyStores',
+          taxonomyStoresId=utils.GetTaxonomyStoresId()).RelativeName())
   return list_pager.YieldFromList(
       _GetService(),
       request,
@@ -105,7 +106,7 @@ def GetIamPolicy(taxonomy_name):
   """
   messages = utils.GetMessagesModule()
   return _GetService().GetIamPolicy(
-      messages.DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest(
+      messages.DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest(
           resource=utils.GetTaxonomyRelativeName(taxonomy_name),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
@@ -122,6 +123,6 @@ def SetIamPolicy(taxonomy_name, policy):
   """
   messages = utils.GetMessagesModule()
   return _GetService().SetIamPolicy(
-      messages.DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest(
+      messages.DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(
           resource=utils.GetTaxonomyRelativeName(taxonomy_name),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

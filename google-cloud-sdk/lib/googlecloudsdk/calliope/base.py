@@ -17,6 +17,7 @@
 
 import abc
 from functools import wraps
+import itertools
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
@@ -127,11 +128,13 @@ class ReleaseTrack(object):
     raise ValueError('Unknown release track id [{}].'.format(id))
 
 
-class Argument(object):
-  """A class that allows you to save an argument configuration for reuse."""
+class Action(object):
+  """A class that allows you to save an Action configuration for reuse."""
+
+  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
-    """Creates the argument.
+    """Creates the Action.
 
     Args:
       *args: The positional args to parser.add_argument.
@@ -144,9 +147,68 @@ class Argument(object):
   def name(self):
     return self.args[0]
 
+  @abc.abstractmethod
+  def AddToParser(self, parser):
+    """Adds this Action to the given parser.
+
+    Args:
+      parser: The argparse parser.
+
+    Returns:
+      The result of adding the Action to the parser.
+    """
+    pass
+
+  def RemoveFromParser(self, parser):
+    """Removes this Action from the given parser.
+
+    Args:
+      parser: The argparse parser.
+    """
+    pass
+
+  def SetDefault(self, parser, default):
+    """Sets the default value for this Action in the given parser.
+
+    Args:
+      parser: The argparse parser.
+      default: The default value.
+    """
+    pass
+
+
+class ArgumentGroup(Action):
+  """A class that allows you to save an argument group configuration for reuse.
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(ArgumentGroup, self).__init__(*args, **kwargs)
+    self.arguments = []
+
+  def AddArgument(self, arg):
+    self.arguments.append(arg)
+
+  def AddToParser(self, parser):
+    """Adds this argument group to the given parser.
+
+    Args:
+      parser: The argparse parser.
+
+    Returns:
+      The result of parser.add_argument().
+    """
+    group = parser.add_argument_group(*self.args, **self.kwargs)
+    for arg in self.arguments:
+      arg.AddToParser(group)
+    return group
+
+
+class Argument(Action):
+  """A class that allows you to save an argument configuration for reuse."""
+
   def __GetFlag(self, parser):
     """Returns the flag object in parser."""
-    for flag in parser.flag_args:
+    for flag in itertools.chain(parser.flag_args, parser.ancestor_flag_args):
       if self.name in flag.option_strings:
         return flag
     return None
@@ -174,7 +236,8 @@ class Argument(object):
       name = flag.option_strings[0]
       conflicts = [(name, flag)]
       no_name = '--no-' + name[2:]
-      for no_flag in parser.flag_args:
+      for no_flag in itertools.chain(parser.flag_args,
+                                     parser.ancestor_flag_args):
         if no_name in no_flag.option_strings:
           conflicts.append((no_name, no_flag))
       # pylint: disable=protected-access, argparse, why can't we be friends
@@ -527,6 +590,8 @@ class Group(_Common):
         service requests.
   """
 
+  _command_suggestions = {}
+
   def __init__(self):
     super(Group, self).__init__()
 
@@ -540,6 +605,10 @@ class Group(_Common):
           .Run() invocation.
     """
     pass
+
+  @classmethod
+  def CommandSuggestions(cls):
+    return cls._command_suggestions
 
 
 class Command(_Common):
@@ -637,7 +706,7 @@ class Command(_Common):
       info = resource_registry.Get(info.async_collection)
     return info
 
-  def Format(self, args):
+  def DeprecatedFormat(self, args):
     """Returns the default format string.
 
     Calliope supports a powerful formatting mini-language. It allows running
@@ -653,6 +722,12 @@ class Command(_Common):
     When a command is run with no `--format` flag, this method is run and its
     result is used as the format string.
 
+    This method is deprecated in favor of calling:
+
+        parser.display_info.AddFormat(<format string>)
+
+    in the Args method for the command.
+
     Args:
       args: the argparse namespace object for this command execution. Not used
         in the default implementation, but available for subclasses to use.
@@ -660,7 +735,7 @@ class Command(_Common):
     Returns:
       str, the default format string for this command.
     """
-    del args  # Unused in Format
+    del args  # Unused in DeprecatedFormat
     return 'default'
 
   def ListFormat(self, args):
@@ -718,7 +793,7 @@ class SilentCommand(Command):
   def _Flags(parser):
     parser.display_info.AddFormat('none')
 
-  def Format(self, unused_args):
+  def DeprecatedFormat(self, unused_args):
     return 'none'
 
 
@@ -772,7 +847,7 @@ class ListCommand(CacheCommand):
     if not resources_were_displayed:
       log.status.Print('Listed 0 items.')
 
-  def Format(self, args):
+  def DeprecatedFormat(self, args):
     return self.ListFormat(args)
 
   @staticmethod
@@ -831,6 +906,29 @@ def Hidden(cmd_class):
   # pylint: disable=protected-access
   cmd_class._is_hidden = True
   return cmd_class
+
+
+def CommandSuggestion(command, suggestion):
+  """Decorator for adding a suggestion when a command is mistyped.
+
+  This applies to base.Group classes. When a user tries to run the given
+  `command` that does not exist, `suggestion` will but suggested as a
+  "did you mean".
+
+  Args:
+    command: str, The name of the command (just the command itself not including
+      the group).
+    suggestion: str, The full command name to suggest (excluding the gcloud
+      prefix).
+
+  Returns:
+    The inner decorator.
+  """
+  def Inner(cmd_class):
+    # pylint: disable=protected-access
+    cmd_class._command_suggestions[command] = suggestion
+    return cmd_class
+  return Inner
 
 
 def UnicodeIsSupported(cmd_class):

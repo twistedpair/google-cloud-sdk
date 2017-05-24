@@ -34,30 +34,32 @@ class DatapolV1alpha1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
-    self.data_orgs_annotationTags = self.DataOrgsAnnotationTagsService(self)
-    self.data_orgs_policyTaxonomies = self.DataOrgsPolicyTaxonomiesService(self)
-    self.data_orgs = self.DataOrgsService(self)
+    self.data_taxonomyStores_annotationTags = self.DataTaxonomyStoresAnnotationTagsService(self)
+    self.data_taxonomyStores_dataTaxonomies = self.DataTaxonomyStoresDataTaxonomiesService(self)
+    self.data_taxonomyStores = self.DataTaxonomyStoresService(self)
     self.data = self.DataService(self)
     self.dataAssets = self.DataAssetsService(self)
-    self.orgs_policyTaxonomies_annotations = self.OrgsPolicyTaxonomiesAnnotationsService(self)
-    self.orgs_policyTaxonomies = self.OrgsPolicyTaxonomiesService(self)
-    self.orgs = self.OrgsService(self)
+    self.projects = self.ProjectsService(self)
+    self.taxonomyStores_dataTaxonomies_annotations = self.TaxonomyStoresDataTaxonomiesAnnotationsService(self)
+    self.taxonomyStores_dataTaxonomies = self.TaxonomyStoresDataTaxonomiesService(self)
+    self.taxonomyStores = self.TaxonomyStoresService(self)
 
-  class DataOrgsAnnotationTagsService(base_api.BaseApiService):
-    """Service class for the data_orgs_annotationTags resource."""
+  class DataTaxonomyStoresAnnotationTagsService(base_api.BaseApiService):
+    """Service class for the data_taxonomyStores_annotationTags resource."""
 
-    _NAME = u'data_orgs_annotationTags'
+    _NAME = u'data_taxonomyStores_annotationTags'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.DataOrgsAnnotationTagsService, self).__init__(client)
+      super(DatapolV1alpha1.DataTaxonomyStoresAnnotationTagsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def List(self, request, global_params=None):
-      """Lists all visible annotation tags on a cloud data set.
+      """Lists all visible annotation tags from a taxonomy store that are applied on.
+a cloud data set.
 
       Args:
-        request: (DatapolDataOrgsAnnotationTagsListRequest) input message
+        request: (DatapolDataTaxonomyStoresAnnotationTagsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListAnnotationTagsResponse) The response message.
@@ -67,26 +69,26 @@ class DatapolV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/data/{dataId}/orgs/{orgsId}/annotationTags',
+        flat_path=u'v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/annotationTags',
         http_method=u'GET',
-        method_id=u'datapol.data.orgs.annotationTags.list',
+        method_id=u'datapol.data.taxonomyStores.annotationTags.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+parent}/annotationTags',
         request_field='',
-        request_type_name=u'DatapolDataOrgsAnnotationTagsListRequest',
+        request_type_name=u'DatapolDataTaxonomyStoresAnnotationTagsListRequest',
         response_type_name=u'ListAnnotationTagsResponse',
         supports_download=False,
     )
 
-  class DataOrgsPolicyTaxonomiesService(base_api.BaseApiService):
-    """Service class for the data_orgs_policyTaxonomies resource."""
+  class DataTaxonomyStoresDataTaxonomiesService(base_api.BaseApiService):
+    """Service class for the data_taxonomyStores_dataTaxonomies resource."""
 
-    _NAME = u'data_orgs_policyTaxonomies'
+    _NAME = u'data_taxonomyStores_dataTaxonomies'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.DataOrgsPolicyTaxonomiesService, self).__init__(client)
+      super(DatapolV1alpha1.DataTaxonomyStoresDataTaxonomiesService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -94,7 +96,7 @@ class DatapolV1alpha1(base_api.BaseApiClient):
       """Applies an annotation tag on a cloud data set.
 
       Args:
-        request: (DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest) input message
+        request: (DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AnnotationTag) The response message.
@@ -104,15 +106,15 @@ class DatapolV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     ApplyAnnotationTag.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/data/{dataId}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:applyAnnotationTag',
+        flat_path=u'v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:applyAnnotationTag',
         http_method=u'POST',
-        method_id=u'datapol.data.orgs.policyTaxonomies.applyAnnotationTag',
+        method_id=u'datapol.data.taxonomyStores.dataTaxonomies.applyAnnotationTag',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}:applyAnnotationTag',
         request_field=u'applyAnnotationTagRequest',
-        request_type_name=u'DatapolDataOrgsPolicyTaxonomiesApplyAnnotationTagRequest',
+        request_type_name=u'DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest',
         response_type_name=u'AnnotationTag',
         supports_download=False,
     )
@@ -121,7 +123,7 @@ class DatapolV1alpha1(base_api.BaseApiClient):
       """Deletes an annotation tag from a cloud data set.
 
       Args:
-        request: (DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest) input message
+        request: (DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -131,26 +133,26 @@ class DatapolV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     DeleteAnnotationTag.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/data/{dataId}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotationTag',
+        flat_path=u'v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotationTag',
         http_method=u'DELETE',
-        method_id=u'datapol.data.orgs.policyTaxonomies.deleteAnnotationTag',
+        method_id=u'datapol.data.taxonomyStores.dataTaxonomies.deleteAnnotationTag',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolDataOrgsPolicyTaxonomiesDeleteAnnotationTagRequest',
+        request_type_name=u'DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest',
         response_type_name=u'Empty',
         supports_download=False,
     )
 
-  class DataOrgsService(base_api.BaseApiService):
-    """Service class for the data_orgs resource."""
+  class DataTaxonomyStoresService(base_api.BaseApiService):
+    """Service class for the data_taxonomyStores resource."""
 
-    _NAME = u'data_orgs'
+    _NAME = u'data_taxonomyStores'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.DataOrgsService, self).__init__(client)
+      super(DatapolV1alpha1.DataTaxonomyStoresService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -200,13 +202,50 @@ class DatapolV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class OrgsPolicyTaxonomiesAnnotationsService(base_api.BaseApiService):
-    """Service class for the orgs_policyTaxonomies_annotations resource."""
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
 
-    _NAME = u'orgs_policyTaxonomies_annotations'
+    _NAME = u'projects'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.OrgsPolicyTaxonomiesAnnotationsService, self).__init__(client)
+      super(DatapolV1alpha1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetDefaultTaxonomyStore(self, request, global_params=None):
+      """Search for the taxonomy store for the given project.
+
+      Args:
+        request: (DatapolProjectsGetDefaultTaxonomyStoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyStore) The response message.
+      """
+      config = self.GetMethodConfig('GetDefaultTaxonomyStore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDefaultTaxonomyStore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/defaultTaxonomyStore',
+        http_method=u'GET',
+        method_id=u'datapol.projects.getDefaultTaxonomyStore',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'DatapolProjectsGetDefaultTaxonomyStoreRequest',
+        response_type_name=u'TaxonomyStore',
+        supports_download=False,
+    )
+
+  class TaxonomyStoresDataTaxonomiesAnnotationsService(base_api.BaseApiService):
+    """Service class for the taxonomyStores_dataTaxonomies_annotations resource."""
+
+    _NAME = u'taxonomyStores_dataTaxonomies_annotations'
+
+    def __init__(self, client):
+      super(DatapolV1alpha1.TaxonomyStoresDataTaxonomiesAnnotationsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -214,7 +253,7 @@ class DatapolV1alpha1(base_api.BaseApiClient):
       """Creates an annotation in a taxonomy.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Annotation) The response message.
@@ -224,15 +263,15 @@ class DatapolV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations',
         http_method=u'POST',
-        method_id=u'datapol.orgs.policyTaxonomies.annotations.create',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
         relative_path=u'v1alpha1/{+parent}/annotations',
         request_field=u'annotation',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest',
         response_type_name=u'Annotation',
         supports_download=False,
     )
@@ -242,7 +281,7 @@ class DatapolV1alpha1(base_api.BaseApiClient):
 annotation is a group annotation.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -252,15 +291,15 @@ annotation is a group annotation.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}',
         http_method=u'DELETE',
-        method_id=u'datapol.orgs.policyTaxonomies.annotations.delete',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsDeleteRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -269,7 +308,7 @@ annotation is a group annotation.
       """Gets definition of an annotation.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Annotation) The response message.
@@ -279,15 +318,15 @@ annotation is a group annotation.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}',
         http_method=u'GET',
-        method_id=u'datapol.orgs.policyTaxonomies.annotations.get',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsGetRequest',
         response_type_name=u'Annotation',
         supports_download=False,
     )
@@ -296,7 +335,7 @@ annotation is a group annotation.
       """Lists all annotations in a taxonomy.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesAnnotationsListRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListAnnotationsResponse) The response message.
@@ -306,15 +345,15 @@ annotation is a group annotation.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations',
         http_method=u'GET',
-        method_id=u'datapol.orgs.policyTaxonomies.annotations.list',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+parent}/annotations',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesAnnotationsListRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsListRequest',
         response_type_name=u'ListAnnotationsResponse',
         supports_download=False,
     )
@@ -323,7 +362,7 @@ annotation is a group annotation.
       """Updates description of an annotation.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Annotation) The response message.
@@ -333,62 +372,62 @@ annotation is a group annotation.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}',
         http_method=u'PATCH',
-        method_id=u'datapol.orgs.policyTaxonomies.annotations.patch',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.patch',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field=u'updateAnnotationRequest',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest',
         response_type_name=u'Annotation',
         supports_download=False,
     )
 
-  class OrgsPolicyTaxonomiesService(base_api.BaseApiService):
-    """Service class for the orgs_policyTaxonomies resource."""
+  class TaxonomyStoresDataTaxonomiesService(base_api.BaseApiService):
+    """Service class for the taxonomyStores_dataTaxonomies resource."""
 
-    _NAME = u'orgs_policyTaxonomies'
+    _NAME = u'taxonomyStores_dataTaxonomies'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.OrgsPolicyTaxonomiesService, self).__init__(client)
+      super(DatapolV1alpha1.TaxonomyStoresDataTaxonomiesService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new data policy taxonomy.
+      """Creates a new data taxonomy in a given taxonomy store.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesCreateRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (PolicyTaxonomy) The response message.
+        (DataTaxonomy) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies',
         http_method=u'POST',
-        method_id=u'datapol.orgs.policyTaxonomies.create',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/policyTaxonomies',
-        request_field=u'policyTaxonomy',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesCreateRequest',
-        response_type_name=u'PolicyTaxonomy',
+        relative_path=u'v1alpha1/{+parent}/dataTaxonomies',
+        request_field=u'dataTaxonomy',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesCreateRequest',
+        response_type_name=u'DataTaxonomy',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a taxonomy. This operation will also delete all annotations in.
-this taxonomy.
+      """Deletes a taxonomy from a taxonomy store. This operation will also delete.
+all annotations in this taxonomy.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesDeleteRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -398,15 +437,15 @@ this taxonomy.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}',
         http_method=u'DELETE',
-        method_id=u'datapol.orgs.policyTaxonomies.delete',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesDeleteRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesDeleteRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -415,34 +454,34 @@ this taxonomy.
       """Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesGetRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (PolicyTaxonomy) The response message.
+        (DataTaxonomy) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}',
         http_method=u'GET',
-        method_id=u'datapol.orgs.policyTaxonomies.get',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesGetRequest',
-        response_type_name=u'PolicyTaxonomy',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesGetRequest',
+        response_type_name=u'DataTaxonomy',
         supports_download=False,
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """GetIamPolicy method for the orgs_policyTaxonomies service.
+      """GetIamPolicy method for the taxonomyStores_dataTaxonomies service.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Policy) The response message.
@@ -452,51 +491,51 @@ this taxonomy.
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:getIamPolicy',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:getIamPolicy',
         http_method=u'POST',
-        method_id=u'datapol.orgs.policyTaxonomies.getIamPolicy',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1alpha1/{+resource}:getIamPolicy',
         request_field=u'getIamPolicyRequest',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesGetIamPolicyRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      """Lists all taxonomies that an org owns.
+      """Lists all taxonomies in a taxonomy store.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesListRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListPolicyTaxonomiesResponse) The response message.
+        (ListDataTaxonomiesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies',
         http_method=u'GET',
-        method_id=u'datapol.orgs.policyTaxonomies.list',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/policyTaxonomies',
+        relative_path=u'v1alpha1/{+parent}/dataTaxonomies',
         request_field='',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesListRequest',
-        response_type_name=u'ListPolicyTaxonomiesResponse',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesListRequest',
+        response_type_name=u'ListDataTaxonomiesResponse',
         supports_download=False,
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """SetIamPolicy method for the orgs_policyTaxonomies service.
+      """SetIamPolicy method for the taxonomyStores_dataTaxonomies service.
 
       Args:
-        request: (DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest) input message
+        request: (DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Policy) The response message.
@@ -506,25 +545,79 @@ this taxonomy.
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:setIamPolicy',
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:setIamPolicy',
         http_method=u'POST',
-        method_id=u'datapol.orgs.policyTaxonomies.setIamPolicy',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.setIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1alpha1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatapolOrgsPolicyTaxonomiesSetIamPolicyRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
     )
 
-  class OrgsService(base_api.BaseApiService):
-    """Service class for the orgs resource."""
+  class TaxonomyStoresService(base_api.BaseApiService):
+    """Service class for the taxonomyStores resource."""
 
-    _NAME = u'orgs'
+    _NAME = u'taxonomyStores'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.OrgsService, self).__init__(client)
+      super(DatapolV1alpha1.TaxonomyStoresService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetIamPolicy(self, request, global_params=None):
+      """GetIamPolicy method for the taxonomyStores service.
+
+      Args:
+        request: (DatapolTaxonomyStoresGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'DatapolTaxonomyStoresGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """SetIamPolicy method for the taxonomyStores service.
+
+      Args:
+        request: (DatapolTaxonomyStoresSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'DatapolTaxonomyStoresSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )

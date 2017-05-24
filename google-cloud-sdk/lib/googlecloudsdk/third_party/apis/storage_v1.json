@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20170501",
+ "revision": "20170512",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -105,6 +105,16 @@
       "required": [
        "storage.buckets.update"
       ]
+     }
+    },
+    "billing": {
+     "type": "object",
+     "description": "The bucket's billing configuration.",
+     "properties": {
+      "requesterPays": {
+       "type": "boolean",
+       "description": "When set to true, bucket is requester pays."
+      }
      }
     },
     "cors": {
@@ -1060,6 +1070,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1088,6 +1103,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1113,6 +1133,11 @@
        "description": "Name of a bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1140,6 +1165,11 @@
        "description": "Name of a bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1170,6 +1200,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1204,6 +1239,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1247,6 +1287,11 @@
        "type": "string",
        "description": "If set, only deletes the bucket if its metageneration does not match this value.",
        "format": "int64",
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       }
      },
@@ -1295,6 +1340,11 @@
         "Omit owner, acl and defaultObjectAcl properties."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1322,6 +1372,11 @@
        "description": "Name of a bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1553,6 +1608,11 @@
         "Omit owner, acl and defaultObjectAcl properties."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1580,6 +1640,11 @@
        "description": "Name of a bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1614,6 +1679,11 @@
        "description": "Permissions to test.",
        "required": true,
        "repeated": true,
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       }
      },
@@ -1708,6 +1778,11 @@
         "Omit owner, acl and defaultObjectAcl properties."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1766,6 +1841,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1794,6 +1874,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1819,6 +1904,11 @@
        "description": "Name of a bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1858,6 +1948,11 @@
        "description": "If present, only return default ACL listing if the bucket's current metageneration does not match the given value.",
        "format": "int64",
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1888,6 +1983,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1922,6 +2022,11 @@
        "description": "The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1960,6 +2065,11 @@
        "description": "ID of the notification to delete.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -1989,6 +2099,11 @@
        "description": "Notification ID",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2017,6 +2132,11 @@
        "description": "The parent bucket of the notification.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2045,6 +2165,11 @@
        "description": "Name of a GCS bucket.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2094,6 +2219,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2135,6 +2265,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2173,6 +2308,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2213,6 +2353,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2256,6 +2401,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2303,6 +2453,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2374,6 +2529,11 @@
        "type": "string",
        "description": "Makes the operation conditional on whether the object's current metageneration matches the given value.",
        "format": "int64",
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       }
      },
@@ -2511,6 +2671,11 @@
        "description": "Name of the source object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2579,6 +2744,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2651,6 +2821,11 @@
         "Omit the owner, acl property."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2692,6 +2867,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2788,6 +2968,11 @@
         "Omit the owner, acl property."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -2868,6 +3053,11 @@
         "Include all properties.",
         "Omit the owner, acl property."
        ],
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       },
       "versions": {
@@ -2971,6 +3161,11 @@
         "Include all properties.",
         "Omit the owner, acl property."
        ],
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       }
      },
@@ -3117,6 +3312,11 @@
        "description": "Name of the source object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -3160,6 +3360,11 @@
        "description": "Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
        "required": true,
        "location": "path"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -3207,6 +3412,11 @@
        "description": "Permissions to test.",
        "required": true,
        "repeated": true,
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       }
      },
@@ -3307,6 +3517,11 @@
         "Omit the owner, acl property."
        ],
        "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -3371,6 +3586,11 @@
         "Include all properties.",
         "Omit the owner, acl property."
        ],
+       "location": "query"
+      },
+      "userProject": {
+       "type": "string",
+       "description": "The project number to be billed for this request, for Requester Pays buckets.",
        "location": "query"
       },
       "versions": {

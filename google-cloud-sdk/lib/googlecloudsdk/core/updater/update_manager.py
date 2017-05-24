@@ -706,26 +706,7 @@ version [{1}].  To clear your fixed version setting, run:
 
     original_update_seed = update_seed
     if update_seed:
-      invalid_seeds = diff.InvalidUpdateSeeds(update_seed)
-      if invalid_seeds:
-        if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
-          # We are doing a reinstall.  Ignore any components that no longer
-          # exist.
-          update_seed = set(update_seed) - invalid_seeds
-        else:
-          ignored = set(_IGNORED_MISSING_COMPONENTS)
-          deprecated = invalid_seeds & ignored
-          for item in deprecated:
-            log.warning('Component [%s] no longer exists.', item)
-            additional_msg = _IGNORED_MISSING_COMPONENTS.get(item)
-            if additional_msg:
-              log.warning(additional_msg)
-          invalid_seeds -= ignored
-          if invalid_seeds:
-            raise InvalidComponentError(
-                'The following components are unknown [{invalid_seeds}]'
-                .format(invalid_seeds=', '.join(invalid_seeds)))
-          update_seed = set(update_seed) - deprecated
+      update_seed = self._HandleInvalidUpdateSeeds(diff, version, update_seed)
     else:
       update_seed = diff.current.components.keys()
 
@@ -858,6 +839,64 @@ To revert your SDK to the previously installed version, you may run:
   """.format('\n'.join(duplicate_commands)))
 
     return True
+
+  def _HandleInvalidUpdateSeeds(self, diff, version, update_seed):
+    """Checks that the update seeds are valid components.
+
+    Args:
+      diff: The ComponentSnapshotDiff.
+      version: str, The SDK version if in install mode or None if in update
+        mode.
+      update_seed: [str], A list of component ids to update.
+
+    Raises:
+      InvalidComponentError: If any of the given component ids do not exist.
+
+    Returns:
+      [str], The update seeds that should be used for the install/update.
+    """
+    invalid_seeds = diff.InvalidUpdateSeeds(update_seed)
+    if not invalid_seeds:
+      return update_seed
+
+    if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+      # We are doing a reinstall.  Ignore any components that no longer
+      # exist.
+      return set(update_seed) - invalid_seeds
+
+    ignored = set(_IGNORED_MISSING_COMPONENTS)
+    deprecated = invalid_seeds & ignored
+    for item in deprecated:
+      log.warning('Component [%s] no longer exists.', item)
+      additional_msg = _IGNORED_MISSING_COMPONENTS.get(item)
+      if additional_msg:
+        log.warning(additional_msg)
+    invalid_seeds -= ignored
+
+    if invalid_seeds:
+      completely_invalid_seeds = invalid_seeds
+      update_required_seeds = set()
+      if version:
+        # We are doing an install vs an update. It is possible that the given
+        # components exist but were just not available for my SDK version. Check
+        # against the latest snapshot just to see if they are there now.
+        _, latest_diff = self._GetStateAndDiff(
+            command_path='components.update')
+        completely_invalid_seeds = latest_diff.InvalidUpdateSeeds(invalid_seeds)
+        update_required_seeds = invalid_seeds - completely_invalid_seeds
+
+      msgs = []
+      if completely_invalid_seeds:
+        msgs.append('The following components are unknown [{}].'
+                    .format(', '.join(completely_invalid_seeds)))
+      if update_required_seeds:
+        msgs.append('The following components are not available for your '
+                    'current SDK version [{}]. Please run `gcloud components '
+                    'update` to update your SDK.'
+                    .format(', '.join(update_required_seeds)))
+      raise InvalidComponentError(' '.join(msgs))
+
+    return set(update_seed) - deprecated
 
   def _FindToolsOnPath(self, path=None, duplicates=True, old=True):
     """Helper function to find commands matching SDK bin dir on the path."""

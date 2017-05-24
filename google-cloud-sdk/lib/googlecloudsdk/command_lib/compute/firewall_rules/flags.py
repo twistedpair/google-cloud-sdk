@@ -46,6 +46,26 @@ table(
                     targetTags.list():label=TARGET_TAGS
                 )"""
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      network.basename(),
+      sourceRanges.list():label=SRC_RANGES,
+      allowed[].map().firewall_rule().list():label=RULES,
+      sourceTags.list():label=SRC_TAGS,
+      targetTags.list():label=TARGET_TAGS
+    )"""
+
+DEFAULT_ALPHA_LIST_FORMAT = """\
+    table(
+      name,
+      network.basename(),
+      direction,
+      priority,
+      allowed[].map().firewall_rule().list():label=ALLOW,
+      denied[].map().firewall_rule().list():label=DENY
+    )"""
+
 LIST_NOTICE = """\
 To show all fields of the firewall, please show in JSON format: --format=json
 To show all fields in table format, please see the examples in --help.

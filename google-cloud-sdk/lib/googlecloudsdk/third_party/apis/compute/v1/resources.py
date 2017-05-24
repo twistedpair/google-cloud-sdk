@@ -155,6 +155,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'network']
   )
+  NEXTHOPGATEWAYS = (
+      'nextHopGateways',
+      'projects/{project}/global/gateways/{nextHopGateway}',
+      {},
+      ['project', 'nextHopGateway']
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',
@@ -257,6 +263,12 @@ class Collections(enum.Enum):
       'projects/{project}/global/targetSslProxies/{targetSslProxy}',
       {},
       [u'project', u'targetSslProxy']
+  )
+  TARGETTCPPROXIES = (
+      'targetTcpProxies',
+      'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+      {},
+      [u'project', u'targetTcpProxy']
   )
   TARGETVPNGATEWAYS = (
       'targetVpnGateways',

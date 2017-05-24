@@ -171,8 +171,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -276,20 +276,49 @@ class BuildProvenance(_messages.Message):
 class BuildSignature(_messages.Message):
   """Message encapsulating signature of the verified build
 
+  Enums:
+    KeyTypeValueValuesEnum: The type of the key, either stored in `public_key`
+      or referenced in `key_id`
+
   Fields:
+    keyId: An ID for the key used to sign.  This could be either an ID for the
+      key stored in `public_key` (e.g., the ID or fingerprint for a PGP key,
+      or the CN for a cert), or a reference to an external key (e.g., a
+      reference to a key in Cloud KMS).
+    keyType: The type of the key, either stored in `public_key` or referenced
+      in `key_id`
     publicKey: Public key of the builder which can be used to verify that
-      related Findings are valid and unchanged. To verify the signature, place
-      the contents of this field into a file (public.pem). The signature field
-      is base64-decoded into its binary representation in signature.bin, and
-      the provenance bytes from BuildDetails are base64-decoded into a binary
-      representation in signed.bin. Openssl can then verify the signature:
-      'openssl sha256 -verify public.pem -signature signature.bin signed.bin'
+      related Findings are valid and unchanged.  If `key_type` is empty this
+      defaults to PEM encoded public keys.  This field may be empty if
+      `key_id` references an external key.  For Cloud Container Builder based
+      signatures this is a PEM encoded public key. To verify the Cloud
+      Container Builder signature, place the contents of this field into a
+      file (public.pem). The signature field is base64-decoded into its binary
+      representation in signature.bin, and the provenance bytes from
+      BuildDetails are base64-decoded into a binary representation in
+      signed.bin. OpenSSL can then verify the signature: `openssl sha256
+      -verify public.pem -signature signature.bin signed.bin`
     signature: Signature of the related BuildProvenance, encoded in a base64
       string.
   """
 
-  publicKey = _messages.StringField(1)
-  signature = _messages.StringField(2)
+  class KeyTypeValueValuesEnum(_messages.Enum):
+    """The type of the key, either stored in `public_key` or referenced in
+    `key_id`
+
+    Values:
+      UNSET: KeyType is not set.
+      PGP_ASCII_ARMORED: PGP ASCII Armored public key.
+      PKIX_PEM: PKIX PEM public key.
+    """
+    UNSET = 0
+    PGP_ASCII_ARMORED = 1
+    PKIX_PEM = 2
+
+  keyId = _messages.StringField(1)
+  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 2)
+  publicKey = _messages.StringField(3)
+  signature = _messages.StringField(4)
 
 
 class BuildType(_messages.Message):
@@ -307,7 +336,29 @@ class BuildType(_messages.Message):
 
 
 class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class CloudRepoSourceContext(_messages.Message):

@@ -22,11 +22,29 @@ BASE_URL = 'https://logging.googleapis.com/v1beta3/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
+  PROJECTS_LOGSERVICES = (
+      'projects.logServices',
+      'projects/{projectsId}/logServices/{logServicesId}',
+      {},
+      [u'projectsId', u'logServicesId']
+  )
   PROJECTS_LOGSERVICES_SINKS = (
       'projects.logServices.sinks',
       'projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}',
       {},
       [u'projectsId', u'logServicesId', u'sinksId']
+  )
+  PROJECTS_LOGS = (
+      'projects.logs',
+      'projects/{projectsId}/logs/{logsId}',
+      {},
+      [u'projectsId', u'logsId']
   )
   PROJECTS_LOGS_SINKS = (
       'projects.logs.sinks',

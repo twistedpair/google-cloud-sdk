@@ -17,9 +17,10 @@ The print_format string passed to resource_printer.Print() is determined in this
 order:
  (1) Display disabled and resources not consumed if user output is disabled.
  (2) The explicit --format flag format string.
- (3) The explicit Display() method.
- (4) The Format() string.
- (5) Otherwise no output but the resources are consumed.
+ (3) The DisplayInfo format from the parser.
+ (4) The explicit Display() method.
+ (5) The DeprecatedFormat() string.
+ (6) Otherwise no output but the resources are consumed.
 
 Format expressions are left-to-right composable. Each format expression is a
 string tuple
@@ -286,7 +287,7 @@ class Displayer(object):
       return self._format
     if hasattr(self._command, 'Display'):
       return ''
-    return self._command.Format(self._args)
+    return self._command.DeprecatedFormat(self._args)
 
   def GetFormat(self):
     """Determines the display format.

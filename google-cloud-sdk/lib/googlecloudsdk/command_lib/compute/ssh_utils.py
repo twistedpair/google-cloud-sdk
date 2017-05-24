@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 
 # The maximum amount of time to wait for a newly-added SSH key to
@@ -189,10 +190,12 @@ def _PrepareSSHKeysValue(ssh_keys):
   for key in reversed(ssh_keys):
     num_bytes = len(key + '\n')
     if bytes_consumed + num_bytes > constants.MAX_METADATA_VALUE_SIZE_IN_BYTES:
-      log.warn('The following SSH key will be removed from your project '
-               'because your sshKeys metadata value has reached its '
-               'maximum allowed size of {0} bytes: {1}'
-               .format(constants.MAX_METADATA_VALUE_SIZE_IN_BYTES, key))
+      prompt_message = ('The following SSH key will be removed from your '
+                        'project because your sshKeys metadata value has '
+                        'reached its maximum allowed size of {0} bytes: {1}')
+      prompt_message = prompt_message.format(
+          constants.MAX_METADATA_VALUE_SIZE_IN_BYTES, key)
+      console_io.PromptContinue(message=prompt_message, cancel_on_no=True)
     else:
       keys.append(key)
       bytes_consumed += num_bytes
@@ -699,38 +702,3 @@ def GetUserAndInstance(user_host, use_account_service, http):
   raise exceptions.ToolException(
       'Expected argument of the form [USER@]INSTANCE; received [{0}].'
       .format(user_host))
-
-
-def GetRemoteCommand(container, command):
-  """Assemble the remote command list given user-supplied args.
-
-  If a container argument is supplied, we should run
-  `container_exec <container-name> <command>`.
-
-  Args:
-    container: str or None, name of container to enter during connection.
-    command: str or None, the remote command to execute.
-
-  Returns:
-    [str] or None, Remote command to run or None if no command.
-  """
-  if container:
-    # The `/bin/sh` call makes conatiner_exec listen to commands.
-    return ['container_exec', container, command or '/bin/sh']
-  if command:
-    return [command]
-  return None
-
-
-def GetTty(container, command):
-  """Determine the ssh command should be run in a TTY or not.
-
-  Args:
-    container: str or None, name of container to enter during connection.
-    command: str or None, the remote command to execute.
-
-  Returns:
-    Bool or None, whether to enforce TTY or not, or None if "auto".
-  """
-  return True if container and not command else None
-

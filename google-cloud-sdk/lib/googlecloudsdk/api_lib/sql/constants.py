@@ -17,10 +17,7 @@
 DEFAULT_MACHINE_TYPE = 'D1'
 
 # Determining what executables and flags to use for sql connect.
-DB_EXE = {
-    'MYSQL': 'mysql',
-    'POSTGRES': 'psql'
-}
+DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}
 
 EXE_FLAGS = {
     'mysql': {

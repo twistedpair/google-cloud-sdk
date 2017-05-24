@@ -122,105 +122,13 @@
     }
   },
   "schemas": {
-    "PolicyTaxonomy": {
-      "id": "PolicyTaxonomy",
-      "description": "A taxonomy in DataPolicy API. A taxonomy is a set of data types of business\nsignificance, typically associated with the substance of the data (e.g.\ncredit card, SSN), or how it is used (e.g. account name, user ID). There are\nthree IAM roles on each taxonomy:\n  - role\/administrator: use all service APIs above.\n  - role\/annotator: use all APIs in service DataPolicyAnnotationTagging, and\n      Get* APIs in service DataPolicyTaxonomy and DataPolicyAnnotation.\n  - role\/reader: use Get* and List* APIs.\nWhen a PolicyTaxonomy is created, the API caller will be added to each of\nthose IAM roles above..",
+    "TaxonomyStore": {
+      "id": "TaxonomyStore",
+      "description": "A taxonomy store keeps a collection of data taxonomies. Each organization or\neach project that does not belong to any organization can have at most one\ntaxonomy store.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the datapol taxonomy, which has the format of\n\"orgs\/{org_id}\/policyTaxonomies\/{taxonomy_name}\".",
-          "type": "string"
-        },
-        "orgId": {
-          "description": "Id of the cloud organization that this taxonomy belongs to. If the project\ndoes not have an organization ID, use the \"project:project_id\" instead, and\nthe scope of the defined taxonomy is limited to this project only.",
-          "type": "string"
-        },
-        "taxonomyName": {
-          "description": "Name of the taxonomy. Should be no more than 100 characters with only\nletters, numbers, -, and _.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description of the datapol taxonomy. Length of the description is limited\nto 1000 characters.",
-          "type": "string"
-        }
-      }
-    },
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "ListPolicyTaxonomiesResponse": {
-      "id": "ListPolicyTaxonomiesResponse",
-      "description": "Response message for \"DataPolicyTaxonomy.ListPolicyTaxonomies\".",
-      "type": "object",
-      "properties": {
-        "taxonomies": {
-          "description": "Taxonomies that the org owns.",
-          "type": "array",
-          "items": {
-            "$ref": "PolicyTaxonomy"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "description": "Resource name of the taxonomy store, which has the format of\n\"taxonomyStores\/{store_id}\".",
           "type": "string"
         }
       }
@@ -284,7 +192,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -539,6 +447,20 @@
       "description": "Write a Cloud Audit log",
       "type": "object",
       "properties": {
+        "logName": {
+          "description": "The log_name to populate in the Cloud Audit Record.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_LOG_NAME",
+            "ADMIN_ACTIVITY",
+            "DATA_ACCESS"
+          ]
+        }
       }
     },
     "SetIamPolicyRequest": {
@@ -557,13 +479,112 @@
         }
       }
     },
-    "Annotation": {
-      "id": "Annotation",
-      "description": "An annotation in Data Policy API. An annotation is one data type in a policy\ntaxonomy (e.g. ssn). Annotations can be defined in a hierarchy for at most\ntwo levels.\nFor example, consider the following hierachy:\n              Geolocation\n                   |\n  ------------------------------------\n  |                |                 |\nLatLong          City              ZipCode\nAnnotation \"Geolocation\" contains three child annotations: \"LatLong\",\n\"City\", and \"ZipCode\".",
+    "DataTaxonomy": {
+      "id": "DataTaxonomy",
+      "description": "A taxonomy is a set of data types of business significance, typically\nassociated with the substance of the data (e.g. credit card, SSN), or how it\nis used (e.g. account name, user ID).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the annotation, which has the format of\n\"orgs\/{org_id}\/policyTaxonomies\/{taxonomy_name}\/annotations\/{annotation_name}\".",
+          "description": "Resource name of the datapol taxonomy, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\".",
+          "type": "string"
+        },
+        "taxonomyName": {
+          "description": "Name of the taxonomy. Should be no more than 100 characters with only\nletters, numbers, -, and _.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the datapol taxonomy. Length of the description is limited\nto 1000 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "ListDataTaxonomiesResponse": {
+      "id": "ListDataTaxonomiesResponse",
+      "description": "Response message for \"DataTaxonomyService.ListDataTaxonomies\".",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Taxonomies that the taxonomy store contains.",
+          "type": "array",
+          "items": {
+            "$ref": "DataTaxonomy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "id": "Annotation",
+      "description": "An annotation is one data type in a data taxonomy (e.g. ssn). Annotations can\nbe defined in a hierarchy.\nFor example, consider the following hierachy:\n              Geolocation\n                   |\n  ------------------------------------\n  |                |                 |\nLatLong          City              ZipCode\nAnnotation \"Geolocation\" contains three child annotations: \"LatLong\",\n\"City\", and \"ZipCode\".",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of the annotation, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\/annotations\/{annotation_name}\".",
           "type": "string"
         },
         "annotationName": {
@@ -589,7 +610,7 @@
     },
     "UpdateAnnotationRequest": {
       "id": "UpdateAnnotationRequest",
-      "description": "Request message for \"DataPolicyAnnotation.UpdateAnnotation\".",
+      "description": "Request message for \"DataAnnotation.UpdateAnnotation\".",
       "type": "object",
       "properties": {
         "description": {
@@ -600,7 +621,7 @@
     },
     "ListAnnotationsResponse": {
       "id": "ListAnnotationsResponse",
-      "description": "Response message for \"DataPolicyAnnotation.ListAnnotations\".",
+      "description": "Response message for \"DataAnnotation.ListAnnotations\".",
       "type": "object",
       "properties": {
         "annotations": {
@@ -618,11 +639,11 @@
     },
     "ApplyAnnotationTagRequest": {
       "id": "ApplyAnnotationTagRequest",
-      "description": "Request message for \"DataPolicyAnnotationTagging.ApplyAnnotationTag\".",
+      "description": "Request message for \"DataAnnotationTagging.ApplyAnnotationTag\".",
       "type": "object",
       "properties": {
         "annotationName": {
-          "description": "[Required] Name of the annotation tag. The annotation must be a valid\nannotation defined in the data policy taxonomy that is specified in the\nresource name.",
+          "description": "[Required] Name of the annotation tag. The annotation must be a valid\nannotation defined in the data taxonomy that is specified in the\nresource name.",
           "type": "string"
         }
       }
@@ -633,7 +654,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the annotation tag, which has the format of\n\"data\/{resource_name_of_the_data}\/orgs\/{org_id}\/policyTaxonomies\/{taxonomy_name}\/annotationTag\"\nResouce name of the data asset should be RFC3986 escaped.",
+          "description": "Resource name of the annotation tag, which has the format of\n\"data\/{resource_name_of_the_data}\/taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\/annotationTag\"\nResouce name of the data asset should be RFC3986 escaped.",
           "type": "string"
         },
         "annotationName": {
@@ -651,7 +672,7 @@
     },
     "ListAnnotationTagsResponse": {
       "id": "ListAnnotationTagsResponse",
-      "description": "Response message for \"DataPolicyAnnotationTagging.ListAnnotationTags\".",
+      "description": "Response message for \"DataAnnotationTagging.ListAnnotationTags\".",
       "type": "object",
       "properties": {
         "tags": {
@@ -669,7 +690,7 @@
     },
     "ListAssetsResponse": {
       "id": "ListAssetsResponse",
-      "description": "Response message for \"DataPolicyAnnotationTagging.ListAssets\".\nNext tag: 4",
+      "description": "Response message for \"DataAnnotationTagging.ListAssets\".\nNext tag: 4",
       "type": "object",
       "properties": {
         "dataAssets": {
@@ -735,22 +756,113 @@
     }
   },
   "resources": {
-    "orgs": {
+    "projects": {
+      "methods": {
+        "getDefaultTaxonomyStore": {
+          "id": "datapol.projects.getDefaultTaxonomyStore",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/projects/{projectsId}/defaultTaxonomyStore",
+          "httpMethod": "GET",
+          "description": "Search for the taxonomy store for the given project.",
+          "parameters": {
+            "name": {
+              "description": "[Required] Resource name of the taxonomy store.",
+              "location": "path",
+              "required": true,
+              "pattern": "^projects\/[^\/]+\/defaultTaxonomyStore$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "TaxonomyStore"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        }
+      }
+    },
+    "taxonomyStores": {
+      "methods": {
+        "getIamPolicy": {
+          "id": "datapol.taxonomyStores.getIamPolicy",
+          "path": "v1alpha1/{+resource}:getIamPolicy",
+          "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:getIamPolicy",
+          "httpMethod": "POST",
+          "description": "",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^taxonomyStores\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "GetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        },
+        "setIamPolicy": {
+          "id": "datapol.taxonomyStores.setIamPolicy",
+          "path": "v1alpha1/{+resource}:setIamPolicy",
+          "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:setIamPolicy",
+          "httpMethod": "POST",
+          "description": "",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^taxonomyStores\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "SetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        }
+      }
+      ,
       "resources": {
-        "policyTaxonomies": {
+        "dataTaxonomies": {
           "methods": {
             "create": {
-              "id": "datapol.orgs.policyTaxonomies.create",
-              "path": "v1alpha1/{+parent}/policyTaxonomies",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies",
+              "id": "datapol.taxonomyStores.dataTaxonomies.create",
+              "path": "v1alpha1/{+parent}/dataTaxonomies",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies",
               "httpMethod": "POST",
-              "description": "Creates a new data policy taxonomy.",
+              "description": "Creates a new data taxonomy in a given taxonomy store.",
               "parameters": {
                 "parent": {
-                  "description": "[Required] Resource name of the organization that the newly created\ntaxonomy belongs to.",
+                  "description": "[Required] Resource name of the taxonomy store that the newly created\ntaxonomy belongs to.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -758,10 +870,10 @@
                 "parent"
               ],
               "request": {
-                "$ref": "PolicyTaxonomy"
+                "$ref": "DataTaxonomy"
               },
               "response": {
-                "$ref": "PolicyTaxonomy"
+                "$ref": "DataTaxonomy"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
@@ -769,17 +881,17 @@
               ]
             },
             "delete": {
-              "id": "datapol.orgs.policyTaxonomies.delete",
+              "id": "datapol.taxonomyStores.dataTaxonomies.delete",
               "path": "v1alpha1/{+name}",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a taxonomy. This operation will also delete all annotations in\nthis taxonomy.",
+              "description": "Deletes a taxonomy from a taxonomy store. This operation will also delete\nall annotations in this taxonomy.",
               "parameters": {
                 "name": {
                   "description": "[Required] Resource name of the taxonomy to be deleted.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -795,9 +907,9 @@
               ]
             },
             "get": {
-              "id": "datapol.orgs.policyTaxonomies.get",
+              "id": "datapol.taxonomyStores.dataTaxonomies.get",
               "path": "v1alpha1/{+name}",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}",
               "httpMethod": "GET",
               "description": "Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.",
               "parameters": {
@@ -805,7 +917,7 @@
                   "description": "[Required] Resource name of the taxonomy to be returned.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -813,7 +925,7 @@
                 "name"
               ],
               "response": {
-                "$ref": "PolicyTaxonomy"
+                "$ref": "DataTaxonomy"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
@@ -821,17 +933,17 @@
               ]
             },
             "list": {
-              "id": "datapol.orgs.policyTaxonomies.list",
-              "path": "v1alpha1/{+parent}/policyTaxonomies",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies",
+              "id": "datapol.taxonomyStores.dataTaxonomies.list",
+              "path": "v1alpha1/{+parent}/dataTaxonomies",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies",
               "httpMethod": "GET",
-              "description": "Lists all taxonomies that an org owns.",
+              "description": "Lists all taxonomies in a taxonomy store.",
               "parameters": {
                 "parent": {
-                  "description": "[Required] Resource name of a org.",
+                  "description": "[Required] Resource name of a taxonomy store.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -850,7 +962,7 @@
                 "parent"
               ],
               "response": {
-                "$ref": "ListPolicyTaxonomiesResponse"
+                "$ref": "ListDataTaxonomiesResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
@@ -858,9 +970,9 @@
               ]
             },
             "getIamPolicy": {
-              "id": "datapol.orgs.policyTaxonomies.getIamPolicy",
+              "id": "datapol.taxonomyStores.dataTaxonomies.getIamPolicy",
               "path": "v1alpha1/{+resource}:getIamPolicy",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:getIamPolicy",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:getIamPolicy",
               "httpMethod": "POST",
               "description": "",
               "parameters": {
@@ -868,7 +980,7 @@
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -887,9 +999,9 @@
               ]
             },
             "setIamPolicy": {
-              "id": "datapol.orgs.policyTaxonomies.setIamPolicy",
+              "id": "datapol.taxonomyStores.dataTaxonomies.setIamPolicy",
               "path": "v1alpha1/{+resource}:setIamPolicy",
-              "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:setIamPolicy",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:setIamPolicy",
               "httpMethod": "POST",
               "description": "",
               "parameters": {
@@ -897,7 +1009,7 @@
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -921,9 +1033,9 @@
             "annotations": {
               "methods": {
                 "create": {
-                  "id": "datapol.orgs.policyTaxonomies.annotations.create",
+                  "id": "datapol.taxonomyStores.dataTaxonomies.annotations.create",
                   "path": "v1alpha1/{+parent}/annotations",
-                  "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations",
+                  "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations",
                   "httpMethod": "POST",
                   "description": "Creates an annotation in a taxonomy.",
                   "parameters": {
@@ -931,7 +1043,7 @@
                       "description": "[Required] Resource name of the taxonomy that the newly created annotation\nbelongs to.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                      "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -950,9 +1062,9 @@
                   ]
                 },
                 "patch": {
-                  "id": "datapol.orgs.policyTaxonomies.annotations.patch",
+                  "id": "datapol.taxonomyStores.dataTaxonomies.annotations.patch",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}",
+                  "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "PATCH",
                   "description": "Updates description of an annotation.",
                   "parameters": {
@@ -960,7 +1072,7 @@
                       "description": "[Required] Resource name of the annotation to be updated.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
+                      "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -979,9 +1091,9 @@
                   ]
                 },
                 "delete": {
-                  "id": "datapol.orgs.policyTaxonomies.annotations.delete",
+                  "id": "datapol.taxonomyStores.dataTaxonomies.annotations.delete",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}",
+                  "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes an annotation. Also deletes all member annotations if the given\nannotation is a group annotation.",
                   "parameters": {
@@ -989,7 +1101,7 @@
                       "description": "[Required] Resource name of the annotation to be deleted.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
+                      "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1005,9 +1117,9 @@
                   ]
                 },
                 "get": {
-                  "id": "datapol.orgs.policyTaxonomies.annotations.get",
+                  "id": "datapol.taxonomyStores.dataTaxonomies.annotations.get",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations/{annotationsId}",
+                  "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "GET",
                   "description": "Gets definition of an annotation.",
                   "parameters": {
@@ -1015,7 +1127,7 @@
                       "description": "[Required] Resource name of the annotation to be returned.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
+                      "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1031,9 +1143,9 @@
                   ]
                 },
                 "list": {
-                  "id": "datapol.orgs.policyTaxonomies.annotations.list",
+                  "id": "datapol.taxonomyStores.dataTaxonomies.annotations.list",
                   "path": "v1alpha1/{+parent}/annotations",
-                  "flatPath": "v1alpha1/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotations",
+                  "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations",
                   "httpMethod": "GET",
                   "description": "Lists all annotations in a taxonomy.",
                   "parameters": {
@@ -1041,7 +1153,7 @@
                       "description": "[Required] Resource name of a taxonomy.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                      "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1075,14 +1187,14 @@
     },
     "data": {
       "resources": {
-        "orgs": {
+        "taxonomyStores": {
           "resources": {
-            "policyTaxonomies": {
+            "dataTaxonomies": {
               "methods": {
                 "applyAnnotationTag": {
-                  "id": "datapol.data.orgs.policyTaxonomies.applyAnnotationTag",
+                  "id": "datapol.data.taxonomyStores.dataTaxonomies.applyAnnotationTag",
                   "path": "v1alpha1/{+name}:applyAnnotationTag",
-                  "flatPath": "v1alpha1/data/{dataId}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}:applyAnnotationTag",
+                  "flatPath": "v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:applyAnnotationTag",
                   "httpMethod": "POST",
                   "description": "Applies an annotation tag on a cloud data set.",
                   "parameters": {
@@ -1090,7 +1202,7 @@
                       "description": "[Required] Resource name of the tag to be updated.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^data\/[^\/]+\/orgs\/[^\/]+\/policyTaxonomies\/[^\/]+$",
+                      "pattern": "^data\/[^\/]+\/taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1109,9 +1221,9 @@
                   ]
                 },
                 "deleteAnnotationTag": {
-                  "id": "datapol.data.orgs.policyTaxonomies.deleteAnnotationTag",
+                  "id": "datapol.data.taxonomyStores.dataTaxonomies.deleteAnnotationTag",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/data/{dataId}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/annotationTag",
+                  "flatPath": "v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotationTag",
                   "httpMethod": "DELETE",
                   "description": "Deletes an annotation tag from a cloud data set.",
                   "parameters": {
@@ -1119,7 +1231,7 @@
                       "description": "[Required] Resource name of the tag to be deleted.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^data\/[^\/]+\/orgs\/[^\/]+\/policyTaxonomies\/[^\/]+\/annotationTag$",
+                      "pattern": "^data\/[^\/]+\/taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotationTag$",
                       "type": "string"
                     }
                   },
@@ -1139,17 +1251,17 @@
             "annotationTags": {
               "methods": {
                 "list": {
-                  "id": "datapol.data.orgs.annotationTags.list",
+                  "id": "datapol.data.taxonomyStores.annotationTags.list",
                   "path": "v1alpha1/{+parent}/annotationTags",
-                  "flatPath": "v1alpha1/data/{dataId}/orgs/{orgsId}/annotationTags",
+                  "flatPath": "v1alpha1/data/{dataId}/taxonomyStores/{taxonomyStoresId}/annotationTags",
                   "httpMethod": "GET",
-                  "description": "Lists all visible annotation tags on a cloud data set.",
+                  "description": "Lists all visible annotation tags from a taxonomy store that are applied on\na cloud data set.",
                   "parameters": {
                     "parent": {
                       "description": "[Required] Resource name of the data asset.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^data\/[^\/]+\/orgs\/[^\/]+$",
+                      "pattern": "^data\/[^\/]+\/taxonomyStores\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {

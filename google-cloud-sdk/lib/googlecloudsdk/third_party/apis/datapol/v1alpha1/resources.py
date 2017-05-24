@@ -24,39 +24,41 @@ class Collections(enum.Enum):
 
   DATA_TAG = (
       'data.tag',
-      'data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/'
-      'annotationTag',
+      'data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/'
+      '{dataTaxonomiesId}/annotationTag',
       {},
-      ['data', 'orgsId', 'policyTaxonomiesId']
+      ['data', 'taxonomyStoresId', 'dataTaxonomiesId']
   )
   DATA_TAXONOMY = (
       'data.taxonomy',
-      'data/{data}/orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}',
+      'data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/'
+      '{dataTaxonomiesId}',
       {},
-      ['data', 'orgsId', 'policyTaxonomiesId']
+      ['data', 'taxonomyStoresId', 'dataTaxonomiesId']
   )
-  ORG = (
-      'org',
-      'orgs/{orgsId}',
+  TAXONOMYSTORES = (
+      'taxonomyStores',
+      'taxonomyStores/{taxonomyStoresId}',
       {},
-      ['orgsId']
+      [u'taxonomyStoresId']
   )
-  ORGS_POLICYTAXONOMIES = (
-      'orgs.policyTaxonomies',
+  TAXONOMYSTORES_DATATAXONOMIES = (
+      'taxonomyStores.dataTaxonomies',
       '{+name}',
       {
           '':
-              'orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}',
+              'taxonomyStores/{taxonomyStoresId}/dataTaxonomies/'
+              '{dataTaxonomiesId}',
       },
       [u'name']
   )
-  ORGS_POLICYTAXONOMIES_ANNOTATIONS = (
-      'orgs.policyTaxonomies.annotations',
+  TAXONOMYSTORES_DATATAXONOMIES_ANNOTATIONS = (
+      'taxonomyStores.dataTaxonomies.annotations',
       '{+name}',
       {
           '':
-              'orgs/{orgsId}/policyTaxonomies/{policyTaxonomiesId}/'
-              'annotations/{annotationsId}',
+              'taxonomyStores/{taxonomyStoresId}/dataTaxonomies/'
+              '{dataTaxonomiesId}/annotations/{annotationsId}',
       },
       [u'name']
   )

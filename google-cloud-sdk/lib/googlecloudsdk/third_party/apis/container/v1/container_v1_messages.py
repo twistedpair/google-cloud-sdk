@@ -12,6 +12,19 @@ from apitools.base.py import encoding
 package = 'container'
 
 
+class AcceleratorConfig(_messages.Message):
+  """AcceleratorConfig represents a Hardware Accelerator request.
+
+  Fields:
+    count: The number of the accelerator cards exposed to an instance.
+    type: The accelerator type resource name. List of supported accelerators
+      [here](/compute/docs/gpus/#Introduction)
+  """
+
+  count = _messages.IntegerField(1)
+  type = _messages.StringField(2)
+
+
 class AddonsConfig(_messages.Message):
   """Configuration for the addons that can be automatically spun up in the
   cluster, enabling additional functionality.
@@ -258,7 +271,7 @@ class Cluster(_messages.Message):
 
   Messages:
     ResourceLabelsValue: The resource labels for the cluster to use to
-      annotate any related GCE resources.
+      annotate any related Google Compute Engine resources.
 
   Fields:
     addonsConfig: Configurations for the various addons available to run in
@@ -344,7 +357,7 @@ class Cluster(_messages.Message):
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     resourceLabels: The resource labels for the cluster to use to annotate any
-      related GCE resources.
+      related Google Compute Engine resources.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -385,8 +398,8 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):
-    """The resource labels for the cluster to use to annotate any related GCE
-    resources.
+    """The resource labels for the cluster to use to annotate any related
+    Google Compute Engine resources.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceLabelsValue
@@ -1272,7 +1285,7 @@ class MasterAuthorizedNetworks(_messages.Message):
   """Configuration options for the master authorized networks feature. Enabled
   master authorized networks will disallow all external traffic to access
   Kubernetes master through HTTPS except traffic from the given CIDR blocks,
-  GCE Public IPs and Google Prod IPs.
+  Google Compute Engine Public IPs and Google Prod IPs.
 
   Fields:
     cidrs: Network CIDRs define up to 10 external networks that could access
@@ -1307,6 +1320,9 @@ class NodeConfig(_messages.Message):
       32 KB.  The total size of all keys and values must be less than 512 KB.
 
   Fields:
+    accelerators: A list of hardware accelerators to be attached to each node.
+      See https://cloud.google.com/compute/docs/gpus for more information
+      about support for GPUs.
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
@@ -1349,7 +1365,7 @@ class NodeConfig(_messages.Message):
       required scopes will be added.
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
-      more inforamtion about preemptible VM instances.
+      more information about preemptible VM instances.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
@@ -1422,16 +1438,17 @@ class NodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  imageType = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  localSsdCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(5)
-  metadata = _messages.MessageField('MetadataValue', 6)
-  oauthScopes = _messages.StringField(7, repeated=True)
-  preemptible = _messages.BooleanField(8)
-  serviceAccount = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
+  accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
+  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  imageType = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  localSsdCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(6)
+  metadata = _messages.MessageField('MetadataValue', 7)
+  oauthScopes = _messages.StringField(8, repeated=True)
+  preemptible = _messages.BooleanField(9)
+  serviceAccount = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
 
 
 class NodeManagement(_messages.Message):

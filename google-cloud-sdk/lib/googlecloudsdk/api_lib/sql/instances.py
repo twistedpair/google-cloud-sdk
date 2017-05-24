@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utility functions for sql instances."""
 
 import argparse
@@ -29,12 +28,11 @@ class _BaseInstances(object):
   def _SetBackupConfiguration(cls, sql_messages, settings, args, original):
     """Sets the backup configuration for the instance."""
     # create defines '--backup' while patch defines '--no-backup'
-    no_backup = getattr(args, 'no_backup', False) or (
-        not getattr(args, 'backup', True))
+    no_backup = getattr(args, 'no_backup',
+                        False) or (not getattr(args, 'backup', True))
 
-    if original and (
-        any([args.backup_start_time, args.enable_bin_log is not None,
-             no_backup])):
+    if original and (any(
+        [args.backup_start_time, args.enable_bin_log is not None, no_backup])):
       if original.settings.backupConfiguration:
         if isinstance(original.settings.backupConfiguration, list):
           # Only one backup configuration was ever allowed.
@@ -44,16 +42,14 @@ class _BaseInstances(object):
           backup_config = original.settings.backupConfiguration
       else:
         backup_config = sql_messages.BackupConfiguration(
-            startTime='00:00',
-            enabled=False),
-    elif not any([args.backup_start_time, args.enable_bin_log is not None,
-                  no_backup]):
+            startTime='00:00', enabled=False),
+    elif not any(
+        [args.backup_start_time, args.enable_bin_log is not None, no_backup]):
       return
 
     if not original:
       backup_config = sql_messages.BackupConfiguration(
-          startTime='00:00',
-          enabled=False)
+          startTime='00:00', enabled=False)
 
     if args.backup_start_time:
       backup_config.startTime = args.backup_start_time
@@ -75,9 +71,8 @@ class _BaseInstances(object):
     if args.database_flags:
       settings.databaseFlags = []
       for (name, value) in args.database_flags.items():
-        settings.databaseFlags.append(sql_messages.DatabaseFlags(
-            name=name,
-            value=value))
+        settings.databaseFlags.append(
+            sql_messages.DatabaseFlags(name=name, value=value))
     elif getattr(args, 'clear_database_flags', False):
       settings.databaseFlags = []
 
@@ -98,8 +93,7 @@ class _BaseInstances(object):
       if ((day is None and hour is not None) or
           (hour is None and day is not None)):
         raise argparse.ArgumentError(
-            None,
-            'There is currently no maintenance window on the instance. '
+            None, 'There is currently no maintenance window on the instance. '
             'To add one, specify values for both day, and hour.')
 
     if channel:
@@ -150,8 +144,10 @@ class _BaseInstances(object):
     elif clear_gae_apps:
       settings.authorizedGaeApplications = []
 
-    if any([args.assign_ip is not None, args.require_ssl is not None,
-            args.authorized_networks, clear_authorized_networks]):
+    if any([
+        args.assign_ip is not None, args.require_ssl is not None,
+        args.authorized_networks, clear_authorized_networks
+    ]):
       settings.ipConfiguration = sql_messages.IpConfiguration()
       if args.assign_ip is not None:
         if hasattr(settings.ipConfiguration, 'enabled'):
@@ -165,8 +161,9 @@ class _BaseInstances(object):
         # present, the API expects an AclEntry for the authorizedNetworks list;
         # otherwise, it expects a string.
         if getattr(sql_messages, 'AclEntry', None) is not None:
-          authorized_networks = [sql_messages.AclEntry(value=n) for n in
-                                 args.authorized_networks]
+          authorized_networks = [
+              sql_messages.AclEntry(value=n) for n in args.authorized_networks
+          ]
         else:
           authorized_networks = args.authorized_networks
         settings.ipConfiguration.authorizedNetworks = authorized_networks
@@ -179,8 +176,7 @@ class _BaseInstances(object):
 
     if any([args.follow_gae_app, args.gce_zone]):
       settings.locationPreference = sql_messages.LocationPreference(
-          followGaeApplication=args.follow_gae_app,
-          zone=args.gce_zone)
+          followGaeApplication=args.follow_gae_app, zone=args.gce_zone)
 
     if getattr(args, 'enable_database_replication', None) is not None:
       settings.databaseReplicationEnabled = args.enable_database_replication
@@ -188,8 +184,11 @@ class _BaseInstances(object):
     return settings
 
   @classmethod
-  def ConstructInstanceFromArgs(cls, sql_messages, args,
-                                original=None, instance_ref=None):
+  def ConstructInstanceFromArgs(cls,
+                                sql_messages,
+                                args,
+                                original=None,
+                                instance_ref=None):
     """Construct a Cloud SQL instance from command line args.
 
     Args:
@@ -324,7 +323,7 @@ class _BaseInstances(object):
       custom_type_string = cls._ConstructCustomMachineType(
           cpu,
           # Converting from B to MiB.
-          int(memory / (2 ** 20)))
+          int(memory / (2**20)))
 
       # Updating the machine type that is set for the URIs.
       machine_type = custom_type_string

@@ -202,6 +202,7 @@ class MarkdownGenerator(object):
     """
     self._command_path = command_path
     self._command_name = ' '.join(self._command_path)
+    self._top = self._command_path[0] if self._command_path else ''
     self._buf = StringIO.StringIO()
     self._out = self._buf.write
     self._capsule = ''
@@ -210,7 +211,7 @@ class MarkdownGenerator(object):
     self._sections = {}
     self._file_name = '_'.join(self._command_path)
     self._flag_sections = None
-    self._has_global_flags = False
+    self._global_flags = []
     self._is_hidden = is_hidden
     self._is_root = len(self._command_path) == 1
     self._release_track = release_track
@@ -264,7 +265,7 @@ class MarkdownGenerator(object):
 
   @abc.abstractmethod
   def GetFlagGroups(self):
-    """Returns (group, group_attr, has_global_flags)."""
+    """Returns (group, group_attr, global_flags)."""
     pass
 
   def _FilterOutHidden(self, args):
@@ -284,31 +285,31 @@ class MarkdownGenerator(object):
         text or '',
         command=self._command_name,
         man_name=self._file_name,
-        top_command=self._command_path[0] if self._command_path else '',
+        top_command=self._top,
         parent_command=' '.join(self._command_path[:-1]),
         index=self._capsule,
         **self._sections
     )
 
   def _SetFlagSections(self):
-    """Sets self._flag_sections in document order and self._has_global_flags.
+    """Sets self._flag_sections in document order and self._global_flags.
 
     Returns:
-      ([section], has_global_flags)
+      ([section], global_flags)
         section - (heading, is_priority, flags)
           heading - The section heading.
           is_priority - True if this is a priority section. Priority sections
             are grouped first. The first 2 priority sections appear in short
             help.
           flags - The list of flags in the section.
-          attrs - a dict of calliope.backend.ArgumentGroupAttr objects indexed
-            by group_id
-        has_global_flags - True if command has global flags not included in the
-          section list.
+          attrs - A dict of calliope.backend.ArgumentGroupAttr objects indexed
+            by group_id.
+        global_flags - The list of global flags not included in the section
+          .list
     """
     if self._flag_sections is not None:
       return
-    groups, group_attr, self._has_global_flags = self.GetFlagGroups()
+    groups, group_attr, self._global_flags = self.GetFlagGroups()
     # Partition the non-GLOBAL flag groups dict into categorized sections. A
     # group is REQUIRED if any flag in it is required, categorized if any flag
     # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
@@ -358,8 +359,8 @@ class MarkdownGenerator(object):
         else:
           heading = other_flags_heading
         if heading == base.COMMONLY_USED_FLAGS and self._is_root:
-          # The root command COMMON flags are "GLOBAL".
-          heading = 'GLOBAL'
+          # The root command COMMON flags are "<self._top> WIDE".
+          heading = '{} WIDE'.format(self._top.upper())
         self._flag_sections.append((GetFlagHeading(heading),
                                     other is not None,
                                     categorized_groups[category],
@@ -505,8 +506,8 @@ class MarkdownGenerator(object):
             else:
               self._out(' [{msg}]'.format(msg=msg))
 
-    if self._has_global_flags:
-      self._out(' [' + em + 'GLOBAL-FLAG ...' + em + ']')
+    if self._global_flags:
+      self._out(' [' + em + self._top.upper() + '_WIDE_FLAG ...' + em + ']')
 
     # positional_args will only be non-empty if we had -- ... or REMAINDER left.
     for arg in self._FilterOutHidden(positional_args):
@@ -577,11 +578,14 @@ class MarkdownGenerator(object):
       self.PrintFlagSection(heading, groups, attrs,
                             disable_header=disable_header)
 
-    if self._has_global_flags:
+    if self._global_flags:
       if not disable_header:
-        self.PrintSectionHeader('GLOBAL FLAGS', sep=False)
-      self._out('\nRun *$ gcloud help* for a description of flags available to'
-                '\nall commands.\n')
+        self.PrintSectionHeader(
+            '{} WIDE FLAGS'.format(self._top.upper()), sep=False)
+      self._out('\nThese flags are available to all commands: {}.'
+                '\nRun *$ {} help* for details.\n'
+                .format(', '.join(sorted(self._global_flags)),
+                        self._top))
 
   def PrintSubGroups(self, disable_header=False):
     """Prints the subgroup section if there are subgroups.
@@ -733,13 +737,12 @@ class MarkdownGenerator(object):
     r"""Add ([`*])command ...\1 link markdown to doc."""
     if not self._command_path:
       return doc
-    top = self._command_path[0]
     # This pattern matches "([`*]){top} {arg}*\1" where {top}...{arg} is a
     # known command. The negative lookbehind prefix prevents hyperlinks in
     # SYNOPSIS sections and as the first line in a paragraph.
     pat = re.compile(r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )'
                      r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)\1'.format(
-                         top=top))
+                         top=self._top))
     pos = 0
     rep = ''
     while True:
@@ -764,14 +767,13 @@ class MarkdownGenerator(object):
     """Add $ command ... link markdown to doc."""
     if not self._command_path:
       return doc
-    top = self._command_path[0]
     # This pattern matches "$ {top} {arg}*" where each arg is lower case and
     # does not start with example-, my-, or sample-. This follows the style
     # guide rule that user-supplied args to example commands contain upper case
     # chars or start with example-, my-, or sample-. The trailing .? allows for
     # an optional punctuation character before end of line. This handles cases
-    # like ``... run $ gcloud foo bar.'' at the end of a sentence.
-    pat = re.compile(r'\$ (' + top +
+    # like ``... run $ <top> foo bar.'' at the end of a sentence.
+    pat = re.compile(r'\$ (' + self._top +
                      '((?: (?!(example|my|sample)-)[a-z][-a-z0-9]*)*)).?[ `\n]')
     pos = 0
     rep = ''
@@ -791,11 +793,10 @@ class MarkdownGenerator(object):
     return doc
 
   def _AddManPageLinkMarkdown(self, doc):
-    """Add gcloud ...(1) man page link markdown to doc."""
+    """Add <top> ...(1) man page link markdown to doc."""
     if not self._command_path:
       return doc
-    top = self._command_path[0]
-    pat = re.compile(r'(\*?(' + top + r'(?:[-_ a-z])*)\*?)\(1\)')
+    pat = re.compile(r'(\*?(' + self._top + r'(?:[-_ a-z])*)\*?)\(1\)')
     pos = 0
     rep = ''
     while True:
@@ -951,16 +952,19 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     return self._command.ai.positional_args
 
   def GetFlagGroups(self):
-    """Returns (group, group_attr, has_global_flags)."""
+    """Returns (group, group_attr, global_flags)."""
     # Place all flag groups into a dict. Flags that are in a mutually
     # exclusive group are mapped group_id -> [flags]. All other flags
     # are mapped dest -> [flag].
-    has_global_flags = False
+    global_flags = []
     groups = {}
     for flag in (self._command.ai.flag_args +
                  self._command.ai.ancestor_flag_args):
       if flag.is_global and not self._is_root:
-        has_global_flags = True
+        if (flag.help != argparse.SUPPRESS and
+            flag.option_strings and
+            flag.option_strings[0].startswith('--')):
+          global_flags.append(flag.option_strings[0])
       else:
         group_id = self._command.ai.mutex_groups.get(
             flag.dest,
@@ -968,7 +972,7 @@ class CommandMarkdownGenerator(MarkdownGenerator):
         if group_id not in groups:
           groups[group_id] = []
         groups[group_id].append(flag)
-    return groups, self._command.ai.group_attr, has_global_flags
+    return groups, self._command.ai.group_attr, global_flags
 
 
 def Markdown(command):

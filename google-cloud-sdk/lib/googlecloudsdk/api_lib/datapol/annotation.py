@@ -19,7 +19,7 @@ from googlecloudsdk.api_lib.datapol import utils
 
 def _GetService():
   """Gets the data policy annotation service."""
-  return utils.GetClientInstance().orgs_policyTaxonomies_annotations
+  return utils.GetClientInstance().taxonomyStores_dataTaxonomies_annotations
 
 
 def Create(taxonomy_name,
@@ -41,7 +41,7 @@ def Create(taxonomy_name,
   """
   messages = utils.GetMessagesModule()
   return _GetService().Create(
-      messages.DatapolOrgsPolicyTaxonomiesAnnotationsCreateRequest(
+      messages.DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest(
           parent=utils.GetTaxonomyRelativeName(taxonomy_name),
           annotation=messages.Annotation(
               annotationName=annotation_name,
@@ -63,7 +63,7 @@ def Delete(taxonomy_name, annotation_name):
   """
   return _GetService().Delete(
       utils.GetMessagesModule()
-      .DatapolOrgsPolicyTaxonomiesAnnotationsDeleteRequest(
+      .DatapolTaxonomyStoresDataTaxonomiesAnnotationsDeleteRequest(
           name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name)))
 
 
@@ -79,7 +79,7 @@ def Get(taxonomy_name, annotation_name):
   """
   return _GetService().Get(
       utils.GetMessagesModule()
-      .DatapolOrgsPolicyTaxonomiesAnnotationsGetRequest(
+      .DatapolTaxonomyStoresDataTaxonomiesAnnotationsGetRequest(
           name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name)))
 
 
@@ -94,7 +94,7 @@ def List(taxonomy_name, limit=None):
     Generator that yields taxonomies
   """
   request = utils.GetMessagesModule(
-  ).DatapolOrgsPolicyTaxonomiesAnnotationsListRequest(
+  ).DatapolTaxonomyStoresDataTaxonomiesAnnotationsListRequest(
       parent=utils.GetTaxonomyRelativeName(taxonomy_name))
   return list_pager.YieldFromList(
       _GetService(),
@@ -117,7 +117,7 @@ def Update(taxonomy_name, annotation_name, description):
   """
   messages = utils.GetMessagesModule()
   return _GetService().Patch(
-      messages.DatapolOrgsPolicyTaxonomiesAnnotationsPatchRequest(
+      messages.DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest(
           name=utils.GetAnnotationRelativeName(taxonomy_name, annotation_name),
           updateAnnotationRequest=messages.UpdateAnnotationRequest(
               description=description)))

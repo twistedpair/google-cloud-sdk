@@ -22,6 +22,12 @@ BASE_URL = 'https://logging.googleapis.com/v2/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  BILLINGACCOUNTS = (
+      'billingAccounts',
+      'billingAccounts/{billingAccountsId}',
+      {},
+      [u'billingAccountsId']
+  )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
       '{+sinkName}',
@@ -30,6 +36,12 @@ class Collections(enum.Enum):
               'billingAccounts/{billingAccountsId}/sinks/{sinksId}',
       },
       [u'sinkName']
+  )
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      [u'foldersId']
   )
   FOLDERS_SINKS = (
       'folders.sinks',
@@ -40,6 +52,12 @@ class Collections(enum.Enum):
       },
       [u'sinkName']
   )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      [u'organizationsId']
+  )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
       '{+sinkName}',
@@ -48,6 +66,12 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/sinks/{sinksId}',
       },
       [u'sinkName']
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
   )
   PROJECTS_METRICS = (
       'projects.metrics',

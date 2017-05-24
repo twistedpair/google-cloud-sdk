@@ -183,8 +183,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
       groups.update(commands[name]['groups'])
       commands = commands[name]['commands']
     return ([Flag(flag, is_global=True)
-             for flag in self._tree['flags'].values()] +
-            [Flag(flag) for flag in flags.values()],
+             for flag in self._tree['flags'].values() if not flag['hidden']] +
+            [Flag(flag) for flag in flags.values() if not flag['hidden']],
             {name: GroupAttr(attr) for name, attr in groups.iteritems()})
 
   def GetArgDetails(self, arg):
@@ -201,22 +201,22 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     return arg.help
 
   def GetFlagGroups(self):
-    """Returns (group, group_attr, has_global_flags)."""
+    """Returns (group, group_attr, global_flags)."""
     # Place all flag groups into a dict. Flags that are in a mutually
     # exclusive group are mapped group_id -> [flags]. All other flags
     # are mapped dest -> [flag].
-    has_global_flags = False
+    global_flags = []
     groups = {}
     flags, group_attr = self._GetAllFlagsAndGroupAttr()
     for flag in flags:
       if not self._is_root and flag.is_global:
-        has_global_flags = True
+        global_flags.append(flag.name)
       else:
         group_id = flag.group
         if group_id not in groups:
           groups[group_id] = []
         groups[group_id].append(flag)
-    return groups, group_attr, has_global_flags
+    return groups, group_attr, global_flags
 
   def _GetSubHelp(self, is_group=False):
     """Returns the help dict indexed by command for sub commands or groups."""

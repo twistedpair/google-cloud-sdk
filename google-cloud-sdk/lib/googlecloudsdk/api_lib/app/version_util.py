@@ -20,7 +20,7 @@ from googlecloudsdk.api_lib.app import exceptions as app_exceptions
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -211,7 +211,7 @@ def DeleteVersions(api_client, versions):
       with progress_tracker.ProgressTracker(
           'Deleting [{0}]'.format(version_path)):
         api_client.DeleteVersion(version.service, version.id)
-    except (calliope_exceptions.HttpException, operations_util.OperationError,
+    except (core_api_exceptions.HttpException, operations_util.OperationError,
             operations_util.OperationTimeoutError, app_exceptions.Error) as err:
       errors[version_path] = str(err)
 
@@ -292,7 +292,7 @@ def _SetDefaultVersion(new_version, api_client):
   # TODO(b/31824825): It sometimes takes a while for a new service to show up.
   # Retry it if we get a service not found error.
   def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
-    return issubclass(exc_type, calliope_exceptions.HttpException)
+    return issubclass(exc_type, core_api_exceptions.HttpException)
 
   try:
     retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2)
@@ -351,7 +351,7 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
         service_name=old_default_version.service,
         version_id=old_default_version.id,
         block=False)
-  except (calliope_exceptions.HttpException,
+  except (core_api_exceptions.HttpException,
           operations_util.OperationError,
           operations_util.OperationTimeoutError) as err:
     log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,

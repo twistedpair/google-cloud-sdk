@@ -1729,7 +1729,7 @@ class Binding(_messages.Message):
       `joe@example.com`.    * `serviceAccount:{emailid}`: An email address
       that represents a service account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group. For example, `admins@example.com`.  *
+      that represents a Google group. For example, `admins@example.com`.    *
       `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -1784,17 +1784,21 @@ class CacheKeyPolicy(_messages.Message):
 
 
 class Commitment(_messages.Message):
-  """A usage-commitment with a start / end time. Users create commitments for
-  particular resources (e.g. memory). Actual usage is first deducted from
-  available commitments made prior, perhaps at a reduced price (as laid out in
-  the commitment).
+  """Represents a Commitment resource. Creating a Commitment resource means
+  that you are purchasing a committed use contract with an explicit start and
+  end time. You can create commitments based on vCPUs and memory usage and
+  receive discounted rates. For full details, read Signing Up for Committed
+  Use Discounts.  Committed use discounts are subject to Google Cloud
+  Platform's Service Specific Terms. By purchasing a committed use discount,
+  you agree to these terms. Committed use discounts will not renew, so you
+  must purchase a new commitment to continue receiving discounts.
 
   Enums:
     PlanValueValuesEnum: The plan for this commitment, which determines
       duration and discount rate. The currently supported plans are
       TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
     StatusValueValuesEnum: [Output Only] Status of the commitment with regards
-      to eventual expiration (each commitment has an end-date defined). One of
+      to eventual expiration (each commitment has an end date defined). One of
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
 
   Fields:
@@ -1824,7 +1828,7 @@ class Commitment(_messages.Message):
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
-      expiration (each commitment has an end-date defined). One of the
+      expiration (each commitment has an end date defined). One of the
       following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
@@ -1846,7 +1850,7 @@ class Commitment(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] Status of the commitment with regards to eventual
-    expiration (each commitment has an end-date defined). One of the following
+    expiration (each commitment has an end date defined). One of the following
     values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
 
     Values:
@@ -11537,6 +11541,8 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    startRestricted: [Output Only] Whether a VM has been restricted for start
+      because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
@@ -11616,10 +11622,11 @@ class Instance(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 16)
   selfLink = _messages.StringField(17)
   serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  tags = _messages.MessageField('Tags', 21)
-  zone = _messages.StringField(22)
+  startRestricted = _messages.BooleanField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  tags = _messages.MessageField('Tags', 22)
+  zone = _messages.StringField(23)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -12540,8 +12547,7 @@ class InstanceProperties(_messages.Message):
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the Enable IP forwarding for instances documentation for more
-      information.
+      false. See the Enable IP forwarding documentation for more information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -12941,10 +12947,38 @@ class LogConfig(_messages.Message):
   """Specifies what kind of log the caller must write
 
   Fields:
+    cloudAudit: Cloud audit options.
     counter: Counter options.
   """
 
-  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('LogConfigCounterOptions', 2)
+
+
+class LogConfigCloudAuditOptions(_messages.Message):
+  """Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    """The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      ADMIN_ACTIVITY: <no description>
+      DATA_ACCESS: <no description>
+      UNSPECIFIED_LOG_NAME: <no description>
+    """
+    ADMIN_ACTIVITY = 0
+    DATA_ACCESS = 1
+    UNSPECIFIED_LOG_NAME = 2
+
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class LogConfigCounterOptions(_messages.Message):
@@ -14623,15 +14657,20 @@ class ResourceCommitment(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Type of resource for which this commitment applies.
+      Possible values are VCPU and MEMORY
 
   Fields:
     amount: The amount of the resource purchased (in a type-dependent unit,
-      such as bytes).
-    type: Type of resource for which this commitment applies.
+      such as bytes). For vCPUs, this can just be an integer. For memory, this
+      must be provided in MB. Memory must be a multiple of 256 MB, with up to
+      6.5GB of memory per every vCPU.
+    type: Type of resource for which this commitment applies. Possible values
+      are VCPU and MEMORY
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Type of resource for which this commitment applies.
+    """Type of resource for which this commitment applies. Possible values are
+    VCPU and MEMORY
 
     Values:
       MEMORY: <no description>

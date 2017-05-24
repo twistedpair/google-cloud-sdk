@@ -50,8 +50,6 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
-    deployedSourceDownloadUrl: Output only. The Google Cloud Storage signed
-      URL generated for downloading the current deployed source code.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -107,20 +105,19 @@ class CloudFunction(_messages.Message):
     DELETING = 4
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  deployedSourceDownloadUrl = _messages.StringField(2)
-  entryPoint = _messages.StringField(3)
-  eventTrigger = _messages.MessageField('EventTrigger', 4)
-  httpsTrigger = _messages.MessageField('HTTPSTrigger', 5)
-  latestOperation = _messages.StringField(6)
-  name = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  sourceArchiveUrl = _messages.StringField(9)
-  sourceRepository = _messages.MessageField('SourceRepository', 10)
-  sourceRepositoryUrl = _messages.StringField(11)
-  sourceUploadUrl = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  entryPoint = _messages.StringField(2)
+  eventTrigger = _messages.MessageField('EventTrigger', 3)
+  httpsTrigger = _messages.MessageField('HTTPSTrigger', 4)
+  latestOperation = _messages.StringField(5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  sourceArchiveUrl = _messages.StringField(8)
+  sourceRepository = _messages.MessageField('SourceRepository', 9)
+  sourceRepositoryUrl = _messages.StringField(10)
+  sourceUploadUrl = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  timeout = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -183,6 +180,21 @@ class CloudfunctionsProjectsLocationsFunctionsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest(_messages.Message):
+  """A CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest
+  object.
+
+  Fields:
+    generateDownloadUrlRequest: A GenerateDownloadUrlRequest resource to be
+      passed as the request body.
+    name: The name of function for which source code Google Cloud Storage
+      signed URL should be generated.
+  """
+
+  generateDownloadUrlRequest = _messages.MessageField('GenerateDownloadUrlRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudfunctionsProjectsLocationsFunctionsGetRequest(_messages.Message):
@@ -270,12 +282,27 @@ class EventTrigger(_messages.Message):
   retryPolicy = _messages.MessageField('RetryPolicy', 3)
 
 
+class GenerateDownloadUrlRequest(_messages.Message):
+  """Request of `GenerateDownloadUrl` method."""
+
+
+class GenerateDownloadUrlResponse(_messages.Message):
+  """Response of `GenerateDownloadUrl` method.
+
+  Fields:
+    downloadUrl: The generated Google Cloud Storage signed URL that should be
+      used for function source code download.
+  """
+
+  downloadUrl = _messages.StringField(1)
+
+
 class GenerateUploadUrlRequest(_messages.Message):
-  """Request of `GenerateSourceUploadUrl` method."""
+  """Request of `GenerateUploadUrl` method."""
 
 
 class GenerateUploadUrlResponse(_messages.Message):
-  """Response of `GenerateSourceUploadUrl` method.
+  """Response of `GenerateUploadUrl` method.
 
   Fields:
     uploadUrl: The generated Google Cloud Storage signed URL that should be
@@ -706,7 +733,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -719,8 +746,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should

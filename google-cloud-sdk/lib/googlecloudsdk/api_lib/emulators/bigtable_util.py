@@ -17,6 +17,7 @@ import os
 from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import platforms
 
 BIGTABLE = 'bigtable'
 BIGTABLE_TITLE = 'Google Cloud Bigtable emulator'
@@ -38,15 +39,18 @@ def BuildStartArgs(args):
     A list of command arguments.
   """
   bigtable_dir = util.GetEmulatorRoot(BIGTABLE)
-  bigtable_executable = os.path.join(bigtable_dir,
-                                     BIGTABLE_EXECUTABLE)
+  bigtable_executable = os.path.join(bigtable_dir, BIGTABLE_EXECUTABLE)
+  if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
+    bigtable_executable += '.exe'
   return execution_utils.ArgsForExecutableTool(bigtable_executable, *args)
 
 
 def GetEnv(args):
   """Returns an environment variable mapping from an argparse.Namespace."""
-  return {'BIGTABLE_EMULATOR_HOST': '%s:%s' %
-                                    (args.host_port.host, args.host_port.port)}
+  return {
+      'BIGTABLE_EMULATOR_HOST':
+          '%s:%s' % (args.host_port.host, args.host_port.port)
+  }
 
 
 def Start(args):

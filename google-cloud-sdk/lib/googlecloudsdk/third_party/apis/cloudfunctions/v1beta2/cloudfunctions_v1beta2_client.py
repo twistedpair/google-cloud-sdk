@@ -204,6 +204,37 @@ remove this function.
         supports_download=False,
     )
 
+    def GenerateDownloadUrl(self, request, global_params=None):
+      """Returns a signed URL for downloading deployed function source code.
+The URL is only valid for a limited period and should be used within
+minutes after generation.
+For more information about the signed URL usage see:
+https://cloud.google.com/storage/docs/access-control/signed-urls
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateDownloadUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateDownloadUrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateDownloadUrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:generateDownloadUrl',
+        http_method=u'POST',
+        method_id=u'cloudfunctions.projects.locations.functions.generateDownloadUrl',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}:generateDownloadUrl',
+        request_field=u'generateDownloadUrlRequest',
+        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest',
+        response_type_name=u'GenerateDownloadUrlResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns a function with the given name from the requested project.
 

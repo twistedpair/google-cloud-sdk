@@ -41,14 +41,9 @@ To use in compute Run(args) methods:
 
   from googlecloudsdk.api_lib.compute import filter_rewrite
     ...
-  if args.filter:
-    filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
-  else:
-    filter_expr = None
+  args.filter, backend_filter = filter_rewrite.Rewriter().Rewrite(args.filter)
     ...
-  Request(
-    ...
-    filter=filter_expr,
+    filter=backend_filter,
     ...
   )
 
@@ -77,10 +72,10 @@ class Rewriter(resource_expr_rewrite.Backend):
   _INVERT = {'eq': 'ne', 'ne': 'eq'}
 
   def Rewrite(self, expression, defaults=None):
-    rewrite = super(Rewriter, self).Rewrite(expression, defaults=defaults)
-    if not rewrite:
-      return None
-    return ' '.join(rewrite)
+    frontend, backend_tokens = super(Rewriter, self).Rewrite(
+        expression, defaults=defaults)
+    backend = ' '.join(backend_tokens) if backend_tokens else None
+    return frontend, backend
 
   def RewriteNOT(self, expr):
     if expr[0] == '(':

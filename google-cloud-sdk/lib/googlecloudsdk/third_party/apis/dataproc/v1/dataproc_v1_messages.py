@@ -685,6 +685,18 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DiagnoseClusterOutputLocation(_messages.Message):
+  """The location where output from diagnostic command can be found.
+
+  Fields:
+    outputUri: Output-only The Google Cloud Storage URI of the diagnostic
+      output. This will be a plain text file with summary of collected
+      diagnostics.
+  """
+
+  outputUri = _messages.StringField(1)
+
+
 class DiagnoseClusterRequest(_messages.Message):
   """A request to collect cluster diagnostic information."""
 
@@ -1494,6 +1506,90 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  """Metadata describing the operation.
+
+  Enums:
+    StateValueValuesEnum: A message containing the operation state.
+
+  Fields:
+    clusterName: Name of the cluster for the operation.
+    clusterUuid: Cluster UUId for the operation.
+    description: Output-only Short description of operation.
+    details: A message containing any operation metadata details.
+    endTime: The time that the operation completed.
+    innerState: A message containing the detailed operation state.
+    insertTime: The time that the operation was requested.
+    operationType: Output-only The operation type.
+    startTime: The time that the operation was started by the server.
+    state: A message containing the operation state.
+    status: Output-only Current operation status.
+    statusHistory: Output-only Previous operation status.
+    warnings: Output-only Errors encountered during operation execution.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """A message containing the operation state.
+
+    Values:
+      UNKNOWN: Unused.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+    """
+    UNKNOWN = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  clusterName = _messages.StringField(1)
+  clusterUuid = _messages.StringField(2)
+  description = _messages.StringField(3)
+  details = _messages.StringField(4)
+  endTime = _messages.StringField(5)
+  innerState = _messages.StringField(6)
+  insertTime = _messages.StringField(7)
+  operationType = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  status = _messages.MessageField('OperationStatus', 11)
+  statusHistory = _messages.MessageField('OperationStatus', 12, repeated=True)
+  warnings = _messages.StringField(13, repeated=True)
+
+
+class OperationStatus(_messages.Message):
+  """The status of the operation.
+
+  Enums:
+    StateValueValuesEnum: A message containing the operation state.
+
+  Fields:
+    details: A message containing any operation metadata details.
+    innerState: A message containing the detailed operation state.
+    state: A message containing the operation state.
+    stateStartTime: The time this state was entered.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """A message containing the operation state.
+
+    Values:
+      UNKNOWN: Unused.
+      PENDING: The operation has been created.
+      RUNNING: The operation is running.
+      DONE: The operation is done; either cancelled or completed.
+    """
+    UNKNOWN = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  details = _messages.StringField(1)
+  innerState = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  stateStartTime = _messages.StringField(4)
+
+
 class PigJob(_messages.Message):
   """A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
   queries on YARN.
@@ -1964,7 +2060,7 @@ class Status(_messages.Message):
   facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package google.rpc which can be used for common error
+  detail types in the package google.rpc that can be used for common error
   conditions.Language mappingThe Status message is the logical representation
   of the error model, but it is not necessarily the actual wire format. When
   the Status message is exposed in different client libraries and different
@@ -1976,11 +2072,11 @@ class Status(_messages.Message):
   of this error model include: Partial errors. If a service needs to return
   partial errors to the client, it may embed the Status in the normal response
   to indicate the partial errors. Workflow errors. A typical workflow has
-  multiple steps. Each step may have a Status message for error reporting
-  purpose. Batch operations. If a client uses batch request and batch
-  response, the Status message should be used directly inside batch response,
-  one for each error sub-response. Asynchronous operations. If an API call
-  embeds asynchronous operation results in its response, the status of those
+  multiple steps. Each step may have a Status message for error reporting.
+  Batch operations. If a client uses batch request and batch response, the
+  Status message should be used directly inside batch response, one for each
+  error sub-response. Asynchronous operations. If an API call embeds
+  asynchronous operation results in its response, the status of those
   operations should be represented directly using the Status message. Logging.
   If some API errors are stored in logs, the message Status could be used
   directly after any stripping needed for security/privacy reasons.

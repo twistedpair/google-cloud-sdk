@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utility functions for sql instances using v1beta3 API."""
 
 
-def GetCertRefFromName(
-    sql_client, sql_messages, resources, instance_ref, common_name):
+def GetCertRefFromName(sql_client, sql_messages, resources, instance_ref,
+                       common_name):
   """Get a cert reference for a particular instance, given its common name.
 
   Args:
@@ -46,8 +45,7 @@ def GetCertRefFromName(
       sha1Fingerprint=cert.sha1Fingerprint)
 
 
-def GetCertFromName(
-    sql_client, sql_messages, instance_ref, common_name):
+def GetCertFromName(sql_client, sql_messages, instance_ref, common_name):
   """Get a cert for a particular instance, given its common name.
 
   In versions of the SQL API up to at least v1beta3, the last parameter of the
@@ -71,8 +69,7 @@ def GetCertFromName(
   """
   certs = sql_client.sslCerts.List(
       sql_messages.SqlSslCertsListRequest(
-          project=instance_ref.project,
-          instance=instance_ref.instance))
+          project=instance_ref.project, instance=instance_ref.instance))
   for cert in certs.items:
     if cert.commonName == common_name:
       return cert

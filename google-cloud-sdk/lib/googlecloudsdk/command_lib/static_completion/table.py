@@ -45,13 +45,17 @@ def _CompletionValueType(arg):
 class CompletionTableGenerator(walker.Walker):
   """Generates a static completion table by walking the gcloud CLI tree."""
 
-  def __init__(self, cli):
+  def __init__(self, cli, ignore_load_errors=False):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
+      ignore_load_errors: bool, True to ignore command load failures. This
+        should only be used when it is not critical that all data is returned,
+        like for optimizations like static tab completion.
     """
-    super(CompletionTableGenerator, self).__init__(cli)
+    super(CompletionTableGenerator, self).__init__(
+        cli, ignore_load_errors=ignore_load_errors)
     self.global_flags = set()
 
   def _VisitFlags(self, flags, at_root):
@@ -153,7 +157,8 @@ def Update(cli):
   """
   # Overwrite the completion table file with updated content
   with open(_TablePath(), 'w') as table_file:
-    table = CompletionTableGenerator(cli).Walk(hidden=False)
+    table = CompletionTableGenerator(
+        cli, ignore_load_errors=True).Walk(hidden=False)
     table_file.write('table=')
     pprint(table, table_file)
   # _TableDirPath() could contain unicode chars and py_compile chokes on unicode

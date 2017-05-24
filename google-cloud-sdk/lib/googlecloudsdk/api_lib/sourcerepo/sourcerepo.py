@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Source apis layer."""
 import os
 
 from apitools.base.py import exceptions
-
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
@@ -64,9 +63,8 @@ def _NormalizeToSourceAPIPath(path):
 class NoEndpointException(Exception):
 
   def __str__(self):
-    return (
-        'Source endpoint not initialized. Source.SetApiEndpoint must be '
-        'called before using this module.')
+    return ('Source endpoint not initialized. Source.SetApiEndpoint must be '
+            'called before using this module.')
 
 
 class FileTooBigException(Exception):
@@ -78,10 +76,9 @@ class FileTooBigException(Exception):
     self.max_size = max_size
 
   def __str__(self):
-    return (
-        'Could not write file "{0}" because it was too large '
-        '({1} bytes). Max size is {2} bytes').format(
-            self.name, self.size, self.max_size)
+    return ('Could not write file "{0}" because it was too large '
+            '({1} bytes). Max size is {2} bytes').format(
+                self.name, self.size, self.max_size)
 
 
 def _GetViolationsFromError(error_info):
@@ -153,11 +150,16 @@ class Source(object):
         resource=repo_resource.RelativeName(), setIamPolicyRequest=req)
     return self._client.projects_repos.SetIamPolicy(request)
 
-  def ListRepos(self, project_resource):
+  def ListRepos(self, project_resource, limit=None, page_size=None):
     """Returns list of repos."""
-    request = messages.SourcerepoProjectsReposListRequest(
-        name=project_resource.RelativeName())
-    return self._client.projects_repos.List(request).repos
+    return list_pager.YieldFromList(
+        self._client.projects_repos,
+        messages.SourcerepoProjectsReposListRequest(
+            name=project_resource.RelativeName()),
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='repos')
 
   def GetRepo(self, repo_resource):
     """Finds details on the named repo, if it exists.
@@ -188,8 +190,8 @@ class Source(object):
       (messages.Repo) The full definition of the new repo, as reported by
         the server.
     """
-    parent = resources.REGISTRY.Create('sourcerepo.projects',
-                                       projectsId=repo_resource.projectsId)
+    parent = resources.REGISTRY.Create(
+        'sourcerepo.projects', projectsId=repo_resource.projectsId)
     request = messages.SourcerepoProjectsReposCreateRequest(
         parent=parent.RelativeName(),
         repo=messages.Repo(name=repo_resource.RelativeName()))
