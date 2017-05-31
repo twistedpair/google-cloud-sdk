@@ -7,6 +7,7 @@ databases.
 
 from apitools.base.protorpclite import message_types as _message_types
 from apitools.base.protorpclite import messages as _messages
+from apitools.base.py import encoding
 
 
 package = 'sqladmin'
@@ -429,6 +430,8 @@ class ImportContext(_messages.Message):
       is CSV, it must be specified.
     fileType: The file type for the specified uri. SQL: The file contains SQL
       statements. CSV: The file contains CSV data.
+    importUser: The PostgreSQL user to use for this import operation. Defaults
+      to cloudsqlsuperuser. Does not apply to MySQL instances.
     kind: This is always sql#importContext.
     uri: A path to the file in Google Cloud Storage from which the import is
       made. The URI is in the form gs://bucketName/fileName. Compressed gzip
@@ -450,8 +453,9 @@ class ImportContext(_messages.Message):
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 1)
   database = _messages.StringField(2)
   fileType = _messages.StringField(3)
-  kind = _messages.StringField(4, default=u'sql#importContext')
-  uri = _messages.StringField(5)
+  importUser = _messages.StringField(4)
+  kind = _messages.StringField(5, default=u'sql#importContext')
+  uri = _messages.StringField(6)
 
 
 class InstancesCloneRequest(_messages.Message):
@@ -564,18 +568,6 @@ class IpMapping(_messages.Message):
   ipAddress = _messages.StringField(1)
   timeToRetire = _message_types.DateTimeField(2)
   type = _messages.StringField(3)
-
-
-class Labels(_messages.Message):
-  """Reserved for future use.
-
-  Fields:
-    key: Reserved for future use.
-    value: Reserved for future use.
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
 
 
 class LocationPreference(_messages.Message):
@@ -801,6 +793,9 @@ class RestoreBackupContext(_messages.Message):
 class Settings(_messages.Message):
   """Database instance settings.
 
+  Messages:
+    LabelsValue: User defined labels.
+
   Fields:
     activationPolicy: The activation policy specifies when the instance is
       activated; it is applicable only when the instance state is RUNNABLE.
@@ -834,7 +829,7 @@ class Settings(_messages.Message):
       to the instance. The IPv4 address cannot be disabled for Second
       Generation instances.
     kind: This is always sql#settings.
-    labels: Reserved for future use.
+    labels: User defined labels.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or GCE zone for better performance. App Engine co-location is only
@@ -853,13 +848,37 @@ class Settings(_messages.Message):
       properly. During update, use the most recent settingsVersion value for
       this instance and do not try to update this value.
     storageAutoResize: Configuration to increase storage size automatically.
-      The default value is false. Applies only to Second Generation instances.
+      The default value is true. Applies only to Second Generation instances.
     storageAutoResizeLimit: The maximum size to which storage capacity can be
       automatically increased. The default value is 0, which specifies that
       there is no limit. Applies only to Second Generation instances.
     tier: The tier of service for this instance, for example D1, D2. For more
       information, see pricing.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: An individual label entry.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activationPolicy = _messages.StringField(1)
   authorizedGaeApplications = _messages.StringField(2, repeated=True)
@@ -872,7 +891,7 @@ class Settings(_messages.Message):
   databaseReplicationEnabled = _messages.BooleanField(9)
   ipConfiguration = _messages.MessageField('IpConfiguration', 10)
   kind = _messages.StringField(11, default=u'sql#settings')
-  labels = _messages.MessageField('Labels', 12, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 12)
   locationPreference = _messages.MessageField('LocationPreference', 13)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
   pricingPlan = _messages.StringField(15)

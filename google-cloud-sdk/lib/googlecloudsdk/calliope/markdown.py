@@ -391,13 +391,13 @@ class MarkdownGenerator(object):
     if len(cmd) <= 1:
       return cmd, []
     # Skip the top level command name.
-    prefix = 1
-    i = prefix + 1
+    skip = 1
+    i = skip
     while i <= len(cmd):
-      if not self.IsValidSubPath(cmd[prefix:i]):
+      i += 1
+      if not self.IsValidSubPath(cmd[skip:i]):
         i -= 1
         break
-      i += 1
     return cmd[:i], cmd[i:]
 
   def _UserInput(self, msg):
@@ -687,21 +687,20 @@ class MarkdownGenerator(object):
             cmd=self._UserInput(name)))
       self._out(content)
 
+  def GetNotes(self):
+    """Returns the explicit NOTES section contents."""
+    return self._sections.get('NOTES')
+
   def PrintNotesSection(self, disable_header=False):
     """Prints the NOTES section if needed.
 
     Args:
       disable_header: Disable printing the section header if True.
     """
-    notes = self._sections.get('NOTES')
-    if notes or self._is_hidden or self._release_track.help_note:
+    notes = self.GetNotes()
+    if notes:
       if not disable_header:
         self.PrintSectionHeader('NOTES')
-      if self._is_hidden:
-        self._out('This command is an internal implementation detail and may '
-                  'change or disappear without notice.\n\n')
-      if self._release_track.help_note:
-        self._out(self._release_track.help_note + '\n\n')
       if notes:
         self._out(notes + '\n\n')
 
@@ -973,6 +972,10 @@ class CommandMarkdownGenerator(MarkdownGenerator):
           groups[group_id] = []
         groups[group_id].append(flag)
     return groups, self._command.ai.group_attr, global_flags
+
+  def GetNotes(self):
+    """Returns the explicit and auto-generated NOTES section contents."""
+    return self._command.GetNotesHelpSection(self._sections.get('NOTES'))
 
 
 def Markdown(command):

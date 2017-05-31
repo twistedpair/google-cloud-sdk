@@ -420,7 +420,7 @@ def RenderDocumentAction(command, default_style=None):
         option_string: The ArgParse flag string.
 
       Raises:
-        ArgumentTypeError: For unknown flag value attribute name.
+        parser_errors.ArgumentError: For unknown flag value attribute name.
       """
       if default_style:
         # --help
@@ -438,7 +438,7 @@ def RenderDocumentAction(command, default_style=None):
           elif name == 'title':
             title = value
           else:
-            raise argparse.ArgumentTypeError(
+            raise parser_errors.ArgumentError(
                 'Unknown document attribute [{0}]'.format(name))
 
       if title is None:

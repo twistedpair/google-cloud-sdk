@@ -120,8 +120,9 @@ class ImageExpander(object):
         batch_url=self._batch_url,
         errors=errors))
     if errors:
-      utils.RaiseToolException(
+      utils.RaiseException(
           errors,
+          utils.ImageNotFoundError,
           error_message='Could not fetch image resource:')
     return res[0]
 

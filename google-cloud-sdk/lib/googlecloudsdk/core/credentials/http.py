@@ -52,11 +52,12 @@ def Http(timeout='unset'):
     http_client = _WrapRequestForIAMAuth(
         http_client, authority_selector, authorization_token_file)
 
-  creds = store.Load()
-  http_client = creds.authorize(http_client)
-  # Wrap the request method to put in our own error handling.
-  http_client = http.Modifiers.WrapRequest(
-      http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
+  creds = store.LoadIfEnabled()
+  if creds:
+    http_client = creds.authorize(http_client)
+    # Wrap the request method to put in our own error handling.
+    http_client = http.Modifiers.WrapRequest(
+        http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
 

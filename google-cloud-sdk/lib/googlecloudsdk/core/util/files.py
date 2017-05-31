@@ -881,34 +881,98 @@ class _WindowsLocking(object):
     msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
 
 
-def GetFileContents(path):
+@contextlib.contextmanager
+def _FileInBinaryMode(file_obj):
+  """Context manager to temporarily swap a file to binary mode on Windows.
+
+  On exit, the mode is swapped back to its original mode, whether that was text
+  or binary.
+
+  See the 'On Windows...' note in the Python docs for more info about text and
+  binary mode:
+  https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
+
+  Args:
+    file_obj: File-like object to swap to binary mode.
+
+  Yields:
+    None.
+  """
+  # If file_obj does not define fileno, just pass it through. For example,
+  # this happens for unit tests which replace sys.stdin with StringIO.
+  try:
+    fd = file_obj.fileno()
+  except AttributeError:
+    yield
+    return
+
+  if platforms.OperatingSystem.IsWindows():
+    # pylint: disable=g-import-not-at-top
+    import msvcrt
+
+    try:
+      old_mode = msvcrt.setmode(fd, os.O_BINARY)
+      yield
+    finally:
+      msvcrt.setmode(fd, old_mode)
+  else:
+    # On non-Windows platforms, text mode == binary mode, so just yield.
+    yield
+
+
+def GetFileContents(path, binary=False):
   """Returns the contents of the specified file.
 
   Args:
     path: str, The path of the file to read.
+    binary: bool, True to open the file in binary mode.
 
   Raises:
-    Error: If the file cannot be read.
+    Error: If the file cannot be read or is larger than max_bytes.
 
   Returns:
     The contents of the file.
   """
   try:
-    with open(path) as in_file:
+    with open(path, 'rb' if binary else 'r') as in_file:
       return in_file.read()
-  except EnvironmentError:
+  except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
-    raise Error(u'Unable to read file [{0}]'.format(path))
+    raise Error(u'Unable to read file [{0}]: {1}'.format(path, e))
 
 
-def WriteFileContents(path, content, overwrite=True):
+def GetFileOrStdinContents(path, binary=False):
+  """Returns the contents of the specified file or stdin if path is '-'.
+
+  Args:
+    path: str, The path of the file to read.
+    binary: bool, True to open the file in binary mode.
+
+  Raises:
+    Error: If the file cannot be read or is larger than max_bytes.
+
+  Returns:
+    The contents of the file.
+  """
+  if path == '-':
+    if binary:
+      with _FileInBinaryMode(sys.stdin):
+        return sys.stdin.read()
+    else:
+      return sys.stdin.read()
+
+  return GetFileContents(path, binary=binary)
+
+
+def WriteFileContents(path, content, overwrite=True, binary=False):
   """Writes content to the specified file.
 
   Args:
     path: str, The path of the file to write.
     content: str, The content to write to the file.
     overwrite: bool, Whether or not to overwrite the file if it exists.
+    binary: bool, True to open the file in binary mode.
 
   Raises:
     Error: If the file cannot be written.
@@ -916,9 +980,34 @@ def WriteFileContents(path, content, overwrite=True):
   try:
     if not overwrite and os.path.exists(path):
       raise Error(u'File [{0}] already exists and overwrite=False'.format(path))
-    with open(path, 'w') as out_file:
+    with open(path, 'wb' if binary else 'w') as out_file:
       out_file.write(content)
-  except EnvironmentError:
+  except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
-    raise Error(u'Unable to write file [{0}]'.format(path))
+    raise Error(u'Unable to write file [{0}]: {1}'.format(path, e))
+
+
+def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False):
+  """Writes content to the specified file.
+
+  Args:
+    path: str, The path of the file to write.
+    content: str, The content to write to the file.
+    overwrite: bool, Whether or not to overwrite the file if it exists.
+    binary: bool, True to open the file in binary mode.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  if path == '-':
+    if binary:
+      with _FileInBinaryMode(sys.stdout):
+        sys.stdout.write(content)
+        # Flush to force content to be written out with the correct mode.a
+        sys.stdout.flush()
+    else:
+      sys.stdout.write(content)
+    return
+
+  WriteFileContents(path, content, overwrite=overwrite, binary=binary)

@@ -26,14 +26,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-# TODO(b/36712515) Remove this warning and cut over.
-V1BETA1_DEPRECATION_WARNING = """\
-The v1beta1 API for Google Cloud ML Engine is deprecated and will be turned off
-on 2017-05-31. Please switch to the `gcloud ml-engine` commands, which use the
-v1 API, by that date; at that time, the `gcloud beta ml-engine` commands will switch over to the v1 API.
-"""
-
-
 class ArgumentError(exceptions.Error):
   pass
 
@@ -75,7 +67,7 @@ CONFIG = base.Argument(
     help="""\
 Path to the job configuration file. The file should be a YAML document (JSON
 also accepted) containing a Job resource as defined in the API (all fields are
-optional): https://cloud.google.com/ml/reference/rest/v1beta1/projects.jobs
+optional): https://cloud.google.com/ml/reference/rest/v1/projects.jobs
 
 If an option is specified both in the configuration file *and* via command line
 arguments, the command line arguments override the configuration file.
@@ -110,13 +102,14 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 def GetJobDirFlag(upload_help=True):
   """Get base.Argument() for `--job-dir`."""
   help_ = """\
-A Google Cloud Storage path in which to store training outputs and other data
+A {dir_type} in which to store training outputs and other data
 needed for training.
 
 This path will be passed to your TensorFlow program as `--job_dir` command-line
 arg. The benefit of specifying this field is that Cloud ML Engine will validate
 the path for use in training.
-"""
+""".format(dir_type=('Google Cloud Storage path' if upload_help else
+                     'local directory'))
   if upload_help:
     help_ += """\
 

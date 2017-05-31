@@ -15,6 +15,7 @@
 """Base class for commands copying files from and to virtual machines."""
 
 import sys
+from argcomplete.completers import FilesCompleter
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.command_lib.compute import flags
@@ -41,6 +42,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
 
     parser.add_argument(
         'sources',
+        completer=FilesCompleter,
         help='Specifies the files to copy.',
         metavar='[[USER@]INSTANCE:]SRC',
         nargs='+')

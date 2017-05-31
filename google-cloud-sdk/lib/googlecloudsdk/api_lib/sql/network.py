@@ -13,6 +13,7 @@
 # limitations under the License.
 """Common utility functions for network operations."""
 
+from googlecloudsdk.core.util import times
 import ipaddr
 
 IP_VERSION_4 = 4
@@ -37,3 +38,8 @@ def GetIpVersion(ip_address):
     return version
   except ValueError:  # ipaddr library could not resolve address
     return IP_VERSION_UNKNOWN
+
+
+def GetCurrentTime():
+  """Returns the current UTC datetime."""
+  return times.Now(tzinfo=times.UTC)

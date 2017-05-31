@@ -4861,7 +4861,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.instances.insert',
         ordered_params=[u'project', u'zone'],
         path_params=[u'project', u'zone'],
-        query_params=[u'requestId'],
+        query_params=[u'requestId', u'sourceInstanceTemplate'],
         relative_path=u'projects/{project}/zones/{zone}/instances',
         request_field=u'instance',
         request_type_name=u'ComputeInstancesInsertRequest',
@@ -5898,7 +5898,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified License resource. Get a list of available licenses by making a list() request.
+      """Returns the specified License resource.
 
       Args:
         request: (ComputeLicensesGetRequest) input message

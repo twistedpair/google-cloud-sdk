@@ -907,18 +907,18 @@
     },
     "ListOccurrencesResponse": {
       "id": "ListOccurrencesResponse",
-      "description": "Response including listed occurrences.",
+      "description": "Response including listed active occurrences.",
       "type": "object",
       "properties": {
         "occurrences": {
-          "description": "The occurrences requested",
+          "description": "The occurrences requested.",
           "type": "array",
           "items": {
             "$ref": "Occurrence"
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as\npage_token for the following request. An empty value means no more result.",
+          "description": "The next pagination token in the List response. It should be used as\npage_token for the following request. An empty value means no more results.",
           "type": "string"
         }
       }
@@ -1460,7 +1460,7 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).\nSee: go\/rpc-security-policy-dynamicauth.",
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported."
           ],
           "type": "string",
@@ -1660,7 +1660,7 @@
               "path": "v1alpha1/{+parent}/occurrences",
               "flatPath": "v1alpha1/projects/{projectsId}/occurrences",
               "httpMethod": "GET",
-              "description": "Lists all occurrences for a given project\/Digest.  Filters can be used on\nthis field to list all digests containing a specific occurrence in a\nproject.",
+              "description": "Lists active occurrences for a given project\/Digest.",
               "parameters": {
                 "parent": {
                   "description": "This contains the projectId for example: projects\/{project_id}",
@@ -1670,7 +1670,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name field will contain the projectId for example:\n\"projects\/{project_id}\n@deprecated",
+                  "description": "The name field will contain the projectId for example:\n\"projects\/{project_id}\n@Deprecated",
                   "location": "query",
                   "type": "string"
                 },
@@ -1680,7 +1680,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Number of notes to return in the list.",
+                  "description": "Number of occurrences to return in the list.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1741,7 +1741,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name of the project.  Should be of the form \"projects\/{project_id}\".\n@deprecated",
+                  "description": "The name of the project.  Should be of the form \"projects\/{project_id}\".\n@Deprecated",
                   "location": "query",
                   "type": "string"
                 }
@@ -1930,7 +1930,7 @@
               "path": "v1alpha1/{+parent}/notes",
               "flatPath": "v1alpha1/projects/{projectsId}/notes",
               "httpMethod": "GET",
-              "description": "Lists all notes for a given project.  Filters can be used on this\nfield to list all notes with a specific parameter.",
+              "description": "Lists all notes for a given project.",
               "parameters": {
                 "parent": {
                   "description": "This field contains the projectId for example:\n\"project\/{project_id}",
@@ -1940,7 +1940,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name field will contain the projectId for example:\n\"providers\/{provider_id}\n@deprecated",
+                  "description": "The name field will contain the projectId for example:\n\"providers\/{provider_id}\n@Deprecated",
                   "location": "query",
                   "type": "string"
                 },
@@ -2011,7 +2011,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name of the project.\nShould be of the form \"providers\/{provider_id}\".\n@deprecated",
+                  "description": "The name of the project.\nShould be of the form \"providers\/{provider_id}\".\n@Deprecated",
                   "location": "query",
                   "type": "string"
                 },
@@ -2292,10 +2292,10 @@
               "path": "v1alpha1/{+name}/notes",
               "flatPath": "v1alpha1/providers/{providersId}/notes",
               "httpMethod": "GET",
-              "description": "Lists all notes for a given project.  Filters can be used on this\nfield to list all notes with a specific parameter.",
+              "description": "Lists all notes for a given project.",
               "parameters": {
                 "name": {
-                  "description": "The name field will contain the projectId for example:\n\"providers\/{provider_id}\n@deprecated",
+                  "description": "The name field will contain the projectId for example:\n\"providers\/{provider_id}\n@Deprecated",
                   "location": "path",
                   "required": true,
                   "pattern": "^providers\/[^\/]+$",
@@ -2366,7 +2366,7 @@
               "description": "Creates a new note.",
               "parameters": {
                 "name": {
-                  "description": "The name of the project.\nShould be of the form \"providers\/{provider_id}\".\n@deprecated",
+                  "description": "The name of the project.\nShould be of the form \"providers\/{provider_id}\".\n@Deprecated",
                   "location": "path",
                   "required": true,
                   "pattern": "^providers\/[^\/]+$",

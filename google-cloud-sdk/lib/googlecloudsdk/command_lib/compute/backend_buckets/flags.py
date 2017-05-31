@@ -18,6 +18,14 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 _GCS_BUCKET_DETAILED_HELP = """\
 The name of the Google Cloud Storage bucket to serve from. The storage
         bucket must be owned by the project's owner."""
+
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      bucketName:label=GCS_BUCKET_NAME,
+      enableCdn
+    )"""
+
 BACKEND_BUCKET_ARG = compute_flags.ResourceArgument(
     name='backend_bucket_name',
     resource_name='backend bucket',

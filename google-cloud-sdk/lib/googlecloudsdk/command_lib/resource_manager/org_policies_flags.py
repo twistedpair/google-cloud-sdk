@@ -21,7 +21,6 @@ def AddIdArgToParser(parser):
   base.Argument(
       'id',
       metavar='ORG_POLICY_ID',
-      list_command_path='resource-manager org-policies list --uri',
       help='The Org Policy constraint name.').AddToParser(parser)
 
 
@@ -29,7 +28,6 @@ def AddResourceFlagsToParser(parser):
   base.Argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      list_command_path='organizations list --uri',
       help='Organization ID for Org Policies.').AddToParser(parser)
 
 

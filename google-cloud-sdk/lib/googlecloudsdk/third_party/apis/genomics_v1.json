@@ -2906,7 +2906,7 @@
           "description": "Lists operations that match the specified filter in the request.",
           "parameters": {
             "name": {
-              "description": "The name of the operation collection.",
+              "description": "The name of the operation's parent resource.",
               "location": "path",
               "required": true,
               "pattern": "^operations$",

@@ -28,7 +28,6 @@ import sys
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
-from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -62,14 +61,6 @@ def UpdateCheck(command_path, **unused_kwargs):
   # messages printed should reach the user.
   except Exception:
     log.debug('Failed to perform update check.', exc_info=True)
-
-
-def IssueMlWarning(command_path=None):
-  del command_path  # Unused in _IssueMlWarning
-  log.warn(
-      'The `gcloud beta ml` commands have been renamed and will soon be '
-      'removed. Please use `gcloud ml-engine` instead.')
-  log.warn(flags.V1BETA1_DEPRECATION_WARNING)
 
 
 def _IssueTestWarning(command_path=None):
@@ -109,20 +100,6 @@ def CreateCLI(surfaces):
     loader.AddModule(dot_path, dir_path, component=None)
 
   if os.path.exists(os.path.join(pkg_root, 'surface', 'beta')):
-    for mod in ['jobs', 'local', 'models', 'operations', 'versions',
-                'init_project.py', 'predict.py']:
-      loader.AddModule(
-          'beta.ml.{}'.format(mod.replace('.py', '')),
-          os.path.join(pkg_root, 'surface', 'ml_engine', mod))
-    loader.RegisterPreRunHook(IssueMlWarning,
-                              include_commands=r'gcloud\.beta\.ml\..*',
-                              exclude_commands=(
-                                  r'gcloud\.beta\.ml\.vision\..*'
-                                  r'|gcloud\.beta\.ml\.language\..*'
-                                  r'|gcloud\.beta\.ml\.speech\..*'
-                                  r'|gcloud\.beta\.ml$'
-                              ))
-
     # TODO(b/35758009): Remove cloned beta.test commands and PreRunHook after a
     # suitable deprecation period.
     # Clone 'firebase test' surface into 'beta test' for backward compatibility.

@@ -297,8 +297,7 @@ projects/{projectid}/notes/{noteid} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists all notes for a given project.  Filters can be used on this.
-field to list all notes with a specific parameter.
+      """Lists all notes for a given project.
 
       Args:
         request: (ContaineranalysisProjectsNotesListRequest) input message
@@ -583,9 +582,7 @@ projects/{projectid}/notes/{noteid} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists all occurrences for a given project/Digest.  Filters can be used on.
-this field to list all digests containing a specific occurrence in a
-project.
+      """Lists active occurrences for a given project/Digest.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesListRequest) input message
@@ -890,8 +887,7 @@ projects/{projectid}/notes/{noteid} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists all notes for a given project.  Filters can be used on this.
-field to list all notes with a specific parameter.
+      """Lists all notes for a given project.
 
       Args:
         request: (ContaineranalysisProvidersNotesListRequest) input message

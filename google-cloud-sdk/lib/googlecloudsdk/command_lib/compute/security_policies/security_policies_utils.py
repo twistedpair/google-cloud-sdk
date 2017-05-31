@@ -15,31 +15,42 @@
 """Code that's shared between multiple security policies subcommands."""
 
 import base64
+import json
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.resource import resource_printer
 import yaml
 
 
-def SecurityPolicyFromFile(input_file, messages):
+def SecurityPolicyFromFile(input_file, messages, file_format):
   """Returns the security policy read from the given file.
 
   Args:
     input_file: file, A file with a security policy config.
     messages: messages, The set of available messages.
+    file_format: string, the format of the file to read from
 
   Returns:
     A security policy resource.
   """
-  try:
-    parsed_security_policy = yaml.safe_load(input_file)
-  except yaml.YAMLError, e:
-    raise exceptions.BadFileException('Error parsing YAML: {0}'.format(str(e)))
+
+  if file_format == 'yaml':
+    try:
+      parsed_security_policy = yaml.safe_load(input_file)
+    except yaml.YAMLError as e:
+      raise exceptions.BadFileException(
+          'Error parsing YAML: {0}'.format(str(e)))
+  else:
+    try:
+      parsed_security_policy = json.load(input_file)
+    except ValueError as e:
+      raise exceptions.BadFileException(
+          'Error parsing JSON: {0}'.format(str(e)))
 
   security_policy = messages.SecurityPolicy()
   security_policy.description = parsed_security_policy['description']
   security_policy.fingerprint = base64.urlsafe_b64decode(
-      parsed_security_policy['fingerprint'])
+      parsed_security_policy['fingerprint'].encode('ascii'))
 
   rules = []
   for rule in parsed_security_policy['rules']:

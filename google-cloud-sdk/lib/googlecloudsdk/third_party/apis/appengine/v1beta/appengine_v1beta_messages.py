@@ -322,7 +322,7 @@ class AppengineAppsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
@@ -732,6 +732,7 @@ class AutomaticScaling(_messages.Message):
       for this version.
     networkUtilization: Target scaling by network usage.
     requestUtilization: Target scaling by request utilization.
+    standardSchedulerSettings: Scheduler settings for standard environment.
   """
 
   coolDownPeriod = _messages.StringField(1)
@@ -746,6 +747,7 @@ class AutomaticScaling(_messages.Message):
   minTotalInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   networkUtilization = _messages.MessageField('NetworkUtilization', 11)
   requestUtilization = _messages.MessageField('RequestUtilization', 12)
+  standardSchedulerSettings = _messages.MessageField('StandardSchedulerSettings', 13)
 
 
 class BasicScaling(_messages.Message):
@@ -1831,6 +1833,20 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(14)
 
 
+class StandardSchedulerSettings(_messages.Message):
+  """Scheduler settings for standard environment.
+
+  Fields:
+    targetCpuUtilization: Target CPU utilization ratio to maintain when
+      scaling.
+    targetThroughputUtilization: Target throughput utilization ratio to
+      maintain when scaling
+  """
+
+  targetCpuUtilization = _messages.FloatField(1)
+  targetThroughputUtilization = _messages.FloatField(2)
+
+
 class StaticFilesHandler(_messages.Message):
   """Files served directly to the user for a given URL, such as images, CSS
   stylesheets, or JavaScript source files. Static file handlers describe which
@@ -2285,6 +2301,9 @@ class Version(_messages.Message):
     resources: Machine resources for this version. Only applicable for VM
       runtimes.
     runtime: Desired runtime. Example: python27.
+    runtimeApiVersion: The version of the API in the given runtime
+      environment. Please see the app.yaml reference for valid values at https
+      ://cloud.google.com/appengine/docs/standard/<language>/config/appref
     servingStatus: Current serving status of this version. Only the versions
       with a SERVING status create instances and can be
       billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
@@ -2416,10 +2435,11 @@ class Version(_messages.Message):
   readinessCheck = _messages.MessageField('ReadinessCheck', 25)
   resources = _messages.MessageField('Resources', 26)
   runtime = _messages.StringField(27)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 28)
-  threadsafe = _messages.BooleanField(29)
-  versionUrl = _messages.StringField(30)
-  vm = _messages.BooleanField(31)
+  runtimeApiVersion = _messages.StringField(28)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 29)
+  threadsafe = _messages.BooleanField(30)
+  versionUrl = _messages.StringField(31)
+  vm = _messages.BooleanField(32)
 
 
 class Volume(_messages.Message):

@@ -21,7 +21,6 @@ def FolderIdArg(use_description):
   return base.Argument(
       'id',
       metavar='FOLDER_ID',
-      list_command_path='resource-manager folders list --uri',
       help='ID for the folder {0}'.format(use_description))
 
 
@@ -31,7 +30,6 @@ def FolderIdFlag(use_description):
       '--folder',
       metavar='FOLDER_ID',
       default=None,
-      list_command_path='resource-manager folders list --uri',
       help='ID for the folder {0}'.format(use_description))
 
 
@@ -39,7 +37,6 @@ def OrganizationIdFlag(use_description):
   return base.Argument(
       '--organization',
       metavar='ORGANIZATION_ID',
-      list_command_path='organizations list --uri',
       help='ID for the organization {0}'.format(use_description))
 
 
@@ -47,7 +44,6 @@ def OperationIdArg(use_description):
   return base.Argument(
       'id',
       metavar='OPERATION_ID',
-      list_command_path='resource-manager operations list --uri',
       help='ID for the operation {0}'.format(use_description))
 
 
@@ -64,7 +60,6 @@ def LienIdArg(use_description):
   return base.Argument(
       'id',
       metavar='LIEN_ID',
-      list_command_path='resource-manager liens list --uri',
       help='ID for the lien {0}'.format(use_description))
 
 

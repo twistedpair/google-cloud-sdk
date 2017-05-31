@@ -14,15 +14,15 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _SOURCE_DISK_DETAILED_HELP = """\
         A source disk to create the image from. The value for this option can be
         the name of a disk with the zone specified via ``--source-disk-zone''
         flag.
-
-        This flag is mutually exclusive with ``--source-uri''.
 """
 _REPLACEMENT_DISK_DETAILED_HELP = """\
        Specifies a Compute Engine image as a replacement for the image
@@ -80,3 +80,95 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     detailed_help=_SOURCE_DISK_DETAILED_HELP,
     zone_explanation=_SOURCE_DISK_ZONE_EXPLANATION,
     required=False)
+
+
+def AddCommonArgs(parser):
+  """Add common image creation args."""
+  parser.add_argument(
+      '--description',
+      help=('An optional, textual description for the image being created.'))
+
+  parser.add_argument(
+      '--family',
+      help=('The family of the image. When creating an instance or disk, '
+            'specifying a family will cause the latest non-deprecated image '
+            'in the family to be used.')
+  )
+
+  parser.add_argument(
+      '--licenses',
+      type=arg_parsers.ArgList(),
+      help='Comma-separated list of URIs to license resources.')
+
+
+def AddCommonSourcesArgs(parser, sources_group):
+  """Add common args for specifying the source for image creation."""
+  sources_group.add_argument(
+      '--source-uri',
+      help="""\
+      The full Google Cloud Storage URI where the disk image is stored.
+      This file must be a gzip-compressed tarball whose name ends in
+      ``.tar.gz''.
+      """)
+
+  SOURCE_DISK_ARG.AddArgument(parser, mutex_group=sources_group)
+
+
+def AddCloningImagesArgs(parser, sources_group):
+  """Add args to support image cloning."""
+  sources_group.add_argument(
+      '--source-image',
+      help="""\
+      The name of an image to clone. May be used with
+      ``--source-image-project'' to clone an image in a different
+      project.
+      """)
+
+  sources_group.add_argument(
+      '--source-image-family',
+      help="""\
+      The family of the source image. This will cause the latest non-
+      deprecated image in the family to be used as the source image.
+      May be used with ``--source-image-project'' to refer to an image
+      family in a different project.
+      """)
+
+  parser.add_argument(
+      '--source-image-project',
+      help="""\
+      The project name of the source image. Must also specify either
+      ``--source-image'' or ``--source-image-family'' when using
+      this flag.
+      """)
+
+
+def AddGuestOsFeaturesArg(parser, guest_os_features):
+  """Add the guest-os-features arg."""
+  if not guest_os_features:
+    return
+  parser.add_argument(
+      '--guest-os-features',
+      metavar='GUEST_OS_FEATURE',
+      type=arg_parsers.ArgList(element_type=lambda x: x.upper(),
+                               choices=guest_os_features),
+      help=('One or more features supported by the OS in the image.'))
+
+
+def ValidateSourceArgs(args, sources):
+  """Validate that there is one, and only one, source for creating an image."""
+  sources_error_message = 'Please specify a source for image creation.'
+
+  # Get the list of source arguments
+  source_arg_list = [getattr(args, s.replace('-', '_')) for s in sources]
+  # Count the number of source arguments that are specified.
+  source_arg_count = sum(bool(a) for a in source_arg_list)
+
+  source_arg_names = ['--' + s for s in sources]
+
+  if source_arg_count > 1:
+    raise exceptions.ConflictingArgumentsException(*source_arg_names)
+
+  if source_arg_count < 1:
+    raise exceptions.MinimumArgumentException(source_arg_names,
+                                              sources_error_message)
+

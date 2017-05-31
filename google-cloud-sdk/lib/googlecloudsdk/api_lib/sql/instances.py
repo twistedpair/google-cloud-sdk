@@ -17,6 +17,7 @@ import argparse
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 
 
 # TODO(b/35104889): Migrate methods containing Namespace args to command_lib
@@ -330,6 +331,10 @@ class _BaseInstances(object):
 
     # Reverting to default if creating instance and no flags are set.
     if not machine_type and not instance:
+      # TODO(b/37718516): Remove warning when defaults are changed.
+      log.warning('The default instance type will change from First Generation '
+                  '"D1" to Second Generation "db-n1-standard-1" on 2017-07-19. '
+                  'Specifying a tier will avoid unexpected behavior.')
       machine_type = constants.DEFAULT_MACHINE_TYPE
 
     return machine_type

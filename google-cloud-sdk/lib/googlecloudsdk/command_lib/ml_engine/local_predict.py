@@ -20,7 +20,6 @@ conventions of Cloud SDK do not apply here.
 from __future__ import print_function
 
 import argparse
-import imp
 import json
 import os
 import sys
@@ -60,46 +59,24 @@ def _verify_tensorflow(version):
   return True
 
 
-def _import_prediction_lib_ga():
-  """Import a GA prediction library (bundled)."""
-  if not _verify_tensorflow('1.0.0'):
-    sys.exit(-1)
-
-  sdk_root_dir = os.environ['CLOUDSDK_ROOT']
-  # pylint: disable=g-import-not-at-top
+def import_prediction_lib():
   try:
-    # This horrible hack is necessary because we can't import the Cloud ML SDK
-    # like normal; we're probably missing dependencies. We just want to import
-    # prediction.prediction_lib.
-    sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
-                                    'cloud_ml_engine_sdk', 'prediction'))
-    import prediction_lib
-    return prediction_lib
-  finally:
-    sys.path.pop(0)
-  # pylint: enable=g-import-not-at-top
+    if not _verify_tensorflow('1.0.0'):
+      sys.exit(-1)
 
-
-def _import_prediction_lib_beta():
-  """Import a beta prediction library (packaged with Cloud SDK source)."""
-  if not _verify_tensorflow('0.10.0'):
-    sys.exit(-1)
-  # This horrible hack is necessary because we're executing outside of the
-  # context of the Cloud SDK. There's no guarantee about what is/is not on the
-  # PYTHONPATH.
-  return imp.load_source(
-      'prediction_lib_beta',
-      os.path.join(os.path.dirname(__file__), 'prediction_lib_beta.py'))
-
-
-def import_prediction_lib(version):
-  try:
-    if version == 'ga':
-      return _import_prediction_lib_ga()
-    elif version == 'beta':
-      return _import_prediction_lib_beta()
-    else:
-      raise ValueError('Invalid version [{}]. Must be one of [beta, ga]')
+    sdk_root_dir = os.environ['CLOUDSDK_ROOT']
+    # pylint: disable=g-import-not-at-top
+    try:
+      # This horrible hack is necessary because we can't import the Cloud ML SDK
+      # like normal; we're probably missing dependencies. We just want to import
+      # prediction.prediction_lib.
+      sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
+                                      'cloud_ml_engine_sdk', 'prediction'))
+      import prediction_lib
+      return prediction_lib
+    finally:
+      sys.path.pop(0)
+    # pylint: enable=g-import-not-at-top
   except ImportError as err:
     if 'prediction_lib' in err:
       # This shouldn't happen; we should always have predict_lib.py available.
@@ -117,8 +94,6 @@ def import_prediction_lib(version):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--model-dir', required=True, help='Path of the model.')
-  parser.add_argument('--version', required=True, choices=['beta', 'ga'],
-                      help='Which prediction library release to use.')
   args, _ = parser.parse_known_args()
 
   instances = []
@@ -126,7 +101,7 @@ def main():
     instance = json.loads(line.rstrip('\n'))
     instances.append(instance)
 
-  prediction_lib = import_prediction_lib(args.version)
+  prediction_lib = import_prediction_lib()
   predictions = prediction_lib.local_predict(model_dir=args.model_dir,
                                              instances=instances)
   print(json.dumps(predictions))

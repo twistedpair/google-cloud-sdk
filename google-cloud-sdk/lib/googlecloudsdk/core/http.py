@@ -401,7 +401,7 @@ class Modifiers(object):
 
     if 'headers' in kwargs:
       return kwargs['headers'].get(header, default)
-    elif len(args) > 3:
+    elif len(args) > 3 and args[3]:
       return args[3].get(header, default)
     else:
       return default
@@ -412,7 +412,7 @@ class Modifiers(object):
 
     if 'headers' in kwargs:
       kwargs['headers'][header] = value
-    elif len(args) > 3:
+    elif len(args) > 3 and args[3]:
       args[3][header] = value
     else:
       kwargs['headers'] = {header: value}

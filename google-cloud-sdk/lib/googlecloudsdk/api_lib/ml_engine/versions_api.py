@@ -25,34 +25,30 @@ class InvalidVersionConfigFile(exceptions.Error):
   """Error indicating an invalid Version configuration file."""
 
 
-def VersionsClient(version='v1beta1'):
-  if version == 'v1beta1':
-    return VersionsClientBeta()
-  elif version == 'v1':
-    return VersionsClientGa()
-  else:
-    raise ValueError('Unrecognized version [{}]'.format(version))
-
-
-class VersionsClientBase(object):
+class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
   _ALLOWED_YAML_FIELDS = set(['description', 'deploymentUri', 'runtimeVersion',
                               'manualScaling'])
 
-  def __init__(self, client, messages=None):
-    self.client = client
+  def __init__(self, client=None, messages=None):
+    self.client = client or apis.GetClientInstance('ml', 'v1')
     self.messages = messages or self.client.MESSAGES_MODULE
 
   @property
   def version_class(self):
-    raise NotImplementedError()
+    return self.messages.GoogleCloudMlV1Version
 
   def _MakeCreateRequest(self, parent, version):
-    raise NotImplementedError()
+    return self.messages.MlProjectsModelsVersionsCreateRequest(
+        parent=parent,
+        googleCloudMlV1Version=version)
 
   def _MakeSetDefaultRequest(self, name):
-    raise NotImplementedError()
+    request = self.messages.GoogleCloudMlV1SetDefaultVersionRequest()
+    return self.messages.MlProjectsModelsVersionsSetDefaultRequest(
+        name=name,
+        googleCloudMlV1SetDefaultVersionRequest=request)
 
   def Create(self, model_ref, version):
     """Creates a new version in an existing model."""
@@ -148,49 +144,3 @@ class VersionsClientBase(object):
         setattr(version, field_name, value)
 
     return version
-
-
-class VersionsClientBeta(VersionsClientBase):
-  """Client for the versions service of Cloud ML Engine."""
-
-  def __init__(self, client=None, messages=None):
-    super(VersionsClientBeta, self).__init__(
-        client or apis.GetClientInstance('ml', 'v1beta1'), messages)
-
-  @property
-  def version_class(self):
-    return self.messages.GoogleCloudMlV1beta1Version
-
-  def _MakeCreateRequest(self, parent, version):
-    return self.messages.MlProjectsModelsVersionsCreateRequest(
-        parent=parent,
-        googleCloudMlV1beta1Version=version)
-
-  def _MakeSetDefaultRequest(self, name):
-    request = self.messages.GoogleCloudMlV1beta1SetDefaultVersionRequest()
-    return self.messages.MlProjectsModelsVersionsSetDefaultRequest(
-        name=name,
-        googleCloudMlV1beta1SetDefaultVersionRequest=request)
-
-
-class VersionsClientGa(VersionsClientBase):
-  """Client for the versions service of Cloud ML Engine."""
-
-  def __init__(self, client=None, messages=None):
-    super(VersionsClientGa, self).__init__(
-        client or apis.GetClientInstance('ml', 'v1'), messages)
-
-  @property
-  def version_class(self):
-    return self.messages.GoogleCloudMlV1Version
-
-  def _MakeCreateRequest(self, parent, version):
-    return self.messages.MlProjectsModelsVersionsCreateRequest(
-        parent=parent,
-        googleCloudMlV1Version=version)
-
-  def _MakeSetDefaultRequest(self, name):
-    request = self.messages.GoogleCloudMlV1SetDefaultVersionRequest()
-    return self.messages.MlProjectsModelsVersionsSetDefaultRequest(
-        name=name,
-        googleCloudMlV1SetDefaultVersionRequest=request)

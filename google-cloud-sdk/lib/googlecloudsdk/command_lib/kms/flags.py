@@ -18,7 +18,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
-
 # Collection names.
 LOCATION_COLLECTION = 'cloudkms.projects.locations'
 KEY_RING_COLLECTION = 'cloudkms.projects.locations.keyRings'
@@ -29,9 +28,11 @@ CRYPTO_KEY_VERSION_COLLECTION = (
 
 # Flags.
 def AddLocationFlag(parser):
+
   def _CompletionCallback(parser):
     del parser  # Unused by Callback.
     return ['kms', 'locations', 'list', '--format=value(locationId)']
+
   parser.add_argument(
       '--location',
       completion_resource=LOCATION_COLLECTION,
@@ -46,33 +47,19 @@ def AddKeyRingFlag(parser):
       help='The containing keyring.')
 
 
-def AddCryptoKeyFlag(parser):
+def AddCryptoKeyFlag(parser, help_text=None):
   parser.add_argument(
       '--key',
       completion_resource=CRYPTO_KEY_COLLECTION,
-      help='The containing key.')
+      help=help_text or 'The containing key.')
 
 
-# Arguments
-def AddKeyRingArgument(parser, help_action):
+def AddCryptoKeyVersionFlag(parser, help_action, required=False):
   parser.add_argument(
-      'keyring',
-      completion_resource=KEY_RING_COLLECTION,
-      help='Name of the keyring %s.' % help_action)
-
-
-def AddCryptoKeyArgument(parser, help_action):
-  parser.add_argument(
-      'key',
-      completion_resource=CRYPTO_KEY_COLLECTION,
-      help='Name of the key %s.' % help_action)
-
-
-def AddCryptoKeyVersionArgument(parser, help_action):
-  parser.add_argument(
-      'version',
+      '--version',
+      required=required,
       completion_resource=CRYPTO_KEY_VERSION_COLLECTION,
-      help='Name of the version %s.' % help_action)
+      help='The version {0}.'.format(help_action))
 
 
 def AddRotationPeriodFlag(parser):
@@ -87,6 +74,49 @@ def AddNextRotationTimeFlag(parser):
       '--next-rotation-time',
       type=arg_parsers.Datetime.Parse,
       help='Next automatic rotation time of the key.')
+
+
+def AddPlaintextFileFlag(parser, help_action):
+  parser.add_argument(
+      '--plaintext-file',
+      help='Path to the plaintext file {0}.'.format(help_action),
+      required=True)
+
+
+def AddCiphertextFileFlag(parser, help_action):
+  parser.add_argument(
+      '--ciphertext-file',
+      help='Path to the ciphertext file {0}.'.format(help_action),
+      required=True)
+
+
+def AddAadFileFlag(parser):
+  parser.add_argument(
+      '--additional-authenticated-data-file',
+      help=
+      'Path to the optional file containing the additional authenticated data.')
+
+
+# Arguments
+def AddKeyRingArgument(parser, help_action):
+  parser.add_argument(
+      'keyring',
+      completion_resource=KEY_RING_COLLECTION,
+      help='Name of the keyring {0}.'.format(help_action))
+
+
+def AddCryptoKeyArgument(parser, help_action):
+  parser.add_argument(
+      'key',
+      completion_resource=CRYPTO_KEY_COLLECTION,
+      help='Name of the key {0}.'.format(help_action))
+
+
+def AddCryptoKeyVersionArgument(parser, help_action):
+  parser.add_argument(
+      'version',
+      completion_resource=CRYPTO_KEY_VERSION_COLLECTION,
+      help='Name of the version {0}.'.format(help_action))
 
 
 # Parsing.
@@ -133,7 +163,7 @@ def ParseCryptoKeyVersionName(args):
 # Set proto fields from flags.
 def SetRotationPeriod(args, crypto_key):
   if args.rotation_period is not None:
-    crypto_key.rotationPeriod = '%ds' % args.rotation_period
+    crypto_key.rotationPeriod = '{0}s'.format(args.rotation_period)
 
 
 def SetNextRotationTime(args, crypto_key):

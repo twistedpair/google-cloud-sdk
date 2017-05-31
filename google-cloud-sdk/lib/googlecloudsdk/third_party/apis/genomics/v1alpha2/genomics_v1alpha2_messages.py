@@ -284,7 +284,7 @@ class GenomicsOperationsListRequest(_messages.Message):
       1432140000 AND createTime <= 1432150000 AND status = RUNNING` *
       `projectId = my-project AND labels.color = *` * `projectId = my-project
       AND labels.color = red`
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The maximum number of results to return. If unspecified,
       defaults to 256. The maximum value is 2048.
     pageToken: The standard list page token.

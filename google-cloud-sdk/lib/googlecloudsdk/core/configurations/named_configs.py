@@ -474,13 +474,19 @@ def _ActiveConfigNameFromFile():
     str, The name of the active configuration or None.
   """
   path = config.Paths().named_config_activator_path
+  is_invalid = False
 
   try:
     with open(path, 'r') as f:
       config_name = f.read()
       # If the file is empty, treat it like the file does not exist.
       if config_name:
-        return config_name
+        if _IsValidConfigName(config_name, allow_reserved=True):
+          return config_name
+        else:
+          # Somehow the file got corrupt, just remove it and it will get
+          # recreated correctly.
+          is_invalid = True
   except (OSError, IOError) as exc:
     if exc.errno != errno.ENOENT:
       raise NamedConfigFileAccessError(
@@ -489,6 +495,9 @@ def _ActiveConfigNameFromFile():
           'in [{1}]'
           .format(path, config.Paths().named_config_directory), exc)
 
+  if is_invalid:
+    # Need to do this outside the `with open()` because that fails on Windows.
+    os.remove(path)
   # The active named config pointer file is missing, return None
   return None
 
@@ -513,6 +522,25 @@ def _FileForConfig(config_name, paths):
                       _CONFIG_FILE_PREFIX + config_name)
 
 
+def _IsValidConfigName(config_name, allow_reserved):
+  """Determines if the given configuration name conforms to the standard.
+
+  Args:
+    config_name: str, The name to check.
+    allow_reserved: bool, Allows the given name to be one of the reserved
+      configuration names.
+
+  Returns:
+    True if valid, False otherwise.
+  """
+  if config_name in _RESERVED_CONFIG_NAMES:
+    if not allow_reserved:
+      return False
+  elif not re.match(_VALID_CONFIG_NAME_REGEX, config_name):
+    return False
+  return True
+
+
 def _EnsureValidConfigName(config_name, allow_reserved):
   """Ensures that the given configuration name conforms to the standard.
 
@@ -524,10 +552,7 @@ def _EnsureValidConfigName(config_name, allow_reserved):
   Raises:
     InvalidConfigName: If the name is invalid.
   """
-  if config_name in _RESERVED_CONFIG_NAMES:
-    if not allow_reserved:
-      raise InvalidConfigName(config_name)
-  elif not re.match(_VALID_CONFIG_NAME_REGEX, config_name):
+  if not _IsValidConfigName(config_name, allow_reserved):
     raise InvalidConfigName(config_name)
 
 

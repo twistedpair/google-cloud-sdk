@@ -20,11 +20,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def GetMessagesModule(version='v1beta1'):
+def GetMessagesModule(version='v1'):
   return apis.GetMessagesModule('ml', version)
 
 
-def GetClientInstance(version='v1beta1', no_http=False):
+def GetClientInstance(version='v1', no_http=False):
   return apis.GetClientInstance('ml', version, no_http=no_http)
 
 
@@ -52,7 +52,7 @@ class CloudMlOperationPoller(waiter.CloudOperationPoller):
 class OperationsClient(object):
   """Client for operations service in the Cloud ML Engine API."""
 
-  def __init__(self, version='v1beta1'):
+  def __init__(self, version='v1'):
     self.client = GetClientInstance(version)
     self.messages = self.client.MESSAGES_MODULE
 

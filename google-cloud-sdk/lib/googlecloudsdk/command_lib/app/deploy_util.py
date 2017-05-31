@@ -526,6 +526,14 @@ def _PossiblyCreateApp(api_client, project):
       # App resource must be fetched again
       return api_client.GetApplication()
     raise exceptions.MissingApplicationError(project)
+  except core_api_exceptions.HttpException as e:
+    if e.payload.status_code == 403:
+      raise core_api_exceptions.HttpException(
+          ('Permissions error fetching application [{}]. Please '
+           'make sure you are using the correct project ID and that '
+           'you have permission to view applications on the project.'.format(
+               api_client._FormatApp())))  # pylint: disable=protected-access
+    raise
 
 
 def _PossiblyRepairApp(api_client, app):

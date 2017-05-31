@@ -279,7 +279,7 @@ CryptoKey.purpose is required.
     )
 
     def Decrypt(self, request, global_params=None):
-      """Decrypt data that was protected by Encrypt.
+      """Decrypts data that was protected by Encrypt.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest) input message
@@ -306,7 +306,7 @@ CryptoKey.purpose is required.
     )
 
     def Encrypt(self, request, global_params=None):
-      """Encrypt data, so that it can only be recovered by a call to Decrypt.
+      """Encrypts data, so that it can only be recovered by a call to Decrypt.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest) input message

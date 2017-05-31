@@ -649,19 +649,22 @@ class HttpRule(_messages.Message):
   path pattern cannot be repeated and must have a primitive (non-message)
   type.  Any fields in the request message which are not bound by the path
   pattern automatically become (optional) HTTP query parameters. Assume the
-  following definition of the request message:       message GetMessageRequest
-  {       message SubMessage {         string subfield = 1;       }
-  string message_id = 1; // mapped to the URL       int64 revision = 2;    //
-  becomes a parameter       SubMessage sub = 3;    // `sub.subfield` becomes a
-  parameter     }   This enables a HTTP JSON to RPC mapping as below:  HTTP |
-  RPC -----|----- `GET /v1/messages/123456?revision=2&sub.subfield=foo` |
-  `GetMessage(message_id: "123456" revision: 2 sub: SubMessage(subfield:
-  "foo"))`  Note that fields which are mapped to HTTP parameters must have a
-  primitive type or a repeated primitive type. Message types are not allowed.
-  In the case of a repeated type, the parameter can be repeated in the URL, as
-  in `...?param=A&param=B`.  For HTTP method kinds which allow a request body,
-  the `body` field specifies the mapping. Consider a REST update method on the
-  message resource collection:       service Messaging {       rpc
+  following definition of the request message:       service Messaging {
+  rpc GetMessage(GetMessageRequest) returns (Message) {         option
+  (google.api.http).get = "/v1/messages/{message_id}";       }     }
+  message GetMessageRequest {       message SubMessage {         string
+  subfield = 1;       }       string message_id = 1; // mapped to the URL
+  int64 revision = 2;    // becomes a parameter       SubMessage sub = 3;
+  // `sub.subfield` becomes a parameter     }   This enables a HTTP JSON to
+  RPC mapping as below:  HTTP | RPC -----|----- `GET
+  /v1/messages/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id:
+  "123456" revision: 2 sub: SubMessage(subfield: "foo"))`  Note that fields
+  which are mapped to HTTP parameters must have a primitive type or a repeated
+  primitive type. Message types are not allowed. In the case of a repeated
+  type, the parameter can be repeated in the URL, as in `...?param=A&param=B`.
+  For HTTP method kinds which allow a request body, the `body` field specifies
+  the mapping. Consider a REST update method on the message resource
+  collection:       service Messaging {       rpc
   UpdateMessage(UpdateMessageRequest) returns (Message) {         option
   (google.api.http) = {           put: "/v1/messages/{message_id}"
   body: "message"         };       }     }     message UpdateMessageRequest {
@@ -761,6 +764,14 @@ class HttpRule(_messages.Message):
       Because, semantically, this rpc is actually an operation on the
       "projects.addresses" collection, the `rest_collection` field is
       configured to override the derived collection name.
+    restMethodName: Optional. The rest method name is by default derived from
+      the URL pattern. If specified, this field overrides the default method
+      name. Example:      rpc CreateResource(CreateResourceRequest)
+      returns (CreateResourceResponse) {       option (google.api.http) = {
+      post: "/v1/resources",         body: "resource",
+      rest_method_name: "insert"       };     }  This method has the
+      automatically derived rest method name "create", but  for backwards
+      compatability with apiary, it is specified as insert.
     selector: Selects methods to which this rule applies.  Refer to selector
       for syntax details.
   """
@@ -777,7 +788,8 @@ class HttpRule(_messages.Message):
   put = _messages.StringField(10)
   responseBody = _messages.StringField(11)
   restCollection = _messages.StringField(12)
-  selector = _messages.StringField(13)
+  restMethodName = _messages.StringField(13)
+  selector = _messages.StringField(14)
 
 
 class LabelDescriptor(_messages.Message):

@@ -126,7 +126,7 @@ def _ValidateBucketUrl(url):
   if url.startswith(GSUTIL_BUCKET_PREFIX):
     name = url[len(GSUTIL_BUCKET_PREFIX):]
   else:
-    name = name
+    name = url
   _ValidateBucketName(name.rstrip('/'))
 
 
@@ -154,9 +154,9 @@ class BucketReference(object):
     return 'gs://{}'.format(self.bucket)
 
   @classmethod
-  def FromArgument(cls, value):
+  def FromArgument(cls, value, require_prefix=True):
     """Validates that the argument is a reference to a Cloud Storage bucket."""
-    if not value.startswith(GSUTIL_BUCKET_PREFIX):
+    if require_prefix and not value.startswith(GSUTIL_BUCKET_PREFIX):
       raise argparse.ArgumentTypeError(
           'Must be a valid Google Cloud Storage bucket of the form '
           '[gs://somebucket]')

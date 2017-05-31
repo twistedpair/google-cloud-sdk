@@ -464,8 +464,7 @@ class Condition(_messages.Message):
         the approvers associated with the request matches the specified
         principal, or is a member of the specified group. Approvers can only
         grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
-        dynamicauth.
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
       JUSTIFICATION_TYPE: What types of justifications have been supplied with
         this request. String values should match enum names from
         tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
@@ -560,7 +559,7 @@ class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
 
   Fields:
     name: The name of the project. Should be of the form
-      "providers/{provider_id}". @deprecated
+      "providers/{provider_id}". @Deprecated
     note: A Note resource to be passed as the request body.
     noteId: The ID to use for this note.
     parent: This field contains the projectId for example:
@@ -616,7 +615,7 @@ class ContaineranalysisProjectsNotesListRequest(_messages.Message):
   Fields:
     filter: The filter expression.
     name: The name field will contain the projectId for example:
-      "providers/{provider_id} @deprecated
+      "providers/{provider_id} @Deprecated
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: This field contains the projectId for example:
@@ -682,7 +681,7 @@ class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
 
   Fields:
     name: The name of the project.  Should be of the form
-      "projects/{project_id}". @deprecated
+      "projects/{project_id}". @Deprecated
     occurrence: A Occurrence resource to be passed as the request body.
     parent: This field contains the projectId for example:
       "projects/{project_id}"
@@ -747,8 +746,8 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   Fields:
     filter: The filter expression.
     name: The name field will contain the projectId for example:
-      "projects/{project_id} @deprecated
-    pageSize: Number of notes to return in the list.
+      "projects/{project_id} @Deprecated
+    pageSize: Number of occurrences to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: This contains the projectId for example: projects/{project_id}
   """
@@ -795,7 +794,7 @@ class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
 
   Fields:
     name: The name of the project. Should be of the form
-      "providers/{provider_id}". @deprecated
+      "providers/{provider_id}". @Deprecated
     note: A Note resource to be passed as the request body.
     noteId: The ID to use for this note.
     parent: This field contains the projectId for example:
@@ -851,7 +850,7 @@ class ContaineranalysisProvidersNotesListRequest(_messages.Message):
   Fields:
     filter: The filter expression.
     name: The name field will contain the projectId for example:
-      "providers/{provider_id} @deprecated
+      "providers/{provider_id} @Deprecated
     pageSize: Number of notes to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
     parent: This field contains the projectId for example:
@@ -1266,13 +1265,13 @@ class ListNotesResponse(_messages.Message):
 
 
 class ListOccurrencesResponse(_messages.Message):
-  """Response including listed occurrences.
+  """Response including listed active occurrences.
 
   Fields:
     nextPageToken: The next pagination token in the List response. It should
       be used as page_token for the following request. An empty value means no
-      more result.
-    occurrences: The occurrences requested
+      more results.
+    occurrences: The occurrences requested.
   """
 
   nextPageToken = _messages.StringField(1)

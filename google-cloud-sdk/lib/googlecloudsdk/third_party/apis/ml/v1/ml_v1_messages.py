@@ -32,14 +32,46 @@ class GoogleApiHttpBody(_messages.Message):
   how the request and response bodies are handled, all other features will
   continue to work unchanged.
 
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
   Fields:
     contentType: The HTTP Content-Type string representing the content type of
       the body.
     data: HTTP body binary data.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    """A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   contentType = _messages.StringField(1)
   data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class GoogleCloudMlV1CancelJobRequest(_messages.Message):
@@ -1305,7 +1337,7 @@ class MlProjectsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """

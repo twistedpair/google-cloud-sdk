@@ -153,6 +153,34 @@ class Node(object):
                                         self.properties.displayName)
     out.Print(kind_and_name)
 
+  def _DisplayShortRepresentation(self, out, prepend, beneath_stub):
+    if self.properties.shortRepresentation:
+      short_rep = '{}{} {}'.format(
+          prepend, beneath_stub,
+          self.properties.shortRepresentation.description)
+      out.Print(short_rep)
+
+  def _DisplayBreakLine(self, out, prepend, beneath_stub, is_root):
+    """Displays an empty line between nodes for visual breathing room.
+
+    Keeps in tact the vertical lines connecting all immediate children of a
+    node to each other.
+
+    Args:
+      out: Output stream to which we print.
+      prepend: String that precedes any information about this node to maintain
+        a visible hierarchy.
+      beneath_stub: String that preserves the indentation of the vertical lines.
+      is_root: Boolean indicating whether this node is the root of the tree.
+    """
+    above_child = '  ' if is_root else ''
+    above_child += '  |' if self.children else ''
+    break_line = '{}{}{}'.format(prepend, beneath_stub, above_child)
+    # It could be the case the beneath_stub adds spaces but above_child doesn't
+    # add an additional vertical line, in which case we want to remove the
+    # extra trailing spaces.
+    out.Print(break_line.rstrip())
+
   def PrettyPrint(self, out, prepend=None, is_last=True, is_root=True):
     """Prints a string representation of this node in the tree.
 
@@ -169,7 +197,13 @@ class Node(object):
     # of its parents. All nodes except the root get one.
     stub = '' if is_root else (r'\-' if is_last else '+-')
 
+    # To list additional properties beneath the name, figure out how they should
+    # be indented relative to the name's stub.
+    beneath_stub = '' if is_root else ('  ' if is_last else '| ')
+
     self._DisplayKindAndName(out, prepend, stub)
+    self._DisplayShortRepresentation(out, prepend, beneath_stub)
+    self._DisplayBreakLine(out, prepend, beneath_stub, is_root)
 
     for idx, child in enumerate(self.children):
       is_last_child = idx == len(self.children) - 1

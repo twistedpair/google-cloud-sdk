@@ -83,7 +83,7 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
     sha1_hash = file_utils.Checksum.HashSingleFile(full_path,
                                                    algorithm=hashlib.sha1)
     manifest_path = '/'.join([bucket_url, sha1_hash])
-    manifest[rel_path] = {
+    manifest[_FormatForManifest(rel_path)] = {
         'sourceUrl': manifest_path,
         'sha1Sum': sha1_hash
     }
@@ -102,7 +102,7 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
       sha1_hash = file_utils.Checksum.HashSingleFile(context_file,
                                                      algorithm=hashlib.sha1)
       manifest_path = '/'.join([bucket_url, sha1_hash])
-      manifest[rel_path] = {
+      manifest[_FormatForManifest(rel_path)] = {
           'sourceUrl': manifest_path,
           'sha1Sum': sha1_hash,
       }
@@ -313,7 +313,7 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     old_url = manifest.get(manifest_path, {}).get('sourceUrl', '')
     if old_url and old_url != dest_path:
       return None
-    manifest[manifest_path] = {
+    manifest[_FormatForManifest(manifest_path)] = {
         'sourceUrl': dest_path,
         'sha1Sum': sha1_hash,
     }
@@ -324,7 +324,8 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     size = os.path.getsize(local_path)
     if size > _MAX_FILE_SIZE:
       raise LargeFileError(local_path, size, _MAX_FILE_SIZE)
-    target_path = AddFileToManifest(relative_path, local_path)
+    target_path = AddFileToManifest(_FormatForManifest(relative_path),
+                                    local_path)
     if not os.path.exists(target_path):
       _CopyOrSymlink(local_path, target_path)
 
@@ -361,3 +362,10 @@ def _CopyOrSymlink(source, target):
   except AttributeError:
     # The system does not support symlinks. Do a file copy instead.
     shutil.copyfile(source, target)
+
+
+def _FormatForManifest(filename):
+  """Reformat a filename for the deployment manifest if it is Windows format."""
+  if os.path.sep == '\\':
+    return filename.replace('\\', '/')
+  return filename

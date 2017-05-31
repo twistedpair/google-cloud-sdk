@@ -20,7 +20,6 @@ import os
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import config
-from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import files
 
@@ -59,7 +58,6 @@ def Update(cli):
     json.dump(
         help_text, index_file, sort_keys=True, indent=2, separators=(',', ':'))
     index_file.write('\n')
-  log.warn('updated help index at {0}'.format(table_path))
 
 
 class HelpIndexGenerator(walker.Walker):

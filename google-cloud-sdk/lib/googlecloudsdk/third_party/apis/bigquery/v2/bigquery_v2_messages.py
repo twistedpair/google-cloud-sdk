@@ -1223,6 +1223,8 @@ class JobConfigurationQuery(_messages.Message):
       allows the query to produce arbitrarily large result tables at a slight
       cost in performance. Requires destinationTable to be set. For standard
       SQL queries, this flag is ignored and large results are always allowed.
+      However, you must still set destinationTable when result size exceeds
+      the allowed maximum response size.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1234,7 +1236,8 @@ class JobConfigurationQuery(_messages.Message):
       unqualified table names in the query.
     destinationTable: [Optional] Describes the table where the query results
       should be stored. If not present, a new table will be created to store
-      the results.
+      the results. This property must be set for large results that exceed the
+      maximum response size.
     flattenResults: [Optional] If true and query uses legacy SQL dialect,
       flattens all nested and repeated fields in the query results.
       allowLargeResults must be true if this is set to false. For standard SQL

@@ -749,7 +749,7 @@ def AddMachineTypeArgs(parser, required=False, unspecified_help=None):
   )
 
 
-def AddMinCpuPlatformArgs(parser, required=False):
+def AddMinCpuPlatformArgs(parser, track, required=False):
   parser.add_argument(
       '--min-cpu-platform',
       metavar='PLATFORM',
@@ -759,10 +759,13 @@ def AddMinCpuPlatformArgs(parser, required=False):
       architecture or a newer one. To list available CPU platforms in given
       zone, run:
 
-          $ gcloud aplha compute zones describe ZONE --format="value(availableCpuPlatforms)"
+          $ gcloud {} compute zones describe ZONE --format="value(availableCpuPlatforms)"
 
       CPU platform selection is available only in selected zones.
-      """)
+
+      You can find more information on-line:
+      [](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform)
+      """.format(track.prefix))
 
 
 def AddPreemptibleVmArgs(parser):

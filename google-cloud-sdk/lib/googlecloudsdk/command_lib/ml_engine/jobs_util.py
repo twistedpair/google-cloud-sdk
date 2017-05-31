@@ -69,12 +69,12 @@ def List(jobs_client):
   return jobs_client.List(project_ref)
 
 
-def StreamLogs(api_version, job, task_name, polling_interval,
+def StreamLogs(job, task_name, polling_interval,
                allow_multiline_logs):
   log_fetcher = stream.LogFetcher(
       filters=log_utils.LogFilters(job, task_name),
       polling_interval=polling_interval, continue_interval=_CONTINUE_INTERVAL,
-      continue_func=log_utils.MakeContinueFunction(job, api_version))
+      continue_func=log_utils.MakeContinueFunction(job))
   return log_utils.SplitMultiline(
       log_fetcher.YieldLogs(), allow_multiline=allow_multiline_logs)
 

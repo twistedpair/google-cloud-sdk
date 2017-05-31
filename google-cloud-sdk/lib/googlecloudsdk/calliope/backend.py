@@ -36,6 +36,7 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import pkg_resources
+from googlecloudsdk.core.util import text
 
 
 class LayoutException(Exception):
@@ -52,6 +53,32 @@ class CommandLoadFailure(Exception):
     super(CommandLoadFailure, self).__init__(
         'Problem loading {command}: {issue}.'.format(
             command=command, issue=str(root_exception)))
+
+
+class _Notes(object):
+  """Auto-generated NOTES section helper."""
+
+  def __init__(self, explicit_notes=None):
+    self._notes = []
+    if explicit_notes:
+      self._notes.append(explicit_notes.rstrip())
+      self._paragraph = True
+    else:
+      self._paragraph = False
+
+  def AddLine(self, line):
+    """Adds a note line with preceding separator if not empty."""
+    if not line:
+      if line is None:
+        return
+    elif self._paragraph:
+      self._paragraph = False
+      self._notes.append('')
+    self._notes.append(line.rstrip())
+
+  def GetContents(self):
+    """Returns the notes contents as a single string."""
+    return '\n'.join(self._notes) if self._notes else None
 
 
 class CommandCommon(object):
@@ -194,8 +221,8 @@ class CommandCommon(object):
     if tags:
       tag = ' '.join(tags) + ' '
 
-      def _InsertTag(text):
-        return re.sub(r'^(\s*)', r'\1' + tag, text)
+      def _InsertTag(txt):
+        return re.sub(r'^(\s*)', r'\1' + tag, txt)
 
       self.short_help = _InsertTag(self.short_help)
       # If long_help starts with section markdown then it's not the implicit
@@ -211,6 +238,25 @@ class CommandCommon(object):
         self.detailed_help = dict(self.detailed_help)  # make a shallow copy
         self.detailed_help['DESCRIPTION'] = _InsertTag(
             textwrap.dedent(description))
+
+  def GetNotesHelpSection(self, contents=None):
+    """Returns the NOTES section with explicit and generated help."""
+    if not contents:
+      contents = self.detailed_help.get('NOTES')
+    notes = _Notes(contents)
+    if self.IsHidden():
+      notes.AddLine('This command is an internal implementation detail and may '
+                    'change or disappear without notice.')
+    notes.AddLine(self.ReleaseTrack().help_note)
+    alternates = self.GetExistingAlternativeReleaseTracks()
+    if alternates:
+      notes.AddLine('{} also available:'.format(
+          text.Pluralize(
+              len(alternates), 'This variant is', 'These variants are')))
+      notes.AddLine('')
+      for alternate in alternates:
+        notes.AddLine('  $ ' + alternate)
+    return notes.GetContents()
 
   def _AssignParser(self, parser_group, allow_positional_args):
     """Assign a parser group to model this Command or CommandGroup.
@@ -440,6 +486,32 @@ class CommandCommon(object):
     if include_hidden:
       return flags
     return [f for f in flags if f.help != argparse.SUPPRESS]
+
+  def GetExistingAlternativeReleaseTracks(self, value=None):
+    """Gets the names for the command in other release tracks.
+
+    Args:
+      value: str, Optional value being parsed after the command.
+
+    Returns:
+      [str]: The names for the command in other release tracks.
+    """
+    existing_alternatives = []
+    # Get possible alternatives.
+    path = self.GetPath()
+    if value:
+      path.append(value)
+    alternates = self._cli_generator.ReplicateCommandPathForAllOtherTracks(path)
+    # See if the command is actually enabled in any of those alternative tracks.
+    if alternates:
+      top_element = self._TopCLIElement()
+      # Pre-sort by the release track prefix so GA commands always list first.
+      for _, command_path in sorted(alternates.iteritems(),
+                                    key=lambda x: x[0].prefix):
+        alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
+        if alternative_cmd and not alternative_cmd.IsHidden():
+          existing_alternatives.append(' '.join(command_path))
+    return existing_alternatives
 
 
 class CommandGroup(CommandCommon):

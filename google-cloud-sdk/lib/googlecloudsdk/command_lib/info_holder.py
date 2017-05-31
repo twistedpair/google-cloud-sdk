@@ -24,6 +24,7 @@ import os
 import platform as system_platform
 import re
 import StringIO
+import subprocess
 import sys
 import textwrap
 
@@ -48,6 +49,7 @@ class InfoHolder(object):
     self.config = ConfigInfo()
     self.env_proxy = ProxyInfoFromEnvironmentVars()
     self.logs = LogsInfo()
+    self.tools = ToolsInfo()
 
   def __str__(self):
     out = StringIO.StringIO()
@@ -57,6 +59,7 @@ class InfoHolder(object):
     if unicode(self.env_proxy):
       out.write(unicode(self.env_proxy) + '\n')
     out.write(unicode(self.logs) + '\n')
+    out.write(unicode(self.tools) + '\n')
     return out.getvalue()
 
 
@@ -421,3 +424,36 @@ class LogsInfo(object):
       A list of LogData
     """
     return [LogData.FromFile(log_file) for log_file in self.last_logs]
+
+
+class ToolsInfo(object):
+  """Holds info about tools gcloud interacts with."""
+
+  def __init__(self):
+    self.git_version = self._GitVersion()
+    self.ssh_version = self._SshVersion()
+
+  def _GitVersion(self):
+    return self._GetVersion(['git', '--version'])
+
+  def _SshVersion(self):
+    return self._GetVersion(['ssh', '-V'])
+
+  def _GetVersion(self, cmd):
+    try:
+      proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT)
+    except OSError:
+      return 'NOT AVAILABLE'
+    stdoutdata, _ = proc.communicate()
+    data = filter(None, stdoutdata.split('\n'))
+    if len(data) != 1:
+      return 'NOT AVAILABLE'
+    else:
+      return data[0]
+
+  def __str__(self):
+    return textwrap.dedent(u"""\
+        git: [{git}]
+        ssh: [{ssh}]
+        """.format(git=self.git_version, ssh=self.ssh_version))

@@ -112,13 +112,12 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   return datetime_getter().isoformat().lower().translate(None, ':-')[:15]
 
 
-def FileIterator(base, skip_files, separator=os.path.sep):
+def FileIterator(base, skip_files):
   """Walks a directory tree, returning all the files. Follows symlinks.
 
   Args:
     base: The base path to search for files under.
     skip_files: A regular expression object for files/directories to skip.
-    separator: Path separator used by the running system's platform.
 
   Yields:
     Paths of files found, relative to base.
@@ -130,28 +129,30 @@ def FileIterator(base, skip_files, separator=os.path.sep):
     current_dir = dirs.pop()
     entries = set(os.listdir(os.path.join(base, current_dir)))
     for entry in sorted(entries):
-      name = os.path.join(current_dir, entry)
-      fullname = os.path.join(base, name)
+      true_name = os.path.join(current_dir, entry)
+      fullname = os.path.join(base, true_name)
 
       # On Windows, os.path.join uses the path separator '\' instead of '/'.
       # However, the skip_files regular expression always uses '/'.
       # To handle this, we'll replace '\' characters with '/' characters.
-      if separator == '\\':
-        name = name.replace('\\', '/')
+      if os.path.sep == '\\':
+        name = true_name.replace('\\', '/')
+      else:
+        name = true_name
 
       if os.path.isfile(fullname):
         if skip_files.match(name):
-          log.info('Ignoring file [%s]: File matches ignore regex.', name)
+          log.info('Ignoring file [%s]: File matches ignore regex.', true_name)
           contains_skipped_modules = True
         else:
-          yield name
+          yield true_name
       elif os.path.isdir(fullname):
         if skip_files.match(name):
           log.info('Ignoring directory [%s]: Directory matches ignore regex.',
-                   name)
+                   true_name)
           contains_skipped_modules = True
         else:
-          dirs.append(name)
+          dirs.append(true_name)
 
   if contains_skipped_modules:
     log.status.Print(

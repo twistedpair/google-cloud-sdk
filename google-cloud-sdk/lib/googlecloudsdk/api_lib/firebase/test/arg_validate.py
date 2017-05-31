@@ -21,6 +21,7 @@ import string
 import sys
 
 from googlecloudsdk.api_lib.firebase.test import exceptions as test_exceptions
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 
@@ -325,13 +326,12 @@ def ValidateResultsBucket(args):
   """
   if args.results_bucket is None:
     return
-  # TODO(b/35922895): migrate to resource.ParseStorageURL when it works here.
-  if args.results_bucket.startswith('gs://'):
-    args.results_bucket = args.results_bucket[5:]
-  args.results_bucket = args.results_bucket.rstrip('/')
-  if '/' in args.results_bucket:
-    raise exceptions.InvalidArgumentException(
-        'results-bucket', 'Results bucket name is not valid')
+  try:
+    bucket_ref = storage_util.BucketReference.FromArgument(args.results_bucket,
+                                                           require_prefix=False)
+  except Exception as err:
+    raise exceptions.InvalidArgumentException('results-bucket', str(err))
+  args.results_bucket = bucket_ref.bucket
 
 
 def ValidateResultsDir(args):

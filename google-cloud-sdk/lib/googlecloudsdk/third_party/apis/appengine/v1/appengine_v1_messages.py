@@ -162,7 +162,7 @@ class AppengineAppsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
@@ -1921,6 +1921,9 @@ class Version(_messages.Message):
     resources: Machine resources for this version. Only applicable for VM
       runtimes.
     runtime: Desired runtime. Example: python27.
+    runtimeApiVersion: The version of the API in the given runtime
+      environment. Please see the app.yaml reference for valid values at https
+      ://cloud.google.com/appengine/docs/standard/<language>/config/appref
     servingStatus: Current serving status of this version. Only the versions
       with a SERVING status create instances and can be
       billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
@@ -2052,10 +2055,11 @@ class Version(_messages.Message):
   readinessCheck = _messages.MessageField('ReadinessCheck', 25)
   resources = _messages.MessageField('Resources', 26)
   runtime = _messages.StringField(27)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 28)
-  threadsafe = _messages.BooleanField(29)
-  versionUrl = _messages.StringField(30)
-  vm = _messages.BooleanField(31)
+  runtimeApiVersion = _messages.StringField(28)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 29)
+  threadsafe = _messages.BooleanField(30)
+  versionUrl = _messages.StringField(31)
+  vm = _messages.BooleanField(32)
 
 
 class Volume(_messages.Message):

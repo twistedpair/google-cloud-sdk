@@ -237,18 +237,25 @@ class Command(object):
     # passed as a LazyFormat kwarg. Second, no unexpanded text should appear
     # in the CLI tree. The LazyFormat calls are ordered to make sure that
     # doesn't happen.
-    sections = getattr(command, 'detailed_help', {})
     capsule = _NormalizeDescription(capsule)
+    sections = {}
     self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
+    detailed_help = getattr(command, 'detailed_help', {})
+    sections.update(detailed_help)
     description = _NormalizeDescription(description)
+    if 'DESCRIPTION' not in sections:
+      sections['DESCRIPTION'] = description
+    notes = command.GetNotesHelpSection()
+    if notes:
+      sections['NOTES'] = notes
     if sections:
-      for s in sections:
+      for name, contents in sections.iteritems():
         # islower() section names were used to convert markdown in command
         # docstrings into the static self.section[] entries seen here.
-        if s.isupper():
-          self.sections[s] = console_io.LazyFormat(
-              _NormalizeDescription(sections[s]),
+        if name.isupper():
+          self.sections[name] = console_io.LazyFormat(
+              _NormalizeDescription(contents),
               command=command_path_string,
               man_name='.'.join(self.path),
               top_command=self.path[0] if self.path else '',
@@ -256,15 +263,6 @@ class Command(object):
               index=capsule,
               description=description,
               **sections)
-    if 'DESCRIPTION' not in self.sections:
-      self.sections['DESCRIPTION'] = console_io.LazyFormat(
-          description,
-          command=command_path_string,
-          man_name='.'.join(self.path),
-          top_command=self.path[0] if self.path else '',
-          parent_command=parent_path_string,
-          index=capsule,
-          **sections)
     self.capsule = console_io.LazyFormat(
         capsule,
         command=command_path_string,

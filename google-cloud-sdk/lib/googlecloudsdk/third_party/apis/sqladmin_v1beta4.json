@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20170512",
+ "revision": "20170523",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -646,6 +646,10 @@
      "type": "string",
      "description": "The file type for the specified uri.\nSQL: The file contains SQL statements.\nCSV: The file contains CSV data."
     },
+    "importUser": {
+     "type": "string",
+     "description": "The PostgreSQL user to use for this import operation. Defaults to cloudsqlsuperuser. Does not apply to MySQL instances."
+    },
     "kind": {
      "type": "string",
      "description": "This is always sql#importContext.",
@@ -785,21 +789,6 @@
     "type": {
      "type": "string",
      "description": "The type of this IP address. A PRIMARY address is an address that can accept incoming connections. An OUTGOING address is the source address of connections originating from the instance, if supported."
-    }
-   }
-  },
-  "Labels": {
-   "id": "Labels",
-   "type": "object",
-   "description": "Reserved for future use.",
-   "properties": {
-    "key": {
-     "type": "string",
-     "description": "Reserved for future use."
-    },
-    "value": {
-     "type": "string",
-     "description": "Reserved for future use."
     }
    }
   },
@@ -1154,10 +1143,11 @@
      "default": "sql#settings"
     },
     "labels": {
-     "type": "array",
-     "description": "Reserved for future use.",
-     "items": {
-      "$ref": "Labels"
+     "type": "object",
+     "description": "User defined labels.",
+     "additionalProperties": {
+      "type": "string",
+      "description": "An individual label entry."
      }
     },
     "locationPreference": {
@@ -1188,7 +1178,7 @@
     },
     "storageAutoResize": {
      "type": "boolean",
-     "description": "Configuration to increase storage size automatically. The default value is false. Applies only to Second Generation instances."
+     "description": "Configuration to increase storage size automatically. The default value is true. Applies only to Second Generation instances."
     },
     "storageAutoResizeLimit": {
      "type": "string",

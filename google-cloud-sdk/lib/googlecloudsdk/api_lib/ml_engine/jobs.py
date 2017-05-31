@@ -20,33 +20,24 @@ from googlecloudsdk.core import resources
 import yaml
 
 
-def GetMessagesModule(version='v1beta1'):
+def GetMessagesModule(version='v1'):
   return apis.GetMessagesModule('ml', version)
 
 
-def GetClientInstance(version='v1beta1', no_http=False):
+def GetClientInstance(version='v1', no_http=False):
   return apis.GetClientInstance('ml', version, no_http=no_http)
 
 
-def JobsClient(version='v1beta1'):
-  if version == 'v1beta1':
-    return JobsClientBeta()
-  elif version == 'v1':
-    return JobsClientGa()
-  else:
-    raise ValueError('Unrecognized API version [{}]'.format(version))
-
-
-class _JobsClientBase(object):
+class JobsClient(object):
   """Client for jobs service in the Cloud ML Engine API."""
 
-  def __init__(self, client, messages=None):
-    self.client = client
+  def __init__(self, client=None, messages=None):
+    self.client = client or GetClientInstance('v1')
     self.messages = messages or self.client.MESSAGES_MODULE
 
   @property
   def state_enum(self):
-    raise NotImplementedError()
+    return self.messages.GoogleCloudMlV1Job.StateValueValuesEnum
 
   def List(self, project_ref):
     req = self.messages.MlProjectsJobsListRequest(
@@ -57,18 +48,20 @@ class _JobsClientBase(object):
 
   @property
   def job_class(self):
-    raise NotImplementedError()
+    return self.messages.GoogleCloudMlV1Job
 
   @property
   def training_input_class(self):
-    raise NotImplementedError()
+    return self.messages.GoogleCloudMlV1TrainingInput
 
   @property
   def prediction_input_class(self):
-    raise NotImplementedError()
+    return self.messages.GoogleCloudMlV1PredictionInput
 
   def _MakeCreateRequest(self, parent=None, job=None):
-    raise NotImplementedError()
+    return self.messages.MlProjectsJobsCreateRequest(
+        parent=parent,
+        googleCloudMlV1Job=job)
 
   def Create(self, project_ref, job):
     return self.client.projects_jobs.Create(
@@ -197,61 +190,3 @@ class _JobsClientBase(object):
         jobId=job_name,
         predictionInput=prediction_input
     )
-
-
-class JobsClientGa(_JobsClientBase):
-  """Client for jobs service in the Cloud ML Engine API."""
-
-  def __init__(self, client=None, messages=None):
-    super(JobsClientGa, self).__init__(client or GetClientInstance('v1'),
-                                       messages)
-
-  @property
-  def state_enum(self):
-    return self.messages.GoogleCloudMlV1Job.StateValueValuesEnum
-
-  @property
-  def job_class(self):
-    return self.messages.GoogleCloudMlV1Job
-
-  @property
-  def training_input_class(self):
-    return self.messages.GoogleCloudMlV1TrainingInput
-
-  @property
-  def prediction_input_class(self):
-    return self.messages.GoogleCloudMlV1PredictionInput
-
-  def _MakeCreateRequest(self, parent=None, job=None):
-    return self.messages.MlProjectsJobsCreateRequest(
-        parent=parent,
-        googleCloudMlV1Job=job)
-
-
-class JobsClientBeta(_JobsClientBase):
-  """Client for jobs service in the Cloud ML Engine API."""
-
-  def __init__(self, client=None, messages=None):
-    super(JobsClientBeta, self).__init__(client or GetClientInstance('v1beta1'),
-                                         messages)
-
-  @property
-  def state_enum(self):
-    return self.messages.GoogleCloudMlV1beta1Job.StateValueValuesEnum
-
-  @property
-  def job_class(self):
-    return self.messages.GoogleCloudMlV1beta1Job
-
-  @property
-  def training_input_class(self):
-    return self.messages.GoogleCloudMlV1beta1TrainingInput
-
-  @property
-  def prediction_input_class(self):
-    return self.messages.GoogleCloudMlV1beta1PredictionInput
-
-  def _MakeCreateRequest(self, parent=None, job=None):
-    return self.messages.MlProjectsJobsCreateRequest(
-        parent=parent,
-        googleCloudMlV1beta1Job=job)

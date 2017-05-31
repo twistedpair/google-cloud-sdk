@@ -20,6 +20,7 @@ from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import gce as c_gce
+from googlecloudsdk.core.util import text
 
 
 def PromptForScope(resource_name, underspecified_names,
@@ -55,8 +56,21 @@ def PromptForScope(resource_name, underspecified_names,
       sorted(scopes, key=operator.attrgetter('name')),
       underspecified_names)
 
+  choice_names, choice_mapping = _FormatScopeValueChoices(scope_value_choices)
+
+  if len(choice_mapping) == 1:
+    suggested_resource_scope_enum = choice_mapping[0][0]
+    suggested_resource = choice_mapping[0][1]
+    if _PromptDidYouMeanScope(resource_name, underspecified_names,
+                              suggested_resource_scope_enum,
+                              suggested_resource):
+      return suggested_resource_scope_enum, suggested_resource
+    else:
+      return None, None
+
   resource_scope_enum, scope_value = _PromptWithScopeChoices(
-      resource_name, underspecified_names, scope_value_choices)
+      resource_name, underspecified_names, scope_value_choices, choice_names,
+      choice_mapping)
 
   return resource_scope_enum, scope_value
 
@@ -64,23 +78,20 @@ def PromptForScope(resource_name, underspecified_names,
 def _PromptDidYouMeanScope(resource_name, underspecified_names, scope_enum,
                            suggested_resource):
   """Prompts "did you mean <scope>".  Returns str or None."""
+  if scope_enum == compute_scope.ScopeEnum.GLOBAL:
+    message = 'Did you mean [{0}] for {1}: [{2}]'.format(
+        scope_enum.flag_name, resource_name, ', '.join(underspecified_names))
+  else:
+    message = 'Did you mean {0} [{1}] for {2}: [{3}]'.format(
+        scope_enum.flag_name, suggested_resource,
+        resource_name, ', '.join(underspecified_names))
+  return console_io.PromptContinue(prompt_string=message, default=True,
+                                   throw_if_unattended=True)
 
-  message = 'Did you mean {0} [{1}] for {2}: [{3}]'.format(
-      scope_enum.flag_name, suggested_resource,
-      resource_name, ', '.join(underspecified_names))
 
-  if console_io.PromptContinue(prompt_string=message, default=True,
-                               throw_if_unattended=True):
-    return suggested_resource
-  return None
-
-
-def _PromptWithScopeChoices(resource_name, underspecified_names,
-                            scope_value_choices):
-  """Queries user to choose scope and its value."""
-  # Print deprecation state for choices.
-  choice_names = []
-  choice_mapping = []
+def _FormatScopeValueChoices(scope_value_choices):
+  """Formats scope value choices for prompting and adds deprecation states."""
+  choice_names, choice_mapping = [], []
   for scope in sorted(scope_value_choices.keys(),
                       key=operator.attrgetter('flag_name')):
     for choice_resource in sorted(scope_value_choices[scope],
@@ -101,9 +112,14 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
       choice_mapping.append((scope, choice_resource.name))
       choice_names.append(choice_name)
 
-  title = ('For the following {0}{1}:\n {2}\n'
-           .format(resource_name,
-                   '(s)' if len(underspecified_names) > 1 else '',
+  return choice_names, choice_mapping
+
+
+def _PromptWithScopeChoices(resource_name, underspecified_names,
+                            scope_value_choices, choice_names, choice_mapping):
+  """Queries user to choose scope and its value."""
+  title = ('For the following {0}:\n {1}\n'
+           .format(text.Pluralize(len(underspecified_names), resource_name),
                    '\n '.join('- [{0}]'.format(n)
                               for n in sorted(underspecified_names))))
   flags = ' or '.join(

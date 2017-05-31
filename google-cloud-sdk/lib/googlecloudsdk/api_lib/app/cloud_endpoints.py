@@ -85,6 +85,13 @@ def ProcessEndpointsService(service, source_dir, project, client=None,
       else:
         swagger_abs_path = os.path.normpath(
             os.path.join(source_dir, swagger_file))
+      # Warn the user about deprecation
+      log.warn('The Cloud Endpoints configuration in app.yaml is deprecated '
+               'and will stop working on June 28th, 2017.  Please use  '
+               '`gcloud service-management deploy` to deploy your Endpoints '
+               'configuration. See '
+               'https://cloud.google.com/endpoints/docs/deploy-an-api '
+               'to learn more.')
       return PushServiceConfig(swagger_abs_path, project, client, messages)
 
   return None

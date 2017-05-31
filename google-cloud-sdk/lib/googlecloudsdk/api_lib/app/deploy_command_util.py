@@ -429,11 +429,12 @@ def PossiblyEnableFlex(project):
     warning = FLEXIBLE_SERVICE_VERIFY_WARNING.format(project)
     # If user is using a service account, add more info about what might
     # have gone wrong.
-    account = c_store.Load()
-    account_type = creds.CredentialType.FromCredentials(account)
-    if account_type in (creds.CredentialType.SERVICE_ACCOUNT,
-                        creds.CredentialType.P12_SERVICE_ACCOUNT):
-      warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
+    credential = c_store.LoadIfEnabled()
+    if credential:
+      account_type = creds.CredentialType.FromCredentials(credential)
+      if account_type in (creds.CredentialType.SERVICE_ACCOUNT,
+                          creds.CredentialType.P12_SERVICE_ACCOUNT):
+        warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
     log.warn(warning)
   except sm_exceptions.EnableServicePermissionDeniedException:
     # If enabling the Flexible API fails due to a permissions error, the

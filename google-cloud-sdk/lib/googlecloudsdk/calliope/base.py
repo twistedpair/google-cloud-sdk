@@ -615,7 +615,9 @@ class Command(_Common):
   """Command is a base class for commands to implement.
 
   Attributes:
-    cli: calliope.cli.CLI, The CLI object representing this command line tool.
+    _cli_power_users_only: calliope.cli.CLI, The CLI object representing this
+      command line tool. This should *only* be accessed via commands that
+      absolutely *need* introspection of the entire CLI.
     context: {str:object}, A set of key-value pairs that can be used for
         common initialization among commands.
     http_func: function that returns an http object that can be used during
@@ -627,16 +629,27 @@ class Command(_Common):
 
   def __init__(self, cli, context):
     super(Command, self).__init__()
-    self._cli = cli
+    self._cli_do_not_use_directly = cli
     self.context = context
     self._uri_cache_enabled = False
 
   @property
-  def cli(self):
-    return self._cli
+  def _cli_power_users_only(self):
+    return self._cli_do_not_use_directly
 
-  def ExecuteCommand(self, args):
-    self.cli.Execute(args, call_arg_complete=False)
+  def ExecuteCommandDoNotUse(self, args):
+    """Execute a command using the given CLI.
+
+    Do not introduce new invocations of this method unless your command
+    *requires* it; any such new invocations must be approved by a team lead.
+
+    Args:
+      args: list of str, the args to Execute() via the CLI.
+
+    Returns:
+      pass-through of the return value from Execute()
+    """
+    return self._cli_power_users_only.Execute(args, call_arg_complete=False)
 
   @staticmethod
   def _Flags(parser):
@@ -780,7 +793,8 @@ class TopicCommand(Command):
   __metaclass__ = abc.ABCMeta
 
   def Run(self, args):
-    self.cli.Execute(args.command_path[1:] + ['--document=style=topic'])
+    self.ExecuteCommandDoNotUse(args.command_path[1:] +
+                                ['--document=style=topic'])
     return None
 
 

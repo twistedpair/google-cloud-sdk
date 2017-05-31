@@ -714,7 +714,13 @@ def GetLogFilePath():
   return _log_manager.current_log_file
 
 
-def _PrintResourceChange(operation, resource, kind, async, details, failed):
+def _PrintResourceChange(operation,
+                         resource,
+                         kind,
+                         async,
+                         details,
+                         failed,
+                         operation_past_tense=None):
   """Prints a status message for operation on resource.
 
   The non-failure status messages are disabled when user output is disabled.
@@ -729,6 +735,8 @@ def _PrintResourceChange(operation, resource, kind, async, details, failed):
       resources and report all successes and failures before exiting. Failure
       messages use log.error. This will display the message on the standard
       error even when user output is disabled.
+    operation_past_tense: str, The past tense version of the operation verb.
+      If None assumes operation + 'd'
   """
   msg = []
   if failed:
@@ -738,7 +746,9 @@ def _PrintResourceChange(operation, resource, kind, async, details, failed):
     msg.append(operation.capitalize())
     msg.append('in progress for')
   else:
-    msg.append('{0}d'.format(operation.capitalize()))
+    verb = operation_past_tense or '{0}d'.format(operation)
+    msg.append('{0}'.format(verb.capitalize()))
+
   if kind:
     msg.append(kind)
   msg.append(u'[{0}]'.format(unicode(resource)))
@@ -806,6 +816,20 @@ def UpdatedResource(resource, kind=None, async=False, details=None,
     failed: str, Failure message.
   """
   _PrintResourceChange('update', resource, kind, async, details, failed)
+
+
+def ResetResource(resource, kind=None, async=False, details=None, failed=None):
+  """Prints a status message indicating that a resource was reset.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('reset', resource, kind, async, details, failed,
+                       operation_past_tense='reset')
 
 
 # pylint: disable=invalid-name

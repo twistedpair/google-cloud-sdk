@@ -120,7 +120,10 @@ class UpdateCheckData(object):
     Returns:
       bool, True if we know about updates, False otherwise.
     """
-    return bool(self._data.notifications)
+    return bool([
+        notification for notification in self._data.notifications
+        if notification.condition.check_components
+    ])
 
   def SetFromSnapshot(self, snapshot, component_updates_available, force=False):
     """Sets that we just did an update check and found the given snapshot.
@@ -138,9 +141,6 @@ class UpdateCheckData(object):
         we have installed.  False otherwise.
       force: bool, True to force a recalculation of whether there are available
         updates, even if the snapshot revision has not changed.
-
-    Returns:
-      bool, True if there are now components to update, False otherwise.
     """
     if force or self.LastUpdateCheckRevision() != snapshot.revision:
       log.debug('Updating notification cache...')
@@ -163,7 +163,6 @@ class UpdateCheckData(object):
     self._data.last_update_check_time = time.time()
     self._data.last_update_check_revision = snapshot.revision
     self._dirty = True
-    return self.UpdatesAvailable()
 
   def SetFromIncompatibleSchema(self):
     """Sets that we just did an update check and found a new schema version.

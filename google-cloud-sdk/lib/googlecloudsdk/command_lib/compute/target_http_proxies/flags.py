@@ -15,6 +15,12 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      urlMap.basename()
+    )"""
+
 
 def TargetHttpProxyArgument(required=True):
   return compute_flags.ResourceArgument(

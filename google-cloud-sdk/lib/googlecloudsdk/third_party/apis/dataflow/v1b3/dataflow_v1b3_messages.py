@@ -4079,19 +4079,14 @@ class TemplateMetadata(_messages.Message):
   """Metadata describing a template.
 
   Fields:
-    bypassTempDirValidation: If true, will bypass the validation that the temp
-      directory is writable. This should only be used with templates for
-      pipelines that are guaranteed not to need to write to the temp
-      directory, which is subject to change based on the optimizer.
     description: Optional. A description of the template.
     name: Required. The name of the template.
     parameters: The parameters for the template.
   """
 
-  bypassTempDirValidation = _messages.BooleanField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  parameters = _messages.MessageField('ParameterMetadata', 4, repeated=True)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  parameters = _messages.MessageField('ParameterMetadata', 3, repeated=True)
 
 
 class TopologyConfig(_messages.Message):

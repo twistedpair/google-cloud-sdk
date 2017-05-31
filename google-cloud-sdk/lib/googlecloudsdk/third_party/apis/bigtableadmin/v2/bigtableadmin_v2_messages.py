@@ -66,7 +66,7 @@ class BigtableadminOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
@@ -915,10 +915,15 @@ class SingleClusterRouting(_messages.Message):
   availability.
 
   Fields:
+    allowTransactionalWrites: Whether or not `CheckAndMutateRow` and
+      `ReadModifyWriteRow` requests are allowed by this app profile. It is
+      unsafe to send these requests to the same table/row/column in multiple
+      clusters.
     clusterId: The cluster to which read/write requests should be routed.
   """
 
-  clusterId = _messages.StringField(1)
+  allowTransactionalWrites = _messages.BooleanField(1)
+  clusterId = _messages.StringField(2)
 
 
 class Split(_messages.Message):

@@ -158,6 +158,14 @@ MAP = {
             default_version=True
         ),
     },
+    'cloudiot': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudiot.v1beta1',
+            client_classpath='cloudiot_v1beta1_client.CloudiotV1beta1',
+            messages_modulepath='cloudiot_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'cloudkms': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudkms.v1',
@@ -391,12 +399,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.ml.v1',
             client_classpath='ml_v1_client.MlV1',
             messages_modulepath='ml_v1_messages',
-            default_version=False
-        ),
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.ml.v1beta1',
-            client_classpath='ml_v1beta1_client.MlV1beta1',
-            messages_modulepath='ml_v1beta1_messages',
             default_version=True
         ),
     },

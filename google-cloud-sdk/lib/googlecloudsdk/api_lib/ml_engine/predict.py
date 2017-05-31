@@ -54,7 +54,7 @@ def Predict(model_or_version_ref, instances):
                                'because the input is not utf-8 encoded.')
 
   # Workaround since current gcloud sdk cannot handle the httpbody properly.
-  # TODO(b/31403673): use M1V1beta1.ProjectsService.Predict once b/31403673
+  # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
   # is fixed.
   response, response_body = http.Http().request(
       uri=url, method='POST', body=body, headers=headers)

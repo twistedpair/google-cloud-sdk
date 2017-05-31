@@ -16,12 +16,8 @@
 
 import abc
 import collections
-import cStringIO
 import json
 import textwrap
-
-from apitools.base.protorpclite import messages
-from apitools.base.py import encoding
 
 import enum
 from googlecloudsdk.api_lib.compute import client_adapter
@@ -42,8 +38,6 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.util import edit
 from googlecloudsdk.core.util import text
 import yaml
 
@@ -754,24 +748,6 @@ class RegionalDescriber(BaseDescriber):
     request.region = ref.region
 
 
-class ZonalDescriber(BaseDescriber):
-  """Base class for describing zonal resources."""
-
-  @staticmethod
-  def Args(parser, resource=None, command=None):
-    BaseDescriber.AddArgs(parser, resource, command)
-    flags.AddZoneFlag(
-        parser,
-        resource_type='resource',
-        operation_type='fetch')
-
-  def CreateReference(self, args):
-    return self.CreateZonalReference(args.name, args.zone)
-
-  def ScopeRequest(self, ref, request):
-    request.zone = ref.zone
-
-
 class MultiScopeDescriber(BaseDescriber):
   """Base class for describing global or regional resources."""
 
@@ -1421,172 +1397,3 @@ def WriteResourceInCommentBlock(serialized_resource, title, buf):
       buf.write('   ')
       buf.write(line)
       buf.write('\n')
-
-
-class BaseEdit(BaseCommand):
-  """Base class for modifying resources using $EDITOR."""
-
-  DEFAULT_FORMAT = 'yaml'
-
-  @abc.abstractmethod
-  def CreateReference(self, args):
-    """Returns a resources.Resource object for the object being mutated."""
-
-  @abc.abstractproperty
-  def reference_normalizers(self):
-    """Defines how to normalize resource references."""
-
-  @abc.abstractproperty
-  def service(self):
-    pass
-
-  @abc.abstractmethod
-  def GetGetRequest(self, args):
-    """Returns a request for fetching the resource."""
-
-  @abc.abstractmethod
-  def GetSetRequest(self, args, replacement, existing):
-    """Returns a request for setting the resource."""
-
-  @abc.abstractproperty
-  def example_resource(self):
-    pass
-
-  def ProcessEditedResource(self, file_contents, args):
-    """Returns an updated resource that was edited by the user."""
-
-    # It's very important that we replace the characters of comment
-    # lines with spaces instead of removing the comment lines
-    # entirely. JSON and YAML deserialization give error messages
-    # containing line, column, and the character offset of where the
-    # error occurred. If the deserialization fails; we want to make
-    # sure those numbers map back to what the user actually had in
-    # front of him or her otherwise the errors will not be very
-    # useful.
-    non_comment_lines = '\n'.join(
-        ' ' * len(line) if line.startswith('#') else line
-        for line in file_contents.splitlines())
-
-    modified_record = DeserializeValue(non_comment_lines,
-                                       args.format or BaseEdit.DEFAULT_FORMAT)
-
-    # Normalizes all of the fields that refer to other
-    # resource. (i.e., translates short names to URIs)
-    reference_normalizer = property_selector.PropertySelector(
-        transformations=self.reference_normalizers)
-    modified_record = reference_normalizer.Apply(modified_record)
-
-    if self.modifiable_record == modified_record:
-      new_object = None
-
-    else:
-      modified_record['name'] = self.original_record['name']
-      fingerprint = self.original_record.get('fingerprint')
-      if fingerprint:
-        modified_record['fingerprint'] = fingerprint
-
-      new_object = encoding.DictToMessage(
-          modified_record, self._resource_spec.message_class)
-
-    # If existing object is equal to the proposed object or if
-    # there is no new object, then there is no work to be done, so we
-    # return the original object.
-    if not new_object or self.original_object == new_object:
-      return [self.original_object]
-
-    errors = []
-    resource_list = list(request_helper.MakeRequests(
-        requests=[self.GetSetRequest(args, new_object, self.original_object)],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
-    if errors:
-      utils.RaiseToolException(
-          errors,
-          error_message='Could not update resource:')
-
-    return resource_list
-
-  def Run(self, args):
-    self.ref = self.CreateReference(args)
-    get_request = self.GetGetRequest(args)
-
-    errors = []
-    objects = list(request_helper.MakeRequests(
-        requests=[get_request],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
-    if errors:
-      utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch resource:')
-
-    self.original_object = objects[0]
-    self.original_record = encoding.MessageToDict(self.original_object)
-
-    # Selects only the fields that can be modified.
-    field_selector = property_selector.PropertySelector(
-        properties=self._resource_spec.editables)
-    self.modifiable_record = field_selector.Apply(self.original_record)
-
-    buf = cStringIO.StringIO()
-    for line in HELP.splitlines():
-      buf.write('#')
-      if line:
-        buf.write(' ')
-      buf.write(line)
-      buf.write('\n')
-
-    buf.write('\n')
-    buf.write(SerializeDict(self.modifiable_record,
-                            args.format or BaseEdit.DEFAULT_FORMAT))
-    buf.write('\n')
-
-    example = SerializeDict(
-        encoding.MessageToDict(self.example_resource),
-        args.format or BaseEdit.DEFAULT_FORMAT)
-    WriteResourceInCommentBlock(example, 'Example resource:', buf)
-
-    buf.write('#\n')
-
-    original = SerializeDict(self.original_record,
-                             args.format or BaseEdit.DEFAULT_FORMAT)
-    WriteResourceInCommentBlock(original, 'Original resource:', buf)
-
-    file_contents = buf.getvalue()
-    while True:
-      try:
-        file_contents = edit.OnlineEdit(file_contents)
-      except edit.NoSaveException:
-        raise calliope_exceptions.ToolException('Edit aborted by user.')
-      try:
-        resource_list = self.ProcessEditedResource(file_contents, args)
-        break
-      except (ValueError, yaml.error.YAMLError,
-              messages.ValidationError,
-              calliope_exceptions.ToolException) as e:
-        if isinstance(e, ValueError):
-          message = e.message
-        else:
-          message = str(e)
-
-        if isinstance(e, calliope_exceptions.ToolException):
-          problem_type = 'applying'
-        else:
-          problem_type = 'parsing'
-
-        message = ('There was a problem {0} your changes: {1}'
-                   .format(problem_type, message))
-        if not console_io.PromptContinue(
-            message=message,
-            prompt_string='Would you like to edit the resource again?'):
-          raise calliope_exceptions.ToolException('Edit aborted by user.')
-
-    resource_list = lister.ProcessResults(
-        resources=resource_list,
-        field_selector=property_selector.PropertySelector(
-            properties=None,
-            transformations=self.transformations))
-    for resource in resource_list:
-      yield resource

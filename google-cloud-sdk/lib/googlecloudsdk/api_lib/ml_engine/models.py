@@ -26,16 +26,7 @@ def _ParseModel(model_id):
       collection='ml.projects.models')
 
 
-def ModelsClient(version='v1beta1'):
-  if version == 'v1beta1':
-    return ModelsClientBeta()
-  elif version == 'v1':
-    return ModelsClientGa()
-  else:
-    raise ValueError('Unrecognized API version [{}]'.format(version))
-
-
-class ModelsClientGa(object):
+class ModelsClient(object):
   """High-level client for the ML models surface."""
 
   def __init__(self, client=None, messages=None):
@@ -79,25 +70,3 @@ class ModelsClientGa(object):
         req,
         field='models',
         batch_size_attribute='pageSize')
-
-
-class ModelsClientBeta(ModelsClientGa):
-  """High-level client for the ML models surface."""
-
-  def __init__(self, client=None, messages=None):
-    super(ModelsClientBeta, self).__init__(
-        client or apis.GetClientInstance('ml', 'v1beta1'), messages)
-
-  def Create(self, model_name, regions, enable_logging=False):
-    """Create a new model."""
-    model_ref = _ParseModel(model_name)
-    regions_list = regions or []
-    project_ref = resources.REGISTRY.Parse(model_ref.projectsId,
-                                           collection='ml.projects')
-    req = self.messages.MlProjectsModelsCreateRequest(
-        parent=project_ref.RelativeName(),
-        googleCloudMlV1beta1Model=self.messages.GoogleCloudMlV1beta1Model(
-            name=model_ref.Name(),
-            regions=regions_list,
-            onlinePredictionLogging=enable_logging))
-    return self.client.projects_models.Create(req)

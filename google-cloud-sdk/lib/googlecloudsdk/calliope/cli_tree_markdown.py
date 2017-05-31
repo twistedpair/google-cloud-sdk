@@ -164,8 +164,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     return commands
 
   def IsValidSubPath(self, command_path):
-    """Returns True if the given command path is valid."""
-    return bool(self._GetCommandFromPath(command_path))
+    """Returns True if the given command path after the top is valid."""
+    return self._GetCommandFromPath(command_path) is not None
 
   def GetPositionalArgs(self):
     """Returns the command positional args."""

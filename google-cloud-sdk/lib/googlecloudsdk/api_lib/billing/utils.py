@@ -16,24 +16,6 @@
 
 from googlecloudsdk.api_lib.util import apis
 
-ACCOUNT_ID_ARG_PARAMS = dict(
-    metavar='ACCOUNT_ID',
-    completion_resource='cloudbilling.billingAccounts',
-    list_command_path='billing accounts list --uri',
-    help=(
-        'Specify a billing account id. Billing account '
-        'ids look like: 0X0X0X-0X0X0X-0X0X0X, and can '
-        'be listed with, gcloud alpha billing accounts list.'
-    )
-)
-
-PROJECT_ID_ARG_PARAMS = dict(
-    metavar='PROJECT_ID',
-    completion_resource='cloudresourcemanager.projects',
-    list_command_path='projects list --uri',
-    help='Specify a project id.'
-)
-
 
 def GetMessages():
   """Import and return the appropriate projects messages module."""

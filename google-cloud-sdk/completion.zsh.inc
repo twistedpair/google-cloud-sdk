@@ -1,6 +1,8 @@
-autoload -Uz compinit bashcompinit
-compinit
-bashcompinit
+autoload -U +X bashcompinit && bashcompinit
+zmodload -i zsh/parameter
+if ! (( $+functions[compdef] )) ; then
+    autoload -U +X compinit && compinit
+fi
 
 _python_argcomplete() {
     local prefix=

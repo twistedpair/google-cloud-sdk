@@ -2,6 +2,67 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 157.0.0 (2017-05-31)
+
+### Google Cloud SDK
+
+*   Added the auth/disable_credentials property that allows gcloud to
+    make requests without loading credentials. This is only useful if you are
+    behind a proxy that adds authentication to your requests automatically.
+*   Cloud Tools for PowerShell:
+    *   Added BigQuery beta cmdlets to manage BigQuery datasets.
+    *   Added Container beta cmdlets to manage Container clusters.
+
+### Google App Engine
+
+*   Added command `gcloud beta app instances scp` for securely copying files
+    between an App Engine Flexible instance and the local machine.
+*   Updated App Engine components to 1.9.54.
+
+### Google Compute Engine
+
+*   Added ability to set the min-cpu-platform of an instance or
+    instance-template in beta.
+
+### Google Cloud Bigquery
+
+*   gcloud config set proxy/* settings are now propagated to bq.
+
+
+### Google Cloud IOT
+
+*   Added `gcloud beta iot` command group to the beta release track. Commands in
+    this group manage IoT devices and data.
+
+### Google Cloud Datalab
+
+*   Updated the `datalab` component to the 20170525 release. Changes in this
+    release are documented in its tracking issue
+    [here](https://github.com/googledatalab/datalab/issues/1385).
+
+### Google Cloud Container Engine
+
+*   Updated Google Container Engine's kubectl from version 1.6.3 to 1.6.4.
+
+### Google Cloud ML Engine
+
+*   Removed `gcloud beta ml` alias for `gcloud beta ml-engine`
+    commands. Please use `gcloud ml-engine` directly.
+*   Removed `gcloud ml-engine models versions` group in favor of the identical
+    `gcloud ml-engine versions` group.
+*   `gcloud ml-engine` commands in the beta track now run
+    against the `v1` API, since the `v1beta1` API is turning down.
+    These changes do not affect `gcloud ml` commands for Google Cloud Natural
+    Language, Google Cloud Speech, or Google Cloud Vision.
+
+### Google Cloud SQL
+
+*   Promoted `gcloud sql connect` to GA.
+
+### Google Cloud KMS
+
+*   Added `encrypt` and `decrypt` commands to `gcloud beta kms`.
+
 ## 156.0.0 (2017-05-24)
 
 ### Breaking Changes
@@ -20,10 +81,6 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     instead. Note that recursive copy is not turned on by default for `scp`.
     Add `--recurse` to the invocation to turn it on.
 
-*   Added `--async` flag and deprecated `--wait` flag in
-    `gcloud container node-pools delete`. Users should use `--async` in place of
-    `--wait`.
-
 *   The ISO time string format for the `DUE_TIME` argument to retrieve a backup
     in `gcloud beta sql backups describe` is now deprecated in favor of
     integer format (now known as the `ID` argument). Instead of running:
@@ -41,6 +98,10 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     *   Python: https://cloud.google.com/appengine/docs/python/release-notes
     *   Java: https://cloud.google.com/appengine/docs/java/release-notes
 
+*   The App Engine Flexible environment includes Python 3.6 support (beta).
+    To preview this runtime, specify `python_version: 3.6` in the
+    `runtime_config` stanza of your `app.yaml` file.
+
 *   `gcloud beta app instances ssh` now accepts remote commands in the
     following fashion: `gcloud beta app instances ssh -- echo hello world`.
 
@@ -53,7 +114,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 *   The Cloud Bigtable Emulator is now supported on Windows hosts.
 
-### Google Cloud Container Builder
+### Google Cloud Container Engine
 
 *   Update Google Container Engine's kubectl from version 1.6.2 to 1.6.3.
 
@@ -174,6 +235,10 @@ Copyright 2014-2017 Google Inc. All rights reserved.
     alpha track only.
 
 ### Google Container Engine
+
+*   Added `--async` flag and deprecated `--wait` flag in
+    `gcloud container node-pools delete`. Users should use `--async` in place of
+    `--wait`.
 
 *   Moved `gcloud container operations cancel` to beta.
 

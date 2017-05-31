@@ -241,8 +241,7 @@ class Condition(_messages.Message):
         the approvers associated with the request matches the specified
         principal, or is a member of the specified group. Approvers can only
         grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
-        dynamicauth.
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
       JUSTIFICATION_TYPE: What types of justifications have been supplied with
         this request. String values should match enum names from
         tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
@@ -1782,7 +1781,7 @@ class SpannerProjectsInstancesDatabasesOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
@@ -2065,7 +2064,7 @@ class SpannerProjectsInstancesOperationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    name: The name of the operation collection.
+    name: The name of the operation's parent resource.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """

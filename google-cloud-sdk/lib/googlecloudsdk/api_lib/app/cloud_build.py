@@ -118,10 +118,6 @@ def _GetIncludedPaths(source_dir, exclude, skip_files=None):
   # Also filter on the ignore regex from the app.yaml.
   if skip_files:
     included_paths = set(util.FileIterator(source_dir, skip_files))
-    # FileIterator replaces all path separators with '/', so reformat
-    # the results to compare with the first set.
-    included_paths = {
-        p.replace('/', os.path.sep) for p in included_paths}
     paths.intersection_update(included_paths)
   return paths
 

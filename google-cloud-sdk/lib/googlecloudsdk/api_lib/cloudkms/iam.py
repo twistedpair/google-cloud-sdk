@@ -35,7 +35,7 @@ def GetKeyRingIamPolicy(key_ring_ref):
   return client.projects_locations_keyRings.GetIamPolicy(req)
 
 
-def SetKeyRingIamPolicy(key_ring_ref, policy):
+def SetKeyRingIamPolicy(key_ring_ref, policy, update_mask):
   """Set the IAM Policy attached to the named KeyRing to the given policy.
 
   If 'policy' has no etag specified, this will BLINDLY OVERWRITE the IAM policy!
@@ -43,6 +43,7 @@ def SetKeyRingIamPolicy(key_ring_ref, policy):
   Args:
       key_ring_ref: A resources.Resource naming the KeyRing.
       policy: An apitools wrapper for the IAM Policy.
+      update_mask: str, FieldMask represented as comma-separated field names.
 
   Returns:
       The IAM Policy.
@@ -52,7 +53,8 @@ def SetKeyRingIamPolicy(key_ring_ref, policy):
 
   req = messages.CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest(
       resource=key_ring_ref.RelativeName(),
-      setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+      setIamPolicyRequest=messages.SetIamPolicyRequest(
+          policy=policy, updateMask=update_mask))
 
   return client.projects_locations_keyRings.SetIamPolicy(req)
 
@@ -63,14 +65,14 @@ def AddPolicyBindingToKeyRing(key_ring_ref, member, role):
 
   policy = GetKeyRingIamPolicy(key_ring_ref)
   iam_util.AddBindingToIamPolicy(messages, policy, member, role)
-  return SetKeyRingIamPolicy(key_ring_ref, policy)
+  return SetKeyRingIamPolicy(key_ring_ref, policy, update_mask='bindings,etag')
 
 
 def RemovePolicyBindingFromKeyRing(key_ring_ref, member, role):
   """Does an atomic Read-Modify-Write, removing the member from the role."""
   policy = GetKeyRingIamPolicy(key_ring_ref)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return SetKeyRingIamPolicy(key_ring_ref, policy)
+  return SetKeyRingIamPolicy(key_ring_ref, policy, update_mask='bindings,etag')
 
 
 def GetCryptoKeyIamPolicy(crypto_key_ref):
@@ -91,7 +93,7 @@ def GetCryptoKeyIamPolicy(crypto_key_ref):
   return client.projects_locations_keyRings_cryptoKeys.GetIamPolicy(req)
 
 
-def SetCryptoKeyIamPolicy(crypto_key_ref, policy):
+def SetCryptoKeyIamPolicy(crypto_key_ref, policy, update_mask):
   """Set the IAM Policy attached to the named CryptoKey to the given policy.
 
   If 'policy' has no etag specified, this will BLINDLY OVERWRITE the IAM policy!
@@ -99,6 +101,7 @@ def SetCryptoKeyIamPolicy(crypto_key_ref, policy):
   Args:
       crypto_key_ref: A resources.Resource naming the CryptoKey.
       policy: An apitools wrapper for the IAM Policy.
+      update_mask: str, FieldMask represented as comma-separated field names.
 
   Returns:
       The IAM Policy.
@@ -108,7 +111,8 @@ def SetCryptoKeyIamPolicy(crypto_key_ref, policy):
 
   req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest(
       resource=crypto_key_ref.RelativeName(),
-      setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+      setIamPolicyRequest=messages.SetIamPolicyRequest(
+          policy=policy, updateMask=update_mask))
 
   return client.projects_locations_keyRings_cryptoKeys.SetIamPolicy(req)
 
@@ -119,11 +123,13 @@ def AddPolicyBindingToCryptoKey(crypto_key_ref, member, role):
 
   policy = GetCryptoKeyIamPolicy(crypto_key_ref)
   iam_util.AddBindingToIamPolicy(messages, policy, member, role)
-  return SetCryptoKeyIamPolicy(crypto_key_ref, policy)
+  return SetCryptoKeyIamPolicy(
+      crypto_key_ref, policy, update_mask='bindings,etag')
 
 
 def RemovePolicyBindingFromCryptoKey(crypto_key_ref, member, role):
   """Does an atomic Read-Modify-Write, removing the member from the role."""
   policy = GetCryptoKeyIamPolicy(crypto_key_ref)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return SetCryptoKeyIamPolicy(crypto_key_ref, policy)
+  return SetCryptoKeyIamPolicy(
+      crypto_key_ref, policy, update_mask='bindings,etag')

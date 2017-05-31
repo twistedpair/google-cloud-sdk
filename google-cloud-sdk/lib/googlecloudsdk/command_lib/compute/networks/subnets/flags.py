@@ -17,6 +17,14 @@
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      network.basename(),
+      ipCidrRange:label=RANGE
+    )"""
+
 
 def SubnetworkArgument(required=True):
   return compute_flags.ResourceArgument(

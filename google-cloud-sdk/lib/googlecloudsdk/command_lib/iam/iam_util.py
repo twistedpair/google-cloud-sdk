@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -313,7 +314,8 @@ def ParseYamlPolicyFile(policy_file_path, policy_message_type):
   return policy
 
 
-def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
+def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
+                                   additional_flags=''):
   """Returns a detailed_help for a set-iam-policy command.
 
   Args:
@@ -322,6 +324,8 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
         (ex: "my-project", '1234')
     example_see_more: Optional "See ... for details" message. If not specified,
         includes a default reference to IAM managing-policies documentation
+    additional_flags: str, additional flags to include in the example command
+        (after the command name and before the ID of the resource).
   Returns:
     a dict with boilerplate help text for the set-iam-policy command
   """
@@ -330,16 +334,19 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
           See https://cloud.google.com/iam/docs/managing-policies for details
           of the policy file format and contents."""
 
+  additional_flags = additional_flags + ' ' if additional_flags else ''
   return {
       'brief': 'Set IAM policy for a {0}.'.format(collection),
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will read an IAM policy defined in a JSON file
-          'policy.json' and set it for a {0} with identifier '{1}'
+          'policy.json' and set it for a {collection} with identifier '{id}'
 
-            $ {{command}} {1} policy.json
+            $ {{command}} {flags}{id} policy.json
 
-          {2}""".format(collection, example_id, example_see_more)
+          {see_more}""".format(collection=collection, id=example_id,
+                               see_more=example_see_more,
+                               flags=additional_flags)
   }
 
 
@@ -574,3 +581,6 @@ def AddServiceAccountNameArg(parser, help_text):
                       list_command_path='iam.service_accounts',
                       help=help_text)
 
+
+def LogSetIamPolicy(name, kind):
+  log.status.Print('Updated IAM policy for {} [{}].'.format(kind, name))

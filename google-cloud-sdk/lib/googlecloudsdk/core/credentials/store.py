@@ -159,27 +159,39 @@ def AvailableAccounts():
   return sorted(accounts)
 
 
-def LoadIfValid(account=None, scopes=None):
-  """Gets the credentials associated with the provided account if valid.
+def LoadIfEnabled():
+  """Get the credentials associated with the current account.
 
-  Args:
-    account: str, The account address for the credentials being fetched. If
-        None, the account stored in the core.account property is used.
-    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
-        are requested.
+  If credentials have been disabled via properties, this will return None.
+  Otherwise it will load credentials like normal. If credential loading fails
+  for any reason (including the user not being logged in), the usual exception
+  is raised.
 
   Returns:
-    oauth2client.client.Credentials, The credentials if they were found and
-    valid, or None otherwise.
+    The credentials or None. The only time None is returned is if credentials
+    are disabled via properties. If no credentials are present but credentials
+    are enabled via properties, it will be an error.
+
+  Raises:
+    NoActiveAccountException: If account is not provided and there is no
+        active account.
+    c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
+        be reached.
+    TokenRefreshError: If the credentials fail to refresh.
+    TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
-  try:
-    return Load(account=account, scopes=scopes)
-  except Error:
+  if properties.VALUES.auth.disable_credentials.GetBool():
     return None
+  return Load()
 
 
 def Load(account=None, scopes=None, prevent_refresh=False):
   """Get the credentials associated with the provided account.
+
+  This loads credentials regardless of whether credentials have been disabled
+  via properties. Only use this when the functionality of the caller absolutely
+  requires credentials (like printing out a token) vs logically requiring
+  credentials (like for an http request).
 
   Args:
     account: str, The account address for the credentials being fetched. If

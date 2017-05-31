@@ -901,6 +901,11 @@ class _SectionAuth(_Section):
     self.auth_host = self._Add(
         'auth_host', hidden=True,
         default='https://accounts.google.com/o/oauth2/auth')
+    self.disable_credentials = self._AddBool(
+        'disable_credentials', default=False,
+        help_text='If true, gcloud will not attempt to load any credentials or '
+        'authenticate any requests. This is useful if you are behind a proxy '
+        'that adds authentication to your requests.')
     self.token_host = self._Add(
         'token_host', hidden=True,
         default='https://accounts.google.com/o/oauth2/token')

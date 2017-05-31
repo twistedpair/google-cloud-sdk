@@ -72,6 +72,8 @@ apis:
       discovery_doc: cloudbilling_v1.json
       unelidable_request_methods:
       - cloudbilling.projects.updateBillingInfo
+      resources:
+        projects: projects/{projectsId}
   cloudbuild:
     v1:
       discovery_doc: cloudbuild_v1.json
@@ -95,6 +97,12 @@ apis:
         # For now, we only accept global buckets, but should give them to the
         # EventTrigger API in the format that it expects (with the underscore).
         projects.buckets: projects/_/buckets/{bucketId}
+  cloudiot:
+    v1beta1:
+      discovery_doc: cloudiot_v1beta1.json
+      resources:
+        projects.locations: "projects/{projectsId}/locations/{locationsId}"
+        projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions"
   cloudkms:
     v1beta1:
       discovery_doc: cloudkms_v1beta1.json
@@ -207,9 +215,6 @@ apis:
     v1beta2:
       discovery_doc: manager_v1beta2.json
   ml:
-    v1beta1:
-      discovery_doc: ml_v1beta1.json
-      default: true
     v1:
       discovery_doc: ml_v1.json
   pubsub:

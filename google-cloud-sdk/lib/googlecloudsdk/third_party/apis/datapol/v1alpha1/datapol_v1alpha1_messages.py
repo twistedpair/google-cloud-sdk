@@ -93,15 +93,11 @@ class Asset(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Unknown type.
       BIGQUERY_TABLE: BigQuery table.
-      BIGQUERY_DATASET: BigQuery dataset.
-      BIGQUERY_VIEW: BigQuery views.
-      BIGQUERY_EXTERNAL_TABLE: BigQuery external tables.
+      BIGQUERY_TABLE_COLUMN: A column in a BigQuery table.
     """
     TYPE_UNSPECIFIED = 0
     BIGQUERY_TABLE = 1
-    BIGQUERY_DATASET = 2
-    BIGQUERY_VIEW = 3
-    BIGQUERY_EXTERNAL_TABLE = 4
+    BIGQUERY_TABLE_COLUMN = 2
 
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
@@ -272,8 +268,7 @@ class Condition(_messages.Message):
         the approvers associated with the request matches the specified
         principal, or is a member of the specified group. Approvers can only
         grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN). See: go/rpc-security-policy-
-        dynamicauth.
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
       JUSTIFICATION_TYPE: What types of justifications have been supplied with
         this request. String values should match enum names from
         tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted

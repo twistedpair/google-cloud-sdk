@@ -249,7 +249,7 @@ class ResourceResolver(object):
   """Object responsible for resolving resources.
 
   There are two ways to build an instance of this object:
-  1. Preffered when you don't have instance of ResourceArgScopes already built,
+  1. Preferred when you don't have instance of ResourceArgScopes already built,
      using .FromMap static function. For example:
 
      resolver = ResourceResolver.FromMap(
@@ -262,7 +262,7 @@ class ResourceResolver(object):
        in those scopes.
      - optional prefix of scope flags was skipped.
 
-  2. Using constructior. Recommended only if you have instance of
+  2. Using constructor. Recommended only if you have instance of
      ResourceArgScopes available.
 
   Once you've built the resover you can use it to build resource references (and

@@ -23,7 +23,6 @@ def GetOperationNameFlag(verb):
   return base.Argument(
       'name',
       metavar='OPERATION_NAME',
-      list_command_path='alpha bio operations list --uri',
       help='Name for the operation you want to {0}.'.format(verb))
 
 

@@ -191,6 +191,22 @@ class UpdateManager(object):
     return manager._EnsureInstalledAndRestart(components, msg, command)
 
   @staticmethod
+  def UpdatesAvailable():
+    """Returns True if updates are available, False otherwise.
+
+    Returns:
+      bool, True if updates are available, False otherwise.
+    """
+    # Component manager is disabled, never check for updates.
+    if (config.INSTALLATION_CONFIG.disable_updater or
+        properties.VALUES.component_manager.disable_update_check.GetBool()):
+      log.debug('SDK update checks are disabled.')
+      return False
+
+    with update_check.UpdateCheckData() as last_update_check:
+      return last_update_check.UpdatesAvailable()
+
+  @staticmethod
   def PerformUpdateCheck(command_path, force=False):
     """Checks to see if a new snapshot has been released periodically.
 
@@ -204,14 +220,11 @@ class UpdateManager(object):
         being run (i.e. gcloud.foo.bar).
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
-
-    Returns:
-      bool, True if updates are available, False otherwise.
     """
     platform = platforms.Platform.Current()
     manager = UpdateManager(platform_filter=platform, warn=False)
     # pylint: disable=protected-access
-    return manager._PerformUpdateCheck(command_path, force=force)
+    manager._PerformUpdateCheck(command_path, force=force)
 
   def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True):
     """Creates a new UpdateManager.
@@ -479,15 +492,12 @@ version [{1}].  To clear your fixed version setting, run:
         being run (i.e. gcloud.foo.bar).
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
-
-    Returns:
-      bool, True if updates are available, False otherwise.
     """
     # Component manager is disabled, never check for updates.
     if (config.INSTALLATION_CONFIG.disable_updater or
         properties.VALUES.component_manager.disable_update_check.GetBool()):
       log.debug('SDK update checks are disabled.')
-      return False
+      return
 
     with update_check.UpdateCheckData() as last_update_check:
       if force or last_update_check.ShouldDoUpdateCheck():
@@ -503,7 +513,6 @@ version [{1}].  To clear your fixed version setting, run:
 
       # Possibly print any notifications that should be triggered right now.
       last_update_check.Notify(command_path)
-      return last_update_check.UpdatesAvailable()
 
   def List(self):
     """Lists all of the components and their current state.

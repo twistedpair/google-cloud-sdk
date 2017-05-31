@@ -46,6 +46,10 @@ class WrongInstanceTypeError(calliope_exceptions.ToolException):
   """The instance type is not appropriate for this command."""
 
 
+class ImageNotFoundError(calliope_exceptions.ToolException):
+  """The image resource could not be found."""
+
+
 def ZoneNameToRegionName(zone_name):
   """Converts zone name to region name: 'us-central1-a' -> 'us-central1'."""
   return zone_name.rsplit('-', 1)[0]

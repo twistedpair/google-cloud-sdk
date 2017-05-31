@@ -471,6 +471,12 @@ class ArgumentInterceptor(object):
         the list command. Takes precedence over list_command_path.
     """
     if not completion_resource:
+      if list_command_path or list_command_callback_fn:
+        raise parser_errors.ArgumentException(
+            'Command [{}] argument [{}] does not have completion_resource '
+            'set but has one or more of the deprecated list_command_path '
+            'and list_command_callback_fn attributes.'.format(
+                ' '.join(self.data.command_name), added_argument.dest))
       return
     # add a remote completer
     added_argument.completer = (

@@ -105,7 +105,7 @@ class QueryRewriter(resource_expr_rewrite.Backend):
           values.append(collection[len(CLOUD_RESOURCE_SEARCH_COLLECTION) + 1:])
         else:
           try:
-            values.append(RESOURCE_TYPES[collection.lower()])
+            values.append(RESOURCE_TYPES[collection])
           except KeyError:
             raise CollectionNotIndexed(
                 'Collection [{}] not indexed for search.'.format(collection))

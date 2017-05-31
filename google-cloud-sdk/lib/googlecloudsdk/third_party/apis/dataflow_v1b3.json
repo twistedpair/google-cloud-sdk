@@ -1541,10 +1541,6 @@
           "items": {
             "$ref": "ParameterMetadata"
           }
-        },
-        "bypassTempDirValidation": {
-          "description": "If true, will bypass the validation that the temp directory is\nwritable. This should only be used with templates for pipelines\nthat are guaranteed not to need to write to the temp directory,\nwhich is subject to change based on the optimizer.",
-          "type": "boolean"
         }
       }
     },

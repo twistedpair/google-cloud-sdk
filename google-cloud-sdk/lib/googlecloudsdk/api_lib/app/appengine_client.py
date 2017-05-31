@@ -80,34 +80,32 @@ class AppengineClient(object):
     self.client_id = None
     self.client_secret = None
 
-    account = properties.VALUES.core.account.Get()
-    # This statement will raise a c_store.Error if there is a problem
-    # fetching credentials.
-    credentials = c_store.Load(account=account)
-    if isinstance(credentials, service_account.ServiceAccountCredentials):
-      self.oauth2_access_token = credentials.access_token
-      self.client_id = credentials.client_id
-      self.client_secret = credentials.client_secret
-    elif isinstance(credentials, c_devshell.DevshellCredentials):
-      # TODO(b/36057357): This passes the access token to use for API calls to
-      # appcfg which means that commands that are longer than the lifetime
-      # of the access token may fail - e.g. some long deployments.  The proper
-      # solution is to integrate appcfg closer with the Cloud SDK libraries,
-      # this code will go away then and the standard credentials flow will be
-      # used.
-      self.oauth2_access_token = credentials.access_token
-      self.client_id = None
-      self.client_secret = None
-    elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
-      # If we are on GCE, use the service account
-      self.authenticate_service_account = True
-      self.client_id = None
-      self.client_secret = None
-    else:
-      # Otherwise use a stored refresh token
-      self.oauth2_refresh_token = credentials.refresh_token
-      self.client_id = credentials.client_id
-      self.client_secret = credentials.client_secret
+    credentials = c_store.LoadIfEnabled()
+    if credentials:
+      if isinstance(credentials, service_account.ServiceAccountCredentials):
+        self.oauth2_access_token = credentials.access_token
+        self.client_id = credentials.client_id
+        self.client_secret = credentials.client_secret
+      elif isinstance(credentials, c_devshell.DevshellCredentials):
+        # TODO(b/36057357): This passes the access token to use for API calls to
+        # appcfg which means that commands that are longer than the lifetime
+        # of the access token may fail - e.g. some long deployments.  The proper
+        # solution is to integrate appcfg closer with the Cloud SDK libraries,
+        # this code will go away then and the standard credentials flow will be
+        # used.
+        self.oauth2_access_token = credentials.access_token
+        self.client_id = None
+        self.client_secret = None
+      elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
+        # If we are on GCE, use the service account
+        self.authenticate_service_account = True
+        self.client_id = None
+        self.client_secret = None
+      else:
+        # Otherwise use a stored refresh token
+        self.oauth2_refresh_token = credentials.refresh_token
+        self.client_id = credentials.client_id
+        self.client_secret = credentials.client_secret
 
   def CleanupIndexes(self, index_yaml):
     """Removes unused datastore indexes.

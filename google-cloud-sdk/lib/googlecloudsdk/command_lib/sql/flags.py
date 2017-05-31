@@ -52,7 +52,15 @@ USERNAME_FLAG = base.Argument(
 
 HOST_FLAG = base.Argument('host', help='Cloud SQL user\'s host.')
 
-PASSWORD_FLAG = base.Argument('--password', help='Cloud SQL user\'s password.')
+PASSWORD_FLAG = base.Argument(
+    '--password',
+    help='Cloud SQL user\'s password.')
+PROMPT_FOR_PASSWORD_FLAG = base.Argument(
+    '--prompt-for-password',
+    action='store_true',
+    help=('Prompt for the Cloud SQL user\'s password with character echo '
+          'disabled. The password is all typed characters up to but not '
+          'including the RETURN or ENTER key.'))
 
 # Database specific flags
 

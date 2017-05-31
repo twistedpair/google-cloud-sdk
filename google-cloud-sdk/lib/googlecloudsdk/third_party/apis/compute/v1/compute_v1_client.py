@@ -34,6 +34,7 @@ class ComputeV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.acceleratorTypes = self.AcceleratorTypesService(self)
     self.addresses = self.AddressesService(self)
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
@@ -79,6 +80,94 @@ class ComputeV1(base_api.BaseApiClient):
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
+
+  class AcceleratorTypesService(base_api.BaseApiService):
+    """Service class for the acceleratorTypes resource."""
+
+    _NAME = u'acceleratorTypes'
+
+    def __init__(self, client):
+      super(ComputeV1.AcceleratorTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of accelerator types.
+
+      Args:
+        request: (ComputeAcceleratorTypesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorTypeAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/acceleratorTypes',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesAggregatedListRequest',
+        response_type_name=u'AcceleratorTypeAggregatedList',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified accelerator type. Get a list of available accelerator types by making a list() request.
+
+      Args:
+        request: (ComputeAcceleratorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.get',
+        ordered_params=[u'project', u'zone', u'acceleratorType'],
+        path_params=[u'acceleratorType', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes/{acceleratorType}',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesGetRequest',
+        response_type_name=u'AcceleratorType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of accelerator types available to the specified project.
+
+      Args:
+        request: (ComputeAcceleratorTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorTypeList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.acceleratorTypes.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/acceleratorTypes',
+        request_field='',
+        request_type_name=u'ComputeAcceleratorTypesListRequest',
+        response_type_name=u'AcceleratorTypeList',
+        supports_download=False,
+    )
 
   class AddressesService(base_api.BaseApiService):
     """Service class for the addresses resource."""
@@ -1077,7 +1166,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -2469,7 +2558,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -3515,7 +3604,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -3536,6 +3625,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setLabels',
         request_field=u'instancesSetLabelsRequest',
         request_type_name=u'ComputeInstancesSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMachineResources(self, request, global_params=None):
+      """Changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
+
+      Args:
+        request: (ComputeInstancesSetMachineResourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMachineResources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMachineResources.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setMachineResources',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineResources',
+        request_field=u'instancesSetMachineResourcesRequest',
+        request_type_name=u'ComputeInstancesSetMachineResourcesRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -3759,7 +3874,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified License resource. Get a list of available licenses by making a list() request.
+      """Returns the specified License resource.
 
       Args:
         request: (ComputeLicensesGetRequest) input message
@@ -3882,6 +3997,32 @@ If the group is part of a backend service that has enabled connection draining, 
       self._upload_configs = {
           }
 
+    def AddPeering(self, request, global_params=None):
+      """Adds a peering to the specified network.
+
+      Args:
+        request: (ComputeNetworksAddPeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddPeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddPeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networks.addPeering',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/networks/{network}/addPeering',
+        request_field=u'networksAddPeeringRequest',
+        request_type_name=u'ComputeNetworksAddPeeringRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified network.
 
@@ -3983,6 +4124,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNetworksListRequest',
         response_type_name=u'NetworkList',
+        supports_download=False,
+    )
+
+    def RemovePeering(self, request, global_params=None):
+      """Removes a peering from the specified network.
+
+      Args:
+        request: (ComputeNetworksRemovePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemovePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemovePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networks.removePeering',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/networks/{network}/removePeering',
+        request_field=u'networksRemovePeeringRequest',
+        request_type_name=u'ComputeNetworksRemovePeeringRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -5717,7 +5884,7 @@ For more information, see Deleting snaphots.
     )
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
