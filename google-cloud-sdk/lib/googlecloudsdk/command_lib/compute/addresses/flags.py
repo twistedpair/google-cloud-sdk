@@ -18,15 +18,14 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def AddressArgument(required=True):
+def AddressArgument(required=True, plural=True):
   return compute_flags.ResourceArgument(
-      resource_name='address name',
+      resource_name='address',
       completion_resource_id='compute.addresses',
-      plural=True,
+      plural=plural and 'addresses',
       required=required,
       regional_collection='compute.addresses',
-      global_collection='compute.globalAddresses',
-      short_help='The address names to operate on.')
+      global_collection='compute.globalAddresses')
 
 
 def AddAddresses(parser):

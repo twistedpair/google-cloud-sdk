@@ -14,6 +14,9 @@
 """Module for wrangling bigtable command arguments."""
 
 
+_INSTANCE_COMPLETION = 'beta bigtable instances list --uri'
+
+
 class ArgAdder(object):
   """A class for adding Bigtable command-line arguments."""
 
@@ -28,11 +31,29 @@ class ArgAdder(object):
     return self
 
   def AddCluster(self, positional=True):
+    """Add cluster argument."""
+
+    def _CompletionFn(args):
+      """Completion function for clusters."""
+
+      instance = getattr(args, 'instance')
+      return ['beta', 'bigtable', 'clusters', 'list',
+              '--instances={}'.format(instance), '--uri']
+
     help_text = 'ID of the cluster.'
     if positional:
-      self.parser.add_argument('cluster', help=help_text)
+      self.parser.add_argument(
+          'cluster',
+          completion_resource='bigtableadmin.projects.instances.clusters',
+          list_command_callback_fn=_CompletionFn,
+          help=help_text)
     else:
-      self.parser.add_argument('--cluster', help=help_text, required=True)
+      self.parser.add_argument(
+          '--cluster',
+          completion_resource='bigtableadmin.projects.instances.clusters',
+          list_command_callback_fn=_CompletionFn,
+          help=help_text,
+          required=True)
     return self
 
   def AddClusterNodes(self, in_instance=False):
@@ -66,12 +87,17 @@ class ArgAdder(object):
     help_text = 'ID of the instance.'
     if positional:
       self.parser.add_argument(
-          'instance', help=help_text, nargs='+' if multiple else None)
+          'instance',
+          completion_resource='bigtableadmin.projects.instances',
+          list_command_path=_INSTANCE_COMPLETION,
+          help=help_text, nargs='+' if multiple else None)
     else:
       self.parser.add_argument(
           '--instances' if multiple else '--instance',
           help=help_text,
           required=required,
+          completion_resource='bigtableadmin.projects.instances',
+          list_command_path=_INSTANCE_COMPLETION,
           nargs='+' if multiple else None)
     return self
 

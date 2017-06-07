@@ -23,14 +23,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def RouterArgument(required=True):
+def RouterArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='router',
       completion_resource_id='compute.routers',
-      plural=False,
+      plural=plural,
       required=required,
       regional_collection='compute.routers',
-      short_help='The name of the router.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 

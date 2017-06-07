@@ -451,7 +451,8 @@ def GetUsage(command, argument_interceptor):
       if IsSuppressed(arg):
         continue
       if not arg.required:
-        optional_flags.append(sorted(arg.option_strings)[0])
+        if arg.option_strings:
+          optional_flags.append(sorted(arg.option_strings)[0])
         continue
       # and add it to the usage
       msg = FlagDisplayString(arg, brief=True)

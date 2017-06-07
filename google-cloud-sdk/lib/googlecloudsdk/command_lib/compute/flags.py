@@ -30,7 +30,7 @@ from googlecloudsdk.core.console import console_io
 
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, you will be prompted to select a zone.
+If not specified, you may be prompted to select a zone.
 
 To avoid prompting when this flag is omitted, you can set the
 ``compute/zone'' property:
@@ -50,7 +50,7 @@ Alternatively, the zone can be stored in the environment variable
 """
 
 ZONE_PROPERTY_EXPLANATION_NO_DEFAULT = """\
-If not specified, you will be prompted to select a zone.
+If not specified, you may be prompted to select a zone.
 
 A list of zones can be fetched by running:
 

@@ -69,10 +69,10 @@ class Namespace(argparse.Namespace):
       metrics. This dict accumulate across all subparsers.
   """
 
-  def __init__(self):
-    self._specified_args = {}
+  def __init__(self, **kwargs):
     self._deepest_parser = None
-    super(Namespace, self).__init__()
+    self._specified_args = {}
+    super(Namespace, self).__init__(**kwargs)
 
   def GetDisplayInfo(self):
     """Returns the parser display_info."""

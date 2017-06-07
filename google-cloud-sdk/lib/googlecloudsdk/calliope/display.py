@@ -80,6 +80,7 @@ class Displayer(object):
     self._defaults = None
     self._default_format_used = False
     self._format = None
+    self._filter = None
     self._info = None
     self._legacy = True
     self._printer = None
@@ -95,6 +96,7 @@ class Displayer(object):
           symbols=display_info.transforms,
           aliases=display_info.aliases)
       self._format = display_info.format
+      self._filter = display_info.filter
     if self._legacy:
       self._defaults = resource_projection_spec.ProjectionSpec(
           defaults=command.Defaults())
@@ -208,7 +210,7 @@ class Displayer(object):
 
   def _AddFilterTap(self):
     """Taps a resource filter into self.resources if needed."""
-    expression = self._GetFlag('filter')
+    expression = self._GetFilter()
     if not expression:
       return
     tap = display_taps.Filterer(expression, self._defaults)
@@ -288,6 +290,13 @@ class Displayer(object):
     if hasattr(self._command, 'Display'):
       return ''
     return self._command.DeprecatedFormat(self._args)
+
+  def _GetFilter(self):
+    flag_filter = self._GetFlag('filter')
+    if flag_filter is None:
+      return self._filter
+    else:
+      return flag_filter
 
   def GetFormat(self):
     """Determines the display format.
@@ -371,7 +380,7 @@ class Displayer(object):
         keys.add(resource_lex.GetKeyName(col.key))
 
     # Add the filter key references.
-    filter_expression = self._GetFlag('filter')
+    filter_expression = self._GetFilter()
     if filter_expression:
       expr = resource_filter.Compile(filter_expression,
                                      defaults=self._defaults,

@@ -25,11 +25,10 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def HttpsHealthCheckArgument(required=True):
+def HttpsHealthCheckArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='https health check',
+      resource_name='HTTPS health check',
       completion_resource_id='compute.httpsHealthChecks',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.httpsHealthChecks',
-      short_help='The name of the HTTPS health check.')
+      global_collection='compute.httpsHealthChecks')

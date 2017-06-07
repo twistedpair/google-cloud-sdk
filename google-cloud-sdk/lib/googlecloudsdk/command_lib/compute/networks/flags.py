@@ -25,14 +25,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def NetworkArgument(required=True):
+def NetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='network',
       completion_resource_id='compute.networks',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.networks',
-      short_help='The name of the network.')
+      global_collection='compute.networks')
 
 
 def NetworkArgumentForOtherResource(short_help,

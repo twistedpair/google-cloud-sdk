@@ -14,14 +14,11 @@
 
 """Utilities related to adding flags for the gcloud meta api commands."""
 
-from apitools.base.protorpclite import messages
-
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.meta.apis import marshalling
 from googlecloudsdk.command_lib.meta.apis import registry
-from googlecloudsdk.core import resources
 
 
 def APICompleter(**_):
@@ -80,15 +77,12 @@ class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
     # so we are generating the wrong args.
     method = registry.GetMethod(full_collection_name, method_name,
                                 api_version=api_version)
-    arg_generator = marshalling.ArgumentGenerator(method)
-    args = arg_generator.MessageFieldFlags()
-    args.update(arg_generator.ResourceFlags())
-    args.update(arg_generator.ResourceArg())
 
-    method_ref = MethodRef(namespace, method)
+    arg_generator = marshalling.ArgumentGenerator(method)
+    method_ref = MethodRef(namespace, method, arg_generator)
     setattr(namespace, self._dest, method_ref)
 
-    return args
+    return arg_generator.GenerateArgs()
 
   def Completions(self, prefix, parsed_args, **kwargs):
     return MethodCompleter(prefix, parsed_args, **kwargs)
@@ -97,21 +91,25 @@ class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
 class MethodRef(object):
   """Encapsulates a method specified on the command line with all its flags.
 
-  Whereas the ArgumentGenerator generates all the flags that correspond to a
-  method, this reference is used to encapsulate the parsing of all of it. A user
-  doesn't need to be aware of which flags were added and manually extract them.
-  This knows which flags exist and what method fields they correspond to.
+  This makes use of an ArgumentGenerator to generate and parse all the flags
+  that correspond to a method. It provides a simple interface to the command so
+  the implementor doesn't need to be aware of which flags were added and
+  manually extract them. This knows which flags exist and what method fields
+  they correspond to.
   """
 
-  def __init__(self, namespace, method):
+  def __init__(self, namespace, method, arg_generator):
     """Creates the MethodRef.
 
     Args:
       namespace: The argparse namespace that holds the parsed args.
       method: APIMethod, The method.
+      arg_generator: marshalling.ArgumentGenerator, The generator for this
+        method.
     """
     self.namespace = namespace
     self.method = method
+    self.arg_generator = arg_generator
 
   def Call(self):
     """Execute the method.
@@ -121,72 +119,6 @@ class MethodRef(object):
     """
     # TODO(b/38000796): Should have special handling for list requests to do
     # paging automatically.
-    return self.method.Call(self._GenerateRequest())
+    return self.method.Call(self.arg_generator.CreateRequest(self.namespace))
 
-  def _GenerateRequest(self):
-    """Generates the request object for the method call."""
-    request_type = self.method.GetRequestType()
-    # Recursively create the message and sub-messages.
-    fields = self._CreateMessage('', request_type)
 
-    # For each actual method path field, add the attribute to the request.
-    ref = self._GetResourceRef()
-    if ref:
-      relative_name = ref.RelativeName()
-      fields.update(
-          {f: getattr(ref, f, relative_name) for f in self.method.params})
-    return request_type(**fields)
-
-  def _CreateMessage(self, prefix, message):
-    """Recursively generates the message and any sub-messages.
-
-    Args:
-      prefix: str, The flag prefix for the sub-message being generated.
-      message: The apitools class for the message.
-
-    Returns:
-      The instantiated apitools Message with all fields filled in from flags.
-    """
-    kwargs = {}
-    for field in message.all_fields():
-      name = marshalling.ArgumentGenerator.FlagNameForField(self.method, prefix,
-                                                            field)
-      # Field is a sub-message, recursively generate it.
-      if field.variant == messages.Variant.MESSAGE:
-        sub_kwargs = self._CreateMessage(name + '.', field.type)
-        if sub_kwargs:
-          # Only construct the sub-message if we have something to put in it.
-          value = field.type(**sub_kwargs)
-          # TODO(b/38000796): Handle repeated fields correctly.
-          kwargs[field.name] = value if not field.repeated else [value]
-      # Field is a scalar, just get the value.
-      else:
-        value = getattr(self.namespace, name, None)
-        if value is not None:
-          # TODO(b/38000796): Handle repeated fields correctly.
-          kwargs[field.name] = value if not field.repeated else [value]
-    return kwargs
-
-  def _GetResourceRef(self):
-    """Gets the resource ref for the resource specified as the positional arg.
-
-    Returns:
-      The parsed resource ref or None if no resource arg was generated for this
-      method.
-    """
-    r = getattr(self.namespace, 'resource')
-    if r is None:
-      return None
-    return resources.REGISTRY.Parse(
-        r,
-        collection=self.method.RequestCollection().full_name,
-        params=self._GetResourceParams())
-
-  def _GetResourceParams(self):
-    """Gets the defaults for parsing the resource ref."""
-    params = self.method.GetDefaultParams()
-    resource_flags = {f: getattr(self.namespace, f)
-                      for f in self.method.ResourceFieldNames()}
-    params.update({f: v for f, v in resource_flags.iteritems()
-                   if v is not None})
-    return params

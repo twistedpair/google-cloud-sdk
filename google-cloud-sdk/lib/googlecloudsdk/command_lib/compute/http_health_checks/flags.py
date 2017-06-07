@@ -16,15 +16,22 @@
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      host,
+      port,
+      requestPath
+    )"""
 
-def HttpHealthCheckArgument(required=True):
+
+def HttpHealthCheckArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='http health check',
+      resource_name='HTTP health check',
       completion_resource_id='compute.httpHealthChecks',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.httpHealthChecks',
-      short_help='The name of the HTTP health check.')
+      global_collection='compute.httpHealthChecks')
 
 
 def HttpHealthCheckArgumentForTargetPool(action, required=True):

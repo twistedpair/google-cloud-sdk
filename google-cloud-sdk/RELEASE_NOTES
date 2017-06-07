@@ -2,6 +2,43 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+
+## 158.0.0 (2017-06-07)
+
+### Breaking Changes
+
+*   The App Engine Go externalized runtime will detect Go apps using only the
+    files in the root of the app directory. This means that
+    `gcloud beta app gen-config` (and `gcloud app deploy` in an app directory
+    with no app.yaml file) will not recognize a Go runtime if .go files are in
+    subdirectories. To override this behavior, run
+    `gcloud beta app gen-config --runtime go` to generate an app.yaml with the
+    Go runtime.
+
+### Google App Engine
+
+*   `gcloud beta app deploy` now uses the new Ruby Runtime Builder pipeline to
+     deploy apps. The normal `gcloud app deploy` remains unchanged.
+
+### Google Cloud Bigtable Emulator
+
+*    Fixes compatibility with latest HBase client library.
+*    Performance improvements for large bulk mutations.
+
+### Google Cloud SQL
+
+*    `gcloud sql instances patch` commands will stop asking for confirmation
+      that existing networks have been included in case of authorized networks
+      being updated, unless the `--authorized-networks` flag is being used.
+
+### Google Compute Engine
+
+*     POTENTIALLY BREAKING: Most `gcloud compute` commands that involve
+      specifying instances will now only prompt with relevant zones and no
+      longer show all Google Cloud Platform zones when the `--zone` flag is
+      omitted.
+*     gcloud shared VPC network (XPN) commands are now in GA.
+
 ## 157.0.0 (2017-05-31)
 
 ### Google Cloud SDK

@@ -26,8 +26,8 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import config
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
@@ -512,9 +512,13 @@ class CLILoader(object):
     Returns:
       CLI, The generated CLI tool.
     """
-    if '_ARGCOMPLETE' not in os.environ:
-      # Don't bother setting up logging if we are just doing a completion.
+    # Don't bother setting up logging if we are just doing a completion.
+    if '_ARGCOMPLETE' not in os.environ or '_ARGCOMPLETE_TRACE' in os.environ:
       log.AddFileLogging(self.__logs_dir)
+      verbosity_string = os.environ.get('_ARGCOMPLETE_TRACE')
+      if verbosity_string:
+        verbosity = log.VALID_VERBOSITY_STRINGS.get(verbosity_string)
+        log.SetVerbosity(verbosity)
 
     # Pre-load all commands if lazy loading is disabled.
     if properties.VALUES.core.disable_command_lazy_loading.GetBool():
@@ -523,6 +527,87 @@ class CLILoader(object):
     cli = CLI(self.__name, top_element, self.__pre_run_hooks,
               self.__post_run_hooks)
     return cli
+
+
+class _CompletionFinder(argcomplete.CompletionFinder):
+  """Calliope overrides for argcomplete.CompletionFinder.
+
+  This makes calliope ArgumentInterceptor and actions objects visible to the
+  argcomplete monkeypatcher.
+  """
+
+  def _patch_argument_parser(self):
+    ai = self._parser
+    self._parser = ai.parser
+    active_parsers = super(_CompletionFinder, self)._patch_argument_parser()
+    if ai:
+      self._parser = ai
+    return active_parsers
+
+  def _get_completions(self, comp_words, cword_prefix, cword_prequote,
+                       first_colon_pos):
+    active_parsers = self._patch_argument_parser()
+
+    parsed_args = parser_extensions.Namespace()
+    self.completing = True
+
+    try:
+      self._parser.parse_known_args(comp_words[1:], namespace=parsed_args)
+    except BaseException:  # pylint: disable=broad-except
+      pass
+
+    self.completing = False
+
+    completions = self.collect_completions(
+        active_parsers, parsed_args, cword_prefix, lambda *_: None)
+    completions = self.filter_completions(completions)
+    return self.quote_completions(completions, cword_prequote, first_colon_pos)
+
+
+def _ArgComplete(ai, **kwargs):
+  """Runs argcomplete.autocomplete on a calliope argument interceptor."""
+  if '_ARGCOMPLETE' not in os.environ:
+    return
+  if '_ARGCOMPLETE_COMP_WORDBREAKS' not in os.environ:
+    # The default would \ escape : and . -- bud tugley for GRIs.
+    os.environ['_ARGCOMPLETE_COMP_WORDBREAKS'] = '\t"\'@><;|&('
+  mute_stderr = None
+  namespace = None
+  try:
+    # Monkeypatch argcomplete argparse Namespace to be the Calliope extended
+    # Namespace so the parsed_args passed to the completers is an extended
+    # Namespace object.
+    namespace = argcomplete.argparse.Namespace
+    argcomplete.argparse.Namespace = parser_extensions.Namespace
+    # Monkeypatch disable argcomplete.mute_stderr if the caller wants to see
+    # error output. This is indispensible for debugging Cloud SDK completers.
+    # It's much less verbose than the argcomplete _ARC_DEBUG output.
+    if '_ARGCOMPLETE_TRACE' in os.environ:
+      mute_stderr = argcomplete.mute_stderr
+
+      def _DisableMuteStderr():
+        pass
+
+      argcomplete.mute_stderr = _DisableMuteStderr
+
+    if properties.VALUES.core.resource_completion_style.Get() in (
+        'flags', 'gri'):
+      validator = None
+    else:
+      validator = lambda completion, prefix: True
+
+    completer = _CompletionFinder()
+    # pylint: disable=not-callable
+    completer(
+        ai,
+        always_complete_options=False,
+        validator=validator,
+        **kwargs)
+  finally:
+    if namespace:
+      argcomplete.argparse.Namespace = namespace
+    if mute_stderr:
+      argcomplete.mute_stderr = mute_stderr
 
 
 class CLI(object):
@@ -535,9 +620,6 @@ class CLI(object):
     self.__top_element = top_element
     self.__pre_run_hooks = pre_run_hooks
     self.__post_run_hooks = post_run_hooks
-
-  def _ArgComplete(self):
-    argcomplete.autocomplete(self.__parser, always_complete_options=False)
 
   def _TopElement(self):
     return self.__top_element
@@ -616,6 +698,10 @@ class CLI(object):
   def name(self):
     return self.__name
 
+  @property
+  def top_element(self):
+    return self.__top_element
+
   def IsValidCommand(self, cmd):
     """Checks if given command exists.
 
@@ -655,7 +741,7 @@ class CLI(object):
     argparse.str = unicode
 
     if call_arg_complete:
-      self._ArgComplete()
+      _ArgComplete(self.__top_element.ai)
 
     if not args:
       args = sys.argv[1:]
@@ -680,6 +766,8 @@ class CLI(object):
     specified_arg_names = None
 
     argv = self._ConvertNonAsciiArgsToUnicode(args)
+    old_user_output_enabled = None
+    old_verbosity = None
     try:
       args = self.__parser.parse_args(argv)
       command_path_string = '.'.join(args.command_path)
@@ -691,8 +779,8 @@ class CLI(object):
 
       # Now that we have parsed the args, reload the settings so the flags will
       # take effect.  These will use the values from the properties.
-      log.SetUserOutputEnabled(None)
-      log.SetVerbosity(None)
+      old_user_output_enabled = log.SetUserOutputEnabled(None)
+      old_verbosity = log.SetVerbosity(None)
 
       # Set the command_name property so it is persisted until the process ends.
       # Only do this for the top level command that can be detected by looking
@@ -703,8 +791,6 @@ class CLI(object):
       # Set the invocation value for all commands, this is lost when popped
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
-      metrics.Commands(
-          command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names)
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
@@ -728,6 +814,10 @@ class CLI(object):
 
         return _Yield()
 
+      # Do this last. If there is an error, the error handler will log the
+      # command execution along with the error.
+      metrics.Commands(
+          command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names)
       return resources
 
     except Exception as exc:  # pylint: disable=broad-except
@@ -738,8 +828,10 @@ class CLI(object):
       named_configs.FLAG_OVERRIDE_STACK.Pop()
       # Reset these values to their previous state now that we popped the flag
       # values.
-      log.SetUserOutputEnabled(None)
-      log.SetVerbosity(None)
+      if old_user_output_enabled is not None:
+        log.SetUserOutputEnabled(old_user_output_enabled)
+      if old_verbosity is not None:
+        log.SetVerbosity(old_verbosity)
 
   def _HandleAllErrors(self, exc, command_path_string, specified_arg_names):
     """Handle all errors.
@@ -752,56 +844,31 @@ class CLI(object):
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
-    if isinstance(exc, exceptions.ExitCodeNoError):
-      self._HandleKnownError(exc, command_path_string, specified_arg_names,
-                             print_error=False)
-    elif isinstance(exc, core_exceptions.Error):
-      self._HandleKnownError(exc, command_path_string, specified_arg_names,
-                             print_error=True)
-    else:
-      known_exc = exceptions.ConvertKnownError(exc)
-      if known_exc:
-        self._HandleKnownError(known_exc, command_path_string,
-                               specified_arg_names, print_error=True,
-                               orig_exc=exc)
-      else:
-        # Make sure any uncaught exceptions still make it into the log file.
-        log.debug(console_attr.EncodeForConsole(exc),
-                  exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc.__class__, specified_arg_names,
-                      error_extra_info={'error_code': 1})
-        raise
-
-  def _HandleKnownError(self, exc, command_path_string, specified_arg_names,
-                        print_error=True, orig_exc=None):
-    """Print the error and exit for exceptions of known type.
-
-    Args:
-      exc: Exception, The exception that was raised.
-      command_path_string: str, The '.' separated command path.
-      specified_arg_names: [str], The specified arg named scrubbed for metrics.
-      print_error: bool, True to print an error message, False to just exit with
-        the given error code.
-      orig_exc: Exception or None, The original exception for metrics purposes
-        if the exception was converted to a new type.
-    """
-    msg = u'({0}) {1}'.format(
-        console_attr.EncodeForConsole(command_path_string),
-        console_attr.EncodeForConsole(exc))
-    log.debug(msg, exc_info=sys.exc_info())
-    if print_error:
-      log.error(msg)
-    metrics_exc = orig_exc or exc
-    metrics_exc_class = metrics_exc.__class__
+    known_exc, print_error = exceptions.ConvertKnownError(exc)
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
     if isinstance(exc, exceptions.HttpException):
       error_extra_info['http_status_code'] = exc.payload.status_code
 
-    metrics.Error(command_path_string, metrics_exc_class, specified_arg_names,
+    metrics.Commands(
+        command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names,
+        error=exc.__class__, error_extra_info=error_extra_info)
+    metrics.Error(command_path_string, exc.__class__, specified_arg_names,
                   error_extra_info=error_extra_info)
-    if properties.VALUES.core.print_handled_tracebacks.GetBool():
+
+    if known_exc:
+      msg = u'({0}) {1}'.format(
+          console_attr.EncodeForConsole(command_path_string),
+          console_attr.EncodeForConsole(known_exc))
+      log.debug(msg, exc_info=sys.exc_info())
+      if print_error:
+        log.error(msg)
+      if properties.VALUES.core.print_handled_tracebacks.GetBool():
+        raise
+      self._Exit(known_exc)
+    else:
+      # Make sure any uncaught exceptions still make it into the log file.
+      log.debug(console_attr.EncodeForConsole(exc), exc_info=sys.exc_info())
       raise
-    self._Exit(exc)
 
   def _Exit(self, exc):
     """This method exists so we can mock this out during testing to not exit."""

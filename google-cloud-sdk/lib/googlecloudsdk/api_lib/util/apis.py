@@ -176,7 +176,7 @@ def GetApiEnablementInfo(exc):
   return (None, None)
 
 
-_PROJECTS_NOT_TO_ENABLE = set('cloudsdktool')
+_PROJECTS_NOT_TO_ENABLE = set('google.com:cloudsdktool')
 
 
 def ShouldAttemptProjectEnable(project):
@@ -234,20 +234,25 @@ def GetClientClass(api_name, api_version):
   return apis_internal._GetClientClass(api_name, api_version)
 
 
-def GetClientInstance(api_name, api_version, no_http=False):
+def GetClientInstance(api_name, api_version, no_http=False,
+                      disable_resource_quota=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
+    disable_resource_quota: bool, By default, we are going to tell APIs to use
+      the quota of the project being operated on. For some APIs we want to use
+      gcloud's quota, so you can explicitly disable that behavior by passing
+      True here.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance(api_name, api_version, no_http,
-                                          _CheckResponse)
+  return apis_internal._GetClientInstance(
+      api_name, api_version, no_http, _CheckResponse, disable_resource_quota)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

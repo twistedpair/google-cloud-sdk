@@ -22,14 +22,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def SslCertificateArgument(required=True):
+def SslCertificateArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='ssl certificate',
+      resource_name='SSL certificate',
       completion_resource_id='compute.sslCertificates',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.sslCertificates',
-      short_help='The name of the SSL certificate.')
+      global_collection='compute.sslCertificates')
 
 
 def SslCertificateArgumentForOtherResource(resource, required=True):

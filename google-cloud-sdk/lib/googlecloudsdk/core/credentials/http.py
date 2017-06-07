@@ -28,13 +28,17 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-def Http(timeout='unset'):
+def Http(timeout='unset', disable_resource_quota=False):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
+    disable_resource_quota: bool, By default, we are going to tell APIs to use
+        the quota of the project being operated on. For some APIs we want to use
+        gcloud's quota, so you can explicitly disable that behavior by passing
+        True here.
 
   Returns:
     An authorized httplib2.Http client object, or a regular httplib2.Http object
@@ -45,36 +49,42 @@ def Http(timeout='unset'):
   """
   http_client = http.Http(timeout=timeout)
 
+  # Wrappers for IAM header injection.
   authority_selector = properties.VALUES.auth.authority_selector.Get()
   authorization_token_file = (
       properties.VALUES.auth.authorization_token_file.Get())
-  if authority_selector or authorization_token_file:
-    http_client = _WrapRequestForIAMAuth(
-        http_client, authority_selector, authorization_token_file)
+  handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
+
+  # Inject the resource project header for quota unless explicitly disabled.
+  if not (disable_resource_quota or
+          properties.VALUES.billing.disable_resource_project_quota.GetBool()):
+    quota_project = (properties.VALUES.billing.quota_project.Get() or
+                     properties.VALUES.core.project.Get())
+    handlers.append(http.Modifiers.Handler(
+        http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
   creds = store.LoadIfEnabled()
   if creds:
     http_client = creds.authorize(http_client)
     # Wrap the request method to put in our own error handling.
     http_client = http.Modifiers.WrapRequest(
-        http_client, [], _HandleAuthError, client.AccessTokenRefreshError)
+        http_client, handlers, _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
 
 
-def _WrapRequestForIAMAuth(http_client, authority_selector,
-                           authorization_token_file):
-  """Wrap request with IAM authority seelctor.
+def _GetIAMAuthHandlers(authority_selector, authorization_token_file):
+  """Get the request handlers for IAM authority selctors and auth tokens..
 
   Args:
-    http_client: The original http object.
     authority_selector: str, The authority selector string we want to use for
-        the request.
+        the request or None.
     authorization_token_file: str, The file that contains the authorization
-        token we want to use for the request.
+        token we want to use for the request or None.
 
   Returns:
-    http: The same http object but with the request method wrapped.
+    [http.Modifiers]: A list of request modifier functions to use to wrap an
+    http request.
   """
   authorization_token = None
   if authorization_token_file:
@@ -94,7 +104,7 @@ def _WrapRequestForIAMAuth(http_client, authority_selector,
         http.Modifiers.SetHeader('x-goog-iam-authorization-token',
                                  authorization_token)))
 
-  return http.Modifiers.WrapRequest(http_client, handlers)
+  return handlers
 
 
 def _HandleAuthError(e):

@@ -95,8 +95,9 @@ class ArgumentInterceptor(object):
       self.required = []
       self.required_mutex_groups = set()
 
-  def __init__(self, parser, is_root, cli_generator, allow_positional,
-               data=None, mutex_group_id=None, argument_group_id=None):
+  def __init__(self, parser, is_root=False, cli_generator=None,
+               allow_positional=True, data=None, mutex_group_id=None,
+               argument_group_id=None):
     self.parser = parser
     self.is_root = is_root
     self.cli_generator = cli_generator
@@ -319,6 +320,10 @@ class ArgumentInterceptor(object):
 
   def get_default(self, dest):
     return self.parser.get_default(dest)
+
+  def parse_known_args(self, args=None, namespace=None):
+    """Hooks ArgumentInterceptor into the argcomplete monkeypatch."""
+    return self.parser.parse_known_args(args=args, namespace=namespace)
 
   def add_argument_group(self, *args, **kwargs):
     new_parser = self.parser.add_argument_group(*args, **kwargs)

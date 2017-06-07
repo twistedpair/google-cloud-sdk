@@ -13,8 +13,6 @@
 # limitations under the License.
 """Utility functions that don't belong in the other utility modules."""
 
-# TODO(b/36050882): Move the top-level functions in base_classes.py here.
-
 import argparse
 import cStringIO
 import re

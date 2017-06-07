@@ -1323,6 +1323,8 @@ class NodeConfig(_messages.Message):
     accelerators: A list of hardware accelerators to be attached to each node.
       See https://cloud.google.com/compute/docs/gpus for more information
       about support for GPUs.
+    bootDiskType: Type of the disk attached to each node (e.g. 'pd-standard'
+      or 'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
@@ -1439,16 +1441,17 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  imageType = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  localSsdCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(6)
-  metadata = _messages.MessageField('MetadataValue', 7)
-  oauthScopes = _messages.StringField(8, repeated=True)
-  preemptible = _messages.BooleanField(9)
-  serviceAccount = _messages.StringField(10)
-  tags = _messages.StringField(11, repeated=True)
+  bootDiskType = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  imageType = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  localSsdCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(7)
+  metadata = _messages.MessageField('MetadataValue', 8)
+  oauthScopes = _messages.StringField(9, repeated=True)
+  preemptible = _messages.BooleanField(10)
+  serviceAccount = _messages.StringField(11)
+  tags = _messages.StringField(12, repeated=True)
 
 
 class NodeManagement(_messages.Message):

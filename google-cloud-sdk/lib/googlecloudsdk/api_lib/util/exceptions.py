@@ -277,7 +277,7 @@ class HttpException(core_exceptions.Error):
   def __str__(self):
     error_format = self.error_format
     if error_format is None:
-      error_format = '{message}'
+      error_format = '{message}{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
     return self.payload.format(unicode(error_format).replace(

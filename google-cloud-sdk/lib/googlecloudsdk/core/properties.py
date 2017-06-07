@@ -227,6 +227,7 @@ class _Sections(object):
     self.api_client_overrides = _SectionApiClientOverrides()
     self.app = _SectionApp()
     self.auth = _SectionAuth()
+    self.billing = _SectionBilling()
     self.core = _SectionCore()
     self.component_manager = _SectionComponentManager()
     self.compute = _SectionCompute()
@@ -245,10 +246,10 @@ class _Sections(object):
     self.__sections = dict(
         (section.name, section) for section in
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
-         self.auth, self.core, self.component_manager, self.compute,
-         self.container, self.dataproc, self.devshell, self.emulator,
-         self.experimental, self.functions, self.metrics, self.ml_engine,
-         self.proxy, self.spanner, self.test])
+         self.auth, self.billing, self.core, self.component_manager,
+         self.compute, self.container, self.dataproc, self.devshell,
+         self.emulator, self.experimental, self.functions, self.metrics,
+         self.ml_engine, self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
 
   @property
@@ -758,6 +759,14 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If True, the parser for gcloud Resource Identifiers will be'
                   'enabled when interpreting resource arguments.')
+    self.resource_completion_style = self._Add(
+        'resource_completion_style',
+        choices=('flags', 'gri'),
+        default='flags',
+        hidden=True,
+        help_text='The resource completion style controls how resource strings '
+        'are represented in command argument completions.  All styles, '
+        'including uri, are handled on input.')
     self.api_host = self._Add(
         'api_host',
         hidden=True,
@@ -927,6 +936,27 @@ class _SectionAuth(_Section):
         'use_sqlite_store', default=False, hidden=True)
 
 
+class _SectionBilling(_Section):
+  """Contains the properties for the 'auth' section."""
+
+  def __init__(self):
+    super(_SectionBilling, self).__init__('billing')
+
+    self.disable_resource_project_quota = self._AddBool(
+        'disable_resource_project_quota', hidden=True, default=True,
+        help_text='Disables charging quota against your currently set project '
+        'for operations performed on it. Instead, quota will be drawn from '
+        'a shared pool of gcloud quota. The ability to use gcloud shared quota '
+        'will be removed in the future.')
+    self.quota_project = self._Add(
+        'quota_project', hidden=True,
+        help_text='When resource quota is enabled, quota will automatically be '
+        'charged against your currently set project for the operations you '
+        'perform on it. If you need to operate on one project, but want to '
+        'charge quota against a different project, you can use this property '
+        'to specify the alternate project.')
+
+
 class _SectionMetrics(_Section):
   """Contains the properties for the 'metrics' section."""
 
@@ -1068,38 +1098,53 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
+    self.apikeys = self._Add('apikeys')
     self.appengine = self._Add('appengine')
-    self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.bigtableadmin = self._Add('bigtableadmin')
-    self.compute = self._Add('compute')
+    self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
+    self.bio = self._Add('bio')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')
+    self.clouddebugger = self._Add('clouddebugger')
+    self.clouderrorreporting = self._Add('clouderrorreporting')
+    self.cloudfunctions = self._Add('cloudfunctions')
+    self.cloudiot = self._Add('cloudiot')
     self.cloudkms = self._Add('cloudkms')
+    self.cloudresourcemanager = self._Add('cloudresourcemanager')
+    self.cloudresourcesearch = self._Add('cloudresourcesearch')
     self.clouduseraccounts = self._Add('clouduseraccounts')
+    self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.containeranalysis = self._Add('containeranalysis')
     self.dataflow = self._Add('dataflow')
     self.dataproc = self._Add('dataproc')
+    self.datapol = self._Add('datapol')
+    self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
-    self.clouddebugger = self._Add('clouddebugger')
     self.deploymentmanager = self._Add('deploymentmanager')
+    self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
-    self.cloudfunctions = self._Add('cloudfunctions')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
+    self.language = self._Add('language')
     self.logging = self._Add('logging')
+    self.manager = self._Add('manager')
     self.ml = self._Add('ml')
-    self.cloudresourcemanager = self._Add('cloudresourcemanager')
-    self.cloudresourcesearch = self._Add('cloudresourcesearch')
+    self.pubsub = self._Add('pubsub')
+    self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
-    self.testing = self._Add('testing')
-    self.toolresults = self._Add('toolresults')
     self.servicemanagement = self._Add('servicemanagement')
+    self.serviceregistry = self._Add('serviceregistry')
+    self.serviceuser = self._Add('serviceuser')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')
     self.spanner = self._Add('spanner')
+    self.speech = self._Add('speech')
     self.sql = self._Add('sql')
-    self.pubsub = self._Add('pubsub')
+    self.storage = self._Add('storage')
+    self.testing = self._Add('testing')
+    self.toolresults = self._Add('toolresults')
+    self.vision = self._Add('vision')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

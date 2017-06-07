@@ -153,6 +153,25 @@ class Node(object):
                                         self.properties.displayName)
     out.Print(kind_and_name)
 
+  def _DisplayMetadata(self, out, prepend, beneath_stub):
+    """Prints the keys and values of the metadata for a node.
+
+    Args:
+      out: Output stream to which we print.
+      prepend: String that precedes any information about this node to maintain
+        a visible hierarchy.
+      beneath_stub: String that preserves the indentation of the vertical lines.
+    """
+    if self.properties.metadata:
+      additional_props = []
+      # additionalProperties looks like: [key: {value: {string_value: str}}]
+      for prop in self.properties.metadata.additionalProperties:
+        additional_props.append(
+            '{}: {}'.format(prop.key, prop.value.string_value))
+      metadata = '{}{} {}'.format(prepend, beneath_stub,
+                                  ', '.join(sorted(additional_props)))
+      out.Print(metadata)
+
   def _DisplayShortRepresentation(self, out, prepend, beneath_stub):
     if self.properties.shortRepresentation:
       short_rep = '{}{} {}'.format(
@@ -202,6 +221,7 @@ class Node(object):
     beneath_stub = '' if is_root else ('  ' if is_last else '| ')
 
     self._DisplayKindAndName(out, prepend, stub)
+    self._DisplayMetadata(out, prepend, beneath_stub)
     self._DisplayShortRepresentation(out, prepend, beneath_stub)
     self._DisplayBreakLine(out, prepend, beneath_stub, is_root)
 

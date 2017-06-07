@@ -23,14 +23,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def TargetVpnGatewayArgument(required=True):
+def TargetVpnGatewayArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='Target VPN Gateway',
       completion_resource_id='compute.targetVpnGateways',
-      plural=False,
+      plural=plural,
       required=required,
       regional_collection='compute.targetVpnGateways',
-      short_help='The name of the target VPN Gateway.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 

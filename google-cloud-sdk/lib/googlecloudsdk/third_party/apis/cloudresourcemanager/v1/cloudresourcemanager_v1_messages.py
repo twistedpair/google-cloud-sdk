@@ -26,7 +26,7 @@ class Ancestor(_messages.Message):
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConifg must have one or more
+  are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
@@ -37,7 +37,7 @@ class AuditConfig(_messages.Message):
   "user:foo@gmail.com"               ]             },             {
   "log_type": "DATA_WRITE",             },             {
   "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice@googleapis.com"           "audit_log_configs": [
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
   {               "log_type": "DATA_READ",             },             {
   "log_type": "DATA_WRITE",               "exempted_members": [
   "user:bar@gmail.com"               ]             }           ]         }
@@ -106,8 +106,8 @@ class Binding(_messages.Message):
       or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`. Required
@@ -173,6 +173,91 @@ class ClearOrgPolicyRequest(_messages.Message):
 
   constraint = _messages.StringField(1)
   etag = _messages.BytesField(2)
+
+
+class CloudresourcemanagerFoldersClearOrgPolicyRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersClearOrgPolicyRequest object.
+
+  Fields:
+    clearOrgPolicyRequest: A ClearOrgPolicyRequest resource to be passed as
+      the request body.
+    foldersId: Part of `resource`. Name of the resource for the `Policy` to
+      clear.
+  """
+
+  clearOrgPolicyRequest = _messages.MessageField('ClearOrgPolicyRequest', 1)
+  foldersId = _messages.StringField(2, required=True)
+
+
+class CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest object.
+
+  Fields:
+    foldersId: Part of `resource`. The name of the resource to start computing
+      the effective `Policy`.
+    getEffectiveOrgPolicyRequest: A GetEffectiveOrgPolicyRequest resource to
+      be passed as the request body.
+  """
+
+  foldersId = _messages.StringField(1, required=True)
+  getEffectiveOrgPolicyRequest = _messages.MessageField('GetEffectiveOrgPolicyRequest', 2)
+
+
+class CloudresourcemanagerFoldersGetOrgPolicyRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersGetOrgPolicyRequest object.
+
+  Fields:
+    foldersId: Part of `resource`. Name of the resource the `Policy` is set
+      on.
+    getOrgPolicyRequest: A GetOrgPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  foldersId = _messages.StringField(1, required=True)
+  getOrgPolicyRequest = _messages.MessageField('GetOrgPolicyRequest', 2)
+
+
+class CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest
+  object.
+
+  Fields:
+    foldersId: Part of `resource`. Name of the resource to list `Constraints`
+      for.
+    listAvailableOrgPolicyConstraintsRequest: A
+      ListAvailableOrgPolicyConstraintsRequest resource to be passed as the
+      request body.
+  """
+
+  foldersId = _messages.StringField(1, required=True)
+  listAvailableOrgPolicyConstraintsRequest = _messages.MessageField('ListAvailableOrgPolicyConstraintsRequest', 2)
+
+
+class CloudresourcemanagerFoldersListOrgPoliciesRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersListOrgPoliciesRequest object.
+
+  Fields:
+    foldersId: Part of `resource`. Name of the resource to list Policies for.
+    listOrgPoliciesRequest: A ListOrgPoliciesRequest resource to be passed as
+      the request body.
+  """
+
+  foldersId = _messages.StringField(1, required=True)
+  listOrgPoliciesRequest = _messages.MessageField('ListOrgPoliciesRequest', 2)
+
+
+class CloudresourcemanagerFoldersSetOrgPolicyRequest(_messages.Message):
+  """A CloudresourcemanagerFoldersSetOrgPolicyRequest object.
+
+  Fields:
+    foldersId: Part of `resource`. Resource name of the resource to attach the
+      `Policy`.
+    setOrgPolicyRequest: A SetOrgPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  foldersId = _messages.StringField(1, required=True)
+  setOrgPolicyRequest = _messages.MessageField('SetOrgPolicyRequest', 2)
 
 
 class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
@@ -482,8 +567,8 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       rules are case insensitive. The fields eligible for filtering are:  +
       `name` + `id` + <code>labels.<em>key</em></code> where *key* is the name
       of a label  Some examples of using labels as filters:
-      |Filter|Description| |------|-----------| |name:*|The project has a
-      name.| |name:Howl|The project's name is `Howl` or `howl`.|
+      |Filter|Description| |------|-----------| |name:how*|The project's name
+      starts with "how".| |name:Howl|The project's name is `Howl` or `howl`.|
       |name:HOWL|Equivalent to above.| |NAME:howl|Equivalent to above.|
       |labels.color:*|The project has the label `color`.|
       |labels.color:red|The project's label `color` has the value `red`.|
@@ -1461,7 +1546,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -1474,8 +1559,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should

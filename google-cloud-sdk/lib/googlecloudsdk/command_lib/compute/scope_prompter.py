@@ -17,6 +17,7 @@
 import operator
 
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import gce as c_gce
@@ -61,12 +62,10 @@ def PromptForScope(resource_name, underspecified_names,
   if len(choice_mapping) == 1:
     suggested_resource_scope_enum = choice_mapping[0][0]
     suggested_resource = choice_mapping[0][1]
-    if _PromptDidYouMeanScope(resource_name, underspecified_names,
-                              suggested_resource_scope_enum,
-                              suggested_resource):
-      return suggested_resource_scope_enum, suggested_resource
-    else:
-      return None, None
+    _PromptSuggestedScopeChoice(resource_name, underspecified_names,
+                                suggested_resource_scope_enum,
+                                suggested_resource)
+    return suggested_resource_scope_enum, suggested_resource
 
   resource_scope_enum, scope_value = _PromptWithScopeChoices(
       resource_name, underspecified_names, scope_value_choices, choice_names,
@@ -87,6 +86,20 @@ def _PromptDidYouMeanScope(resource_name, underspecified_names, scope_enum,
         resource_name, ', '.join(underspecified_names))
   return console_io.PromptContinue(prompt_string=message, default=True,
                                    throw_if_unattended=True)
+
+
+def _PromptSuggestedScopeChoice(resource_name, underspecified_names, scope_enum,
+                                suggested_resource):
+  if scope_enum == compute_scope.ScopeEnum.GLOBAL:
+    log.status.Print('No scope specified. Using [{0}] for {1}: [{2}].'.format(
+        scope_enum.flag_name,
+        text.Pluralize(len(underspecified_names), resource_name),
+        ', '.join(underspecified_names)))
+  else:
+    log.status.Print('No {0} specified. Using {0} [{1}] for {2}: [{3}].'.format(
+        scope_enum.flag_name, suggested_resource,
+        text.Pluralize(len(underspecified_names), resource_name),
+        ', '.join(underspecified_names)))
 
 
 def _FormatScopeValueChoices(scope_value_choices):

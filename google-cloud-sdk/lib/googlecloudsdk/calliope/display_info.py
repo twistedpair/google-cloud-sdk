@@ -31,6 +31,7 @@ class DisplayInfo(object):
   def __init__(self):
     self._legacy = True
     self._format = None
+    self._filter = None
     self._transforms = {}
     self._aliases = {}
 
@@ -44,6 +45,10 @@ class DisplayInfo(object):
     self._legacy = False
     if format:
       self._format = format
+
+  def AddFilter(self, filter):
+    if filter:
+      self._filter = filter
 
   def AddTransforms(self, transforms):
     """Adds transforms to the display info, newer values takes precedence.
@@ -100,6 +105,10 @@ class DisplayInfo(object):
   @property
   def format(self):
     return self._format
+
+  @property
+  def filter(self):
+    return self._filter
 
   @property
   def aliases(self):

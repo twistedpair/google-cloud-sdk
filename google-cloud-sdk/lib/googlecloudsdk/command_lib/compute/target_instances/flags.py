@@ -24,12 +24,11 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def TargetInstanceArgument(required=True):
+def TargetInstanceArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target instance',
       completion_resource_id='compute.targetInstances',
-      plural=False,
+      plural=plural,
       required=required,
       zonal_collection='compute.targetInstances',
-      short_help='The name of the target instance.',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)

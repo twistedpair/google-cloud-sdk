@@ -72,11 +72,15 @@ To show all fields in table format, please see the examples in --help.
 """
 
 
-def FirewallRuleArgument(required=True, operation_type='create'):
+def FirewallRuleArgument(required=True, operation_type='create', plural=False):
+  if plural:
+    short_help = 'Names of firewall rules to {0}.'.format(operation_type)
+  else:
+    short_help = 'The name of the firewall rule to {0}.'.format(operation_type)
   return compute_flags.ResourceArgument(
-      resource_name='firewall',
+      resource_name='firewall rule',
       completion_resource_id='compute.firewalls',
-      plural=False,
+      plural=plural,
       required=required,
       global_collection='compute.firewalls',
-      short_help='The name of the firewall rule to {0}.'.format(operation_type))
+      short_help=short_help)

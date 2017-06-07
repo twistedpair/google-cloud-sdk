@@ -16,9 +16,15 @@
 from googlecloudsdk.command_lib.compute.backend_buckets import flags as backend_buckets_flags
 
 
-def AddUpdatableArgs(parser):
-  """Adds top-level backend bucket arguments that can be updated."""
-  backend_buckets_flags.BACKEND_BUCKET_ARG.AddArgument(parser)
+def AddUpdatableArgs(cls, parser):
+  """Adds top-level backend bucket arguments that can be updated.
+
+  Args:
+    cls: type, Class to add backend bucket argument to.
+    parser: The argparse parser.
+  """
+  cls.BACKEND_BUCKET_ARG = backend_buckets_flags.BackendBucketArgument()
+  cls.BACKEND_BUCKET_ARG.AddArgument(parser)
 
   parser.add_argument(
       '--description',

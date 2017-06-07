@@ -153,7 +153,8 @@ class AccessTokenCache(object):
         'CREATE TABLE IF NOT EXISTS "{}" '
         '(account_id TEXT PRIMARY KEY, '
         'access_token TEXT, '
-        'token_expiry TIMESTAMP)'.format(_ACCESS_TOKEN_TABLE))
+        'token_expiry TIMESTAMP, '
+        'rapt_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
 
   def _Execute(self, *args):
     with self._cursor as cur:
@@ -162,15 +163,16 @@ class AccessTokenCache(object):
   def Load(self, account_id):
     with self._cursor as cur:
       return cur.Execute(
-          'SELECT access_token, token_expiry FROM "{}" WHERE account_id = ?'
+          'SELECT access_token, token_expiry, rapt_token '
+          'FROM "{}" WHERE account_id = ?'
           .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
 
-  def Store(self, account_id, access_token, token_expiry):
+  def Store(self, account_id, access_token, token_expiry, rapt_token):
     self._Execute(
         'REPLACE INTO "{}" '
-        '(account_id, access_token, token_expiry) VALUES (?,?,?)'
+        '(account_id, access_token, token_expiry, rapt_token) VALUES (?,?,?,?)'
         .format(_ACCESS_TOKEN_TABLE),
-        (account_id, access_token, token_expiry))
+        (account_id, access_token, token_expiry, rapt_token))
 
   def Remove(self, account_id):
     self._Execute(
@@ -202,15 +204,20 @@ class AccessTokenStore(client.Storage):
     self._credentials = credentials
 
   def locked_get(self):
-    access_token, token_expiry = self._access_token_cache.Load(self._account_id)
+    access_token, token_expiry, rapt_token = self._access_token_cache.Load(
+        self._account_id)
     self._credentials.access_token = access_token
     self._credentials.token_expiry = token_expiry
+    if rapt_token is not None:
+      self._credentials.rapt_token = rapt_token
     return self._credentials
 
   def locked_put(self, credentials):
-    self._access_token_cache.Store(self._account_id,
-                                   self._credentials.access_token,
-                                   self._credentials.token_expiry)
+    self._access_token_cache.Store(
+        self._account_id,
+        self._credentials.access_token,
+        self._credentials.token_expiry,
+        getattr(self._credentials, 'rapt_token', None))
 
   def locked_delete(self):
     self._access_token_cache.Remove(self._account_id)
@@ -260,9 +267,17 @@ def GetCredentialStore(store_file=None, access_token_file=None):
     CredentialStore object.
   """
 
-  if properties.VALUES.auth.use_sqlite_store.GetBool():
-    _MigrateMultistore2Sqlite()
-    return _GetSqliteStore(store_file, access_token_file)
+  try:
+    import sqlite3  # pylint: disable=g-import-not-at-top,unused-variable
+  except ImportError:
+    log.warn('This python installation does not have sqlite3 library. '
+             'Please upgrade your set of dependencies to include sqlite3 as '
+             'otherwise gcloud commands will stop working in near future. '
+             'Contact Cloud SDK if you have any questions.')
+  else:
+    if properties.VALUES.auth.use_sqlite_store.GetBool():
+      _MigrateMultistore2Sqlite()
+      return _GetSqliteStore(store_file, access_token_file)
 
   _MigrateSqlite2Multistore()
   return Oauth2ClientCredentialStore(
@@ -383,8 +398,8 @@ def ToJson(credentials):
     # These fields are optionally serialized as they are not required for
     # credentials to be usable, these are used by Oauth2client.
     for field in ('id_token', 'invalid', 'revoke_uri', 'token_response',
-                  'token_uri', 'user_agent'):
-      value = getattr(credentials, field)
+                  'token_uri', 'user_agent', 'rapt_token'):
+      value = getattr(credentials, field, None)
       if value:
         creds_dict[field] = value
 
@@ -426,6 +441,7 @@ def FromJson(json_value):
         token_response=json_key.get('token_response'),
         scopes=json_key.get('scopes'),
         token_info_uri=json_key.get('token_info_uri'),
+        rapt_token=json_key.get('rapt_token'),
     )
   elif cred_type == CredentialType.P12_SERVICE_ACCOUNT:
     # pylint: disable=protected-access

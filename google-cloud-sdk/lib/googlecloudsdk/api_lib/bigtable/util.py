@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 
 
@@ -147,3 +148,10 @@ def WaitForInstance(client, operation_ref, message):
   poller = waiter.CloudOperationPoller(
       client.projects_instances, client.operations)
   return waiter.WaitFor(poller, operation_ref, message)
+
+
+def GetInstanceRef(instance):
+  return resources.REGISTRY.Parse(
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='bigtableadmin.projects.instances')

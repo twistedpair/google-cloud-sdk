@@ -252,7 +252,8 @@ def AddBetaArgs(parser):
       '--network-profile=LTE, which consists of a set of parameters to emulate '
       'network conditions when running the test (default: no network shaping; '
       'see available profiles listed by the `$ gcloud beta firebase test '
-      'network-profiles list` command).')
+      'network-profiles list` command). This feature only works on physical '
+      'devices.')
 
 
 def AddMatrixArgs(parser):

@@ -22,15 +22,14 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def UrlMapArgument(required=True):
+def UrlMapArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       name='url_map_name',
-      resource_name='url map',
+      resource_name='URL map',
       completion_resource_id='compute.urlMaps',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.urlMaps',
-      short_help='The name of the URL map.')
+      global_collection='compute.urlMaps')
 
 
 def UrlMapArgumentForTargetProxy(required=True, proxy_type='HTTP'):

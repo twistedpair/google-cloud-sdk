@@ -586,8 +586,8 @@ def Error(command_path, error, flag_names, error_extra_info=None):
   """Logs that a top level Exception was caught for a gcloud command.
 
   Args:
-    command_path: [str], The '.' separated name of the calliope command.
-    error: [class], The class (not the instance) of the exception that was
+    command_path: str, The '.' separated name of the calliope command.
+    error: class, The class (not the instance) of the exception that was
       caught.
     flag_names: [str], The names of the flags that were used during this
       execution.

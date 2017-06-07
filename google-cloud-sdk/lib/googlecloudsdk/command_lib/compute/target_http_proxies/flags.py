@@ -22,11 +22,10 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def TargetHttpProxyArgument(required=True):
+def TargetHttpProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='target http proxy',
+      resource_name='target HTTP proxy',
       completion_resource_id='compute.targetHttpProxies',
-      plural=False,
+      plural=plural and 'target HTTP proxies',
       required=required,
-      global_collection='compute.targetHttpProxies',
-      short_help='The name of the target HTTP proxy.')
+      global_collection='compute.targetHttpProxies')

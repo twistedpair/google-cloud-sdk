@@ -301,9 +301,6 @@ class HttpException(api_exceptions.HttpException):
   See api_lib.util.exceptions.HttpException for full documentation.
   """
 
-  def __init__(self, error, error_format='{message}'):
-    super(HttpException, self).__init__(error, error_format)
-
 
 class InvalidArgumentException(ToolException):
   """InvalidArgumentException is for malformed arguments."""
@@ -399,9 +396,17 @@ def ConvertKnownError(exc):
     exc: Exception, the exception to convert.
 
   Returns:
-    None if this is not a known type, otherwise a new exception that should be
-    logged.
+    (exception, bool), exception is None if this is not a known type, otherwise
+    a new exception that should be logged. The boolean is True if the error
+    should be printed, or False to just exit without printing.
   """
+  if isinstance(exc, ExitCodeNoError):
+    return exc, False
+  elif isinstance(exc, core_exceptions.Error):
+    return exc, True
+
+  known_err = None
+
   classes = [type(exc)]
   processed = set([])  # To avoid circular dependencies
   while classes:
@@ -418,7 +423,8 @@ def ConvertKnownError(exc):
 
   if not known_err:
     # This is not a known error type
-    return None
+    return None, True
 
   # If there is no known exception just return the original exception.
-  return known_err(exc) or exc
+  new_exc = known_err(exc)
+  return (new_exc, True) if new_exc else (exc, True)

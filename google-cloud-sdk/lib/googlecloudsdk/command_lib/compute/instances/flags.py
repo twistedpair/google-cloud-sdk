@@ -13,18 +13,44 @@
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
 import argparse
+import functools
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources as core_resources
 import ipaddr
+
+ZONE_PROPERTY_EXPLANATION = """\
+If not specified, you may be prompted to select a zone. `gcloud` will attempt
+to identify the zone by searching for resources in your project. If the zone
+cannot be determined, you will then be prompted with all Google Cloud
+Platform zones.
+
+To avoid prompting when this flag is omitted, you can set the
+``compute/zone'' property:
+
+  $ gcloud config set compute/zone ZONE
+
+A list of zones can be fetched by running:
+
+  $ gcloud compute zones list
+
+To unset the property, run:
+
+  $ gcloud config unset compute/zone
+
+Alternatively, the zone can be stored in the environment variable
+``CLOUDSDK_COMPUTE_ZONE''.
+"""
 
 MIGRATION_OPTIONS = {
     'MIGRATE': (
@@ -57,13 +83,22 @@ DEFAULT_LIST_FORMAT = """\
 
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
+    name='instance_name',
     completion_resource_id='compute.instances',
     zonal_collection='compute.instances',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+    zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 INSTANCES_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
-    name='names',
+    name='instance_names',
+    completion_resource_id='compute.instances',
+    zonal_collection='compute.instances',
+    zone_explanation=ZONE_PROPERTY_EXPLANATION,
+    plural=True)
+
+INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
+    resource_name='instance',
+    name='instance_names',
     completion_resource_id='compute.instances',
     zonal_collection='compute.instances',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
@@ -73,6 +108,47 @@ SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
     'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
 
 
+def GetInstanceZoneScopeLister(compute_client):
+  return functools.partial(InstanceZoneScopeLister, compute_client)
+
+
+def InstanceZoneScopeLister(compute_client, _, underspecified_names):
+  """Scope lister for zones of underspecified instances."""
+  messages = compute_client.messages
+  instance_name = underspecified_names[0]
+  project = properties.VALUES.core.project.Get(required=True)
+  # TODO(b/33813901): look in cache if possible
+  request = (compute_client.apitools_client.instances,
+             'AggregatedList',
+             messages.ComputeInstancesAggregatedListRequest(
+                 filter='name eq ^{0}$'.format(instance_name),
+                 project=project,
+                 maxResults=constants.MAX_RESULTS_PER_PAGE))
+  errors = []
+  matching_instances = compute_client.MakeRequests([request],
+                                                   errors_to_collect=errors)
+  zones = []
+  if errors:
+    # Fall back to displaying all possible zones if can't resolve
+    log.debug('Errors fetching filtered aggregate list:\n{}'.format(errors))
+    log.status.Print(
+        'Error fetching possible zones for instance: [{0}].'.format(
+            ', '.join(underspecified_names)))
+    zones = zones_service.List(compute_client, project)
+  elif not matching_instances:
+    # Fall back to displaying all possible zones if can't resolve
+    log.debug('Errors fetching filtered aggregate list:\n{}'.format(errors))
+    log.status.Print(
+        'Unable to find an instance with name [{0}].'.format(instance_name))
+    zones = zones_service.List(compute_client, project)
+  else:
+    for i in matching_instances:
+      zone = core_resources.REGISTRY.Parse(
+          i.zone, collection='compute.zones', params={'project': project})
+      zones.append(messages.Zone(name=zone.Name()))
+  return {compute_scope.ScopeEnum.ZONE: zones}
+
+
 def InstanceArgumentForRoute(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
@@ -80,7 +156,7 @@ def InstanceArgumentForRoute(required=True):
       completion_resource_id='compute.instances',
       required=required,
       zonal_collection='compute.instances',
-      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+      zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 
 def InstanceArgumentForTargetInstance(required=True):
@@ -519,7 +595,7 @@ def ValidateDiskAccessModeFlags(args):
     mode_value = disk.get('mode')
     # Ensures that the user is not trying to attach a read-write
     # disk to more than one instance.
-    if len(args.names) > 1 and mode_value == 'rw':
+    if len(args.instance_names) > 1 and mode_value == 'rw':
       raise exceptions.ToolException(
           'Cannot attach disk [{0}] in read-write mode to more than one '
           'instance.'.format(disk_name))

@@ -20,6 +20,14 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      backends[].group.list():label=BACKENDS,
+      protocol
+    )"""
+
+
 ZONAL_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     name='--instance-group',
     resource_name='instance group',
@@ -306,7 +314,7 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
     else:
       health_check_refs.extend(
           resource_resolver.HEALTH_CHECK_ARG.ResolveAsResource(
-              args, resource_resolver.resources))
+              args, resource_parser))
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 

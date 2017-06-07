@@ -25,14 +25,15 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def TargetPoolArgument(required=True, help_suffix='.'):
+def TargetPoolArgument(required=True, help_suffix='.', plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target pool',
       completion_resource_id='compute.targetPools',
-      plural=False,
+      plural=plural,
       required=required,
       regional_collection='compute.targetPools',
-      short_help='The name of the target pool{0}'.format(help_suffix),
+      short_help=(help_suffix and
+                  'The name of the target pool{0}'.format(help_suffix)),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 

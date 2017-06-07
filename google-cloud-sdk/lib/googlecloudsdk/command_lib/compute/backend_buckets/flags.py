@@ -26,11 +26,14 @@ DEFAULT_LIST_FORMAT = """\
       enableCdn
     )"""
 
-BACKEND_BUCKET_ARG = compute_flags.ResourceArgument(
-    name='backend_bucket_name',
-    resource_name='backend bucket',
-    completion_resource_id='compute.backendBuckets',
-    global_collection='compute.backendBuckets')
+
+def BackendBucketArgument(plural=False):
+  return compute_flags.ResourceArgument(
+      name='backend_bucket_name',
+      resource_name='backend bucket',
+      plural=plural,
+      completion_resource_id='compute.backendBuckets',
+      global_collection='compute.backendBuckets')
 
 GCS_BUCKET_ARG = compute_flags.ResourceArgument(
     resource_name='backend bucket',

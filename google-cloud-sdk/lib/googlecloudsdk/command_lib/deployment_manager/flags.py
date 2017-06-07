@@ -18,6 +18,31 @@ from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
 from googlecloudsdk.calliope import arg_parsers
 
 
+RESOURCES_AND_OUTPUTS_FORMAT = """
+    table(
+      resources:format='table(
+        name,
+        type,
+        update.state.yesno(no="COMPLETED"),
+        update.error.errors.group(code),
+        update.intent)',
+      outputs:format='table(
+        name:label=OUTPUTS,
+        finalValue:label=VALUE)'
+    )
+"""
+
+OPERATION_FORMAT = """
+    table(
+      name,
+      operationType:label=TYPE,
+      status,
+      targetLink.basename():label=TARGET,
+      error.errors.group(code)
+    )
+"""
+
+
 def AddDeploymentNameFlag(parser):
   """Add properties flag."""
   parser.add_argument('deployment_name', help='Deployment name.')

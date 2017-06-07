@@ -43,11 +43,10 @@ NEXT_HOP_GATEWAY_ARG = compute_flags.ResourceArgument(
         'Compute Engine.'))
 
 
-def RouteArgument(required=True):
+def RouteArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='route',
       completion_resource_id='compute.routes',
-      plural=False,
+      plural=plural,
       required=required,
-      global_collection='compute.routes',
-      short_help='The name to assign to the route.')
+      global_collection='compute.routes')

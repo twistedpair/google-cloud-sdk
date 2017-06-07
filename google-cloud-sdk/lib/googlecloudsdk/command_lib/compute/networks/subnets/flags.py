@@ -26,14 +26,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def SubnetworkArgument(required=True):
+def SubnetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='subnetwork',
       completion_resource_id='compute.subnetworks',
-      plural=False,
+      plural=plural,
       required=required,
       regional_collection='compute.subnetworks',
-      short_help='The name of the subnetwork.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 

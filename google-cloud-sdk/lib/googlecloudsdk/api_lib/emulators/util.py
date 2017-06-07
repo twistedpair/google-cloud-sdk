@@ -36,6 +36,9 @@ import portpicker
 import yaml
 
 
+_IPV6_RE = re.compile(r'\[(.*)\]:(\d*)')
+
+
 class NoCloudSDKError(exceptions.Error):
   """The module was unable to find Cloud SDK."""
 
@@ -243,15 +246,18 @@ def GetHostPort(prefix):
     ADDRESS:PORT.
 
   Returns:
-    str, Configured or default host_port if present, else a random local port.
+    str, Configured or default host_port if present, else an unused local port.
   """
+  default_host = '[::1]' if socket.has_ipv6 else 'localhost'
 
-  random_host_port = 'localhost:8{rand:03d}'.format(rand=random.randint(0, 999))
-  configured = _GetEmulatorProperty(prefix, 'host_port') or random_host_port
+  # Can't use portpicker here, as it only finds free ports on localhost.
+  arbitrary_host_port = '{host}:{port}'.format(
+      host=default_host, port=random.randint(8000, 8999))
+  configured = _GetEmulatorProperty(prefix, 'host_port') or arbitrary_host_port
   try:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # TODO(b/36653529): Support IPv6 via configured host-port.
-    host, port = configured.split(':')
+    host, port = _ParseHostPort(configured)
+    protocol = socket.AF_INET6 if _IPV6_RE.match(configured) else socket.AF_INET
+    sock = socket.socket(protocol, socket.SOCK_STREAM)
     port = int(port)
   except ValueError:
     raise InvalidHostError()
@@ -259,7 +265,14 @@ def GetHostPort(prefix):
   if sock.connect_ex((host, port)) != 0:
     return configured
 
-  return random_host_port
+  return arbitrary_host_port
+
+
+def _ParseHostPort(hostport):
+  if _IPV6_RE.match(hostport):
+    return _IPV6_RE.match(hostport).groups()
+  else:
+    return hostport.split(':')
 
 
 def _GetEmulatorProperty(prefix, prop_name):
@@ -324,8 +337,13 @@ def BuildArgsList(args):
   """Converts an argparse.Namespace to a list of arg strings."""
   args_list = []
   if args.host_port:
+    if _IPV6_RE.match(args.host_port.host):
+      host = '[{}]'.format(args.host_port.host)
+    else:
+      host = args.host_port.host
+
     if args.host_port.host is not None:
-      args_list.append('--host={0}'.format(args.host_port.host))
+      args_list.append('--host={0}'.format(host))
     if args.host_port.port is not None:
       args_list.append('--port={0}'.format(args.host_port.port))
   return args_list

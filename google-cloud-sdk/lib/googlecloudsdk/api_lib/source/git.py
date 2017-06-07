@@ -220,8 +220,9 @@ def _HasSystemCredHelper():
     NoGitException: if `git` was not found.
   """
   try:
-    stdout = subprocess.check_output(['git', 'config', '--system', '--list'])
-    return (re.search(r'^credential.helper=', stdout, re.MULTILINE) and
+    stdout = subprocess.check_output(
+        ['git', 'config', '--system', '--list'], stderr=subprocess.STDOUT)
+    return (re.search(r'^credential.helper=.', stdout, re.MULTILINE) and
             not re.search(r'^credential.helper=!gcloud', stdout, re.MULTILINE))
   except OSError as e:
     if e.errno == errno.ENOENT:

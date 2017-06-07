@@ -278,8 +278,8 @@ class Modifiers(object):
       """Replacement http.request() method."""
       current_value = Modifiers._GetHeader(args, kwargs, header, '')
       new_value = '{0} {1}'.format(current_value, value).strip()
-      Modifiers._SetHeader(args, kwargs, header, new_value)
-      return Modifiers.Result()
+      modified_args = Modifiers._SetHeader(args, kwargs, header, new_value)
+      return Modifiers.Result(args=modified_args)
     return _AppendToHeader
 
   @classmethod
@@ -295,8 +295,8 @@ class Modifiers(object):
     """
     def _SetHeader(args, kwargs):
       """Replacement http.request() method."""
-      Modifiers._SetHeader(args, kwargs, header, value)
-      return Modifiers.Result()
+      modified_args = Modifiers._SetHeader(args, kwargs, header, value)
+      return Modifiers.Result(args=modified_args)
     return _SetHeader
 
   @classmethod
@@ -410,9 +410,21 @@ class Modifiers(object):
   def _SetHeader(cls, args, kwargs, header, value):
     """Set a header given the args and kwargs of an Http Request call."""
 
+    modified_args = list(args)
+
     if 'headers' in kwargs:
+      # Headers was given to request() as a kwarg, we can just update it.
       kwargs['headers'][header] = value
-    elif len(args) > 3 and args[3]:
-      args[3][header] = value
+    elif len(modified_args) > 3:
+      # Headers was given as a positional, we need to update that arg.
+      if modified_args[3] is not None:
+        # Headers were actually provided, update that dictionary.
+        modified_args[3][header] = value
+      else:
+        # Headers were explicitly provided as a positional but None, copy the
+        # args because the tuple is immutable and insert the header.
+        modified_args[3] = {header: value}
     else:
       kwargs['headers'] = {header: value}
+
+    return modified_args

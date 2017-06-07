@@ -1040,10 +1040,6 @@ def TranslateRequestsProtobufs(requests_protobufs, command):
   return requests
 
 
-class NoOutputMutator(base.SilentCommand, BaseCommand):
-  """Base class for mutating subcommands that don't display resources."""
-
-
 class NoOutputAsyncMutator(base.SilentCommand, BaseAsyncMutator):
   """Base class for mutating subcommands that don't display resources."""
 

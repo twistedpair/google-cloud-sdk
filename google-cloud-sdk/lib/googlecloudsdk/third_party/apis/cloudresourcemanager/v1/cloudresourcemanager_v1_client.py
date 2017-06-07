@@ -34,10 +34,188 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.folders = self.FoldersService(self)
     self.liens = self.LiensService(self)
     self.operations = self.OperationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = u'folders'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ClearOrgPolicy(self, request, global_params=None):
+      """Clears a `Policy` from a resource.
+
+      Args:
+        request: (CloudresourcemanagerFoldersClearOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ClearOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClearOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.clearOrgPolicy',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:clearOrgPolicy',
+        request_field=u'clearOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerFoldersClearOrgPolicyRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def GetEffectiveOrgPolicy(self, request, global_params=None):
+      """Gets the effective `Policy` on a resource. This is the result of merging.
+`Policies` in the resource hierarchy. The returned `Policy` will not have
+an `etag`set because it is a computed `Policy` across multiple resources.
+
+      Args:
+        request: (CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.getEffectiveOrgPolicy',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:getEffectiveOrgPolicy',
+        request_field=u'getEffectiveOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
+
+    def GetOrgPolicy(self, request, global_params=None):
+      """Gets a `Policy` on a resource.
+
+If no `Policy` is set on the resource, a `Policy` is returned with default
+values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
+`etag` value can be used with `SetOrgPolicy()` to create or update a
+`Policy` during read-modify-write.
+
+      Args:
+        request: (CloudresourcemanagerFoldersGetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('GetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.getOrgPolicy',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:getOrgPolicy',
+        request_field=u'getOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerFoldersGetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
+
+    def ListAvailableOrgPolicyConstraints(self, request, global_params=None):
+      """Lists `Constraints` that could be applied on the specified resource.
+
+      Args:
+        request: (CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAvailableOrgPolicyConstraintsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableOrgPolicyConstraints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableOrgPolicyConstraints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.listAvailableOrgPolicyConstraints',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:listAvailableOrgPolicyConstraints',
+        request_field=u'listAvailableOrgPolicyConstraintsRequest',
+        request_type_name=u'CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest',
+        response_type_name=u'ListAvailableOrgPolicyConstraintsResponse',
+        supports_download=False,
+    )
+
+    def ListOrgPolicies(self, request, global_params=None):
+      """Lists all the `Policies` set for a particular resource.
+
+      Args:
+        request: (CloudresourcemanagerFoldersListOrgPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOrgPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOrgPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOrgPolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.listOrgPolicies',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:listOrgPolicies',
+        request_field=u'listOrgPoliciesRequest',
+        request_type_name=u'CloudresourcemanagerFoldersListOrgPoliciesRequest',
+        response_type_name=u'ListOrgPoliciesResponse',
+        supports_download=False,
+    )
+
+    def SetOrgPolicy(self, request, global_params=None):
+      """Updates the specified `Policy` on the resource. Creates a new `Policy` for.
+that `Constraint` on the resource if one does not exist.
+
+Not supplying an `etag` on the request `Policy` results in an unconditional
+write of the `Policy`.
+
+      Args:
+        request: (CloudresourcemanagerFoldersSetOrgPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OrgPolicy) The response message.
+      """
+      config = self.GetMethodConfig('SetOrgPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetOrgPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudresourcemanager.folders.setOrgPolicy',
+        ordered_params=[u'foldersId'],
+        path_params=[u'foldersId'],
+        query_params=[],
+        relative_path=u'v1/folders/{foldersId}:setOrgPolicy',
+        request_field=u'setOrgPolicyRequest',
+        request_type_name=u'CloudresourcemanagerFoldersSetOrgPolicyRequest',
+        response_type_name=u'OrgPolicy',
+        supports_download=False,
+    )
 
   class LiensService(base_api.BaseApiService):
     """Service class for the liens resource."""

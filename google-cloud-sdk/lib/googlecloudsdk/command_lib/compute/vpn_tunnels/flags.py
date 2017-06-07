@@ -24,14 +24,13 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def VpnTunnelArgument(required=True):
+def VpnTunnelArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='VPN Tunnel',
       completion_resource_id='compute.vpnTunnels',
-      plural=False,
+      plural=plural,
       required=required,
       regional_collection='compute.vpnTunnels',
-      short_help='The name of the VPN tunnel.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 

@@ -93,7 +93,8 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
 
     instance_ref = instance_flags.SSH_INSTANCE_RESOLVER.ResolveResources(
         [remote.host], compute_scope.ScopeEnum.ZONE, args.zone, self.resources,
-        scope_lister=flags.GetDefaultScopeLister(self.compute_client))[0]
+        scope_lister=instance_flags.GetInstanceZoneScopeLister(
+            self.compute_client))[0]
     instance = self.GetInstance(instance_ref)
 
     # Now replace the instance name with the actual IP/hostname

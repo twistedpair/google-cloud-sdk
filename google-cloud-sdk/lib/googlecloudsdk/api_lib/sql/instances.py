@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 
 
 # TODO(b/35104889): Migrate methods containing Namespace args to command_lib
@@ -338,6 +339,15 @@ class _BaseInstances(object):
       machine_type = constants.DEFAULT_MACHINE_TYPE
 
     return machine_type
+
+  @staticmethod
+  def PrintAndConfirmAuthorizedNetworksOverwrite():
+    console_io.PromptContinue(
+        message='When adding a new IP address to authorized networks, '
+        'make sure to also include any IP addresses that have already been '
+        'authorized. Otherwise, they will be overwritten and de-authorized.',
+        default=True,
+        cancel_on_no=True)
 
 
 class InstancesV1Beta3(_BaseInstances):

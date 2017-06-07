@@ -372,6 +372,10 @@
           "items": {
             "$ref": "AcceleratorConfig"
           }
+        },
+        "bootDiskType": {
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
+          "type": "string"
         }
       }
     },

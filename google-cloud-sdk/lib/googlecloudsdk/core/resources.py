@@ -110,7 +110,7 @@ class RequiredFieldOmittedException(UserError):
 
   def __init__(self, collection_name, expected):
     super(RequiredFieldOmittedException, self).__init__(
-        'value for field [{expected}] for in collection [{collection_name}] is '
+        'value for field [{expected}] in collection [{collection_name}] is '
         'required but was not provided'.format(
             expected=expected, collection_name=collection_name))
 
