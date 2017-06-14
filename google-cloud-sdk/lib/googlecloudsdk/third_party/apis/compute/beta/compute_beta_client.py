@@ -2914,7 +2914,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.images.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'requestId'],
+        query_params=[u'forceCreate', u'requestId'],
         relative_path=u'projects/{project}/global/images',
         request_field=u'image',
         request_type_name=u'ComputeImagesInsertRequest',

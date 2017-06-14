@@ -192,7 +192,7 @@ May return any of the following canonical error codes:
         method_id=u'testing.testEnvironmentCatalog.get',
         ordered_params=[u'environmentType'],
         path_params=[u'environmentType'],
-        query_params=[],
+        query_params=[u'projectId'],
         relative_path=u'v1/testEnvironmentCatalog/{environmentType}',
         request_field='',
         request_type_name=u'TestingTestEnvironmentCatalogGetRequest',

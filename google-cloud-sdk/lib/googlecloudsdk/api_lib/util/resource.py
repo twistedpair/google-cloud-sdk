@@ -166,6 +166,7 @@ def GetParamsFromPath(path):
   Returns:
     list(str), list of parameters in the template path.
   """
+  path = path.split(':')[0]
   parts = path.split('/')
   params = []
   for part in parts:

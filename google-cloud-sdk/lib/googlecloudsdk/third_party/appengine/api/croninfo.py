@@ -63,6 +63,8 @@ SERVER_ID_RE_STRING = r'(?!-)[a-z\d\-]{1,63}'
 # NOTE(user): The length here must remain 100 for backwards compatibility,
 # see b/5485871 for more information.
 SERVER_VERSION_RE_STRING = r'(?!-)[a-z\d\-]{1,100}'
+# This _VERSION_REGEX probably should be the same as in
+# apphosting/api/queueinfo.py. See b/35767221.
 _VERSION_REGEX = r'^(?:(?:(%s):)?)(%s)$' % (SERVER_ID_RE_STRING,
                                             SERVER_VERSION_RE_STRING)
 

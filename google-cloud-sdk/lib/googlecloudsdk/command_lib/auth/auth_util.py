@@ -14,6 +14,16 @@
 
 """Support library for the auth command."""
 
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import store as c_store
+
+
+ACCOUNT_TABLE_FORMAT = ("""\
+    table[title='Credentialed Accounts'](
+        status.yesno(yes='*', no=''):label=ACTIVE,
+        account
+    )""")
+
 
 class _AcctInfo(object):
   """An auth command resource list item.
@@ -28,6 +38,8 @@ class _AcctInfo(object):
     self.status = 'ACTIVE' if active else ''
 
 
-def AuthResults(accounts, active_account):
+def AllAccounts():
   """The resource list return value for the auth command Run() method."""
-  return [_AcctInfo(account, account == active_account) for account in accounts]
+  active_account = properties.VALUES.core.account.Get()
+  return [_AcctInfo(account, account == active_account)
+          for account in c_store.AvailableAccounts()]

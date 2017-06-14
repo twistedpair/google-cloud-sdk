@@ -18,9 +18,6 @@ from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import array
 import thread
 
-__pychecker__ = """maxreturns=0 maxbranches=0 no-callinit
-                   unusednames=printElemNumber,debug_strs no-special"""
-
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
   _ExtendableProtocolMessage = ProtocolBuffer.ExtendableProtocolMessage
@@ -1803,7 +1800,6 @@ class MemcacheDeleteResponse(ProtocolBuffer.ProtocolMessage):
   DEADLINE_EXCEEDED =    3 
   UNREACHABLE  =    4 
   OTHER_ERROR  =    5 
-  CAS_MISMATCH =    6 
 
   _DeleteStatusCode_NAMES = {
     1: "DELETED",
@@ -1811,7 +1807,6 @@ class MemcacheDeleteResponse(ProtocolBuffer.ProtocolMessage):
     3: "DEADLINE_EXCEEDED",
     4: "UNREACHABLE",
     5: "OTHER_ERROR",
-    6: "CAS_MISMATCH",
   }
 
   def DeleteStatusCode_Name(cls, x): return cls._DeleteStatusCode_NAMES.get(x, "")

@@ -32,13 +32,8 @@ class ErrorReporting(object):
       self.api_client = core_apis.GetClientInstance(API_NAME, API_VERSION)
     self.api_messages = self.api_client.MESSAGES_MODULE
 
-  def ReportEvent(self,
-                  error_message,
-                  service,
-                  version=None,
-                  project=None,
-                  request_url=None,
-                  user=None):
+  def ReportEvent(self, error_message, service, version=None,
+                  project=None, request_url=None, user=None):
     """Creates a new error event and sends to StackDriver Reporting API.
 
     Args:
@@ -48,6 +43,25 @@ class ErrorReporting(object):
       project: str, Project to report errors to, defaults to current
       request_url: str, The request url that led to the error
       user: str, The user affected by the error
+    """
+    self.api_client.projects_events.Report(self.GenerateReportRequest(
+        error_message, service, version=version, project=project,
+        request_url=request_url, user=user))
+
+  def GenerateReportRequest(self, error_message, service, version=None,
+                            project=None, request_url=None, user=None):
+    """Creates a new error event request.
+
+    Args:
+      error_message: str, Crash details including stacktrace
+      service: str, Name of service
+      version: str, Service version, defaults to None
+      project: str, Project to report errors to, defaults to current
+      request_url: str, The request url that led to the error
+      user: str, The user affected by the error
+
+    Returns:
+      The request to send.
     """
     service_context = self.api_messages.ServiceContext(
         service=service, version=version)
@@ -68,10 +82,8 @@ class ErrorReporting(object):
       project = self._GetGcloudProject()
     project_name = self._MakeProjectName(project)
 
-    self.api_client.projects_events.Report(
-        self.api_messages.ClouderrorreportingProjectsEventsReportRequest(
-            projectName=project_name,
-            reportedErrorEvent=error_event))
+    return self.api_messages.ClouderrorreportingProjectsEventsReportRequest(
+        projectName=project_name, reportedErrorEvent=error_event)
 
   def _GetGcloudProject(self):
     """Gets the current project if project is not specified."""

@@ -27,6 +27,7 @@ def TargetHttpsProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTPS proxy',
       completion_resource_id='compute.targetHttpsProxies',
-      plural=plural and 'target HTTPS proxies',
+      plural=plural,
+      custom_plural='target HTTPS proxies',
       required=required,
       global_collection='compute.targetHttpsProxies')

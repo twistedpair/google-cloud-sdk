@@ -718,9 +718,39 @@
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
         },
+        "automaticScaling": {
+          "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
+          "$ref": "GoogleCloudMlV1__AutomaticScaling"
+        },
         "manualScaling": {
-          "description": "Optional. Manually select the number of nodes to use for serving the\nmodel. If unset (i.e., by default), the number of nodes used to serve\nthe model automatically scales with traffic. However, care should be\ntaken to ramp up traffic according to the model's ability to scale. If\nyour model needs to handle bursts of traffic beyond it's ability to\nscale, it is recommended you set this field appropriately.",
+          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `automatic_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want more\npredictable billing. Beware that latency and error rates will increase\nif the traffic exceeds that capability of the system to serve it based\non the selected number of nodes.",
           "$ref": "GoogleCloudMlV1__ManualScaling"
+        },
+        "state": {
+          "description": "Output only. The state of a version.",
+          "enumDescriptions": [
+            "The version state is unspecified.",
+            "The version is ready for prediction.",
+            "The version is still in the process of creation."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "READY",
+            "CREATING"
+          ]
+        }
+      }
+    },
+    "GoogleCloudMlV1__AutomaticScaling": {
+      "id": "GoogleCloudMlV1__AutomaticScaling",
+      "description": "Options for automatically scaling a model.",
+      "type": "object",
+      "properties": {
+        "minNodes": {
+          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed, so the\ncost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in\n[pricing](https:\/\/cloud.google.com\/ml-engine\/pricing#prediction_pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -730,7 +760,7 @@
       "type": "object",
       "properties": {
         "nodes": {
-          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to nodes * number of hours since\ndeployment.",
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to `nodes` * number of hours since\nlast billing cycle plus the cost for each prediction performed.",
           "type": "integer",
           "format": "int32"
         }
@@ -918,9 +948,39 @@
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
         },
+        "automaticScaling": {
+          "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
+          "$ref": "GoogleCloudMlV1beta1__AutomaticScaling"
+        },
         "manualScaling": {
-          "description": "Optional. Manually select the number of nodes to use for serving the\nmodel. If unset (i.e., by default), the number of nodes used to serve\nthe model automatically scales with traffic. However, care should be\ntaken to ramp up traffic according to the model's ability to scale. If\nyour model needs to handle bursts of traffic beyond it's ability to\nscale, it is recommended you set this field appropriately.",
+          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `automatic_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want predictable\nbilling. Beware that latency and error rates will increase if the\ntraffic exceeds that capability of the system to serve it based on\nthe selected number of nodes.",
           "$ref": "GoogleCloudMlV1beta1__ManualScaling"
+        },
+        "state": {
+          "description": "Output only. The state of a version.",
+          "enumDescriptions": [
+            "\/ The version state is unspecified.",
+            "The version is ready for prediction.",
+            "The version is still in the process of creation."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "READY",
+            "CREATING"
+          ]
+        }
+      }
+    },
+    "GoogleCloudMlV1beta1__AutomaticScaling": {
+      "id": "GoogleCloudMlV1beta1__AutomaticScaling",
+      "description": "Options for automatically scaling a model.",
+      "type": "object",
+      "properties": {
+        "minNodes": {
+          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed, so the\ncost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in\n[pricing](https:\/\/cloud.google.com\/ml-engine\/pricing#prediction_pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -930,7 +990,7 @@
       "type": "object",
       "properties": {
         "nodes": {
-          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to nodes * number of hours since\ndeployment.",
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to `nodes` * number of hours since\nlast billing cycle.",
           "type": "integer",
           "format": "int32"
         }

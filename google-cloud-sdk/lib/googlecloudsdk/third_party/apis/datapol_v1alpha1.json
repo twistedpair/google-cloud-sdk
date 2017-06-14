@@ -151,7 +151,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`.\nMultiple `bindings` must not be specified for the same `role`.\n`bindings` with no members will result in an error.",
+          "description": "Associates a list of `members` to a `role`.\n`bindings` with no members will result in an error.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -197,6 +197,33 @@
           "items": {
             "type": "string"
           }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is GOOGLE_INTERNAL.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
         }
       }
     },
@@ -485,11 +512,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the datapol taxonomy, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\".",
+          "description": "Resource name of the datapol taxonomy, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique id of the taxonomy.",
           "type": "string"
         },
         "taxonomyName": {
-          "description": "Name of the taxonomy. Should be no more than 100 characters with only\nletters, numbers, -, and _.",
+          "description": "Name of the taxonomy. Should be no more than 100 characters.",
           "type": "string"
         },
         "description": {
@@ -584,11 +615,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the annotation, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\/annotations\/{annotation_name}\".",
+          "description": "Resource name of the annotation, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\/annotations\/{annotation_id}\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique id of the annotation.",
           "type": "string"
         },
         "annotationName": {
-          "description": "Name of the annotation. Should be no more than 100 characters with only\nletters, numbers, -, and _.",
+          "description": "Name of the annotation. Should be no more than 100 characters.",
           "type": "string"
         },
         "description": {
@@ -596,11 +631,11 @@
           "type": "string"
         },
         "parentAnnotation": {
-          "description": "Name of the parent annotation to this annotation. If empty, it means this\nannotation is a top level annotation.",
+          "description": "Ids of the parent annotation to this annotation. If empty, it means this\nannotation is a top level annotation.",
           "type": "string"
         },
         "childAnnotations": {
-          "description": "Names of child annotations of this annotation.",
+          "description": "Ids of child annotations of this annotation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -642,8 +677,12 @@
       "description": "Request message for \"DataAnnotationTagging.ApplyAnnotationTag\".",
       "type": "object",
       "properties": {
-        "annotationName": {
-          "description": "[Required] Name of the annotation tag. The annotation must be a valid\nannotation defined in the data taxonomy that is specified in the\nresource name.",
+        "dataSubsetName": {
+          "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
+          "type": "string"
+        },
+        "annotationId": {
+          "description": "[Required] Id of the annotation tag. The annotation must be a valid\nannotation defined in the data taxonomy that is specified in the\nresource name.",
           "type": "string"
         }
       }
@@ -654,11 +693,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the annotation tag, which has the format of\n\"data\/{resource_name_of_the_data}\/taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_name}\/annotationTag\"\nResouce name of the data asset should be RFC3986 escaped.",
+          "description": "Resource name of the annotation tag, which has the format of\n\"data\/{resource_name_of_the_data}\/taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\/annotationTag\"\nResouce name of the data asset should be RFC3986 escaped.",
           "type": "string"
         },
-        "annotationName": {
-          "description": "The value of 'annotation_name' for the tagged annotation.The annotation\nmust be a member of the taxonomy included in the resource name.",
+        "dataSubsetName": {
+          "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
+          "type": "string"
+        },
+        "annotationId": {
+          "description": "The value of 'id' for the tagged annotation.The annotation must be a member\nof the taxonomy included in the resource name.",
           "type": "string"
         }
       }
@@ -722,18 +765,6 @@
           "description": "Resource name of the data asset.",
           "type": "string"
         },
-        "projectId": {
-          "description": "Id of the project that owns the data asset, if available.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Display name of the data asset, if available.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description of the data asset, if available.",
-          "type": "string"
-        },
         "type": {
           "description": "Type of the data asset, if available.",
           "enumDescriptions": [
@@ -747,6 +778,22 @@
             "BIGQUERY_TABLE",
             "BIGQUERY_TABLE_COLUMN"
           ]
+        },
+        "dataSubsetName": {
+          "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Id of the project that owns the data asset, if available.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the data asset, if available.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the data asset, if available.",
+          "type": "string"
         }
       }
     }
@@ -1229,6 +1276,11 @@
                       "required": true,
                       "pattern": "^data\/[^\/]+\/taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotationTag$",
                       "type": "string"
+                    },
+                    "dataSubsetName": {
+                      "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1258,6 +1310,11 @@
                       "location": "path",
                       "required": true,
                       "pattern": "^data\/[^\/]+\/taxonomyStores\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "dataSubsetName": {
+                      "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
+                      "location": "query",
                       "type": "string"
                     },
                     "pageSize": {

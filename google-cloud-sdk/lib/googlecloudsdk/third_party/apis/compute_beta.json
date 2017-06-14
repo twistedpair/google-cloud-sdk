@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20170523",
+ "revision": "20170606",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1588,6 +1588,10 @@
    "type": "object",
    "description": "Associates `members` with a `role`.",
    "properties": {
+    "condition": {
+     "$ref": "Expr",
+     "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently. This field is GOOGLE_INTERNAL."
+    },
     "members": {
      "type": "array",
      "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
@@ -2550,6 +2554,29 @@
     }
    }
   },
+  "Expr": {
+   "id": "Expr",
+   "type": "object",
+   "description": "Represents an expression text. Example:\n\ntitle: \"User account presence\" description: \"Determines whether the request has a user account\" expression: \"size(request.user) \u003e 0\"",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI."
+    },
+    "expression": {
+     "type": "string",
+     "description": "Textual representation of an expression in Common Expression Language syntax.\n\nThe application context of the containing message determines which well-known feature set of CEL is supported."
+    },
+    "location": {
+     "type": "string",
+     "description": "An optional string indicating the location of the expression for error reporting, e.g. a file name and a position in the file."
+    },
+    "title": {
+     "type": "string",
+     "description": "An optional title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression."
+    }
+   }
+  },
   "Firewall": {
    "id": "Firewall",
    "type": "object",
@@ -2663,9 +2690,23 @@
       "type": "string"
      }
     },
+    "sourceServiceAccounts": {
+     "type": "array",
+     "description": "If source service accounts are specified, the firewall will apply only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP belongs to an instance with service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used at the same time as sourceTags or targetTags.",
+     "items": {
+      "type": "string"
+     }
+    },
     "sourceTags": {
      "type": "array",
      "description": "If source tags are specified, the firewall will apply only to traffic with source IP that belongs to a tag listed in source tags. Source tags cannot be used to control traffic to an instance's external IP address. Because tags are associated with an instance, not an IP address. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "targetServiceAccounts": {
+     "type": "array",
+     "description": "A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network.",
      "items": {
       "type": "string"
      }
@@ -3017,7 +3058,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "description": "The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the server might also populate this property with the value WINDOWS to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
+     "description": "The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the server might also populate this property with the value WINDOWS to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
       "MULTI_IP_SUBNET",
@@ -3608,6 +3649,18 @@
     "sourceDiskId": {
      "type": "string",
      "description": "The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name."
+    },
+    "sourceImage": {
+     "type": "string",
+     "description": "URL of the source image used to create this image. This can be a full or valid partial URL. You must provide exactly one of:  \n- this property, or  \n- the rawDisk.source property, or  \n- the sourceDisk property   in order to create an image."
+    },
+    "sourceImageEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key."
+    },
+    "sourceImageId": {
+     "type": "string",
+     "description": "[Output Only] The ID value of the image used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given image name."
     },
     "sourceType": {
      "type": "string",
@@ -6110,7 +6163,7 @@
     },
     "bindings": {
      "type": "array",
-     "description": "Associates a list of `members` to a `role`. Multiple `bindings` must not be specified for the same `role`. `bindings` with no members will result in an error.",
+     "description": "Associates a list of `members` to a `role`. `bindings` with no members will result in an error.",
      "items": {
       "$ref": "Binding"
      }
@@ -14253,6 +14306,11 @@
      "httpMethod": "POST",
      "description": "Creates an image in the specified project using the data included in the request.",
      "parameters": {
+      "forceCreate": {
+       "type": "boolean",
+       "description": "Force image creation if true.",
+       "location": "query"
+      },
       "project": {
        "type": "string",
        "description": "Project ID for this request.",
@@ -17845,8 +17903,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "getXpnResources": {
@@ -17890,8 +17947,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "listXpnHosts": {
@@ -17938,8 +17994,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "moveDisk": {

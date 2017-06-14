@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20170523",
+ "revision": "20170606",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -157,6 +157,15 @@
      "description": "Default access controls to apply to new objects when no ACL is provided.",
      "items": {
       "$ref": "ObjectAccessControl"
+     }
+    },
+    "encryption": {
+     "type": "object",
+     "description": "Encryption configuration used by default for newly inserted objects, when no encryption config is specified.",
+     "properties": {
+      "defaultKmsKeyName": {
+       "type": "string"
+      }
      }
     },
     "etag": {
@@ -714,6 +723,10 @@
      "type": "string",
      "description": "The kind of item this is. For objects, this is always storage#object.",
      "default": "storage#object"
+    },
+    "kmsKeyName": {
+     "type": "string",
+     "description": "Cloud KMS Key used to encrypt this object, if the object is encrypted by such a key."
     },
     "md5Hash": {
      "type": "string",
@@ -2531,6 +2544,11 @@
        "format": "int64",
        "location": "query"
       },
+      "kmsKeyName": {
+       "type": "string",
+       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.",
+       "location": "query"
+      },
       "userProject": {
        "type": "string",
        "description": "The project to be billed for this request, for Requester Pays buckets.",
@@ -2930,6 +2948,11 @@
        "format": "int64",
        "location": "query"
       },
+      "kmsKeyName": {
+       "type": "string",
+       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.",
+       "location": "query"
+      },
       "name": {
        "type": "string",
        "description": "Name of the object. Required when the object metadata is not otherwise provided. Overrides the object metadata's name value, if any. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.",
@@ -3195,6 +3218,11 @@
        "description": "Name of the bucket in which to store the new object. Overrides the provided object metadata's bucket value, if any.",
        "required": true,
        "location": "path"
+      },
+      "destinationKmsKeyName": {
+       "type": "string",
+       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.",
+       "location": "query"
       },
       "destinationObject": {
        "type": "string",

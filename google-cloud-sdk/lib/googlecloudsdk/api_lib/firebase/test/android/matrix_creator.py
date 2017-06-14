@@ -88,9 +88,13 @@ class MatrixCreator(object):
 
     robo_directives = []
     if self._args.robo_directives:
+      action_types = self._messages.RoboDirective.ActionTypeValueValuesEnum
       for key, value in self._args.robo_directives.iteritems():
         robo_directives.append(
-            self._messages.RoboDirective(resourceName=key, inputText=value))
+            self._messages.RoboDirective(
+                resourceName=key,
+                inputText=value,
+                actionType=action_types.ENTER_TEXT))
 
     spec.androidRoboTest = self._messages.AndroidRoboTest(
         appApk=self._BuildFileReference(self._args.app),

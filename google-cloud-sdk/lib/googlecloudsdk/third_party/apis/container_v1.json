@@ -408,6 +408,10 @@
           "description": "The password to use for HTTP basic authentication to the master endpoint.\nBecause the master endpoint is open to the Internet, you should create a\nstrong password.  If a password is provided for cluster creation, username\nmust be non-empty.",
           "type": "string"
         },
+        "clientCertificateConfig": {
+          "description": "Configuration for client certificate authentication on the cluster.  If no\nconfiguration is specified, a client certificate is issued.",
+          "$ref": "ClientCertificateConfig"
+        },
         "clusterCaCertificate": {
           "description": "[Output only] Base64-encoded public certificate that is the root of\ntrust for the cluster.",
           "type": "string"
@@ -419,6 +423,17 @@
         "clientKey": {
           "description": "[Output only] Base64-encoded private key used by clients to authenticate\nto the cluster endpoint.",
           "type": "string"
+        }
+      }
+    },
+    "ClientCertificateConfig": {
+      "id": "ClientCertificateConfig",
+      "description": "Configuration for client certificates on the cluster.",
+      "type": "object",
+      "properties": {
+        "issueClientCertificate": {
+          "description": "Issue a client certificate.",
+          "type": "boolean"
         }
       }
     },
@@ -671,7 +686,8 @@
             "Automatic node pool repair.",
             "Automatic node upgrade.",
             "Set labels.",
-            "Set\/generate master auth materials"
+            "Set\/generate master auth materials",
+            "Set node pool size."
           ],
           "type": "string",
           "enum": [
@@ -688,7 +704,8 @@
             "AUTO_REPAIR_NODES",
             "AUTO_UPGRADE_NODES",
             "SET_LABELS",
-            "SET_MASTER_AUTH"
+            "SET_MASTER_AUTH",
+            "SET_NODE_POOL_SIZE"
           ]
         },
         "status": {
@@ -972,6 +989,18 @@
       "description": "CompleteIPRotationRequest moves the cluster master back into single-IP mode.",
       "type": "object",
       "properties": {
+      }
+    },
+    "SetNodePoolSizeRequest": {
+      "id": "SetNodePoolSizeRequest",
+      "description": "SetNodePoolSizeRequest sets the size a node\npool.",
+      "type": "object",
+      "properties": {
+        "nodeCount": {
+          "description": "The desired node count for the pool.",
+          "type": "integer",
+          "format": "int32"
+        }
       }
     },
     "CreateTokenRequest": {
@@ -2261,6 +2290,54 @@
                       ],
                       "request": {
                         "$ref": "SetNodePoolManagementRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ]
+                    },
+                    "setSize": {
+                      "id": "container.projects.zones.clusters.nodePools.setSize",
+                      "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
+                      "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
+                      "httpMethod": "POST",
+                      "description": "Sets the size of a specific node pool.",
+                      "parameters": {
+                        "projectId": {
+                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "zone": {
+                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "clusterId": {
+                          "description": "The name of the cluster to update.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "nodePoolId": {
+                          "description": "The name of the node pool to update.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "zone",
+                        "clusterId",
+                        "nodePoolId"
+                      ],
+                      "request": {
+                        "$ref": "SetNodePoolSizeRequest"
                       },
                       "response": {
                         "$ref": "Operation"

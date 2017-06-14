@@ -22,22 +22,24 @@ class Annotation(_messages.Message):
 
   Fields:
     annotationName: Name of the annotation. Should be no more than 100
-      characters with only letters, numbers, -, and _.
-    childAnnotations: Names of child annotations of this annotation.
+      characters.
+    childAnnotations: Ids of child annotations of this annotation.
     description: Description of the annotation. Length of the description is
       limited to 1000 characters.
+    id: Unique id of the annotation.
     name: Resource name of the annotation, which has the format of "taxonomySt
-      ores/{store_id}/dataTaxonomies/{taxonomy_name}/annotations/{annotation_n
-      ame}".
-    parentAnnotation: Name of the parent annotation to this annotation. If
+      ores/{store_id}/dataTaxonomies/{taxonomy_id}/annotations/{annotation_id}
+      ".
+    parentAnnotation: Ids of the parent annotation to this annotation. If
       empty, it means this annotation is a top level annotation.
   """
 
   annotationName = _messages.StringField(1)
   childAnnotations = _messages.StringField(2, repeated=True)
   description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  parentAnnotation = _messages.StringField(5)
+  id = _messages.StringField(4)
+  name = _messages.StringField(5)
+  parentAnnotation = _messages.StringField(6)
 
 
 class AnnotationTag(_messages.Message):
@@ -47,29 +49,38 @@ class AnnotationTag(_messages.Message):
   it associated with, and the taxonomy that the annotation belongs to.
 
   Fields:
-    annotationName: The value of 'annotation_name' for the tagged
-      annotation.The annotation must be a member of the taxonomy included in
-      the resource name.
+    annotationId: The value of 'id' for the tagged annotation.The annotation
+      must be a member of the taxonomy included in the resource name.
+    dataSubsetName: A finer grained subset of the data that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire data asset.
     name: Resource name of the annotation tag, which has the format of "data/{
       resource_name_of_the_data}/taxonomyStores/{store_id}/dataTaxonomies/{tax
-      onomy_name}/annotationTag" Resouce name of the data asset should be
+      onomy_id}/annotationTag" Resouce name of the data asset should be
       RFC3986 escaped.
   """
 
-  annotationName = _messages.StringField(1)
-  name = _messages.StringField(2)
+  annotationId = _messages.StringField(1)
+  dataSubsetName = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class ApplyAnnotationTagRequest(_messages.Message):
   """Request message for "DataAnnotationTagging.ApplyAnnotationTag".
 
   Fields:
-    annotationName: [Required] Name of the annotation tag. The annotation must
-      be a valid annotation defined in the data taxonomy that is specified in
-      the resource name.
+    annotationId: [Required] Id of the annotation tag. The annotation must be
+      a valid annotation defined in the data taxonomy that is specified in the
+      resource name.
+    dataSubsetName: A finer grained subset of the data that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire data asset.
   """
 
-  annotationName = _messages.StringField(1)
+  annotationId = _messages.StringField(1)
+  dataSubsetName = _messages.StringField(2)
 
 
 class Asset(_messages.Message):
@@ -80,6 +91,10 @@ class Asset(_messages.Message):
     TypeValueValuesEnum: Type of the data asset, if available.
 
   Fields:
+    dataSubsetName: A finer grained subset of the data that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire data asset.
     description: Description of the data asset, if available.
     displayName: Display name of the data asset, if available.
     name: Resource name of the data asset.
@@ -99,11 +114,12 @@ class Asset(_messages.Message):
     BIGQUERY_TABLE = 1
     BIGQUERY_TABLE_COLUMN = 2
 
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  dataSubsetName = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class AuditConfig(_messages.Message):
@@ -181,6 +197,10 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently. This field is GOOGLE_INTERNAL.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -198,8 +218,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CloudAuditOptions(_messages.Message):
@@ -353,15 +374,16 @@ class DataTaxonomy(_messages.Message):
   Fields:
     description: Description of the datapol taxonomy. Length of the
       description is limited to 1000 characters.
+    id: Unique id of the taxonomy.
     name: Resource name of the datapol taxonomy, which has the format of
-      "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_name}".
-    taxonomyName: Name of the taxonomy. Should be no more than 100 characters
-      with only letters, numbers, -, and _.
+      "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_id}".
+    taxonomyName: Name of the taxonomy. Should be no more than 100 characters.
   """
 
   description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  taxonomyName = _messages.StringField(3)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+  taxonomyName = _messages.StringField(4)
 
 
 class DatapolDataAssetsListResourceNamesRequest(_messages.Message):
@@ -392,15 +414,20 @@ class DatapolDataTaxonomyStoresAnnotationTagsListRequest(_messages.Message):
   """A DatapolDataTaxonomyStoresAnnotationTagsListRequest object.
 
   Fields:
+    dataSubsetName: A finer grained subset of the data that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire data asset.
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: [Required] Resource name of the data asset.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  dataSubsetName = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest(_messages.Message):
@@ -422,10 +449,15 @@ class DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest(_message
   object.
 
   Fields:
+    dataSubsetName: A finer grained subset of the data that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire data asset.
     name: [Required] Resource name of the tag to be deleted.
   """
 
-  name = _messages.StringField(1, required=True)
+  dataSubsetName = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatapolProjectsGetDefaultTaxonomyStoreRequest(_messages.Message):
@@ -615,6 +647,30 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  """Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -814,9 +870,8 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
-      must not be specified for the same `role`. `bindings` with no members
-      will result in an error.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-

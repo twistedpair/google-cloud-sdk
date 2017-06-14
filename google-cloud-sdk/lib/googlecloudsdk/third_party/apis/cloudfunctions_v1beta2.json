@@ -276,6 +276,22 @@
           "description": "The name of the function (as defined in source code) that will be\nexecuted. Defaults to the resource name suffix, if not specified. For\nbackward compatibility, if function with given name is not found, then the\nsystem will try to use function named \"function\".\nFor Node.js this is name of a function exported by the module specified\nin `source_location`.",
           "type": "string"
         },
+        "language": {
+          "description": "The programming language in which the function is written.",
+          "enumDescriptions": [
+            "Language not specified.",
+            "Automatic language detection to be performed by Cloud Functions.",
+            "Node.js.",
+            "Python."
+          ],
+          "type": "string",
+          "enum": [
+            "LANGUAGE_UNSPECIFIED",
+            "AUTO",
+            "NODE_JS",
+            "PYTHON"
+          ]
+        },
         "timeout": {
           "description": "The function execution timeout. Execution is considered failed and\ncan be terminated if the function is not completed at the end of the\ntimeout period. Defaults to 60 seconds.",
           "type": "string",

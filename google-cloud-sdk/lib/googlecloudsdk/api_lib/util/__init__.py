@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Package marker file."""
+"""Utilities used by more than one surface in the Cloud SDK."""

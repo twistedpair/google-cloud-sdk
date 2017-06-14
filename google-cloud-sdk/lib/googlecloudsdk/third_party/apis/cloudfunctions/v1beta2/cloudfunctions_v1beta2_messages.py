@@ -45,6 +45,8 @@ class CloudFunction(_messages.Message):
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
+    LanguageValueValuesEnum: The programming language in which the function is
+      written.
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Fields:
@@ -60,6 +62,7 @@ class CloudFunction(_messages.Message):
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
+    language: The programming language in which the function is written.
     latestOperation: Output only. Name of the most recent operation modifying
       the function. If the function status is `DEPLOYING` or `DELETING`, then
       it points to the active operation.
@@ -87,6 +90,20 @@ class CloudFunction(_messages.Message):
     updateTime: Output only. The last update timestamp of a Cloud Function.
   """
 
+  class LanguageValueValuesEnum(_messages.Enum):
+    """The programming language in which the function is written.
+
+    Values:
+      LANGUAGE_UNSPECIFIED: Language not specified.
+      AUTO: Automatic language detection to be performed by Cloud Functions.
+      NODE_JS: Node.js.
+      PYTHON: Python.
+    """
+    LANGUAGE_UNSPECIFIED = 0
+    AUTO = 1
+    NODE_JS = 2
+    PYTHON = 3
+
   class StatusValueValuesEnum(_messages.Enum):
     """Output only. Status of the function deployment.
 
@@ -108,16 +125,17 @@ class CloudFunction(_messages.Message):
   entryPoint = _messages.StringField(2)
   eventTrigger = _messages.MessageField('EventTrigger', 3)
   httpsTrigger = _messages.MessageField('HTTPSTrigger', 4)
-  latestOperation = _messages.StringField(5)
-  name = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  sourceArchiveUrl = _messages.StringField(8)
-  sourceRepository = _messages.MessageField('SourceRepository', 9)
-  sourceRepositoryUrl = _messages.StringField(10)
-  sourceUploadUrl = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  timeout = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  language = _messages.EnumField('LanguageValueValuesEnum', 5)
+  latestOperation = _messages.StringField(6)
+  name = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  sourceArchiveUrl = _messages.StringField(9)
+  sourceRepository = _messages.MessageField('SourceRepository', 10)
+  sourceRepositoryUrl = _messages.StringField(11)
+  sourceUploadUrl = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  timeout = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

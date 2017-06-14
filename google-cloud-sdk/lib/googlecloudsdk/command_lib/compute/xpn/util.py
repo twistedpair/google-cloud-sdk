@@ -13,5 +13,5 @@
 # limitations under the License.
 """Utilities for `gcloud compute xpn` commands."""
 
-PROJECTS_COLLECTION = 'compute.xpnProjects'
-XPN_RESOURCE_COLLECTION = 'compute.xpnResourceId'
+XPN_RESOURCE_ID_FORMAT = 'table(id:label=RESOURCE_ID, type:label=RESOURCE_TYPE)'
+XPN_PROJECTS_FORMAT = 'table(name, creationTimestamp, xpnProjectStatus)'

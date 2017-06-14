@@ -429,6 +429,32 @@ This will be an no-op if the last upgrade successfully completed.
         supports_download=False,
     )
 
+    def SetSize(self, request, global_params=None):
+      """Sets the size of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsSetSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.setSize',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
+        request_field=u'setNodePoolSizeRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetSizeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""
 

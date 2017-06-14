@@ -3,6 +3,50 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 159.0.0 (2017-06-14)
+
+### Google App Engine
+
+*   Added commands to support automatically managed certificates:
+    *   `gcloud alpha app domain-mappings`
+    *   `gcloud alpha app ssl-certificates`
+
+*   Added `--no-launch-browser` flag to all `gcloud app browse` commands:
+    *   Allows the user to specify that they don't want a browser, they just
+        want the url.
+    *   Detects situations that the user probably can't launch a browser (no
+        DISPLAY, etc.) and just prints the URL instead of attempting to launch
+        a browser.
+
+### Google Cloud BigTable
+
+*   `cbt ls <table>` now shows the GC policy for each column family.
+
+### Google Compute Engine
+
+*   Added `gcloud compute instances set-service-account`
+*   `gcloud compute disks snapshot` now waits for the operation to finish
+    indefinitely.
+*   Removed the `--zone` flag in:
+    *   `gcloud compute backend-services add-backend`
+    *   `gcloud compute backend-services remove-backend`
+    *   `gcloud compute backend-services update-backend`
+*   Removed the `--region` flag in:
+    *   `gcloud functions` command group (alpha and beta)
+    *   `gcloud functions regions list`
+*   Promoted Google cloud TCP proxy to GA.
+    https://cloud.google.com/compute/docs/load-balancing/tcp-ssl/tcp-proxy
+
+### Google Container Registry
+
+*   Fixed an issue that affected `docker build` while using
+    docker-credential-gcr.
+
+### Google Cloud KMS
+
+*   Promoted KMS `gcloud kms encrypt` and `gcloud kms decrypt` commands from
+    beta to GA.
+
 ## 158.0.0 (2017-06-07)
 
 ### Breaking Changes

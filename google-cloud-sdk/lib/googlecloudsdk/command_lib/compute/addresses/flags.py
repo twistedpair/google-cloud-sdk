@@ -14,6 +14,8 @@
 
 """Flags and helpers for the compute addresses commands."""
 
+import argparse
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -22,10 +24,31 @@ def AddressArgument(required=True, plural=True):
   return compute_flags.ResourceArgument(
       resource_name='address',
       completion_resource_id='compute.addresses',
-      plural=plural and 'addresses',
+      plural=plural,
+      custom_plural='addresses',
       required=required,
       regional_collection='compute.addresses',
       global_collection='compute.globalAddresses')
+
+
+def SubnetworkArgument():
+  return compute_flags.ResourceArgument(
+      name='--subnet',
+      resource_name='subnet',
+      required=False,
+      regional_collection='compute.subnetworks',
+      region_explanation=argparse.SUPPRESS,
+      short_help='The subnet in which to reserve the addresses.',
+      detailed_help="""\
+      If specified, the subnet name in which the address(es) should be reserved.
+      The subnet must be in the same region as the address.
+
+      The address will represent an internal IP reservation from within the
+      subnet. If --address is specified, it must be within the subnet's
+      IP range.
+
+      May not be specified with --global.
+      """)
 
 
 def AddAddresses(parser):

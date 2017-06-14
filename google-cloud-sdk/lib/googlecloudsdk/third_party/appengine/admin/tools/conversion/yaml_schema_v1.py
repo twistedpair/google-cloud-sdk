@@ -23,6 +23,7 @@ SCHEMA = s.Message(
         secure=s.Value('security_level', converter=c.EnumConverter('SECURE')),
         auth_fail_action=s.Value(converter=c.EnumConverter('AUTH_FAIL_ACTION')),
         script=s.Value(converter=c.ToJsonString)),
+    api_version=s.Value('runtime_api_version', converter=c.ToJsonString),
     auto_id_policy=s.Value('beta_settings',
                            lambda val: {'auto_id_policy': val}),
     automatic_scaling=s.Message(
@@ -121,6 +122,8 @@ SCHEMA = s.Message(
         check_interval_sec=s.Value('check_interval',
                                    converter=c.SecondsToDuration),
         timeout_sec=s.Value('timeout', converter=c.SecondsToDuration),
+        app_start_timeout_sec=s.Value('app_start_timeout_sec',
+                                      converter=c.SecondsToDuration),
         success_threshold=s.Value(),
         failure_threshold=s.Value(),
         path=s.Value(),

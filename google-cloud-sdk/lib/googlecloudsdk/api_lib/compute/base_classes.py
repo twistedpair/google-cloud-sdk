@@ -20,6 +20,7 @@ import json
 import textwrap
 
 import enum
+from googlecloudsdk.api_lib.compute import base_classes_resource_registry as resource_registry
 from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
@@ -260,6 +261,16 @@ class BaseLister(base.ListCommand, BaseCommand):
     return items
 
   def Run(self, args):
+    # This is a horrible hack to remove the resource registry from gcloud but
+    # leave it in compute. This will go away when base_classes is removed.
+    # Collection is checked to allow individual commands to opt-out of the magic
+    # format setting.
+    if not args.IsSpecified('format') and not args.uri and self.Collection():
+      r = resource_registry.RESOURCE_REGISTRY[self.Collection()]
+      args.format = r.list_format
+    return self._Run(args)
+
+  def _Run(self, args):
     """Yields JSON-serializable dicts of resources or self links."""
     # Data structures used to perform client-side filtering of
     # resources by their names and/or URIs.

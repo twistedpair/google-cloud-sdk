@@ -63,7 +63,8 @@ class Namespace(argparse.Namespace):
   """A custom subclass for parsed args.
 
   Attributes:
-    _deepest_parser: ArgumentParser, The deepest parser for the command.
+    _deepest_parser: ArgumentParser, The deepest parser for the last command
+      part.
     _specified_args: {dest: arg-name}, A map of dest names for known args
       specified on the command line to arg names that have been scrubbed for
       metrics. This dict accumulate across all subparsers.
@@ -74,10 +75,36 @@ class Namespace(argparse.Namespace):
     self._specified_args = {}
     super(Namespace, self).__init__(**kwargs)
 
+  def _SetParser(self, parser):
+    """Sets the parser for the first part of the command."""
+    self._deepest_parser = parser
+
+  def _GetParser(self):
+    """Returns the deepest parser for the command."""
+    return self._deepest_parser
+
+  def _GetCommand(self):
+    """Returns the command for the deepest parser."""
+    # pylint: disable=protected-access
+    return self._GetParser()._calliope_command
+
+  def _Execute(self, command):
+    """Executes command in the current CLI.
+
+    Args:
+      command: A list of command args to execute.
+
+    Returns:
+      Returns the list of resources from the command.
+    """
+    # pylint: disable=protected-access
+    return self._GetCommand()._cli_generator.Generate().Execute(
+        command, call_arg_complete=False)
+
   def GetDisplayInfo(self):
     """Returns the parser display_info."""
     # pylint: disable=protected-access
-    return self._deepest_parser._calliope_command.ai.display_info
+    return self._GetCommand().ai.display_info
 
   def GetSpecifiedArgNames(self):
     """Returns the scrubbed names for args specified on the command line."""
@@ -110,6 +137,86 @@ class Namespace(argparse.Namespace):
       raise parser_errors.UnknownDestinationException(
           'No registered arg for destination [{}].'.format(dest))
     return dest in self._specified_args
+
+  def GetFlagArgument(self, name):
+    """Returns the flag argument object for name.
+
+    Args:
+      name: The flag name or Namespace destination.
+
+    Raises:
+      UnknownDestinationException: If there is no registered flag arg for name.
+
+    Returns:
+      The flag argument object for name.
+    """
+    if name.startswith('--'):
+      dest = name[2:].replace('-', '_')
+      flag = name
+    else:
+      dest = name
+      flag = '--' + name.replace('_', '-')
+    ai = self._GetCommand().ai
+    for arg in ai.flag_args + ai.ancestor_flag_args:
+      if (dest == arg.dest or
+          arg.option_strings and flag == arg.option_strings[0]):
+        return arg
+    raise parser_errors.UnknownDestinationException(
+        'No registered flag arg for [{}].'.format(name))
+
+  def GetPositionalArgument(self, name):
+    """Returns the positional argument object for name.
+
+    Args:
+      name: The Namespace metavar or destination.
+
+    Raises:
+      UnknownDestinationException: If there is no registered positional arg
+        for name.
+
+    Returns:
+      The positional argument object for name.
+    """
+    dest = name.replace('-', '_').lower()
+    meta = name.replace('_', '-').upper()
+    for arg in self._GetCommand().ai.positional_args:
+      if dest == arg.dest or meta == arg.metavar:
+        return arg
+    raise parser_errors.UnknownDestinationException(
+        'No registered positional arg for [{}].'.format(name))
+
+  def GetFlag(self, dest):
+    """Returns the flag name registered to dest or None is dest is a positional.
+
+    Args:
+      dest: The dest of a registered argument.
+
+    Raises:
+      UnknownDestinationException: If no arg is registered for dest.
+
+    Returns:
+      The flag name registered to dest or None if dest is a positional.
+    """
+    arg = self.GetFlagArgument(dest)
+    return arg.option_strings[0] if arg.option_strings else None
+
+  def GetValue(self, dest):
+    """Returns the value of the argument registered for dest.
+
+    Args:
+      dest: The dest of a registered argument.
+
+    Raises:
+      UnknownDestinationException: If no arg is registered for dest.
+
+    Returns:
+      The value of the argument registered for dest.
+    """
+    try:
+      return getattr(self, dest)
+    except AttributeError:
+      raise parser_errors.UnknownDestinationException(
+          'No registered arg for destination [{}].'.format(dest))
 
   def MakeGetOrRaise(self, flag_name):
     """Returns a function to get given flag value or raise if it is not set.
@@ -307,6 +414,7 @@ class ArgumentParser(argparse.ArgumentParser):
       args = sys.argv[1:]
     if namespace is None:
       namespace = Namespace()
+    namespace._SetParser(self)  # pylint: disable=protected-access
     try:
       if self._remainder_action:
         # Remove remainder_action so it is not parsed regularly.
@@ -331,12 +439,6 @@ class ArgumentParser(argparse.ArgumentParser):
       # Replace action for help message and ArgumentErrors.
       if self._remainder_action:
         self._actions.append(self._remainder_action)
-
-    # Pass back a reference to the deepest parser used in the parse as part of
-    # the returned args.
-    # pylint: disable=protected-access
-    if not namespace._deepest_parser:
-      namespace._deepest_parser = self
     return (namespace, unknown_args)
 
   def parse_args(self, args=None, namespace=None):
@@ -347,8 +449,8 @@ class ArgumentParser(argparse.ArgumentParser):
       return namespace
 
     # Content of these lines differs from argparser's parse_args().
+    deepest_parser = namespace._GetParser()  # pylint: disable=protected-access
     # pylint:disable=protected-access
-    deepest_parser = namespace._deepest_parser or self
     deepest_parser._specified_args = namespace._specified_args
     if deepest_parser._remainder_action:
       # Assume the user wanted to pass all arguments after last recognized
@@ -872,3 +974,28 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
 
     super(DynamicPositionalAction, self).__call__(
         parser, namespace, values, option_string=option_string)
+
+    # Running two dynamic commands in a row using the same CLI object is a
+    # problem because the argparse parsers are saved in between invocations.
+    # This is usually fine because everything is static, but in this case two
+    # invocations could actually have different dynamic args generated. We
+    # have to do two things to get this to work. First we need to clear the
+    # parser from the map. If we don't do this, this class doesn't even get
+    # called again because the choices are already defined. Second, we need
+    # to remove the arguments we added from the ArgumentInterceptor. The
+    # parser itself is thrown out, but because we are sharing an
+    # ArgumentInterceptor with our parent, it remembers the args that we
+    # added. Later, they are propagated back down to us even though they no
+    # longer actually exist. When completing, we know we will only be running
+    # a single invocation and we need to leave the choices around so that the
+    # completer can read them after the command fails to run.
+    if '_ARGCOMPLETE' not in os.environ:
+      self._name_parser_map.clear()
+      # Detaching the argument interceptors here makes the help text work by
+      # preventing the accumlation of duplicate entries with each command
+      # execution on this CLI.  However, it also foils the ability to map arg
+      # dest names back to the original argument, needed for the flag completion
+      # style.  It's commented out here just in case help text wins out over
+      # argument lookup down the road.
+      # for _, arg in args.iteritems():
+      #   arg.RemoveFromParser(ai)

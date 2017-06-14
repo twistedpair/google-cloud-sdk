@@ -715,6 +715,10 @@ class Autoscaler(_messages.Message):
   autoscaling policy that you define. For more information, read Autoscaling
   Groups of Instances.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the autoscaler
+      configuration.
+
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
       algorithm. You can define one or more of the policies for an autoscaler:
@@ -739,10 +743,28 @@ class Autoscaler(_messages.Message):
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
+    status: [Output Only] The status of the autoscaler configuration.
+    statusDetails: [Output Only] Human-readable details about the current
+      state of the autoscaler. Read the documentation for Commonly returned
+      status messages for examples of status messages you might encounter.
     target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides (for
       autoscalers living in zonal scope).
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The status of the autoscaler configuration.
+
+    Values:
+      ACTIVE: <no description>
+      DELETING: <no description>
+      ERROR: <no description>
+      PENDING: <no description>
+    """
+    ACTIVE = 0
+    DELETING = 1
+    ERROR = 2
+    PENDING = 3
 
   autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
   creationTimestamp = _messages.StringField(2)
@@ -752,8 +774,10 @@ class Autoscaler(_messages.Message):
   name = _messages.StringField(6)
   region = _messages.StringField(7)
   selfLink = _messages.StringField(8)
-  target = _messages.StringField(9)
-  zone = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 10, repeated=True)
+  target = _messages.StringField(11)
+  zone = _messages.StringField(12)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -830,6 +854,57 @@ class AutoscalerList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#autoscalerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class AutoscalerStatusDetails(_messages.Message):
+  """A AutoscalerStatusDetails object.
+
+  Enums:
+    TypeValueValuesEnum: The type of error returned.
+
+  Fields:
+    message: The status message.
+    type: The type of error returned.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of error returned.
+
+    Values:
+      ALL_INSTANCES_UNHEALTHY: <no description>
+      BACKEND_SERVICE_DOES_NOT_EXIST: <no description>
+      CAPPED_AT_MAX_NUM_REPLICAS: <no description>
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE: <no description>
+      CUSTOM_METRIC_INVALID: <no description>
+      MIN_EQUALS_MAX: <no description>
+      MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
+      MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
+      MORE_THAN_ONE_BACKEND_SERVICE: <no description>
+      NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
+      REGION_RESOURCE_STOCKOUT: <no description>
+      SCALING_TARGET_DOES_NOT_EXIST: <no description>
+      UNKNOWN: <no description>
+      UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION: <no description>
+      ZONE_RESOURCE_STOCKOUT: <no description>
+    """
+    ALL_INSTANCES_UNHEALTHY = 0
+    BACKEND_SERVICE_DOES_NOT_EXIST = 1
+    CAPPED_AT_MAX_NUM_REPLICAS = 2
+    CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE = 3
+    CUSTOM_METRIC_INVALID = 4
+    MIN_EQUALS_MAX = 5
+    MISSING_CUSTOM_METRIC_DATA_POINTS = 6
+    MISSING_LOAD_BALANCING_DATA_POINTS = 7
+    MORE_THAN_ONE_BACKEND_SERVICE = 8
+    NOT_ENOUGH_QUOTA_AVAILABLE = 9
+    REGION_RESOURCE_STOCKOUT = 10
+    SCALING_TARGET_DOES_NOT_EXIST = 11
+    UNKNOWN = 12
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 13
+    ZONE_RESOURCE_STOCKOUT = 14
+
+  message = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class AutoscalersScopedList(_messages.Message):
@@ -1586,6 +1661,280 @@ class CacheKeyPolicy(_messages.Message):
   includeQueryString = _messages.BooleanField(3)
   queryStringBlacklist = _messages.StringField(4, repeated=True)
   queryStringWhitelist = _messages.StringField(5, repeated=True)
+
+
+class Commitment(_messages.Message):
+  """Represents a Commitment resource. Creating a Commitment resource means
+  that you are purchasing a committed use contract with an explicit start and
+  end time. You can create commitments based on vCPUs and memory usage and
+  receive discounted rates. For full details, read Signing Up for Committed
+  Use Discounts.  Committed use discounts are subject to Google Cloud
+  Platform's Service Specific Terms. By purchasing a committed use discount,
+  you agree to these terms. Committed use discounts will not renew, so you
+  must purchase a new commitment to continue receiving discounts.
+
+  Enums:
+    PlanValueValuesEnum: The plan for this commitment, which determines
+      duration and discount rate. The currently supported plans are
+      TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
+    StatusValueValuesEnum: [Output Only] Status of the commitment with regards
+      to eventual expiration (each commitment has an end date defined). One of
+      the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    endTimestamp: [Output Only] Commitment end time in RFC3339 text format.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#commitment for
+      commitments.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    plan: The plan for this commitment, which determines duration and discount
+      rate. The currently supported plans are TWELVE_MONTH (1 year), and
+      THIRTY_SIX_MONTH (3 years).
+    region: [Output Only] URL of the region where this commitment may be used.
+    resources: List of commitment amounts for particular resources. Note that
+      VCPU and MEMORY resource commitments must occur together.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    startTimestamp: [Output Only] Commitment start time in RFC3339 text
+      format.
+    status: [Output Only] Status of the commitment with regards to eventual
+      expiration (each commitment has an end date defined). One of the
+      following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+    statusMessage: [Output Only] An optional, human-readable explanation of
+      the status.
+  """
+
+  class PlanValueValuesEnum(_messages.Enum):
+    """The plan for this commitment, which determines duration and discount
+    rate. The currently supported plans are TWELVE_MONTH (1 year), and
+    THIRTY_SIX_MONTH (3 years).
+
+    Values:
+      INVALID: <no description>
+      THIRTY_SIX_MONTH: <no description>
+      TWELVE_MONTH: <no description>
+    """
+    INVALID = 0
+    THIRTY_SIX_MONTH = 1
+    TWELVE_MONTH = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output Only] Status of the commitment with regards to eventual
+    expiration (each commitment has an end date defined). One of the following
+    values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
+
+    Values:
+      ACTIVE: <no description>
+      CREATING: <no description>
+      EXPIRED: <no description>
+      NOT_YET_ACTIVE: <no description>
+    """
+    ACTIVE = 0
+    CREATING = 1
+    EXPIRED = 2
+    NOT_YET_ACTIVE = 3
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endTimestamp = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#commitment')
+  name = _messages.StringField(6)
+  plan = _messages.EnumField('PlanValueValuesEnum', 7)
+  region = _messages.StringField(8)
+  resources = _messages.MessageField('ResourceCommitment', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  startTimestamp = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+
+
+class CommitmentAggregatedList(_messages.Message):
+  """A CommitmentAggregatedList object.
+
+  Messages:
+    ItemsValue: Commitments by scope.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: Commitments by scope.
+    kind: [Output Only] Type of resource. Always
+      compute#commitmentAggregatedList for aggregated lists of commitments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """Commitments by scope.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of commitments.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CommitmentsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CommitmentsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#commitmentAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class CommitmentList(_messages.Message):
+  """Contains a list of Commitment resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of Commitment resources.
+    kind: [Output Only] Type of resource. Always compute#commitmentList for
+      lists of commitments.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Commitment', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#commitmentList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class CommitmentsScopedList(_messages.Message):
+  """A CommitmentsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of commitments when the list is empty.
+
+  Fields:
+    commitments: [Output Only] List of commitments contained in this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      commitments when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning which replaces the list of
+    commitments when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  commitments = _messages.MessageField('Commitment', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
@@ -3615,12 +3964,14 @@ class ComputeImagesInsertRequest(_messages.Message):
   """A ComputeImagesInsertRequest object.
 
   Fields:
+    forceCreate: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
   """
 
-  image = _messages.MessageField('Image', 1)
-  project = _messages.StringField(2, required=True)
+  forceCreate = _messages.BooleanField(1)
+  image = _messages.MessageField('Image', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class ComputeImagesListRequest(_messages.Message):
@@ -5409,6 +5760,134 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeRegionCommitmentsGetRequest(_messages.Message):
+  """A ComputeRegionCommitmentsGetRequest object.
+
+  Fields:
+    commitment: Name of the commitment to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionCommitmentsInsertRequest(_messages.Message):
+  """A ComputeRegionCommitmentsInsertRequest object.
+
+  Fields:
+    commitment: A Commitment resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  commitment = _messages.MessageField('Commitment', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionCommitmentsListRequest(_messages.Message):
+  """A ComputeRegionCommitmentsListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
 
 
 class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -8122,6 +8601,13 @@ class Disk(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
+    labelFingerprint: A fingerprint for the labels being applied to this disk,
+      which is essentially a hash of the labels set used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      a disk.
     labels: Labels to apply to this disk. These can be later modified by the
       setLabels method.
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
@@ -8232,24 +8718,25 @@ class Disk(_messages.Message):
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#disk')
-  labels = _messages.MessageField('LabelsValue', 6)
-  lastAttachTimestamp = _messages.StringField(7)
-  lastDetachTimestamp = _messages.StringField(8)
-  licenses = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  options = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  sizeGb = _messages.IntegerField(13)
-  sourceImage = _messages.StringField(14)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceImageId = _messages.StringField(16)
-  sourceSnapshot = _messages.StringField(17)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceSnapshotId = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  type = _messages.StringField(21)
-  users = _messages.StringField(22, repeated=True)
-  zone = _messages.StringField(23)
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  lastAttachTimestamp = _messages.StringField(8)
+  lastDetachTimestamp = _messages.StringField(9)
+  licenses = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  options = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  sizeGb = _messages.IntegerField(14)
+  sourceImage = _messages.StringField(15)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceImageId = _messages.StringField(17)
+  sourceSnapshot = _messages.StringField(18)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceSnapshotId = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  type = _messages.StringField(22)
+  users = _messages.StringField(23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -9195,14 +9682,14 @@ class GuestOsFeature(_messages.Message):
   """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature. Currenty only
+    TypeValueValuesEnum: The type of supported feature. Currently only
       VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
       server might also populate this property with the value WINDOWS to
       indicate that this is a Windows image. This value is purely
       informational and does not enable or disable any features.
 
   Fields:
-    type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
+    type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
       is supported. For newer Windows images, the server might also populate
       this property with the value WINDOWS to indicate that this is a Windows
       image. This value is purely informational and does not enable or disable
@@ -9210,7 +9697,7 @@ class GuestOsFeature(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
+    """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
     supported. For newer Windows images, the server might also populate this
     property with the value WINDOWS to indicate that this is a Windows image.
     This value is purely informational and does not enable or disable any
@@ -9677,6 +10164,13 @@ class Image(_messages.Message):
       using an automatically generated key and you do not need to provide a
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      image, which is essentially a hash of the labels used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      an image.
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method.
     licenses: Any applicable license URI.
@@ -9803,16 +10297,17 @@ class Image(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
   kind = _messages.StringField(10, default=u'compute#image')
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenses = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  rawDisk = _messages.MessageField('RawDiskValue', 14)
-  selfLink = _messages.StringField(15)
-  sourceDisk = _messages.StringField(16)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceDiskId = _messages.StringField(18)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 19, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenses = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  rawDisk = _messages.MessageField('RawDiskValue', 15)
+  selfLink = _messages.StringField(16)
+  sourceDisk = _messages.StringField(17)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceDiskId = _messages.StringField(19)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 20, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
 
 
 class ImageList(_messages.Message):
@@ -9868,6 +10363,12 @@ class Instance(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
+    labelFingerprint: A fingerprint for this request, which is essentially a
+      hash of the metadata's contents and used for optimistic locking. The
+      fingerprint is initially generated by Compute Engine and changes after
+      every request to modify or update metadata. You must always provide an
+      up-to-date fingerprint hash in order to update or change metadata.  To
+      see the latest fingerprint, make get() request to the instance.
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Full or partial URL of the machine type resource to use for
@@ -9973,19 +10474,20 @@ class Instance(_messages.Message):
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(8, default=u'compute#instance')
-  labels = _messages.MessageField('LabelsValue', 9)
-  machineType = _messages.StringField(10)
-  metadata = _messages.MessageField('Metadata', 11)
-  name = _messages.StringField(12)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 14)
-  selfLink = _messages.StringField(15)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
-  startRestricted = _messages.BooleanField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  tags = _messages.MessageField('Tags', 20)
-  zone = _messages.StringField(21)
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  machineType = _messages.StringField(11)
+  metadata = _messages.MessageField('Metadata', 12)
+  name = _messages.StringField(13)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 14, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 15)
+  selfLink = _messages.StringField(16)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
+  startRestricted = _messages.BooleanField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  tags = _messages.MessageField('Tags', 21)
+  zone = _messages.StringField(22)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -12392,6 +12894,7 @@ class Quota(_messages.Message):
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
+      COMMITMENTS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -12406,6 +12909,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -12428,38 +12932,40 @@ class Quota(_messages.Message):
     AUTOSCALERS = 0
     BACKEND_BUCKETS = 1
     BACKEND_SERVICES = 2
-    CPUS = 3
-    CPUS_ALL_REGIONS = 4
-    DISKS_TOTAL_GB = 5
-    FIREWALLS = 6
-    FORWARDING_RULES = 7
-    HEALTH_CHECKS = 8
-    IMAGES = 9
-    INSTANCES = 10
-    INSTANCE_GROUPS = 11
-    INSTANCE_GROUP_MANAGERS = 12
-    INSTANCE_TEMPLATES = 13
-    IN_USE_ADDRESSES = 14
-    LOCAL_SSD_TOTAL_GB = 15
-    NETWORKS = 16
-    PREEMPTIBLE_CPUS = 17
-    REGIONAL_AUTOSCALERS = 18
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 19
-    ROUTERS = 20
-    ROUTES = 21
-    SNAPSHOTS = 22
-    SSD_TOTAL_GB = 23
-    SSL_CERTIFICATES = 24
-    STATIC_ADDRESSES = 25
-    SUBNETWORKS = 26
-    TARGET_HTTPS_PROXIES = 27
-    TARGET_HTTP_PROXIES = 28
-    TARGET_INSTANCES = 29
-    TARGET_POOLS = 30
-    TARGET_SSL_PROXIES = 31
-    TARGET_VPN_GATEWAYS = 32
-    URL_MAPS = 33
-    VPN_TUNNELS = 34
+    COMMITMENTS = 3
+    CPUS = 4
+    CPUS_ALL_REGIONS = 5
+    DISKS_TOTAL_GB = 6
+    FIREWALLS = 7
+    FORWARDING_RULES = 8
+    HEALTH_CHECKS = 9
+    IMAGES = 10
+    INSTANCES = 11
+    INSTANCE_GROUPS = 12
+    INSTANCE_GROUP_MANAGERS = 13
+    INSTANCE_TEMPLATES = 14
+    IN_USE_ADDRESSES = 15
+    LOCAL_SSD_TOTAL_GB = 16
+    NETWORKS = 17
+    NVIDIA_K80_GPUS = 18
+    PREEMPTIBLE_CPUS = 19
+    REGIONAL_AUTOSCALERS = 20
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 21
+    ROUTERS = 22
+    ROUTES = 23
+    SNAPSHOTS = 24
+    SSD_TOTAL_GB = 25
+    SSL_CERTIFICATES = 26
+    STATIC_ADDRESSES = 27
+    SUBNETWORKS = 28
+    TARGET_HTTPS_PROXIES = 29
+    TARGET_HTTP_PROXIES = 30
+    TARGET_INSTANCES = 31
+    TARGET_POOLS = 32
+    TARGET_SSL_PROXIES = 33
+    TARGET_VPN_GATEWAYS = 34
+    URL_MAPS = 35
+    VPN_TUNNELS = 36
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -12745,6 +13251,40 @@ class RegionList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#regionList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class ResourceCommitment(_messages.Message):
+  """Commitment for a particular resource (a Commitment is composed of one or
+  more of these).
+
+  Enums:
+    TypeValueValuesEnum: Type of resource for which this commitment applies.
+      Possible values are VCPU and MEMORY
+
+  Fields:
+    amount: The amount of the resource purchased (in a type-dependent unit,
+      such as bytes). For vCPUs, this can just be an integer. For memory, this
+      must be provided in MB. Memory must be a multiple of 256 MB, with up to
+      6.5GB of memory per every vCPU.
+    type: Type of resource for which this commitment applies. Possible values
+      are VCPU and MEMORY
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type of resource for which this commitment applies. Possible values are
+    VCPU and MEMORY
+
+    Values:
+      MEMORY: <no description>
+      UNSPECIFIED: <no description>
+      VCPU: <no description>
+    """
+    MEMORY = 0
+    UNSPECIFIED = 1
+    VCPU = 2
+
+  amount = _messages.IntegerField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class ResourceGroupReference(_messages.Message):
@@ -13456,6 +13996,13 @@ class Snapshot(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
       Snapshot resources.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      snapshot, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make a get() request to
+      retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
       the setLabels method. Label values may be empty.
     licenses: [Output Only] A list of public visible licenses that apply to
@@ -13557,17 +14104,18 @@ class Snapshot(_messages.Message):
   diskSizeGb = _messages.IntegerField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#snapshot')
-  labels = _messages.MessageField('LabelsValue', 6)
-  licenses = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  sourceDisk = _messages.StringField(11)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
-  sourceDiskId = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  storageBytes = _messages.IntegerField(15)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 16)
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenses = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  sourceDisk = _messages.StringField(12)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceDiskId = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  storageBytes = _messages.IntegerField(16)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 17)
 
 
 class SnapshotList(_messages.Message):

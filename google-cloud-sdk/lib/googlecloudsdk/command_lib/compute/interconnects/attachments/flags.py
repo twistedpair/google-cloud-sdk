@@ -17,16 +17,13 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def InterconnectAttachmentArgument(required=True, plural=False):
-  resource_name = 'interconnectAttachment{0}'.format('s' if plural else '')
   return compute_flags.ResourceArgument(
-      resource_name=resource_name,
+      resource_name='interconnect attachment',
       completion_resource_id='compute.interconnectAttachments',
       plural=plural,
       required=required,
       regional_collection='compute.interconnectAttachments',
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-      short_help=('The name{0} of the {1}.'.format('s' if plural else '',
-                                                   resource_name)))
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
 def InterconnectAttachmentArgumentForRouter(required=False,

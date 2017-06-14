@@ -22,6 +22,8 @@ def OrgPoliciesService(args):
     return client.projects
   elif args.organization:
     return client.organizations
+  elif args.folder:
+    return client.folders
   else:
     return None
 
@@ -45,6 +47,9 @@ def GetOrgPolicyRequest(args):
   elif args.organization:
     return messages.CloudresourcemanagerOrganizationsGetOrgPolicyRequest(
         organizationsId=resource_id, getOrgPolicyRequest=request)
+  elif args.folder:
+    return messages.CloudresourcemanagerFoldersGetOrgPolicyRequest(
+        foldersId=resource_id, getOrgPolicyRequest=request)
   return None
 
 
@@ -68,6 +73,9 @@ def SetOrgPolicyRequest(args, policy):
   elif args.organization:
     return messages.CloudresourcemanagerOrganizationsSetOrgPolicyRequest(
         organizationsId=resource_id, setOrgPolicyRequest=request)
+  elif args.folder:
+    return messages.CloudresourcemanagerFoldersSetOrgPolicyRequest(
+        foldersId=resource_id, setOrgPolicyRequest=request)
   return None
 
 
@@ -76,5 +84,7 @@ def GetResource(args):
     return args.project
   elif args.organization:
     return args.organization
+  elif args.folder:
+    return args.folder
   else:
     return None

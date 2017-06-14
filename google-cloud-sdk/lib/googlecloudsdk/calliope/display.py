@@ -99,7 +99,8 @@ class Displayer(object):
       self._filter = display_info.filter
     if self._legacy:
       self._defaults = resource_projection_spec.ProjectionSpec(
-          defaults=command.Defaults())
+          defaults=command.Defaults(),
+          symbols=display_info.transforms if display_info else None)
       self._info = command.ResourceInfo(args)
       if self._info:
         self._defaults.symbols['collection'] = (

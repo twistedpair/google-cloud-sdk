@@ -19,8 +19,7 @@ from googlecloudsdk.calliope import exceptions
 
 def AddIdArgToParser(parser):
   base.Argument(
-      'id',
-      metavar='ORG_POLICY_ID',
+      'id', metavar='ORG_POLICY_ID',
       help='The Org Policy constraint name.').AddToParser(parser)
 
 
@@ -29,12 +28,17 @@ def AddResourceFlagsToParser(parser):
       '--organization',
       metavar='ORGANIZATION_ID',
       help='Organization ID for Org Policies.').AddToParser(parser)
+  base.Argument(
+      '--folder', metavar='FOLDER_ID',
+      help='Folder ID for Org Policies.').AddToParser(parser)
 
 
 def CheckResourceFlags(args):
-  if args.project and args.organization:
+  if [bool(a)
+      for a in [args.project, args.organization, args.folder]].count(True) > 1:
     raise exceptions.ConflictingArgumentsException('--organization',
-                                                   '--project')
-  if not args.project and not args.organization:
+                                                   '--project', '--folder')
+  if not (args.project or args.organization or args.folder):
     raise exceptions.ToolException(
-        'Neither --project nor --organization provided, exactly one required')
+        'Neither --project nor --organization nor --folder provided, exactly '
+        'one required')

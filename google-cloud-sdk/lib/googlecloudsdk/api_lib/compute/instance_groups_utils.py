@@ -24,7 +24,6 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources as resource_exceptions
 
 INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
     'brief': 'Lists the named ports for an instance group resource',
@@ -168,98 +167,6 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
           *{command}* list instances in an instance group.
           """,
   }
-
-
-def CreateInstanceGroupReferences(
-    scope_prompter, compute, resources, names, region, zone,
-    zonal_resource_type='instanceGroupManagers',
-    regional_resource_type='regionInstanceGroupManagers'):
-  """Creates references to instance group (zonal or regional).
-
-  Args:
-    scope_prompter: scope prompter (for creating zonal/regional references),
-    compute: compute API object,
-    resources: GCE resources object,
-    names: resource names,
-    region: region to resolve unscoped references,
-    zone: zone to resolve unscoped references,,
-    zonal_resource_type: type for zonal resource,
-    regional_resource_type: type for regional resource,
-
-  Returns:
-    list of resource references
-  """
-
-  resolved_refs = {}
-  unresolved_names = []
-  for name in names:
-    try:
-      ref = resources.Parse(name)
-      resolved_refs[name] = ref
-    except resource_exceptions.UnknownCollectionException:
-      unresolved_names.append(name)
-      resolved_refs[name] = None
-
-  if unresolved_names:
-    if region is not None:
-      refs = []
-      for name in unresolved_names:
-        ref = resources.Parse(
-            name,
-            collection='compute.' + regional_resource_type,
-            params={
-                'project': properties.VALUES.core.project.GetOrFail,
-                'region': region
-            })
-        refs.append(ref)
-    elif zone is not None:
-      refs = []
-      for name in unresolved_names:
-        ref = resources.Parse(
-            name,
-            collection='compute.' + zonal_resource_type,
-            params={
-                'project': properties.VALUES.core.project.GetOrFail,
-                'zone': zone
-            })
-        refs.append(ref)
-    else:
-      refs = scope_prompter.PromptForMultiScopedReferences(
-          unresolved_names,
-          scope_names=['zone', 'region'],
-          scope_services=[compute.zones, compute.regions],
-          resource_types=[zonal_resource_type, regional_resource_type],
-          flag_names=['--zone', '--region'])
-    for (name, ref) in zip(unresolved_names, refs):
-      resolved_refs[name] = ref
-
-  return [resolved_refs[name] for name in names]
-
-
-def CreateInstanceGroupReference(
-    scope_prompter, compute, resources, name, region, zone,
-    zonal_resource_type='instanceGroupManagers',
-    regional_resource_type='regionInstanceGroupManagers'):
-  """Creates single reference to instance group (zonal or regional).
-
-  Args:
-    scope_prompter: scope prompter (for creating zonal/regional references),
-    compute: compute API object,
-    resources: GCE resources object,
-    name: resource name,
-    region: region to resolve unscoped references,
-    zone: zone to resolve unscoped references,,
-    zonal_resource_type: type for zonal resource,
-    regional_resource_type: type for regional resource,
-
-  Returns:
-    list of resource references
-  """
-
-  return CreateInstanceGroupReferences(scope_prompter, compute, resources,
-                                       [name], region, zone,
-                                       zonal_resource_type,
-                                       regional_resource_type)[0]
 
 
 def OutputNamedPortsForGroup(group_ref, compute_client):

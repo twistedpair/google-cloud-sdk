@@ -19,6 +19,8 @@ class Bucket(_messages.Message):
   Messages:
     BillingValue: The bucket's billing configuration.
     CorsValueListEntry: A CorsValueListEntry object.
+    EncryptionValue: Encryption configuration used by default for newly
+      inserted objects, when no encryption config is specified.
     LabelsValue: User-provided labels, in key/value pairs.
     LifecycleValue: The bucket's lifecycle configuration. See lifecycle
       management for more information.
@@ -38,6 +40,8 @@ class Bucket(_messages.Message):
     cors: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
     defaultObjectAcl: Default access controls to apply to new objects when no
       ACL is provided.
+    encryption: Encryption configuration used by default for newly inserted
+      objects, when no encryption config is specified.
     etag: HTTP 1.1 Entity tag for the bucket.
     id: The ID of the bucket. For buckets, the id and name properities are the
       same.
@@ -100,6 +104,16 @@ class Bucket(_messages.Message):
     method = _messages.StringField(2, repeated=True)
     origin = _messages.StringField(3, repeated=True)
     responseHeader = _messages.StringField(4, repeated=True)
+
+  class EncryptionValue(_messages.Message):
+    """Encryption configuration used by default for newly inserted objects,
+    when no encryption config is specified.
+
+    Fields:
+      defaultKmsKeyName: A string attribute.
+    """
+
+    defaultKmsKeyName = _messages.StringField(1)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -251,23 +265,24 @@ class Bucket(_messages.Message):
   billing = _messages.MessageField('BillingValue', 2)
   cors = _messages.MessageField('CorsValueListEntry', 3, repeated=True)
   defaultObjectAcl = _messages.MessageField('ObjectAccessControl', 4, repeated=True)
-  etag = _messages.StringField(5)
-  id = _messages.StringField(6)
-  kind = _messages.StringField(7, default=u'storage#bucket')
-  labels = _messages.MessageField('LabelsValue', 8)
-  lifecycle = _messages.MessageField('LifecycleValue', 9)
-  location = _messages.StringField(10)
-  logging = _messages.MessageField('LoggingValue', 11)
-  metageneration = _messages.IntegerField(12)
-  name = _messages.StringField(13)
-  owner = _messages.MessageField('OwnerValue', 14)
-  projectNumber = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
-  selfLink = _messages.StringField(16)
-  storageClass = _messages.StringField(17)
-  timeCreated = _message_types.DateTimeField(18)
-  updated = _message_types.DateTimeField(19)
-  versioning = _messages.MessageField('VersioningValue', 20)
-  website = _messages.MessageField('WebsiteValue', 21)
+  encryption = _messages.MessageField('EncryptionValue', 5)
+  etag = _messages.StringField(6)
+  id = _messages.StringField(7)
+  kind = _messages.StringField(8, default=u'storage#bucket')
+  labels = _messages.MessageField('LabelsValue', 9)
+  lifecycle = _messages.MessageField('LifecycleValue', 10)
+  location = _messages.StringField(11)
+  logging = _messages.MessageField('LoggingValue', 12)
+  metageneration = _messages.IntegerField(13)
+  name = _messages.StringField(14)
+  owner = _messages.MessageField('OwnerValue', 15)
+  projectNumber = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
+  selfLink = _messages.StringField(17)
+  storageClass = _messages.StringField(18)
+  timeCreated = _message_types.DateTimeField(19)
+  updated = _message_types.DateTimeField(20)
+  versioning = _messages.MessageField('VersioningValue', 21)
+  website = _messages.MessageField('WebsiteValue', 22)
 
 
 class BucketAccessControl(_messages.Message):
@@ -573,6 +588,8 @@ class Object(_messages.Message):
       generation number.
     kind: The kind of item this is. For objects, this is always
       storage#object.
+    kmsKeyName: Cloud KMS Key used to encrypt this object, if the object is
+      encrypted by such a key.
     md5Hash: MD5 hash of the data; encoded using base64. For more information
       about using the MD5 hash, see Hashes and ETags: Best Practices.
     mediaLink: Media download link.
@@ -658,19 +675,20 @@ class Object(_messages.Message):
   generation = _messages.IntegerField(12)
   id = _messages.StringField(13)
   kind = _messages.StringField(14, default=u'storage#object')
-  md5Hash = _messages.StringField(15)
-  mediaLink = _messages.StringField(16)
-  metadata = _messages.MessageField('MetadataValue', 17)
-  metageneration = _messages.IntegerField(18)
-  name = _messages.StringField(19)
-  owner = _messages.MessageField('OwnerValue', 20)
-  selfLink = _messages.StringField(21)
-  size = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  storageClass = _messages.StringField(23)
-  timeCreated = _message_types.DateTimeField(24)
-  timeDeleted = _message_types.DateTimeField(25)
-  timeStorageClassUpdated = _message_types.DateTimeField(26)
-  updated = _message_types.DateTimeField(27)
+  kmsKeyName = _messages.StringField(15)
+  md5Hash = _messages.StringField(16)
+  mediaLink = _messages.StringField(17)
+  metadata = _messages.MessageField('MetadataValue', 18)
+  metageneration = _messages.IntegerField(19)
+  name = _messages.StringField(20)
+  owner = _messages.MessageField('OwnerValue', 21)
+  selfLink = _messages.StringField(22)
+  size = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  storageClass = _messages.StringField(24)
+  timeCreated = _message_types.DateTimeField(25)
+  timeDeleted = _message_types.DateTimeField(26)
+  timeStorageClassUpdated = _message_types.DateTimeField(27)
+  updated = _message_types.DateTimeField(28)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1766,6 +1784,10 @@ class StorageObjectsComposeRequest(_messages.Message):
       current generation matches the given value.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
+    kmsKeyName: Resource name of the Cloud KMS key, of the form projects/my-
+      project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be
+      used to encrypt the object. Overrides the object metadata's kms_key_name
+      value, if any.
     userProject: The project to be billed for this request, for Requester Pays
       buckets.
   """
@@ -1799,7 +1821,8 @@ class StorageObjectsComposeRequest(_messages.Message):
   destinationPredefinedAcl = _messages.EnumField('DestinationPredefinedAclValueValuesEnum', 4)
   ifGenerationMatch = _messages.IntegerField(5)
   ifMetagenerationMatch = _messages.IntegerField(6)
-  userProject = _messages.StringField(7)
+  kmsKeyName = _messages.StringField(7)
+  userProject = _messages.StringField(8)
 
 
 class StorageObjectsCopyRequest(_messages.Message):
@@ -2031,6 +2054,10 @@ class StorageObjectsInsertRequest(_messages.Message):
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
       object's current metageneration does not match the given value.
+    kmsKeyName: Resource name of the Cloud KMS key, of the form projects/my-
+      project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be
+      used to encrypt the object. Overrides the object metadata's kms_key_name
+      value, if any.
     name: Name of the object. Required when the object metadata is not
       otherwise provided. Overrides the object metadata's name value, if any.
       For information about how to URL encode object names to be path safe,
@@ -2083,11 +2110,12 @@ class StorageObjectsInsertRequest(_messages.Message):
   ifGenerationNotMatch = _messages.IntegerField(4)
   ifMetagenerationMatch = _messages.IntegerField(5)
   ifMetagenerationNotMatch = _messages.IntegerField(6)
-  name = _messages.StringField(7)
-  object = _messages.MessageField('Object', 8)
-  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 9)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
-  userProject = _messages.StringField(11)
+  kmsKeyName = _messages.StringField(7)
+  name = _messages.StringField(8)
+  object = _messages.MessageField('Object', 9)
+  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 10)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 11)
+  userProject = _messages.StringField(12)
 
 
 class StorageObjectsListRequest(_messages.Message):
@@ -2225,6 +2253,10 @@ class StorageObjectsRewriteRequest(_messages.Message):
   Fields:
     destinationBucket: Name of the bucket in which to store the new object.
       Overrides the provided object metadata's bucket value, if any.
+    destinationKmsKeyName: Resource name of the Cloud KMS key, of the form
+      projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key,
+      that will be used to encrypt the object. Overrides the object metadata's
+      kms_key_name value, if any.
     destinationObject: Name of the new object. Required when the object
       metadata is not otherwise provided. Overrides the object metadata's name
       value, if any. For information about how to URL encode object names to
@@ -2309,24 +2341,25 @@ class StorageObjectsRewriteRequest(_messages.Message):
     noAcl = 1
 
   destinationBucket = _messages.StringField(1, required=True)
-  destinationObject = _messages.StringField(2, required=True)
-  destinationPredefinedAcl = _messages.EnumField('DestinationPredefinedAclValueValuesEnum', 3)
-  ifGenerationMatch = _messages.IntegerField(4)
-  ifGenerationNotMatch = _messages.IntegerField(5)
-  ifMetagenerationMatch = _messages.IntegerField(6)
-  ifMetagenerationNotMatch = _messages.IntegerField(7)
-  ifSourceGenerationMatch = _messages.IntegerField(8)
-  ifSourceGenerationNotMatch = _messages.IntegerField(9)
-  ifSourceMetagenerationMatch = _messages.IntegerField(10)
-  ifSourceMetagenerationNotMatch = _messages.IntegerField(11)
-  maxBytesRewrittenPerCall = _messages.IntegerField(12)
-  object = _messages.MessageField('Object', 13)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 14)
-  rewriteToken = _messages.StringField(15)
-  sourceBucket = _messages.StringField(16, required=True)
-  sourceGeneration = _messages.IntegerField(17)
-  sourceObject = _messages.StringField(18, required=True)
-  userProject = _messages.StringField(19)
+  destinationKmsKeyName = _messages.StringField(2)
+  destinationObject = _messages.StringField(3, required=True)
+  destinationPredefinedAcl = _messages.EnumField('DestinationPredefinedAclValueValuesEnum', 4)
+  ifGenerationMatch = _messages.IntegerField(5)
+  ifGenerationNotMatch = _messages.IntegerField(6)
+  ifMetagenerationMatch = _messages.IntegerField(7)
+  ifMetagenerationNotMatch = _messages.IntegerField(8)
+  ifSourceGenerationMatch = _messages.IntegerField(9)
+  ifSourceGenerationNotMatch = _messages.IntegerField(10)
+  ifSourceMetagenerationMatch = _messages.IntegerField(11)
+  ifSourceMetagenerationNotMatch = _messages.IntegerField(12)
+  maxBytesRewrittenPerCall = _messages.IntegerField(13)
+  object = _messages.MessageField('Object', 14)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 15)
+  rewriteToken = _messages.StringField(16)
+  sourceBucket = _messages.StringField(17, required=True)
+  sourceGeneration = _messages.IntegerField(18)
+  sourceObject = _messages.StringField(19, required=True)
+  userProject = _messages.StringField(20)
 
 
 class StorageObjectsSetIamPolicyRequest(_messages.Message):

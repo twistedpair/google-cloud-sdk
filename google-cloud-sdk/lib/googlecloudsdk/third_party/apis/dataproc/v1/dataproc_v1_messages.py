@@ -685,18 +685,6 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class DiagnoseClusterOutputLocation(_messages.Message):
-  """The location where output from diagnostic command can be found.
-
-  Fields:
-    outputUri: Output-only The Google Cloud Storage URI of the diagnostic
-      output. This will be a plain text file with summary of collected
-      diagnostics.
-  """
-
-  outputUri = _messages.StringField(1)
-
-
 class DiagnoseClusterRequest(_messages.Message):
   """A request to collect cluster diagnostic information."""
 
@@ -1504,90 +1492,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class OperationMetadata(_messages.Message):
-  """Metadata describing the operation.
-
-  Enums:
-    StateValueValuesEnum: A message containing the operation state.
-
-  Fields:
-    clusterName: Name of the cluster for the operation.
-    clusterUuid: Cluster UUId for the operation.
-    description: Output-only Short description of operation.
-    details: A message containing any operation metadata details.
-    endTime: The time that the operation completed.
-    innerState: A message containing the detailed operation state.
-    insertTime: The time that the operation was requested.
-    operationType: Output-only The operation type.
-    startTime: The time that the operation was started by the server.
-    state: A message containing the operation state.
-    status: Output-only Current operation status.
-    statusHistory: Output-only Previous operation status.
-    warnings: Output-only Errors encountered during operation execution.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """A message containing the operation state.
-
-    Values:
-      UNKNOWN: Unused.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    UNKNOWN = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  clusterName = _messages.StringField(1)
-  clusterUuid = _messages.StringField(2)
-  description = _messages.StringField(3)
-  details = _messages.StringField(4)
-  endTime = _messages.StringField(5)
-  innerState = _messages.StringField(6)
-  insertTime = _messages.StringField(7)
-  operationType = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  status = _messages.MessageField('OperationStatus', 11)
-  statusHistory = _messages.MessageField('OperationStatus', 12, repeated=True)
-  warnings = _messages.StringField(13, repeated=True)
-
-
-class OperationStatus(_messages.Message):
-  """The status of the operation.
-
-  Enums:
-    StateValueValuesEnum: A message containing the operation state.
-
-  Fields:
-    details: A message containing any operation metadata details.
-    innerState: A message containing the detailed operation state.
-    state: A message containing the operation state.
-    stateStartTime: The time this state was entered.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """A message containing the operation state.
-
-    Values:
-      UNKNOWN: Unused.
-      PENDING: The operation has been created.
-      RUNNING: The operation is running.
-      DONE: The operation is done; either cancelled or completed.
-    """
-    UNKNOWN = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  details = _messages.StringField(1)
-  innerState = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  stateStartTime = _messages.StringField(4)
 
 
 class PigJob(_messages.Message):

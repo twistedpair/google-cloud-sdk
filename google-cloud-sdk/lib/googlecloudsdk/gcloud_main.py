@@ -32,6 +32,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import store as creds_store
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import keyboard_interrupt
@@ -83,12 +84,16 @@ def CreateCLI(surfaces):
   def VersionFunc():
     generated_cli.Execute(['version'])
 
+  def HandleKnownErrorFunc(exc):
+    crash_handling.ReportError(exc, is_crash=False)
+
   pkg_root = os.path.dirname(os.path.dirname(surface.__file__))
   loader = cli.CLILoader(
       name='gcloud',
       command_root_directory=os.path.join(pkg_root, 'surface'),
       allow_non_existing_modules=True,
-      version_func=VersionFunc)
+      version_func=VersionFunc,
+      known_error_handler=HandleKnownErrorFunc)
   loader.AddReleaseTrack(base.ReleaseTrack.ALPHA,
                          os.path.join(pkg_root, 'surface', 'alpha'),
                          component='alpha')
@@ -120,7 +125,7 @@ def CreateCLI(surfaces):
   return generated_cli
 
 
-def main(gcloud_cli=None):
+def main(gcloud_cli=None, credential_providers=None):
   metrics.Started(START_TIME)
   # TODO(b/36049857): Put a real version number here
   metrics.Executions(
@@ -128,6 +133,15 @@ def main(gcloud_cli=None):
       local_state.InstallationState.VersionForInstalledComponent('core'))
   if gcloud_cli is None:
     gcloud_cli = CreateCLI([])
+
+  # Register some other sources for credentials and project.
+  credential_providers = credential_providers or [
+      creds_store.DevShellCredentialProvider(),
+      creds_store.GceCredentialProvider(),
+  ]
+  for provider in credential_providers:
+    provider.Register()
+
   try:
     try:
       gcloud_cli.Execute()
@@ -153,6 +167,9 @@ def main(gcloud_cli=None):
       # This is the case for most non-Cloud SDK developers. They shouldn't see
       # the full stack trace, but just the nice "gcloud crashed" message.
       sys.exit(1)
+  finally:
+    for provider in credential_providers:
+      provider.UnRegister()
 
 
 if __name__ == '__main__':

@@ -14,6 +14,18 @@
 
 """Debug command flags."""
 
+SNAPSHOT_LIST_FORMAT = """
+          table(
+            short_status():label=STATUS,
+            userEmail.if(all_users),
+            location,
+            condition,
+            finalTime.if(include_inactive != 0):label=COMPLETED_TIME,
+            id,
+            consoleViewUrl:label=VIEW
+          )
+"""
+
 
 def AddIdOptions(parser, entity, plural_entity, action_description):
   parser.add_argument(

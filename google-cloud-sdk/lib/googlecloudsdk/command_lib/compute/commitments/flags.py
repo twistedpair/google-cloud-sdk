@@ -17,7 +17,7 @@
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-_VALID_PLANS = ['12-month', '36-month']
+VALID_PLANS = ['12-month', '36-month']
 _REQUIRED_RESOURCES = sorted(['VCPU', 'MEMORY'])
 
 
@@ -26,13 +26,6 @@ def _GetFlagToPlanMap(messages):
       '12-month': messages.Commitment.PlanValueValuesEnum.TWELVE_MONTH,
       '36-month': messages.Commitment.PlanValueValuesEnum.THIRTY_SIX_MONTH,
   }
-
-
-def ValidatePlanArg(plan_arg):
-  if plan_arg not in _VALID_PLANS:
-    raise exceptions.InvalidArgumentException(
-        '--plan', 'expected one of {!r} but got {!r}.'.format(
-            _VALID_PLANS, plan_arg))
 
 
 def TranslatePlanArg(messages, plan_arg):

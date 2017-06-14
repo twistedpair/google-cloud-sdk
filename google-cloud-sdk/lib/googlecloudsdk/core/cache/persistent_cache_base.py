@@ -156,8 +156,8 @@ class Table(object):
     for row in rows:
       if len(row) != self.columns:
         raise exceptions.CacheTableRowSizeInvalid(
-            'Row size [{}] is invalid. Must be {}.'.format(
-                len(row), self.columns))
+            'Cache table [{}] row size [{}] is invalid. Must be {}.'.format(
+                self.name, len(row), self.columns))
 
   def _CheckRowTemplates(self, rows):
     """Raise an exception if the size of any row template in rows is invalid.
@@ -178,7 +178,8 @@ class Table(object):
         else:
           limits = '>= 1 and <= {}'.format(self.columns)
         raise exceptions.CacheTableRowSizeInvalid(
-            'Row size [{}] is invalid. Must be {}.'.format(len(row), limits))
+            'Cache table [{}] row size [{}] is invalid. Must be {}.'.format(
+                self.name, len(row), limits))
 
   def Invalidate(self):
     """Invalidates the table by marking it expired."""

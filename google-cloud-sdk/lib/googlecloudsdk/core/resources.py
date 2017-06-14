@@ -176,7 +176,7 @@ class _ResourceParser(object):
                     endpoint_url=base_url)
 
   def ParseResourceId(self, resource_id, kwargs,
-                      base_url=None, subcollection=''):
+                      base_url=None, subcollection='', validate=True):
     """Given a command line and some keyword args, get the resource.
 
     Args:
@@ -189,6 +189,17 @@ class _ResourceParser(object):
       base_url: use this base url (endpoint) for the resource, if not provided
           default corresponding api version base url will be used.
       subcollection: str, name of subcollection to use when parsing this path.
+      validate: bool, Validate syntax. Use validate=False to handle IDs under
+        construction. An ID can be:
+          fully qualified - All parameters are specified and have valid syntax.
+          partially qualified - Some parameters are specified, all have valid
+            syntax.
+          under construction - Some parameters may be missing or too short and
+            not meet the syntax constraints. With additional characters they
+            would have valid syntax. Used by completers that build IDs from
+            strings character by character. Completers need to do the
+            string => parameters => string round trip with validate=False to
+            handle the "add character TAB" cycle.
 
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
@@ -222,10 +233,11 @@ class _ResourceParser(object):
           .format(sorted(kwargs.keys()), sorted(params),
                   self.collection_info.full_name))
 
-    if properties.VALUES.core.enable_gri.GetBool():
+    if _GRIsAreEnabled():
       # Also ensures that the collection specified in the GRI matches ours.
-      gri = _GRI.FromString(resource_id,
-                            collection=self.collection_info.full_name)
+      gri = GRI.FromString(resource_id,
+                           collection=self.collection_info.full_name,
+                           validate=validate)
       fields = gri.path_fields
       if len(fields) > len(params):
         raise GRIPathMismatchException(
@@ -357,6 +369,10 @@ class Resource(object):
     """Returns resource reference parameters and its values."""
     return {k: getattr(self, k) for k in self._params}
 
+  def AsList(self):
+    """Returns resource reference values."""
+    return [getattr(self, param) for param in self._params]
+
   def SelfLink(self):
     """Returns URI for this resource."""
     return self._self_link
@@ -377,6 +393,12 @@ class Resource(object):
 
   def __repr__(self):
     return self._self_link
+
+
+def _GRIsAreEnabled():
+  """Returns True if GRIs are enabled."""
+  return (properties.VALUES.core.enable_gri.GetBool() or
+          properties.VALUES.core.resource_completion_style.Get() == 'gri')
 
 
 def _CopyNestedDictSpine(maybe_dictionary):
@@ -465,7 +487,7 @@ class GRIPathMismatchException(GRIException):
     )
 
 
-class _GRI(object):
+class GRI(object):
   """Encapsulates a parsed GRI string.
 
   Attributes:
@@ -476,20 +498,21 @@ class _GRI(object):
       in explicitly during parsing.
   """
 
-  def __init__(self, path_fields, collection, is_fully_qualified):
+  def __init__(self, path_fields, collection=None, is_fully_qualified=False):
     """Use FromString() to construct a GRI."""
     self.path_fields = path_fields
     self.collection = collection
-    self.is_fully_qualified = is_fully_qualified
+    self.is_fully_qualified = is_fully_qualified and collection is not None
 
   def __str__(self):
-    gri = ':'.join([_GRI._EscapePathSegment(s) for s in self.path_fields])
+    gri = ':'.join([self._EscapePathSegment(s)
+                    for s in self.path_fields]).rstrip(':')
     if self.is_fully_qualified:
       gri += '::' + self.collection
     return gri
 
   @classmethod
-  def FromString(cls, gri, collection=None):
+  def FromString(cls, gri, collection=None, validate=True):
     """Parses a GRI from a string.
 
     Args:
@@ -497,40 +520,44 @@ class _GRI(object):
       collection: str, The collection this GRI is for. If provided and the GRI
         contains a collection, they must match. If not provided, the collection
         in the GRI will be used, or None if it is not specified.
+      validate: bool, Validate syntax. Use validate=False to handle GRIs under
+        construction.
 
     Returns:
-      A parsed _GRI object.
+      A parsed GRI object.
 
     Raises:
       GRICollectionMismatchException: If the given collection does not match the
         collection specified in the GRI.
     """
-    path, parsed_collection = _GRI._SplitCollection(gri)
+    path, parsed_collection = cls._SplitCollection(gri, validate=validate)
 
     if not collection:
       # No collection was provided, use the one the was parsed from the GRI.
       # Could be None at this point.
       collection = parsed_collection
-    else:
+    elif validate:
       # A collection was provided, validate it for syntax.
-      _GRI._ValidateCollection(gri, collection)
+      cls._ValidateCollection(gri, collection)
       if parsed_collection and parsed_collection != collection:
         # There was also a collection in the GRI, ensure it matches.
         raise GRICollectionMismatchException(
             gri, expected_collection=collection,
             parsed_collection=parsed_collection)
 
-    path_fields = _GRI._SplitPath(path)
+    path_fields = cls._SplitPath(path)
 
-    return _GRI(path_fields, collection,
-                is_fully_qualified=bool(parsed_collection))
+    return GRI(
+        path_fields, collection, is_fully_qualified=bool(parsed_collection))
 
   @classmethod
-  def _SplitCollection(cls, gri):
+  def _SplitCollection(cls, gri, validate=True):
     """Splits a GRI into its path and collection segments.
 
     Args:
       gri: str, The GRI string to parse.
+      validate: bool, Validate syntax. Use validate=False to handle GRIs under
+        construction.
 
     Returns:
       (str, str), The path and collection parts of the string. The
@@ -555,13 +582,14 @@ class _GRI(object):
       raise InvalidGRIFormatException(gri)
     elif len(parts) == 2:
       path, parsed_collection = parts[0], parts[1]
-      _GRI._ValidateCollection(gri, parsed_collection)
+      if validate:
+        cls._ValidateCollection(gri, parsed_collection)
     else:
       path, parsed_collection = parts[0], None
 
     # The regex can't correctly match ':' at the beginning or the end, but in
     # either case, they are invalid.
-    if path.startswith(':') or path.endswith(':'):
+    if validate and (path.startswith(':') or path.endswith(':')):
       raise InvalidGRIPathSyntaxException(
           gri, 'GRIs cannot have empty path segments.')
 
@@ -583,9 +611,6 @@ class _GRI(object):
 
     Returns:
       [str], A list of the path segments of the GRI.
-
-    Raises:
-      InvalidGRIPathSyntaxException: If the GRI cannot be parsed.
     """
     if not path:
       return []
@@ -595,7 +620,7 @@ class _GRI(object):
                      path)
 
     # Unescape escaped colons by stripping off one layer of braces.
-    return [_GRI._UnescapePathSegment(part) for part in parts]
+    return [cls._UnescapePathSegment(part) for part in parts]
 
   @classmethod
   def _UnescapePathSegment(cls, segment):
@@ -720,7 +745,18 @@ class Registry(object):
 
     cur_level[None] = subcollection, parser
 
-  def _GetParserForCollection(self, collection):
+  def GetParserForCollection(self, collection):
+    """Returns a parser object for collection.
+
+    Args:
+      collection: str, The resource collection name.
+
+    Raises:
+      InvalidCollectionException: If there is no parser.
+
+    Returns:
+      The parser object for collection.
+    """
     # Register relevant API if necessary and possible
     api_name = _APINameFromCollection(collection)
     api_version = self.RegisterApiByName(api_name)
@@ -731,7 +767,7 @@ class Registry(object):
       raise InvalidCollectionException(collection)
     return parser
 
-  def ParseResourceId(self, collection, resource_id, kwargs):
+  def ParseResourceId(self, collection, resource_id, kwargs, validate=True):
     """Parse a resource id string into a Resource.
 
     Args:
@@ -742,6 +778,18 @@ class Registry(object):
           resolvers that can help parse this resource. If the fields in
           collection-path do not provide all the necessary information,
           kwargs will be searched for what remains.
+      validate: bool, Validate syntax. Use validate=False to handle IDs under
+        construction. An ID can be:
+          fully qualified - All parameters are specified and have valid syntax.
+          partially qualified - Some parameters are specified, all have valid
+            syntax.
+          under construction - Some parameters may be missing or too short and
+            not meet the syntax constraints. With additional characters they
+            would have valid syntax. Used by completers that build IDs from
+            strings character by character. Completers need to do the
+            string => parameters => string round trip with validate=False to
+            handle the "add character TAB" cycle.
+
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
 
@@ -751,19 +799,19 @@ class Registry(object):
           determined.
 
     """
-    if properties.VALUES.core.enable_gri.GetBool():
+    if _GRIsAreEnabled():
       # If collection is set already, it will be validated in the split method.
       # If it is unknown, it will come back with the parsed collection or None.
       # TODO(b/35869924): Ideally we would pass the parsed GRI to the parser
       # instead of reparsing it there, but this library would need some
       # refactoring to make that clean.
-      collection = _GRI.FromString(
-          resource_id, collection=collection).collection
+      collection = GRI.FromString(
+          resource_id, collection=collection, validate=validate).collection
 
     if not collection:
       raise UnknownCollectionException(resource_id)
 
-    parser = self._GetParserForCollection(collection)
+    parser = self.GetParserForCollection(collection)
     base_url = _GetApiBaseUrl(parser.collection_info.api_name,
                               parser.collection_info.api_version)
 
@@ -771,8 +819,8 @@ class Registry(object):
     subcollection = ''
     if len(parser_collection) != len(collection):
       subcollection = collection[len(parser_collection)+1:]
-    return parser.ParseResourceId(
-        resource_id, kwargs, base_url, subcollection)
+    return parser.ParseResourceId(resource_id, kwargs, base_url, subcollection,
+                                  validate=validate)
 
   def GetCollectionInfo(self, collection_name):
     api_name = _APINameFromCollection(collection_name)
@@ -780,6 +828,8 @@ class Registry(object):
     parser = (self.parsers_by_collection
               .get(api_name, {}).get(api_version, {})
               .get(collection_name, None))
+    if parser is None:
+      raise InvalidCollectionException(collection_name)
     return parser.collection_info
 
   def ParseURL(self, url):
@@ -886,7 +936,7 @@ class Registry(object):
 
   def ParseRelativeName(self, relative_name, collection, url_unescape=False):
     """Parser relative names. See Resource.RelativeName() method."""
-    parser = self._GetParserForCollection(collection)
+    parser = self.GetParserForCollection(collection)
     base_url = _GetApiBaseUrl(parser.collection_info.api_name,
                               parser.collection_info.api_version)
     subcollection = parser.collection_info.GetSubcollection(collection)
@@ -915,7 +965,8 @@ class Registry(object):
         resource_id=None,
         kwargs={'bucket': match.group(1)})
 
-  def Parse(self, line, params=None, collection=None, enforce_collection=True):
+  def Parse(self, line, params=None, collection=None, enforce_collection=True,
+            validate=True):
     """Parse a Cloud resource from a command line.
 
     Args:
@@ -928,6 +979,8 @@ class Registry(object):
         inferred from the line.
       enforce_collection: bool, fail unless parsed resource is of this
         specified collection, this is applicable only if line is URL.
+      validate: bool, Validate syntax. Use validate=False to handle IDs under
+        construction.
 
     Returns:
       A resource object.
@@ -982,10 +1035,11 @@ class Registry(object):
       elif line.startswith('gs://'):
         return self.ParseStorageURL(line, collection=collection)
 
-    if line is not None and not line:
+    if validate and line is not None and not line:
       raise InvalidResourceException(line)
 
-    return self.ParseResourceId(collection, line, params or {})
+    return self.ParseResourceId(collection, line, params or {},
+                                validate=validate)
 
   def Create(self, collection, **params):
     """Create a Resource from known collection and params.

@@ -36,6 +36,11 @@ CERTIFICATE_ID_FLAG = base.Argument(
           ' creation of a new certificate. Run `{parent_command}'
           ' list` to view existing certificates.'))
 
+LAUNCH_BROWSER = base.Argument(
+    '--launch-browser',
+    action='store_true', default=True, dest='launch_browser',
+    help='Launch a browser if possible. When disabled, only displays the URL.')
+
 IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',
@@ -105,6 +110,15 @@ def AddCertificateIdFlag(parser, include_no_cert):
         help='Do not associate any certificate with this domain.')
   else:
     certificate_id.AddToParser(parser)
+
+
+def AddNoManagedCertificateFlag(parser):
+  parser.add_argument(
+      '--no-managed-certificate',
+      action='store_true',
+      help=('Do not automatically provision a certificate for the domain. '
+            'This flag may not be used in combination with a user provided '
+            'certificate-id'))
 
 
 def AddSslCertificateFlags(parser, required):

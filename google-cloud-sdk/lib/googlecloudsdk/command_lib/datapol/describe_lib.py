@@ -19,11 +19,11 @@ from googlecloudsdk.api_lib.datapol import taxonomy
 from googlecloudsdk.api_lib.util import exceptions
 
 
-def DescribeTaxonomy(taxonomy_name):
+def DescribeTaxonomy(taxonomy_id):
   """Show the contents of the named taxonomy.
 
   Args:
-    taxonomy_name: name of the taxonomy.
+    taxonomy_id: id of the taxonomy.
 
   Raises:
     exceptions.HttpException: on unknown errors.
@@ -33,7 +33,7 @@ def DescribeTaxonomy(taxonomy_name):
   """
 
   try:
-    pol_taxonomy = taxonomy.Get(taxonomy_name)
+    pol_taxonomy = taxonomy.Get(taxonomy_id)
     print '{0}: {1}'.format(pol_taxonomy.name, pol_taxonomy.description)
     # TODO(b/32858676): Print ACL and (annotations, descriptions) in the
     # taxonomy.

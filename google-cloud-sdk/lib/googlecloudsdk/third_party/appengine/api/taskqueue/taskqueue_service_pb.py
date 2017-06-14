@@ -18,9 +18,6 @@ from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import array
 import thread
 
-__pychecker__ = """maxreturns=0 maxbranches=0 no-callinit
-                   unusednames=printElemNumber,debug_strs no-special"""
-
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
   _ExtendableProtocolMessage = ProtocolBuffer.ExtendableProtocolMessage
@@ -30,6 +27,7 @@ else:
 
 from googlecloudsdk.third_party.appengine.datastore.datastore_v3_pb import *
 import googlecloudsdk.third_party.appengine.datastore.datastore_v3_pb
+googlecloudsdk_dot_third_party_dot_appengine_dot_datastore_dot_datastore__v3__pb = __import__('googlecloudsdk.third_party.appengine.datastore.datastore_v3_pb', {}, {}, [''])
 from googlecloudsdk.third_party.appengine.proto.message_set import MessageSet
 class TaskQueueServiceError(ProtocolBuffer.ProtocolMessage):
 

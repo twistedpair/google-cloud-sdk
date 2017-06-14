@@ -43,6 +43,7 @@ Pythonicness of the Transform*() methods:
 
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.core import resources
 
 
 def TransformBuildImages(r, undefined=''):
@@ -107,9 +108,21 @@ def TransformBuildSource(r, undefined=''):
   return undefined
 
 
+def _GetUri(resource, undefined=None):
+  build_ref = resources.REGISTRY.Parse(
+      None,
+      params={
+          'projectId': resource.projectId,
+          'id': resource.id,
+      },
+      collection='cloudbuild.projects.builds')
+  return build_ref.SelfLink() or undefined
+
+
 _TRANSFORMS = {
     'build_images': TransformBuildImages,
     'build_source': TransformBuildSource,
+    'uri': _GetUri,
 }
 
 

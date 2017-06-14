@@ -26,6 +26,8 @@ def TargetHttpProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTP proxy',
       completion_resource_id='compute.targetHttpProxies',
-      plural=plural and 'target HTTP proxies',
+      plural=plural,
+      custom_plural='target HTTP proxies',
       required=required,
-      global_collection='compute.targetHttpProxies')
+      global_collection='compute.targetHttpProxies',
+      list_command_path='compute target-http-proxies list --uri')

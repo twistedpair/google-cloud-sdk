@@ -74,6 +74,31 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class GoogleCloudMlV1AutomaticScaling(_messages.Message):
+  """Options for automatically scaling a model.
+
+  Fields:
+    minNodes: Optional. The minimum number of nodes to allocate for this
+      model. These nodes are always up, starting from the time the model is
+      deployed, so the cost of operating this model will be at least `rate` *
+      `min_nodes` * number of hours since last billing cycle, where `rate` is
+      the cost per node-hour as documented in
+      [pricing](https://cloud.google.com/ml-
+      engine/pricing#prediction_pricing), even if no predictions are
+      performed. There is additional cost for each prediction performed.
+      Unlike manual scaling, if the load gets too heavy for the nodes that are
+      up, the service will automatically add nodes to handle the increased
+      load as well as scale back as traffic drops, always maintaining at least
+      `min_nodes`. You will be charged for the time in which additional nodes
+      are used.  If not specified, `min_nodes` defaults to 0, in which case,
+      when traffic to a model stops (and after a cool-down period), nodes will
+      be shut down and no charges will be incurred until traffic to the model
+      resumes.
+  """
+
+  minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1CancelJobRequest(_messages.Message):
   """Request message for the CancelJob method."""
 
@@ -299,8 +324,8 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
   Fields:
     nodes: The number of nodes to allocate for this model. These nodes are
       always up, starting from the time the model is deployed, so the cost of
-      operating this model will be proportional to nodes * number of hours
-      since deployment.
+      operating this model will be proportional to `nodes` * number of hours
+      since last billing cycle plus the cost for each prediction performed.
   """
 
   nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -748,7 +773,14 @@ class GoogleCloudMlV1Version(_messages.Message):
   given model by calling [projects.models.versions.list](/ml-
   engine/reference/rest/v1/projects.models.versions/list).
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of a version.
+
   Fields:
+    automaticScaling: Automatically scale the number of nodes used to serve
+      the model in response to increases and decreases in traffic. Care should
+      be taken to ramp up traffic according to the model's ability to scale or
+      you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
       model used to create the version. See the [overview of model deployment
@@ -767,26 +799,66 @@ class GoogleCloudMlV1Version(_messages.Message):
       engine/reference/rest/v1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
-    manualScaling: Optional. Manually select the number of nodes to use for
-      serving the model. If unset (i.e., by default), the number of nodes used
-      to serve the model automatically scales with traffic. However, care
-      should be taken to ramp up traffic according to the model's ability to
-      scale. If your model needs to handle bursts of traffic beyond it's
-      ability to scale, it is recommended you set this field appropriately.
+    manualScaling: Manually select the number of nodes to use for serving the
+      model. You should generally use `automatic_scaling` with an appropriate
+      `min_nodes` instead, but this option is available if you want more
+      predictable billing. Beware that latency and error rates will increase
+      if the traffic exceeds that capability of the system to serve it based
+      on the selected number of nodes.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       this deployment. If not set, Google Cloud ML will choose a version.
+    state: Output only. The state of a version.
   """
 
-  createTime = _messages.StringField(1)
-  deploymentUri = _messages.StringField(2)
-  description = _messages.StringField(3)
-  isDefault = _messages.BooleanField(4)
-  lastUseTime = _messages.StringField(5)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 6)
-  name = _messages.StringField(7)
-  runtimeVersion = _messages.StringField(8)
+  class StateValueValuesEnum(_messages.Enum):
+    """Output only. The state of a version.
+
+    Values:
+      UNKNOWN: The version state is unspecified.
+      READY: The version is ready for prediction.
+      CREATING: The version is still in the process of creation.
+    """
+    UNKNOWN = 0
+    READY = 1
+    CREATING = 2
+
+  automaticScaling = _messages.MessageField('GoogleCloudMlV1AutomaticScaling', 1)
+  createTime = _messages.StringField(2)
+  deploymentUri = _messages.StringField(3)
+  description = _messages.StringField(4)
+  isDefault = _messages.BooleanField(5)
+  lastUseTime = _messages.StringField(6)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 7)
+  name = _messages.StringField(8)
+  runtimeVersion = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class GoogleCloudMlV1beta1AutomaticScaling(_messages.Message):
+  """Options for automatically scaling a model.
+
+  Fields:
+    minNodes: Optional. The minimum number of nodes to allocate for this
+      model. These nodes are always up, starting from the time the model is
+      deployed, so the cost of operating this model will be at least `rate` *
+      `min_nodes` * number of hours since last billing cycle, where `rate` is
+      the cost per node-hour as documented in
+      [pricing](https://cloud.google.com/ml-
+      engine/pricing#prediction_pricing), even if no predictions are
+      performed. There is additional cost for each prediction performed.
+      Unlike manual scaling, if the load gets too heavy for the nodes that are
+      up, the service will automatically add nodes to handle the increased
+      load as well as scale back as traffic drops, always maintaining at least
+      `min_nodes`. You will be charged for the time in which additional nodes
+      are used.  If not specified, `min_nodes` defaults to 0, in which case,
+      when traffic to a model stops (and after a cool-down period), nodes will
+      be shut down and no charges will be incurred until traffic to the model
+      resumes.
+  """
+
+  minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
@@ -795,8 +867,8 @@ class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
   Fields:
     nodes: The number of nodes to allocate for this model. These nodes are
       always up, starting from the time the model is deployed, so the cost of
-      operating this model will be proportional to nodes * number of hours
-      since deployment.
+      operating this model will be proportional to `nodes` * number of hours
+      since last billing cycle.
   """
 
   nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -849,7 +921,14 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   given model by calling [projects.models.versions.list](/ml-
   engine/reference/rest/v1beta1/projects.models.versions/list).
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of a version.
+
   Fields:
+    automaticScaling: Automatically scale the number of nodes used to serve
+      the model in response to increases and decreases in traffic. Care should
+      be taken to ramp up traffic according to the model's ability to scale or
+      you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
       model used to create the version. See the [overview of model deployment
@@ -868,26 +947,41 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       engine/reference/rest/v1beta1/projects.models.versions/setDefault).
     lastUseTime: Output only. The time the version was last used for
       prediction.
-    manualScaling: Optional. Manually select the number of nodes to use for
-      serving the model. If unset (i.e., by default), the number of nodes used
-      to serve the model automatically scales with traffic. However, care
-      should be taken to ramp up traffic according to the model's ability to
-      scale. If your model needs to handle bursts of traffic beyond it's
-      ability to scale, it is recommended you set this field appropriately.
+    manualScaling: Manually select the number of nodes to use for serving the
+      model. You should generally use `automatic_scaling` with an appropriate
+      `min_nodes` instead, but this option is available if you want
+      predictable billing. Beware that latency and error rates will increase
+      if the traffic exceeds that capability of the system to serve it based
+      on the selected number of nodes.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       this deployment. If not set, Google Cloud ML will choose a version.
+    state: Output only. The state of a version.
   """
 
-  createTime = _messages.StringField(1)
-  deploymentUri = _messages.StringField(2)
-  description = _messages.StringField(3)
-  isDefault = _messages.BooleanField(4)
-  lastUseTime = _messages.StringField(5)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 6)
-  name = _messages.StringField(7)
-  runtimeVersion = _messages.StringField(8)
+  class StateValueValuesEnum(_messages.Enum):
+    """Output only. The state of a version.
+
+    Values:
+      UNKNOWN: / The version state is unspecified.
+      READY: The version is ready for prediction.
+      CREATING: The version is still in the process of creation.
+    """
+    UNKNOWN = 0
+    READY = 1
+    CREATING = 2
+
+  automaticScaling = _messages.MessageField('GoogleCloudMlV1beta1AutomaticScaling', 1)
+  createTime = _messages.StringField(2)
+  deploymentUri = _messages.StringField(3)
+  description = _messages.StringField(4)
+  isDefault = _messages.BooleanField(5)
+  lastUseTime = _messages.StringField(6)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 7)
+  name = _messages.StringField(8)
+  runtimeVersion = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

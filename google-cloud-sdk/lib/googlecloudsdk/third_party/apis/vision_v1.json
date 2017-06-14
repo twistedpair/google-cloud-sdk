@@ -739,7 +739,7 @@
           "format": "float"
         },
         "boundingPoly": {
-          "description": "Image region to which this entity belongs. Currently not produced\nfor `LABEL_DETECTION` features. For `TEXT_DETECTION` (OCR), `boundingPoly`s\nare produced for the entire text detected in an image region, followed by\n`boundingPoly`s for each word within the detected text.",
+          "description": "Image region to which this entity belongs. Not produced\nfor `LABEL_DETECTION` features.",
           "$ref": "BoundingPoly"
         },
         "locations": {

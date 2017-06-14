@@ -119,8 +119,9 @@ class ArgumentGenerator(object):
       The parsed resource ref or None if no resource arg was generated for this
       method.
     """
-    r = getattr(namespace, _RESOURCE_ARG_NAME)
-    if r is None:
+    not_generated = object()
+    r = getattr(namespace, _RESOURCE_ARG_NAME, not_generated)
+    if r is not_generated:
       return None
     return resources.REGISTRY.Parse(
         r,

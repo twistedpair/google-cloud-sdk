@@ -79,6 +79,12 @@ MAP = {
             messages_modulepath='appengine_v1_messages',
             default_version=True
         ),
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.appengine.v1alpha',
+            client_classpath='appengine_v1alpha_client.AppengineV1alpha',
+            messages_modulepath='appengine_v1alpha_messages',
+            default_version=False
+        ),
         'v1beta': APIDef(
             class_path='googlecloudsdk.third_party.apis.appengine.v1beta',
             client_classpath='appengine_v1beta_client.AppengineV1beta',
@@ -255,6 +261,12 @@ MAP = {
             messages_modulepath='container_v1_messages',
             default_version=True
         ),
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.container.v1alpha1',
+            client_classpath='container_v1alpha1_client.ContainerV1alpha1',
+            messages_modulepath='container_v1alpha1_messages',
+            default_version=False
+        ),
     },
     'containeranalysis': {
         'v1alpha1': APIDef(
@@ -402,6 +414,14 @@ MAP = {
             default_version=True
         ),
     },
+    'oslogin': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.oslogin.v1alpha',
+            client_classpath='oslogin_v1alpha_client.OsloginV1alpha',
+            messages_modulepath='oslogin_v1alpha_messages',
+            default_version=True
+        ),
+    },
     'pubsub': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.pubsub.v1',
@@ -510,6 +530,20 @@ MAP = {
             client_classpath='toolresults_v1beta3_client.ToolresultsV1beta3',
             messages_modulepath='toolresults_v1beta3_messages',
             default_version=True
+        ),
+    },
+    'videointelligence': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.videointelligence.v1',
+            client_classpath='videointelligence_v1_client.VideointelligenceV1',
+            messages_modulepath='videointelligence_v1_messages',
+            default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.videointelligence.v1beta1',
+            client_classpath='videointelligence_v1beta1_client.VideointelligenceV1beta1',
+            messages_modulepath='videointelligence_v1beta1_messages',
+            default_version=False
         ),
     },
     'vision': {

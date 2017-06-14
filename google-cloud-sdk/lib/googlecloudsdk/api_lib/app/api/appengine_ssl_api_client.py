@@ -15,9 +15,29 @@
 
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
+
+
+def GetApiClient(release_track):
+  """Retrieves a client based on the release track.
+
+  The API clients override the base class for each track so that methods with
+  functional differences can be overridden. The ssl-certificates api does not
+  have API changes for alpha, but output is formatted differently, so the alpha
+  override simply calls the new API.
+
+  Args:
+    release_track: calliope_base.ReleaseTrack, the release track of the command
+
+  Returns:
+    A client that calls appengine using the v1beta or v1alpha API.
+  """
+  if release_track == calliope_base.ReleaseTrack.ALPHA:
+    return AppengineSslApiAlphaClient.GetApiClient()
+  return AppengineSslApiClient.GetApiClient()
 
 
 class AppengineSslApiClient(base.AppengineApiClientBase):
@@ -148,8 +168,9 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
         displayName=display_name, certificateRawData=cert_data)
 
     if not mask_fields:
-      raise exceptions.MinimumArgumentException(
-          'Please specify at least one attribute to the certificate update.')
+      raise exceptions.MinimumArgumentException([
+          '--certificate', '--private-key', '--display-name'
+      ], 'Please specify at least one attribute to the certificate update.')
 
     request = self.messages.AppengineAppsAuthorizedCertificatesPatchRequest(
         name=self._FormatSslCert(cert_id),
@@ -165,3 +186,11 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
         params={'appsId': self.project},
         collection='appengine.apps.authorizedCertificates')
     return res.RelativeName()
+
+
+class AppengineSslApiAlphaClient(AppengineSslApiClient):
+  """Client used by gcloud to communicate with the App Engine SSL APIs."""
+
+  @classmethod
+  def ApiVersion(cls):
+    return 'v1alpha'

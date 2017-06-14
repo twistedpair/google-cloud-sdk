@@ -39,11 +39,11 @@ from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3 import entit
 from googlecloudsdk.third_party.appengine.datastore import datastore_v4_pb
 from googlecloudsdk.third_party.appengine.datastore import entity_v4_pb
 
-_MIN_CLOUD_DATASTORE_VERSION = (4, 0, 0, 'b1')
+_MIN_CLOUD_DATASTORE_VERSION = (6, 0, 0)
 _CLOUD_DATASTORE_ENABLED = False
 # pylint: disable=g-import-not-at-top,unused-import
 try:
-  from googledatastore import v1beta3
+  from googledatastore import v1
   import googledatastore
   # We also need to ensure that this is the right version.
   if googledatastore.VERSION >= _MIN_CLOUD_DATASTORE_VERSION:

@@ -35,7 +35,6 @@ class BigtableadminV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
-    self.projects_instances_appProfiles = self.ProjectsInstancesAppProfilesService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
@@ -179,124 +178,6 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'BigtableadminOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsInstancesAppProfilesService(base_api.BaseApiService):
-    """Service class for the projects_instances_appProfiles resource."""
-
-    _NAME = u'projects_instances_appProfiles'
-
-    def __init__(self, client):
-      super(BigtableadminV2.ProjectsInstancesAppProfilesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      """Creates an app profile within an instance.
-
-      Args:
-        request: (BigtableadminProjectsInstancesAppProfilesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AppProfile) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
-        http_method=u'POST',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'appProfileId'],
-        relative_path=u'v2/{+parent}/appProfiles',
-        request_field=u'appProfile',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesCreateRequest',
-        response_type_name=u'AppProfile',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      """Deletes an app profile from an instance.
-
-      Args:
-        request: (BigtableadminProjectsInstancesAppProfilesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
-        http_method=u'DELETE',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      """Gets information about an app profile.
-
-      Args:
-        request: (BigtableadminProjectsInstancesAppProfilesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AppProfile) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesGetRequest',
-        response_type_name=u'AppProfile',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """Lists information about app profiles in an instance.
-
-      Args:
-        request: (BigtableadminProjectsInstancesAppProfilesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListAppProfilesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.projects.instances.appProfiles.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageToken'],
-        relative_path=u'v2/{+parent}/appProfiles',
-        request_field='',
-        request_type_name=u'BigtableadminProjectsInstancesAppProfilesListRequest',
-        response_type_name=u'ListAppProfilesResponse',
         supports_download=False,
     )
 

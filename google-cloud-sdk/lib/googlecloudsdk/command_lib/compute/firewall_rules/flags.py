@@ -83,4 +83,5 @@ def FirewallRuleArgument(required=True, operation_type='create', plural=False):
       plural=plural,
       required=required,
       global_collection='compute.firewalls',
-      short_help=short_help)
+      short_help=short_help,
+      list_command_path='compute target-http-proxies list --uri')

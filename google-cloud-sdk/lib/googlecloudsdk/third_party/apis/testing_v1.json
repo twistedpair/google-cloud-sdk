@@ -537,7 +537,8 @@
             "There there is no test loop intent filter, or the one that is given is\nnot formatted correctly.",
             "The request contains a scenario label that was not declared in the\nmanifest.",
             "There was an error when parsing a label's value.",
-            "The request contains a scenario number that was not declared in the\nmanifest."
+            "The request contains a scenario number that was not declared in the\nmanifest.",
+            "Device administrator applications are not allowed."
           ],
           "type": "string",
           "enum": [
@@ -555,7 +556,8 @@
             "TEST_LOOP_INTENT_FILTER_NOT_FOUND",
             "SCENARIO_LABEL_NOT_DECLARED",
             "SCENARIO_LABEL_MALFORMED",
-            "SCENARIO_NOT_DECLARED"
+            "SCENARIO_NOT_DECLARED",
+            "DEVICE_ADMIN_RECEIVER"
           ]
         }
       }
@@ -1160,7 +1162,7 @@
           "description": "Get the catalog of supported test environments.\n\nMay return any of the following canonical error codes:\n\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the environment type does not exist\n- INTERNAL - if an internal error occurred",
           "parameters": {
             "environmentType": {
-              "description": "The type of environment that should be listed.",
+              "description": "The type of environment that should be listed.\nRequired",
               "location": "path",
               "required": true,
               "type": "string",
@@ -1169,6 +1171,11 @@
                 "ANDROID",
                 "NETWORK_CONFIGURATION"
               ]
+            },
+            "projectId": {
+              "description": "For authorization, the cloud project requesting the TestEnvironmentCatalog.\nOptional",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [

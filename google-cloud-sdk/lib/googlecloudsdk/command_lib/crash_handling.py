@@ -75,6 +75,7 @@ def _PrintInstallationAction(err, err_string):
 
 
 CRASH_SERVICE = 'gcloud'
+ERROR_SERVICE = 'gcloud-user-error'
 CRASH_PROJECT = 'cloud-sdk-errors'
 CRASH_API_KEY = 'AIzaSyA45D7bA0Y1vyLmQ_Gl10G149M8jiwwK-s'
 
@@ -91,12 +92,16 @@ def _GetReportingClient():
   return client_instance
 
 
-def _ReportCrash(err):
+def ReportError(err, is_crash):
   """Report the anonymous crash information to the Error Reporting service.
 
   Args:
     err: Exception, the error that caused the crash.
+    is_crash: bool, True if this is a crash, False if it is a user error.
   """
+  if properties.VALUES.core.disable_usage_reporting.GetBool():
+    return
+
   stacktrace = traceback.format_exc(err)
   stacktrace = error_reporting_util.RemovePrivateInformationFromTraceback(
       stacktrace)
@@ -106,16 +111,21 @@ def _ReportCrash(err):
   client = _GetReportingClient()
   reporter = util.ErrorReporting(client)
   try:
-    reporter.ReportEvent(error_message=stacktrace,
-                         service=CRASH_SERVICE,
-                         version=config.CLOUD_SDK_VERSION,
-                         project=CRASH_PROJECT,
-                         request_url=command,
-                         user=cid)
-  except apitools_exceptions.HttpError as http_err:
+    method_config = client.projects_events.GetMethodConfig('Report')
+    request = reporter.GenerateReportRequest(
+        error_message=stacktrace,
+        service=CRASH_SERVICE if is_crash else ERROR_SERVICE,
+        version=config.CLOUD_SDK_VERSION, project=CRASH_PROJECT,
+        request_url=command, user=cid)
+    http_request = client.projects_events.PrepareHttpRequest(
+        method_config, request)
+    metrics.CustomBeacon(http_request.url, http_request.http_method,
+                         http_request.body, http_request.headers)
+
+  except apitools_exceptions.Error as e:
     log.file_only_logger.error(
         'Unable to report crash stacktrace:\n{0}'.format(
-            console_attr.EncodeForConsole(http_err)))
+            console_attr.EncodeForConsole(e)))
 
 
 def HandleGcloudCrash(err):
@@ -131,8 +141,7 @@ def HandleGcloudCrash(err):
   else:
     log.error(u'gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
-    if not properties.VALUES.core.disable_usage_reporting.GetBool():
-      _ReportCrash(err)
+    ReportError(err, is_crash=True)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')

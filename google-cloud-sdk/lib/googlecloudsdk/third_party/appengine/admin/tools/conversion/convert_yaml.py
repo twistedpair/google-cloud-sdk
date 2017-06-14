@@ -39,7 +39,7 @@ def main():
                                    'and public JSON representations of App '
                                    'Engine versions')
   parser.add_argument('input_file')
-  parser.add_argument('--api_version', dest='api_version', default='v1beta5',
+  parser.add_argument('--api_version', dest='api_version', default='v1',
                       choices=sorted(API_VERSION_SCHEMAS.keys()))
 
   args = parser.parse_args()

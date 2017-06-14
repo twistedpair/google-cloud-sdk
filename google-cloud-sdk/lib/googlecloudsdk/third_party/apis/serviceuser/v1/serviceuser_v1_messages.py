@@ -605,7 +605,7 @@ class Field(_messages.Message):
 
 
 class Http(_messages.Message):
-  """Defines the HTTP configuration for a service. It contains a list of
+  """Defines the HTTP configuration for an API service. It contains a list of
   HttpRule, each specifying the mapping of an RPC method to one or more HTTP
   REST API methods.
 
@@ -625,21 +625,22 @@ class Http(_messages.Message):
 
 class HttpRule(_messages.Message):
   """`HttpRule` defines the mapping of an RPC method to one or more HTTP REST
-  APIs.  The mapping determines what portions of the request message are
-  populated from the path, query parameters, or body of the HTTP request.  The
-  mapping is typically specified as an `google.api.http` annotation, see
-  "google/api/annotations.proto" for details.  The mapping consists of a field
-  specifying the path template and method kind.  The path template can refer
-  to fields in the request message, as in the example below which describes a
-  REST GET operation on a resource collection of messages:       service
-  Messaging {       rpc GetMessage(GetMessageRequest) returns (Message) {
-  option (google.api.http).get = "/v1/messages/{message_id}/{sub.subfield}";
-  }     }     message GetMessageRequest {       message SubMessage {
-  string subfield = 1;       }       string message_id = 1; // mapped to the
-  URL       SubMessage sub = 2;    // `sub.subfield` is url-mapped     }
-  message Message {       string text = 1; // content of the resource     }
-  The same http annotation can alternatively be expressed inside the `GRPC API
-  Configuration` YAML file.      http:       rules:         - selector:
+  API methods. The mapping specifies how different portions of the RPC request
+  message are mapped to URL path, URL query parameters, and HTTP request body.
+  The mapping is typically specified as an `google.api.http` annotation on the
+  RPC method, see "google/api/annotations.proto" for details.  The mapping
+  consists of a field specifying the path template and method kind.  The path
+  template can refer to fields in the request message, as in the example below
+  which describes a REST GET operation on a resource collection of messages:
+  service Messaging {       rpc GetMessage(GetMessageRequest) returns
+  (Message) {         option (google.api.http).get =
+  "/v1/messages/{message_id}/{sub.subfield}";       }     }     message
+  GetMessageRequest {       message SubMessage {         string subfield = 1;
+  }       string message_id = 1; // mapped to the URL       SubMessage sub =
+  2;    // `sub.subfield` is url-mapped     }     message Message {
+  string text = 1; // content of the resource     }  The same http annotation
+  can alternatively be expressed inside the `GRPC API Configuration` YAML
+  file.      http:       rules:         - selector:
   <proto_package_name>.Messaging.GetMessage           get:
   /v1/messages/{message_id}/{sub.subfield}  This definition enables an
   automatic, bidrectional mapping of HTTP JSON to RPC. Example:  HTTP | RPC
@@ -700,8 +701,8 @@ class HttpRule(_messages.Message):
   `GetMessage(user_id: "me" message_id: "123456")`  # Rules for HTTP mapping
   The rules for mapping HTTP path, query parameters, and body fields to the
   request message are as follows:  1. The `body` field specifies either `*` or
-  a field path, or is    omitted. If omitted, it assumes there is no HTTP
-  body. 2. Leaf fields (recursive expansion of nested messages in the
+  a field path, or is    omitted. If omitted, it indicates there is no HTTP
+  request body. 2. Leaf fields (recursive expansion of nested messages in the
   request) can be classified into three types:     (a) Matched in the URL
   template.     (b) Covered by body (if body is `*`, everything except (a)
   fields;         else everything under the body field)     (c) All other
@@ -711,21 +712,26 @@ class HttpRule(_messages.Message):
   [ Verb ] ;     Segments = Segment { "/" Segment } ;     Segment  = "*" |
   "**" | LITERAL | Variable ;     Variable = "{" FieldPath [ "=" Segments ]
   "}" ;     FieldPath = IDENT { "." IDENT } ;     Verb     = ":" LITERAL ;
-  The syntax `*` matches a single path segment. It follows the semantics of
-  [RFC 6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple String
-  Expansion.  The syntax `**` matches zero or more path segments. It follows
-  the semantics of [RFC 6570](https://tools.ietf.org/html/rfc6570) Section
-  3.2.3 Reserved Expansion. NOTE: it must be the last segment in the path
-  except the Verb.  The syntax `LITERAL` matches literal text in the URL path.
-  The syntax `Variable` matches the entire path as specified by its template;
-  this nested template must not contain further variables. If a variable
-  matches a single path segment, its template may be omitted, e.g. `{var}` is
-  equivalent to `{var=*}`.  NOTE: the field paths in variables and in the
-  `body` must not refer to repeated fields or map fields.  Use
-  CustomHttpPattern to specify any HTTP method that is not included in the
-  `pattern` field, such as HEAD, or "*" to leave the HTTP method unspecified
-  for a given URL path rule. The wild-card rule is useful for services that
-  provide content to Web (HTML) clients.
+  The syntax `*` matches a single path segment. The syntax `**` matches zero
+  or more path segments, which must be the last part of the path except the
+  `Verb`. The syntax `LITERAL` matches literal text in the path.  The syntax
+  `Variable` matches part of the URL path as specified by its template. A
+  variable template must not contain other variables. If a variable matches a
+  single path segment, its template may be omitted, e.g. `{var}` is equivalent
+  to `{var=*}`.  If a variable contains exactly one path segment, such as
+  `"{var}"` or `"{var=*}"`, when such a variable is expanded into a URL path,
+  all characters except `[-_.~0-9a-zA-Z]` are percent-encoded. Such variables
+  show up in the Discovery Document as `{var}`.  If a variable contains one or
+  more path segments, such as `"{var=foo/*}"` or `"{var=**}"`, when such a
+  variable is expanded into a URL path, all characters except `[-_.~/0-9a-
+  zA-Z]` are percent-encoded. Such variables show up in the Discovery Document
+  as `{+var}`.  NOTE: While the single segment variable matches the semantics
+  of [RFC 6570](https://tools.ietf.org/html/rfc6570) Section 3.2.2 Simple
+  String Expansion, the multi segment variable **does not** match RFC 6570
+  Reserved Expansion. The reason is that the Reserved Expansion does not
+  expand special characters like `?` and `#`, which would lead to invalid
+  URLs.  NOTE: the field paths in variables and in the `body` must not refer
+  to repeated fields or map fields.
 
   Fields:
     additionalBindings: Additional HTTP bindings for the selector. Nested
@@ -735,7 +741,10 @@ class HttpRule(_messages.Message):
       body, or `*` for mapping all fields not captured by the path pattern to
       the HTTP body. NOTE: the referred field must not be a repeated field and
       must be present at the top-level of request message type.
-    custom: Custom pattern is used for defining custom verbs.
+    custom: The custom pattern is used for specifying an HTTP method that is
+      not included in the `pattern` field, such as HEAD, or "*" to leave the
+      HTTP method unspecified for this rule. The wild-card rule is useful for
+      services that provide content to Web (HTML) clients.
     delete: Used for deleting a resource.
     get: Used for listing and getting information about resources.
     mediaDownload: Use this only for Scotty Requests. Do not use this for
@@ -1132,8 +1141,7 @@ class MetricDescriptor(_messages.Message):
 
 class MetricRule(_messages.Message):
   """Bind API methods to metrics. Binding a method to a metric causes that
-  metric's configured quota, billing, and monitoring behaviors to apply to the
-  method call.  Used by metric-based quotas only.
+  metric's configured quota behaviors to apply to the method call.
 
   Messages:
     MetricCostsValue: Metrics to update when the selected methods are called,
@@ -1591,10 +1599,9 @@ class Quota(_messages.Message):
   metric_kind: DELTA        value_type: INT64
 
   Fields:
-    limits: List of `QuotaLimit` definitions for the service.  Used by metric-
-      based quotas only.
+    limits: List of `QuotaLimit` definitions for the service.
     metricRules: List of `MetricRule` definitions, each one mapping a selected
-      method to one or more metrics.  Used by metric-based quotas only.
+      method to one or more metrics.
   """
 
   limits = _messages.MessageField('QuotaLimit', 1, repeated=True)
@@ -1607,27 +1614,7 @@ class QuotaLimit(_messages.Message):
   limit type combination defined within a `QuotaGroup`.
 
   Messages:
-    ValuesValue: Tiered limit values. Also allows for regional or zone
-      overrides for these values if "/{region}" or "/{zone}" is specified in
-      the unit field.  Currently supported tiers from low to high: VERY_LOW,
-      LOW, STANDARD, HIGH, VERY_HIGH  To apply different limit values for
-      users according to their tiers, specify the values for the tiers you
-      want to differentiate. For example: {LOW:100, STANDARD:500, HIGH:1000,
-      VERY_HIGH:5000}  The limit value for each tier is optional except for
-      the tier STANDARD. The limit value for an unspecified tier falls to the
-      value of its next tier towards tier STANDARD. For the above example, the
-      limit value for tier STANDARD is 500.  To apply the same limit value for
-      all users, just specify limit value for tier STANDARD. For example:
-      {STANDARD:500}.  To apply a regional overide for a tier, add a map entry
-      with key "<TIER>/<region>", where <region> is a region name. Similarly,
-      for a zone override, add a map entry with key "<TIER>/{zone}". Further,
-      a wildcard can be used at the end of a zone name in order to specify
-      zone level overrides. For example: LOW: 10, STANDARD: 50, HIGH: 100, LOW
-      /us-central1: 20, STANDARD/us-central1: 60, HIGH/us-central1: 200, LOW
-      /us-central1-*: 10, STANDARD/us-central1-*: 20, HIGH/us-central1-*: 80
-      The regional overrides tier set for each region must be the same as the
-      tier set for default limit values. Same rule applies for zone overrides
-      tier as well.  Used by metric-based quotas only.
+    ValuesValue: Tiered limit values, currently only STANDARD is supported.
 
   Fields:
     defaultLimit: Default number of tokens that can be consumed during the
@@ -1669,17 +1656,15 @@ class QuotaLimit(_messages.Message):
       metric must be defined within the service config.  Used by metric-based
       quotas only.
     name: Name of the quota limit. The name is used to refer to the limit when
-      overriding the default limit on per-consumer basis.  For group-based
-      quota limits, the name must be unique within the quota group. If a name
-      is not provided, it will be generated from the limit_by and duration
-      fields.  For metric-based quota limits, the name must be provided, and
-      it must be unique within the service. The name can only include
-      alphanumeric characters as well as '-'.  The maximum length of the limit
-      name is 64 characters.  The name of a limit is used as a unique
-      identifier for this limit. Therefore, once a limit has been put into
-      use, its name should be immutable. You can use the display_name field to
-      provide a user-friendly name for the limit. The display name can be
-      evolved over time without affecting the identity of the limit.
+      overriding the default limit on per-consumer basis.  For metric-based
+      quota limits, the name must be provided, and it must be unique within
+      the service. The name can only include alphanumeric characters as well
+      as '-'.  The maximum length of the limit name is 64 characters.  The
+      name of a limit is used as a unique identifier for this limit.
+      Therefore, once a limit has been put into use, its name should be
+      immutable. You can use the display_name field to provide a user-friendly
+      name for the limit. The display name can be evolved over time without
+      affecting the identity of the limit.
     unit: Specify the unit of the quota limit. It uses the same syntax as
       Metric.unit. The supported unit kinds are determined by the quota
       backend system.  The [Google Service Control](https://cloud.google.com
@@ -1687,66 +1672,17 @@ class QuotaLimit(_messages.Message):
       time intevals:   * "/min"  for quota every minute.   * "/d"  for quota
       every 24 hours, starting 00:00 US Pacific Time.   * Otherwise the quota
       won't be reset by time, such as storage limit. * One and only one of the
-      granted containers:   * "/{organization}" quota for an organization.   *
-      "/{project}" quota for a project.   * "/{folder}" quota for a folder.
-      * "/{resource}" quota for a universal resource. * Zero or more quota
-      segmentation dimension. Not all combos are valid.   * "/{region}" quota
-      for every region. Not to be used with time intervals.   * Otherwise the
-      resources granted on the target is not segmented.   * "/{zone}" quota
-      for every zone. Not to be used with time intervals.   * Otherwise the
-      resources granted on the target is not segmented.   * "/{resource}"
-      quota for a resource associated with a project or org.  Here are some
-      examples: * "1/min/{project}" for quota per minute per project. *
-      "1/min/{user}" for quota per minute per user. * "1/min/{organization}"
-      for quota per minute per organization.  Note: the order of unit
-      components is insignificant. The "1" at the beginning is required to
-      follow the metric unit syntax.  Used by metric-based quotas only.
-    values: Tiered limit values. Also allows for regional or zone overrides
-      for these values if "/{region}" or "/{zone}" is specified in the unit
-      field.  Currently supported tiers from low to high: VERY_LOW, LOW,
-      STANDARD, HIGH, VERY_HIGH  To apply different limit values for users
-      according to their tiers, specify the values for the tiers you want to
-      differentiate. For example: {LOW:100, STANDARD:500, HIGH:1000,
-      VERY_HIGH:5000}  The limit value for each tier is optional except for
-      the tier STANDARD. The limit value for an unspecified tier falls to the
-      value of its next tier towards tier STANDARD. For the above example, the
-      limit value for tier STANDARD is 500.  To apply the same limit value for
-      all users, just specify limit value for tier STANDARD. For example:
-      {STANDARD:500}.  To apply a regional overide for a tier, add a map entry
-      with key "<TIER>/<region>", where <region> is a region name. Similarly,
-      for a zone override, add a map entry with key "<TIER>/{zone}". Further,
-      a wildcard can be used at the end of a zone name in order to specify
-      zone level overrides. For example: LOW: 10, STANDARD: 50, HIGH: 100, LOW
-      /us-central1: 20, STANDARD/us-central1: 60, HIGH/us-central1: 200, LOW
-      /us-central1-*: 10, STANDARD/us-central1-*: 20, HIGH/us-central1-*: 80
-      The regional overrides tier set for each region must be the same as the
-      tier set for default limit values. Same rule applies for zone overrides
-      tier as well.  Used by metric-based quotas only.
+      granted containers:   * "/{project}" quota for a project  Here are some
+      examples: * "1/min/{project}" for quota per minute per project.  Note:
+      the order of unit components is insignificant. The "1" at the beginning
+      is required to follow the metric unit syntax.  Used by metric-based
+      quotas only.
+    values: Tiered limit values, currently only STANDARD is supported.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValuesValue(_messages.Message):
-    """Tiered limit values. Also allows for regional or zone overrides for
-    these values if "/{region}" or "/{zone}" is specified in the unit field.
-    Currently supported tiers from low to high: VERY_LOW, LOW, STANDARD, HIGH,
-    VERY_HIGH  To apply different limit values for users according to their
-    tiers, specify the values for the tiers you want to differentiate. For
-    example: {LOW:100, STANDARD:500, HIGH:1000, VERY_HIGH:5000}  The limit
-    value for each tier is optional except for the tier STANDARD. The limit
-    value for an unspecified tier falls to the value of its next tier towards
-    tier STANDARD. For the above example, the limit value for tier STANDARD is
-    500.  To apply the same limit value for all users, just specify limit
-    value for tier STANDARD. For example: {STANDARD:500}.  To apply a regional
-    overide for a tier, add a map entry with key "<TIER>/<region>", where
-    <region> is a region name. Similarly, for a zone override, add a map entry
-    with key "<TIER>/{zone}". Further, a wildcard can be used at the end of a
-    zone name in order to specify zone level overrides. For example: LOW: 10,
-    STANDARD: 50, HIGH: 100, LOW/us-central1: 20, STANDARD/us-central1: 60,
-    HIGH/us-central1: 200, LOW/us-central1-*: 10, STANDARD/us-central1-*: 20,
-    HIGH/us-central1-*: 80  The regional overrides tier set for each region
-    must be the same as the tier set for default limit values. Same rule
-    applies for zone overrides tier as well.  Used by metric-based quotas
-    only.
+    """Tiered limit values, currently only STANDARD is supported.
 
     Messages:
       AdditionalProperty: An additional property for a ValuesValue object.
@@ -1847,9 +1783,7 @@ class Service(_messages.Message):
     monitoring: Monitoring configuration.
     name: The DNS address at which this service is available, e.g.
       `calendar.googleapis.com`.
-    producerProjectId: The id of the Google developer project that owns the
-      service. Members of this project can manage the service configuration,
-      manage consumption of the service, etc.
+    producerProjectId: The Google project that owns this service.
     quota: Quota configuration.
     sourceInfo: Output only. The source information for this configuration if
       available.
@@ -1859,7 +1793,7 @@ class Service(_messages.Message):
       that these types are not needed by user-defined APIs. Therefore, they
       will not show up in the generated discovery doc. This field should only
       be used to define system APIs in ESF.
-    title: The product title associated with this service.
+    title: The product title for this service.
     types: A list of all proto message types included in this API service.
       Types referenced directly or indirectly by the `apis` are automatically
       included.  Messages which are not referenced but shall be included, such

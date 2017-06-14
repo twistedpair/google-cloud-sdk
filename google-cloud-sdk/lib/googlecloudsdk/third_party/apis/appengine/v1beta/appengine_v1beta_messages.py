@@ -576,7 +576,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
 
 class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
-  Engine application.
+  Engine application. Next tag: 19
 
   Enums:
     ServingStatusValueValuesEnum: Serving status of this application.
@@ -1588,6 +1588,32 @@ class OperationMetadataV1(_messages.Message):
   warning = _messages.StringField(7, repeated=True)
 
 
+class OperationMetadataV1Alpha(_messages.Message):
+  """Metadata for the given google.longrunning.Operation.
+
+  Fields:
+    endTime: Time that this operation completed.@OutputOnly
+    ephemeralMessage: Ephemeral message that may change every time the
+      operation is polled. @OutputOnly
+    insertTime: Time that this operation was created.@OutputOnly
+    method: API method that initiated this operation. Example:
+      google.appengine.v1alpha.Versions.CreateVersion.@OutputOnly
+    target: Name of the resource that this operation is acting on. Example:
+      apps/myapp/services/default.@OutputOnly
+    user: User who requested this operation.@OutputOnly
+    warning: Durable messages that persist on every operation poll.
+      @OutputOnly
+  """
+
+  endTime = _messages.StringField(1)
+  ephemeralMessage = _messages.StringField(2)
+  insertTime = _messages.StringField(3)
+  method = _messages.StringField(4)
+  target = _messages.StringField(5)
+  user = _messages.StringField(6)
+  warning = _messages.StringField(7, repeated=True)
+
+
 class OperationMetadataV1Beta(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
@@ -1639,6 +1665,9 @@ class ReadinessCheck(_messages.Message):
   are removed from traffic rotation.
 
   Fields:
+    appStartTimeout: A maximum time limit on application initialization,
+      measured from moment the application successfully replies to a
+      healthcheck until it is ready to serve traffic.
     checkInterval: Interval between health checks.
     failureThreshold: Number of consecutive failed checks required before
       removing traffic.
@@ -1650,12 +1679,13 @@ class ReadinessCheck(_messages.Message):
     timeout: Time before the check is considered failed.
   """
 
-  checkInterval = _messages.StringField(1)
-  failureThreshold = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  host = _messages.StringField(3)
-  path = _messages.StringField(4)
-  successThreshold = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  timeout = _messages.StringField(6)
+  appStartTimeout = _messages.StringField(1)
+  checkInterval = _messages.StringField(2)
+  failureThreshold = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  host = _messages.StringField(4)
+  path = _messages.StringField(5)
+  successThreshold = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  timeout = _messages.StringField(7)
 
 
 class RepairApplicationRequest(_messages.Message):

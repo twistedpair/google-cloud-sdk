@@ -96,17 +96,19 @@ class BasicPerfSampleSeries(_messages.Message):
     """PerfUnitValueValuesEnum enum type.
 
     Values:
+      byte: <no description>
       bytesPerSecond: <no description>
       framesPerSecond: <no description>
       kibibyte: <no description>
       percent: <no description>
       perfUnitUnspecified: <no description>
     """
-    bytesPerSecond = 0
-    framesPerSecond = 1
-    kibibyte = 2
-    percent = 3
-    perfUnitUnspecified = 4
+    byte = 0
+    bytesPerSecond = 1
+    framesPerSecond = 2
+    kibibyte = 3
+    percent = 4
+    perfUnitUnspecified = 5
 
   class SampleSeriesLabelValueValuesEnum(_messages.Enum):
     """SampleSeriesLabelValueValuesEnum enum type.

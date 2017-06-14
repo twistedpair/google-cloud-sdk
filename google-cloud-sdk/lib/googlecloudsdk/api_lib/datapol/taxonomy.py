@@ -44,11 +44,11 @@ def Create(taxonomy_name, description):
               taxonomyName=taxonomy_name, description=description)))
 
 
-def Delete(taxonomy_name):
+def Delete(taxonomy_id):
   """Makes an API call to delete a taxonomy.
 
   Args:
-    taxonomy_name: Name of the taxonomy.
+    taxonomy_id: Id of the taxonomy.
 
   Returns:
     An Operation message which can be used to check on the progress of taxonomy
@@ -56,21 +56,21 @@ def Delete(taxonomy_name):
   """
   return _GetService().Delete(utils.GetMessagesModule(
   ).DatapolTaxonomyStoresDataTaxonomiesDeleteRequest(
-      name=utils.GetTaxonomyRelativeName(taxonomy_name)))
+      name=utils.GetTaxonomyRelativeName(taxonomy_id)))
 
 
-def Get(taxonomy_name):
+def Get(taxonomy_id):
   """Makes an API call to get the definition of a taxonomy.
 
   Args:
-    taxonomy_name: Name of the taxonomy.
+    taxonomy_id: Name of the taxonomy.
 
   Returns:
     A Taxonomy message.
   """
   return _GetService().Get(
       utils.GetMessagesModule().DatapolTaxonomyStoresDataTaxonomiesGetRequest(
-          name=utils.GetTaxonomyRelativeName(taxonomy_name)))
+          name=utils.GetTaxonomyRelativeName(taxonomy_id)))
 
 
 def List(limit=None):
@@ -95,11 +95,11 @@ def List(limit=None):
       batch_size_attribute='pageSize')
 
 
-def GetIamPolicy(taxonomy_name):
+def GetIamPolicy(taxonomy_id):
   """Gets IAM policy for a given taxonomy.
 
   Args:
-    taxonomy_name: Name of the taxonomy.
+    taxonomy_id: Id of the taxonomy.
 
   Returns:
     An IamPolicy message.
@@ -107,15 +107,15 @@ def GetIamPolicy(taxonomy_name):
   messages = utils.GetMessagesModule()
   return _GetService().GetIamPolicy(
       messages.DatapolTaxonomyStoresDataTaxonomiesGetIamPolicyRequest(
-          resource=utils.GetTaxonomyRelativeName(taxonomy_name),
+          resource=utils.GetTaxonomyRelativeName(taxonomy_id),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
 
-def SetIamPolicy(taxonomy_name, policy):
+def SetIamPolicy(taxonomy_id, policy):
   """Sets IAM policy, for a given taxonomy.
 
   Args:
-    taxonomy_name: Name of the taxonomy.
+    taxonomy_id: Id of the taxonomy.
     policy: An IamPolicy message.
 
   Returns:
@@ -124,5 +124,5 @@ def SetIamPolicy(taxonomy_name, policy):
   messages = utils.GetMessagesModule()
   return _GetService().SetIamPolicy(
       messages.DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(
-          resource=utils.GetTaxonomyRelativeName(taxonomy_name),
+          resource=utils.GetTaxonomyRelativeName(taxonomy_id),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

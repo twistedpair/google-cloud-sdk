@@ -22,12 +22,13 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import labels_util
 
 
-def List(limit=None):
+def List(limit=None, filter=None):  # pylint: disable=redefined-builtin
   """Make API calls to List active projects.
 
   Args:
     limit: The number of projects to limit the resutls to. This limit is passed
            to the server and the server does the limiting.
+    filter: The client side filter expression.
 
   Returns:
     Generator that yields projects
@@ -36,7 +37,7 @@ def List(limit=None):
   messages = projects_util.GetMessages()
   return list_pager.YieldFromList(
       client.projects,
-      messages.CloudresourcemanagerProjectsListRequest(),
+      messages.CloudresourcemanagerProjectsListRequest(filter=filter),
       limit=limit,
       field='projects',
       predicate=

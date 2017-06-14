@@ -17,8 +17,8 @@
 A completion cache is a persistent cache that stores the current list of names
 for resources visible to the caller.  The cache generates lists of resources
 that match prefixes and/or patterns, suitable for command line completers. The
-name representation is resource specific, but is most often a GRI, URI or
-argument strings with flags.
+name representation is resource specific.  See core.resource.resource_style for
+details.
 
 Refer to the resource_cache module for a detailed description of resource
 parsing and representation.
@@ -91,29 +91,31 @@ class Completer(resource_cache.Updater):
     return [c if '*' in c else c + '*' for c in row_template]
 
   @abc.abstractmethod
-  def RowToString(self, row, program_state=None):
+  def RowToString(self, row, parameter_info=None):
     """Returns the string representation of row.
 
     Args:
       row: The resource parameter tuple.
-      program_state: Program state object for accesing parameter values.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
 
     Returns:
       The string representation of row.
     """
     pass
 
-  def Complete(self, prefix, program_state):
+  def Complete(self, prefix, parameter_info):
     """Returns the list of strings matching prefix.
 
     Args:
       prefix: The resource prefix string to match.
-      program_state: Program state object for accesing parameter values.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
 
     Returns:
       The list of strings matching prefix.
     """
     row = self.StringToRow(prefix)
     row_template = self.RowToTemplate(row)
-    rows = self.Select(row_template, program_state)
-    return [self.RowToString(row, program_state) for row in rows]
+    rows = self.Select(row_template, parameter_info)
+    return [self.RowToString(row, parameter_info) for row in rows]

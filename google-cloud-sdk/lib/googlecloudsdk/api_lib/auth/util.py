@@ -18,9 +18,7 @@ import os
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.core.util import platforms
 from oauth2client import client
 from oauth2client import clientsecrets
 
@@ -39,16 +37,6 @@ DEFAULT_SCOPES = [
     CLOUD_PLATFORM_SCOPE
 ]
 
-# A list of results for webbrowser.get().name that indicate we should not
-# attempt to open a web browser for the user.
-_WEBBROWSER_NAMES_BLACKLIST = [
-    'www-browser',
-]
-
-# These are environment variables that can indicate a running compositor on
-# Linux.
-_DISPLAY_VARIABLES = ['DISPLAY', 'WAYLAND_DISPLAY', 'MIR_SOCKET']
-
 
 class Error(exceptions.Error):
   """A base exception for this class."""
@@ -58,30 +46,6 @@ class Error(exceptions.Error):
 class InvalidClientSecretsError(Error):
   """An error for when we fail to load the client secrets file."""
   pass
-
-
-def ShouldLaunchBrowser(launch_browser):
-  """Determines if a browser can be launched."""
-  # pylint:disable=g-import-not-at-top, Import when needed for performance.
-  import webbrowser
-  # Sometimes it's not possible to launch the web browser. This often
-  # happens when people ssh into other machines.
-  if launch_browser:
-    if c_gce.Metadata().connected:
-      launch_browser = False
-    current_os = platforms.OperatingSystem.Current()
-    if (current_os is platforms.OperatingSystem.LINUX and
-        not any(os.getenv(var) for var in _DISPLAY_VARIABLES)):
-      launch_browser = False
-    try:
-      browser = webbrowser.get()
-      if (hasattr(browser, 'name')
-          and browser.name in _WEBBROWSER_NAMES_BLACKLIST):
-        launch_browser = False
-    except webbrowser.Error:
-      launch_browser = False
-
-  return launch_browser
 
 
 def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,

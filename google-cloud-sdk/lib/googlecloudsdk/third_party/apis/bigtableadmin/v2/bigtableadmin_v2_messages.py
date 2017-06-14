@@ -11,26 +11,6 @@ from apitools.base.py import extra_types
 package = 'bigtableadmin'
 
 
-class AppProfile(_messages.Message):
-  """A configuration object describing how Cloud Bigtable should treat traffic
-  from a particular end user application.
-
-  Fields:
-    displayName: The descriptive name for this app profile as it appears in
-      UIs. Can be changed at any time, but should be kept unique within an
-      instance to avoid confusion.
-    highAvailabilityRouting: Use a high availability routing policy.
-    name: (`OutputOnly`) The unique name of the app profile. Values are of the
-      form `projects/<project>/instances/<instance>/appProfiles/_a-zA-Z0-9*`.
-    singleClusterRouting: Use a single cluster routing policy.
-  """
-
-  displayName = _messages.StringField(1)
-  highAvailabilityRouting = _messages.MessageField('HighAvailabilityRouting', 2)
-  name = _messages.StringField(3)
-  singleClusterRouting = _messages.MessageField('SingleClusterRouting', 4)
-
-
 class BigtableadminOperationsCancelRequest(_messages.Message):
   """A BigtableadminOperationsCancelRequest object.
 
@@ -75,61 +55,6 @@ class BigtableadminOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class BigtableadminProjectsInstancesAppProfilesCreateRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesAppProfilesCreateRequest object.
-
-  Fields:
-    appProfile: A AppProfile resource to be passed as the request body.
-    appProfileId: The ID to be used when referring to the new app profile
-      within its instance, e.g., just `myprofile` rather than
-      `projects/myproject/instances/myinstance/appProfiles/myprofile`.
-    parent: The unique name of the instance in which to create the new app
-      profile. Values are of the form
-      `projects/<project>/instances/<instance>`.
-  """
-
-  appProfile = _messages.MessageField('AppProfile', 1)
-  appProfileId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class BigtableadminProjectsInstancesAppProfilesDeleteRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesAppProfilesDeleteRequest object.
-
-  Fields:
-    name: The unique name of the app profile to be deleted. Values are of the
-      form
-      `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminProjectsInstancesAppProfilesGetRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesAppProfilesGetRequest object.
-
-  Fields:
-    name: The unique name of the requested app profile. Values are of the form
-      `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminProjectsInstancesAppProfilesListRequest(_messages.Message):
-  """A BigtableadminProjectsInstancesAppProfilesListRequest object.
-
-  Fields:
-    pageToken: The value of `next_page_token` returned by a previous call.
-    parent: The unique name of the instance for which a list of app profiles
-      is requested. Values are of the form
-      `projects/<project>/instances/<instance>`.
-  """
-
-  pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
 
 
 class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
@@ -609,15 +534,6 @@ class GcRule(_messages.Message):
   union = _messages.MessageField('Union', 4)
 
 
-class HighAvailabilityRouting(_messages.Message):
-  """Read/write requests may be routed to any cluster in the instance, and
-  will fail over to another cluster in the event of transient errors or
-  delays. Choosing this option sacrifices read-your-writes consistency to
-  improve availability.
-  """
-
-
-
 class Instance(_messages.Message):
   """A collection of Bigtable Tables and the resources that serve them. All
   tables in an instance are served from a single Cluster.
@@ -686,20 +602,6 @@ class Intersection(_messages.Message):
   """
 
   rules = _messages.MessageField('GcRule', 1, repeated=True)
-
-
-class ListAppProfilesResponse(_messages.Message):
-  """Response message for BigtableInstanceAdmin.ListAppProfiles.
-
-  Fields:
-    appProfiles: The list of requested app profiles.
-    nextPageToken: Set if not all app profiles could be returned in a single
-      response. Pass this value to `page_token` in another request to get the
-      next page of results.
-  """
-
-  appProfiles = _messages.MessageField('AppProfile', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListClustersResponse(_messages.Message):
@@ -907,23 +809,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class SingleClusterRouting(_messages.Message):
-  """Unconditionally routes all read/write requests to a specific cluster.
-  This option preserves read-your-writes consistency, but does not improve
-  availability.
-
-  Fields:
-    allowTransactionalWrites: Whether or not `CheckAndMutateRow` and
-      `ReadModifyWriteRow` requests are allowed by this app profile. It is
-      unsafe to send these requests to the same table/row/column in multiple
-      clusters.
-    clusterId: The cluster to which read/write requests should be routed.
-  """
-
-  allowTransactionalWrites = _messages.BooleanField(1)
-  clusterId = _messages.StringField(2)
 
 
 class Split(_messages.Message):

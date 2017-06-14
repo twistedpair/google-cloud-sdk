@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170523",
+ "revision": "20170606",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1754,6 +1754,10 @@
    "type": "object",
    "description": "Associates `members` with a `role`.",
    "properties": {
+    "condition": {
+     "$ref": "Expr",
+     "description": "The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently. This field is GOOGLE_INTERNAL."
+    },
     "members": {
      "type": "array",
      "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
@@ -2758,6 +2762,29 @@
     }
    }
   },
+  "Expr": {
+   "id": "Expr",
+   "type": "object",
+   "description": "Represents an expression text. Example:\n\ntitle: \"User account presence\" description: \"Determines whether the request has a user account\" expression: \"size(request.user) \u003e 0\"",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI."
+    },
+    "expression": {
+     "type": "string",
+     "description": "Textual representation of an expression in Common Expression Language syntax.\n\nThe application context of the containing message determines which well-known feature set of CEL is supported."
+    },
+    "location": {
+     "type": "string",
+     "description": "An optional string indicating the location of the expression for error reporting, e.g. a file name and a position in the file."
+    },
+    "title": {
+     "type": "string",
+     "description": "An optional title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression."
+    }
+   }
+  },
   "Firewall": {
    "id": "Firewall",
    "type": "object",
@@ -3275,7 +3302,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "description": "The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the server might also populate this property with the value WINDOWS to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
+     "description": "The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the server might also populate this property with the value WINDOWS to indicate that this is a Windows image. This value is purely informational and does not enable or disable any features.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
       "MULTI_IP_SUBNET",
@@ -4456,7 +4483,7 @@
     },
     "host": {
      "type": "string",
-     "description": "Full or partial URL of the host resource that the instance should be placed on, in the format: zones/zone/hosts/host.\n\nOptional, Private Host (physical machine) that the instance will be placed on when it's created. The instance is guaranteed to be placed on the same machine as other instances with the same private host.\n\nThe request will be rejected if the private host has run out of resources."
+     "description": "Full or partial URL of the host resource that the instance should be placed on, in the format: zones/zone/hosts/host.\n\nOptional, sole-tenant Host (physical machine) that the instance will be placed on when it's created. The instance is guaranteed to be placed on the same machine as other instances with the same sole-tenant host.\n\nThe request will be rejected if the sole-tenant host has run out of resources."
     },
     "id": {
      "type": "string",
@@ -4744,6 +4771,9 @@
    "type": "object",
    "description": "An Instance Group Manager resource.",
    "properties": {
+    "activities": {
+     "$ref": "InstanceGroupManagerActivities"
+    },
     "autoHealingPolicies": {
      "type": "array",
      "description": "The autohealing policy for this managed instance group. You can specify only one value.",
@@ -4931,6 +4961,89 @@
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are being verified. More details regarding verification process are covered in the documentation of ManagedInstance.InstanceAction.VERIFYING enum field.",
      "format": "int32"
+    }
+   }
+  },
+  "InstanceGroupManagerActivities": {
+   "id": "InstanceGroupManagerActivities",
+   "type": "object",
+   "properties": {
+    "autohealing": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "autohealingHealthCheckBased": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "autoscalingDown": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "autoscalingUp": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "creatingInstances": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "deletingInstances": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "recreatingInstances": {
+     "type": "string",
+     "enum": [
+      "PERMITTED",
+      "PROHIBITED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -5943,7 +6056,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 21",
+   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 22",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -7017,7 +7130,7 @@
    "properties": {
     "disks": {
      "type": "array",
-     "description": "The disk overrides defined for this instance",
+     "description": "Disk overrides defined for this instance",
      "items": {
       "$ref": "ManagedInstanceOverrideDiskOverride"
      }
@@ -7793,7 +7906,7 @@
     },
     "bindings": {
      "type": "array",
-     "description": "Associates a list of `members` to a `role`. Multiple `bindings` must not be specified for the same `role`. `bindings` with no members will result in an error.",
+     "description": "Associates a list of `members` to a `role`. `bindings` with no members will result in an error.",
      "items": {
       "$ref": "Binding"
      }
@@ -9758,6 +9871,10 @@
    "type": "object",
    "description": "A Subnetwork resource.",
    "properties": {
+    "allowSubnetCidrRoutesOverlap": {
+     "type": "boolean",
+     "description": "Whether this subnetwork can conflict with network routes. Setting this to true allows this subnetwork's primary and secondary ranges to conflict with routes that have already been configured on the corresponding network. Network routes will take precedence over VM endpoints within the network if the route prefix length is larger than the subnetwork prefix length.\n\nAlso, packets destined to IPs within subnetwork may contain private/sensitive data and are prevented from leaving the virtual network. Setting this field to true will disable this feature.\n\nThe default value is false and applies to all existing subnetworks and automatically created subnetworks.\n\nThis field cannot be set to true at resource creation time."
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -9765,6 +9882,11 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource. This field can be set only at resource creation time."
+    },
+    "fingerprint": {
+     "type": "string",
+     "description": "Fingerprint generated from a hash of the resource contents.",
+     "format": "byte"
     },
     "gatewayAddress": {
      "type": "string",
@@ -21350,6 +21472,40 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.licenses.getIamPolicy",
+     "path": "{project}/global/licenses/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.licenses.insert",
      "path": "{project}/global/licenses",
@@ -21428,6 +21584,79 @@
      ],
      "response": {
       "$ref": "LicensesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.licenses.setIamPolicy",
+     "path": "{project}/global/licenses/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "Policy"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.licenses.testIamPermissions",
+     "path": "{project}/global/licenses/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -22122,8 +22351,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "getXpnResources": {
@@ -22167,8 +22395,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "listXpnHosts": {
@@ -22215,8 +22442,7 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "moveDisk": {
@@ -26718,6 +26944,56 @@
      ],
      "response": {
       "$ref": "SubnetworkList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.subnetworks.patch",
+     "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
+     "httpMethod": "PATCH",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range and allow_subnet_cidr_routes_overlap. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and then the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.",
+       "location": "query"
+      },
+      "subnetwork": {
+       "type": "string",
+       "description": "Name of the Subnetwork resource to patch.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "subnetwork"
+     ],
+     "request": {
+      "$ref": "Subnetwork"
+     },
+     "response": {
+      "$ref": "Operation"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

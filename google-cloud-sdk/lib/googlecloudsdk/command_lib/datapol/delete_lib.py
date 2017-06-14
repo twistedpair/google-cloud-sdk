@@ -17,11 +17,11 @@
 from googlecloudsdk.api_lib.datapol import taxonomy
 
 
-def DeleteTaxonomy(taxonomy_name):
+def DeleteTaxonomy(taxonomy_id):
   """Delete the named taxonomy.
 
   Args:
-    taxonomy_name: name of the taxonomy.
+    taxonomy_id: id of the taxonomy.
 
   Returns:
     An Operation message which can be used to check the progress of taxonomy
@@ -29,4 +29,4 @@ def DeleteTaxonomy(taxonomy_name):
   """
   # TODO(b/32858676): wait on API call to finish before returning to surface;
   #   add error handling as well.
-  return taxonomy.Delete(taxonomy_name)
+  return taxonomy.Delete(taxonomy_id)

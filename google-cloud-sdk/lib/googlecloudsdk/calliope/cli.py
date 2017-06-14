@@ -87,7 +87,8 @@ class CLILoader(object):
 
   def __init__(self, name, command_root_directory,
                allow_non_existing_modules=False,
-               logs_dir=config.Paths().logs_dir, version_func=None):
+               logs_dir=config.Paths().logs_dir, version_func=None,
+               known_error_handler=None):
     """Initialize Calliope.
 
     Args:
@@ -101,6 +102,8 @@ class CLILoader(object):
         for no log files.
       version_func: func, A function to call for a top-level -v and
         --version flag. If None, no flags will be available.
+      known_error_handler: f(x)->None, A function to call when an known error is
+        handled. It takes a single argument that is the exception.
 
     Raises:
       backend.LayoutException: If no command root directory is given.
@@ -115,6 +118,7 @@ class CLILoader(object):
 
     self.__logs_dir = logs_dir
     self.__version_func = version_func
+    self.__known_errror_handler = known_error_handler
 
     self.__pre_run_hooks = []
     self.__post_run_hooks = []
@@ -525,7 +529,7 @@ class CLILoader(object):
       top_element.LoadAllSubElements(recursive=True)
 
     cli = CLI(self.__name, top_element, self.__pre_run_hooks,
-              self.__post_run_hooks)
+              self.__post_run_hooks, self.__known_errror_handler)
     return cli
 
 
@@ -613,13 +617,15 @@ def _ArgComplete(ai, **kwargs):
 class CLI(object):
   """A generated command line tool."""
 
-  def __init__(self, name, top_element, pre_run_hooks, post_run_hooks):
+  def __init__(self, name, top_element, pre_run_hooks, post_run_hooks,
+               known_error_handler):
     # pylint: disable=protected-access
     self.__name = name
     self.__parser = top_element._parser
     self.__top_element = top_element
     self.__pre_run_hooks = pre_run_hooks
     self.__post_run_hooks = post_run_hooks
+    self.__known_error_handler = known_error_handler
 
   def _TopElement(self):
     return self.__top_element
@@ -862,6 +868,9 @@ class CLI(object):
       log.debug(msg, exc_info=sys.exc_info())
       if print_error:
         log.error(msg)
+      # Uncaught errors will be handled in gcloud_main.
+      if self.__known_error_handler:
+        self.__known_error_handler(exc)
       if properties.VALUES.core.print_handled_tracebacks.GetBool():
         raise
       self._Exit(known_exc)

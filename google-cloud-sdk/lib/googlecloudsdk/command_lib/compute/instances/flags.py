@@ -174,7 +174,7 @@ def InstanceArgumentForTargetInstance(required=True):
 
 def InstanceArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
-      resource_name='instances',
+      resource_name='instance',
       name='--instances',
       completion_resource_id='compute.instances',
       required=required,

@@ -104,7 +104,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     Args:
       domain: str, the custom domain string.
       certificate_id: str, a certificate id for the domain.
-      no_certificate_id: boolean, remove the certificate id from the domain.
+      no_certificate_id: bool, remove the certificate id from the domain.
 
     Returns:
       The updated DomainMapping object.
@@ -119,6 +119,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
 
     if not mask_fields:
       raise exceptions.MinimumArgumentException(
+          ['--[no-]certificate-id'],
           'Please specify at least one attribute to the domain-mapping update.')
 
     request = self.messages.AppengineAppsDomainMappingsPatchRequest(
@@ -152,3 +153,80 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
         params={'appsId': self.project},
         collection='appengine.apps.domainMappings')
     return res.RelativeName()
+
+
+class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
+  """Client used by gcloud to communicate with the App Engine API."""
+
+  @classmethod
+  def ApiVersion(cls):
+    return 'v1alpha'
+
+  def CreateDomainMapping(self, domain, certificate_id, no_managed_certificate):
+    """Creates a domain mapping for the given application.
+
+    Args:
+      domain: str, the custom domain string.
+      certificate_id: str, a certificate id for the new domain.
+      no_managed_certificate: bool, don't automatically provision a certificate.
+
+    Returns:
+      The created DomainMapping object.
+    """
+    ssl = self.messages.SslSettings(certificateId=certificate_id)
+
+    domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
+
+    request = self.messages.AppengineAppsDomainMappingsCreateRequest(
+        parent=self._FormatApp(),
+        domainMapping=domain_mapping,
+        noManagedCertificate=no_managed_certificate)
+
+    operation = requests.MakeRequest(self.client.apps_domainMappings.Create,
+                                     request)
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation).response
+
+  def UpdateDomainMapping(self,
+                          domain,
+                          certificate_id,
+                          no_certificate_id,
+                          no_managed_certificate=None):
+    """Updates a domain mapping for the given application.
+
+    Args:
+      domain: str, the custom domain string.
+      certificate_id: str, a certificate id for the domain.
+      no_certificate_id: bool, remove the certificate id from the domain.
+      no_managed_certificate: bool, don't automatically provision a certificate.
+
+    Returns:
+      The updated DomainMapping object.
+    """
+    mask_fields = []
+    if certificate_id or no_certificate_id:
+      mask_fields.append('sslSettings.certificateId')
+    if no_managed_certificate:
+      mask_fields.append('noManagedCertificate')
+
+    ssl = self.messages.SslSettings(certificateId=certificate_id)
+
+    domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
+
+    if not mask_fields:
+      raise exceptions.MinimumArgumentException(
+          ['--[no-]certificate-id', '--no_managed_certificate'],
+          'Please specify at least one attribute to the domain-mapping update.')
+
+    request = self.messages.AppengineAppsDomainMappingsPatchRequest(
+        name=self._FormatDomainMapping(domain),
+        noManagedCertificate=no_managed_certificate,
+        domainMapping=domain_mapping,
+        updateMask=','.join(mask_fields))
+
+    operation = requests.MakeRequest(self.client.apps_domainMappings.Patch,
+                                     request)
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation).response

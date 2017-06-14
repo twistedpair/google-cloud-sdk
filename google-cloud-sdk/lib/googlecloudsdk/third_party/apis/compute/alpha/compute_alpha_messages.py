@@ -1944,6 +1944,10 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently. This field is GOOGLE_INTERNAL.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -1961,8 +1965,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -7826,6 +7831,18 @@ class ComputeLicensesDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeLicensesGetIamPolicyRequest(_messages.Message):
+  """A ComputeLicensesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   """A ComputeLicensesGetRequest object.
 
@@ -7906,6 +7923,35 @@ class ComputeLicensesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeLicensesSetIamPolicyRequest(_messages.Message):
+  """A ComputeLicensesSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeLicensesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeMachineTypesAggregatedListRequest(_messages.Message):
@@ -10968,6 +11014,32 @@ class ComputeSubnetworksListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeSubnetworksPatchRequest(_messages.Message):
+  """A ComputeSubnetworksPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and then the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.
+    subnetwork: Name of the Subnetwork resource to patch.
+    subnetworkResource: A Subnetwork resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  subnetwork = _messages.StringField(4, required=True)
+  subnetworkResource = _messages.MessageField('Subnetwork', 5)
+
+
 class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
   """A ComputeSubnetworksSetIamPolicyRequest object.
 
@@ -13765,6 +13837,30 @@ class DistributionPolicyZoneConfiguration(_messages.Message):
   zone = _messages.StringField(1)
 
 
+class Expr(_messages.Message):
+  """Represents an expression text. Example:  title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class Firewall(_messages.Message):
   """Represents a Firewall resource.
 
@@ -14460,14 +14556,14 @@ class GuestOsFeature(_messages.Message):
   """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature. Currenty only
+    TypeValueValuesEnum: The type of supported feature. Currently only
       VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
       server might also populate this property with the value WINDOWS to
       indicate that this is a Windows image. This value is purely
       informational and does not enable or disable any features.
 
   Fields:
-    type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
+    type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
       is supported. For newer Windows images, the server might also populate
       this property with the value WINDOWS to indicate that this is a Windows
       image. This value is purely informational and does not enable or disable
@@ -14475,7 +14571,7 @@ class GuestOsFeature(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
+    """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
     supported. For newer Windows images, the server might also populate this
     property with the value WINDOWS to indicate that this is a Windows image.
     This value is purely informational and does not enable or disable any
@@ -15716,11 +15812,11 @@ class Instance(_messages.Message):
     guestAccelerators: List of the type and count of accelerator cards
       attached to the instance.
     host: Full or partial URL of the host resource that the instance should be
-      placed on, in the format: zones/zone/hosts/host.  Optional, Private Host
-      (physical machine) that the instance will be placed on when it's
+      placed on, in the format: zones/zone/hosts/host.  Optional, sole-tenant
+      Host (physical machine) that the instance will be placed on when it's
       created. The instance is guaranteed to be placed on the same machine as
-      other instances with the same private host.  The request will be
-      rejected if the private host has run out of resources.
+      other instances with the same sole-tenant host.  The request will be
+      rejected if the sole-tenant host has run out of resources.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     instanceEncryptionKey: Encrypts or decrypts data for an instance with a
@@ -16060,6 +16156,7 @@ class InstanceGroupManager(_messages.Message):
       NO_FAILOVER.
 
   Fields:
+    activities: A InstanceGroupManagerActivities attribute.
     autoHealingPolicies: The autohealing policy for this managed instance
       group. You can specify only one value.
     baseInstanceName: The base instance name to use for instances in this
@@ -16136,30 +16233,31 @@ class InstanceGroupManager(_messages.Message):
     NO_FAILOVER = 0
     UNKNOWN = 1
 
-  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
-  baseInstanceName = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 4)
-  description = _messages.StringField(5)
-  distributionPolicy = _messages.MessageField('DistributionPolicy', 6)
-  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(10)
-  instanceTemplate = _messages.StringField(11)
-  kind = _messages.StringField(12, default=u'compute#instanceGroupManager')
-  name = _messages.StringField(13)
-  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
-  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  serviceAccount = _messages.StringField(18)
-  statefulPolicy = _messages.MessageField('InstanceGroupManagerStatefulPolicy', 19)
-  targetPools = _messages.StringField(20, repeated=True)
-  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
-  zone = _messages.StringField(24)
+  activities = _messages.MessageField('InstanceGroupManagerActivities', 1)
+  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 2, repeated=True)
+  baseInstanceName = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 5)
+  description = _messages.StringField(6)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 7)
+  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(11)
+  instanceTemplate = _messages.StringField(12)
+  kind = _messages.StringField(13, default=u'compute#instanceGroupManager')
+  name = _messages.StringField(14)
+  namedPorts = _messages.MessageField('NamedPort', 15, repeated=True)
+  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  serviceAccount = _messages.StringField(19)
+  statefulPolicy = _messages.MessageField('InstanceGroupManagerStatefulPolicy', 20)
+  targetPools = _messages.StringField(21, repeated=True)
+  targetSize = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 23)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -16210,6 +16308,108 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   verifying = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerActivities(_messages.Message):
+  """A InstanceGroupManagerActivities object.
+
+  Enums:
+    AutohealingValueValuesEnum:
+    AutohealingHealthCheckBasedValueValuesEnum:
+    AutoscalingDownValueValuesEnum:
+    AutoscalingUpValueValuesEnum:
+    CreatingInstancesValueValuesEnum:
+    DeletingInstancesValueValuesEnum:
+    RecreatingInstancesValueValuesEnum:
+
+  Fields:
+    autohealing: A AutohealingValueValuesEnum attribute.
+    autohealingHealthCheckBased: A AutohealingHealthCheckBasedValueValuesEnum
+      attribute.
+    autoscalingDown: A AutoscalingDownValueValuesEnum attribute.
+    autoscalingUp: A AutoscalingUpValueValuesEnum attribute.
+    creatingInstances: A CreatingInstancesValueValuesEnum attribute.
+    deletingInstances: A DeletingInstancesValueValuesEnum attribute.
+    recreatingInstances: A RecreatingInstancesValueValuesEnum attribute.
+  """
+
+  class AutohealingHealthCheckBasedValueValuesEnum(_messages.Enum):
+    """AutohealingHealthCheckBasedValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class AutohealingValueValuesEnum(_messages.Enum):
+    """AutohealingValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class AutoscalingDownValueValuesEnum(_messages.Enum):
+    """AutoscalingDownValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class AutoscalingUpValueValuesEnum(_messages.Enum):
+    """AutoscalingUpValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class CreatingInstancesValueValuesEnum(_messages.Enum):
+    """CreatingInstancesValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class DeletingInstancesValueValuesEnum(_messages.Enum):
+    """DeletingInstancesValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  class RecreatingInstancesValueValuesEnum(_messages.Enum):
+    """RecreatingInstancesValueValuesEnum enum type.
+
+    Values:
+      PERMITTED: <no description>
+      PROHIBITED: <no description>
+    """
+    PERMITTED = 0
+    PROHIBITED = 1
+
+  autohealing = _messages.EnumField('AutohealingValueValuesEnum', 1)
+  autohealingHealthCheckBased = _messages.EnumField('AutohealingHealthCheckBasedValueValuesEnum', 2)
+  autoscalingDown = _messages.EnumField('AutoscalingDownValueValuesEnum', 3)
+  autoscalingUp = _messages.EnumField('AutoscalingUpValueValuesEnum', 4)
+  creatingInstances = _messages.EnumField('CreatingInstancesValueValuesEnum', 5)
+  deletingInstances = _messages.EnumField('DeletingInstancesValueValuesEnum', 6)
+  recreatingInstances = _messages.EnumField('RecreatingInstancesValueValuesEnum', 7)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -17332,7 +17532,7 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 
 class Interconnect(_messages.Message):
   """Protocol definitions for Mixer API to support Interconnect. Next
-  available tag: 21
+  available tag: 22
 
   Enums:
     InterconnectTypeValueValuesEnum:
@@ -18466,7 +18666,7 @@ class ManagedInstanceOverride(_messages.Message):
   """Overrides of stateful properties for a given instance
 
   Fields:
-    disks: The disk overrides defined for this instance
+    disks: Disk overrides defined for this instance
     instance: The URL of the instance.
   """
 
@@ -19295,9 +19495,8 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
-      must not be specified for the same `role`. `bindings` with no members
-      will result in an error.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -21217,11 +21416,23 @@ class Subnetwork(_messages.Message):
   """A Subnetwork resource.
 
   Fields:
+    allowSubnetCidrRoutesOverlap: Whether this subnetwork can conflict with
+      network routes. Setting this to true allows this subnetwork's primary
+      and secondary ranges to conflict with routes that have already been
+      configured on the corresponding network. Network routes will take
+      precedence over VM endpoints within the network if the route prefix
+      length is larger than the subnetwork prefix length.  Also, packets
+      destined to IPs within subnetwork may contain private/sensitive data and
+      are prevented from leaving the virtual network. Setting this field to
+      true will disable this feature.  The default value is false and applies
+      to all existing subnetworks and automatically created subnetworks.  This
+      field cannot be set to true at resource creation time.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
+    fingerprint: Fingerprint generated from a hash of the resource contents.
     gatewayAddress: [Output Only] The gateway address for default routes to
       reach destination addresses outside this subnetwork. This field can be
       set only at resource creation time.
@@ -21258,18 +21469,20 @@ class Subnetwork(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  gatewayAddress = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(5)
-  kind = _messages.StringField(6, default=u'compute#subnetwork')
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  privateIpGoogleAccess = _messages.BooleanField(9)
-  region = _messages.StringField(10)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 11, repeated=True)
-  selfLink = _messages.StringField(12)
+  allowSubnetCidrRoutesOverlap = _messages.BooleanField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fingerprint = _messages.BytesField(4)
+  gatewayAddress = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(7)
+  kind = _messages.StringField(8, default=u'compute#subnetwork')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  privateIpGoogleAccess = _messages.BooleanField(11)
+  region = _messages.StringField(12)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 13, repeated=True)
+  selfLink = _messages.StringField(14)
 
 
 class SubnetworkAggregatedList(_messages.Message):

@@ -319,8 +319,9 @@ class _MetricsCollector(object):
     params.extend(self._csi_params)
     data = urllib.urlencode(params)
 
-    self._metrics.append(
-        ('{0}?{1}'.format(_CSI_ENDPOINT, data), 'GET', None, self._user_agent))
+    headers = {'user-agent': self._user_agent}
+    self.CollectHTTPBeacon('{0}?{1}'.format(_CSI_ENDPOINT, data),
+                           'GET', None, headers)
 
   def CollectGAMetric(self, event):
     """Adds the given GA event to the metrics queue.
@@ -340,7 +341,19 @@ class _MetricsCollector(object):
     params.extend(self._ga_params)
     data = urllib.urlencode(params)
 
-    self._metrics.append((_GA_ENDPOINT, 'POST', data, self._user_agent))
+    headers = {'user-agent': self._user_agent}
+    self.CollectHTTPBeacon(_GA_ENDPOINT, 'POST', data, headers)
+
+  def CollectHTTPBeacon(self, url, method, body, headers):
+    """Record a custom event to an arbitrary endpoint.
+
+    Args:
+      url: str, The full url of the endpoint to hit.
+      method: str, The HTTP method to issue.
+      body: str, The body to send with the request.
+      headers: {str: str}, A map of headers to values to include in the request.
+    """
+    self._metrics.append((url, method, body, headers))
 
   def ReportMetrics(self, wait_for_report=False):
     """Reports the collected metrics using a separate async process."""
@@ -654,3 +667,18 @@ def CustomTimedEvent(event_name):
   collector = _MetricsCollector.GetCollector()
   if collector:
     collector.RecordTimedEvent(event_name)
+
+
+@CaptureAndLogException
+def CustomBeacon(url, method, body, headers):
+  """Record a custom event to an arbitrary endpoint.
+
+  Args:
+    url: str, The full url of the endpoint to hit.
+    method: str, The HTTP method to issue.
+    body: str, The body to send with the request.
+    headers: {str: str}, A map of headers to values to include in the request.
+  """
+  collector = _MetricsCollector.GetCollector()
+  if collector:
+    collector.CollectHTTPBeacon(url, method, body, headers)

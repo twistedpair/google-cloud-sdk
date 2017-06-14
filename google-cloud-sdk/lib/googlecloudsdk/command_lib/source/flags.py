@@ -15,6 +15,6 @@
 from googlecloudsdk.calliope import arg_parsers
 
 REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(
-    '[-_A-Za-z0-9]+',
-    'repostory name may contain between 1 and 63 (inclusive) letters, digits, '
+    '[A-Za-z0-9_][-_A-Za-z0-9]{0,127}',
+    'repostory name may contain between 1 and 128 (inclusive) letters, digits, '
     'hyphens, and underscores.')

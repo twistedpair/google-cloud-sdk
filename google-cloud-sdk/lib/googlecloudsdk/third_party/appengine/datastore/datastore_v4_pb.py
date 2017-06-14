@@ -18,9 +18,6 @@ from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import array
 import thread
 
-__pychecker__ = """maxreturns=0 maxbranches=0 no-callinit
-                   unusednames=printElemNumber,debug_strs no-special"""
-
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
   _ExtendableProtocolMessage = ProtocolBuffer.ExtendableProtocolMessage
@@ -30,6 +27,7 @@ else:
 
 from googlecloudsdk.third_party.appengine.datastore.entity_v4_pb import *
 import googlecloudsdk.third_party.appengine.datastore.entity_v4_pb
+googlecloudsdk_dot_third_party_dot_appengine_dot_datastore_dot_entity__v4__pb = __import__('googlecloudsdk.third_party.appengine.datastore.entity_v4_pb', {}, {}, [''])
 class Error(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
@@ -49,6 +47,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
   ALREADY_EXISTS =   14 
   FAILED_PRECONDITION =   15 
   UNAUTHENTICATED =   16 
+  ABORTED      =   17 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -67,6 +66,7 @@ class Error(ProtocolBuffer.ProtocolMessage):
     14: "ALREADY_EXISTS",
     15: "FAILED_PRECONDITION",
     16: "UNAUTHENTICATED",
+    17: "ABORTED",
   }
 
   def ErrorCode_Name(cls, x): return cls._ErrorCode_NAMES.get(x, "")

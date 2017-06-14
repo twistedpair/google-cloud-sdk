@@ -60,6 +60,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
+    self.regionCommitments = self.RegionCommitmentsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
@@ -2523,7 +2524,7 @@ If an empty request body is given, clears the deprecation status instead.
         method_id=u'compute.images.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[],
+        query_params=[u'forceCreate'],
         relative_path=u'projects/{project}/global/images',
         request_field=u'image',
         request_type_name=u'ComputeImagesInsertRequest',
@@ -4856,6 +4857,120 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'backendServiceResource',
         request_type_name=u'ComputeRegionBackendServicesUpdateRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class RegionCommitmentsService(base_api.BaseApiService):
+    """Service class for the regionCommitments resource."""
+
+    _NAME = u'regionCommitments'
+
+    def __init__(self, client):
+      super(ComputeV1.RegionCommitmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of commitments.
+
+      Args:
+        request: (ComputeRegionCommitmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CommitmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionCommitments.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/commitments',
+        request_field='',
+        request_type_name=u'ComputeRegionCommitmentsAggregatedListRequest',
+        response_type_name=u'CommitmentAggregatedList',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified commitment resource. Get a list of available commitments by making a list() request.
+
+      Args:
+        request: (ComputeRegionCommitmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Commitment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionCommitments.get',
+        ordered_params=[u'project', u'region', u'commitment'],
+        path_params=[u'commitment', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/commitments/{commitment}',
+        request_field='',
+        request_type_name=u'ComputeRegionCommitmentsGetRequest',
+        response_type_name=u'Commitment',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a commitment in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionCommitmentsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionCommitments.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/commitments',
+        request_field=u'commitment',
+        request_type_name=u'ComputeRegionCommitmentsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of commitments contained within the specified region.
+
+      Args:
+        request: (ComputeRegionCommitmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CommitmentList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionCommitments.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/commitments',
+        request_field='',
+        request_type_name=u'ComputeRegionCommitmentsListRequest',
+        response_type_name=u'CommitmentList',
         supports_download=False,
     )
 

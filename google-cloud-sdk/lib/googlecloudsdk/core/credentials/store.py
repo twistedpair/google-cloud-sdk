@@ -139,6 +139,100 @@ class RevokeError(Error):
   """Exception for when there was a problem revoking."""
 
 
+class StaticCredentialProviders(object):
+  """Manages a list of credential providers."""
+
+  def __init__(self):
+    self._providers = []
+
+  def AddProvider(self, provider):
+    self._providers.append(provider)
+
+  def RemoveProvider(self, provider):
+    self._providers.remove(provider)
+
+  def GetCredentials(self, account):
+    for provider in self._providers:
+      cred = provider.GetCredentials(account)
+      if cred is not None:
+        return cred
+    return None
+
+  def GetAccounts(self):
+    accounts = set()
+    for provider in self._providers:
+      accounts |= provider.GetAccounts()
+    return accounts
+
+
+STATIC_CREDENTIAL_PROVIDERS = StaticCredentialProviders()
+
+
+class DevShellCredentialProvider(object):
+  """Provides account, project and credential data for devshell env."""
+
+  def GetCredentials(self, account):
+    devshell_creds = c_devshell.LoadDevshellCredentials()
+    if devshell_creds and (devshell_creds.devshell_response.user_email ==
+                           account):
+      return devshell_creds
+    return None
+
+  def GetAccount(self):
+    return c_devshell.DefaultAccount()
+
+  def GetAccounts(self):
+    devshell_creds = c_devshell.LoadDevshellCredentials()
+    if devshell_creds:
+      return set([devshell_creds.devshell_response.user_email])
+    return set()
+
+  def GetProject(self):
+    return c_devshell.Project()
+
+  def Register(self):
+    properties.VALUES.core.account.AddCallback(self.GetAccount)
+    properties.VALUES.core.project.AddCallback(self.GetProject)
+    STATIC_CREDENTIAL_PROVIDERS.AddProvider(self)
+
+  def UnRegister(self):
+    properties.VALUES.core.account.RemoveCallback(self.GetAccount)
+    properties.VALUES.core.project.RemoveCallback(self.GetProject)
+    STATIC_CREDENTIAL_PROVIDERS.RemoveProvider(self)
+
+
+class GceCredentialProvider(object):
+  """Provides account, project and credential data for gce vm env."""
+
+  def GetCredentials(self, account):
+    if account in c_gce.Metadata().Accounts():
+      return AcquireFromGCE(account)
+    return None
+
+  def GetAccount(self):
+    if properties.VALUES.core.check_gce_metadata.GetBool():
+      return c_gce.Metadata().DefaultAccount()
+    return None
+
+  def GetAccounts(self):
+    return set(c_gce.Metadata().Accounts())
+
+  def GetProject(self):
+    if properties.VALUES.core.check_gce_metadata.GetBool():
+      return c_gce.Metadata().Project()
+    return None
+
+  def Register(self):
+    properties.VALUES.core.account.AddCallback(self.GetAccount)
+    properties.VALUES.core.project.AddCallback(self.GetProject)
+    STATIC_CREDENTIAL_PROVIDERS.AddProvider(self)
+
+  def UnRegister(self):
+    properties.VALUES.core.account.RemoveCallback(self.GetAccount)
+    properties.VALUES.core.project.RemoveCallback(self.GetProject)
+    STATIC_CREDENTIAL_PROVIDERS.RemoveProvider(self)
+
+
 def AvailableAccounts():
   """Get all accounts that have credentials stored for the CloudSDK.
 
@@ -150,11 +244,7 @@ def AvailableAccounts():
 
   """
   store = creds.GetCredentialStore()
-  accounts = store.GetAccounts() | set(c_gce.Metadata().Accounts())
-
-  devshell_creds = c_devshell.LoadDevshellCredentials()
-  if devshell_creds:
-    accounts.add(devshell_creds.devshell_response.user_email)
+  accounts = store.GetAccounts() | STATIC_CREDENTIAL_PROVIDERS.GetAccounts()
 
   return sorted(accounts)
 
@@ -247,13 +337,9 @@ def Load(account=None, scopes=None, prevent_refresh=False):
   if not account:
     raise NoActiveAccountException()
 
-  devshell_creds = c_devshell.LoadDevshellCredentials()
-  if devshell_creds and (
-      devshell_creds.devshell_response.user_email == account):
-    return devshell_creds
-
-  if account in c_gce.Metadata().Accounts():
-    return AcquireFromGCE(account)
+  cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
+  if cred is not None:
+    return cred
 
   store = creds.GetCredentialStore()
   cred = store.Load(account)

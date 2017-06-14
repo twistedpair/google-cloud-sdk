@@ -166,7 +166,7 @@ BUILTIN_NAME_PREFIX = 'ah-builtin'
 RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
 
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
-ENV_RE_STRING = r'[\w.]{1,32}'
+ENV_RE_STRING = r'(1|2|standard|flex|flexible)'
 
 SOURCE_LANGUAGE_RE_STRING = r'[\w.\-]{1,32}'
 
@@ -270,6 +270,7 @@ DATASTORE_AUTO_ID_POLICY = 'auto_id_policy'
 API_CONFIG = 'api_config'
 CODE_LOCK = 'code_lock'
 ENV_VARIABLES = 'env_variables'
+STANDARD_WEBSOCKET = 'standard_websocket'
 
 SOURCE_REPO_RE_STRING = r'^[a-z][a-z0-9\-\+\.]*:[^#]*$'
 SOURCE_REVISION_RE_STRING = r'^[0-9a-fA-F]+$'
@@ -343,6 +344,7 @@ OFF_ALIASES = ['no', 'n', 'False', 'f', '0', 'false']
 ENABLE_HEALTH_CHECK = 'enable_health_check'
 CHECK_INTERVAL_SEC = 'check_interval_sec'
 TIMEOUT_SEC = 'timeout_sec'
+APP_START_TIMEOUT_SEC = 'app_start_timeout_sec'
 UNHEALTHY_THRESHOLD = 'unhealthy_threshold'
 HEALTHY_THRESHOLD = 'healthy_threshold'
 FAILURE_THRESHOLD = 'failure_threshold'
@@ -368,6 +370,7 @@ FORWARDED_PORTS = 'forwarded_ports'
 INSTANCE_TAG = 'instance_tag'
 NETWORK_NAME = 'name'
 SUBNETWORK_NAME = 'subnetwork_name'
+SESSION_AFFINITY = 'session_affinity'
 
 
 class _VersionedLibrary(object):
@@ -381,7 +384,8 @@ class _VersionedLibrary(object):
                latest_version,
                default_version=None,
                deprecated_versions=None,
-               experimental_versions=None):
+               experimental_versions=None,
+               hidden_versions=None):
     """Initializer for `_VersionedLibrary`.
 
     Args:
@@ -401,9 +405,14 @@ class _VersionedLibrary(object):
           in the Python 2.7 runtime, or `None` if the library is not available
           by default; for example, `v1`.
       deprecated_versions: A list of the versions of the library that have been
-          deprecated; for example, `["v1", "v2"]`.
+          deprecated; for example, `["v1", "v2"]`. Order by release version.
       experimental_versions: A list of the versions of the library that are
-          currently experimental; for example, `["v1"]`.
+          currently experimental; for example, `["v1"]`. Order by release
+          version.
+      hidden_versions: A list of versions that will not show up in public
+          documentation for release purposes.  If, as a result, the library
+          has no publicly documented versions, the entire library won't show
+          up in the docs. Order by release version.
     """
     self.name = name
     self.url = url
@@ -413,6 +422,16 @@ class _VersionedLibrary(object):
     self.default_version = default_version
     self.deprecated_versions = deprecated_versions or []
     self.experimental_versions = experimental_versions or []
+    self.hidden_versions = hidden_versions or []
+
+  @property
+  def hidden(self):
+    """Determines if the entire library should be hidden from public docs.
+
+    Returns:
+      True if there is every supported version is hidden.
+    """
+    return sorted(self.supported_versions) == sorted(self.hidden_versions)
 
   @property
   def non_deprecated_versions(self):
@@ -432,6 +451,15 @@ _SUPPORTED_LIBRARIES = [
         'A fast, powerful, and language-neutral HTML template system.',
         ['0.10.5'],
         latest_version='0.10.5',
+        hidden_versions=['0.10.5'],
+        ),
+    _VersionedLibrary(
+        'click',
+        'http://click.pocoo.org/',
+        'A command line library for Python.',
+        ['6.6'],
+        latest_version='6.6',
+        hidden_versions=['6.6'],
         ),
     _VersionedLibrary(
         'django',
@@ -449,10 +477,19 @@ _SUPPORTED_LIBRARIES = [
         ),
     _VersionedLibrary(
         'endpoints',
-        'https://developers.google.com/appengine/docs/python/endpoints/',
+        'https://cloud.google.com/appengine/docs/standard/python/endpoints/',
         'Libraries for building APIs in an App Engine application.',
         ['1.0'],
         latest_version='1.0',
+        ),
+    _VersionedLibrary(
+        'flask',
+        'http://flask.pocoo.org/',
+        'Flask is a microframework for Python based on Werkzeug, Jinja 2 '
+        'and good intentions.',
+        ['0.12'],
+        latest_version='0.12',
+        hidden_versions=['0.12'],
         ),
     _VersionedLibrary(
         'grpcio',
@@ -461,6 +498,15 @@ _SUPPORTED_LIBRARIES = [
         ['1.0.0'],
         latest_version='1.0.0',
         default_version='1.0.0',
+        hidden_versions=['1.0.0'],
+        ),
+    _VersionedLibrary(
+        'itsdangerous',
+        'http://pythonhosted.org/itsdangerous/',
+        'HMAC and SHA1 signing for Python.',
+        ['0.24'],
+        latest_version='0.24',
+        hidden_versions=['0.24'],
         ),
     _VersionedLibrary(
         'jinja2',
@@ -473,9 +519,10 @@ _SUPPORTED_LIBRARIES = [
         'lxml',
         'http://lxml.de/',
         'A Pythonic binding for the C libraries libxml2 and libxslt.',
-        ['2.3', '2.3.5'],
+        ['2.3', '2.3.5', '3.7.3'],
         latest_version='2.3',
         experimental_versions=['2.3.5'],
+        hidden_versions=['3.7.3'],
         ),
     _VersionedLibrary(
         'markupsafe',
@@ -574,6 +621,14 @@ _SUPPORTED_LIBRARIES = [
         latest_version='2.7',
         ),
     _VersionedLibrary(
+        'ujson',
+        'https://pypi.python.org/pypi/ujson',
+        'UltraJSON is an ultra fast JSON encoder and decoder written in pure C',
+        ['1.35'],
+        latest_version='1.35',
+        hidden_versions=['1.35'],
+        ),
+    _VersionedLibrary(
         'webapp2',
         'http://webapp-improved.appspot.com/',
         'A lightweight Python web framework.',
@@ -614,6 +669,8 @@ _NAME_TO_SUPPORTED_LIBRARY = dict((library.name, library)
 # A mapping from third-party name/version to a list of that library's
 # dependencies.
 REQUIRED_LIBRARIES = {
+    ('flask', '0.12'): [('click', '6.6'), ('itsdangerous', '0.24'),
+                        ('jinja2', '2.6'), ('werkzeug', '0.11.10')],
     ('jinja2', '2.6'): [('markupsafe', '0.15'), ('setuptools', '0.6c11')],
     ('jinja2', 'latest'): [('markupsafe', 'latest'), ('setuptools', 'latest')],
     ('matplotlib', '1.2.0'): [('numpy', '1.6.1')],
@@ -850,7 +907,7 @@ class HttpHeadersDict(validation.ValidatedDict):
       # HTTP does not allow unclosed double quote marks in header values, per
       # RFC 2616 section 4.2.
       printable = set(string.printable[:-5])
-      if not all(char in printable for char in value):
+      if not all(char in printable for char in str(value)):
         raise appinfo_errors.InvalidHttpHeaderValue(
             'HTTP header field values must consist of printable characters.')
 
@@ -1715,8 +1772,6 @@ class LivenessCheck(validation.Validated):
   ATTRIBUTES = {
       CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
       TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       INITIAL_DELAY_SEC: validation.Optional(validation.Range(0, sys.maxint)),
@@ -1729,8 +1784,8 @@ class ReadinessCheck(validation.Validated):
   ATTRIBUTES = {
       CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
       TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      APP_START_TIMEOUT_SEC: validation.Optional(
+          validation.Range(0, sys.maxint)),
       FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
       PATH: validation.Optional(validation.TYPE_STR),
@@ -1784,6 +1839,9 @@ class Network(validation.Validated):
 
       SUBNETWORK_NAME: validation.Optional(validation.Regex(
           GCE_RESOURCE_NAME_REGEX)),
+
+      SESSION_AFFINITY:
+          validation.Optional(bool)
   }
 
 
@@ -2081,6 +2139,7 @@ class AppInfoExternal(validation.Validated):
       API_CONFIG: validation.Optional(ApiConfigHandler),
       CODE_LOCK: validation.Optional(bool),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
+      STANDARD_WEBSOCKET: validation.Optional(bool),
   }
 
   def CheckInitialized(self):

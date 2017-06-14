@@ -19,6 +19,16 @@ import os
 import pkgutil
 import sys
 
+from googlecloudsdk.core import exceptions
+
+
+class Error(exceptions.Error):
+  """Exceptions for this module."""
+
+
+class ImportModuleError(Error):
+  """ImportModule failed."""
+
 
 def _GetPackageName(module_name):
   """Returns package name for given module name."""
@@ -315,3 +325,30 @@ def GetData(path):
     return importer.get_data(path)
 
   raise IOError('File not found {0}'.format(path))
+
+
+def ImportModule(module_path):
+  """Imports the Cloud SDK module named by module_path and returns it.
+
+  Args:
+    module_path: The googlecloudsdk relative module path to import.
+
+  Raises:
+    ImportModuleError: Any failure to import.
+
+  Returns:
+    The Cloud SDK module named by module_path.
+  """
+  module_parts = module_path.split('.')
+  module_name = module_parts.pop()
+  module_parts.insert(0, 'googlecloudsdk')
+  try:
+    module_package = __import__('.'.join(module_parts), fromlist=[module_name])
+  except ImportError:
+    raise ImportModuleError('Package [{}] not found.'.format(
+        '.'.join(module_parts)))
+  try:
+    return getattr(module_package, module_name)
+  except AttributeError:
+    raise ImportModuleError('Module [{}] not found in package [{}].'.format(
+        module_name, '.'.join(module_parts)))

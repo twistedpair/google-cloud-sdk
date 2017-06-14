@@ -27,7 +27,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
-
+from googlecloudsdk.core.util import text
 
 ZONE_PROPERTY_EXPLANATION = """\
 If not specified, you may be prompted to select a zone.
@@ -97,7 +97,7 @@ class BadArgumentException(ValueError):
 
 def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                 explanation=ZONE_PROPERTY_EXPLANATION,
-                hidden=False):
+                hidden=False, plural=False, custom_plural=None):
   """Adds a --zone flag to the given parser.
 
   Args:
@@ -109,9 +109,14 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
     flag_prefix: str, flag will be named --{flag_prefix}-zone.
     explanation: str, detailed explanation of the flag.
     hidden: bool, If True, --zone argument help will be hidden.
+    plural: bool, resource_type will be pluralized or not depending on value.
+    custom_plural: str, If plural is True then this string will be used as
+                        resource types, otherwise resource_types will be
+                        pluralized by appending 's'.
   """
   short_help = 'The zone of the {0} to {1}.'.format(
-      resource_type, operation_type)
+      text.Pluralize(
+          int(plural) + 1, resource_type or '', custom_plural), operation_type)
   flag_name = 'zone'
   if flag_prefix is not None:
     flag_name = flag_prefix + '-' + flag_name
@@ -126,7 +131,7 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
 def AddRegionFlag(parser, resource_type, operation_type,
                   flag_prefix=None,
                   explanation=REGION_PROPERTY_EXPLANATION,
-                  hidden=False):
+                  hidden=False, plural=False, custom_plural=None):
   """Adds a --region flag to the given parser.
 
   Args:
@@ -138,9 +143,14 @@ def AddRegionFlag(parser, resource_type, operation_type,
     flag_prefix: str, flag will be named --{flag_prefix}-region.
     explanation: str, detailed explanation of the flag.
     hidden: bool, If True, --region argument help will be hidden.
+    plural: bool, resource_type will be pluralized or not depending on value.
+    custom_plural: str, If plural is True then this string will be used as
+                        resource types, otherwise resource_types will be
+                        pluralized by appending 's'.
   """
   short_help = 'The region of the {0} to {1}.'.format(
-      resource_type, operation_type)
+      text.Pluralize(
+          int(plural) + 1, resource_type or '', custom_plural), operation_type)
   flag_name = 'region'
   if flag_prefix is not None:
     flag_name = flag_prefix + '-' + flag_name
@@ -490,7 +500,9 @@ class ResourceArgument(object):
                plural=False, required=True, zonal_collection=None,
                regional_collection=None, global_collection=None,
                region_explanation=None, zone_explanation=None,
-               short_help=None, detailed_help=None):
+               short_help=None, detailed_help=None,
+               custom_plural=None,
+               list_command_path=None):
 
     """Constructor.
 
@@ -517,6 +529,9 @@ class ResourceArgument(object):
                        will be 'The name[s] of the ${resource_name}[s].'.
       detailed_help: str, detailed help for the flag being added, if not
                           provided there will be no detailed help for the flag.
+      custom_plural: str, If plural is True then this string will be used as
+                          plural resource name.
+      list_command_path: the list_command_path for the main argument
     Raises:
       exceptions.Error: if there some inconsistency in arguments.
     """
@@ -535,6 +550,7 @@ class ResourceArgument(object):
     self.resource_name = resource_name
     self.completion_resource_id = completion_resource_id
     self.plural = plural
+    self.custom_plural = custom_plural
     self.required = required
     if not (zonal_collection or regional_collection or global_collection):
       raise exceptions.Error('Must specify at least one resource type zonal, '
@@ -551,6 +567,7 @@ class ResourceArgument(object):
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
     self._resource_resolver = ResourceResolver(self.scopes, resource_name)
+    self._list_command_path = list_command_path
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
@@ -572,8 +589,11 @@ class ResourceArgument(object):
     elif self._short_help:
       params['help'] = self._short_help
     else:
-      params['help'] = 'The name{0} of the {1}{0}.'.format(
-          's' if self.plural else '', self.resource_name)
+      params['help'] = 'The name{} of the {}.'.format(
+          's' if self.plural else '',
+          text.Pluralize(
+              int(self.plural) + 1, self.resource_name or '',
+              self.custom_plural))
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required
@@ -585,6 +605,9 @@ class ResourceArgument(object):
           params['nargs'] = '+'
       else:
         params['nargs'] = '*' if self.plural else '?'
+
+    if self._list_command_path:
+      params['list_command_path'] = self._list_command_path
 
     (mutex_group or parser).add_argument(self.name_arg, **params)
 
@@ -600,7 +623,9 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._zone_explanation,
-          hidden=self._zone_explanation is argparse.SUPPRESS)
+          hidden=self._zone_explanation is argparse.SUPPRESS,
+          plural=self.plural,
+          custom_plural=self.custom_plural)
 
     if compute_scope.ScopeEnum.REGION in self.scopes:
       AddRegionFlag(
@@ -609,15 +634,23 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._region_explanation,
-          hidden=self._region_explanation is argparse.SUPPRESS)
+          hidden=self._region_explanation is argparse.SUPPRESS,
+          plural=self.plural,
+          custom_plural=self.custom_plural)
 
+    if not self.plural:
+      resource_mention = '{} is'.format(self.resource_name)
+    elif self.plural and not self.custom_plural:
+      resource_mention = '{}s are'.format(self.resource_name)
+    else:
+      resource_mention = '{} are'.format(self.custom_plural)
     if compute_scope.ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
       scope.add_argument(
           self.scopes[compute_scope.ScopeEnum.GLOBAL].flag,
           action='store_true',
           default=None,
-          help='If provided, it is assumed the {0} is global.'
-          .format(self.resource_name))
+          help='If provided, it is assumed the {0} global.'
+          .format(resource_mention))
 
   def ResolveAsResource(self, args,
                         api_resource_registry,

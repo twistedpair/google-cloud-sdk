@@ -688,32 +688,6 @@ class _SectionContainer(_Section):
         'complete.')
 
 
-def _GetGCEAccount():
-  if VALUES.core.check_gce_metadata.GetBool():
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core.credentials import gce as c_gce
-    return c_gce.Metadata().DefaultAccount()
-
-
-def _GetGCEProject():
-  if VALUES.core.check_gce_metadata.GetBool():
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core.credentials import gce as c_gce
-    return c_gce.Metadata().Project()
-
-
-def _GetDevshellAccount():
-  # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.core.credentials import devshell as c_devshell
-  return c_devshell.DefaultAccount()
-
-
-def _GetDevshellProject():
-  # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.core.credentials import devshell as c_devshell
-  return c_devshell.Project()
-
-
 class _SectionCore(_Section):
   """Contains the properties for the 'core' section."""
 
@@ -723,8 +697,7 @@ class _SectionCore(_Section):
         'account',
         help_text='The account gcloud should use for authentication.  You can '
         'run `gcloud auth list` to see the accounts you currently have '
-        'available.',
-        callbacks=[_GetDevshellAccount, _GetGCEAccount])
+        'available.')
     self.disable_collection_path_deprecation_warning = self._AddBool(
         'disable_collection_path_deprecation_warning',
         hidden=True,
@@ -828,6 +801,28 @@ class _SectionCore(_Section):
         help_text='If true, will prompt to enable an API if a command fails due'
         ' to the API not being enabled.')
 
+    def ShowStructuredLogsValidator(show_structured_logs):
+      if show_structured_logs is None:
+        return
+      if show_structured_logs not in ['always', 'log', 'terminal', 'never']:
+        raise InvalidValueError(('show_structured_logs must be one of: '
+                                 '[always, log, terminal, never]'))
+
+    self.show_structured_logs = self._Add(
+        'show_structured_logs',
+        choices=['always', 'log', 'terminal', 'never'],
+        default='never',
+        hidden=False,
+        validator=ShowStructuredLogsValidator,
+        help_text='Controls when JSON structured log messages for the current '
+        'verbosity and above will be written to standard error. The default is '
+        'text format when disabled. Valid values are: '
+        '`never` - Log messages as text, '
+        '`always` - Always log messages as JSON, '
+        '`log` - Only log messages as JSON if stderr is a file, '
+        '`terminal` - Only log messages as JSON if stderr is a terminal.'
+        ' If unset default is `never`.')
+
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:
         return
@@ -892,7 +887,6 @@ class _SectionCore(_Section):
         'by default.  This can be overridden by using the global `--project` '
         'flag.',
         validator=ProjectValidator,
-        callbacks=[_GetDevshellProject, _GetGCEProject],
         resource='cloudresourcemanager.projects',
         resource_command_path='beta projects list --uri')
     self.credentialed_hosted_repo_domains = self._Add(
@@ -933,7 +927,9 @@ class _SectionAuth(_Section):
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
     self.use_sqlite_store = self._AddBool(
-        'use_sqlite_store', default=False, hidden=True)
+        'use_sqlite_store', default=False, hidden=True,
+        callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel]
+    )
 
 
 class _SectionBilling(_Section):
@@ -1402,6 +1398,14 @@ class _Property(object):
     if value is not None:
       value = Stringize(value)
     encoding.SetEncodedValue(os.environ, self.EnvironmentName(), value)
+
+  def AddCallback(self, callback):
+    """Adds another callback for this property."""
+    self.__callbacks.append(callback)
+
+  def RemoveCallback(self, callback):
+    """Removess given callback for this property."""
+    self.__callbacks.remove(callback)
 
   def EnvironmentName(self):
     """Get the name of the environment variable for this property.

@@ -151,6 +151,9 @@ apis:
   container:
     v1:
       discovery_doc: container_v1.json
+      default: true
+    v1alpha1:
+      discovery_doc: container_v1alpha1.json
   containeranalysis:
     v1alpha1:
       discovery_doc: containeranalysis_v1alpha1.json
@@ -196,6 +199,10 @@ apis:
       default: true
     v1alpha2:
       discovery_doc: genomics_v1alpha2.json
+  oslogin:
+    v1alpha:
+      discovery_doc: oslogin_v1alpha.json
+      default: true
   iam:
     v1:
       discovery_doc: iam_v1.json
@@ -267,6 +274,13 @@ apis:
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
+  videointelligence:
+    v1beta1:
+      discovery_doc: videointelligence_v1beta1.json
+    v1:
+      discovery_doc: videointelligence_v1.json
+      default: true
   vision:
     v1:
       discovery_doc: vision_v1.json
+

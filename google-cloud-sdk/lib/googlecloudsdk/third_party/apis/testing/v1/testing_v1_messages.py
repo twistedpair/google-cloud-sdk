@@ -829,6 +829,8 @@ class TestMatrix(_messages.Message):
         value.
       SCENARIO_NOT_DECLARED: The request contains a scenario number that was
         not declared in the manifest.
+      DEVICE_ADMIN_RECEIVER: Device administrator applications are not
+        allowed.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -845,6 +847,7 @@ class TestMatrix(_messages.Message):
     SCENARIO_LABEL_NOT_DECLARED = 12
     SCENARIO_LABEL_MALFORMED = 13
     SCENARIO_NOT_DECLARED = 14
+    DEVICE_ADMIN_RECEIVER = 15
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -1000,14 +1003,16 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
 
   Enums:
     EnvironmentTypeValueValuesEnum: The type of environment that should be
-      listed.
+      listed. Required
 
   Fields:
-    environmentType: The type of environment that should be listed.
+    environmentType: The type of environment that should be listed. Required
+    projectId: For authorization, the cloud project requesting the
+      TestEnvironmentCatalog. Optional
   """
 
   class EnvironmentTypeValueValuesEnum(_messages.Enum):
-    """The type of environment that should be listed.
+    """The type of environment that should be listed. Required
 
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: <no description>
@@ -1019,6 +1024,7 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     NETWORK_CONFIGURATION = 2
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
+  projectId = _messages.StringField(2)
 
 
 class ToolResultsExecution(_messages.Message):

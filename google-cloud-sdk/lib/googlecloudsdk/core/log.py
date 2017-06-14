@@ -13,9 +13,10 @@
 # limitations under the License.
 
 """Module with logging related functionality for calliope."""
-
+from collections import OrderedDict
 import datetime
 import errno
+import json
 import logging
 import os
 import sys
@@ -24,7 +25,7 @@ import time
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-
+from googlecloudsdk.core.util import times
 
 DEFAULT_VERBOSITY = logging.WARNING
 DEFAULT_VERBOSITY_STRING = 'warning'
@@ -52,6 +53,26 @@ LOG_PREFIX_PATTERN = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}'
 # For example, `logs/1970.01.01/12.00.00.000000.log`.
 DAY_DIR_FORMAT = '%Y.%m.%d'
 FILENAME_FORMAT = '%H.%M.%S.%f'
+
+# These are for Structured (JSON) Log Records
+STRUCTURED_RECORD_VERSION = '0.0.1'
+STRUCTURED_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%3f%Ez'
+
+# These fields are ordered by how they will appear in the log file
+# for consistency. All values are strings.
+# (Output Field, LogRecord Field, Description)
+STRUCTURED_RECORD_FIELDS = [
+    ('version', 'version',
+     'Semantic version of the message format. E.g. v0.0.1'),
+    ('verbosity', 'levelname',
+     'Logging Level: e.g. debug, info, warn, error, critical, exception.'),
+    ('timestamp', 'asctime', 'UTC time event logged'),
+    ('message', 'message', 'Log/Error message.'),
+    ('error', 'error',
+     'Actual exception or error raised, if message contains exception data.'),
+]
+REQUIRED_STRUCTURED_RECORD_FIELDS = OrderedDict((x[:2] for x in
+                                                 STRUCTURED_RECORD_FIELDS))
 
 
 class _NullHandler(logging.Handler, object):
@@ -191,7 +212,7 @@ class _ConsoleFormatter(logging.Formatter):
   }
 
   def __init__(self, out_stream):
-    logging.Formatter.__init__(self)
+    super(_ConsoleFormatter, self).__init__()
     use_color = not properties.VALUES.core.disable_color.GetBool()
     use_color &= out_stream.isatty()
     use_color &= (platforms.OperatingSystem.Current() !=
@@ -203,6 +224,114 @@ class _ConsoleFormatter(logging.Formatter):
     self._fmt = self._formats.get(record.levelno,
                                   _ConsoleFormatter.DEFAULT_FORMAT)
     return logging.Formatter.format(self, record)
+
+
+class _JsonFormatter(logging.Formatter):
+  """A formatter that handles formatting log messages as JSON."""
+
+  def __init__(self,
+               required_fields,
+               json_serializer=None,
+               json_encoder=None):
+
+    super(_JsonFormatter, self).__init__()
+    self.required_fields = required_fields
+    self.json_encoder = json_encoder
+    self.json_serializer = json_serializer or json.dumps
+    self.default_time_format = STRUCTURED_TIME_FORMAT
+
+  def GetErrorDict(self, log_record):
+    """Extract exception info from a logging.LogRecord as an OrderedDict."""
+    error_dict = OrderedDict()
+    if log_record.exc_info:
+      if not log_record.exc_text:
+        log_record.exc_text = self.formatException(log_record.exc_info)
+
+      if issubclass(type(log_record.msg), BaseException):
+        error_dict['type'] = type(log_record.msg).__name__
+        error_dict['details'] = log_record.msg.message
+        error_dict['stacktrace'] = getattr(log_record.msg,
+                                           '__traceback__', None)
+      elif issubclass(type(log_record.exc_info[0]), BaseException):
+        error_dict['type'] = log_record.exc_info[0]
+        error_dict['details'] = log_record.exc_text
+        error_dict['stacktrace'] = log_record.exc_info[2]
+      else:
+        error_dict['type'] = log_record.exc_text
+        error_dict['details'] = log_record.exc_text
+        error_dict['stacktrace'] = log_record.exc_text
+      return error_dict
+    return None
+
+  def BuildLogMsg(self, log_record):
+    """Converts a logging.LogRecord object to a JSON serializable OrderedDict.
+
+    Utilizes supplied set of required_fields to determine output fields.
+
+    Args:
+      log_record: logging.LogRecord, log record to be converted
+
+    Returns:
+      OrderedDict of required_field values.
+    """
+    message_dict = OrderedDict()
+    # This perserves the order in the output for each JSON message
+    for outfield, logfield in self.required_fields.iteritems():
+      if outfield == 'version':
+        message_dict[outfield] = STRUCTURED_RECORD_VERSION
+      else:
+        message_dict[outfield] = log_record.__dict__.get(logfield)
+    return message_dict
+
+  def LogRecordToJson(self, log_record):
+    """Returns a json string of the log message."""
+    log_message = self.BuildLogMsg(log_record)
+    if not log_message.get('error'):
+      log_message.pop('error')
+
+    return self.json_serializer(log_message,
+                                cls=self.json_encoder)
+
+  def formatTime(self, record, datefmt=None):
+    return times.FormatDateTime(
+        times.GetDateTimeFromTimeStamp(record.created),
+        fmt=datefmt,
+        tzinfo=times.UTC)
+
+  def format(self, record):
+    """Formats a log record and serializes to json."""
+    record.__dict__['error'] = self.GetErrorDict(record)
+    record.message = record.getMessage()
+    record.asctime = self.formatTime(record, self.default_time_format)
+    return self.LogRecordToJson(record)
+
+
+class _StructuredFormatWrapper(logging.Formatter):
+  """Logging Formatter Composed of other formatters."""
+
+  def __init__(self,
+               structured_formatter,
+               stream_writter,
+               default_formatter=None):
+    logging.Formatter.__init__(self)
+    self.default_formatter = default_formatter or logging.Formatter
+    self.structured_formatter = structured_formatter
+    self.terminal = stream_writter.isatty()
+
+  def ShowStructuredOutput(self):
+    """Returns True if output should be Structured, False otherwise."""
+    show_messages = properties.VALUES.core.show_structured_logs.Get()
+    if any([show_messages == 'terminal' and self.terminal,
+            show_messages == 'log' and not self.terminal,
+            show_messages == 'always']):
+      return True
+
+    return False
+
+  def format(self, record):
+    if self.ShowStructuredOutput():
+      return self.structured_formatter.format(record)
+    return self.default_formatter.format(record)
 
 
 class _LogManager(object):
@@ -258,9 +387,14 @@ class _LogManager(object):
     self.stdout_stream_wrapper.stream = stdout
     self.stderr_stream_wrapper.stream = stderr
 
-    # Reset the color handling.
-    self.console_formatter = _ConsoleFormatter(stderr)
-
+    # Configure Formatters
+    json_formatter = _JsonFormatter(REQUIRED_STRUCTURED_RECORD_FIELDS)
+    std_console_formatter = _ConsoleFormatter(stderr)
+    wrapped_console_formatter = _StructuredFormatWrapper(json_formatter,
+                                                         self.stderr_writer,
+                                                         std_console_formatter)
+    # Reset the color and structured output handling.
+    self.console_formatter = wrapped_console_formatter
     # A handler to redirect logs to stderr, this one is standard.
     self.stderr_handler = logging.StreamHandler(stderr)
     self.stderr_handler.setFormatter(self.console_formatter)

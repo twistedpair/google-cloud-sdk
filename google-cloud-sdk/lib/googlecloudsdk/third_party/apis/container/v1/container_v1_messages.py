@@ -263,6 +263,16 @@ class CertificateSigningRequestStatus(_messages.Message):
   conditions = _messages.MessageField('CertificateSigningRequestCondition', 2, repeated=True)
 
 
+class ClientCertificateConfig(_messages.Message):
+  """Configuration for client certificates on the cluster.
+
+  Fields:
+    issueClientCertificate: Issue a client certificate.
+  """
+
+  issueClientCertificate = _messages.BooleanField(1)
+
+
 class Cluster(_messages.Message):
   """A Google Container Engine cluster.
 
@@ -834,6 +844,27 @@ class ContainerProjectsZonesClustersNodePoolsSetManagementRequest(_messages.Mess
   zone = _messages.StringField(5, required=True)
 
 
+class ContainerProjectsZonesClustersNodePoolsSetSizeRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsSetSizeRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to update.
+    nodePoolId: The name of the node pool to update.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setNodePoolSizeRequest: A SetNodePoolSizeRequest resource to be passed as
+      the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  nodePoolId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  setNodePoolSizeRequest = _messages.MessageField('SetNodePoolSizeRequest', 4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ContainerProjectsZonesClustersResourceLabelsRequest(_messages.Message):
   """A ContainerProjectsZonesClustersResourceLabelsRequest object.
 
@@ -1261,6 +1292,9 @@ class MasterAuth(_messages.Message):
   Fields:
     clientCertificate: [Output only] Base64-encoded public certificate used by
       clients to authenticate to the cluster endpoint.
+    clientCertificateConfig: Configuration for client certificate
+      authentication on the cluster.  If no configuration is specified, a
+      client certificate is issued.
     clientKey: [Output only] Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
     clusterCaCertificate: [Output only] Base64-encoded public certificate that
@@ -1275,10 +1309,11 @@ class MasterAuth(_messages.Message):
   """
 
   clientCertificate = _messages.StringField(1)
-  clientKey = _messages.StringField(2)
-  clusterCaCertificate = _messages.StringField(3)
-  password = _messages.StringField(4)
-  username = _messages.StringField(5)
+  clientCertificateConfig = _messages.MessageField('ClientCertificateConfig', 2)
+  clientKey = _messages.StringField(3)
+  clusterCaCertificate = _messages.StringField(4)
+  password = _messages.StringField(5)
+  username = _messages.StringField(6)
 
 
 class MasterAuthorizedNetworks(_messages.Message):
@@ -1708,6 +1743,7 @@ class Operation(_messages.Message):
       AUTO_UPGRADE_NODES: Automatic node upgrade.
       SET_LABELS: Set labels.
       SET_MASTER_AUTH: Set/generate master auth materials
+      SET_NODE_POOL_SIZE: Set node pool size.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -1723,6 +1759,7 @@ class Operation(_messages.Message):
     AUTO_UPGRADE_NODES = 11
     SET_LABELS = 12
     SET_MASTER_AUTH = 13
+    SET_NODE_POOL_SIZE = 14
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.
@@ -1897,6 +1934,16 @@ class SetNodePoolManagementRequest(_messages.Message):
   """
 
   management = _messages.MessageField('NodeManagement', 1)
+
+
+class SetNodePoolSizeRequest(_messages.Message):
+  """SetNodePoolSizeRequest sets the size a node pool.
+
+  Fields:
+    nodeCount: The desired node count for the pool.
+  """
+
+  nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class SignedUrls(_messages.Message):

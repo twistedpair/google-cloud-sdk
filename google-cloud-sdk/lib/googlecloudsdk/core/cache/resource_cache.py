@@ -79,25 +79,67 @@ from googlecloudsdk.core.util import files
 PERSISTENT_CACHE_IMPLEMENTATION = file_cache
 
 
-class ProgramState(object):
+def DeleteDeprecatedCache():
+  """Silently deletes the deprecated resource completion cache if it exists."""
+  cache_dir = config.Paths().completion_cache_dir
+  if os.path.isdir(cache_dir):
+    files.RmTree(cache_dir)
+
+
+class ParameterInfo(object):
   """An object for accessing parameter values in the program state.
 
   "program state" is defined by this class.  It could include parsed command
   line arguments and properties.  The class also can also map between resource
   and program parameter names.
+
+  Attributes:
+    _additional_params: The list of parameter names not in the parsed resource.
+    _updaters: A parameter_name => (Updater, aggregator) dict.
   """
 
-  def GetParameterValue(self, parameter):
-    """Returns the program state string value for parameter.
+  def __init__(self, additional_params=None, updaters=None):
+    self._additional_params = additional_params or []
+    self._updaters = updaters or {}
+
+  def GetValue(self, parameter_name, check_properties=True):
+    """Returns the program state string value for parameter_name.
 
     Args:
-      parameter: The Parameter object.
+      parameter_name: The Parameter name.
+      check_properties: Check the property value if True.
 
     Returns:
       The parameter value from the program state.
     """
-    del parameter
+    del parameter_name, check_properties
     return None
+
+  def GetAdditionalParams(self):
+    """Return the list of parameter names not in the parsed resource.
+
+    These names are associated with the resource but not a specific parameter
+    in the resource.  For example a global resource might not have a global
+    Boolean parameter in the parsed resource, but its command line specification
+    might require a --global flag to completly qualify the resource.
+
+    Returns:
+      The list of parameter names not in the parsed resource.
+    """
+    return self._additional_params
+
+  def GetUpdater(self, parameter_name):
+    """Returns the updater and aggregator property for parameter_name.
+
+    Args:
+      parameter_name: The Parameter name.
+
+    Returns:
+      An (updater, aggregator) tuple where updater is the Updater class and
+      aggregator is True if this updater must be used to aggregate all resource
+      values.
+    """
+    return self._updaters.get(parameter_name, (None, None))
 
 
 class Parameter(object):
@@ -107,45 +149,40 @@ class Parameter(object):
 
   Attributes:
     column: The parameter tuple column index.
-    flag_names: The command line flag dest names for GetValue().
     name: The parameter name.
-    property_names: The property names for GetValue().
-    updater_class: The parameter Updater class.
   """
 
-  def __init__(self, column=0, flag_names=None, name=None,
-               property_names=None, updater_class=None):
+  def __init__(self, column=0, name=None):
     self.column = column
-    self.flag_names = flag_names or []
     self.name = name
-    self.property_names = property_names or []
-    self.updater_class = updater_class
 
 
 class _RuntimeParameter(Parameter):
   """A runtime Parameter.
 
   Attributes:
+    aggregator: True if parameter is an aggregator (not aggregated by updater).
     generate: True if values must be generated for this parameter.
     table: The cache table for all possible values of the parameter.
     updater: The updater object.
     value: A default value from the program state.
   """
 
-  def __init__(self, parameter, table, updater, value):
+  def __init__(self, parameter, table, updater, value, aggregator):
     super(_RuntimeParameter, self).__init__(
-        parameter.column,
-        flag_names=parameter.flag_names,
-        name=parameter.name,
-        property_names=parameter.property_names,
-        updater_class=parameter.updater_class)
+        parameter.column, name=parameter.name)
     self.generate = False
     self.table = table
     self.updater = updater
     self.value = value
+    self.aggregator = aggregator
 
 
-class Updater(object):
+class BaseUpdater(object):
+  """A base object for thin updater wrappers."""
+
+
+class Updater(BaseUpdater):
   """A resource cache table updater.
 
   An updater returns a list of parsed parameter tuples that replaces the rows in
@@ -186,6 +223,7 @@ class Updater(object):
       parameters: A list of Parameter objects.
       timeout: The resource table timeout in seconds, 0 for no timeout.
     """
+    super(Updater, self).__init__()
     self.cache = cache
     self.collection = collection
     self.columns = columns
@@ -193,13 +231,13 @@ class Updater(object):
     self.parameters = parameters or []
     self.timeout = timeout or 0
 
-  def _GetRuntimeParameters(self, program_state):
+  def _GetRuntimeParameters(self, parameter_info):
     """Constructs and returns the _RuntimeParameter list.
 
     This method constructs a muable shadow of self.parameters with updater_class
     and table instantiations. Each runtime parameter can be:
 
-    (1) A static value derived from program_state.
+    (1) A static value derived from parameter_info.
     (2) A parameter with it's own updater_class.  The updater is used to list
         all of the possible values for the parameter.
     (3) An unknown value (None).  The possible values are contained in the
@@ -209,18 +247,20 @@ class Updater(object):
     parameters to filter the list of parsed resources in the resource cache.
 
     Args:
-      program_state: Program state object for accesing parameter values.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
 
     Returns:
       The runtime parameters shadow of the immutable self.parameters.
     """
     runtime_parameters = []
     for parameter in self.parameters:
-      if parameter.updater_class:
+      updater_class, aggregator = parameter_info.GetUpdater(parameter.name)
+      if updater_class:
         # Updater object instantiation is on demand so they don't have to be
         # instantiated at import time in the static CLI tree. It also makes it
         # easier to serialize in the static CLI tree JSON object.
-        updater = parameter.updater_class(cache=self.cache)
+        updater = updater_class(cache=self.cache)
         # Instantiate the table to hold all possible values for this parameter.
         # This table is a child of the collection table. It may itself be a
         # resource object.
@@ -232,15 +272,18 @@ class Updater(object):
       else:
         updater = None
         table = None
-      if program_state:
-        value = program_state.GetParameterValue(parameter)
-      else:
-        value = None
-      runtime_parameter = _RuntimeParameter(parameter, table, updater, value)
+      value = parameter_info.GetValue(
+          parameter.name, check_properties=aggregator)
+      runtime_parameter = _RuntimeParameter(
+          parameter, table, updater, value, aggregator)
       runtime_parameters.append(runtime_parameter)
     return runtime_parameters
 
-  def SelectTable(self, table, row_template, program_state, aggregations=None):
+  def ParameterInfo(self):
+    """Returns the parameter info object."""
+    return ParameterInfo()
+
+  def SelectTable(self, table, row_template, parameter_info, aggregations=None):
     """Returns the list of rows matching row_template in table.
 
     Refreshes expired tables by calling the updater.
@@ -248,7 +291,8 @@ class Updater(object):
     Args:
       table: The persistent table object.
       row_template: A row template to match in Select().
-      program_state: Program state object for accesing parameter values.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
       aggregations: A list of aggregation Parameter objects.
 
     Returns:
@@ -256,19 +300,19 @@ class Updater(object):
     """
     if not aggregations:
       aggregations = []
-    log.info('cache table=%s %s',
+    log.info('cache table=%s aggregations=[%s]',
              table.name,
              ' '.join(['{}={}'.format(x.name, x.value) for x in aggregations]))
     try:
       return table.Select(row_template)
     except exceptions.CacheTableExpired:
-      rows = self.Update(program_state, aggregations)
+      rows = self.Update(parameter_info, aggregations)
       table.DeleteRows()
       table.AddRows(rows)
       table.Validate()
       return table.Select(row_template, ignore_expiration=True)
 
-  def Select(self, row_template, program_state=None):
+  def Select(self, row_template, parameter_info=None):
     """Returns the list of rows matching row_template in the collection.
 
     All tables in the collection are in play. The row matching done by the
@@ -282,7 +326,8 @@ class Updater(object):
           * - match any string of zero or more characters
           ? - match any character
         The matching is anchored on the left.
-      program_state: Program state object for accesing parameter values.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
 
     Returns:
       The list of rows that match the template row.
@@ -293,25 +338,28 @@ class Updater(object):
     log.info('cache template=%s', template)
     values = []
     aggregations = []
-    parameters = self._GetRuntimeParameters(program_state)
+    parameters = self._GetRuntimeParameters(parameter_info)
     for parameter in parameters:
       parameter.generate = False
       if parameter.value and template[parameter.column] in (None, '*'):
         template[parameter.column] = parameter.value
-        if parameter.updater:
-          aggregations.append(parameter)
         log.info('cache parameter=%s column=%s value=%s aggregate=%s',
                  parameter.name, parameter.column, parameter.value,
-                 bool(parameter.updater))
-      elif parameter.updater:
+                 parameter.aggregator)
+        if parameter.aggregator:
+          aggregations.append(parameter)
+          parameter.generate = True
+          values.append([parameter.value])
+      elif parameter.aggregator:
+        aggregations.append(parameter)
         parameter.generate = True
         sub_template = [None] * parameter.table.columns
         sub_template[parameter.updater.column] = template[parameter.column]
         rows = parameter.updater.SelectTable(
-            parameter.table, sub_template, program_state)
+            parameter.table, sub_template, parameter_info)
         v = [row[parameter.updater.column] for row in rows]
-        log.info('cache parameter=%s column=%s values=%s',
-                 parameter.name, parameter.column, v)
+        log.info('cache parameter=%s column=%s values=%s aggregate=%s',
+                 parameter.name, parameter.column, v, parameter.aggregator)
         values.append(v)
     if not values:
       table = self.cache.Table(
@@ -319,7 +367,7 @@ class Updater(object):
           columns=self.columns,
           keys=self.columns,
           timeout=self.timeout)
-      return self.SelectTable(table, template, program_state, aggregations)
+      return self.SelectTable(table, template, parameter_info, aggregations)
     rows = []
     for perm in itertools.product(*values):
       perm = list(perm)
@@ -336,22 +384,38 @@ class Updater(object):
         if parameter.value:
           aggregations.append(parameter)
       rows.extend(self.SelectTable(
-          table, template, program_state, aggregations))
+          table, template, parameter_info, aggregations))
     return rows
 
+  def GetTableForRow(self, row, parameter_info=None, create=True):
+    """Returns the table for row.
+
+    Args:
+      row: The fully populated resource row.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
+      create: Create the table if it doesn't exist if True.
+
+    Returns:
+      The table for row.
+    """
+    parameters = self._GetRuntimeParameters(parameter_info)
+    values = [row[p.column] for p in parameters if p.aggregator]
+    return self.cache.Table(
+        '.'.join([self.collection] + values),
+        columns=self.columns,
+        keys=self.columns,
+        timeout=self.timeout,
+        create=create)
+
   @abc.abstractmethod
-  def Update(self, program_state=None, aggregations=None):
+  def Update(self, parameter_info=None, aggregations=None):
     """Returns the list of all current parsed resource parameters."""
-    del program_state
-    del aggregations
+    del parameter_info, aggregations
 
 
 class ResourceCache(PERSISTENT_CACHE_IMPLEMENTATION.Cache):
-  """A resource cache object.
-
-  Attributes:
-    cache: The persistent cache object.
-  """
+  """A resource cache object."""
 
   def __init__(self, name=None, create=True):
     """ResourceCache constructor.
@@ -363,12 +427,17 @@ class ResourceCache(PERSISTENT_CACHE_IMPLEMENTATION.Cache):
       create: Create the cache if it doesn't exist if True.
     """
     if not name:
-      path = [config.Paths().cache_dir]
-      account = properties.VALUES.core.account.Get(required=False)
-      if account:
-        path.append(account)
-      files.MakeDir(os.path.join(*path))
-      path.append('resource.cache')
-      name = os.path.join(*path)
+      name = self.GetDefaultName()
     super(ResourceCache, self).__init__(
         name=name, create=create, version='googlecloudsdk.resource-1.0')
+
+  @staticmethod
+  def GetDefaultName():
+    """Returns the default resource cache name."""
+    path = [config.Paths().cache_dir]
+    account = properties.VALUES.core.account.Get(required=False)
+    if account:
+      path.append(account)
+    files.MakeDir(os.path.join(*path))
+    path.append('resource.cache')
+    return os.path.join(*path)

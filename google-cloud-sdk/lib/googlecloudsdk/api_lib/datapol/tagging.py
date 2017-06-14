@@ -20,13 +20,13 @@ from googlecloudsdk.core import resources
 
 
 # TODO(b/36551117) Use parsed resource objects instead of resource name.
-def Apply(data, taxonomy_name, annotation_name):
+def Apply(data, taxonomy_id, annotation_id):
   """Applies an annotation to a data asset.
 
   Args:
     data: Name of the data to be annotated.
-    taxonomy_name: Name of the policy taxonomy.
-    annotation_name: Name of the annotation. This annotation must belong to
+    taxonomy_id: Id of the policy taxonomy.
+    annotation_id: Id of the annotation. This annotation must belong to
       the policy taxonomy specified in taxonomy_name.
 
   Returns:
@@ -38,24 +38,24 @@ def Apply(data, taxonomy_name, annotation_name):
       'datapol.data.taxonomy',
       data=data,
       taxonomyStoresId=utils.GetTaxonomyStoresId(),
-      dataTaxonomiesId=taxonomy_name).RelativeName()
+      dataTaxonomiesId=taxonomy_id).RelativeName()
   try:
     return client.ApplyAnnotationTag(
         messages.
         DatapolDataTaxonomyStoresDataTaxonomiesApplyAnnotationTagRequest(
             name=name,
             applyAnnotationTagRequest=messages.ApplyAnnotationTagRequest(
-                annotationName=annotation_name)))
+                annotationId=annotation_id)))
   except apitools_exceptions.HttpError as e:
     raise utils.ErrorWrapper(e, name)
 
 
-def Delete(data, taxonomy_name):
+def Delete(data, taxonomy_id):
   """Deletes an annotation on a data asset.
 
   Args:
     data: Name of the data to be annotated.
-    taxonomy_name: Name of the policy taxonomy.
+    taxonomy_id: Id of the policy taxonomy.
 
   Returns:
     An Empty message.
@@ -65,7 +65,7 @@ def Delete(data, taxonomy_name):
       'datapol.data.tag',
       data=data,
       taxonomyStoresId=utils.GetTaxonomyStoresId(),
-      dataTaxonomiesId=taxonomy_name).RelativeName()
+      dataTaxonomiesId=taxonomy_id).RelativeName()
   try:
     return client.DeleteAnnotationTag(
         utils.GetMessagesModule()

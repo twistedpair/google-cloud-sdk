@@ -46,8 +46,7 @@ def ReportMetrics(metrics_file_path):
                        proxy_info=http_proxy.GetHttpProxyInfo())
 
   for metric in metrics:
-    headers = {'user-agent': metric[3]}
-    http.request(metric[0], method=metric[1], body=metric[2], headers=headers)
+    http.request(metric[0], method=metric[1], body=metric[2], headers=metric[3])
 
 if __name__ == '__main__':
   try:

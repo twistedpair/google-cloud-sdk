@@ -1766,6 +1766,10 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
+    condition: The condition that is associated with this binding. NOTE: an
+      unsatisfied condition will not allow user access via current binding.
+      Different bindings, including their conditions, are examined
+      independently. This field is GOOGLE_INTERNAL.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -1783,8 +1787,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -4791,6 +4796,7 @@ class ComputeImagesInsertRequest(_messages.Message):
   """A ComputeImagesInsertRequest object.
 
   Fields:
+    forceCreate: Force image creation if true.
     image: A Image resource to be passed as the request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -4803,9 +4809,10 @@ class ComputeImagesInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.
   """
 
-  image = _messages.MessageField('Image', 1)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  forceCreate = _messages.BooleanField(1)
+  image = _messages.MessageField('Image', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeImagesListRequest(_messages.Message):
@@ -11764,6 +11771,30 @@ class DisksScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class Expr(_messages.Message):
+  """Represents an expression text. Example:  title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class Firewall(_messages.Message):
   """Represents a Firewall resource.
 
@@ -11829,6 +11860,18 @@ class Firewall(_messages.Message):
       that belongs to a tag listed in the sourceTags property. The connection
       does not need to match both properties for the firewall to apply. Only
       IPv4 is supported.
+    sourceServiceAccounts: If source service accounts are specified, the
+      firewall will apply only to traffic originating from an instance with a
+      service account in this list. Source service accounts cannot be used to
+      control traffic to an instance's external IP address because service
+      accounts are associated with an instance, not an IP address.
+      sourceRanges can be set at the same time as sourceServiceAccounts. If
+      both are set, the firewall will apply to traffic that has source IP
+      address within sourceRanges OR the source IP belongs to an instance with
+      service account listed in sourceServiceAccount. The connection does not
+      need to match both properties for the firewall to apply.
+      sourceServiceAccounts cannot be used at the same time as sourceTags or
+      targetTags.
     sourceTags: If source tags are specified, the firewall will apply only to
       traffic with source IP that belongs to a tag listed in source tags.
       Source tags cannot be used to control traffic to an instance's external
@@ -11838,6 +11881,12 @@ class Firewall(_messages.Message):
       IP address within sourceRanges OR the source IP that belongs to a tag
       listed in the sourceTags property. The connection does not need to match
       both properties for the firewall to apply.
+    targetServiceAccounts: A list of service accounts indicating sets of
+      instances located in the network that may make network connections as
+      specified in allowed[]. targetServiceAccounts cannot be used at the same
+      time as targetTags or sourceTags. If neither targetServiceAccounts nor
+      targetTags are specified, the firewall rule applies to all instances on
+      the specified network.
     targetTags: A list of instance tags indicating sets of instances located
       in the network that may make network connections as specified in
       allowed[]. If no targetTags are specified, the firewall rule applies to
@@ -11906,8 +11955,10 @@ class Firewall(_messages.Message):
   priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   selfLink = _messages.StringField(12)
   sourceRanges = _messages.StringField(13, repeated=True)
-  sourceTags = _messages.StringField(14, repeated=True)
-  targetTags = _messages.StringField(15, repeated=True)
+  sourceServiceAccounts = _messages.StringField(14, repeated=True)
+  sourceTags = _messages.StringField(15, repeated=True)
+  targetServiceAccounts = _messages.StringField(16, repeated=True)
+  targetTags = _messages.StringField(17, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -12401,14 +12452,14 @@ class GuestOsFeature(_messages.Message):
   """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature. Currenty only
+    TypeValueValuesEnum: The type of supported feature. Currently only
       VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
       server might also populate this property with the value WINDOWS to
       indicate that this is a Windows image. This value is purely
       informational and does not enable or disable any features.
 
   Fields:
-    type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
+    type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
       is supported. For newer Windows images, the server might also populate
       this property with the value WINDOWS to indicate that this is a Windows
       image. This value is purely informational and does not enable or disable
@@ -12416,7 +12467,7 @@ class GuestOsFeature(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
+    """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
     supported. For newer Windows images, the server might also populate this
     property with the value WINDOWS to indicate that this is a Windows image.
     This value is purely informational and does not enable or disable any
@@ -12920,6 +12971,16 @@ class Image(_messages.Message):
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
+    sourceImage: URL of the source image used to create this image. This can
+      be a full or valid partial URL. You must provide exactly one of:   -
+      this property, or   - the rawDisk.source property, or   - the sourceDisk
+      property   in order to create an image.
+    sourceImageEncryptionKey: The customer-supplied encryption key of the
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
+    sourceImageId: [Output Only] The ID value of the image used to create this
+      image. This value may be used to determine whether the image was taken
+      from the current or a previous instance of a given image name.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -13031,8 +13092,11 @@ class Image(_messages.Message):
   sourceDisk = _messages.StringField(17)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
   sourceDiskId = _messages.StringField(19)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 20, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  sourceImage = _messages.StringField(20)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceImageId = _messages.StringField(22)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 23, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
 
 
 class ImageList(_messages.Message):
@@ -15685,9 +15749,8 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
-      must not be specified for the same `role`. `bindings` with no members
-      will result in an error.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-

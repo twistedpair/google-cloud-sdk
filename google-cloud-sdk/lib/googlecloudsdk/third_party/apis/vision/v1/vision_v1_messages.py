@@ -340,11 +340,8 @@ class EntityAnnotation(_messages.Message):
   """Set of detected entity features.
 
   Fields:
-    boundingPoly: Image region to which this entity belongs. Currently not
-      produced for `LABEL_DETECTION` features. For `TEXT_DETECTION` (OCR),
-      `boundingPoly`s are produced for the entire text detected in an image
-      region, followed by `boundingPoly`s for each word within the detected
-      text.
+    boundingPoly: Image region to which this entity belongs. Not produced for
+      `LABEL_DETECTION` features.
     confidence: The accuracy of the entity detection in an image. For example,
       for an image in which the "Eiffel Tower" entity is detected, this field
       represents the confidence that there is a tower in the query image.

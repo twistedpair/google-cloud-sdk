@@ -191,6 +191,7 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
 def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   """Adds common flags for mutating forwarding rule targets."""
   del include_alpha
+  del include_beta
   target = parser.add_mutually_exclusive_group(required=True)
 
   TARGET_HTTP_PROXY_ARG.AddArgument(parser, mutex_group=target)
@@ -198,6 +199,7 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
+  TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
 
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
@@ -213,9 +215,6 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
       type=lambda x: x.upper(),
       default='EXTERNAL',
       help='This signifies what the forwarding rule will be used for.')
-
-  if include_beta:
-    TARGET_TCP_PROXY_ARG.AddArgument(parser, mutex_group=target)
 
 
 def AddIPProtocols(parser):

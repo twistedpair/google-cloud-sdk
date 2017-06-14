@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.command_lib.app import exceptions
+from googlecloudsdk.command_lib.util import check_browser
 from googlecloudsdk.core import log
 
 
@@ -35,13 +36,18 @@ def OpenURL(url):
   webbrowser.open_new_tab(url)
 
 
-def BrowseApp(project, service=None, version=None):
-  """Open the app in a browser, optionally with given service and version.
+def BrowseApp(project, service, version, launch_browser):
+  """Let you browse the given service at the given version.
 
   Args:
     project: str, project ID.
-    service: str, (optional) specific service, defaults to 'default'
-    version: str, (optional) specific version, defaults to latest
+    service: str, specific service, 'default' if None
+    version: str, specific version, latest if None
+    launch_browser: boolean, if False only print url
+
+  Returns:
+    None if the browser should open the URL
+    The relevant output as a dict for calliope format to print if not
 
   Raises:
     MissingApplicationError: If an app does not exist.
@@ -53,4 +59,12 @@ def BrowseApp(project, service=None, version=None):
   except api_lib_exceptions.NotFoundError:
     log.debug('No app found:', exc_info=True)
     raise exceptions.MissingApplicationError(project)
-  OpenURL(url)
+  if check_browser.ShouldLaunchBrowser(launch_browser):
+    OpenURL(url)
+    return None
+  else:
+    return {
+        'url': url,
+        'service': service or 'default',
+        'version': version,
+    }
