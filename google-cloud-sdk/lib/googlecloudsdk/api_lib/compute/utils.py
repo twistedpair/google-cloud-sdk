@@ -190,7 +190,7 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
     log.warn(
         'You have selected a disk size of under [%sGB]. This may result in '
         'poor I/O performance. For more information, see: '
-        'https://developers.google.com/compute/docs/disks#pdperformance.',
+        'https://developers.google.com/compute/docs/disks#performance.',
         warning_threshold_gb)
 
 

@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import pkg_resources
 
 
 def _GetDescription(arg):
@@ -51,23 +52,6 @@ def _NormalizeDescription(description):
   return description or ''
 
 
-def _GetModulePath(typ, default=''):
-  """Returns the module path name for typ if not builtin else default.
-
-  Args:
-    typ: type, The type to get the module path from.
-    default: str, The string to return if the module path is builtin or
-      not in googlecloudsdk.
-
-  Returns:
-    The module path name for typ if not builtin else default.
-  """
-  path = typ.__class__.__module__
-  if path.startswith('googlecloudsdk'):
-    return '.'.join([path.split('.', 1)[1], typ.__class__.__name__])
-  return default
-
-
 class Argument(object):
   """Positional or flag argument.
 
@@ -85,7 +69,7 @@ class Argument(object):
 
     completer = getattr(arg, 'completer', None)
     if isinstance(completer, type):
-      self.completer = _GetModulePath(completer, '')
+      self.completer = pkg_resources.GetModulePath(completer) or ''
     else:
       # Legacy completer.
       self.completer = None
@@ -166,7 +150,7 @@ class Flag(Argument):
       elif isinstance(flag.type, arg_parsers.ArgList):
         self.type = 'list'
       else:
-        self.type = _GetModulePath(flag.type, 'string')
+        self.type = pkg_resources.GetModulePath(flag.type) or 'string'
     if flag.choices:
       choices = sorted(flag.choices)
       if choices == ['false', 'true']:

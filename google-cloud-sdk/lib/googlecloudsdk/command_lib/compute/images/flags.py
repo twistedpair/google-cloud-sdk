@@ -46,6 +46,7 @@ LIST_FORMAT = """\
 def MakeDiskImageArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='disk image',
+      name='image_name',
       completion_resource_id='compute.images',
       plural=plural,
       global_collection='compute.images')

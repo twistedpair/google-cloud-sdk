@@ -16,6 +16,7 @@
 from functools import partial
 from apitools.base.py import encoding
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.util import text
 
 
 def _GetAdditionalProperty(properties, property_key, not_found_value='Unknown'):
@@ -153,6 +154,72 @@ class Node(object):
                                         self.properties.displayName)
     out.Print(kind_and_name)
 
+  def _GetNestedStatProperty(self, prop_name, nested_prop_name):
+    """Gets a nested property name on this object's executionStats.
+
+    Args:
+      prop_name: A string of the key name for the outer property on
+        executionStats.
+      nested_prop_name: A string of the key name of the nested property.
+
+    Returns:
+      The string value of the nested property, or None if the outermost
+      property or nested property don't exist.
+    """
+    prop = _GetAdditionalProperty(
+        self.properties.executionStats.additionalProperties, prop_name, '')
+    if not prop:
+      return None
+
+    nested_prop = _GetAdditionalProperty(prop.object_value.properties,
+                                         nested_prop_name, '')
+    if nested_prop:
+      return nested_prop.string_value
+
+    return None
+
+  def _DisplayExecutionStats(self, out, prepend, beneath_stub):
+    """Prints the relevant execution statistics for a node.
+
+    More specifically, print out latency information and the number of
+    executions. This information only exists when query is run in 'PROFILE'
+    mode.
+
+    Args:
+      out: Output stream to which we print.
+      prepend: String that precedes any information about this node to maintain
+        a visible hierarchy.
+      beneath_stub: String that preserves the indentation of the vertical lines.
+    """
+    if not self.properties.executionStats:
+      return None
+
+    stat_props = []
+
+    num_executions = self._GetNestedStatProperty('execution_summary',
+                                                 'num_executions')
+    if num_executions:
+      num_executions = int(num_executions)
+      executions_str = '{} {}'.format(num_executions,
+                                      text.Pluralize(num_executions,
+                                                     'execution'))
+      stat_props.append(executions_str)
+
+    # Total latency and latency unit are always expected to be present when
+    # latency exists. Latency exists when the query is run in PROFILE mode.
+    mean_latency = self._GetNestedStatProperty('latency', 'mean')
+    total_latency = self._GetNestedStatProperty('latency', 'total')
+    unit = self._GetNestedStatProperty('latency', 'unit')
+    if mean_latency:
+      stat_props.append('{} {} average latency'.format(mean_latency, unit))
+    elif total_latency:
+      stat_props.append('{} {} total latency'.format(total_latency, unit))
+
+    if stat_props:
+      executions_stats_str = '{}{} ({})'.format(prepend, beneath_stub,
+                                                ', '.join(stat_props))
+      out.Print(executions_stats_str)
+
   def _DisplayMetadata(self, out, prepend, beneath_stub):
     """Prints the keys and values of the metadata for a node.
 
@@ -221,6 +288,7 @@ class Node(object):
     beneath_stub = '' if is_root else ('  ' if is_last else '| ')
 
     self._DisplayKindAndName(out, prepend, stub)
+    self._DisplayExecutionStats(out, prepend, beneath_stub)
     self._DisplayMetadata(out, prepend, beneath_stub)
     self._DisplayShortRepresentation(out, prepend, beneath_stub)
     self._DisplayBreakLine(out, prepend, beneath_stub, is_root)

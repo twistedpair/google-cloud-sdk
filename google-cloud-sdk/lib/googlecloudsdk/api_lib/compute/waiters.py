@@ -90,19 +90,47 @@ def _RecordUnfinishedOperations(operations, errors):
                   links=', '.join(pending_resources))))
 
 
-def WaitForOperations(operations, project, operation_service, resource_service,
+class OperationData(object):
+  """Holds all information necessary to poll given operation.
+
+  Fields:
+    operation: An Operation object to poll.
+    project: str, The project to which the resource belong.
+    operation_service: The service that can be used to get operation
+      object.
+    resource_service: The service of the collection being mutated by
+      the operation. If the operation type is not delete, this service
+      is used to fetch the mutated object after the operation is done.
+  """
+
+  def __init__(self, operation, project, operation_service, resource_service):
+    self.operation = operation
+    self.project = project
+    self.operation_service = operation_service
+    self.resource_service = resource_service
+
+  def __eq__(self, o):
+    if not isinstance(o, OperationData):
+      return False
+    return (self.operation == o.operation and self.project == o.project and
+            self.operation_service == o.operation_service and
+            self.resource_service == o.resource_service)
+
+  def __hash__(self):
+    return (hash(self.operation) ^ hash(self.project) ^
+            hash(self.operation_service) ^ hash(self.resource_service))
+
+  def __ne__(self, o):
+    return not self == o
+
+
+def WaitForOperations(operations_data,
                       http, batch_url, warnings, errors,
                       timeout=None):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
-    operations: A list of Operation objects to poll.
-    project: The project to which the resources belog.
-    operation_service: The service that can be used to get operation
-      objects.
-    resource_service: The service of the collection being mutated by
-      the operations. If the operation type is not delete, this service
-      is used to fetch the mutated objects after the operations are done.
+    operations_data: A list of OperationData objects holding Operations to poll.
     http: An HTTP object.
     batch_url: The URL to which batch requests should be sent.
     warnings: An output parameter for capturing warnings.
@@ -117,18 +145,35 @@ def WaitForOperations(operations, project, operation_service, resource_service,
   """
   timeout = timeout or _POLLING_TIMEOUT_SEC
 
-  operation_type = operation_service.GetResponseType('Get')
+  # Operation -> OperationData mapping will be used to reify operation_service
+  # and resource_service from operation_service.Get(operation) response.
+  # It is necessary because poll operation is returning only response, but we
+  # also need to get operation details to know the service to poll for all
+  # unfinished_operations.
+  operation_details = {}
+  unfinished_operations = []
+  for operation in operations_data:
+    operation_details[operation.operation.selfLink] = operation
+    unfinished_operations.append(operation.operation)
 
   responses = []
   start = time_util.CurrentTimeSec()
   sleep_sec = 0
 
-  while operations:
+  while unfinished_operations:
     resource_requests = []
     operation_requests = []
 
-    log.debug('Operations to inspect: %s', operations)
-    for operation in operations:
+    log.debug('Operations to inspect: %s', unfinished_operations)
+    for operation in unfinished_operations:
+      # Reify operation
+      data = operation_details[operation.selfLink]
+      project = data.project
+      operation_service = data.operation_service
+      resource_service = data.resource_service
+
+      operation_type = operation_service.GetResponseType('Get')
+
       if operation.status == operation_type.StatusValueValuesEnum.DONE:
         # The operation has reached the DONE state, so we record any
         # problems it contains (if any) and proceed to get the target
@@ -193,22 +238,22 @@ def WaitForOperations(operations, project, operation_service, resource_service,
         batch_url=batch_url)
     errors.extend(request_errors)
 
-    operations = []
+    unfinished_operations = []
     for response in responses:
       if isinstance(response, operation_type):
-        operations.append(response)
+        unfinished_operations.append(response)
       else:
         yield response
 
     # If there are no more operations, we are done.
-    if not operations:
+    if not unfinished_operations:
       break
 
     # Did we time out? If so, record the operations that timed out so
     # they can be reported to the user.
     if time_util.CurrentTimeSec() - start > timeout:
       log.debug('Timeout of %ss reached.', timeout)
-      _RecordUnfinishedOperations(operations, errors)
+      _RecordUnfinishedOperations(unfinished_operations, errors)
       break
 
     # Sleeps before trying to poll the operations again.

@@ -37,7 +37,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
-_GA_ENDPOINT = 'https://ssl.google-analytics.com/collect'
+_GA_ENDPOINT = 'https://ssl.google-analytics.com/batch'
 _GA_TID = 'UA-36037335-2'
 _GA_TID_TESTING = 'UA-36037335-13'
 _GA_INSTALLS_CATEGORY = 'Installs'
@@ -52,6 +52,8 @@ _CSI_ID = 'cloud_sdk'
 _CSI_LOAD_EVENT = 'load'
 _CSI_RUN_EVENT = 'run'
 _CSI_TOTAL_EVENT = 'total'
+_CSI_REMOTE_EVENT = 'remote'
+_CSI_LOCAL_EVENT = 'local'
 
 
 class _GAEvent(object):
@@ -70,9 +72,9 @@ def _GetTimeMillis(time_secs=None):
 
 class _TimedEvent(object):
 
-  def __init__(self, name):
+  def __init__(self, name, time_millis):
     self.name = name
-    self.time_millis = _GetTimeMillis()
+    self.time_millis = time_millis
 
 
 class _CommandTimer(object):
@@ -81,6 +83,8 @@ class _CommandTimer(object):
   def __init__(self, start_time_ms):
     self.__start = start_time_ms
     self.__events = []
+    self.__total_rpc_duration = 0
+    self.__stop = start_time_ms
     self.__category = 'unknown'
     self.__action = 'unknown'
     self.__label = None
@@ -96,7 +100,13 @@ class _CommandTimer(object):
     return self.__action
 
   def Event(self, name):
-    self.__events.append(_TimedEvent(name))
+    time_millis = _GetTimeMillis()
+    self.__events.append(_TimedEvent(name, time_millis))
+    if name is _CSI_TOTAL_EVENT:
+      self.__stop = time_millis
+
+  def AddRPCDuration(self, duration_in_ms):
+    self.__total_rpc_duration += duration_in_ms
 
   def _GetCSIAction(self):
     csi_action = '{0},{1}'.format(self.__category, self.__action)
@@ -115,6 +125,13 @@ class _CommandTimer(object):
         '{0}.{1}'.format(event.name, event.time_millis - self.__start)
         for event in self.__events]
     params.append(('rt', ','.join(response_times)))
+
+    local_time = (self.__stop - self.__start) - self.__total_rpc_duration
+    interval_times = [
+        '{0}.{1}'.format(_CSI_REMOTE_EVENT, self.__total_rpc_duration),
+        '{0}.{1}'.format(_CSI_LOCAL_EVENT, local_time),
+    ]
+    params.append(('it', ','.join(interval_times)))
 
     return params
 
@@ -219,14 +236,15 @@ class _MetricsCollector(object):
         ('cid', cid),
         ('t', 'event')]
     self._ga_params.extend([(param[0], param[2]) for param in common_params])
+    self._ga_events = []
 
     self._csi_params = [('s', _CSI_ID),
                         ('v', '2'),
                         ('rls', config.CLOUD_SDK_VERSION),
                         ('c', cid)]
     self._csi_params.extend([(param[1], param[2]) for param in common_params])
-
     self.StartTimer(_GetTimeMillis())
+
     self._metrics = []
 
     # Tracking the level so we can only report metrics for the top level action
@@ -293,6 +311,14 @@ class _MetricsCollector(object):
     if self._action_level == 0 or not record_only_on_top_level:
       self._timer.Event(name)
 
+  def RecordRPCDuration(self, duration_in_ms):
+    """Records the time when a particular event happened.
+
+    Args:
+      duration_in_ms: int, Duration of the RPC in milli seconds.
+    """
+    self._timer.AddRPCDuration(duration_in_ms)
+
   def SetTimerContext(self, category, action, label=None, **kwargs):
     """Sets the context for which the timer is collecting timed events.
 
@@ -323,7 +349,7 @@ class _MetricsCollector(object):
     self.CollectHTTPBeacon('{0}?{1}'.format(_CSI_ENDPOINT, data),
                            'GET', None, headers)
 
-  def CollectGAMetric(self, event):
+  def RecordGAEvent(self, event):
     """Adds the given GA event to the metrics queue.
 
     Args:
@@ -340,7 +366,10 @@ class _MetricsCollector(object):
     params.extend(sorted(custom_dimensions))
     params.extend(self._ga_params)
     data = urllib.urlencode(params)
+    self._ga_events.append(data)
 
+  def CollectGAMetric(self):
+    data = '\n'.join(self._ga_events)
     headers = {'user-agent': self._user_agent}
     self.CollectHTTPBeacon(_GA_ENDPOINT, 'POST', data, headers)
 
@@ -393,7 +422,7 @@ class _MetricsCollector(object):
       log.debug('Metrics reporting process finished.')
 
 
-def _CollectGAMetricAndSetTimerContext(
+def _RecordGAEventAndSetTimerContext(
     category, action, label, value=0, flag_names=None,
     error=None, error_extra_info_json=None):
   """Common code for processing a GA event."""
@@ -412,7 +441,7 @@ def _CollectGAMetricAndSetTimerContext(
     if error_extra_info_json is not None:
       cds['cd9'] = str(error_extra_info_json)
 
-    collector.CollectGAMetric(
+    collector.RecordGAEvent(
         _GAEvent(category=category, action=action, label=label, value=value,
                  **cds))
 
@@ -450,7 +479,7 @@ def CaptureAndLogException(func):
 def StartTestMetrics(test_group_id, test_method):
   _MetricsCollector.ResetCollectorInstance(False, _GA_TID_TESTING)
   _MetricsCollector.test_group = test_group_id
-  _CollectGAMetricAndSetTimerContext(
+  _RecordGAEventAndSetTimerContext(
       _GA_TEST_EXECUTIONS_CATEGORY,
       test_method,
       test_group_id,
@@ -502,6 +531,7 @@ def Shutdown():
   if collector:
     collector.RecordTimedEvent(_CSI_TOTAL_EVENT)
     collector.CollectCSIMetric()
+    collector.CollectGAMetric()
     collector.ReportMetrics()
 
 
@@ -553,12 +583,12 @@ def Installs(component_id, version_string):
     component_id: str, The component id that was installed.
     version_string: str, The version of the component.
   """
-  _CollectGAMetricAndSetTimerContext(
+  _RecordGAEventAndSetTimerContext(
       _GA_INSTALLS_CATEGORY, component_id, version_string)
 
 
 @CaptureAndLogException
-def Commands(command_path, version_string, flag_names,
+def Commands(command_path, version_string='unknown', flag_names=None,
              error=None, error_extra_info=None):
   """Logs that a gcloud command was run.
 
@@ -573,10 +603,7 @@ def Commands(command_path, version_string, flag_names,
       extra info that we want to log with the error. This enables us to write
       queries that can understand the keys and values in this dict.
   """
-  if not version_string:
-    version_string = 'unknown'
-
-  _CollectGAMetricAndSetTimerContext(
+  _RecordGAEventAndSetTimerContext(
       _GA_COMMANDS_CATEGORY, command_path, version_string,
       flag_names=_GetFlagNameString(flag_names),
       error=_GetExceptionName(error),
@@ -591,7 +618,7 @@ def Help(command_path, mode):
     command_path: str, The '.' separated name of the calliope command.
     mode: str, The way help was invoked (-h, --help, help).
   """
-  _CollectGAMetricAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
+  _RecordGAEventAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
 
 
 @CaptureAndLogException
@@ -608,29 +635,31 @@ def Error(command_path, error, flag_names, error_extra_info=None):
       extra info that we want to log with the error. This enables us to write
       queries that can understand the keys and values in this dict.
   """
-  _CollectGAMetricAndSetTimerContext(
+  _RecordGAEventAndSetTimerContext(
       _GA_ERROR_CATEGORY, command_path, _GetExceptionName(error),
       flag_names=_GetFlagNameString(flag_names),
       error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
 
 
 @CaptureAndLogException
-def Executions(command_name, version_string):
+def Executions(command_name, version_string='unknown'):
   """Logs that a top level SDK script was run.
 
   Args:
     command_name: str, The script name.
     version_string: str, The version of the command.
   """
-  if not version_string:
-    version_string = 'unknown'
-  _CollectGAMetricAndSetTimerContext(
+  _RecordGAEventAndSetTimerContext(
       _GA_EXECUTIONS_CATEGORY, command_name, version_string)
 
 
 @CaptureAndLogException
 def Started(start_time):
-  """Record the time when the command was started."""
+  """Record the time when the command was started.
+
+  Args:
+    start_time: float, The start time in seconds since epoch.
+  """
   collector = _MetricsCollector.GetCollector()
   if collector:
     collector.StartTimer(_GetTimeMillis(start_time))
@@ -667,6 +696,18 @@ def CustomTimedEvent(event_name):
   collector = _MetricsCollector.GetCollector()
   if collector:
     collector.RecordTimedEvent(event_name)
+
+
+@CaptureAndLogException
+def RPCDuration(duration_in_secs):
+  """Record the time taken to perform an RPC.
+
+  Args:
+    duration_in_secs: float, The duration of the RPC in seconds.
+  """
+  collector = _MetricsCollector.GetCollector()
+  if collector:
+    collector.RecordRPCDuration(_GetTimeMillis(duration_in_secs))
 
 
 @CaptureAndLogException

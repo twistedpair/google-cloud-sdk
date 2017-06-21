@@ -20,6 +20,7 @@ from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.users import client as user_client
+from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.command_lib.util import time_util
@@ -235,6 +236,24 @@ def _MetadataHasBlockProjectSshKeys(metadata):
   return matching_values[0].lower() == 'true'
 
 
+def _MetadataHasOsloginEnable(metadata):
+  """Return true if the metadata has 'oslogin-enable' set and 'true'.
+
+  Args:
+    metadata: Instance or Project metadata.
+
+  Returns:
+    True if Enabled, False if Disabled, None if key is not present.
+  """
+  if not (metadata and metadata.items):
+    return None
+  matching_values = [item.value for item in metadata.items
+                     if item.key == constants.OSLOGIN_ENABLE_METADATA_KEY]
+  if not matching_values:
+    return None
+  return matching_values[0].lower() == 'true'
+
+
 class BaseSSHCommand(base_classes.BaseCommand):
   """Base class for subcommands that need to connect to instances using SSH.
 
@@ -428,20 +447,21 @@ class BaseSSHCommand(base_classes.BaseCommand):
     else:
       return False
 
-  def EnsureSSHKeyIsInProject(self, user, project_name=None):
+  def EnsureSSHKeyIsInProject(self, user, project=None):
     """Ensures that the user's public SSH key is in the project metadata.
 
     Args:
       user: str, the name of the user associated with the SSH key in the
           metadata
-      project_name: str, the project SSH key will be added to
+      project: Project, the project SSH key will be added to
 
     Returns:
       bool, True if the key was newly added, False if it was in the metadata
           already
     """
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    project = self.GetProject(project_name)
+    if not project:
+      project = self.GetProject(None)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
         self.messages, user, public_key, existing_metadata)
@@ -487,7 +507,7 @@ class BaseSSHCommand(base_classes.BaseCommand):
     Args:
       user: str, The user name.
       instance: Instance, the instance to connect to.
-      project: str, the project instance is in
+      project: Project, the project instance is in
       use_account_service: bool, when false upload ssh keys to project metadata.
 
     Returns:
@@ -562,6 +582,45 @@ class BaseSSHCommand(base_classes.BaseCommand):
           keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
                                                            iam_keys=True)
     return keys_newly_added
+
+  def CheckForOsloginAndGetUser(self, instance,
+                                project, requested_user):
+    """Checks instance/project metadata for oslogin and update username."""
+    # Instance metadata has priority
+    use_oslogin = False
+    oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+    if oslogin_enabled is None:
+      project_metadata = project.commonInstanceMetadata
+      oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)
+
+    if not oslogin_enabled:
+      return requested_user, use_oslogin
+
+    # Connect to the oslogin API and add public key to oslogin user account.
+    oslogin = oslogin_client.OsloginClient(self.ReleaseTrack())
+    if not oslogin:
+      log.warn('OS Login is enabled on Instance/Project, but is not availabe '
+               'in the {0} version of gcloud.'.format(self.ReleaseTrack().id))
+      return requested_user, use_oslogin
+    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+    user_email = gaia.GetAuthenticatedGaiaEmail(self.http)
+    login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
+    use_oslogin = True
+
+    # Get the username for the oslogin user. If the username is the same as the
+    # default user, return that one. Otherwise, return the 'primary' username.
+    # If no 'primary' exists, return the first username.
+    oslogin_user = None
+    for pa in login_profile.loginProfile.posixAccounts:
+      oslogin_user = oslogin_user or pa.username
+      if pa.username == requested_user:
+        return requested_user, use_oslogin
+      elif pa.primary:
+        oslogin_user = pa.username
+
+    log.warn('Using OS Login user [{0}] instead of default user [{1}]'
+             .format(oslogin_user, requested_user))
+    return oslogin_user, use_oslogin
 
   def GetConfig(self, host_key_alias, strict_host_key_checking=None):
     """Returns a dict of default `ssh-config(5)` options on the OpenSSH format.

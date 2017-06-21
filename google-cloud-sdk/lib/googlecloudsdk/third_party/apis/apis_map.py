@@ -220,6 +220,14 @@ MAP = {
             default_version=True
         ),
     },
+    'cloudtasks': {
+        'v2beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudtasks.v2beta2',
+            client_classpath='cloudtasks_v2beta2_client.CloudtasksV2beta2',
+            messages_modulepath='cloudtasks_v2beta2_messages',
+            default_version=True
+        ),
+    },
     'clouduseraccounts': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.clouduseraccounts.alpha',
@@ -341,6 +349,12 @@ MAP = {
             messages_modulepath='dns_v1beta1_messages',
             default_version=False
         ),
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dns.v1beta2',
+            client_classpath='dns_v1beta2_client.DnsV1beta2',
+            messages_modulepath='dns_v1beta2_messages',
+            default_version=False
+        ),
         'v2beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.dns.v2beta1',
             client_classpath='dns_v2beta1_client.DnsV2beta1',
@@ -395,14 +409,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.logging.v2',
             client_classpath='logging_v2_client.LoggingV2',
             messages_modulepath='logging_v2_messages',
-            default_version=True
-        ),
-    },
-    'manager': {
-        'v1beta2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.manager.v1beta2',
-            client_classpath='manager_v1beta2_client.ManagerV1beta2',
-            messages_modulepath='manager_v1beta2_messages',
             default_version=True
         ),
     },

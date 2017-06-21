@@ -594,18 +594,11 @@ def _ArgComplete(ai, **kwargs):
 
       argcomplete.mute_stderr = _DisableMuteStderr
 
-    if properties.VALUES.core.resource_completion_style.Get() in (
-        'flags', 'gri'):
-      validator = None
-    else:
-      validator = lambda completion, prefix: True
-
     completer = _CompletionFinder()
     # pylint: disable=not-callable
     completer(
         ai,
         always_complete_options=False,
-        validator=validator,
         **kwargs)
   finally:
     if namespace:

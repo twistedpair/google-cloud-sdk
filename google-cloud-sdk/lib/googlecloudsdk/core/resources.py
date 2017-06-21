@@ -822,9 +822,9 @@ class Registry(object):
     return parser.ParseResourceId(resource_id, kwargs, base_url, subcollection,
                                   validate=validate)
 
-  def GetCollectionInfo(self, collection_name):
+  def GetCollectionInfo(self, collection_name, api_version=None):
     api_name = _APINameFromCollection(collection_name)
-    api_version = self.RegisterApiByName(api_name)
+    api_version = self.RegisterApiByName(api_name, api_version=api_version)
     parser = (self.parsers_by_collection
               .get(api_name, {}).get(api_version, {})
               .get(collection_name, None))

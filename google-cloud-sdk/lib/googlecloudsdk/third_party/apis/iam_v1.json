@@ -451,6 +451,18 @@
           "description": "Required. The full resource name to query from the list of grantable roles.\n\nThe name follows the Google Cloud Platform resource format.\nFor example, a Cloud Platform project with id `my-project` will be named\n`\/\/cloudresourcemanager.googleapis.com\/projects\/my-project`.",
           "type": "string"
         },
+        "view": {
+
+          "enumDescriptions": [
+            "Omits the `included_permissions` field.\nThis is the default value.",
+            "Returns all fields."
+          ],
+          "type": "string",
+          "enum": [
+            "BASIC",
+            "FULL"
+          ]
+        },
         "pageSize": {
           "description": "Optional limit on the number of roles to include in the response.",
           "type": "integer",
@@ -496,6 +508,178 @@
         "description": {
           "description": "Optional.  A human-readable description for the role.",
           "type": "string"
+        },
+        "includedPermissions": {
+
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stage": {
+
+          "enumDescriptions": [
+            "The user has indicated this role is currently in an alpha phase.",
+            "The user has indicated this role is currently in a beta phase.",
+            "The user has indicated this role is generally available.",
+            "The user has indicated this role is being deprecated.",
+            "This role is disabled and will not contribute permissions to any members\nit is granted to in policies.",
+            "The user has indicated this role is currently in an eap phase."
+          ],
+          "type": "string",
+          "enum": [
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED",
+            "DISABLED",
+            "EAP"
+          ]
+        },
+        "etag": {
+
+          "type": "string",
+          "format": "byte"
+        },
+        "deleted": {
+
+          "type": "boolean"
+        }
+      }
+    },
+    "ListRolesResponse": {
+      "id": "ListRolesResponse",
+      "description": "The response containing the roles defined under a resource.",
+      "type": "object",
+      "properties": {
+        "roles": {
+          "description": "The Roles defined on this resource.",
+          "type": "array",
+          "items": {
+            "$ref": "Role"
+          }
+        },
+        "nextPageToken": {
+          "description": "To retrieve the next page of results, set\n`ListRolesRequest.page_token` to this value.",
+          "type": "string"
+        }
+      }
+    },
+    "CreateRoleRequest": {
+      "id": "CreateRoleRequest",
+      "description": "The request to create a new role.\nThe resource name of the parent resource in one of the following formats:\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+      "type": "object",
+      "properties": {
+        "roleId": {
+          "description": "The role id to use for this role.",
+          "type": "string"
+        },
+        "role": {
+          "description": "The Role resource to create.",
+          "$ref": "Role"
+        }
+      }
+    },
+    "UndeleteRoleRequest": {
+      "id": "UndeleteRoleRequest",
+      "description": "The request to undelete an existing role.",
+      "type": "object",
+      "properties": {
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "QueryTestablePermissionsRequest": {
+      "id": "QueryTestablePermissionsRequest",
+      "description": "A request to get permissions which can be tested on a resource.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "Required. The full resource name to query from the list of testable\npermissions.\n\nThe name follows the Google Cloud Platform resource format.\nFor example, a Cloud Platform project with id `my-project` will be named\n`\/\/cloudresourcemanager.googleapis.com\/projects\/my-project`.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional limit on the number of permissions to include in the response.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Optional pagination token returned in an earlier\nQueryTestablePermissionsRequest.",
+          "type": "string"
+        }
+      }
+    },
+    "QueryTestablePermissionsResponse": {
+      "id": "QueryTestablePermissionsResponse",
+      "description": "The response containing permissions which can be tested on a resource.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The Permissions testable on the requested resource.",
+          "type": "array",
+          "items": {
+            "$ref": "Permission"
+          }
+        },
+        "nextPageToken": {
+          "description": "To retrieve the next page of results, set\n`QueryTestableRolesRequest.page_token` to this value.",
+          "type": "string"
+        }
+      }
+    },
+    "Permission": {
+      "id": "Permission",
+      "description": "A permission which can be included by a role.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this Permission.",
+          "type": "string"
+        },
+        "title": {
+          "description": "The title of this Permission.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A brief description of what this Permission is used for.",
+          "type": "string"
+        },
+        "onlyInPredefinedRoles": {
+          "description": "This permission can ONLY be used in predefined roles.",
+          "type": "boolean"
+        },
+        "stage": {
+          "description": "The current launch stage of the permission.",
+          "enumDescriptions": [
+            "The permission is currently in an alpha phase.",
+            "The permission is currently in a beta phase.",
+            "The permission is generally available.",
+            "The permission is being deprecated."
+          ],
+          "type": "string",
+          "enum": [
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED"
+          ]
+        },
+        "customRolesSupportLevel": {
+
+          "enumDescriptions": [
+            "Permission is fully supported for custom role use.",
+            "Permission is being tested to check custom role compatibility.",
+            "Permission is not supported for custom role use."
+          ],
+          "type": "string",
+          "enum": [
+            "SUPPORTED",
+            "TESTING",
+            "NOT_SUPPORTED"
+          ]
         }
       }
     },
@@ -970,6 +1154,205 @@
               }
             }
           }
+        },
+        "roles": {
+          "methods": {
+            "list": {
+              "id": "iam.projects.roles.list",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/projects/{projectsId}/roles",
+              "httpMethod": "GET",
+              "description": "Lists the Roles defined on a resource.",
+              "parameters": {
+                "parent": {
+                  "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional limit on the number of roles to include in the response.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional pagination token returned in an earlier ListRolesResponse.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "Optional view for the returned Role objects.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "BASIC",
+                    "FULL"
+                  ]
+                },
+                "showDeleted": {
+                  "description": "Include Roles that have been deleted.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListRolesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "iam.projects.roles.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
+              "httpMethod": "GET",
+              "description": "Gets a Role definition.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "create": {
+              "id": "iam.projects.roles.create",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/projects/{projectsId}/roles",
+              "httpMethod": "POST",
+              "description": "Creates a new Role.",
+              "parameters": {
+                "parent": {
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "CreateRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "patch": {
+              "id": "iam.projects.roles.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a Role definition.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "A mask describing which fields in the Role have changed.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Role"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "iam.projects.roles.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
+              "httpMethod": "DELETE",
+              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                },
+                "etag": {
+                  "description": "Used to perform a consistent read-modify-write.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "undelete": {
+              "id": "iam.projects.roles.undelete",
+              "path": "v1/{+name}:undelete",
+              "flatPath": "v1/projects/{projectsId}/roles/{rolesId}:undelete",
+              "httpMethod": "POST",
+              "description": "Undelete a Role, bringing it back in its previous state.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UndeleteRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
         }
       }
     },
@@ -990,6 +1373,305 @@
           },
           "response": {
             "$ref": "QueryGrantableRolesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "list": {
+          "id": "iam.roles.list",
+          "path": "v1/roles",
+          "flatPath": "v1/roles",
+          "httpMethod": "GET",
+          "description": "Lists the Roles defined on a resource.",
+          "parameters": {
+            "parent": {
+              "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional limit on the number of roles to include in the response.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional pagination token returned in an earlier ListRolesResponse.",
+              "location": "query",
+              "type": "string"
+            },
+            "view": {
+              "description": "Optional view for the returned Role objects.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "BASIC",
+                "FULL"
+              ]
+            },
+            "showDeleted": {
+              "description": "Include Roles that have been deleted.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListRolesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "get": {
+          "id": "iam.roles.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/roles/{rolesId}",
+          "httpMethod": "GET",
+          "description": "Gets a Role definition.",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+              "location": "path",
+              "required": true,
+              "pattern": "^roles\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Role"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "roles": {
+          "methods": {
+            "list": {
+              "id": "iam.organizations.roles.list",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/organizations/{organizationsId}/roles",
+              "httpMethod": "GET",
+              "description": "Lists the Roles defined on a resource.",
+              "parameters": {
+                "parent": {
+                  "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional limit on the number of roles to include in the response.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional pagination token returned in an earlier ListRolesResponse.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "Optional view for the returned Role objects.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "BASIC",
+                    "FULL"
+                  ]
+                },
+                "showDeleted": {
+                  "description": "Include Roles that have been deleted.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListRolesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "iam.organizations.roles.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "GET",
+              "description": "Gets a Role definition.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "create": {
+              "id": "iam.organizations.roles.create",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/organizations/{organizationsId}/roles",
+              "httpMethod": "POST",
+              "description": "Creates a new Role.",
+              "parameters": {
+                "parent": {
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "CreateRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "patch": {
+              "id": "iam.organizations.roles.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a Role definition.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "A mask describing which fields in the Role have changed.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Role"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "iam.organizations.roles.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "DELETE",
+              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                },
+                "etag": {
+                  "description": "Used to perform a consistent read-modify-write.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "undelete": {
+              "id": "iam.organizations.roles.undelete",
+              "path": "v1/{+name}:undelete",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}:undelete",
+              "httpMethod": "POST",
+              "description": "Undelete a Role, bringing it back in its previous state.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UndeleteRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "permissions": {
+      "methods": {
+        "queryTestablePermissions": {
+          "id": "iam.permissions.queryTestablePermissions",
+          "path": "v1/permissions:queryTestablePermissions",
+          "flatPath": "v1/permissions:queryTestablePermissions",
+          "httpMethod": "POST",
+          "description": "Lists the permissions testable on a resource.\nA permission is testable if it can be tested for an identity on a resource.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryTestablePermissionsRequest"
+          },
+          "response": {
+            "$ref": "QueryTestablePermissionsResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"

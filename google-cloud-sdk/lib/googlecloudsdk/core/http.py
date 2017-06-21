@@ -25,6 +25,7 @@ import uuid
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import platforms
@@ -121,6 +122,10 @@ def _Wrap(
     http, The same http object but with the request method wrapped.
   """
   handlers = []
+
+  handlers.append(Modifiers.Handler(
+      Modifiers.RecordStartTime(),
+      Modifiers.ReportDuration()))
 
   handlers.append(Modifiers.Handler(
       Modifiers.AppendToHeader('user-agent', gcloud_ua)))
@@ -394,6 +399,32 @@ class Modifiers(object):
       log.status.Print('---- response end ----')
       log.status.Print('----------------------')
     return _LogResponse
+
+  @classmethod
+  def RecordStartTime(cls):
+    """Records the time at which the request was started.
+
+    Returns:
+      A function that can be used in a Handler.request.
+    """
+    def _RecordStartTime(unused_args, unused_kwargs):
+      """Replacement http.request() method."""
+      return Modifiers.Result(data=time.time())
+    return _RecordStartTime
+
+  @classmethod
+  def ReportDuration(cls):
+    """Reports the duration of response to the metrics module.
+
+    Returns:
+      A function that can be used in a Handler.response.
+    """
+    def _ReportDuration(unused_response, start_time):
+      """Response handler."""
+      duration = time.time() - start_time
+      metrics.RPCDuration(duration)
+
+    return _ReportDuration
 
   @classmethod
   def _GetHeader(cls, args, kwargs, header, default=None):

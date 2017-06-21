@@ -17,15 +17,12 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def InterconnectArgument(required=True, plural=False):
-  resource_name = 'interconnect{0}'.format('s' if plural else '')
   return compute_flags.ResourceArgument(
-      resource_name=resource_name,
+      resource_name='interconnect',
       completion_resource_id='compute.interconnects',
       plural=plural,
       required=required,
-      global_collection='compute.interconnects',
-      short_help=('The name{0} of the {1}.'.format('s' if plural else '',
-                                                   resource_name)))
+      global_collection='compute.interconnects')
 
 
 def InterconnectArgumentForOtherResource(short_help,

@@ -14,6 +14,24 @@
 """Code that's shared between multiple networks subcommands."""
 
 
+def GetSubnetMode(network):
+  """Returns the subnet mode of the input network."""
+  if getattr(network, 'IPv4Range', None) is not None:
+    return 'LEGACY'
+  elif getattr(network, 'autoCreateSubnetworks', False):
+    return 'AUTO'
+  else:
+    return 'CUSTOM'
+
+
+def GetBgpRoutingMode(network):
+  """Returns the BGP routing mode of the input network."""
+  if getattr(network, 'routingConfig', None) is not None:
+    return network.routingConfig.routingMode
+  else:
+    return None
+
+
 def _GetNetworkMode(network):
   """Takes a network resource and returns the "mode" of the network."""
   if network.get('IPv4Range', None) is not None:
@@ -28,3 +46,24 @@ def AddMode(items):
   for resource in items:
     resource['x_gcloud_mode'] = _GetNetworkMode(resource)
     yield resource
+
+
+def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
+  """Creates a new network resource from flag arguments."""
+
+  network = messages.Network(
+      name=network_ref.Name(),
+      description=network_args.description)
+
+  if network_args.subnet_mode == 'LEGACY':
+    network.IPv4Range = network_args.range
+  else:
+    network.autoCreateSubnetworks = (network_args.subnet_mode == 'AUTO')
+
+  if network_args.bgp_routing_mode:
+    network.routingConfig = messages.NetworkRoutingConfig()
+    network.routingConfig.routingMode = (messages.NetworkRoutingConfig.
+                                         RoutingModeValueValuesEnum(
+                                             network_args.bgp_routing_mode))
+
+  return network

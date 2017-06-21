@@ -141,8 +141,9 @@ def GetAndValidateOpsFromArgs(parsed_args):
   Args:
     parsed_args: The parsed args.
   Returns:
-    (update_labels and remove_labels)
-    update_labels contains values from --labels or --update-labels flag.
+    (update_labels, remove_labels)
+    update_labels contains values from --labels and --update-labels flags
+    respectively.
     remove_labels contains values from --remove-labels flag
   Raise:
     RequiredArgumentException if all labels arguments are absent.

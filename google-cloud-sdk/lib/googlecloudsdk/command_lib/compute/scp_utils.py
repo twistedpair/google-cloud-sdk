@@ -96,6 +96,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
         scope_lister=instance_flags.GetInstanceZoneScopeLister(
             self.compute_client))[0]
     instance = self.GetInstance(instance_ref)
+    project = self.GetProject(instance_ref.project)
 
     # Now replace the instance name with the actual IP/hostname
     remote.host = ssh_utils.GetExternalIPAddress(instance)
@@ -122,7 +123,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
       keys_newly_added = False
     else:
       keys_newly_added = self.EnsureSSHKeyExists(
-          remote.user, instance, instance_ref.project,
+          remote.user, instance, project,
           use_account_service=self._use_account_service)
 
     if keys_newly_added:

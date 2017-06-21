@@ -589,11 +589,12 @@ class ResourceArgument(object):
     elif self._short_help:
       params['help'] = self._short_help
     else:
-      params['help'] = 'The name{} of the {}.'.format(
+      params['help'] = 'The name{} of the {} to {}.'.format(
           's' if self.plural else '',
           text.Pluralize(
               int(self.plural) + 1, self.resource_name or '',
-              self.custom_plural))
+              self.custom_plural),
+          operation_type)
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required

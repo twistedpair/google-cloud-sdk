@@ -25,6 +25,16 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+ALPHA_LIST_FORMAT = """\
+    table(
+      name,
+      x_gcloud_subnet_mode:label=SUBNET_MODE,
+      x_gcloud_bgp_routing_mode:label=BGP_ROUTING_MODE,
+      IPv4Range:label=IPV4_RANGE,
+      gatewayIPv4
+    )"""
+
+
 def NetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='network',

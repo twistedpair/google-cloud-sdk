@@ -352,3 +352,28 @@ def ImportModule(module_path):
   except AttributeError:
     raise ImportModuleError('Module [{}] not found in package [{}].'.format(
         module_name, '.'.join(module_parts)))
+
+
+def GetModulePath(obj):
+  """Returns the module path name for obj if not builtin else None.
+
+  Args:
+    obj: The object to get the module path from.
+
+  Returns:
+    The module path name for obj if not builtin else None.
+  """
+  try:
+    # An object either has a module ...
+    module = obj.__module__
+  except AttributeError:
+    # ... or it has a __class__ that has a __module__.
+    obj = obj.__class__
+    module = obj.__module__
+  if module.startswith('__builtin__'):
+    return None
+  path = '.' + module
+  part = '.googlecloudsdk.'
+  i = path.find(part)
+  path = path[i + len(part):] if i >= 0 else module
+  return path + '.' + obj.__name__

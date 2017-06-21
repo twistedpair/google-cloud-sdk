@@ -25,6 +25,15 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
+OUTCOMES_FORMAT = """
+          table[box](
+            outcome.color(red=Fail, green=Pass, yellow=Inconclusive),
+            axis_value:label=TEST_AXIS_VALUE,
+            test_details:label=TEST_DETAILS
+          )
+"""
+
+
 def GetError(error):
   """Returns a ready-to-print string representation from the http response.
 

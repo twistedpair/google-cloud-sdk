@@ -150,7 +150,7 @@ def MakeRequests(requests, http, batch_url, errors):
   # Collects all operation objects in a list so they can be waited on
   # and yields all non-operation objects since non-operation responses
   # cannot be waited on.
-  operations = []
+  operations_data = []
 
   for request, response in zip(requests, responses):
     if response is None:
@@ -164,38 +164,29 @@ def MakeRequests(requests, http, batch_url, errors):
             'ZoneOperationsService',
             'GlobalAccountsOperationsService')):
 
-      operations.append(response)
+      resource_service = service
+      project = request_body.project
 
-      # This logic assumes that all requests are homogenous, i.e.,
-      # they all make calls to the same service and verb. This is
-      # temporary. In the future, we will push this logic into the
-      # function that does the actual waiting. For now, we have to
-      # deal with existing interfaces to keep the scopes of the
-      # refactoring CLs small.
-      # TODO(b/32276307)
-      if not operation_service:
-        resource_service = service
-        project = request_body.project
+      if response.kind == 'clouduseraccounts#operation':
+        operation_service = service.client.globalAccountsOperations
+      elif response.zone:
+        operation_service = service.client.zoneOperations
+      elif response.region:
+        operation_service = service.client.regionOperations
+      else:
+        operation_service = service.client.globalOperations
 
-        if response.kind == 'clouduseraccounts#operation':
-          operation_service = service.client.globalAccountsOperations
-        elif response.zone:
-          operation_service = service.client.zoneOperations
-        elif response.region:
-          operation_service = service.client.regionOperations
-        else:
-          operation_service = service.client.globalOperations
+      operations_data.append(
+          waiters.OperationData(response, project, operation_service,
+                                resource_service))
 
     else:
       yield response
 
-  if operations:
+  if operations_data:
     warnings = []
     for response in waiters.WaitForOperations(
-        operations=operations,
-        project=project,
-        operation_service=operation_service,
-        resource_service=resource_service,
+        operations_data=operations_data,
         http=http,
         batch_url=batch_url,
         warnings=warnings,

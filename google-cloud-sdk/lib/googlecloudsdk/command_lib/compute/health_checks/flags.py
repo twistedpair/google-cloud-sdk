@@ -24,14 +24,9 @@ DEFAULT_LIST_FORMAT = """\
 
 
 def HealthCheckArgument(protocol_string, required=True, plural=False):
-  if plural:
-    short_help = 'Names of {0} health checks.'.format(protocol_string)
-  else:
-    short_help = 'The name of the {0} health check.'.format(protocol_string)
   return compute_flags.ResourceArgument(
-      resource_name='health check',
+      resource_name='{} health check'.format(protocol_string),
       completion_resource_id='compute.healthChecks',
       plural=plural,
       required=required,
-      global_collection='compute.healthChecks',
-      short_help=short_help)
+      global_collection='compute.healthChecks')

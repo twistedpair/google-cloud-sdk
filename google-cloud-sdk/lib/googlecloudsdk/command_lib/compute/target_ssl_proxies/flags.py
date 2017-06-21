@@ -17,12 +17,10 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def TargetSslProxyArgument(required=True, plural=False):
-  resource_name = 'target SSL prox{0}'.format('ies' if plural else 'y')
   return compute_flags.ResourceArgument(
-      resource_name=resource_name,
+      resource_name='target SSL proxy',
       completion_resource_id='compute.targetSslProxies',
       plural=plural,
+      custom_plural='target SSL proxies',
       required=required,
-      global_collection='compute.targetSslProxies',
-      short_help=('The name{0} of the {1}.'
-                  .format('s' if plural else '', resource_name)))
+      global_collection='compute.targetSslProxies')

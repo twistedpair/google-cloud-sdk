@@ -13,10 +13,12 @@
 # limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin API."""
 
+import itertools
 import json
 import operator
 
 from apitools.base.py import encoding
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import operations_util
@@ -248,28 +250,29 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       return operation
 
   def ListInstances(self, versions):
-    """Lists all instances for the given versions.
+    """Produces a generator of all instances for the given versions.
 
     Args:
       versions: list of version_util.Version
 
     Returns:
-      list of instances_util.Instance for the given versions
+      A generator of each instances_util.Instance for the given versions
     """
-    instances = []
+    iters = []
     for version in versions:
-      list_req = (
-          self.messages.AppengineAppsServicesVersionsInstancesListRequest(
-              parent=self._FormatVersion(version.service,
-                                         version.id)))
-      instances += map(instances_util.Instance.FromInstanceResource,
-                       requests.MakeRequest(
-                           self.client.apps_services_versions_instances.List,
-                           list_req).instances)
-    return instances
+      request = self.messages.AppengineAppsServicesVersionsInstancesListRequest(
+          parent=self._FormatVersion(version.service, version.id))
+      iters.append(list_pager.YieldFromList(
+          self.client.apps_services_versions_instances,
+          request,
+          field='instances',
+          batch_size=100,  # Set batch size so tests can expect it.
+          batch_size_attribute='pageSize'))
+    return (instances_util.Instance.FromInstanceResource(i)
+            for i in itertools.chain.from_iterable(iters))
 
   def GetAllInstances(self, service=None, version=None, version_filter=None):
-    """List all instances, optionally filtering by service or version.
+    """Generator of all instances, optionally filtering by service or version.
 
     Args:
       service: str, the ID of the service to filter by.
@@ -277,7 +280,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       version_filter: filter function accepting version_util.Version
 
     Returns:
-      list of instance_util.Instance
+      generator of instance_util.Instance
     """
     services = self.ListServices()
     log.debug('All services: {0}'.format(services))
@@ -395,17 +398,16 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     """
     request = self.messages.AppengineAppsServicesListRequest(
         parent=self._FormatApp())
-    response = requests.MakeRequest(self.client.apps_services.List, request)
-
     services = []
-    for s in response.services:
+    for service in list_pager.YieldFromList(
+        self.client.apps_services, request, field='services',
+        batch_size=100, batch_size_attribute='pageSize'):
       traffic_split = {}
-      if s.split:
-        for split in s.split.allocations.additionalProperties:
+      if service.split:
+        for split in service.split.allocations.additionalProperties:
           traffic_split[split.key] = split.value
-      service = service_util.Service(self.project, s.id, traffic_split)
-      services.append(service)
-
+      services.append(
+          service_util.Service(self.project, service.id, traffic_split))
     return services
 
   def GetVersionResource(self, service, version):
@@ -437,11 +439,11 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       # Get the versions.
       request = self.messages.AppengineAppsServicesVersionsListRequest(
           parent=self._GetServiceRelativeName(service.id))
-      response = requests.MakeRequest(
-          self.client.apps_services_versions.List, request)
-
-      for v in response.versions:
-        versions.append(version_util.Version.FromVersionResource(v, service))
+      for version in list_pager.YieldFromList(
+          self.client.apps_services_versions, request, field='versions',
+          batch_size=100, batch_size_attribute='pageSize'):
+        versions.append(
+            version_util.Version.FromVersionResource(version, service))
 
     return versions
 
@@ -453,13 +455,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     """
     request = self.messages.AppengineAppsLocationsListRequest(
         name='apps/-')
-    response = requests.MakeRequest(
-        self.client.apps_locations.List, request)
-
-    regions = [region_util.Region.FromRegionResource(l)
-               for l in response.locations]
-
-    return regions
+    regions = list_pager.YieldFromList(
+        self.client.apps_locations, request, field='locations',
+        batch_size=100, batch_size_attribute='pageSize')
+    return [region_util.Region.FromRegionResource(loc) for loc in regions]
 
   def DeleteService(self, service_name):
     """Deletes the specified service.
@@ -505,9 +504,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         name=self._FormatApp(),
         filter=op_filter)
 
-    response = requests.MakeRequest(self.client.apps_operations.List, request)
-    return [operations_util.Operation(op)
-            for op in response.operations]
+    operations = list_pager.YieldFromList(
+        self.client.apps_operations, request, field='operations',
+        batch_size=100, batch_size_attribute='pageSize')
+    return [operations_util.Operation(op) for op in operations]
 
   def _CreateVersionResource(
       self, service_config, manifest, version_id, image, endpoints_info):

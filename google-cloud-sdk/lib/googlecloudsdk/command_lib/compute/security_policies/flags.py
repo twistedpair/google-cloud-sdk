@@ -17,15 +17,13 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def SecurityPolicyArgument(required=True, plural=False):
-  resource_name = 'security polic{0}'.format('ies' if plural else 'y')
   return compute_flags.ResourceArgument(
-      resource_name=resource_name,
+      resource_name='security policy',
       completion_resource_id='compute.securityPolicies',
       plural=plural,
+      custom_plural='security policies',
       required=required,
-      global_collection='compute.securityPolicies',
-      short_help=('The name{0} of the {1}.'.format('s' if plural else '',
-                                                   resource_name)))
+      global_collection='compute.securityPolicies')
 
 
 def SecurityPolicyArgumentForTargetResource(resource, required=True):

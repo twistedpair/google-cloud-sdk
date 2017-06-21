@@ -20,12 +20,32 @@ import os
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import files
 
 
+class Error(exceptions.Error):
+  """Base class for exceptions in this module."""
+
+
+class NoSdkRootException(Error):
+  """Raised if no SDK root can be found."""
+
+
 def _IndexDirPath():
+  """Locates the path for the directory where help search index should be.
+
+  Raises:
+    NoSdkRootException: if no SDK root is found.
+
+  Returns:
+    str, the path to the directory.
+  """
   paths = config.Paths()
+  if paths.sdk_root is None:
+    raise NoSdkRootException('No SDK root for this installation found. Help '
+                             'search index cannot be located.')
   # Table will be stored at root/.install/help_text.
   index_dir_path = os.path.join(paths.sdk_root, paths.CLOUDSDK_STATE_DIR,
                                 'help_text')
@@ -36,7 +56,32 @@ def _IndexDirPath():
 
 
 def IndexPath():
+  """Locates the path for the help search index.
+
+  Raises:
+    NoSdkRootException: if no SDK root is found.
+
+  Returns:
+    str, the path to the index.
+  """
   return os.path.join(_IndexDirPath(), 'table.json')
+
+
+def GetSerializedHelpIndex(cli):
+  """Helper function to generate and serialize help text.
+
+  Args:
+    cli: Calliope CLI object.
+
+  Returns:
+    str: the serialized help tree.
+  """
+  help_text = HelpIndexGenerator(
+      cli, ignore_load_errors=True).Walk(hidden=False)
+  def SerializeCommand(command):
+    return resource_projector.Compile().Evaluate(command)
+
+  return SerializeCommand(help_text)
 
 
 def Update(cli):
@@ -45,14 +90,7 @@ def Update(cli):
   Args:
     cli: Calliope CLI object for generating the help search table.
   """
-  help_text = HelpIndexGenerator(
-      cli, ignore_load_errors=True).Walk(hidden=False)
-  def SerializeCommand(command):
-    return resource_projector.Compile().Evaluate(command)
-
-  help_text = SerializeCommand(help_text)
-
-  # Overwrite the help search table file with updated content
+  help_text = GetSerializedHelpIndex(cli)
   table_path = IndexPath()
   with open(table_path, 'w') as index_file:
     json.dump(

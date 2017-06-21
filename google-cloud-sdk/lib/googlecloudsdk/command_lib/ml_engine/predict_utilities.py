@@ -44,7 +44,7 @@ def ReadInstances(input_file, data_format, limit=None):
   instances = []
 
   for line_num, line in enumerate(input_file):
-    line_content = line.rstrip('\n')
+    line_content = line.rstrip('\r\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '
                                       'instances file.')

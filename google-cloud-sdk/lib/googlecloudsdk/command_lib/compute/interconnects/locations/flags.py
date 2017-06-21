@@ -18,12 +18,11 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 def InterconnectLocationArgument(required=True):
   return compute_flags.ResourceArgument(
-      resource_name='interconnectLocation',
+      resource_name='interconnect location',
       completion_resource_id='compute.interconnectLocations',
       plural=False,
       required=required,
-      global_collection='compute.interconnectLocations',
-      short_help='The name of the interconnectLocation.')
+      global_collection='compute.interconnectLocations')
 
 
 def InterconnectLocationArgumentForOtherResource(short_help,

@@ -107,7 +107,7 @@ class _Command(object):
                                                            msg=msg)
 
 # Path to the go-app-stager binary
-_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot-1.6', 'bin')
+_GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
 
 # STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
 # path relative to Cloud SDK Root; it should look something like the following:
@@ -128,18 +128,18 @@ _GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot-1.6', 'bin')
 _STAGING_REGISTRY = {
     ('go', util.Environment.STANDARD):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.MANAGED_VMS):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.FLEX):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
 }
 

@@ -172,9 +172,20 @@ class Displayer(object):
       reverse: Sort by the keys in descending order if True, otherwise
         ascending.
     """
+    def _GetKey(r, key):
+      """Returns the value for key in r that can be compared with None."""
+      value = resource_property.Get(r, key, None)
+      # Some types (datetime for example) preclude comparisons with None.
+      # This converts the value to a string and uses that ordering.
+      try:
+        assert None < value
+        return value
+      except (AssertionError, TypeError):
+        return unicode(value)
+
     self._resources = sorted(
         self._resources,
-        key=lambda r: [resource_property.Get(r, k) for k in keys],
+        key=lambda r: [_GetKey(r, k) for k in keys],
         reverse=reverse)
 
   def _AddSortByTap(self):

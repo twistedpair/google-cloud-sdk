@@ -132,6 +132,7 @@ PREVIEW_IMAGE_PROJECTS = []
 SSH_KEYS_METADATA_KEY = 'sshKeys'
 SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'ssh-keys'
 SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
+OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'

@@ -20,7 +20,6 @@ from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.console import console_io
 
-
 _MODE_CHOICES = {
     'DEFAULT': 'Default (Google-managed) BGP advertisements.',
     'CUSTOM': 'Custom (user-configured) BGP advertisements.',
@@ -132,10 +131,9 @@ def ParseIpRanges(messages, ip_ranges):
 def AddUpdateBgpPeerArgs(parser):
   """Adds common update Bgp peer arguments."""
 
+  # TODO(b/62667314): add a test case to test the required field.
   parser.add_argument(
-      '--peer-name',
-      required=True,
-      help='The name of the peer being modified.')
+      '--peer-name', required=True, help='The name of the peer being modified.')
 
   parser.add_argument(
       '--interface',
@@ -145,27 +143,27 @@ def AddUpdateBgpPeerArgs(parser):
       '--peer-asn',
       type=int,
       help='The new BGP autonomous system number (ASN) for this BGP peer. '
-           'For more information see: https://tools.ietf.org/html/rfc6996.')
+      'For more information see: https://tools.ietf.org/html/rfc6996.')
 
   parser.add_argument(
       '--ip-address',
       help='The new link local address of the Cloud Router interface for this '
-           'BGP peer. Must be a link-local IP address belonging to the range '
-           '169.254.0.0/16 and must belong to same subnet as the interface '
-           'address of the peer router.')
+      'BGP peer. Must be a link-local IP address belonging to the range '
+      '169.254.0.0/16 and must belong to same subnet as the interface '
+      'address of the peer router.')
 
   parser.add_argument(
       '--peer-ip-address',
       help='The new link local address of the peer router. Must be a '
-           'link-local IP address belonging to the range 169.254.0.0/16.')
+      'link-local IP address belonging to the range 169.254.0.0/16.')
 
   parser.add_argument(
       '--advertised-route-priority',
       type=int,
       help='The priority of routes advertised to this BGP peer. In the case '
-           'where there is more than one matching route of maximum length, '
-           'the routes with lowest priority value win. 0 <= priority <= '
-           '65535.')
+      'where there is more than one matching route of maximum length, '
+      'the routes with lowest priority value win. 0 <= priority <= '
+      '65535.')
 
 
 def AddCustomAdvertisementArgs(parser, resource_str):
@@ -200,8 +198,7 @@ def AddCustomAdvertisementArgs(parser, resource_str):
               can only be specified in custom advertisement mode."""
       .format(resource_str))
 
-  incremental_args = parser.add_mutually_exclusive_group(
-      required=False)
+  incremental_args = parser.add_mutually_exclusive_group(required=False)
 
   incremental_args.add_argument(
       '--add-advertisement-groups',
@@ -221,8 +218,7 @@ def AddCustomAdvertisementArgs(parser, resource_str):
       help="""A list of pre-defined groups of IP ranges to remove from dynamic
               advertisement on this {0}. Each group in the list must exist in
               the current set of custom advertisements. This field can only be
-              specified in custom advertisement mode."""
-      .format(resource_str))
+              specified in custom advertisement mode.""".format(resource_str))
 
   incremental_args.add_argument(
       '--add-advertisement-ranges',
@@ -259,17 +255,14 @@ def CheckIncompatibleFlagsOrRaise(args):
 
 def HasReplaceAdvertisementFlags(args):
   """Returns whether replace-style flags are specified in arguments."""
-  return (args.advertisement_mode or
-          args.advertisement_groups or
-          args.advertisement_ranges)
+  return (args.advertisement_mode or args.advertisement_groups is not None or
+          args.advertisement_ranges is not None)
 
 
 def HasIncrementalAdvertisementFlags(args):
   """Returns whether incremental-style flags are specified in arguments."""
-  return (args.add_advertisement_groups or
-          args.remove_advertisement_groups or
-          args.add_advertisement_ranges or
-          args.remove_advertisement_ranges)
+  return (args.add_advertisement_groups or args.remove_advertisement_groups or
+          args.add_advertisement_ranges or args.remove_advertisement_ranges)
 
 
 def ParseAdvertisements(messages, resource_class, args):
@@ -314,13 +307,13 @@ def ParseAdvertisements(messages, resource_class, args):
 def ValidateCustomMode(messages, resource_class, resource):
   """Validate that a router/peer is in custom mode."""
 
-  if (resource.advertiseMode
-      is not resource_class.AdvertiseModeValueValuesEnum.CUSTOM):
+  if (resource.advertiseMode is
+      not resource_class.AdvertiseModeValueValuesEnum.CUSTOM):
     raise CustomWithDefaultError(messages, resource_class)
 
 
-def PromptIfSwitchToDefaultMode(
-    messages, resource_class, existing_mode, new_mode):
+def PromptIfSwitchToDefaultMode(messages, resource_class, existing_mode,
+                                new_mode):
   """If necessary, prompts the user for switching modes."""
 
   if (existing_mode is not None and
@@ -376,8 +369,8 @@ def RemoveGroupsFromAdvertisements(messages, resource_class, resource, groups):
   ]
 
 
-def RemoveIpRangesFromAdvertisements(
-    messages, resource_class, resource, ip_ranges):
+def RemoveIpRangesFromAdvertisements(messages, resource_class, resource,
+                                     ip_ranges):
   """Removes all specified IP ranges from a resource's advertisements.
 
   Raises an error if any of the specified advertised IP ranges were not found in

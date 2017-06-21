@@ -215,7 +215,15 @@ class _ProcessHolder(object):
           signum=signum,
           pid=self.process.pid
       ))
-      self.process.terminate()
+      # We could have jumped to the signal handler between cleaning up our
+      # finished child process in communicate() and removing the signal handler.
+      # Check to see if our process is still running before we attempt to send
+      # it a signal. If poll() returns None, even if the process dies right
+      # between that and the terminate() call, the terminate() call will still
+      # complete without an error (it just might send a signal to a zombie
+      # process).
+      if self.process.poll() is None:
+        self.process.terminate()
       ret_val = self.process.wait()
       sys.exit(ret_val)
 

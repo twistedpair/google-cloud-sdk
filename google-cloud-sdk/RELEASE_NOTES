@@ -3,6 +3,44 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 160.0.0 (2017-06-21)
+
+### Breaking Changes
+
+*   Removed the deprecated `gcloud ml-engine init-project` command. It is no
+    longer needed by other Google Cloud ML Engine commands.
+
+### Google Cloud SDK
+
+*   GA cmdlets for Stackdriver Logging, Google Cloud Pub/Sub, Google Cloud IAM
+    are now available in Cloud Tools for PowerShell.
+
+### Google App Engine
+
+*   `gcloud beta app deploy` now uses the new PHP Runtime Builder pipeline to
+    deploy apps. The normal `gcloud app deploy` remains unchanged.
+*   Previously, `gcloud app` list commands would only show the first 50 results.
+    Now, all relevant results will be shown.
+
+### Google Compute Engine
+
+*   It is now supported to delete both zonal and regional Managed Instance
+    Groups in one `gcloud` invocation.
+*   Using labels in `gcloud` for the following Google Compute Engine resources
+    is now in GA: disks, images, instances, and snapshots.
+
+### Google Cloud Container Builder
+
+*   Fixed a bug affecting concurrent invocations of `gcloud container builds
+    submit` wherein objects could be uploaded to the same location,
+    resulting in collisions and corrupted/broken builds.
+
+### Google Cloud Video Intelligence
+
+*   The `gcloud ml video` command group is now available in the beta track.
+    These commands allow you to use the Cloud Video Intelligence API to analyze
+    videos and manage long-running video analysis operations.
+
 ## 159.0.0 (2017-06-14)
 
 ### Google App Engine
@@ -10,7 +48,6 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 *   Added commands to support automatically managed certificates:
     *   `gcloud alpha app domain-mappings`
     *   `gcloud alpha app ssl-certificates`
-
 *   Added `--no-launch-browser` flag to all `gcloud app browse` commands:
     *   Allows the user to specify that they don't want a browser, they just
         want the url.

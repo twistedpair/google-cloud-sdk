@@ -98,7 +98,7 @@ from googlecloudsdk.core import properties
 import yaml
 
 
-WHITELISTED_RUNTIMES = ['aspnetcore', 'nodejs', 'ruby']
+WHITELISTED_RUNTIMES = ['aspnetcore', 'nodejs', 'ruby', 'php']
 
 
 class FileReadError(exceptions.Error):

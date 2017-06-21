@@ -39,3 +39,19 @@ def AddCommonArgs(parser, for_update=False):
       type=int,
       # TODO(b/36051080): better help
       help='The mask for network used for the server IP address.')
+
+
+def GetGetRequest(client, ref):
+  """Returns the request to Get a Router resource."""
+  return (client.apitools_client.routers, 'Get',
+          client.messages.ComputeRoutersGetRequest(**ref.AsDict()))
+
+
+def GetPatchRequest(client, ref, replacement):
+  """Returns the request to Patch a Router resource."""
+  request = client.messages.ComputeRoutersPatchRequest(
+      router=replacement.name,
+      routerResource=replacement,
+      project=ref.project,
+      region=ref.region)
+  return (client.apitools_client.routers, 'Patch', request)

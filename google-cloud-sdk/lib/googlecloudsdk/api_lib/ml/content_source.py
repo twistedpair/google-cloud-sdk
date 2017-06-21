@@ -27,7 +27,10 @@ _API_MESSAGE_FIELD_LOOKUP = {
         _REMOTE: 'uri'},
     'language': {
         _LOCAL: 'content',
-        _REMOTE: 'gcsContentUri'}
+        _REMOTE: 'gcsContentUri'},
+    'videointelligence': {
+        _LOCAL: 'inputContent',
+        _REMOTE: 'inputUri'}
     }
 
 
@@ -76,7 +79,7 @@ class ContentSource(object):
 
   @staticmethod
   def FromContentPath(content_path, api_name, url_validator=None,
-                      read_mode='rb'):
+                      read_mode='rb', encode=None):
     """Creates a ContentSource object.
 
     Determines whether the source is local or a valid remote URL and creates
@@ -89,10 +92,12 @@ class ContentSource(object):
       url_validator: function to validate URLs. If None, any path that doesn't
           exist locally is assumed to be a valid URL.
       read_mode: str, the mode to open the local source if applicable.
+      encode: callable function to encode contents if needed.
 
     Raises:
       UnrecognizedContentSourceError: if the URL is invalid or the
           local path is not a file.
+      MessageError: if the message field is not present.
 
     Returns:
       ContentSource, the created object.
@@ -102,7 +107,8 @@ class ContentSource(object):
     if os.path.isfile(content_path):
       return LocalSource(content_path,
                          ContentSource.GetFieldName(api_name, _LOCAL),
-                         read_mode=read_mode)
+                         read_mode=read_mode,
+                         encode=encode)
     # If the URL is valid, create RemoteSource.
     elif url_validator and url_validator(content_path):
       return RemoteSource(content_path,
@@ -134,11 +140,12 @@ class LocalSource(ContentSource):
   """
 
   def __init__(self, content_path, message_field, read_mode='rb',
-               contents=None):
+               contents=None, encode=None):
     self.local_path = content_path
     self.read_mode = read_mode
     self.message_field = message_field
     self.contents = contents
+    self.encode = encode
 
   @staticmethod
   def FromContents(contents, api_name):
@@ -165,6 +172,8 @@ class LocalSource(ContentSource):
     if not contents:
       raise ContentError(
           'No content found for field [{}]'.format(self.message_field))
+    if self.encode:
+      contents = self.encode(contents)
     setattr(message, self.message_field, contents)
 
   def __eq__(self, other):

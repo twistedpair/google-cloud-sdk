@@ -40,13 +40,21 @@ def RunSearch(terms, cli):
   Returns:
     a list of json objects representing gcloud commands.
   """
-  table_path = table.IndexPath()
-  if not os.path.exists(table_path):
-    with progress_tracker.ProgressTracker('Updating command help index...'):
-      table.Update(cli)
+  try:
+    table_path = table.IndexPath()
+  # If the help table file can't be found, load the help tree directly from
+  # the passed cli.
+  except table.NoSdkRootException:
+    with progress_tracker.ProgressTracker('Command help index not found, '
+                                          'loading gcloud commands...'):
+      parent = table.GetSerializedHelpIndex(cli)
+  else:
+    if not os.path.exists(table_path):
+      with progress_tracker.ProgressTracker('Updating command help index...'):
+        table.Update(cli)
 
-  with open(table_path, 'r') as table_file:
-    parent = json.loads(table_file.read())
+    with open(table_path, 'r') as table_file:
+      parent = json.loads(table_file.read())
 
   def WalkTree(parent, found_commands):
     result = PossiblyGetResult(parent, terms)

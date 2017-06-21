@@ -20,5 +20,4 @@ ACCELERATOR_TYPES_ARG = compute_flags.ResourceArgument(
     completion_resource_id='compute.acceleratorTypes',
     plural=False,
     required=True,
-    zonal_collection='compute.acceleratorTypes',
-    short_help=('The name of the accelerator type.'))
+    zonal_collection='compute.acceleratorTypes')

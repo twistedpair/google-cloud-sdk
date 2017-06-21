@@ -39,6 +39,9 @@ apis:
     v1:
       discovery_doc: apikeys_v1.json
   appengine:
+    v1alpha:
+      discovery_doc: appengine_v1alpha.json
+      default: false
     v1beta:
       discovery_doc: appengine_v1beta.json
       default: false
@@ -126,6 +129,9 @@ apis:
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json
+  cloudtasks:
+    v2beta2:
+      discovery_doc: cloudtasks_v2beta2.json
   clouduseraccounts:
     alpha:
       discovery_doc: clouduseraccounts_alpha.json
@@ -191,6 +197,8 @@ apis:
       default: true
     v1beta1:
       discovery_doc: dns_v1beta1.json
+    v1beta2:
+      discovery_doc: dns_v1beta2.json
     v2beta1:
       discovery_doc: dns_v2beta1.json
   genomics:
@@ -218,9 +226,6 @@ apis:
     v2:
       discovery_doc: logging_v2.json
       default: true
-  manager:
-    v1beta2:
-      discovery_doc: manager_v1beta2.json
   ml:
     v1:
       discovery_doc: ml_v1.json

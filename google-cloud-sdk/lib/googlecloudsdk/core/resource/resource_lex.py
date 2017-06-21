@@ -176,6 +176,11 @@ class _Transform(object):
     """The name of the last transform."""
     return self._transforms[-1].name if self._transforms else ''
 
+  @property
+  def term(self):
+    """The first global restriction term."""
+    return self._transforms[0].args[0] if self._transforms else ''
+
   def IsActive(self, active):
     """Returns True if the Transform active level is None or active."""
     return self._transforms and self.active in (None, active)
