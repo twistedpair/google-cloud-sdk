@@ -433,6 +433,35 @@ been deployed).
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (MlProjectsModelsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'ml.projects.models.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'MlProjectsModelsGetIamPolicyRequest',
+        response_type_name=u'GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the models in a project.
 
@@ -460,6 +489,67 @@ versions.
         request_field='',
         request_type_name=u'MlProjectsModelsListRequest',
         response_type_name=u'GoogleCloudMlV1ListModelsResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+      Args:
+        request: (MlProjectsModelsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'ml.projects.models.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'googleIamV1SetIamPolicyRequest',
+        request_type_name=u'MlProjectsModelsSetIamPolicyRequest',
+        response_type_name=u'GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
+
+      Args:
+        request: (MlProjectsModelsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/models/{modelsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'ml.projects.models.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'googleIamV1TestIamPermissionsRequest',
+        request_type_name=u'MlProjectsModelsTestIamPermissionsRequest',
+        response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 

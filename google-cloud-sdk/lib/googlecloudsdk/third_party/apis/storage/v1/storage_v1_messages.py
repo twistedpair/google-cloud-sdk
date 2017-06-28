@@ -792,11 +792,12 @@ class Policy(_messages.Message):
     kind: The kind of item this is. For policies, this is always
       storage#policy. This field is ignored on input.
     resourceId: The ID of the resource to which this policy belongs. Will be
-      of the form buckets/bucket for buckets, and
-      buckets/bucket/objects/object for objects. A specific generation may be
-      specified by appending #generationNumber to the end of the object name,
-      e.g. buckets/my-bucket/objects/data.txt#17. The current generation can
-      be denoted with #0. This field is ignored on input.
+      of the form projects/_/buckets/bucket for buckets, and
+      projects/_/buckets/bucket/objects/object for objects. A specific
+      generation may be specified by appending #generationNumber to the end of
+      the object name, e.g. projects/_/buckets/my-bucket/objects/data.txt#17.
+      The current generation can be denoted with #0. This field is ignored on
+      input.
   """
 
   class BindingsValueListEntry(_messages.Message):

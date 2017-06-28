@@ -191,13 +191,17 @@ class ParameterInfoByConvention(resource_cache.ParameterInfo):
       value = self._GetPropertyValue(dest)
     return value
 
-  def Execute(self, command):
+  def Execute(self, command, call_arg_complete=False):
     """Executes command in the current CLI.
 
     Args:
       command: The command arg list to execute.
+      call_arg_complete: Enable arg completion if True.
 
     Returns:
       Returns the list of resources from the command.
     """
-    return self._parsed_args._Execute(command)  # pylint: disable=protected-access
+    call_arg_complete = False
+    # pylint: disable=protected-access
+    return self._parsed_args._Execute(
+        command, call_arg_complete=call_arg_complete)

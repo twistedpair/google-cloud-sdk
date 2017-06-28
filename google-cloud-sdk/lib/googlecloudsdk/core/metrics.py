@@ -54,6 +54,7 @@ _CSI_RUN_EVENT = 'run'
 _CSI_TOTAL_EVENT = 'total'
 _CSI_REMOTE_EVENT = 'remote'
 _CSI_LOCAL_EVENT = 'local'
+_START_EVENT = 'start'
 
 
 class _GAEvent(object):
@@ -80,30 +81,37 @@ class _TimedEvent(object):
 class _CommandTimer(object):
   """A class for timing the execution of a command."""
 
-  def __init__(self, start_time_ms):
-    self.__start = start_time_ms
+  def __init__(self):
+    self.__start = 0
     self.__events = []
     self.__total_rpc_duration = 0
-    self.__stop = start_time_ms
+    self.__total_local_duration = 0
     self.__category = 'unknown'
     self.__action = 'unknown'
     self.__label = None
-    self.__custom_dimensions = {}
+    self.__flag_names = None
 
-  def SetContext(self, category, action, label, **kwargs):
+  def SetContext(self, category, action, label, flag_names):
     self.__category = category
     self.__action = action
     self.__label = label
-    self.__custom_dimensions = kwargs
+    self.__flag_names = flag_names
 
   def GetAction(self):
     return self.__action
 
-  def Event(self, name):
-    time_millis = _GetTimeMillis()
+  def Event(self, name, event_time=None):
+    time_millis = _GetTimeMillis(event_time)
+
+    if name is _START_EVENT:
+      self.__start = time_millis
+      return
+
     self.__events.append(_TimedEvent(name, time_millis))
+
     if name is _CSI_TOTAL_EVENT:
-      self.__stop = time_millis
+      self.__total_local_duration = time_millis - self.__start
+      self.__total_local_duration -= self.__total_rpc_duration
 
   def AddRPCDuration(self, duration_in_ms):
     self.__total_rpc_duration += duration_in_ms
@@ -118,22 +126,46 @@ class _CommandTimer(object):
   def GetCSIParams(self):
     """Gets the fields to send in the CSI beacon."""
     params = [('action', self._GetCSIAction())]
-    params.extend([(k, v) for k, v in self.__custom_dimensions.iteritems()
-                   if v is not None])
+
+    if self.__flag_names is not None:
+      params.append(('flag_names', self.__flag_names))
 
     response_times = [
         '{0}.{1}'.format(event.name, event.time_millis - self.__start)
         for event in self.__events]
     params.append(('rt', ','.join(response_times)))
 
-    local_time = (self.__stop - self.__start) - self.__total_rpc_duration
     interval_times = [
         '{0}.{1}'.format(_CSI_REMOTE_EVENT, self.__total_rpc_duration),
-        '{0}.{1}'.format(_CSI_LOCAL_EVENT, local_time),
+        '{0}.{1}'.format(_CSI_LOCAL_EVENT, self.__total_local_duration),
     ]
     params.append(('it', ','.join(interval_times)))
 
     return params
+
+  def GetGATimingsParams(self):
+    """Gets the GA timings params corresponding to all the timed events."""
+    ga_timings_params = []
+
+    event_params = [('utc', self.__category), ('utl', self.__action)]
+    if self.__flag_names is not None:
+      event_params.append(('cd6', self.__flag_names))
+
+    for event in self.__events:
+      timing_params = [('utv', event.name),
+                       ('utt', event.time_millis - self.__start)]
+      timing_params.extend(event_params)
+      ga_timings_params.append(timing_params)
+
+    ga_timings_params.append(
+        [('utv', _CSI_REMOTE_EVENT),
+         ('utt', self.__total_rpc_duration)] + event_params)
+
+    ga_timings_params.append(
+        [('utv', _CSI_LOCAL_EVENT),
+         ('utt', self.__total_local_duration)] + event_params)
+
+    return ga_timings_params
 
 
 class _MetricsCollector(object):
@@ -230,20 +262,29 @@ class _MetricsCollector(object):
         # cd9 passed as argument to _GAEvent - cd9 = Error Extra Info
     ]
 
-    self._ga_params = [
+    self._ga_event_params = [
         ('v', '1'),
         ('tid', ga_tid),
         ('cid', cid),
         ('t', 'event')]
-    self._ga_params.extend([(param[0], param[2]) for param in common_params])
+    self._ga_event_params.extend(
+        [(param[0], param[2]) for param in common_params])
     self._ga_events = []
+
+    self._ga_timing_params = [
+        ('v', '1'),
+        ('tid', ga_tid),
+        ('cid', cid),
+        ('t', 'timing')]
+    self._ga_timing_params.extend(
+        [(param[0], param[2]) for param in common_params])
 
     self._csi_params = [('s', _CSI_ID),
                         ('v', '2'),
                         ('rls', config.CLOUD_SDK_VERSION),
                         ('c', cid)]
     self._csi_params.extend([(param[1], param[2]) for param in common_params])
-    self.StartTimer(_GetTimeMillis())
+    self._timer = _CommandTimer()
 
     self._metrics = []
 
@@ -298,18 +339,17 @@ class _MetricsCollector(object):
   def DecrementActionLevel(self):
     self._action_level -= 1
 
-  def StartTimer(self, start_time_ms):
-    self._timer = _CommandTimer(start_time_ms)
-
-  def RecordTimedEvent(self, name, record_only_on_top_level=False):
+  def RecordTimedEvent(self, name, record_only_on_top_level=False,
+                       event_time=None):
     """Records the time when a particular event happened.
 
     Args:
       name: str, Name of the event.
       record_only_on_top_level: bool, Whether to record only on top level.
+      event_time: float, Time when the event happened in secs since epoch.
     """
     if self._action_level == 0 or not record_only_on_top_level:
-      self._timer.Event(name)
+      self._timer.Event(name, event_time=event_time)
 
   def RecordRPCDuration(self, duration_in_ms):
     """Records the time when a particular event happened.
@@ -319,15 +359,14 @@ class _MetricsCollector(object):
     """
     self._timer.AddRPCDuration(duration_in_ms)
 
-  def SetTimerContext(self, category, action, label=None, **kwargs):
+  def SetTimerContext(self, category, action, label=None, flag_names=None):
     """Sets the context for which the timer is collecting timed events.
 
     Args:
       category: str, Category of the action being timed.
       action: str, Name of the action being timed.
       label: str, Additional information about the action being timed.
-      **kwargs: {str: str}, A dictionary of custom dimension names to values to
-        include.
+      flag_names: str, Comma separated list of flag names used with the action.
     """
     # We only want to time top level commands
     if category is _GA_COMMANDS_CATEGORY and self._action_level != 0:
@@ -337,7 +376,7 @@ class _MetricsCollector(object):
     if category is _GA_ERROR_CATEGORY and self._action_level != 0:
       action = self._timer.GetAction()
 
-    self._timer.SetContext(category, action, label, **kwargs)
+    self._timer.SetContext(category, action, label, flag_names)
 
   def CollectCSIMetric(self):
     """Adds metric with latencies for the given command to the metrics queue."""
@@ -364,12 +403,18 @@ class _MetricsCollector(object):
     custom_dimensions = [(k, v) for k, v in event.custom_dimensions.iteritems()
                          if v is not None]
     params.extend(sorted(custom_dimensions))
-    params.extend(self._ga_params)
+    params.extend(self._ga_event_params)
     data = urllib.urlencode(params)
     self._ga_events.append(data)
 
   def CollectGAMetric(self):
-    data = '\n'.join(self._ga_events)
+    ga_timings = []
+    for timing_params in self._timer.GetGATimingsParams():
+      timing_params.extend(self._ga_timing_params)
+      timing_data = urllib.urlencode(timing_params)
+      ga_timings.append(timing_data)
+
+    data = '\n'.join(self._ga_events + ga_timings)
     headers = {'user-agent': self._user_agent}
     self.CollectHTTPBeacon(_GA_ENDPOINT, 'POST', data, headers)
 
@@ -662,7 +707,9 @@ def Started(start_time):
   """
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.StartTimer(_GetTimeMillis(start_time))
+    collector.RecordTimedEvent(name=_START_EVENT,
+                               record_only_on_top_level=True,
+                               event_time=start_time)
 
 
 @CaptureAndLogException

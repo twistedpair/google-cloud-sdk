@@ -53,6 +53,7 @@ class Snapshot(object):
     src_dir: str, The root of the snapshot source on the local disk.
     files: {str: FileMetadata}, A mapping from file path (relative to the
         snapshot root) to file metadata.
+    dir: [str], The list of dirs (possibly empty) in the snapshot.
     uncompressed_size: int, The number of bytes needed to store all of the
         files in this snapshot, uncompressed.
   """
@@ -60,23 +61,46 @@ class Snapshot(object):
   def __init__(self, src_dir):
     self.src_dir = src_dir
     self.files = {}
+    self.dirs = []
     self.uncompressed_size = 0
-
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
-
-    for (dirpath, _, filenames) in os.walk(self.src_dir):
+    for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
       for fname in filenames:
         fpath = os.path.relpath(os.path.join(dirpath, fname), self.src_dir)
         fm = FileMetadata(self.src_dir, fpath)
         self.files[fpath] = fm
         self.uncompressed_size += fm.size
+      for dname in dirnames:
+        dpath = os.path.relpath(os.path.join(dirpath, dname), self.src_dir)
+        self.dirs.append(dpath)
+
+  def _MakeTarball(self, archive_path):
+    """Constructs a tarball of snapshot contents.
+
+    Args:
+      archive_path: Path to place tar file.
+
+    Returns:
+      tarfile.TarFile, The constructed tar file.
+    """
+    tf = tarfile.open(archive_path, mode='w:gz')
+    for dpath in self.dirs:
+      t = tarfile.TarInfo(dpath)
+      t.type = tarfile.DIRTYPE
+      tf.addfile(t)
+      log.debug('Added dir [%s]', dpath)
+    for path in self.files:
+      tf.add(path)
+      log.debug('Added [%s]', path)
+    return tf
 
   def CopyTarballToGCS(self, storage_client, gcs_object):
     """Copy a tarball of the snapshot to GCS.
 
     Args:
-      storage_client: storage.Client, The storage client to use for uploading.
+      storage_client: storage_api.StorageClient, The storage client to use for
+                      uploading.
       gcs_object: storage.objects Resource, The GCS object to write.
 
     Returns:
@@ -85,12 +109,8 @@ class Snapshot(object):
     with files.ChDir(self.src_dir):
       with files.TemporaryDirectory() as tmp:
         archive_path = os.path.join(tmp, 'file.tgz')
-        tf = tarfile.open(archive_path, mode='w:gz')
-        for path in self.files:
-          tf.add(path)
-          log.debug('Added [%s]\n', path)
+        tf = self._MakeTarball(archive_path)
         tf.close()
-
         log.status.write(
             'Uploading tarball of [{src_dir}] to '
             '[gs://{bucket}/{object}]\n'.format(

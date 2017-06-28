@@ -281,7 +281,8 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
       device numeric id.
     updateMask: Only updates the `device` fields indicated by this mask. The
       field mask must not be empty, and it must not contain fields that are
-      immutable or only set by the server.
+      immutable or only set by the server. Mutable top-level fields:
+      `credentials` and `enabled_state`
   """
 
   device = _messages.MessageField('Device', 1)
@@ -345,7 +346,8 @@ class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
       project/locations/us-central1/registries/my-registry`.
     updateMask: Only updates the `device_registry` fields indicated by this
       mask. The field mask must not be empty, and it must not contain fields
-      that are immutable or only set by the server.
+      that are immutable or only set by the server. Mutable top-level fields:
+      `event_notification_config` and `mqtt_config`
   """
 
   deviceRegistry = _messages.MessageField('DeviceRegistry', 1)
@@ -726,7 +728,20 @@ class ListDevicesResponse(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
+  """Specifies what kind of log the caller must write Increment a streamz
+  counter with the specified metric and field names.  Metric names should
+  start with a '/', generally be lowercase-only, and end in "_count". Field
+  names should not contain an initial slash. The actual exported metric names
+  will have "/iam/policy" prepended.  Field names correspond to IAM request
+  parameters and field values are their respective values.  At present the
+  only supported field names are    - "iam_principal", corresponding to
+  IAMContext.principal;    - "" (empty string), resulting in one aggretated
+  counter with no field.  Examples:   counter { metric: "/debug_access_count"
+  field: "iam_principal" }   ==> increment counter
+  /iam/policy/backend_debug_access_count
+  {iam_principal=[value of IAMContext.principal]}  At this time we do not
+  support: * multiple field names (though this may be supported in the future)
+  * decrementing the counter * incrementing it by anything other than 1
 
   Fields:
     cloudAudit: Cloud audit options.

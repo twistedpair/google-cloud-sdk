@@ -794,7 +794,8 @@ class Settings(_messages.Message):
   """Database instance settings.
 
   Messages:
-    LabelsValue: User defined labels.
+    UserLabelsValue: User-provided labels, represented as a dictionary where
+      each label is a single key value pair.
 
   Fields:
     activationPolicy: The activation policy specifies when the instance is
@@ -829,7 +830,6 @@ class Settings(_messages.Message):
       to the instance. The IPv4 address cannot be disabled for Second
       Generation instances.
     kind: This is always sql#settings.
-    labels: User defined labels.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or GCE zone for better performance. App Engine co-location is only
@@ -854,21 +854,25 @@ class Settings(_messages.Message):
       there is no limit. Applies only to Second Generation instances.
     tier: The tier of service for this instance, for example D1, D2. For more
       information, see pricing.
+    userLabels: User-provided labels, represented as a dictionary where each
+      label is a single key value pair.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    """User defined labels.
+  class UserLabelsValue(_messages.Message):
+    """User-provided labels, represented as a dictionary where each label is a
+    single key value pair.
 
     Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
+      AdditionalProperty: An additional property for a UserLabelsValue object.
 
     Fields:
-      additionalProperties: An individual label entry.
+      additionalProperties: An individual label entry, composed of a key and a
+        value.
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      """An additional property for a UserLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -891,15 +895,15 @@ class Settings(_messages.Message):
   databaseReplicationEnabled = _messages.BooleanField(9)
   ipConfiguration = _messages.MessageField('IpConfiguration', 10)
   kind = _messages.StringField(11, default=u'sql#settings')
-  labels = _messages.MessageField('LabelsValue', 12)
-  locationPreference = _messages.MessageField('LocationPreference', 13)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
-  pricingPlan = _messages.StringField(15)
-  replicationType = _messages.StringField(16)
-  settingsVersion = _messages.IntegerField(17)
-  storageAutoResize = _messages.BooleanField(18)
-  storageAutoResizeLimit = _messages.IntegerField(19)
-  tier = _messages.StringField(20)
+  locationPreference = _messages.MessageField('LocationPreference', 12)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 13)
+  pricingPlan = _messages.StringField(14)
+  replicationType = _messages.StringField(15)
+  settingsVersion = _messages.IntegerField(16)
+  storageAutoResize = _messages.BooleanField(17)
+  storageAutoResizeLimit = _messages.IntegerField(18)
+  tier = _messages.StringField(19)
+  userLabels = _messages.MessageField('UserLabelsValue', 20)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):
@@ -1136,7 +1140,8 @@ class SqlInstancesListRequest(_messages.Message):
   """A SqlInstancesListRequest object.
 
   Fields:
-    filter: Reserved for future use.
+    filter: An expression for filtering the results of the request, such as by
+      name or label.
     maxResults: The maximum number of results to return per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.

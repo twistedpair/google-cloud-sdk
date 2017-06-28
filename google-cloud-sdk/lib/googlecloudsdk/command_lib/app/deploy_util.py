@@ -17,7 +17,6 @@ Mostly created to selectively enable Cloud Endpoints in the beta/preview release
 tracks.
 """
 import argparse
-import os
 
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import appengine_client
@@ -34,6 +33,7 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.command_lib.app import create_util
+from googlecloudsdk.command_lib.app import deployables
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.app import flags
 from googlecloudsdk.command_lib.app import output_helpers
@@ -44,6 +44,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import files
 
 
 class Error(core_exceptions.Error):
@@ -77,7 +78,7 @@ class StoppedApplicationError(Error):
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
-  No deployment details (e.g. targets for a specific deployment).
+  No deployment details (e.g. sources for a specific deployment).
 
   Attributes:
     promote: True if the deployed version should recieve all traffic.
@@ -110,15 +111,12 @@ class ServiceDeployer(object):
   Attributes:
     api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
         Admin API client.
-    stager: command_lib.app.staging.Stager, the object used to potentially stage
-        applications with matching runtime/environment combinations.
     deploy_options: DeployOptions, the options to use for services deployed by
         this ServiceDeployer.
   """
 
-  def __init__(self, api_client, stager, deploy_options):
+  def __init__(self, api_client, deploy_options):
     self.api_client = api_client
-    self.stager = stager
     self.deploy_options = deploy_options
 
   def _PossiblyConfigureEndpoints(self, service, source_dir, new_version):
@@ -201,8 +199,8 @@ class ServiceDeployer(object):
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def Deploy(self, service, new_version, code_bucket_ref, image, all_services,
-             gcr_domain):
+  def Deploy(self, service, new_version, code_bucket_ref, image,
+             all_services, gcr_domain):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
@@ -215,8 +213,7 @@ class ServiceDeployer(object):
       --stop-previous-version given (default))
 
     Args:
-      service: yaml_parsing.ServiceYamlInfo, service configuration to be
-        deployed
+      service: deployables.Service, service to be deployed.
       new_version: version_util.Version describing where to deploy the service
       code_bucket_ref: cloud_storage.BucketReference where the service's files
         have been uploaded
@@ -230,30 +227,29 @@ class ServiceDeployer(object):
     """
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
+    source_dir = service.upload_dir
+    service_info = service.service_info
+    endpoints_info = self._PossiblyConfigureEndpoints(
+        service_info, source_dir, new_version)
+    image = self._PossiblyBuildAndPush(
+        new_version, service_info, source_dir, image, code_bucket_ref,
+        gcr_domain)
+    manifest = None
+    # "Non-hermetic" services require file upload outside the Docker image.
+    if not service_info.is_hermetic:
+      manifest = deploy_app_command_util.CopyFilesToCodeBucket(
+          service_info, source_dir, code_bucket_ref)
 
-    with self.stager.Stage(service.file, service.runtime,
-                           service.env) as staging_dir:
-      source_dir = staging_dir or os.path.dirname(service.file)
-      endpoints_info = self._PossiblyConfigureEndpoints(
-          service, source_dir, new_version)
-      image = self._PossiblyBuildAndPush(
-          new_version, service, source_dir, image, code_bucket_ref, gcr_domain)
-      manifest = None
-      # "Non-hermetic" services require file upload outside the Docker image.
-      if not service.is_hermetic:
-        manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-            service, source_dir, code_bucket_ref)
-
-      # Actually create the new version of the service.
-      message = 'Updating service [{service}]'.format(
-          service=new_version.service)
-      with progress_tracker.ProgressTracker(message):
-        metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
-        self.api_client.DeployService(new_version.service, new_version.id,
-                                      service, manifest, image,
-                                      endpoints_info)
-        metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-        self._PossiblyPromote(all_services, new_version)
+    # Actually create the new version of the service.
+    message = 'Updating service [{service}]'.format(
+        service=new_version.service)
+    with progress_tracker.ProgressTracker(message):
+      metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
+      self.api_client.DeployService(new_version.service, new_version.id,
+                                    service_info, manifest, image,
+                                    endpoints_info)
+      metrics.CustomTimedEvent(metric_names.DEPLOY_API)
+      self._PossiblyPromote(all_services, new_version)
 
 
 def ArgsDeploy(parser):
@@ -346,101 +342,92 @@ def RunDeploy(
   deploy_options = DeployOptions.FromProperties(
       enable_endpoints, runtime_builder_strategy=runtime_builder_strategy)
 
-  # Parse existing app.yamls or try to generate a new one if the directory is
-  # empty.
-  if not args.deployables:
-    yaml_path = deploy_command_util.DEFAULT_DEPLOYABLE
-    if not os.path.exists(deploy_command_util.DEFAULT_DEPLOYABLE):
-      log.warning('Automatic app detection is currently in Beta')
-      yaml_path = deploy_command_util.CreateAppYamlForAppDirectory(os.getcwd())
-    app_config = yaml_parsing.AppConfigSet([yaml_path])
-  else:
-    app_config = yaml_parsing.AppConfigSet(args.deployables)
+  with files.TemporaryDirectory() as staging_area:
+    if args.skip_staging:
+      stager = staging.GetNoopStager(staging_area)
+    elif use_beta_stager:
+      stager = staging.GetBetaStager(staging_area)
+    else:
+      stager = staging.GetStager(staging_area)
+    services, configs = deployables.GetDeployables(
+        args.deployables, stager, deployables.GetPathMatchers())
+    service_infos = [d.service_info for d in services]
 
-  # If applicable, sort services by order they were passed to the command.
-  services = app_config.Services()
+    if not args.skip_image_url_validation:
+      flags.ValidateImageUrl(args.image_url, service_infos)
 
-  if not args.skip_image_url_validation:
-    flags.ValidateImageUrl(args.image_url, services)
+    # The new API client.
+    api_client = appengine_api_client.GetApiClient()
+    # pylint: disable=protected-access
+    log.debug('API endpoint: [{endpoint}], API version: [{version}]'.format(
+        endpoint=api_client.client.url,
+        version=api_client.client._VERSION))
+    # The legacy admin console API client.
+    # The Admin Console API existed long before the App Engine Admin API, and
+    # isn't being improved. We're in the process of migrating all of the calls
+    # over to the Admin API, but a few things (notably config deployments)
+    # haven't been ported over yet.
+    ac_client = appengine_client.AppengineClient(
+        args.server, args.ignore_bad_certs)
 
-  # The new API client.
-  api_client = appengine_api_client.GetApiClient()
-  # pylint: disable=protected-access
-  log.debug('API endpoint: [{endpoint}], API version: [{version}]'.format(
-      endpoint=api_client.client.url,
-      version=api_client.client._VERSION))
-  # The legacy admin console API client.
-  # The Admin Console API existed long before the App Engine Admin API, and
-  # isn't being improved. We're in the process of migrating all of the calls
-  # over to the Admin API, but a few things (notably config deployments) haven't
-  # been ported over yet.
-  ac_client = appengine_client.AppengineClient(
-      args.server, args.ignore_bad_certs)
+    app = _PossiblyCreateApp(api_client, project)
+    if check_for_stopped:
+      _RaiseIfStopped(api_client, app)
+    app = _PossiblyRepairApp(api_client, app)
 
-  app = _PossiblyCreateApp(api_client, project)
-  if check_for_stopped:
-    _RaiseIfStopped(api_client, app)
-  app = _PossiblyRepairApp(api_client, app)
+    # Tell the user what is going to happen, and ask them to confirm.
+    version_id = args.version or util.GenerateVersionId()
+    deployed_urls = output_helpers.DisplayProposedDeployment(
+        app, project, services, configs, version_id, deploy_options.promote)
+    console_io.PromptContinue(cancel_on_no=True)
+    if service_infos:
+      # Do generic app setup if deploying any services.
+      # All deployment paths for a service involve uploading source to GCS.
+      metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET_START)
+      code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
+      metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
+      log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToBucketUrl()))
 
-  # Tell the user what is going to happen, and ask them to confirm.
-  version_id = args.version or util.GenerateVersionId()
-  deployed_urls = output_helpers.DisplayProposedDeployment(
-      app, project, app_config, version_id, deploy_options.promote)
-  console_io.PromptContinue(cancel_on_no=True)
-  if services:
-    # Do generic app setup if deploying any services.
-    # All deployment paths for a service involve uploading source to GCS.
-    metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET_START)
-    code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
-    metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
-    log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToBucketUrl()))
+      # Prepare Flex if any service is going to deploy an image.
+      if any([s.RequiresImage() for s in service_infos]):
+        if use_service_management:
+          deploy_command_util.PossiblyEnableFlex(project)
+        else:
+          deploy_command_util.DoPrepareManagedVms(ac_client)
 
-    # Prepare Flex if any service is going to deploy an image.
-    if any([m.RequiresImage() for m in services.values()]):
-      if use_service_management:
-        deploy_command_util.PossiblyEnableFlex(project)
-      else:
-        deploy_command_util.DoPrepareManagedVms(ac_client)
+      all_services = dict([(s.id, s) for s in api_client.ListServices()])
+    else:
+      code_bucket_ref = None
+      all_services = {}
+    new_versions = []
+    deployer = ServiceDeployer(api_client, deploy_options)
 
-    all_services = dict([(s.id, s) for s in api_client.ListServices()])
-  else:
-    code_bucket_ref = None
-    all_services = {}
-  new_versions = []
-  if args.skip_staging:
-    stager = staging.GetNoopStager()
-  elif use_beta_stager:
-    stager = staging.GetBetaStager()
-  else:
-    stager = staging.GetStager()
-  deployer = ServiceDeployer(api_client, stager, deploy_options)
-
-  # Track whether a service has been deployed yet, for metrics.
-  service_deployed = False
-  for name, service in services.iteritems():
-    if not service_deployed:
-      metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY_START)
-    new_version = version_util.Version(project, name, version_id)
-    deployer.Deploy(service, new_version, code_bucket_ref, args.image_url,
-                    all_services, app.gcrDomain)
-    new_versions.append(new_version)
-    log.status.Print('Deployed service [{0}] to [{1}]'.format(
-        name, deployed_urls[name]))
-    if not service_deployed:
-      metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY)
-    service_deployed = True
+    # Track whether a service has been deployed yet, for metrics.
+    service_deployed = False
+    for service in services:
+      if not service_deployed:
+        metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY_START)
+      new_version = version_util.Version(project, service.service_id,
+                                         version_id)
+      deployer.Deploy(service, new_version, code_bucket_ref,
+                      args.image_url, all_services, app.gcrDomain)
+      new_versions.append(new_version)
+      log.status.Print('Deployed service [{0}] to [{1}]'.format(
+          service.service_id, deployed_urls[service.service_id]))
+      if not service_deployed:
+        metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY)
+      service_deployed = True
 
   # Deploy config files.
-  if app_config.Configs():
+  if configs:
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
-  for (name, config) in app_config.Configs().iteritems():
-    message = 'Updating config [{config}]'.format(config=name)
-    with progress_tracker.ProgressTracker(message):
-      ac_client.UpdateConfig(name, config.parsed)
-  if app_config.Configs():
+    for config in configs:
+      message = 'Updating config [{config}]'.format(config=config.name)
+      with progress_tracker.ProgressTracker(message):
+        ac_client.UpdateConfig(config.name, config.parsed)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 
-  updated_configs = app_config.Configs().keys()
+  updated_configs = [c.name for c in configs]
 
   PrintPostDeployHints(new_versions, updated_configs)
 

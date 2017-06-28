@@ -178,6 +178,12 @@ apis:
       resources:
          projects.regions: "projects/{projectId}/regions/{regionId}"
          projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
+      default: true
+    v1beta2:
+      discovery_doc: dataproc_v1beta2.json
+      resources:
+         projects.regions: "projects/{projectId}/regions/{regionId}"
+         projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
   deploymentmanager:
     alpha:
       discovery_doc: deploymentmanager_alpha.json

@@ -14,7 +14,6 @@
 
 """Module to parse .yaml files for an appengine app."""
 
-import collections
 import os
 
 from googlecloudsdk.api_lib.app import util
@@ -74,15 +73,6 @@ DEFAULT_SKIP_FILES_FLEX = (r'^(.*/)?#.*#$|'
 class Error(exceptions.Error):
   """A base error for this module."""
   pass
-
-
-class AppConfigSetLoadError(Error):
-  """An exception for when the set of configurations are not valid."""
-
-  def __init__(self):
-    """Creates a new Error."""
-    super(AppConfigSetLoadError, self).__init__(
-        'Errors occurred while parsing the App Engine app configuration.')
 
 
 class YamlParseError(Error):
@@ -164,6 +154,12 @@ class ConfigYamlInfo(_YamlInfo):
     """
     super(ConfigYamlInfo, self).__init__(file_path, parsed)
     self.config = config
+
+  @property
+  def name(self):
+    """Name of the config file without extension, e.g. `cron`."""
+    (base, _) = os.path.splitext(os.path.basename(self.file))
+    return base
 
   @staticmethod
   def FromFile(file_path):
@@ -383,138 +379,3 @@ def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):
         'The [{0}] field is specified in file [{1}]. This field is not used '
         'by gcloud and must be removed. '.format(name, file_path) + msg)
 
-
-class AppConfigSet(object):
-  """Parses and holds information about the set of config files for an app."""
-  YAML_EXTS = ['.yaml', '.yml']
-  IGNORED_YAMLS = ['backends']
-
-  def __init__(self, files):
-    """Creates a new AppConfigSet.
-
-    This will scan all files and directories in items, parse them, and
-    validate their contents.
-
-    Args:
-      files: str, The files to load into the config set.
-
-    Raises:
-      AppConfigSetLoadError: If validation fails on the given files.
-      YamlParserError: If a file fails to parse.
-    """
-    self.__config_yamls = {}
-    self.__service_yamls = collections.OrderedDict()
-    self.__error = False
-
-    for f in files:
-      if os.path.isfile(f):
-        try:
-          if not self.__LoadYamlFile(f):
-            self.__Error('File [%s] is not a valid deployable yaml file.', f)
-        except YamlValidationError as err:
-          self.__Error('{0}'.format(err))
-      elif os.path.isdir(f):
-        self.__Error('Directories are not supported [%s].  You must provide '
-                     'explicit yaml files.', f)
-      else:
-        self.__Error(
-            'File [%s] not found.', f)
-
-    if self.__error:
-      raise AppConfigSetLoadError()
-
-  def __Error(self, *args, **kwargs):
-    log.error(*args, **kwargs)
-    self.__error = True
-
-  def Services(self):
-    """Gets the services that were found.
-
-    Returns:
-      {str, ServiceYamlInfo}, A mapping of service name to definition.
-    """
-    return collections.OrderedDict(self.__service_yamls)
-
-  def HermeticServices(self):
-    """Gets the hermetic services that were found.
-
-    Returns:
-      {str, ServiceYamlInfo}, A mapping of service name to definition.
-    """
-    return dict((key, srv) for (key, srv) in self.__service_yamls.iteritems()
-                if srv.is_hermetic)
-
-  def NonHermeticServices(self):
-    """Gets the non-hermetic services that were found.
-
-    Returns:
-      {str, ServiceYamlInfo}, A mapping of service name to definition.
-    """
-    return dict((key, mod) for (key, mod) in self.__service_yamls.iteritems()
-                if not mod.is_hermetic)
-
-  def Configs(self):
-    """Gets the configs that were found.
-
-    Returns:
-      {str, ConfigYamlInfo}, A mapping of config name to definition.
-    """
-    return dict(self.__config_yamls)
-
-  def __IsInterestingFile(self, f):
-    """Determines if the given file is something we should try to parse.
-
-    Args:
-      f: str, The full path to the file.
-
-    Returns:
-      True if the file is a service yaml or a config yaml.
-    """
-    (base, ext) = os.path.splitext(os.path.basename(f))
-    if ext not in AppConfigSet.YAML_EXTS:
-      return False  # Not a yaml file.
-    if base in AppConfigSet.IGNORED_YAMLS:
-      return False  # Something we are explicitly not supporting.
-    return True
-
-  def __LoadYamlFile(self, file_path):
-    """Loads a single yaml file into a configuration object.
-
-    Args:
-      file_path: str, The full path of the file to parse.
-
-    Raises:
-      YamlValidationError: If the info in the yaml file is invalid.
-
-    Returns:
-      True if the file was valid, False if it is not a valid service or config
-      file.
-    """
-    file_path = os.path.abspath(file_path)
-    if not self.__IsInterestingFile(file_path):
-      return False
-
-    yaml = ConfigYamlInfo.FromFile(file_path)
-    if yaml:
-      existing_config = self.__config_yamls.get(yaml.config)
-      if existing_config:
-        self.__Error('Found multiple files for config [%s]: [%s, %s]',
-                     yaml.config, self.__RelPath(yaml),
-                     self.__RelPath(existing_config))
-      else:
-        self.__config_yamls[yaml.config] = yaml
-    else:
-      yaml = ServiceYamlInfo.FromFile(file_path)
-      existing_service = self.__service_yamls.get(yaml.module)
-      if existing_service:
-        self.__Error('Found multiple files declaring service [%s]: [%s, %s]',
-                     yaml.module, self.__RelPath(yaml),
-                     self.__RelPath(existing_service))
-      else:
-        self.__service_yamls[yaml.module] = yaml
-
-    return True
-
-  def __RelPath(self, yaml):
-    # We are going to display full file paths for now.
-    return yaml.file

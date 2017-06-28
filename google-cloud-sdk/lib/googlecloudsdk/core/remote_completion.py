@@ -26,7 +26,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_registry
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -432,12 +431,12 @@ class RemoteCompletion(object):
     return os.fdopen(9, 'w')
 
   @staticmethod
-  def RunListCommand(cli, command, parse_output=False,
+  def RunListCommand(parsed_args, command, parse_output=False,
                      list_command_updates_cache=False):
-    """Runs a cli list comman with a visual progress tracker/spinner.
+    """Runs a cli list command.
 
     Args:
-      cli: The calliope cli object.
+      parsed_args: The parsed command line args.
       command: The list command that generates the completion data.
       parse_output: If True then the output of command is read and split into a
         resource data list, one item per line. If False then the command return
@@ -456,18 +455,14 @@ class RemoteCompletion(object):
       command.append('--format=none')
     else:
       command.append('--format=disable')
-    with progress_tracker.CompletionProgressTracker() as tracker:
-      items = cli().Execute(command, call_arg_complete=False)
+    items = parsed_args._Execute(command, call_arg_complete=False)  # pylint: disable=protected-access
     if parse_output:
       log.out = log_out
-    if tracker.timed_out:
-      return []
-    if parse_output:
       return out.getvalue().rstrip('\n').split('\n')
-    return list(items)
+    return list(items) if items else []
 
   @staticmethod
-  def GetCompleterForResource(resource, cli, command_line=None,
+  def GetCompleterForResource(resource, cli=None, command_line=None,
                               list_command_callback_fn=None):
     """Returns a completer function for the given resource.
 
@@ -482,6 +477,7 @@ class RemoteCompletion(object):
     Returns:
       A completer function for the specified resource.
     """
+    del cli
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       return None
 
@@ -491,7 +487,7 @@ class RemoteCompletion(object):
       s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
       return s2
 
-    def RemoteCompleter(parsed_args, **unused_kwargs):
+    def RemoteCompleter(parsed_args, prefix=None, **unused_kwargs):
       """Runs list command on resource to generate completion data."""
       list_command_updates_cache = False
       info = resource_registry.Get(resource)
@@ -510,18 +506,19 @@ class RemoteCompletion(object):
       if info.bypass_cache:
         # Don't cache - use the cache_command results directly.
         return RemoteCompletion.RunListCommand(
-            cli, command, parse_output=True)
+            parsed_args, command, parse_output=True)
 
       options = []
       try:
-        line = os.getenv('COMP_LINE')
-        prefix = ''
-        if line:
-          for i in range(len(line)-1, -1, -1):
-            c = line[i]
-            if c == ' ' or c == '\t':
-              break
-            prefix = c + prefix
+        if not prefix:
+          prefix = ''
+          line = os.getenv('COMP_LINE')
+          if line:
+            for i in range(len(line)-1, -1, -1):
+              c = line[i]
+              if c == ' ' or c == '\t':
+                break
+              prefix = c + prefix
         parms = {}
         if command[0] in _OPTIONAL_PARMS:
           for arg in _OPTIONAL_PARMS[command[0]]:
@@ -531,8 +528,7 @@ class RemoteCompletion(object):
                 value = fun(parsed_args)
                 if value:
                   parms[attrib] = value
-                  command.append('--' + attrib)
-                  command.append(value)
+                  command.append('--' + attrib + '=' + value)
         resource_link = _GetResourceLink(parms, resource)
         ccache = RemoteCompletion()
         options = ccache.GetFromCache(resource_link, prefix)
@@ -540,7 +536,8 @@ class RemoteCompletion(object):
           return options
 
         items = RemoteCompletion.RunListCommand(
-            cli, command, list_command_updates_cache=list_command_updates_cache)
+            parsed_args, command,
+            list_command_updates_cache=list_command_updates_cache)
         if list_command_updates_cache:
           options = ccache.GetFromCache(resource_link, prefix) or []
           if options:
@@ -560,10 +557,10 @@ class RemoteCompletion(object):
           if resource_link.count('*') > 0:  # There are unknown parts.
             options = ccache.GetFromCache(resource_link, prefix,
                                           increment_counters=False) or []
-      except Exception:  # pylint:disable=broad-except
+      except Exception as e:  # pylint:disable=broad-except
         log.error('completion command [%s] failed', ' '.join(command),
                   exc_info=True)
-        return []
+        raise e
       return options
 
     return RemoteCompleter

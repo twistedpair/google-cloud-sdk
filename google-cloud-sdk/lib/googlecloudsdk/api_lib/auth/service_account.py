@@ -46,11 +46,10 @@ def CredentialsFromAdcFile(filename):
   content = files.GetFileContents(filename)
   try:
     json_key = json.loads(content)
+    return CredentialsFromAdcDict(json_key)
   except ValueError as e:
     raise BadCredentialFileException('Could not read json file {0}: {1}'
                                      .format(filename, e))
-
-  return CredentialsFromAdcDict(json_key)
 
 
 def CredentialsFromAdcDict(json_key):

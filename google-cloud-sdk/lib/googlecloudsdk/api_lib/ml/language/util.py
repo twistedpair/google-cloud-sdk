@@ -13,7 +13,6 @@
 # limitations under the License.
 """Utilities for gcloud ml language commands."""
 
-from apitools.base.py import encoding
 from googlecloudsdk.api_lib.ml import content_source
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
@@ -50,6 +49,14 @@ class LanguageClient(object):
     version = version or LANGUAGE_API_VERSION
     self.client = GetLanguageClient(version=version)
     self.messages = GetLanguageMessages(version=version)
+    self.features = {
+        'analyzeEntities': (self.messages.AnalyzeEntitiesRequest,
+                            self.client.documents.AnalyzeEntities),
+        'analyzeSyntax': (self.messages.AnalyzeSyntaxRequest,
+                          self.client.documents.AnalyzeSyntax),
+        'analyzeSentiment': (self.messages.AnalyzeSentimentRequest,
+                             self.client.documents.AnalyzeSentiment)
+    }
 
   def _GetDocument(self, source=None, language=None,
                    content_type='PLAIN_TEXT'):
@@ -72,12 +79,13 @@ class LanguageClient(object):
     document.type = self.messages.Document.TypeValueValuesEnum(content_type)
     return document
 
-  def _GetAnnotateRequest(self, feature, source, language=None,
+  def _GetAnnotateRequest(self, request_type, source, language=None,
                           content_type=None, encoding_type=None):
     """Builds an annotation request message.
 
     Args:
-      feature: str, the name of the feature to request (e.g. 'extractEntities').
+      request_type: the request type of the message to build (e.g.
+          language_v1_messages.AnalyzeSentimentRequest).
       source: content_source.ContentSource, the source for the content to be
           analyzed.
       language: str, the language of the input text.
@@ -91,29 +99,22 @@ class LanguageClient(object):
       ContentError: if content is given but empty.
 
     Returns:
-      messages.AnnotateTextRequest: a request to be sent to the API.
+      (request_type) a request to be sent to the API, of the given type
     """
     document = self._GetDocument(source=source, language=language,
                                  content_type=content_type)
-    msgs = self.messages  # Shorten for convenience/line length.
-    encoding_enum = msgs.AnnotateTextRequest.EncodingTypeValueValuesEnum
-    request = msgs.AnnotateTextRequest(
-        document=document,
-        features=encoding.PyValueToMessage(
-            msgs.Features,
-            {feature: True}
-        )
-    )
+    encoding_enum = request_type.EncodingTypeValueValuesEnum
+    request = request_type(document=document)
     if encoding_type:
       request.encodingType = encoding_enum(encoding_type)
     return request
 
-  def Annotate(self, feature, source=None, language=None,
-               content_type='PLAIN_TEXT', encoding_type=None):
-    """Sends the annotate text request to the Language API.
+  def SingleFeatureAnnotate(self, feature, source=None, language=None,
+                            content_type='PLAIN_TEXT', encoding_type=None):
+    """Builds and sends a request to the Language API to analyze text.
 
     Args:
-      feature: str, the name of the feature to request (e.g. 'extractEntities').
+      feature: str, the name of the feature (e.g. 'analyzeEntities').
       source: content_source.ContentSource, the source for the content to be
           analyzed.
       language: str, the language of the input text.
@@ -124,15 +125,22 @@ class LanguageClient(object):
     Raises:
       googlecloudsdk.api_lib.util.exceptions.HttpException: if the API returns
           an error.
+      NotImplementedError: if a feature is requested that isn't in the client.
 
     Returns:
-      messages.AnnotateTextResponse: the response from the API.
+      the response from the API (type depends on feature, for example
+          if feature is analyzeEntities, response would be
+          messages.AnalyzeEntitiesResponse).
     """
-    request = self._GetAnnotateRequest(feature, source=source,
+    request_type, method = self.features.get(feature, (None, None))
+    if not (request_type and method):
+      raise NotImplementedError('{} not supported by this client.'.format(
+          feature))
+    request = self._GetAnnotateRequest(request_type, source=source,
                                        language=language,
                                        content_type=content_type,
                                        encoding_type=encoding_type)
-    return self.client.documents.AnnotateText(request)
+    return method(request)
 
 
 def GetContentSource(content=None, content_file=None):

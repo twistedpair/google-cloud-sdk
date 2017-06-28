@@ -3,6 +3,102 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 161.0.0 (2017-06-28)
+
+### Breaking Changes
+
+*   Removed `gcloud beta test android devices`. Please use `gcloud firebase test
+    android models` as an alternative.
+*   Renamed the `--account-id` flag in `gcloud alpha billing projects link` to
+    `--billing-account`. The old flag is still available but deprecated.
+*   Renamed the `ACCOUNT_ID` flag in the `gcloud alpha billing projects
+    list` command to `--billing-account`.
+*   Renamed `gcloud billing accounts projects` to `gcloud billing projects`.
+    The old commands are available but deprecated.
+
+### Billing
+
+*   Promoted `gcloud billing` to beta. The alpha surface remains and is
+    identical; the changes listed in the "Breaking Changes" section apply to
+    the beta release track and the old flag and commands are not available in
+    beta.
+
+### Google App Engine
+
+*   Promoted `gcloud app instances <ssh|scp>` to GA. The beta commands remain
+    and are identical.
+*   Updated App Engine components for Python to version 1.9.55.
+    Please visit the release notes for details:
+    <https://cloud.google.com/appengine/docs/python/release-notes>.
+*   Updated App Engine components for Java to version 1.9.54.
+    Please visit the following release notes for details:
+    <https://cloud.google.com/appengine/docs/java/release-notes>.
+*   Added support for deploying Standard Environment Java applications to
+    `gcloud beta app deploy`; use either `gcloud beta app deploy
+    $APP_DIR/WEB-INF/appengine-web.xml` or `gcloud beta app deploy $APP_DIR`.
+*   Added support for directories as positional arguments to `gcloud app
+    deploy`, in addition to YAML files. In each directory, the command uses the
+    `app.yaml` file if present, or interactively creates one otherwise.
+
+### Google Cloud Dataproc
+
+*   Promoted `--region` flag to beta and GA for every `gcloud dataproc` command.
+    The flag remains available in alpha and is identical.
+*   Added URL support for zonal resource flags `--zone`,
+    `--master-machine-type`, `--worker-machine-type`,
+    `--master-accelerator-type`, and `--worker-accelerator-type` in `gcloud
+    dataproc` commands in addition to short names; for instance,
+    `https://www.googleapis.com/compute/v1/projects/zones/us-central1-f` as
+    well as `us-central1-f`.
+
+### Google Cloud Natural Language
+
+*   Promoted `gcloud ml language` commands to GA to allow the analysis of text
+    using the Cloud Natural Language API. The commands remain in alpha and beta
+    and are identical.
+
+### Google Cloud SQL
+
+*   Added `--labels` flag to `gcloud sql instances create` and
+    `--<update|remove|clear>-labels` flags to `gcloud sql instances patch` to
+    support the application of labels to SQL instances.
+
+### Google Compute Engine
+
+*   Added `--source-instance-template` flag to `gcloud beta compute instances
+    <create|create-from-container>` to allow instance creation based on an
+    instance template (see `gcloud compute instance-templates` command group).
+*   Added `--ssl-certificates` flag to `gcloud alpha compute
+    <target-https-proxies|target-ssl-proxies> <create|update>` to allow the
+    specification of multiple ssl certificates when creating or updating a
+    target proxy.
+*   Added for option `STANDARD` for
+    *   `--network-interface` sub-flag `network-tier` in
+        `gcloud alpha compute instances create` and
+        `gcloud alpha compute instances <create|create-from-container>`
+    *   `--network-tier` flag in
+        `gcloud alpha compute instances
+        <create|add-access-config|update-access-config>`, `gcloud alpha compute
+        instance-templates <create|create-from-container>`, and `gcloud alpha
+        compute <addresses|forwarding-rules> create`.
+*   Added command `gcloud beta compute addresses update` for
+    modification of addresses (in particular, modifying labels).
+*   Added command `gcloud beta compute forwarding-rules update` for
+    modification of forwarding rules (in particular, modifying labels).
+*   Promoted flag `--force-create` of `gcloud compute images create` to beta.
+    By default, image creation fails when it is created from a disk that is
+    attached to a running instance. When this flag is used, image creation from
+    disk will proceed even if the disk is in use.
+
+### Google Container Engine
+
+*   Promoted `gcloud container node-pools rollback` command to GA. The alpha
+    and beta command remains available and is identical.
+*   Added `--enable-network-policy` flag to `gcloud alpha container clusters
+    <create|update>` to enable network policy enforcement.
+*   Updated `kubectl` from version 1.6.4 to version 1.6.6.
+
+
 ## 160.0.0 (2017-06-21)
 
 ### Breaking Changes

@@ -413,6 +413,16 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
       hidden=hidden)
 
 
+def AddNetworkPolicyFlags(parser, hidden=False):
+  """Adds --enable-network-policy flags to parser."""
+  parser.add_argument(
+      '--enable-network-policy',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help='Enable network policy enforcement for this cluster.')
+
+
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):
   """Adds a --enable-legacy-authorization flag to parser."""
   help_text = """\
@@ -525,3 +535,19 @@ Example:
       metavar='KEY',
       type=arg_parsers.ArgList(),
       help=help_text)
+
+
+def AddDiskTypeFlag(parser, suppressed=False):
+  """Adds a --disk-type flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    suppressed: Whether or not to suppress help text.
+  """
+  help_text = argparse.SUPPRESS if suppressed else """\
+Type of the node VM boot disk.
+"""
+  parser.add_argument(
+      '--disk-type',
+      help=help_text,
+      choices=['pd-standard', 'pd-ssd'])

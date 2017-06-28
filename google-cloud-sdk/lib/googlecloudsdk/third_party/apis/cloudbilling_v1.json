@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "cloudbilling:v1",
   "name": "cloudbilling",
+  "canonicalName": "Cloudbilling",
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Billing API",

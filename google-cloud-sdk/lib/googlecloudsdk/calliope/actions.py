@@ -581,7 +581,7 @@ def DeprecationAction(flag_name,
   def DeprecationFunc(value):
     if show_message(value):
       if removed:
-        raise parser_errors.ArgumentException(add_help.message)
+        raise parser_errors.ArgumentError(add_help.message)
       else:
         log.warn(add_help.message)
 

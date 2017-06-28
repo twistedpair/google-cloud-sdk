@@ -1021,20 +1021,18 @@ class _SectionDataproc(_Section):
   """Contains the properties for the 'ml_engine' section."""
 
   def __init__(self):
-    # TODO(b/37750432): Unhide when --region leaves beta.
-    super(_SectionDataproc, self).__init__('dataproc', hidden=True)
+    super(_SectionDataproc, self).__init__('dataproc')
     self.region = self._Add(
         'region',
         default='global',
         help_text=(
-            'Specifies the Dataproc region to use. Each Dataproc region '
-            'constitutes an independent resource namespace constrained to '
-            'deploying instances into GCE zones inside the region. The '
-            'default value of "global" is a special multi-region namespace '
-            'which is capable of deploying instances into all GCE zones '
-            'globally, and is disjoint from other Dataproc regions. This '
-            'region parameter corresponds to the /regions/<region> segment '
-            'of the Dataproc resource URIs being referenced.'))
+            'Specifies the Cloud Dataproc region to use. Each Cloud Dataproc '
+            'region constitutes an independent resource namespace constrained '
+            'to deploying instances into Google Compute Engine zones inside '
+            'the region. The default value of "global" is a special '
+            'multi-region namespace which is capable of deploying instances '
+            'into all Google Compute Engine zones globally, and is disjoint '
+            'from other Cloud Dataproc regions.'))
 
 
 class _SectionProxy(_Section):

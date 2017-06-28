@@ -17,6 +17,7 @@ from googlecloudsdk.command_lib.ml_engine import uploads
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 class InvalidArgumentCombinationError(exceptions.Error):
@@ -83,6 +84,9 @@ def Create(versions_client, operations_client, version_id,
 
 def Delete(versions_client, operations_client, version, model=None):
   version_ref = ParseVersion(model, version)
+  console_io.PromptContinue(
+      'This will delete version [{}]...'.format(version_ref.versionsId),
+      cancel_on_no=True)
   op = versions_client.Delete(version_ref)
   return WaitForOpMaybe(
       operations_client, op, async_=False,

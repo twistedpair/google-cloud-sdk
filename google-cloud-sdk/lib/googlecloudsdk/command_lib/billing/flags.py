@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flag definitions for gcloud billing."""
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 
 
-def GetAccountIdArgument(positional=True):
+def GetOldAccountIdArgument(positional=True):
   metavar = 'ACCOUNT_ID'
   completion_resource = 'cloudbilling.billingAccounts'
   list_command_path = 'billing accounts list --uri'
@@ -25,6 +26,45 @@ def GetAccountIdArgument(positional=True):
       '`$ gcloud alpha billing accounts list`.'
   )
   if positional:
+    # For a positional arg, the action always runs; we want to only show a
+    # message if a value is specified.
+    return base.Argument(
+        'id',
+        nargs='?',
+        metavar=metavar,
+        completion_resource=completion_resource,
+        list_command_path=list_command_path,
+        action=actions.DeprecationAction(
+            'ACCOUNT_ID',
+            show_message=lambda x: x is not None,  # See note above
+            removed=False,
+            warn=('The `{flag_name}` argument has been renamed '
+                  '`--billing-account`.')),
+        help=help_)
+  else:
+    return base.Argument(
+        '--account-id',
+        dest='billing_account',
+        metavar=metavar,
+        completion_resource=completion_resource,
+        list_command_path=list_command_path,
+        action=actions.DeprecationAction(
+            '--account-id',
+            removed=False,
+            warn='The `{flag_name}` flag has been renamed `--billing-account`.'
+        ),
+        help=help_)
+
+
+def GetAccountIdArgument(positional=True, required=False):
+  metavar = 'ACCOUNT_ID'
+  completion_resource = 'cloudbilling.billingAccounts'
+  list_command_path = 'billing accounts list --uri'
+  help_ = (
+      'Specify a billing account ID. Billing account IDs are of the form '
+      '`0X0X0X-0X0X0X-0X0X0X`. To see available IDs, run '
+      '`$ gcloud alpha billing accounts list`.')
+  if positional:
     return base.Argument(
         'id',
         metavar=metavar,
@@ -33,10 +73,9 @@ def GetAccountIdArgument(positional=True):
         help=help_)
   else:
     return base.Argument(
-        '--account-id',
-        dest='account_id',
-        required=True,
+        '--billing-account',
         metavar=metavar,
+        required=required,
         completion_resource=completion_resource,
         list_command_path=list_command_path,
         help=help_)

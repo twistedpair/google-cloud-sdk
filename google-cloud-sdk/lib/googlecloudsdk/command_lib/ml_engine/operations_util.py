@@ -14,6 +14,7 @@
 """Utilities for ml-engine operations commands."""
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 def Cancel(operations_client, operation):
@@ -29,6 +30,9 @@ def Delete(operations_client, operation):
       operation,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='ml.projects.operations')
+  console_io.PromptContinue(
+      'This will delete operation [{}]...'.format(operation_ref.operationsId),
+      cancel_on_no=True)
   return operations_client.Delete(operation_ref)
 
 

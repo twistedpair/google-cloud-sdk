@@ -98,12 +98,12 @@ def FormatListRequests(service, project, scopes, scope_name,
 
 
 def _GetResources(service, project, scopes, scope_name,
-                  filter_expr, http, batch_url, errors):
+                  filter_expr, http, batch_url, errors, make_requests):
   """Helper for the Get{Zonal,Regional,Global}Resources functions."""
   requests = FormatListRequests(service, project, scopes, scope_name,
                                 filter_expr)
 
-  return request_helper.MakeRequests(
+  return make_requests(
       requests=requests,
       http=http,
       batch_url=batch_url,
@@ -136,7 +136,8 @@ def GetZonalResources(service, project, requested_zones,
       filter_expr=filter_expr,
       http=http,
       batch_url=batch_url,
-      errors=errors)
+      errors=errors,
+      make_requests=request_helper.MakeRequests)
 
 
 def GetRegionalResources(service, project, requested_regions,
@@ -165,7 +166,8 @@ def GetRegionalResources(service, project, requested_regions,
       filter_expr=filter_expr,
       http=http,
       batch_url=batch_url,
-      errors=errors)
+      errors=errors,
+      make_requests=request_helper.MakeRequests)
 
 
 def GetGlobalResources(service, project, filter_expr, http,
@@ -192,4 +194,5 @@ def GetGlobalResources(service, project, filter_expr, http,
       filter_expr=filter_expr,
       http=http,
       batch_url=batch_url,
-      errors=errors)
+      errors=errors,
+      make_requests=request_helper.MakeRequests)

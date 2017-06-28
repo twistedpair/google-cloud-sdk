@@ -47,6 +47,7 @@ import re
 
 from dateutil import parser
 from dateutil import tz
+from dateutil.tz import _common as tz_common
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
@@ -79,7 +80,7 @@ class DurationValueError(Error):
   """Duration part overflow error."""
 
 
-tz.PY3 = True  # MONKEYPATCH!!! Fixes a Python 2 standard module bug.
+tz_common.PY3 = True  # MONKEYPATCH!!! Fixes a Python 2 standard module bug.
 
 LOCAL = tz.tzlocal()  # The local timezone.
 UTC = tz.tzutc()  # The UTC timezone.
@@ -383,7 +384,7 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
     return dt
   except OverflowError as e:
     exc = DateTimeValueError
-  except (AttributeError, ValueError) as e:
+  except (AttributeError, ValueError, TypeError) as e:
     exc = DateTimeSyntaxError
 
   try:

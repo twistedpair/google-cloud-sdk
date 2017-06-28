@@ -1493,6 +1493,93 @@
         }
       }
     },
+    "ListIngressRulesResponse": {
+      "id": "ListIngressRulesResponse",
+      "description": "Response message for Firewall.ListIngressRules.",
+      "type": "object",
+      "properties": {
+        "ingressRules": {
+          "description": "The ingress FirewallRules for this application.",
+          "type": "array",
+          "items": {
+            "$ref": "FirewallRule"
+          }
+        },
+        "nextPageToken": {
+          "description": "Continuation token for fetching the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "FirewallRule": {
+      "id": "FirewallRule",
+      "description": "A single firewall rule that is evaluated against incoming traffic and provides an action to take on matched requests.",
+      "type": "object",
+      "properties": {
+        "priority": {
+          "description": "A positive integer between 1, Int32.MaxValue-1 that defines the order of rule evaluation. Rules with the lowest priority are evaluated first.A default rule at priority Int32.MaxValue matches all IPv4 and IPv6 traffic when no previous rule matches. Only the action of this rule can be modified by the user.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "action": {
+          "description": "The action to take on matched requests.",
+          "enumDescriptions": [
+            "",
+            "Matching requests are allowed.",
+            "Matching requests are denied."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_ACTION",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "sourceRange": {
+          "description": "IP address or range, defined using CIDR notation, of requests that this rule applies to. You can use the wildcard character \"*\" to match all IPs equivalent to \"0\/0\" and \"::\/0\" together. Examples: 192.168.1.1 or 192.168.0.0\/16 or 2001:db8::\/32  or 2001:0db8:0000:0042:0000:8a2e:0370:7334.<p>Truncation will be silently performed on addresses which are not properly truncated. For example, 1.2.3.4\/24 is accepted as the same address as 1.2.3.0\/24. Similarly, for IPv6, 2001:db8::1\/32 is accepted as the same address as 2001:db8::\/32.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional string description of this rule. This field has a maximum length of 100 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "BatchUpdateIngressRulesRequest": {
+      "id": "BatchUpdateIngressRulesRequest",
+      "description": "Request message for Firewall.BatchUpdateIngressRules.",
+      "type": "object",
+      "properties": {
+        "ingressRules": {
+          "description": "A list of FirewallRules to replace the existing set.",
+          "type": "array",
+          "items": {
+            "$ref": "FirewallRule"
+          }
+        }
+      }
+    },
+    "BatchUpdateIngressRulesResponse": {
+      "id": "BatchUpdateIngressRulesResponse",
+      "description": "Response message for Firewall.UpdateAllIngressRules.",
+      "type": "object",
+      "properties": {
+        "ingressRules": {
+          "description": "The full list of ingress FirewallRules for this application.",
+          "type": "array",
+          "items": {
+            "$ref": "FirewallRule"
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance:\nservice Foo {\n  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n}\nThe JSON representation for Empty is empty JSON object {}.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListAuthorizedDomainsResponse": {
       "id": "ListAuthorizedDomainsResponse",
       "description": "Response message for AuthorizedDomains.ListAuthorizedDomains.",
@@ -1604,13 +1691,6 @@
           "description": "Unencrypted PEM encoded RSA private key. This field is set once on certificate creation and then encrypted. The key size must be 2048 bits or fewer. Must include the header and footer. Example: <pre> -----BEGIN RSA PRIVATE KEY----- <unencrypted_key_value> -----END RSA PRIVATE KEY----- <\/pre> @InputOnly",
           "type": "string"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance:\nservice Foo {\n  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n}\nThe JSON representation for Empty is empty JSON object {}.",
-      "type": "object",
-      "properties": {
       }
     },
     "ListDomainMappingsResponse": {
@@ -2591,6 +2671,199 @@
                       ]
                     }
                   }
+                }
+              }
+            }
+          }
+        },
+        "firewall": {
+          "resources": {
+            "ingressRules": {
+              "methods": {
+                "list": {
+                  "id": "appengine.apps.firewall.ingressRules.list",
+                  "path": "v1beta/{+parent}/firewall/ingressRules",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules",
+                  "httpMethod": "GET",
+                  "description": "Lists the firewall rules of an application.",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the Firewall collection to retrieve. Example: apps\/myapp\/firewall\/ingressRules.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum results to return per page.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Continuation token for fetching the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "matchingAddress": {
+                      "description": "A valid IP Address. If set, only rules matching this address will be returned. The first returned rule will be the rule that fires on requests from this IP.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListIngressRulesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ]
+                },
+                "batchUpdate": {
+                  "id": "appengine.apps.firewall.ingressRules.batchUpdate",
+                  "path": "v1beta/{+name}:batchUpdate",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules:batchUpdate",
+                  "httpMethod": "POST",
+                  "description": "Replaces the entire firewall ruleset in one bulk operation. This overrides and replaces the rules of an existing firewall with the new rules.If the final rule does not match traffic with the '*' wildcard IP range, then an \"allow all\" rule is explicitly added to the end of the list.",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Firewall collection to set. Example: apps\/myapp\/firewall\/ingressRules.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+\/firewall\/ingressRules$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "BatchUpdateIngressRulesRequest"
+                  },
+                  "response": {
+                    "$ref": "BatchUpdateIngressRulesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "create": {
+                  "id": "appengine.apps.firewall.ingressRules.create",
+                  "path": "v1beta/{+parent}/firewall/ingressRules",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules",
+                  "httpMethod": "POST",
+                  "description": "Creates a firewall rule for the application.",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the parent Firewall collection in which to create a new rule. Example: apps\/myapp\/firewall\/ingressRules.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "FirewallRule"
+                  },
+                  "response": {
+                    "$ref": "FirewallRule"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "get": {
+                  "id": "appengine.apps.firewall.ingressRules.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}",
+                  "httpMethod": "GET",
+                  "description": "Gets the specified firewall rule.",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Firewall resource to retrieve. Example: apps\/myapp\/firewall\/ingressRules\/100.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+\/firewall\/ingressRules\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "FirewallRule"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ]
+                },
+                "patch": {
+                  "id": "appengine.apps.firewall.ingressRules.patch",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}",
+                  "httpMethod": "PATCH",
+                  "description": "Updates the specified firewall rule.",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Firewall resource to update. Example: apps\/myapp\/firewall\/ingressRules\/100.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+\/firewall\/ingressRules\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Standard field mask for the set of fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "FirewallRule"
+                  },
+                  "response": {
+                    "$ref": "FirewallRule"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "delete": {
+                  "id": "appengine.apps.firewall.ingressRules.delete",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}",
+                  "httpMethod": "DELETE",
+                  "description": "Deletes the specified firewall rule.",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Firewall resource to delete. Example: apps\/myapp\/firewall\/ingressRules\/100.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]+\/firewall\/ingressRules\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
             }

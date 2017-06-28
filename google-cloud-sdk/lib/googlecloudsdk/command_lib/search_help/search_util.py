@@ -14,12 +14,16 @@
 
 """utils for search-help command resources."""
 
+import copy
 import re
+import StringIO
 
 from googlecloudsdk.command_lib.search_help import lookup
 from googlecloudsdk.core import log
+from googlecloudsdk.core.document_renderers import render_document
 
 DEFAULT_SNIPPET_LENGTH = 200
+DOT = '.'
 
 PRIORITIES = {lookup.NAME: 0,
               lookup.CAPSULE: 1,
@@ -305,8 +309,7 @@ def _Priority(x):
   return PRIORITIES.get(x[0], len(PRIORITIES))
 
 
-def GetSummary(command, terms_to_locations,
-               length_per_snippet=DEFAULT_SNIPPET_LENGTH):
+def GetSummary(command, found_terms, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
   """Gets a summary of certain attributes of a command.
 
   This will summarize a json representation of a command using
@@ -352,19 +355,21 @@ def GetSummary(command, terms_to_locations,
 
   Args:
     command: dict, a json representation of a command.
-    terms_to_locations: dict, mapping of terms to the locations where they are
+    found_terms: dict, mapping of terms to the locations where they are
         found. If no term is relevant, a '' is used.
     length_per_snippet: int, length of desired substrings to get from text.
 
   Returns:
     str, a markdown summary
   """
+  # Always include capsule.
+  found_terms.update({'': lookup.CAPSULE})
   summary = []
   locations = [location.split('.')
-               for location in sorted(set(terms_to_locations.values()))]
+               for location in sorted(set(found_terms.values()))]
 
   for location in sorted(locations, key=_Priority):
-    terms = {t for t, l in terms_to_locations.iteritems()
+    terms = {t for t, l in found_terms.iteritems()
              if l == '.'.join(location) and t}
     if location[0] == lookup.FLAGS:
       _AddFlagToSummary(command, summary, length_per_snippet, location, terms)
@@ -376,3 +381,86 @@ def GetSummary(command, terms_to_locations,
       _AddGenericSectionToSummary(command, summary, length_per_snippet,
                                   location, terms)
   return '\n'.join(summary)
+
+
+def ProcessResult(command, found_terms):
+  """Helper function to create help text resource for listing results.
+
+  Args:
+    command: dict, json representation of command.
+    found_terms: {str: str}, lookup from terms to where they were
+      found.
+
+  Returns:
+    A modified copy of the json command with a summary, and with the dict
+        of subcommands replaced with just a list of available subcommands.
+  """
+  new_command = copy.deepcopy(command)
+  if lookup.COMMANDS in new_command.keys():
+    new_command[lookup.COMMANDS] = sorted([
+        c[lookup.NAME] for c in new_command[lookup.COMMANDS].values()])
+  summary = GetSummary(command, found_terms)
+  # Render the summary for console printing, but ignoring console width.
+  md = StringIO.StringIO(summary)
+  rendered_summary = StringIO.StringIO()
+  render_document.RenderDocument('text',
+                                 md,
+                                 out=rendered_summary,
+                                 width=len(summary))
+  # Remove indents and blank lines so summary can be easily
+  # printed in a table.
+  new_command[lookup.SUMMARY] = '\n'.join([
+      l.lstrip() for l in rendered_summary.getvalue().splitlines()
+      if l.lstrip()])
+  return new_command
+
+
+def LocateTerm(command, term):
+  """Helper function to get first location of term in a json command.
+
+  Locations are considered in this order: 'name', 'capsule',
+  'sections', 'positionals', 'flags', 'commands', 'path'. Returns a dot-
+  separated lookup for the location e.g. 'sections.description' or
+  empty string if not found.
+
+  Args:
+    command: dict, json representation of command.
+    term: str, the term to search.
+
+  Returns:
+    str, lookup for where to find the term when building summary of command.
+  """
+  # Look in name/capsule
+  regexp = re.compile(re.escape(term), re.IGNORECASE)
+  if (regexp.search(command[lookup.NAME])
+      or regexp.search(command[lookup.CAPSULE])):
+    return lookup.CAPSULE
+
+  # Look in detailed help sections
+  for section_name, section_desc in sorted(
+      command[lookup.SECTIONS].iteritems()):
+    if regexp.search(section_desc):
+      return DOT.join([lookup.SECTIONS, section_name])
+
+  # Look in flags
+  for flag_name, flag in sorted(command[lookup.FLAGS].iteritems()):
+    if (regexp.search(flag[lookup.NAME])
+        or regexp.search(flag[lookup.DESCRIPTION])):
+      return DOT.join([lookup.FLAGS, flag_name])
+    if regexp.search(str(flag[lookup.CHOICES])):
+      return DOT.join([lookup.FLAGS, flag[lookup.NAME], lookup.CHOICES])
+    if regexp.search(str(flag.get(lookup.DEFAULT, ''))):
+      return DOT.join([lookup.FLAGS, flag[lookup.NAME], lookup.DEFAULT])
+
+  # Look in positionals
+  for positional in command[lookup.POSITIONALS]:
+    if (regexp.search(positional[lookup.NAME])
+        or regexp.search(positional[lookup.DESCRIPTION])):
+      return DOT.join([lookup.POSITIONALS, positional[lookup.NAME]])
+
+  # Look in subcommands & path
+  if regexp.search(str(command[lookup.COMMANDS].keys())):
+    return lookup.COMMANDS
+  if regexp.search(' '.join(command[lookup.PATH])):
+    return lookup.PATH
+  return ''

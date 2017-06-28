@@ -1293,9 +1293,10 @@ class BackendService(_messages.Message):
       fingerprint must be provided in order to update the BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required.  For
-      internal load balancing, a URL to a HealthCheck resource must be
-      specified instead.
+      health check can be specified, and a health check is required for GCE
+      backend services. A health check must not be specified for GAE app
+      backend and Cloud Function backend.  For internal load balancing, a URL
+      to a HealthCheck resource must be specified instead.
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.

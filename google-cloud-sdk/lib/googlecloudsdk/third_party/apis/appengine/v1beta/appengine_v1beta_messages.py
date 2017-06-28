@@ -271,6 +271,89 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AppengineAppsFirewallIngressRulesBatchUpdateRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesBatchUpdateRequest object.
+
+  Fields:
+    batchUpdateIngressRulesRequest: A BatchUpdateIngressRulesRequest resource
+      to be passed as the request body.
+    name: Name of the Firewall collection to set. Example:
+      apps/myapp/firewall/ingressRules.
+  """
+
+  batchUpdateIngressRulesRequest = _messages.MessageField('BatchUpdateIngressRulesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineAppsFirewallIngressRulesCreateRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesCreateRequest object.
+
+  Fields:
+    firewallRule: A FirewallRule resource to be passed as the request body.
+    parent: Name of the parent Firewall collection in which to create a new
+      rule. Example: apps/myapp/firewall/ingressRules.
+  """
+
+  firewallRule = _messages.MessageField('FirewallRule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AppengineAppsFirewallIngressRulesDeleteRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesDeleteRequest object.
+
+  Fields:
+    name: Name of the Firewall resource to delete. Example:
+      apps/myapp/firewall/ingressRules/100.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsFirewallIngressRulesGetRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesGetRequest object.
+
+  Fields:
+    name: Name of the Firewall resource to retrieve. Example:
+      apps/myapp/firewall/ingressRules/100.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsFirewallIngressRulesListRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesListRequest object.
+
+  Fields:
+    matchingAddress: A valid IP Address. If set, only rules matching this
+      address will be returned. The first returned rule will be the rule that
+      fires on requests from this IP.
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the Firewall collection to retrieve. Example:
+      apps/myapp/firewall/ingressRules.
+  """
+
+  matchingAddress = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class AppengineAppsFirewallIngressRulesPatchRequest(_messages.Message):
+  """A AppengineAppsFirewallIngressRulesPatchRequest object.
+
+  Fields:
+    firewallRule: A FirewallRule resource to be passed as the request body.
+    name: Name of the Firewall resource to update. Example:
+      apps/myapp/firewall/ingressRules/100.
+    updateMask: Standard field mask for the set of fields to be updated.
+  """
+
+  firewallRule = _messages.MessageField('FirewallRule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class AppengineAppsGetRequest(_messages.Message):
   """A AppengineAppsGetRequest object.
 
@@ -769,6 +852,26 @@ class BasicScaling(_messages.Message):
   maxInstances = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BatchUpdateIngressRulesRequest(_messages.Message):
+  """Request message for Firewall.BatchUpdateIngressRules.
+
+  Fields:
+    ingressRules: A list of FirewallRules to replace the existing set.
+  """
+
+  ingressRules = _messages.MessageField('FirewallRule', 1, repeated=True)
+
+
+class BatchUpdateIngressRulesResponse(_messages.Message):
+  """Response message for Firewall.UpdateAllIngressRules.
+
+  Fields:
+    ingressRules: The full list of ingress FirewallRules for this application.
+  """
+
+  ingressRules = _messages.MessageField('FirewallRule', 1, repeated=True)
+
+
 class BuildInfo(_messages.Message):
   """Google Cloud Container Builder build information.
 
@@ -1026,6 +1129,50 @@ class FileInfo(_messages.Message):
   sourceUrl = _messages.StringField(3)
 
 
+class FirewallRule(_messages.Message):
+  """A single firewall rule that is evaluated against incoming traffic and
+  provides an action to take on matched requests.
+
+  Enums:
+    ActionValueValuesEnum: The action to take on matched requests.
+
+  Fields:
+    action: The action to take on matched requests.
+    description: An optional string description of this rule. This field has a
+      maximum length of 100 characters.
+    priority: A positive integer between 1, Int32.MaxValue-1 that defines the
+      order of rule evaluation. Rules with the lowest priority are evaluated
+      first.A default rule at priority Int32.MaxValue matches all IPv4 and
+      IPv6 traffic when no previous rule matches. Only the action of this rule
+      can be modified by the user.
+    sourceRange: IP address or range, defined using CIDR notation, of requests
+      that this rule applies to. You can use the wildcard character "*" to
+      match all IPs equivalent to "0/0" and "::/0" together. Examples:
+      192.168.1.1 or 192.168.0.0/16 or 2001:db8::/32  or
+      2001:0db8:0000:0042:0000:8a2e:0370:7334.<p>Truncation will be silently
+      performed on addresses which are not properly truncated. For example,
+      1.2.3.4/24 is accepted as the same address as 1.2.3.0/24. Similarly, for
+      IPv6, 2001:db8::1/32 is accepted as the same address as 2001:db8::/32.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """The action to take on matched requests.
+
+    Values:
+      UNSPECIFIED_ACTION: <no description>
+      ALLOW: Matching requests are allowed.
+      DENY: Matching requests are denied.
+    """
+    UNSPECIFIED_ACTION = 0
+    ALLOW = 1
+    DENY = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sourceRange = _messages.StringField(4)
+
+
 class HealthCheck(_messages.Message):
   """Health checking configuration for VM instances. Unhealthy instances are
   killed and replaced with new instances. Only applicable for instances in App
@@ -1187,6 +1334,18 @@ class ListDomainMappingsResponse(_messages.Message):
   """
 
   domainMappings = _messages.MessageField('DomainMapping', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListIngressRulesResponse(_messages.Message):
+  """Response message for Firewall.ListIngressRules.
+
+  Fields:
+    ingressRules: The ingress FirewallRules for this application.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  ingressRules = _messages.MessageField('FirewallRule', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

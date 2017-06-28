@@ -96,7 +96,12 @@ INSTANCES_FORMAT = """
   )
 """
 
+INSTANCES_USERLABELS_FORMAT = """
+  :(settings.userLabels:alias=labels:label=LABELS)
+"""
+
 INSTANCES_FORMAT_BETA = """
+  {0}
   table(
     name,
     region,
@@ -104,7 +109,7 @@ INSTANCES_FORMAT_BETA = """
     ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
     state:label=STATUS
   )
-"""
+""".format(INSTANCES_USERLABELS_FORMAT)
 
 OPERATION_FORMAT = """
   table(

@@ -11,7 +11,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
   BASE_URL = u'https://container.googleapis.com/'
 
   _PACKAGE = u'container'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -34,3 +34,1634 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
+    self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects_zones_clusters_nodePools = self.ProjectsZonesClustersNodePoolsService(self)
+    self.projects_zones_clusters = self.ProjectsZonesClustersService(self)
+    self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
+    self.projects_zones = self.ProjectsZonesService(self)
+    self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters_nodePools resource."""
+
+    _NAME = u'projects_locations_clusters_nodePools'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsLocationsClustersNodePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Autoscaling(self, request, global_params=None):
+      """Sets the autoscaling settings of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsAutoscalingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Autoscaling')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Autoscaling.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.autoscaling',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
+        request_field=u'setNodePoolAutoscalingRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsAutoscalingRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      """Creates a node pool for a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.create',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools',
+        request_field=u'createNodePoolRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a node pool from a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.locations.clusters.nodePools.delete',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Retrieves the node pool requested.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.nodePools.get',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
+        response_type_name=u'NodePool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the node pools for a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.nodePools.list',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
+        response_type_name=u'ListNodePoolsResponse',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      """Roll back the previously Aborted or Failed NodePool upgrade.
+This will be an no-op if the last upgrade successfully completed.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.rollback',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
+        request_field=u'rollbackNodePoolUpgradeRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsRollbackRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetManagement(self, request, global_params=None):
+      """Sets the NodeManagement options for a node pool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsSetManagementRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetManagement')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetManagement.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.setManagement',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
+        request_field=u'setNodePoolManagementRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsSetManagementRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSize(self, request, global_params=None):
+      """Sets the size of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsSetSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.setSize',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
+        request_field=u'setNodePoolSizeRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsSetSizeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the version and/or iamge type of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.update',
+        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
+        request_field=u'updateNodePoolRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsClustersService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters resource."""
+
+    _NAME = u'projects_locations_clusters'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsLocationsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Addons(self, request, global_params=None):
+      """Sets the addons of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersAddonsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Addons')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Addons.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.addons',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/addons',
+        request_field=u'setAddonsConfigRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersAddonsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def CompleteIpRotation(self, request, global_params=None):
+      """Completes master IP rotation.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersCompleteIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.completeIpRotation',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:completeIpRotation',
+        request_field=u'completeIPRotationRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersCompleteIpRotationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      """Creates a cluster, consisting of the specified number and type of Google.
+Compute Engine instances.
+
+By default, the cluster is created in the project's
+[default network](/compute/docs/networks-and-firewalls#networks).
+
+One firewall is added for the cluster. After cluster creation,
+the cluster creates routes for each node to allow the containers
+on that node to communicate with all other instances in the
+cluster.
+
+Finally, an entry is added to the project's global metadata indicating
+which CIDR range is being used by the cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.create',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters',
+        request_field=u'createClusterRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+nodes.
+
+Firewalls and routes that were configured during cluster creation
+are also deleted.
+
+Other Google Compute Engine resources that might be in use by the cluster
+(e.g. load balancer resources) will not be deleted if they weren't present
+at the initial create time.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.locations.clusters.delete',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the details of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Cluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.get',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
+    def LegacyAbac(self, request, global_params=None):
+      """Enables or disables the ABAC authorization mechanism on a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersLegacyAbacRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LegacyAbac')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.legacyAbac',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/legacyAbac',
+        request_field=u'setLegacyAbacRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersLegacyAbacRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all clusters owned by a project in either the specified zone or all.
+zones.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.list',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersListRequest',
+        response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
+    def Locations(self, request, global_params=None):
+      """Sets the locations of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Locations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Locations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.locations',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/locations',
+        request_field=u'setLocationsRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersLocationsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Master(self, request, global_params=None):
+      """Updates the master of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersMasterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Master')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Master.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.master',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/master',
+        request_field=u'updateMasterRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersMasterRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Monitoring(self, request, global_params=None):
+      """Sets the monitoring service of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersMonitoringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Monitoring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Monitoring.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.monitoring',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/monitoring',
+        request_field=u'setMonitoringServiceRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersMonitoringRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ResourceLabels(self, request, global_params=None):
+      """Sets labels on a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersResourceLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResourceLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.resourceLabels',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/resourceLabels',
+        request_field=u'setLabelsRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersResourceLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMasterAuth(self, request, global_params=None):
+      """Used to set master auth materials. Currently supports :-.
+Changing the admin password of a specific cluster.
+This can be either via password generation or explicitly set.
+Modify basic_auth.csv and reset the K8S API server.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersSetMasterAuthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMasterAuth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setMasterAuth',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:setMasterAuth',
+        request_field=u'setMasterAuthRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersSetMasterAuthRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetNetworkPolicy(self, request, global_params=None):
+      """Enables/Disables Network Policy for a cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersSetNetworkPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetNetworkPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetNetworkPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setNetworkPolicy',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:setNetworkPolicy',
+        request_field=u'setNetworkPolicyRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersSetNetworkPolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def StartIpRotation(self, request, global_params=None):
+      """Start master IP rotation.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersStartIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.startIpRotation',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:startIpRotation',
+        request_field=u'startIPRotationRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersStartIpRotationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the settings of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'container.projects.locations.clusters.update',
+        ordered_params=[u'projectId', u'location', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
+        request_field=u'updateClusterRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = u'projects_locations_operations'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      """Cancels the specified operation.
+
+      Args:
+        request: (ContainerProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.locations.operations.cancel',
+        ordered_params=[u'projectId', u'location', u'operationId'],
+        path_params=[u'location', u'operationId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations/{operationId}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'ContainerProjectsLocationsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the specified operation.
+
+      Args:
+        request: (ContainerProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.operations.get',
+        ordered_params=[u'projectId', u'location', u'operationId'],
+        path_params=[u'location', u'operationId', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations/{operationId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all operations in a project in a specific zone or all zones.
+
+      Args:
+        request: (ContainerProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.operations.list',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetServerconfig(self, request, global_params=None):
+      """Returns configuration info about the Container Engine service.
+
+      Args:
+        request: (ContainerProjectsLocationsGetServerconfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServerConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetServerconfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServerconfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.locations.getServerconfig',
+        ordered_params=[u'projectId', u'location'],
+        path_params=[u'location', u'projectId'],
+        query_params=[u'version', u'zone'],
+        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/serverconfig',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsGetServerconfigRequest',
+        response_type_name=u'ServerConfig',
+        supports_download=False,
+    )
+
+  class ProjectsZonesClustersNodePoolsService(base_api.BaseApiService):
+    """Service class for the projects_zones_clusters_nodePools resource."""
+
+    _NAME = u'projects_zones_clusters_nodePools'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsZonesClustersNodePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Autoscaling(self, request, global_params=None):
+      """Sets the autoscaling settings of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsAutoscalingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Autoscaling')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Autoscaling.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.autoscaling',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
+        request_field=u'setNodePoolAutoscalingRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsAutoscalingRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      """Creates a node pool for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.create',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        request_field=u'createNodePoolRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a node pool from a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.zones.clusters.nodePools.delete',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Retrieves the node pool requested.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.nodePools.get',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
+        response_type_name=u'NodePool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the node pools for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.nodePools.list',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
+        response_type_name=u'ListNodePoolsResponse',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      """Roll back the previously Aborted or Failed NodePool upgrade.
+This will be an no-op if the last upgrade successfully completed.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.rollback',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
+        request_field=u'rollbackNodePoolUpgradeRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsRollbackRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetManagement(self, request, global_params=None):
+      """Sets the NodeManagement options for a node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsSetManagementRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetManagement')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetManagement.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.setManagement',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
+        request_field=u'setNodePoolManagementRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetManagementRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSize(self, request, global_params=None):
+      """Sets the size of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsSetSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.setSize',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
+        request_field=u'setNodePoolSizeRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetSizeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the version and/or iamge type of a specific node pool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.update',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
+        request_field=u'updateNodePoolRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsZonesClustersService(base_api.BaseApiService):
+    """Service class for the projects_zones_clusters resource."""
+
+    _NAME = u'projects_zones_clusters'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsZonesClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Addons(self, request, global_params=None):
+      """Sets the addons of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersAddonsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Addons')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Addons.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.addons',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons',
+        request_field=u'setAddonsConfigRequest',
+        request_type_name=u'ContainerProjectsZonesClustersAddonsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def CompleteIpRotation(self, request, global_params=None):
+      """Completes master IP rotation.
+
+      Args:
+        request: (ContainerProjectsZonesClustersCompleteIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.completeIpRotation',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation',
+        request_field=u'completeIPRotationRequest',
+        request_type_name=u'ContainerProjectsZonesClustersCompleteIpRotationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      """Creates a cluster, consisting of the specified number and type of Google.
+Compute Engine instances.
+
+By default, the cluster is created in the project's
+[default network](/compute/docs/networks-and-firewalls#networks).
+
+One firewall is added for the cluster. After cluster creation,
+the cluster creates routes for each node to allow the containers
+on that node to communicate with all other instances in the
+cluster.
+
+Finally, an entry is added to the project's global metadata indicating
+which CIDR range is being used by the cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.create',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters',
+        request_field=u'createClusterRequest',
+        request_type_name=u'ContainerProjectsZonesClustersCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+nodes.
+
+Firewalls and routes that were configured during cluster creation
+are also deleted.
+
+Other Google Compute Engine resources that might be in use by the cluster
+(e.g. load balancer resources) will not be deleted if they weren't present
+at the initial create time.
+
+      Args:
+        request: (ContainerProjectsZonesClustersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.zones.clusters.delete',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the details of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Cluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.get',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersGetRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
+    def LegacyAbac(self, request, global_params=None):
+      """Enables or disables the ABAC authorization mechanism on a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersLegacyAbacRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LegacyAbac')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.legacyAbac',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac',
+        request_field=u'setLegacyAbacRequest',
+        request_type_name=u'ContainerProjectsZonesClustersLegacyAbacRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all clusters owned by a project in either the specified zone or all.
+zones.
+
+      Args:
+        request: (ContainerProjectsZonesClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.list',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersListRequest',
+        response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
+    def Locations(self, request, global_params=None):
+      """Sets the locations of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Locations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Locations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.locations',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations',
+        request_field=u'setLocationsRequest',
+        request_type_name=u'ContainerProjectsZonesClustersLocationsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Logging(self, request, global_params=None):
+      """Sets the logging service of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersLoggingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Logging')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Logging.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.logging',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging',
+        request_field=u'setLoggingServiceRequest',
+        request_type_name=u'ContainerProjectsZonesClustersLoggingRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Master(self, request, global_params=None):
+      """Updates the master of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersMasterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Master')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Master.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.master',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master',
+        request_field=u'updateMasterRequest',
+        request_type_name=u'ContainerProjectsZonesClustersMasterRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Monitoring(self, request, global_params=None):
+      """Sets the monitoring service of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersMonitoringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Monitoring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Monitoring.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.monitoring',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring',
+        request_field=u'setMonitoringServiceRequest',
+        request_type_name=u'ContainerProjectsZonesClustersMonitoringRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ResourceLabels(self, request, global_params=None):
+      """Sets labels on a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersResourceLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResourceLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.resourceLabels',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
+        request_field=u'setLabelsRequest',
+        request_type_name=u'ContainerProjectsZonesClustersResourceLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMasterAuth(self, request, global_params=None):
+      """Used to set master auth materials. Currently supports :-.
+Changing the admin password of a specific cluster.
+This can be either via password generation or explicitly set.
+Modify basic_auth.csv and reset the K8S API server.
+
+      Args:
+        request: (ContainerProjectsZonesClustersSetMasterAuthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMasterAuth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.setMasterAuth',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
+        request_field=u'setMasterAuthRequest',
+        request_type_name=u'ContainerProjectsZonesClustersSetMasterAuthRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetNetworkPolicy(self, request, global_params=None):
+      """Enables/Disables Network Policy for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersSetNetworkPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetNetworkPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetNetworkPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.setNetworkPolicy',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy',
+        request_field=u'setNetworkPolicyRequest',
+        request_type_name=u'ContainerProjectsZonesClustersSetNetworkPolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def StartIpRotation(self, request, global_params=None):
+      """Start master IP rotation.
+
+      Args:
+        request: (ContainerProjectsZonesClustersStartIpRotationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartIpRotation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.startIpRotation',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation',
+        request_field=u'startIPRotationRequest',
+        request_type_name=u'ContainerProjectsZonesClustersStartIpRotationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates the settings of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'container.projects.zones.clusters.update',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field=u'updateClusterRequest',
+        request_type_name=u'ContainerProjectsZonesClustersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsZonesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_zones_operations resource."""
+
+    _NAME = u'projects_zones_operations'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsZonesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      """Cancels the specified operation.
+
+      Args:
+        request: (ContainerProjectsZonesOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.operations.cancel',
+        ordered_params=[u'projectId', u'zone', u'operationId'],
+        path_params=[u'operationId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'ContainerProjectsZonesOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the specified operation.
+
+      Args:
+        request: (ContainerProjectsZonesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.operations.get',
+        ordered_params=[u'projectId', u'zone', u'operationId'],
+        path_params=[u'operationId', u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all operations in a project in a specific zone or all zones.
+
+      Args:
+        request: (ContainerProjectsZonesOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.operations.list',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsZonesService(base_api.BaseApiService):
+    """Service class for the projects_zones resource."""
+
+    _NAME = u'projects_zones'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetServerconfig(self, request, global_params=None):
+      """Returns configuration info about the Container Engine service.
+
+      Args:
+        request: (ContainerProjectsZonesGetServerconfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServerConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetServerconfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServerconfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.getServerconfig',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[u'location', u'version'],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/serverconfig',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',
+        response_type_name=u'ServerConfig',
+        supports_download=False,
+    )
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = u'projects'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

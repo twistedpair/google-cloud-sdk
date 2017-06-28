@@ -14,19 +14,17 @@
 
 """Deprecated completers to assist the completion cache refactor."""
 
-from googlecloudsdk.command_lib.compute import completers
-from googlecloudsdk.core.resource import resource_property
-from googlecloudsdk.core.resource import resource_registry
+from googlecloudsdk.command_lib.util import parameter_info_lib
+from googlecloudsdk.core import remote_completion
 
 
 # TODO(b/38374705): Drop the DeprecatedListCommandCompleter.
-class DeprecatedListCommandCompleter(completers.ListCommandCompleter):
+class DeprecatedListCommandCompleter(object):
   """A ListCommandCompleter for deprecated parser.add_argument() kwargs.
 
-  This class encapsulates all of the assumptions made by the deprecated
-  remote_completion module.  It derives from the compute ListCommandCompleter
-  because it pulls in sub-completers for zone, region and project resource
-  parameters.
+  This class is also temporarily used to allow new completers to use the old
+  cache.  This will allow a small CL to switch from the old cache to the new
+  one.
 
   Attributes:
     _deprecated_list_command: The gcloud list command, either space or '.'
@@ -35,26 +33,43 @@ class DeprecatedListCommandCompleter(completers.ListCommandCompleter):
       given the parsed args.
   """
 
-  def __init__(self, list_command=None, list_command_callback=None, **kwargs):
-    super(DeprecatedListCommandCompleter, self).__init__(**kwargs)
-    self._deprecated_list_command = list_command
-    self._deprecated_list_command_callback = list_command_callback
+  def __init__(self, collection=None, list_command=None,
+               list_command_callback=None, **kwargs):
+    del kwargs
+    self.collection = collection
+    self._list_command = list_command
+    self._list_command_callback = list_command_callback
+
+  def ParameterInfo(self, parsed_args, argument):
+    """Returns the parameter info object.
+
+    Args:
+      parsed_args: The command line parsed args object.
+      argument: The argparse argument object attached to this completer.
+
+    Returns:
+      The parameter info object.
+    """
+    return parameter_info_lib.ParameterInfoByConvention(parsed_args, argument)
 
   def GetListCommand(self, parameter_info):
-    """Returns the list command argv given parameter_info."""
-    info = resource_registry.Get(self.collection)
-    if info.cache_command:
-      command = info.cache_command
-    elif info.list_command:
-      command = info.list_command
-    elif self._deprecated_list_command_callback:
-      command = ' '.join(self._deprecated_list_command_callback(
-          parameter_info.parsed_args))
-    else:
-      if self._deprecated_list_command:
-        command = self._deprecated_list_command
-      else:
-        command = resource_property.ConvertToSnakeCase(
-            self.collection).replace('_', '-') + ' list'
-      command = command.replace('.', ' ')
-    return command.split(' ') + ['--uri', '--quiet', '--format=disable']
+    if self._list_command_callback:
+      return self._list_command_callback(parameter_info.parsed_args)
+    return self._list_command
+
+  def Complete(self, prefix, parameter_info):
+    """Returns the list of strings matching prefix.
+
+    Args:
+      prefix: The resource prefix string to match.
+      parameter_info: A ParamaterInfo object for accessing parameter values in
+        the program state.
+
+    Returns:
+      The list of strings matching prefix.
+    """
+    completer = remote_completion.RemoteCompletion.GetCompleterForResource(
+        resource=self.collection,
+        command_line=self._list_command,
+        list_command_callback_fn=self._list_command_callback)
+    return completer(parameter_info.parsed_args, prefix=prefix)

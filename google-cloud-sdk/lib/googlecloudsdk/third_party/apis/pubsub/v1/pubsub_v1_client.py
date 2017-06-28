@@ -54,13 +54,17 @@ class PubsubV1(base_api.BaseApiClient):
       """Creates a snapshot from the requested subscription.
 If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
+If the backlog in the subscription is too old -- and the resulting snapshot
+would expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.
+See also the `Snapshot.expire_time` field.
 
 If the name is not provided in the request, the server will assign a random
 name for this snapshot on the same project as the subscription, conforming
 to the
-[resource name format](https://cloud.google.com/pubsub/docs/overview#names).
-The generated name is populated in the returned Snapshot object.
-Note that for REST API requests, you must specify a name in the request.
+[resource name
+format](https://cloud.google.com/pubsub/docs/overview#names). The generated
+name is populated in the returned Snapshot object. Note that for REST API
+requests, you must specify a name in the request.
 
       Args:
         request: (PubsubProjectsSnapshotsCreateRequest) input message

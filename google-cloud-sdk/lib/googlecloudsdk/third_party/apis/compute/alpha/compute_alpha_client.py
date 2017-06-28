@@ -512,7 +512,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -782,7 +782,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified BackendBucket resource with the data included in the request. This method supports patch semantics.
+      """Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendBucketsPatchRequest) input message
@@ -1104,7 +1104,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1742,7 +1742,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request. This method supports patch semantics.
+      """Updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeFirewallsPatchRequest) input message
@@ -1960,7 +1960,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified forwarding rule with the data included in the request. This method supports patch semantics. Currently it only allow to patch network_tier field.
+      """Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 
       Args:
         request: (ComputeForwardingRulesPatchRequest) input message
@@ -2344,7 +2344,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified forwarding rule with the data included in the request. This method supports patch semantics. Currently it only allow to patch network_tier field.
+      """Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 
       Args:
         request: (ComputeGlobalForwardingRulesPatchRequest) input message
@@ -2676,7 +2676,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHealthChecksPatchRequest) input message
@@ -3174,7 +3174,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpHealthChecksPatchRequest) input message
@@ -3366,7 +3366,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpsHealthChecksPatchRequest) input message
@@ -3781,6 +3781,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def ApplyUpdatesToInstances(self, request, global_params=None):
+      """Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
+
+      Args:
+        request: (ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplyUpdatesToInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field=u'instanceGroupManagersApplyUpdatesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 
@@ -3833,6 +3859,58 @@ You can specify a maximum of 1000 instances with this method per request.
         relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
         request_field=u'instanceGroupManagersDeleteInstancesRequest',
         request_type_name=u'ComputeInstanceGroupManagersDeleteInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteOverrides(self, request, global_params=None):
+      """Delete selected overrides for the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagersDeleteOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.deleteOverrides',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteOverrides',
+        request_field=u'instanceGroupManagersDeleteOverridesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersDeleteOverridesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeletePerInstanceConfigs(self, request, global_params=None):
+      """Delete selected per-instance configs for the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeletePerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeletePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.deletePerInstanceConfigs',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
+        request_field=u'instanceGroupManagersDeletePerInstanceConfigsReq',
+        request_type_name=u'ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -3943,8 +4021,60 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
         supports_download=False,
     )
 
+    def ListOverrides(self, request, global_params=None):
+      """Lists all of the overrides defined for the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagersListOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagersListOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.listOverrides',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listOverrides',
+        request_field='',
+        request_type_name=u'ComputeInstanceGroupManagersListOverridesRequest',
+        response_type_name=u'InstanceGroupManagersListOverridesResponse',
+        supports_download=False,
+    )
+
+    def ListPerInstanceConfigs(self, request, global_params=None):
+      """Lists all of the per-instance configs defined for the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagersListPerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagersListPerInstanceConfigsResp) The response message.
+      """
+      config = self.GetMethodConfig('ListPerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.listPerInstanceConfigs',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
+        request_field='',
+        request_type_name=u'ComputeInstanceGroupManagersListPerInstanceConfigsRequest',
+        response_type_name=u'InstanceGroupManagersListPerInstanceConfigsResp',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -4183,6 +4313,58 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
         request_field=u'instanceGroupManagerResource',
         request_type_name=u'ComputeInstanceGroupManagersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdateOverrides(self, request, global_params=None):
+      """Insert or patch (for the ones that already exist) overrides for the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagersUpdateOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.updateOverrides',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updateOverrides',
+        request_field=u'instanceGroupManagersUpdateOverridesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersUpdateOverridesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdatePerInstanceConfigs(self, request, global_params=None):
+      """Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
+
+      Args:
+        request: (ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdatePerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdatePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.updatePerInstanceConfigs',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
+        request_field=u'instanceGroupManagersUpdatePerInstanceConfigsReq',
+        request_type_name=u'ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -5104,7 +5286,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMinCpuPlatform(self, request, global_params=None):
-      """Changes the minimum cpu/platform that this instance should be started as. This is called on a stopped instance.
+      """Changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
 
       Args:
         request: (ComputeInstancesSetMinCpuPlatformRequest) input message
@@ -5810,7 +5992,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified interconnect with the data included in the request using patch semantics.
+      """Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectsPatchRequest) input message
@@ -6278,6 +6460,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNetworksListRequest',
         response_type_name=u'NetworkList',
+        supports_download=False,
+    )
+
+    def ListIpOwners(self, request, global_params=None):
+      """List the internal IP owners in the specified network.
+
+      Args:
+        request: (ComputeNetworksListIpOwnersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IpOwnerList) The response message.
+      """
+      config = self.GetMethodConfig('ListIpOwners')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListIpOwners.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networks.listIpOwners',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'filter', u'ipCidrRange', u'maxResults', u'orderBy', u'ownerProjects', u'ownerTypes', u'pageToken', u'subnetName', u'subnetRegion'],
+        relative_path=u'projects/{project}/global/networks/{network}/listIpOwners',
+        request_field='',
+        request_type_name=u'ComputeNetworksListIpOwnersRequest',
+        response_type_name=u'IpOwnerList',
         supports_download=False,
     )
 
@@ -6848,7 +7056,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -7066,7 +7274,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -7603,6 +7811,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def ApplyUpdatesToInstances(self, request, global_params=None):
+      """Apply updates to selected instances the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplyUpdatesToInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field=u'regionInstanceGroupManagersApplyUpdatesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified managed instance group and all of the instances in that group.
 
@@ -7655,6 +7889,58 @@ You can specify a maximum of 1000 instances with this method per request.
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
         request_field=u'regionInstanceGroupManagersDeleteInstancesRequest',
         request_type_name=u'ComputeRegionInstanceGroupManagersDeleteInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteOverrides(self, request, global_params=None):
+      """Delete selected overrides for the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersDeleteOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.deleteOverrides',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteOverrides',
+        request_field=u'regionInstanceGroupManagersDeleteOverridesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersDeleteOverridesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeletePerInstanceConfigs(self, request, global_params=None):
+      """Delete selected per-instance configs for the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeletePerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeletePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.deletePerInstanceConfigs',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs',
+        request_field=u'regionInstanceGroupManagerDeleteInstanceConfigReq',
+        request_type_name=u'ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -7765,8 +8051,60 @@ A regional managed instance group can contain up to 2000 instances.
         supports_download=False,
     )
 
+    def ListOverrides(self, request, global_params=None):
+      """Lists all of the overrides defined for the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersListOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagersListOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.listOverrides',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listOverrides',
+        request_field='',
+        request_type_name=u'ComputeRegionInstanceGroupManagersListOverridesRequest',
+        response_type_name=u'RegionInstanceGroupManagersListOverridesResponse',
+        supports_download=False,
+    )
+
+    def ListPerInstanceConfigs(self, request, global_params=None):
+      """Lists all of the per-instance configs defined for the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagersListInstanceConfigsResp) The response message.
+      """
+      config = self.GetMethodConfig('ListPerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.listPerInstanceConfigs',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listPerInstanceConfigs',
+        request_field='',
+        request_type_name=u'ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest',
+        response_type_name=u'RegionInstanceGroupManagersListInstanceConfigsResp',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -7975,6 +8313,58 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
         request_field=u'instanceGroupManagerResource',
         request_type_name=u'ComputeRegionInstanceGroupManagersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdateOverrides(self, request, global_params=None):
+      """Insert or patch (for the ones that already exist) overrides for the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersUpdateOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.updateOverrides',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updateOverrides',
+        request_field=u'regionInstanceGroupManagersUpdateOverridesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersUpdateOverridesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdatePerInstanceConfigs(self, request, global_params=None):
+      """Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdatePerInstanceConfigs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdatePerInstanceConfigs.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.updatePerInstanceConfigs',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
+        request_field=u'regionInstanceGroupManagerUpdateInstanceConfigReq',
+        request_type_name=u'ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -8436,7 +8826,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified Router resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -9755,6 +10145,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def SetQuicOverride(self, request, global_params=None):
+      """Sets the QUIC override policy for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetQuicOverrideRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetQuicOverride')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetQuicOverride.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setQuicOverride',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
+        request_field=u'targetHttpsProxiesSetQuicOverrideRequest',
+        request_type_name=u'ComputeTargetHttpsProxiesSetQuicOverrideRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetSslCertificates(self, request, global_params=None):
       """Replaces SslCertificates for TargetHttpsProxy.
 
@@ -11038,7 +11454,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message

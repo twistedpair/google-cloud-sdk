@@ -88,18 +88,20 @@ class Namespace(argparse.Namespace):
     # pylint: disable=protected-access
     return self._GetParser()._calliope_command
 
-  def _Execute(self, command):
+  def _Execute(self, command, call_arg_complete=False):
     """Executes command in the current CLI.
 
     Args:
       command: A list of command args to execute.
+      call_arg_complete: Enable arg completion if True.
 
     Returns:
       Returns the list of resources from the command.
     """
+    call_arg_complete = False
     # pylint: disable=protected-access
     return self._GetCommand()._cli_generator.Generate().Execute(
-        command, call_arg_complete=False)
+        command, call_arg_complete=call_arg_complete)
 
   def GetDisplayInfo(self):
     """Returns the parser display_info."""
@@ -708,7 +710,7 @@ class ArgumentParser(argparse.ArgumentParser):
         # message. For instance, argparse might complain about an invalid
         # command choice 'flag-value' for '--unknown-flag flag-value', but
         # with a little finagling in parse_known_args() we can verify that
-        # '--unknown-flag' is in fact an unknwon flag and error out on that.
+        # '--unknown-flag' is in fact an unknown flag and error out on that.
         self._error_context = _ErrorContext(message, parser, error)
         return
     parser.ReportErrorMetrics(error, message)

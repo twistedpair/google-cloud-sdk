@@ -973,16 +973,6 @@ _SPECS_BETA['commitments'] = _InternalSpec(
     ],
     transformations=[],
     editables=[])
-_SPECS_BETA['peerings'] = _InternalSpec(
-    message_class_name='NetworkPeering',
-    table_cols=[
-        ('NAME', 'name'),
-        ('network', 'network'),
-        ('autoCreateRoutes', 'autoCreateRoutes'),
-        ('state', 'state'),
-    ],
-    transformations=None,
-    editables=None,)
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()

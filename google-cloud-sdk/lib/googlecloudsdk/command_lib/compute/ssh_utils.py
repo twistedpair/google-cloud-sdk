@@ -13,11 +13,9 @@
 # limitations under the License.
 """Utilities for subcommands that need to SSH into virtual machine guests."""
 
-from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
-from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.users import client as user_client
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
@@ -254,10 +252,10 @@ def _MetadataHasOsloginEnable(metadata):
   return matching_values[0].lower() == 'true'
 
 
-class BaseSSHCommand(base_classes.BaseCommand):
-  """Base class for subcommands that need to connect to instances using SSH.
+class BaseSSHHelper(object):
+  """Helper class for subcommands that need to connect to instances using SSH.
 
-  Subclasses can call EnsureSSHKeyIsInProject() to make sure that the
+  Clients can call EnsureSSHKeyIsInProject() to make sure that the
   user's public SSH key is placed in the project metadata before
   proceeding.
 
@@ -314,117 +312,90 @@ class BaseSSHCommand(base_classes.BaseCommand):
     self.env = ssh.Environment.Current()
     self.env.RequireSSH()
 
-  def GetInstance(self, instance_ref):
+  def GetInstance(self, client, instance_ref):
     """Fetch an instance based on the given instance_ref."""
-    request = (self.compute.instances,
+    request = (client.apitools_client.instances,
                'Get',
-               self.messages.ComputeInstancesGetRequest(
+               client.messages.ComputeInstancesGetRequest(
                    instance=instance_ref.Name(),
                    project=instance_ref.project,
                    zone=instance_ref.zone))
 
-    errors = []
-    objects = list(request_helper.MakeRequests(
-        requests=[request],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
-    if errors:
-      utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch instance:')
-    return objects[0]
+    return client.MakeRequests([request])[0]
 
-  def GetProject(self, project):
+  def GetProject(self, client, project):
     """Returns the project object.
 
     Args:
+      client: The compute client.
       project: str, the project we are requesting or None for value from
         from properties
 
     Returns:
       The project object
     """
-    errors = []
-    objects = list(request_helper.MakeRequests(
-        requests=[(self.compute.projects,
-                   'Get',
-                   self.messages.ComputeProjectsGetRequest(
-                       project=project or properties.VALUES.core.project.Get(
-                           required=True),
-                   ))],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
-    if errors:
-      utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch project resource:')
-    return objects[0]
+    return client.MakeRequests(
+        [(client.apitools_client.projects, 'Get',
+          client.messages.ComputeProjectsGetRequest(
+              project=project or
+              properties.VALUES.core.project.Get(required=True),))])[0]
 
-  def _SetProjectMetadata(self, new_metadata):
+  def _SetProjectMetadata(self, client, new_metadata):
     """Sets the project metadata to the new metadata."""
-    compute = self.compute
-
     errors = []
-    list(request_helper.MakeRequests(
+    client.MakeRequests(
         requests=[
-            (compute.projects,
+            (client.apitools_client.projects,
              'SetCommonInstanceMetadata',
-             self.messages.ComputeProjectsSetCommonInstanceMetadataRequest(
+             client.messages.ComputeProjectsSetCommonInstanceMetadataRequest(
                  metadata=new_metadata,
                  project=properties.VALUES.core.project.Get(
                      required=True),
              ))],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
+        errors_to_collect=errors)
     if errors:
       utils.RaiseException(
           errors,
           SetProjectMetadataError,
           error_message='Could not add SSH key to project metadata:')
 
-  def SetProjectMetadata(self, new_metadata):
+  def SetProjectMetadata(self, client, new_metadata):
     """Sets the project metadata to the new metadata with progress tracker."""
     with progress_tracker.ProgressTracker('Updating project ssh metadata'):
-      self._SetProjectMetadata(new_metadata)
+      self._SetProjectMetadata(client, new_metadata)
 
-  def _SetInstanceMetadata(self, instance, new_metadata):
+  def _SetInstanceMetadata(self, client, instance, new_metadata):
     """Sets the project metadata to the new metadata."""
-    compute = self.compute
-
     errors = []
     # API wants just the zone name, not the full URL
     zone = instance.zone.split('/')[-1]
-    list(request_helper.MakeRequests(
+    client.MakeRequests(
         requests=[
-            (compute.instances,
+            (client.apitools_client.instances,
              'SetMetadata',
-             self.messages.ComputeInstancesSetMetadataRequest(
+             client.messages.ComputeInstancesSetMetadataRequest(
                  instance=instance.name,
                  metadata=new_metadata,
                  project=properties.VALUES.core.project.Get(
                      required=True),
                  zone=zone
              ))],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors))
+        errors_to_collect=errors)
     if errors:
       utils.RaiseToolException(
           errors,
           error_message='Could not add SSH key to instance metadata:')
 
-  def SetInstanceMetadata(self, instance, new_metadata):
+  def SetInstanceMetadata(self, client, instance, new_metadata):
     """Sets the instance metadata to the new metadata with progress tracker."""
     with progress_tracker.ProgressTracker('Updating instance ssh metadata'):
-      self._SetInstanceMetadata(instance, new_metadata)
+      self._SetInstanceMetadata(client, instance, new_metadata)
 
-  def EnsureSSHKeyIsInInstance(self, user, instance, iam_keys=False):
+  def EnsureSSHKeyIsInInstance(self, client, user, instance, iam_keys=False):
     """Ensures that the user's public SSH key is in the instance metadata.
 
     Args:
+      client: The compute client.
       user: str, the name of the user associated with the SSH key in the
           metadata
       instance: Instance, ensure the SSH key is in the metadata of this instance
@@ -438,19 +409,18 @@ class BaseSSHCommand(base_classes.BaseCommand):
           already
     """
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    new_metadata = _AddSSHKeyToMetadataMessage(self.messages, user, public_key,
-                                               instance.metadata,
-                                               iam_keys=iam_keys)
-    if new_metadata != instance.metadata:
-      self.SetInstanceMetadata(instance, new_metadata)
-      return True
-    else:
-      return False
+    new_metadata = _AddSSHKeyToMetadataMessage(
+        client.messages, user, public_key, instance.metadata, iam_keys=iam_keys)
+    has_new_metadata = new_metadata != instance.metadata
+    if has_new_metadata:
+      self.SetInstanceMetadata(client, instance, new_metadata)
+    return has_new_metadata
 
-  def EnsureSSHKeyIsInProject(self, user, project=None):
+  def EnsureSSHKeyIsInProject(self, client, user, project=None):
     """Ensures that the user's public SSH key is in the project metadata.
 
     Args:
+      client: The compute client.
       user: str, the name of the user associated with the SSH key in the
           metadata
       project: Project, the project SSH key will be added to
@@ -461,24 +431,24 @@ class BaseSSHCommand(base_classes.BaseCommand):
     """
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     if not project:
-      project = self.GetProject(None)
+      project = self.GetProject(client, None)
     existing_metadata = project.commonInstanceMetadata
     new_metadata = _AddSSHKeyToMetadataMessage(
-        self.messages, user, public_key, existing_metadata)
+        client.messages, user, public_key, existing_metadata)
     if new_metadata != existing_metadata:
-      self.SetProjectMetadata(new_metadata)
+      self.SetProjectMetadata(client, new_metadata)
       return True
     else:
       return False
 
-  def _EnsureSSHKeyExistsForUser(self, fetcher, user):
+  def _EnsureSSHKeyExistsForUser(self, http, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     should_upload = True
     try:
       user_info = fetcher.LookupUser(user)
     except user_client.UserException:
-      owner_email = gaia.GetAuthenticatedGaiaEmail(self.http)
+      owner_email = gaia.GetAuthenticatedGaiaEmail(http)
       fetcher.CreateUser(user, owner_email)
       user_info = fetcher.LookupUser(user)
     for remote_public_key in user_info.publicKeys:
@@ -497,14 +467,16 @@ class BaseSSHCommand(base_classes.BaseCommand):
       fetcher.UploadPublicKey(user, public_key)
     return True
 
-  def EnsureSSHKeyExists(self, user, instance, project,
-                         use_account_service=False):
+  def EnsureSSHKeyExists(self, compute_client, cua_client, user, instance,
+                         project, use_account_service=False):
     """Controller for EnsureSSHKey* variants.
 
     Sends the key to the project metadata, instance metadata or account service,
     and signals whether the key was newly added.
 
     Args:
+      compute_client: The compute client.
+      cua_client: The clouduseraccounts client.
       user: str, The user name.
       instance: Instance, the instance to connect to.
       project: Project, the project instance is in
@@ -516,9 +488,12 @@ class BaseSSHCommand(base_classes.BaseCommand):
     if use_account_service:
       log.status.Print('using accounts service')
       fetcher = user_client.UserResourceFetcher(
-          self.clouduseraccounts, self.project, self.http, self.batch_url)
+          cua_client,
+          properties.VALUES.core.project.GetOrFail(),
+          compute_client.apitools_client.http, compute_client.batch_url)
       try:
-        keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
+        keys_newly_added = self._EnsureSSHKeyExistsForUser(
+            compute_client.apitools_client.http, fetcher, user)
       # TODO(b/37739425): find out what desired fallback mechanism is and
       # implement it.
       except  user_client.UserException as e:
@@ -558,17 +533,19 @@ class BaseSSHCommand(base_classes.BaseCommand):
         # 'sshKeys' metadata exists, we won't be able to ssh in because the VM
         # won't check the project-wide metadata. To avoid this, if the instance
         # has per-instance SSH key metadata, we add the key there instead.
-        keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance)
+        keys_newly_added = self.EnsureSSHKeyIsInInstance(
+            compute_client, user, instance)
       elif _MetadataHasBlockProjectSshKeys(instance.metadata):
         # If the instance 'ssh-keys' metadata overrides the project-wide
         # 'sshKeys' metadata, we should put our key there.
-        keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
-                                                         iam_keys=True)
+        keys_newly_added = self.EnsureSSHKeyIsInInstance(
+            compute_client, user, instance, iam_keys=True)
       else:
         # Otherwise, try to add to the project-wide metadata. If we don't have
         # permissions to do that, add to the instance 'ssh-keys' metadata.
         try:
-          keys_newly_added = self.EnsureSSHKeyIsInProject(user, project)
+          keys_newly_added = self.EnsureSSHKeyIsInProject(
+              compute_client, user, project)
         except SetProjectMetadataError:
           log.info('Could not set project metadata:', exc_info=True)
           # If we can't write to the project metadata, it may be because of a
@@ -579,12 +556,12 @@ class BaseSSHCommand(base_classes.BaseCommand):
           # metadata). We prefer this to the per-instance override of the
           # project metadata.
           log.info('Attempting to set instance metadata.')
-          keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
-                                                           iam_keys=True)
+          keys_newly_added = self.EnsureSSHKeyIsInInstance(
+              compute_client, user, instance, iam_keys=True)
     return keys_newly_added
 
   def CheckForOsloginAndGetUser(self, instance,
-                                project, requested_user):
+                                project, requested_user, release_track, http):
     """Checks instance/project metadata for oslogin and update username."""
     # Instance metadata has priority
     use_oslogin = False
@@ -597,13 +574,13 @@ class BaseSSHCommand(base_classes.BaseCommand):
       return requested_user, use_oslogin
 
     # Connect to the oslogin API and add public key to oslogin user account.
-    oslogin = oslogin_client.OsloginClient(self.ReleaseTrack())
+    oslogin = oslogin_client.OsloginClient(release_track)
     if not oslogin:
       log.warn('OS Login is enabled on Instance/Project, but is not availabe '
-               'in the {0} version of gcloud.'.format(self.ReleaseTrack().id))
+               'in the {0} version of gcloud.'.format(release_track.id))
       return requested_user, use_oslogin
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    user_email = gaia.GetAuthenticatedGaiaEmail(self.http)
+    user_email = gaia.GetAuthenticatedGaiaEmail(http)
     login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
     use_oslogin = True
 
@@ -650,18 +627,9 @@ class BaseSSHCommand(base_classes.BaseCommand):
     config['HostKeyAlias'] = host_key_alias
     return config
 
-  @property
-  def resource_type(self):
-    return 'instances'
 
-
-class BaseSSHCLICommand(BaseSSHCommand):
-  """Base class for subcommands that use ssh or scp."""
-
-  def __init__(self, *args, **kwargs):
-    super(BaseSSHCLICommand, self).__init__(*args, **kwargs)
-    self._use_account_service = False
-    self._use_internal_ip = False
+class BaseSSHCLIHelper(BaseSSHHelper):
+  """Helper class for subcommands that use ssh or scp."""
 
   @staticmethod
   def Args(parser):
@@ -675,7 +643,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
           on the command line after this command. Positional arguments are
           allowed.
     """
-    super(BaseSSHCLICommand, BaseSSHCLICommand).Args(parser)
+    super(BaseSSHCLIHelper, BaseSSHCLIHelper).Args(parser)
 
     parser.add_argument(
         '--dry-run',
@@ -703,13 +671,13 @@ class BaseSSHCLICommand(BaseSSHCommand):
         """)
 
   def Run(self, args):
-    super(BaseSSHCLICommand, self).Run(args)
+    super(BaseSSHCLIHelper, self).Run(args)
     if not args.plain:
       self.keys.EnsureKeysExist(args.force_key_file_overwrite,
                                 allow_passphrase=True)
 
-  def _PreliminarylyVerifyInstance(self, instance_id, remote, identity_file,
-                                   options, extra_flags):
+  def PreliminarylyVerifyInstance(self, instance_id, remote, identity_file,
+                                  options):
     """Verify the instance's identity by connecting and running a command.
 
     Args:
@@ -717,7 +685,6 @@ class BaseSSHCLICommand(BaseSSHCommand):
       remote: ssh.Remote, remote to connect to.
       identity_file: str, optional key file.
       options: dict, optional ssh options.
-      extra_flags: [str], optional extra flags on the invocation.
 
     Raises:
       ssh.CommandError: The ssh command failed.

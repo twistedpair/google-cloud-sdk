@@ -815,7 +815,9 @@ class Snapshot(_messages.Message):
       subscription)`. For example, consider a subscription whose oldest
       unacked message is 3 days old. If a snapshot is created from this
       subscription, the snapshot -- which will always capture this 3-day-old
-      backlog as long as the snapshot exists -- will expire in 4 days.
+      backlog as long as the snapshot exists -- will expire in 4 days. The
+      service will refuse to create a snapshot that would expire in less than
+      1 hour after creation.
     name: The name of the snapshot.
     topic: The name of the topic from which this snapshot is retaining
       messages.

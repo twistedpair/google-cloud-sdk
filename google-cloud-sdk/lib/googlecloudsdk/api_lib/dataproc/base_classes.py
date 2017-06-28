@@ -21,6 +21,7 @@ import urlparse
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.dataproc import constants
+from googlecloudsdk.api_lib.dataproc import dataproc as dp
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
@@ -52,51 +53,49 @@ class JobSubmitter(base.Command):
 
   def Run(self, args):
     """This is what gets called when the user runs this command."""
-    client = self.context['dataproc_client']
-    messages = self.context['dataproc_messages']
+    dataproc = dp.Dataproc()
 
     job_id = util.GetJobId(args.id)
-    job_ref = util.ParseJob(job_id, self.context)
+    job_ref = dataproc.ParseJob(job_id)
 
     self.PopulateFilesByType(args)
 
-    cluster_ref = util.ParseCluster(args.cluster, self.context)
-    request = messages.DataprocProjectsRegionsClustersGetRequest(
+    cluster_ref = dataproc.ParseCluster(args.cluster)
+    request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
         projectId=cluster_ref.projectId,
         region=cluster_ref.region,
         clusterName=cluster_ref.clusterName)
 
-    cluster = client.projects_regions_clusters.Get(request)
+    cluster = dataproc.client.projects_regions_clusters.Get(request)
 
     self._staging_dir = self.GetStagingDir(
         cluster, job_ref.jobId, bucket=args.bucket)
     self.ValidateAndStageFiles()
 
-    job = messages.Job(
-        reference=messages.JobReference(
+    job = dataproc.messages.Job(
+        reference=dataproc.messages.JobReference(
             projectId=job_ref.projectId,
             jobId=job_ref.jobId),
-        placement=messages.JobPlacement(
+        placement=dataproc.messages.JobPlacement(
             clusterName=args.cluster))
 
-    self.ConfigureJob(job, args)
+    self.ConfigureJob(dataproc.messages, job, args)
 
-    request = messages.DataprocProjectsRegionsJobsSubmitRequest(
+    request = dataproc.messages.DataprocProjectsRegionsJobsSubmitRequest(
         projectId=job_ref.projectId,
         region=job_ref.region,
-        submitJobRequest=messages.SubmitJobRequest(
+        submitJobRequest=dataproc.messages.SubmitJobRequest(
             job=job))
 
-    job = client.projects_regions_jobs.Submit(request)
+    job = dataproc.client.projects_regions_jobs.Submit(request)
 
     log.status.Print('Job [{0}] submitted.'.format(job_id))
 
     if not args.async:
-      job = util.WaitForJobTermination(
+      job = dataproc.WaitForJobTermination(
           job,
-          self.context,
           message='Waiting for job completion',
-          goal_state=messages.JobStatus.StateValueValuesEnum.DONE,
+          goal_state=dataproc.messages.JobStatus.StateValueValuesEnum.DONE,
           stream_driver_log=True)
       log.status.Print('Job [{0}] finished successfully.'.format(job_id))
 
@@ -153,12 +152,10 @@ class JobSubmitter(base.Command):
             job_id=job_id))
     return staging_dir
 
-  def BuildLoggingConfig(self, driver_logging):
+  def BuildLoggingConfig(self, messages, driver_logging):
     """Build LoggingConfig from parameters."""
     if not driver_logging:
       return None
-
-    messages = self.context['dataproc_messages']
 
     return messages.LoggingConfig(
         driverLogLevels=encoding.DictToMessage(
@@ -166,9 +163,8 @@ class JobSubmitter(base.Command):
             messages.LoggingConfig.DriverLogLevelsValue))
 
   @abc.abstractmethod
-  def ConfigureJob(self, job, args):
+  def ConfigureJob(self, messages, job, args):
     """Add type-specific job configuration to job message."""
-    messages = self.context['dataproc_messages']
     # Parse labels (if present)
     labels = labels_util.UpdateLabels(
         None,
@@ -197,8 +193,7 @@ class JobSubmitterBeta(JobSubmitter):
 
     JobSubmitter.Args(parser)
 
-  def ConfigureJob(self, job, args):
-    messages = self.context['dataproc_messages']
+  def ConfigureJob(self, messages, job, args):
     # Configure Restartable job.
     if args.max_failures_per_hour:
       scheduling = messages.JobScheduling(

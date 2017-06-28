@@ -2156,6 +2156,8 @@ class TableList(_messages.Message):
       labels: [Experimental] The labels associated with this table. You can
         use these to organize and group your tables.
       tableReference: A reference uniquely identifying the table.
+      timePartitioning: [Experimental] The time-based partitioning for this
+        table.
       type: The type of table. Possible values are: TABLE, VIEW.
       view: Additional details for a view.
     """
@@ -2200,8 +2202,9 @@ class TableList(_messages.Message):
     kind = _messages.StringField(3, default=u'bigquery#table')
     labels = _messages.MessageField('LabelsValue', 4)
     tableReference = _messages.MessageField('TableReference', 5)
-    type = _messages.StringField(6)
-    view = _messages.MessageField('ViewValue', 7)
+    timePartitioning = _messages.MessageField('TimePartitioning', 6)
+    type = _messages.StringField(7)
+    view = _messages.MessageField('ViewValue', 8)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'bigquery#tableList')

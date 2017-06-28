@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20170606",
+ "revision": "20170616",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1200,7 +1200,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "The list of URLs to the HttpHealthCheck or HttpsHealthCheck resource for health checking this BackendService. Currently at most one health check can be specified, and a health check is required.\n\nFor internal load balancing, a URL to a HealthCheck resource must be specified instead.",
+     "description": "The list of URLs to the HttpHealthCheck or HttpsHealthCheck resource for health checking this BackendService. Currently at most one health check can be specified, and a health check is required for GCE backend services. A health check must not be specified for GAE app backend and Cloud Function backend.\n\nFor internal load balancing, a URL to a HealthCheck resource must be specified instead.",
      "items": {
       "type": "string"
      }
@@ -9789,7 +9789,7 @@
      "id": "compute.autoscalers.patch",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "PATCH",
-     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "autoscaler": {
        "type": "string",
@@ -10022,7 +10022,7 @@
      "id": "compute.backendBuckets.patch",
      "path": "{project}/global/backendBuckets/{backendBucket}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified BackendBucket resource with the data included in the request. This method supports patch semantics.",
+     "description": "Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendBucket": {
        "type": "string",
@@ -10328,7 +10328,7 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
+     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -12061,7 +12061,7 @@
      "id": "compute.healthChecks.patch",
      "path": "{project}/global/healthChecks/{healthCheck}",
      "httpMethod": "PATCH",
-     "description": "Updates a HealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "healthCheck": {
        "type": "string",
@@ -12282,7 +12282,7 @@
      "id": "compute.httpHealthChecks.patch",
      "path": "{project}/global/httpHealthChecks/{httpHealthCheck}",
      "httpMethod": "PATCH",
-     "description": "Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "httpHealthCheck": {
        "type": "string",
@@ -12503,7 +12503,7 @@
      "id": "compute.httpsHealthChecks.patch",
      "path": "{project}/global/httpsHealthChecks/{httpsHealthCheck}",
      "httpMethod": "PATCH",
-     "description": "Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "httpsHealthCheck": {
        "type": "string",
@@ -15945,7 +15945,7 @@
      "id": "compute.regionAutoscalers.patch",
      "path": "{project}/regions/{region}/autoscalers",
      "httpMethod": "PATCH",
-     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "autoscaler": {
        "type": "string",
@@ -16254,7 +16254,7 @@
      "id": "compute.regionBackendServices.patch",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -17729,7 +17729,7 @@
      "id": "compute.routers.patch",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified Router resource with the data included in the request. This method supports patch semantics.",
+     "description": "Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
      "parameters": {
       "project": {
        "type": "string",
@@ -20654,7 +20654,7 @@
      "id": "compute.urlMaps.patch",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
+     "description": "Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "project": {
        "type": "string",

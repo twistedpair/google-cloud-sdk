@@ -137,41 +137,11 @@ RESOURCE_REGISTRY = {
             email
           )
         """,),
-    'firebase.test.network-profiles':
-        resource_info.ResourceInfo(
-            list_format="""
-          table[box](
-            id:label=PROFILE_ID,
-            synthesize((rule:up, upRule),(rule:down, downRule)):
-              format="table[box](
-                rule,
-                delay,
-                packetLossRatio:label=LOSS_RATIO,
-                packetDuplicationRatio:label=DUPLICATION_RATIO,
-                bandwidth,
-                burst
-              )"
-          )
-        """,),
 
     # special IAM roles completion case
     'iam.roles':
         resource_info.ResourceInfo(
             bypass_cache=True,),
-
-    # generic
-    'default':
-        resource_info.ResourceInfo(
-            list_format="""
-          default
-        """,),
-    'uri':
-        resource_info.ResourceInfo(
-            list_format="""
-          table(
-            uri():sort=1:label=""
-          )
-        """,),
 }
 
 

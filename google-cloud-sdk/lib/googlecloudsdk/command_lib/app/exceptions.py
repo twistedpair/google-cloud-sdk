@@ -115,3 +115,39 @@ class InvalidInstanceTypeError(exceptions.Error):
       msg += '  ' + message
     super(InvalidInstanceTypeError, self).__init__(msg)
 
+
+class FileNotFoundError(exceptions.Error):
+  """File or directory that was supposed to exist didn't exist."""
+
+  def __init__(self, path):
+    super(FileNotFoundError, self).__init__('[{}] does not exist.'.format(path))
+
+
+class DuplicateConfigError(exceptions.Error):
+  """Two config files of the same type."""
+
+  def __init__(self, path1, path2, config_type):
+    super(DuplicateConfigError, self).__init__(
+        '[{path1}] and [{path2}] are both trying to define a {t} config file. '
+        'Only one config file of the same type can be updated at once.'.format(
+            path1=path1, path2=path2, t=config_type))
+
+
+class DuplicateServiceError(exceptions.Error):
+  """Two <service>.yaml files defining the same service id."""
+
+  def __init__(self, path1, path2, service_id):
+    super(DuplicateServiceError, self).__init__(
+        '[{path1}] and [{path2}] are both defining the service id [{s}]. '
+        'All <service>.yaml files must have unique service ids.'.format(
+            path1=path1, path2=path2, s=service_id))
+
+
+class UnknownSourceError(exceptions.Error):
+  """The path exists but points to an unkown file or directory."""
+
+  def __init__(self, path):
+    super(UnknownSourceError, self).__init__(
+        '[{path}] could not be identified as a valid source directory or file.'
+        .format(path=path))
+

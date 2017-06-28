@@ -1300,11 +1300,46 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       GAUGE.
 
   Fields:
+    filter: A filter string, compatible with a Stackdriver Monitoring filter
+      string for TimeSeries.list API call. This filter is used to select a
+      specific TimeSeries for the purpose of autoscaling and to determine
+      whether the metric is exporting per-instance or global data.  For the
+      filter to be valid for autoscaling purposes, the following rules apply:
+      - You can only use the AND operator for joining selectors.  - You can
+      only use direct equality comparison operator (=) without any functions
+      for each selector.  - You can specify the metric in both the filter
+      string and in the metric field. However, if specified in both places,
+      the metric must be identical.  - The monitored resource type determines
+      what kind of values are expected for the metric. If it is a
+      gce_instance, the autoscaler expects the metric to include a separate
+      TimeSeries for each instance in a group. In such a case, you cannot
+      filter on resource labels. If the resource type is any other value, the
+      autoscaler expects this metric to contain values that apply to the
+      entire autoscaled instance group and resource label filtering can be
+      performed to point autoscaler at the correct TimeSeries to scale upon.
+      This is / called a global metric for the purpose of autoscaling.  If not
+      specified, the type defaults to gce_instance.    You should provide a
+      filter that is selective enough to pick just one TimeSeries for the
+      autoscaled group or for each of the instances (if you are using
+      gce_instance resource type). If multiple TimeSeries are returned upon
+      the query execution, the autoscaler will sum their respective values to
+      obtain its scaling value.
     metric: The identifier (type) of the Stackdriver Monitoring metric. The
       metric cannot have negative values and should be a utilization metric,
       which means that the number of virtual machines handling requests should
       increase or decrease proportionally to the metric.  The metric must have
       a value type of INT64 or DOUBLE.
+    singleInstanceAssignment: If scaling is based on a global metric value
+      that represents the total amount of work to be done or resource usage,
+      set this value to an amount assigned for a single instance of the scaled
+      group. Autoscaler will keep the number of instances proportional to the
+      value of this metric, the metric itself should not change value due to
+      group resizing.  A good metric to use with the target is for example
+      pubsub.googleapis.com/subscription/num_undelivered_messages or a custom
+      metric exporting the total number of requests coming to your instances.
+      A bad example would be a metric exporting an average or median latency,
+      since this value can't include a chunk assignable to a single instance,
+      it could be better used with utilization_target instead.
     utilizationTarget: The target value of the metric that autoscaler should
       maintain. This must be a positive value.  For example, a good metric to
       use as a utilization_target is
@@ -1330,9 +1365,11 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
     DELTA_PER_SECOND = 1
     GAUGE = 2
 
-  metric = _messages.StringField(1)
-  utilizationTarget = _messages.FloatField(2)
-  utilizationTargetType = _messages.EnumField('UtilizationTargetTypeValueValuesEnum', 3)
+  filter = _messages.StringField(1)
+  metric = _messages.StringField(2)
+  singleInstanceAssignment = _messages.FloatField(3)
+  utilizationTarget = _messages.FloatField(4)
+  utilizationTargetType = _messages.EnumField('UtilizationTargetTypeValueValuesEnum', 5)
 
 
 class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
@@ -1595,9 +1632,10 @@ class BackendService(_messages.Message):
       fingerprint must be provided in order to update the BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required.  For
-      internal load balancing, a URL to a HealthCheck resource must be
-      specified instead.
+      health check can be specified, and a health check is required for GCE
+      backend services. A health check must not be specified for GAE app
+      backend and Cloud Function backend.  For internal load balancing, a URL
+      to a HealthCheck resource must be specified instead.
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -2460,11 +2498,13 @@ class ComputeAddressesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   address = _messages.StringField(1, required=True)
@@ -2497,11 +2537,13 @@ class ComputeAddressesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   address = _messages.MessageField('Address', 1)
@@ -2572,11 +2614,13 @@ class ComputeAddressesSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     resource: Name of the resource for this request.
   """
 
@@ -2662,11 +2706,13 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: Name of the zone for this request.
   """
 
@@ -2699,11 +2745,13 @@ class ComputeAutoscalersInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: Name of the zone for this request.
   """
 
@@ -2775,11 +2823,13 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: Name of the zone for this request.
   """
 
@@ -2818,11 +2868,13 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: Name of the zone for this request.
   """
 
@@ -2843,11 +2895,13 @@ class ComputeBackendBucketsAddSignedUrlKeyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     signedUrlKey: A SignedUrlKey resource to be passed as the request body.
   """
 
@@ -2866,11 +2920,13 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2889,11 +2945,13 @@ class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -2935,11 +2993,13 @@ class ComputeBackendBucketsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendBucket = _messages.MessageField('BackendBucket', 1)
@@ -3007,11 +3067,13 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -3060,11 +3122,13 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -3083,11 +3147,13 @@ class ComputeBackendServicesAddSignedUrlKeyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     signedUrlKey: A SignedUrlKey resource to be passed as the request body.
   """
 
@@ -3155,11 +3221,13 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3178,11 +3246,13 @@ class ComputeBackendServicesDeleteSignedUrlKeyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3229,11 +3299,13 @@ class ComputeBackendServicesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.MessageField('BackendService', 1)
@@ -3301,11 +3373,13 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3324,11 +3398,13 @@ class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     securityPolicyReference: A SecurityPolicyReference resource to be passed
       as the request body.
   """
@@ -3365,11 +3441,13 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -3566,11 +3644,13 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     snapshot: A Snapshot resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -3592,11 +3672,13 @@ class ComputeDisksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -3643,11 +3725,13 @@ class ComputeDisksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     sourceImage: Optional. Source image to restore onto a disk.
     zone: The name of the zone for this request.
   """
@@ -3721,11 +3805,13 @@ class ComputeDisksResizeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -3760,11 +3846,13 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     resource: Name of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
@@ -3804,11 +3892,13 @@ class ComputeFirewallsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -3837,11 +3927,13 @@ class ComputeFirewallsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   firewall = _messages.MessageField('Firewall', 1)
@@ -3908,11 +4000,13 @@ class ComputeFirewallsPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -3946,11 +4040,13 @@ class ComputeFirewallsUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   firewall = _messages.StringField(1, required=True)
@@ -4018,11 +4114,13 @@ class ComputeForwardingRulesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4056,11 +4154,13 @@ class ComputeForwardingRulesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
@@ -4132,11 +4232,13 @@ class ComputeForwardingRulesPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4157,11 +4259,13 @@ class ComputeForwardingRulesSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     resource: Name of the resource for this request.
   """
 
@@ -4183,11 +4287,13 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -4225,11 +4331,13 @@ class ComputeGlobalAddressesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   address = _messages.StringField(1, required=True)
@@ -4258,11 +4366,13 @@ class ComputeGlobalAddressesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   address = _messages.MessageField('Address', 1)
@@ -4358,11 +4468,13 @@ class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4392,11 +4504,13 @@ class ComputeGlobalForwardingRulesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
@@ -4464,11 +4578,13 @@ class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -4502,11 +4618,13 @@ class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -4667,11 +4785,13 @@ class ComputeHealthChecksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4700,11 +4820,13 @@ class ComputeHealthChecksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   healthCheck = _messages.MessageField('HealthCheck', 1)
@@ -4772,11 +4894,13 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4811,11 +4935,13 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -4996,11 +5122,13 @@ class ComputeHostsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -5047,11 +5175,13 @@ class ComputeHostsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -5154,11 +5284,13 @@ class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -5188,11 +5320,13 @@ class ComputeHttpHealthChecksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpHealthCheck = _messages.MessageField('HttpHealthCheck', 1)
@@ -5260,11 +5394,13 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -5299,11 +5435,13 @@ class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -5321,11 +5459,13 @@ class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5355,11 +5495,13 @@ class ComputeHttpsHealthChecksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpsHealthCheck = _messages.MessageField('HttpsHealthCheck', 1)
@@ -5427,11 +5569,13 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5466,11 +5610,13 @@ class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -5488,11 +5634,13 @@ class ComputeImagesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   image = _messages.StringField(1, required=True)
@@ -5570,11 +5718,13 @@ class ComputeImagesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   forceCreate = _messages.BooleanField(1)
@@ -5688,11 +5838,13 @@ class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5752,6 +5904,26 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group, should
+      conform to RFC1035.
+    instanceGroupManagersApplyUpdatesRequest: A
+      InstanceGroupManagersApplyUpdatesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located.
+      Should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersApplyUpdatesRequest = _messages.MessageField('InstanceGroupManagersApplyUpdatesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A ComputeInstanceGroupManagersDeleteInstancesRequest object.
 
@@ -5764,11 +5936,13 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5777,6 +5951,45 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersDeleteOverridesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersDeleteOverridesRequest: A
+      InstanceGroupManagersDeleteOverridesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersDeleteOverridesRequest = _messages.MessageField('InstanceGroupManagersDeleteOverridesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    instanceGroupManagersDeletePerInstanceConfigsReq: A
+      InstanceGroupManagersDeletePerInstanceConfigsReq resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersDeletePerInstanceConfigsReq = _messages.MessageField('InstanceGroupManagersDeletePerInstanceConfigsReq', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
@@ -5788,11 +6001,13 @@ class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5826,11 +6041,13 @@ class ComputeInstanceGroupManagersInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5858,6 +6075,116 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
   order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
+
+
+class ComputeInstanceGroupManagersListOverridesRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersListOverridesRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
+
+
+class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersListPerInstanceConfigsRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   zone = _messages.StringField(7, required=True)
@@ -5925,11 +6252,13 @@ class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -5953,11 +6282,13 @@ class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -5980,11 +6311,13 @@ class ComputeInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -6004,11 +6337,13 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     size: The number of running instances that the managed instance group
       should maintain at any given time. The group automatically adds or
       removes instances to maintain the number of instances specified by this
@@ -6035,11 +6370,13 @@ class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Messag
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -6062,11 +6399,13 @@ class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -6089,11 +6428,13 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -6121,6 +6462,60 @@ class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersUpdateOverridesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    instanceGroupManagersUpdateOverridesRequest: A
+      InstanceGroupManagersUpdateOverridesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersUpdateOverridesRequest = _messages.MessageField('InstanceGroupManagersUpdateOverridesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    instanceGroupManagersUpdatePerInstanceConfigsReq: A
+      InstanceGroupManagersUpdatePerInstanceConfigsReq resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    requestId: begin_interface: MixerMutationRequestBuilder Request ID to
+      support idempotency.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersUpdatePerInstanceConfigsReq = _messages.MessageField('InstanceGroupManagersUpdatePerInstanceConfigsReq', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
   """A ComputeInstanceGroupManagersUpdateRequest object.
 
@@ -6132,11 +6527,13 @@ class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -6160,11 +6557,13 @@ class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6233,11 +6632,13 @@ class ComputeInstanceGroupsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6270,11 +6671,13 @@ class ComputeInstanceGroupsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where you want to create the instance group.
   """
 
@@ -6405,11 +6808,13 @@ class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6432,11 +6837,13 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone where the instance group is located.
   """
 
@@ -6473,11 +6880,13 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceTemplate = _messages.StringField(1, required=True)
@@ -6507,11 +6916,13 @@ class ComputeInstanceTemplatesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
@@ -6595,11 +7006,13 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6672,11 +7085,13 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6699,11 +7114,13 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6724,11 +7141,13 @@ class ComputeInstancesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6748,11 +7167,13 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6822,11 +7243,13 @@ class ComputeInstancesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
@@ -6958,11 +7381,13 @@ class ComputeInstancesResetRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -6983,11 +7408,13 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7026,11 +7453,13 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7052,11 +7481,13 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7078,11 +7509,13 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7103,11 +7536,13 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7129,11 +7564,13 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7153,11 +7590,13 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     scheduling: A Scheduling resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -7180,11 +7619,13 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7204,11 +7645,13 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     tags: A Tags resource to be passed as the request body.
     zone: The name of the zone for this request.
   """
@@ -7243,11 +7686,13 @@ class ComputeInstancesStartRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7269,11 +7714,13 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7295,11 +7742,13 @@ class ComputeInstancesStopRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7321,11 +7770,13 @@ class ComputeInstancesSuspendRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7365,11 +7816,13 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7393,11 +7846,13 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
@@ -7468,11 +7923,13 @@ class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   interconnectAttachment = _messages.StringField(1, required=True)
@@ -7520,11 +7977,13 @@ class ComputeInterconnectAttachmentsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
@@ -7686,11 +8145,13 @@ class ComputeInterconnectsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   interconnect = _messages.StringField(1, required=True)
@@ -7719,11 +8180,13 @@ class ComputeInterconnectsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   interconnect = _messages.MessageField('Interconnect', 1)
@@ -7791,11 +8254,13 @@ class ComputeInterconnectsPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   interconnect = _messages.StringField(1, required=True)
@@ -7864,11 +8329,13 @@ class ComputeLicensesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   license = _messages.MessageField('License', 1)
@@ -8079,11 +8546,13 @@ class ComputeNetworksAddPeeringRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.StringField(1, required=True)
@@ -8101,11 +8570,13 @@ class ComputeNetworksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.StringField(1, required=True)
@@ -8134,16 +8605,81 @@ class ComputeNetworksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.MessageField('Network', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeNetworksListIpOwnersRequest(_messages.Message):
+  """A ComputeNetworksListIpOwnersRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    ipCidrRange: (Optional) IP CIDR range filter, example: "10.128.10.0/30".
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    network: Name of the network to return.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    ownerProjects: (Optional) Project IDs filter, example:
+      "project-1,project-2".
+    ownerTypes: (Optional) Owner types filter, example:
+      "instance,forwardingRule".
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    subnetName: (Optional) Subnetwork name filter.
+    subnetRegion: (Optional) Subnetwork region filter.
+  """
+
+  filter = _messages.StringField(1)
+  ipCidrRange = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  network = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(5)
+  ownerProjects = _messages.StringField(6)
+  ownerTypes = _messages.StringField(7)
+  pageToken = _messages.StringField(8)
+  project = _messages.StringField(9, required=True)
+  subnetName = _messages.StringField(10)
+  subnetRegion = _messages.StringField(11)
 
 
 class ComputeNetworksListRequest(_messages.Message):
@@ -8205,11 +8741,13 @@ class ComputeNetworksPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.StringField(1, required=True)
@@ -8229,11 +8767,13 @@ class ComputeNetworksRemovePeeringRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.StringField(1, required=True)
@@ -8251,11 +8791,13 @@ class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   network = _messages.StringField(1, required=True)
@@ -8286,11 +8828,13 @@ class ComputeProjectsDisableXpnHostRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -8307,11 +8851,13 @@ class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -8327,11 +8873,13 @@ class ComputeProjectsEnableXpnHostRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -8348,11 +8896,13 @@ class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -8429,11 +8979,13 @@ class ComputeProjectsMoveDiskRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   diskMoveRequest = _messages.MessageField('DiskMoveRequest', 1)
@@ -8451,11 +9003,13 @@ class ComputeProjectsMoveInstanceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceMoveRequest = _messages.MessageField('InstanceMoveRequest', 1)
@@ -8472,11 +9026,13 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   metadata = _messages.MessageField('Metadata', 1)
@@ -8495,11 +9051,13 @@ class ComputeProjectsSetDefaultServiceAccountRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -8515,11 +9073,13 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     usageExportLocation: A UsageExportLocation resource to be passed as the
       request body.
   """
@@ -8539,11 +9099,13 @@ class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   autoscaler = _messages.StringField(1, required=True)
@@ -8576,11 +9138,13 @@ class ComputeRegionAutoscalersInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   autoscaler = _messages.MessageField('Autoscaler', 1)
@@ -8656,7 +9220,9 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   autoscaler = _messages.StringField(1)
@@ -8719,11 +9285,13 @@ class ComputeRegionBackendServicesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -8775,11 +9343,13 @@ class ComputeRegionBackendServicesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.MessageField('BackendService', 1)
@@ -8851,11 +9421,13 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -8894,11 +9466,13 @@ class ComputeRegionBackendServicesUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -8981,11 +9555,13 @@ class ComputeRegionCommitmentsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   commitment = _messages.MessageField('Commitment', 1)
@@ -9138,11 +9714,13 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     snapshot: A Snapshot resource to be passed as the request body.
   """
 
@@ -9164,11 +9742,13 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   disk = _messages.StringField(1, required=True)
@@ -9279,11 +9859,13 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   disk = _messages.StringField(1, required=True)
@@ -9304,11 +9886,13 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     resource: Name of the resource for this request.
   """
 
@@ -9349,11 +9933,13 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9361,6 +9947,27 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersAbandonInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersAbandonInstancesRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest
+  object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group, should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagersApplyUpdatesRequest: A
+      RegionInstanceGroupManagersApplyUpdatesRequest resource to be passed as
+      the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersApplyUpdatesRequest = _messages.MessageField('RegionInstanceGroupManagersApplyUpdatesRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -9376,11 +9983,13 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9388,6 +9997,47 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersDeleteInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersDeleteInstancesRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersDeleteOverridesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagersDeleteOverridesRequest: A
+      RegionInstanceGroupManagersDeleteOverridesRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersDeleteOverridesRequest = _messages.MessageField('RegionInstanceGroupManagersDeleteOverridesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest
+  object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagerDeleteInstanceConfigReq: A
+      RegionInstanceGroupManagerDeleteInstanceConfigReq resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagerDeleteInstanceConfigReq = _messages.MessageField('RegionInstanceGroupManagerDeleteInstanceConfigReq', 4)
 
 
 class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
@@ -9400,11 +10050,13 @@ class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9438,11 +10090,13 @@ class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.MessageField('InstanceGroupManager', 1)
@@ -9468,6 +10122,116 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
   order_by = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+
+
+class ComputeRegionInstanceGroupManagersListOverridesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersListOverridesRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+
+
+class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
@@ -9536,11 +10300,13 @@ class ComputeRegionInstanceGroupManagersPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9563,11 +10329,13 @@ class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Messa
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9587,11 +10355,13 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     size: Number of instances that should exist in this instance group
       manager.
   """
@@ -9616,11 +10386,13 @@ class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9643,11 +10415,13 @@ class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Mes
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9670,11 +10444,13 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9701,6 +10477,47 @@ class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Mess
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersUpdateOverridesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagersUpdateOverridesRequest: A
+      RegionInstanceGroupManagersUpdateOverridesRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersUpdateOverridesRequest = _messages.MessageField('RegionInstanceGroupManagersUpdateOverridesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest
+  object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagerUpdateInstanceConfigReq: A
+      RegionInstanceGroupManagerUpdateInstanceConfigReq resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagerUpdateInstanceConfigReq = _messages.MessageField('RegionInstanceGroupManagerUpdateInstanceConfigReq', 4)
+
+
 class ComputeRegionInstanceGroupManagersUpdateRequest(_messages.Message):
   """A ComputeRegionInstanceGroupManagersUpdateRequest object.
 
@@ -9713,11 +10530,13 @@ class ComputeRegionInstanceGroupManagersUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -9864,11 +10683,13 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   instanceGroup = _messages.StringField(1, required=True)
@@ -10097,11 +10918,13 @@ class ComputeRoutersDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     router: Name of the Router resource to delete.
   """
 
@@ -10148,11 +10971,13 @@ class ComputeRoutersInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     router: A Router resource to be passed as the request body.
   """
 
@@ -10222,11 +11047,13 @@ class ComputeRoutersPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     router: Name of the Router resource to patch.
     routerResource: A Router resource to be passed as the request body.
   """
@@ -10280,11 +11107,13 @@ class ComputeRoutersUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     router: Name of the Router resource to update.
     routerResource: A Router resource to be passed as the request body.
   """
@@ -10304,11 +11133,13 @@ class ComputeRoutesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     route: Name of the Route resource to delete.
   """
 
@@ -10337,11 +11168,13 @@ class ComputeRoutesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     route: A Route resource to be passed as the request body.
   """
 
@@ -10422,11 +11255,13 @@ class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     securityPolicy: Name of the security policy to delete.
   """
 
@@ -10455,11 +11290,13 @@ class ComputeSecurityPoliciesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     securityPolicy: A SecurityPolicy resource to be passed as the request
       body.
   """
@@ -10526,11 +11363,13 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
@@ -10565,11 +11404,13 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     snapshot: Name of the Snapshot resource to delete.
   """
 
@@ -10703,11 +11544,13 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -10736,11 +11579,13 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -10872,11 +11717,13 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     subnetwork: Name of the Subnetwork resource to delete.
   """
 
@@ -10895,11 +11742,13 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     subnetwork: Name of the Subnetwork resource to update.
     subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
       resource to be passed as the request body.
@@ -10949,11 +11798,13 @@ class ComputeSubnetworksInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     subnetwork: A Subnetwork resource to be passed as the request body.
   """
 
@@ -11023,11 +11874,13 @@ class ComputeSubnetworksPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     subnetwork: Name of the Subnetwork resource to patch.
     subnetworkResource: A Subnetwork resource to be passed as the request
       body.
@@ -11065,11 +11918,13 @@ class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     subnetwork: Name of the Subnetwork resource.
     subnetworksSetPrivateIpGoogleAccessRequest: A
       SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
@@ -11108,11 +11963,13 @@ class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpProxy: Name of the TargetHttpProxy resource to delete.
   """
 
@@ -11141,11 +11998,13 @@ class ComputeTargetHttpProxiesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpProxy: A TargetHttpProxy resource to be passed as the request
       body.
   """
@@ -11212,11 +12071,13 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpProxy: Name of the TargetHttpProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
@@ -11251,11 +12112,13 @@ class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
@@ -11284,11 +12147,13 @@ class ComputeTargetHttpsProxiesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
@@ -11347,6 +12212,23 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeTargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesSetQuicOverrideRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetHttpsProxiesSetQuicOverrideRequest: A
+      TargetHttpsProxiesSetQuicOverrideRequest resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to set the QUIC
+      override policy for. The name should conform to RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxiesSetQuicOverrideRequest = _messages.MessageField('TargetHttpsProxiesSetQuicOverrideRequest', 2)
+  targetHttpsProxy = _messages.StringField(3, required=True)
+
+
 class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesSetSslCertificatesRequest object.
 
@@ -11355,11 +12237,13 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpsProxiesSetSslCertificatesRequest: A
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -11381,11 +12265,13 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
       to be set.
     urlMapReference: A UrlMapReference resource to be passed as the request
@@ -11470,11 +12356,13 @@ class ComputeTargetInstancesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetInstance: Name of the TargetInstance resource to delete.
     zone: Name of the zone scoping this request.
   """
@@ -11507,11 +12395,13 @@ class ComputeTargetInstancesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetInstance: A TargetInstance resource to be passed as the request
       body.
     zone: Name of the zone scoping this request.
@@ -11600,11 +12490,13 @@ class ComputeTargetPoolsAddHealthCheckRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the target pool to add a health check to.
     targetPoolsAddHealthCheckRequest: A TargetPoolsAddHealthCheckRequest
       resource to be passed as the request body.
@@ -11626,11 +12518,13 @@ class ComputeTargetPoolsAddInstanceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the TargetPool resource to add instances to.
     targetPoolsAddInstanceRequest: A TargetPoolsAddInstanceRequest resource to
       be passed as the request body.
@@ -11701,11 +12595,13 @@ class ComputeTargetPoolsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the TargetPool resource to delete.
   """
 
@@ -11756,11 +12652,13 @@ class ComputeTargetPoolsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: A TargetPool resource to be passed as the request body.
   """
 
@@ -11830,11 +12728,13 @@ class ComputeTargetPoolsRemoveHealthCheckRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the target pool to remove health checks from.
     targetPoolsRemoveHealthCheckRequest: A TargetPoolsRemoveHealthCheckRequest
       resource to be passed as the request body.
@@ -11856,11 +12756,13 @@ class ComputeTargetPoolsRemoveInstanceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the TargetPool resource to remove instances from.
     targetPoolsRemoveInstanceRequest: A TargetPoolsRemoveInstanceRequest
       resource to be passed as the request body.
@@ -11883,11 +12785,13 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetPool: Name of the TargetPool resource to set a backup pool for.
     targetReference: A TargetReference resource to be passed as the request
       body.
@@ -11926,11 +12830,13 @@ class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetSslProxy: Name of the TargetSslProxy resource to delete.
   """
 
@@ -11959,11 +12865,13 @@ class ComputeTargetSslProxiesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetSslProxy: A TargetSslProxy resource to be passed as the request
       body.
   """
@@ -12030,11 +12938,13 @@ class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetSslProxiesSetBackendServiceRequest: A
       TargetSslProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -12056,11 +12966,13 @@ class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetSslProxiesSetProxyHeaderRequest: A
       TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -12082,11 +12994,13 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetSslProxiesSetSslCertificatesRequest: A
       TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -12123,11 +13037,13 @@ class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetTcpProxy: Name of the TargetTcpProxy resource to delete.
   """
 
@@ -12156,11 +13072,13 @@ class ComputeTargetTcpProxiesInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetTcpProxy: A TargetTcpProxy resource to be passed as the request
       body.
   """
@@ -12227,11 +13145,13 @@ class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetTcpProxiesSetBackendServiceRequest: A
       TargetTcpProxiesSetBackendServiceRequest resource to be passed as the
       request body.
@@ -12253,11 +13173,13 @@ class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetTcpProxiesSetProxyHeaderRequest: A
       TargetTcpProxiesSetProxyHeaderRequest resource to be passed as the
       request body.
@@ -12344,11 +13266,13 @@ class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetVpnGateway: Name of the target VPN gateway to delete.
   """
 
@@ -12381,11 +13305,13 @@ class ComputeTargetVpnGatewaysInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     targetVpnGateway: A TargetVpnGateway resource to be passed as the request
       body.
   """
@@ -12472,11 +13398,13 @@ class ComputeUrlMapsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     urlMap: Name of the UrlMap resource to delete.
   """
 
@@ -12505,11 +13433,13 @@ class ComputeUrlMapsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     urlMap: A UrlMap resource to be passed as the request body.
   """
 
@@ -12528,11 +13458,13 @@ class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     urlMap: Name of the UrlMap scoping this request.
   """
 
@@ -12599,11 +13531,13 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     urlMap: Name of the UrlMap resource to patch.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -12637,11 +13571,13 @@ class ComputeUrlMapsUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -12725,11 +13661,13 @@ class ComputeVpnTunnelsDeleteRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     vpnTunnel: Name of the VpnTunnel resource to delete.
   """
 
@@ -12762,11 +13700,13 @@ class ComputeVpnTunnelsInsertRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     vpnTunnel: A VpnTunnel resource to be passed as the request body.
   """
 
@@ -12838,11 +13778,13 @@ class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
     resource: Name of the resource for this request.
   """
 
@@ -15855,8 +16797,9 @@ class Instance(_messages.Message):
       read the Specifications for custom machine types.
     metadata: The metadata key/value pairs assigned to this instance. This
       includes custom metadata and predefined keys.
-    minCpuPlatform: Minimum cpu/platform to be used by this instance. We may
-      schedule on the specified or later cpu/platform.
+    minCpuPlatform: Specifies a minimum CPU platform for the VM instance.
+      Applicable values are the friendly names of CPU platforms, such as
+      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -16647,12 +17590,80 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
 
 
+class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
+  """InstanceGroupManagers.applyUpdatesToInstances
+
+  Enums:
+    MaximalActionValueValuesEnum: The maximal action that should be perfomed
+      on the instances. By default REPLACE.
+    MinimalActionValueValuesEnum: The minimal action that should be perfomed
+      on the instances. By default NONE.
+
+  Fields:
+    instances: The list of URLs of one or more instances for which we want to
+      apply updates on this managed instance group. This can be a full URL or
+      a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+    maximalAction: The maximal action that should be perfomed on the
+      instances. By default REPLACE.
+    minimalAction: The minimal action that should be perfomed on the
+      instances. By default NONE.
+  """
+
+  class MaximalActionValueValuesEnum(_messages.Enum):
+    """The maximal action that should be perfomed on the instances. By default
+    REPLACE.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    """The minimal action that should be perfomed on the instances. By default
+    NONE.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  instances = _messages.StringField(1, repeated=True)
+  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+
+
 class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A InstanceGroupManagersDeleteInstancesRequest object.
 
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersDeleteOverridesRequest(_messages.Message):
+  """InstanceGroupManagers.deleteOverrides
+
+  Fields:
+    instances: The list of instances for which we want to delete overrides on
+      this managed instance group.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersDeletePerInstanceConfigsReq(_messages.Message):
+  """InstanceGroupManagers.deletePerInstanceConfigs
+
+  Fields:
+    instances: The list of instances for which we want to delete per-instance
+      configs on this managed instance group.
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -16672,6 +17683,38 @@ class InstanceGroupManagersListManagedInstancesResponse(_messages.Message):
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class InstanceGroupManagersListOverridesResponse(_messages.Message):
+  """A InstanceGroupManagersListOverridesResponse object.
+
+  Fields:
+    items: [Output Only] The list of overrides in the managed instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
+  """A InstanceGroupManagersListPerInstanceConfigsResp object.
+
+  Fields:
+    items: [Output Only] The list of overrides in the managed instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -16859,6 +17902,28 @@ class InstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   targetPools = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersUpdateOverridesRequest(_messages.Message):
+  """InstanceGroupManagers.updateOverrides
+
+  Fields:
+    overrides: The list of overrides to insert or patch on this managed
+      instance group.
+  """
+
+  overrides = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
+
+
+class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
+  """InstanceGroupManagers.updatePerInstanceConfigs
+
+  Fields:
+    perInstanceConfigs: The list of per-instance configs to insert or patch on
+      this managed instance group.
+  """
+
+  perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
 
 
 class InstanceGroupsAddInstancesRequest(_messages.Message):
@@ -17155,7 +18220,10 @@ class InstanceProperties(_messages.Message):
       or predefined keys. See Project and instance metadata for more
       information.
     minCpuPlatform: Minimum cpu/platform to be used by this instance. The
-      instance may be scheduled on the specified or later cpu/platform.
+      instance may be scheduled on the specified or newer cpu/platform.
+      Applicable values are the friendly names of CPU platforms, such as
+      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
+      For more information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
     scheduling: Specifies the scheduling options for the instances that are
@@ -18123,6 +19191,44 @@ class InterconnectOutageNotification(_messages.Message):
   source = _messages.EnumField('SourceValueValuesEnum', 6)
   startTime = _messages.IntegerField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class InternalIpOwner(_messages.Message):
+  """A InternalIpOwner object.
+
+  Fields:
+    ipCidrRange: IP CIDR range being owned.
+    owners: URLs of the IP owners of the IP CIDR range.
+    systemOwned: Whether this IP CIDR range is reserved for system use.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  owners = _messages.StringField(2, repeated=True)
+  systemOwned = _messages.BooleanField(3)
+
+
+class IpOwnerList(_messages.Message):
+  """Contains a list of IP owners.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of InternalIpOwner resources.
+    kind: [Output Only] Type of resource. Always compute#internalIpOwnerList
+      for lists of internal IP owners.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InternalIpOwner', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#ipOwnerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class License(_messages.Message):
@@ -19480,6 +20586,19 @@ class PathRule(_messages.Message):
   service = _messages.StringField(2)
 
 
+class PerInstanceConfig(_messages.Message):
+  """A PerInstanceConfig object.
+
+  Fields:
+    instance: The URL of the instance. Serves as a merge key during
+      UpdatePerInstanceConfigs operation.
+    override: A ManagedInstanceOverride attribute.
+  """
+
+  instance = _messages.StringField(1)
+  override = _messages.MessageField('ManagedInstanceOverride', 2)
+
+
 class Policy(_messages.Message):
   """Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.    A `Policy`
@@ -19892,6 +21011,17 @@ class RegionInstanceGroupList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class RegionInstanceGroupManagerDeleteInstanceConfigReq(_messages.Message):
+  """RegionInstanceGroupManagers.deletePerInstanceConfigs
+
+  Fields:
+    instances: The list of instances for which we want to delete per-instance
+      configs on this managed instance group.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class RegionInstanceGroupManagerList(_messages.Message):
   """Contains a list of managed instance groups.
 
@@ -19915,6 +21045,17 @@ class RegionInstanceGroupManagerList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class RegionInstanceGroupManagerUpdateInstanceConfigReq(_messages.Message):
+  """RegionInstanceGroupManagers.updatePerInstanceConfigs
+
+  Fields:
+    perInstanceConfigs: The list of per-instance configs to insert or patch on
+      this managed instance group.
+  """
+
+  perInstanceConfigs = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
+
+
 class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersAbandonInstancesRequest object.
 
@@ -19927,6 +21068,51 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
 
 
+class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
+  """InstanceGroupManagers.applyUpdatesToInstances
+
+  Enums:
+    MaximalActionValueValuesEnum: The maximal action that should be perfomed
+      on the instances. By default REPLACE.
+    MinimalActionValueValuesEnum: The minimal action that should be perfomed
+      on the instances. By default NONE.
+
+  Fields:
+    instances: The list of instances for which we want to apply changes on
+      this managed instance group.
+    maximalAction: The maximal action that should be perfomed on the
+      instances. By default REPLACE.
+    minimalAction: The minimal action that should be perfomed on the
+      instances. By default NONE.
+  """
+
+  class MaximalActionValueValuesEnum(_messages.Enum):
+    """The maximal action that should be perfomed on the instances. By default
+    REPLACE.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    """The minimal action that should be perfomed on the instances. By default
+    NONE.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  instances = _messages.StringField(1, repeated=True)
+  maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+
+
 class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """A RegionInstanceGroupManagersDeleteInstancesRequest object.
 
@@ -19936,6 +21122,34 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
+  """RegionInstanceGroupManagers.deleteOverrides
+
+  Fields:
+    instances: The list of instances for which we want to delete overrides on
+      this managed instance group.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
+  """A RegionInstanceGroupManagersListInstanceConfigsResp object.
+
+  Fields:
+    items: [Output Only] The list of per-instance configs in the managed
+      instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
@@ -19951,6 +21165,22 @@ class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class RegionInstanceGroupManagersListOverridesResponse(_messages.Message):
+  """A RegionInstanceGroupManagersListOverridesResponse object.
+
+  Fields:
+    items: [Output Only] The list of overrides in the managed instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -20001,6 +21231,17 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
+
+
+class RegionInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
+  """RegionInstanceGroupManagers.updateOverrides
+
+  Fields:
+    overrides: The list of overrides to insert or patch on this managed
+      instance group.
+  """
+
+  overrides = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
 
 
 class RegionInstanceGroupsListInstances(_messages.Message):
@@ -21417,15 +22658,15 @@ class Subnetwork(_messages.Message):
 
   Fields:
     allowSubnetCidrRoutesOverlap: Whether this subnetwork can conflict with
-      network routes. Setting this to true allows this subnetwork's primary
-      and secondary ranges to conflict with routes that have already been
-      configured on the corresponding network. Network routes will take
-      precedence over VM endpoints within the network if the route prefix
-      length is larger than the subnetwork prefix length.  Also, packets
-      destined to IPs within subnetwork may contain private/sensitive data and
-      are prevented from leaving the virtual network. Setting this field to
-      true will disable this feature.  The default value is false and applies
-      to all existing subnetworks and automatically created subnetworks.  This
+      static routes. Setting this to true allows this subnetwork's primary and
+      secondary ranges to conflict with routes that have already been
+      configured on the corresponding network. Static routes will take
+      precedence over the subnetwork route if the route prefix length is at
+      least as large as the subnetwork prefix length.  Also, packets destined
+      to IPs within subnetwork may contain private/sensitive data and are
+      prevented from leaving the virtual network. Setting this field to true
+      will disable this feature.  The default value is false and applies to
+      all existing subnetworks and automatically created subnetworks.  This
       field cannot be set to true at resource creation time.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -21822,6 +23063,32 @@ class TargetHttpProxyList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class TargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
+  """A TargetHttpsProxiesSetQuicOverrideRequest object.
+
+  Enums:
+    QuicOverrideValueValuesEnum: QUIC policy for the TargetHttpsProxy
+      resource.
+
+  Fields:
+    quicOverride: QUIC policy for the TargetHttpsProxy resource.
+  """
+
+  class QuicOverrideValueValuesEnum(_messages.Enum):
+    """QUIC policy for the TargetHttpsProxy resource.
+
+    Values:
+      DISABLE: <no description>
+      ENABLE: <no description>
+      NONE: <no description>
+    """
+    DISABLE = 0
+    ENABLE = 1
+    NONE = 2
+
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 1)
+
+
 class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   """A TargetHttpsProxiesSetSslCertificatesRequest object.
 
@@ -21836,6 +23103,16 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
 class TargetHttpsProxy(_messages.Message):
   """A TargetHttpsProxy resource. This resource defines an HTTPS proxy.
+
+  Enums:
+    QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
+      TargetHttpsProxy resource. This determines whether the load balancer
+      will attempt to negotiate QUIC with clients or not. Can specify one of
+      NONE, ENABLE, or DISABLE. Specify ENABLE to always enable QUIC, Enables
+      QUIC when set to ENABLE, and disables QUIC when set to DISABLE. If NONE
+      is specified, uses the QUIC policy with no user overrides, which is
+      equivalent to DISABLE. Not specifying this field is equivalent to
+      specifying NONE.
 
   Fields:
     clientSslPolicy: URL to ClientSslPolicy resource which controls the set of
@@ -21855,6 +23132,13 @@ class TargetHttpsProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    quicOverride: Specifies the QUIC override policy for this TargetHttpsProxy
+      resource. This determines whether the load balancer will attempt to
+      negotiate QUIC with clients or not. Can specify one of NONE, ENABLE, or
+      DISABLE. Specify ENABLE to always enable QUIC, Enables QUIC when set to
+      ENABLE, and disables QUIC when set to DISABLE. If NONE is specified,
+      uses the QUIC policy with no user overrides, which is equivalent to
+      DISABLE. Not specifying this field is equivalent to specifying NONE.
     selfLink: [Output Only] Server-defined URL for the resource.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. Currently,
@@ -21866,15 +23150,34 @@ class TargetHttpsProxy(_messages.Message):
       map  - projects/project/global/urlMaps/url-map  - global/urlMaps/url-map
   """
 
+  class QuicOverrideValueValuesEnum(_messages.Enum):
+    """Specifies the QUIC override policy for this TargetHttpsProxy resource.
+    This determines whether the load balancer will attempt to negotiate QUIC
+    with clients or not. Can specify one of NONE, ENABLE, or DISABLE. Specify
+    ENABLE to always enable QUIC, Enables QUIC when set to ENABLE, and
+    disables QUIC when set to DISABLE. If NONE is specified, uses the QUIC
+    policy with no user overrides, which is equivalent to DISABLE. Not
+    specifying this field is equivalent to specifying NONE.
+
+    Values:
+      DISABLE: <no description>
+      ENABLE: <no description>
+      NONE: <no description>
+    """
+    DISABLE = 0
+    ENABLE = 1
+    NONE = 2
+
   clientSslPolicy = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#targetHttpsProxy')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  sslCertificates = _messages.StringField(8, repeated=True)
-  urlMap = _messages.StringField(9)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 7)
+  selfLink = _messages.StringField(8)
+  sslCertificates = _messages.StringField(9, repeated=True)
+  urlMap = _messages.StringField(10)
 
 
 class TargetHttpsProxyList(_messages.Message):

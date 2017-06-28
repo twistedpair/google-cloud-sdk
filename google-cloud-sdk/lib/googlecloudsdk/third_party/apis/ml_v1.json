@@ -863,6 +863,398 @@
         }
       }
     },
+    "GoogleIamV1__SetIamPolicyRequest": {
+      "id": "GoogleIamV1__SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "$ref": "GoogleIamV1__Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "GoogleIamV1__Policy": {
+      "id": "GoogleIamV1__Policy",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the `Policy`. The default version is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`.\n`bindings` with no members will result in an error.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__AuditConfig"
+          }
+        },
+        "rules": {
+          "description": "If more than one rule is specified, the rules are applied in the following\nmanner:\n- All matching LOG rules are always applied.\n- If any DENY\/DENY_WITH_LOG rule matches, permission is denied.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is\n  granted.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if no rule applies, permission is denied.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__Rule"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "type": "string",
+          "format": "byte"
+        },
+        "iamOwned": {
+
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleIamV1__Binding": {
+      "id": "GoogleIamV1__Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is GOOGLE_INTERNAL.",
+          "$ref": "GoogleType__Expr"
+        }
+      }
+    },
+    "GoogleType__Expr": {
+      "id": "GoogleType__Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleIamV1__AuditConfig": {
+      "id": "GoogleIamV1__AuditConfig",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "exemptedMembers": {
+
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__AuditLogConfig"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__AuditLogConfig": {
+      "id": "GoogleIamV1__AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__Rule": {
+      "id": "GoogleIamV1__Rule",
+      "description": "A rule to be applied in a Policy.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Human-readable description of the rule.",
+          "type": "string"
+        },
+        "permissions": {
+          "description": "A permission is a string of form '<service>.<resource type>.<verb>'\n(e.g., 'storage.buckets.list'). A value of '*' matches all permissions,\nand a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "action": {
+          "description": "Required",
+          "enumDescriptions": [
+            "Default no action.",
+            "Matching 'Entries' grant access.",
+            "Matching 'Entries' grant access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' deny access.",
+            "Matching 'Entries' deny access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' tell IAM.Check callers to generate logs."
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ACTION",
+            "ALLOW",
+            "ALLOW_WITH_LOG",
+            "DENY",
+            "DENY_WITH_LOG",
+            "LOG"
+          ]
+        },
+        "in": {
+          "description": "If one or more 'in' clauses are specified, the rule matches if\nthe PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notIn": {
+          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries is the same as for members in a\nBinding (see google\/iam\/v1\/policy.proto).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "description": "Additional restrictions that must be met",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__Condition"
+          }
+        },
+        "logConfig": {
+          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries\nthat match the LOG action.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__LogConfig"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__Condition": {
+      "id": "GoogleIamV1__Condition",
+      "description": "A condition to be met.",
+      "type": "object",
+      "properties": {
+        "iam": {
+          "description": "Trusted attributes supplied by the IAM system.",
+          "enumDescriptions": [
+            "Default non-attribute.",
+            "Either principal or (if present) authority selector.",
+            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
+            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
+            "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported."
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ATTR",
+            "AUTHORITY",
+            "ATTRIBUTION",
+            "APPROVER",
+            "JUSTIFICATION_TYPE"
+          ]
+        },
+        "sys": {
+          "description": "Trusted attributes supplied by any service that owns resources and uses\nthe IAM system for access control.",
+          "enumDescriptions": [
+            "Default non-attribute type",
+            "Region of the resource",
+            "Service name",
+            "Resource name",
+            "IP address of the caller"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_ATTR",
+            "REGION",
+            "SERVICE",
+            "NAME",
+            "IP"
+          ]
+        },
+        "svc": {
+          "description": "Trusted attributes discharged by the service.",
+          "type": "string"
+        },
+        "op": {
+          "description": "An operator to apply the subject with.",
+          "enumDescriptions": [
+            "Default no-op.",
+            "DEPRECATED. Use IN instead.",
+            "DEPRECATED. Use NOT_IN instead.",
+            "The condition is true if the subject (or any element of it if it is\na set) matches any of the supplied values.",
+            "The condition is true if the subject (or every element of it if it is\na set) matches none of the supplied values.",
+            "Subject is discharged"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_OP",
+            "EQUALS",
+            "NOT_EQUALS",
+            "IN",
+            "NOT_IN",
+            "DISCHARGED"
+          ]
+        },
+        "value": {
+          "description": "DEPRECATED. Use 'values' instead.",
+          "type": "string"
+        },
+        "values": {
+          "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__LogConfig": {
+      "id": "GoogleIamV1__LogConfig",
+      "description": "Specifies what kind of log the caller must write\nIncrement a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present the only supported field names are\n   - \"iam_principal\", corresponding to IAMContext.principal;\n   - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
+      "type": "object",
+      "properties": {
+        "counter": {
+          "description": "Counter options.",
+          "$ref": "GoogleIamV1_LogConfig_CounterOptions"
+        },
+        "dataAccess": {
+          "description": "Data access options.",
+          "$ref": "GoogleIamV1_LogConfig_DataAccessOptions"
+        },
+        "cloudAudit": {
+          "description": "Cloud audit options.",
+          "$ref": "GoogleIamV1_LogConfig_CloudAuditOptions"
+        }
+      }
+    },
+    "GoogleIamV1_LogConfig_CounterOptions": {
+      "id": "GoogleIamV1_LogConfig_CounterOptions",
+      "description": "Options for counters",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "The metric to update.",
+          "type": "string"
+        },
+        "field": {
+          "description": "The field value to attribute.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleIamV1_LogConfig_DataAccessOptions": {
+      "id": "GoogleIamV1_LogConfig_DataAccessOptions",
+      "description": "Write a Data Access (Gin) log",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleIamV1_LogConfig_CloudAuditOptions": {
+      "id": "GoogleIamV1_LogConfig_CloudAuditOptions",
+      "description": "Write a Cloud Audit log",
+      "type": "object",
+      "properties": {
+        "logName": {
+          "description": "The log_name to populate in the Cloud Audit Record.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_LOG_NAME",
+            "ADMIN_ACTIVITY",
+            "DATA_ACCESS"
+          ]
+        }
+      }
+    },
+    "GoogleIamV1__TestIamPermissionsRequest": {
+      "id": "GoogleIamV1__TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__TestIamPermissionsResponse": {
+      "id": "GoogleIamV1__TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudMlV1beta1__OperationMetadata": {
       "id": "GoogleCloudMlV1beta1__OperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -1058,7 +1450,7 @@
           "description": "Performs prediction on the data in the request.\n\n**** REMOVE FROM GENERATED DOCUMENTATION",
           "parameters": {
             "name": {
-              "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+              "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/.+$",
@@ -1086,7 +1478,7 @@
           "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account persmissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning.",
           "parameters": {
             "name": {
-              "description": "Required. The project name.\n\nAuthorization: requires `Viewer` role on the specified project.",
+              "description": "Required. The project name.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]+$",
@@ -1116,7 +1508,7 @@
               "description": "Creates a training or a batch prediction job.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
+                  "description": "Required. The project name.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1144,7 +1536,7 @@
               "description": "Lists the jobs in the project.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the project for which to list jobs.\n\nAuthorization: requires `Viewer` role on the specified project.",
+                  "description": "Required. The name of the project for which to list jobs.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1185,7 +1577,7 @@
               "description": "Describes a job.",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the job to get the description of.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                  "description": "Required. The name of the job to get the description of.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
@@ -1210,7 +1602,7 @@
               "description": "Cancels a running job.",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the job to cancel.\n\nAuthorization: requires `Editor` role on the parent project.",
+                  "description": "Required. The name of the job to cancel.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
@@ -1362,7 +1754,7 @@
               "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create).",
               "parameters": {
                 "parent": {
-                  "description": "Required. The project name.\n\nAuthorization: requires `Editor` role on the specified project.",
+                  "description": "Required. The project name.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1390,7 +1782,7 @@
               "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the project whose models are to be listed.\n\nAuthorization: requires `Viewer` role on the specified project.",
+                  "description": "Required. The name of the project whose models are to be listed.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1426,7 +1818,7 @@
               "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed).",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the model.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                  "description": "Required. The name of the model.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
@@ -1451,7 +1843,7 @@
               "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/delete).",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
+                  "description": "Required. The name of the model.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
@@ -1463,6 +1855,87 @@
               ],
               "response": {
                 "$ref": "GoogleLongrunning__Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "setIamPolicy": {
+              "id": "ml.projects.models.setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/models/{modelsId}:setIamPolicy",
+              "httpMethod": "POST",
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "GoogleIamV1__SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "GoogleIamV1__Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "getIamPolicy": {
+              "id": "ml.projects.models.getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/models/{modelsId}:getIamPolicy",
+              "httpMethod": "GET",
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "response": {
+                "$ref": "GoogleIamV1__Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "ml.projects.models.testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/models/{modelsId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "GoogleIamV1__TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "GoogleIamV1__TestIamPermissionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -1481,7 +1954,7 @@
                   "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the model.\n\nAuthorization: requires `Editor` role on the parent project.",
+                      "description": "Required. The name of the model.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
@@ -1509,7 +1982,7 @@
                   "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has a lot of versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages):",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the model for which to list the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                      "description": "Required. The name of the model for which to list the version.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
@@ -1545,7 +2018,7 @@
                   "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version.\n\nAuthorization: requires `Viewer` role on the parent project.",
+                      "description": "Required. The name of the version.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
@@ -1570,7 +2043,7 @@
                   "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version.",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
@@ -1595,7 +2068,7 @@
                   "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method.",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).\n\nAuthorization: requires `Editor` role on the parent project.",
+                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).\n\nAuthorization: `ml.models.update` permission is required on the parent model.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",

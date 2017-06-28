@@ -52,13 +52,28 @@ _RESOURCE_ARG_NAME = 'resource'
 class ArgumentGenerator(object):
   """Class to generate and parse argparse flags from apitools message fields."""
 
-  def __init__(self, method):
+  def __init__(self, method, raw=False):
     """Creates a new Argument Generator.
 
     Args:
       method: APIMethod, The method to generate arguments for.
+      raw: bool, True to do no special processing of arguments for list
+        commands. If False, typical List command flags will be added in and the
+        equivalent API fields will be ignored.
     """
     self.method = method
+    self.raw = raw
+    self.ignored_fields = set()
+    if not raw:
+      if self.method.IsList():
+        # Ignore the APIs filter flag in favor of ours.
+        self.ignored_fields.add('filter')
+        if self.method.IsPageableList():
+          # Don't expose this directly, it will be used as part listing.
+          self.ignored_fields.add('pageToken')
+          batch_page_size_field = self.method.BatchPageSizeField()
+          if batch_page_size_field:
+            self.ignored_fields.add(batch_page_size_field)
 
   def GenerateArgs(self):
     """Generates all the CLI arguments required to call this method.
@@ -67,6 +82,7 @@ class ArgumentGenerator(object):
       {str, calliope.base.Action}, A map of field name to the argument.
     """
     args = {}
+    args.update(self._GenerateListMethodFlags())
     args.update(self._GenerateMessageFieldsFlags(
         '', self.method.GetRequestType()))
     args.update(self._GenerateResourceFlags())
@@ -93,6 +109,39 @@ class ArgumentGenerator(object):
       fields.update(
           {f: getattr(ref, f, relative_name) for f in self.method.params})
     return request_type(**fields)
+
+  def _GenerateListMethodFlags(self):
+    """Generates all the CLI flags for a List command.
+
+    Returns:
+      {str, calliope.base.Action}, A map of field name to the argument.
+    """
+    flags = {}
+    if not self.raw and self.method.IsList():
+      flags[base.FILTER_FLAG.name] = base.FILTER_FLAG
+      flags[base.SORT_BY_FLAG.name] = base.SORT_BY_FLAG
+      if self.method.IsPageableList() and self.method.ListItemField():
+        # We can use YieldFromList() with a limit.
+        flags[base.LIMIT_FLAG.name] = base.LIMIT_FLAG
+        if self.method.BatchPageSizeField():
+          # API supports page size.
+          flags[base.PAGE_SIZE_FLAG.name] = base.PAGE_SIZE_FLAG
+    return flags
+
+  def Limit(self, namespace):
+    """Gets the value of the limit flag (if present)."""
+    if (not self.raw and
+        self.method.IsPageableList() and
+        self.method.ListItemField()):
+      return getattr(namespace, 'limit')
+
+  def PageSize(self, namespace):
+    """Gets the value of the page size flag (if present)."""
+    if (not self.raw and
+        self.method.IsPageableList() and
+        self.method.ListItemField() and
+        self.method.BatchPageSizeField()):
+      return getattr(namespace, 'page_size')
 
   def _GenerateResourceArg(self):
     """Gets the positional argument that represents the resource.
@@ -181,6 +230,8 @@ class ArgumentGenerator(object):
     field_helps = _FieldHelpDocs(message)
     for field in message.all_fields():
       name = self._FlagNameForField(prefix, field)
+      if name in self.ignored_fields:
+        continue
       if field.variant == messages.Variant.MESSAGE:
         field_help = field_helps.get(field.name, None)
         group = base.ArgumentGroup(

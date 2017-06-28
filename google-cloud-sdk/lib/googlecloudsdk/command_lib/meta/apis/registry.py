@@ -14,7 +14,9 @@
 
 """Utilities for the gcloud meta apis surface."""
 
+from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
+from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
@@ -129,6 +131,48 @@ class APIMethod(object):
     """Gets the apitools request class for this method."""
     return self._service.GetRequestType(self._method_name)
 
+  def GetResponseType(self):
+    """Gets the apitools response class for this method."""
+    return self._service.GetResponseType(self._method_name)
+
+  def IsList(self):
+    """Determines whether this is a List method."""
+    return self._method_name == 'List'
+
+  def IsPageableList(self):
+    """Determines whether this is a List method that supports paging."""
+    if (self.IsList() and
+        'pageToken' in self.RequestFieldNames() and
+        'nextPageToken' in self.ResponseFieldNames()):
+      return True
+    return False
+
+  def BatchPageSizeField(self):
+    """Gets the name of the page size field in the request if it exists."""
+    request_fields = self.RequestFieldNames()
+    if 'maxResults' in request_fields:
+      return 'maxResults'
+    if 'pageSize' in request_fields:
+      return 'pageSize'
+    return None
+
+  def ListItemField(self):
+    """Gets the name of the field that contains the items for a List response.
+
+    This will return None if the method is not a List method or if a single
+    repeated field of items could not be found in the response type.
+
+    Returns:
+      str, The name of the field or None.
+    """
+    if self.IsList():
+      response = self.GetResponseType()
+      found = [f for f in response.all_fields()
+               if f.variant == messages.Variant.MESSAGE and f.repeated]
+      if len(found) == 1:
+        return found[0].name
+    return None
+
   def RequestCollection(self):
     """Gets the collection that should be used to parse resources for this call.
 
@@ -175,6 +219,14 @@ class APIMethod(object):
     """
     return [f.name for f in self.GetRequestType().all_fields()]
 
+  def ResponseFieldNames(self):
+    """Gets the fields that are actually a part of the response message.
+
+    Returns:
+      [str], The field names.
+    """
+    return [f.name for f in self.GetResponseType().all_fields()]
+
   def GetDefaultParams(self):
     """Gets default values for parameters in the request method.
 
@@ -185,17 +237,112 @@ class APIMethod(object):
                       if k in self.ResourceFieldNames()}
     return default_params
 
-  def Call(self, *args, **kwargs):
-    """Executes this method with the given arguments."""
+  def Call(self, request, global_params=None, raw=False,
+           limit=None, page_size=None):
+    """Executes this method with the given arguments.
+
+    Args:
+      request: The apitools request object to send.
+      global_params: {str: str}, A dictionary of global parameters to send with
+        the request.
+      raw: bool, True to not do any processing of the response, False to maybe
+        do processing for List results.
+      limit: int, The max number of items to return if this is a List method.
+      page_size: int, The max number of items to return in a page if this API
+        supports paging.
+
+    Returns:
+      The response from the API.
+    """
     client = apis.GetClientInstance(
         self.collection.api_name, self.collection.api_version)
     service = _GetService(client, self.collection.name)
-    method = getattr(service, self._method_name)
+    request_func = self._GetRequestFunc(
+        service, request, raw=raw, limit=limit, page_size=page_size)
     try:
-      return method(*args, **kwargs)
+      return request_func(global_params=global_params)
     except apitools_exc.InvalidUserInputError as e:
       log.debug('', exc_info=True)
       raise APICallError(e.message)
+
+  def _GetRequestFunc(self, service, request, raw=False,
+                      limit=None, page_size=None):
+    """Gets a request function to call and process the results.
+
+    If this is a List method, it may flatten the response depending on if the
+    List Pager can be used.
+
+    Args:
+      service: The apitools service that will be making the request.
+      request: The apitools request object to send.
+      raw: bool, True to not do any processing of the response, False to maybe
+        do processing for List results.
+      limit: int, The max number of items to return if this is a List method.
+      page_size: int, The max number of items to return in a page if this API
+        supports paging.
+
+    Returns:
+      A function to make the request.
+    """
+    if raw or not self.IsList():
+      return self._NormalRequest(service, request)
+
+    item_field = self.ListItemField()
+    if not item_field:
+      log.warning(
+          'Unable to flatten list response, raw results being returned.')
+      return self._NormalRequest(service, request)
+
+    if not self.IsPageableList():
+      # API doesn't do paging.
+      return self._FlatNonPagedRequest(service, request, item_field)
+
+    def RequestFunc(global_params=None):
+      return list_pager.YieldFromList(
+          service, request, field=item_field,
+          global_params=global_params, limit=limit,
+          current_token_attribute='pageToken',
+          next_token_attribute='nextPageToken',
+          batch_size_attribute=self.BatchPageSizeField(),
+          batch_size=page_size)
+    return RequestFunc
+
+  def _NormalRequest(self, service, request):
+    """Generates a basic request function for the method.
+
+    Args:
+      service: The apitools service that will be making the request.
+      request: The apitools request object to send.
+
+    Returns:
+      A function to make the request.
+    """
+    def RequestFunc(global_params=None):
+      method = getattr(service, self._method_name)
+      return method(request, global_params=global_params)
+    return RequestFunc
+
+  def _FlatNonPagedRequest(self, service, request, item_field):
+    """Generates a request function for the method that extracts an item list.
+
+    List responses usually have a single repeated field that represents the
+    actual items being listed. This request function returns only those items
+    not the entire response.
+
+    Args:
+      service: The apitools service that will be making the request.
+      request: The apitools request object to send.
+      item_field: str, The name of the field that the list of items can be found
+       in.
+
+    Returns:
+      A function to make the request.
+    """
+    def RequestFunc(global_params=None):
+      response = self._NormalRequest(service, request)(
+          global_params=global_params)
+      return getattr(response, item_field)
+    return RequestFunc
 
 
 def _RemoveVersionPrefix(api_version, path):
@@ -324,7 +471,7 @@ def GetMethod(full_collection_name, method, api_version=None):
 
 
 def _GetService(client, collection_name):
-  return getattr(client, collection_name.replace(NAME_SEPARATOR, '_'))
+  return getattr(client, collection_name.replace(NAME_SEPARATOR, '_'), None)
 
 
 def GetMethods(full_collection_name, api_version=None):
@@ -344,6 +491,9 @@ def GetMethods(full_collection_name, api_version=None):
   api_collection = GetAPICollection(full_collection_name,
                                     api_version=api_version)
   service = _GetService(client, collection)
+  if not service:
+    # This is a synthetic collection that does not actually have a backing API.
+    return []
 
   method_names = service.GetMethodsList()
   method_configs = [(name, service.GetMethodConfig(name))

@@ -291,14 +291,23 @@ def AddPortsAndPortRange(parser):
       """)
 
 
-def AddNetworkTier(parser, include_alpha):
+def AddNetworkTier(parser, include_alpha, for_update):
   """Adds network tier flag."""
 
   if include_alpha:
-    parser.add_argument(
-        '--network-tier',
-        choices=['PREMIUM', 'SELECT'],
-        type=lambda x: x.upper(),
-        help='The network tier to assign to the forwarding rules. If left '
-        'empty, `PREMIUM` is used. Supported network tiers are: `PREMIUM`, '
-        '`SELECT`.')
+    if for_update:
+      parser.add_argument(
+          '--network-tier',
+          choices=['PREMIUM', 'SELECT'],
+          type=lambda x: x.upper(),
+          help='Update the network tier of a forwarding rule. Network tier can '
+          'only be changed from `PREMIUM` to `SELECT`, and visa versa. It does '
+          'not allow to change from `STANDARD` to `PREMIUM`/`SELECT` and visa '
+          'versa.')
+    else:
+      parser.add_argument(
+          '--network-tier',
+          choices=['PREMIUM', 'SELECT', 'STANDARD'],
+          default='PREMIUM',
+          type=lambda x: x.upper(),
+          help='The network tier to assign to the forwarding rules.')

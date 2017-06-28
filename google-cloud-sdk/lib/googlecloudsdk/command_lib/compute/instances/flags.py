@@ -186,6 +186,19 @@ def InstanceArgumentForTargetPool(action, required=True):
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
+def MakeSourceInstanceTemplateArg():
+  return compute_flags.ResourceArgument(
+      name='--source-instance-template',
+      resource_name='instance template',
+      completion_resource_id='compute.instanceTemplates',
+      required=False,
+      global_collection='compute.instanceTemplates',
+      short_help=('The name of the instance template that the instance will '
+                  'be created from.\nUsers can also override machine '
+                  'type nad labels. Values of other flags will be ignored - '
+                  '--source-intanse-template will be used instead.'))
+
+
 def AddImageArgs(parser):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -753,7 +766,7 @@ def AddAddressArgs(parser, instances=True,
       network_interface_help += """
         *network-tier*::: Specifies the network tier of the interface. The
         default network tier is PREMIUM. NETWORK_TIER must be one of: PREMIUM,
-        SELECT.
+        SELECT, STANDARD.
         """
     if instances:
       network_interface_help += """
@@ -1014,10 +1027,22 @@ def AddNetworkInterfaceArgs(parser):
       """)
 
 
-def AddNetworkTierArgs(parser, instance=True):
+def AddNetworkTierArgs(parser, instance=True, for_update=False):
   """Adds network tier flag to the argparse."""
 
   choices = constants.NETWORK_TIER_CHOICES_FOR_INSTANCE
+  if for_update:
+    parser.add_argument(
+        '--network-tier',
+        choices=sorted(choices),
+        type=lambda x: x.upper(),
+        help=
+        'Update the network tier of the access configuration. Network tier can '
+        'only be changed from `PREMIUM` to `SELECT`, and visa versa. It does '
+        'not allow to change from `STANDARD` to `PREMIUM`/`SELECT` and visa '
+        'versa.')
+    return
+
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
@@ -1041,18 +1066,18 @@ def AddPublicDnsArgs(parser, instance=True):
 
   public_dns_args = parser.add_mutually_exclusive_group()
   if instance:
-    public_dns_args_help = """\
+    no_public_dns_help = """\
         If provided, the instance will not be assigned a public DNS name.
         """
   else:
-    public_dns_args_help = """\
+    no_public_dns_help = """\
         If provided, the external IP in the access configuration will not be
         assigned a public DNS name.
         """
   public_dns_args.add_argument(
       '--no-public-dns',
       action='store_true',
-      help=public_dns_args_help)
+      help=no_public_dns_help)
 
   if instance:
     public_dns_help = """\
@@ -1380,3 +1405,28 @@ def AddDiskScopeFlag(parser):
       help='The scope of the disk.',
       hidden=True,
       default='zonal')
+
+
+def WarnForSourceInstanceTemplateLimitations(args):
+  """Warn if --source-instance-template is mixed with unsupported flags.
+
+  Args:
+    args: Argument namespace
+  """
+  allowed_flags = [
+      '--project', '--zone', '--region', '--source-instance-template',
+      'INSTANCE_NAMES:1', '--machine-type', '--custom-cpu', '--custom-memory',
+      '--labels'
+  ]
+
+  if args.IsSpecified('source_instance_template'):
+    specified_args = args.GetSpecifiedArgNames()
+    # TODO(b/62933344) - Improve flag collision detection
+    for flag in allowed_flags:
+      if flag in specified_args:
+        specified_args.remove(flag)
+    if specified_args:
+      log.status.write('When a source instance template is used, additional '
+                       'parameters other than --machine-type and --labels will '
+                       'be ignored but provided by the source instance '
+                       'template\n')

@@ -30,11 +30,12 @@ The interface is defined as follows:
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
   ERROR message).
 """
-import contextlib
 import cStringIO
 import os
+import tempfile
 
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -42,6 +43,21 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+
+_JAVA_APPCFG_ENTRY_POINT = 'com.google.appengine.tools.admin.AppCfg'
+
+_JAVA_APPCFG_STAGE_FLAGS = [
+    '--enable_jar_splitting',
+    '--enable_jar_classes']
+
+_STAGING_COMMAND_OUTPUT_TEMPLATE = """\
+------------------------------------ STDOUT ------------------------------------
+{out}\
+------------------------------------ STDERR ------------------------------------
+{err}\
+--------------------------------------------------------------------------------
+"""
 
 
 class NoSdkRootError(exceptions.Error):
@@ -59,6 +75,32 @@ class StagingCommandFailedError(exceptions.Error):
             ' '.join(args), return_code, output_message))
 
 
+def _StagingProtocolMapper(command_path, descriptor, staging_dir):
+  return [command_path, descriptor, staging_dir]
+
+
+def _JavaStagingMapper(command_path, descriptor, staging_dir):
+  """Map a java staging request to the right args.
+
+  Args:
+    command_path: str, path to the jar tool file.
+    descriptor: str, path to the `appengine-web.xml`
+    staging_dir: str, path to the empty staging dir
+
+  Raises:
+    java.JavaError, if Java is not installed.
+
+  Returns:
+    [str], args for executable invocation.
+  """
+  java.CheckIfJavaIsInstalled('local staging for java')
+  java_bin = files.FindExecutableOnPath('java')
+  app_dir = os.path.dirname(os.path.dirname(descriptor))
+  args = ([java_bin, '-classpath', command_path, _JAVA_APPCFG_ENTRY_POINT] +
+          _JAVA_APPCFG_STAGE_FLAGS + ['stage', app_dir, staging_dir])
+  return args
+
+
 class _Command(object):
   """Represents a cross-platform command.
 
@@ -69,12 +111,14 @@ class _Command(object):
     windows_path: str, the path to the executable on Windows
     component: str or None, the name of the Cloud SDK component which contains
       the executable
+    mapper: fn or None, function that maps a staging invocation to a command.
   """
 
-  def __init__(self, nix_path, windows_path, component=None):
+  def __init__(self, nix_path, windows_path, component=None, mapper=None):
     self.nix_path = nix_path
     self.windows_path = windows_path
     self.component = component
+    self.mapper = mapper or _StagingProtocolMapper
 
   @property
   def name(self):
@@ -106,8 +150,41 @@ class _Command(object):
     update_manager.UpdateManager.EnsureInstalledAndRestart([self.component],
                                                            msg=msg)
 
+  def Run(self, staging_area, descriptor):
+    """Invokes a staging command with a given <service>.yaml and temp dir.
+
+    Args:
+      staging_area: str, path to the staging area.
+      descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
+
+    Returns:
+      str, the path to the staged directory.
+
+    Raises:
+      StagingCommandFailedError: if the staging command process exited non-zero.
+    """
+    staging_dir = tempfile.mkdtemp(dir=staging_area)
+    args = self.mapper(self.GetPath(), descriptor, staging_dir)
+    log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
+    out = cStringIO.StringIO()
+    err = cStringIO.StringIO()
+    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
+                                       err_func=err.write)
+    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
+                                                      err=err.getvalue())
+    log.info(message)
+    if return_code:
+      raise StagingCommandFailedError(args, return_code, message)
+    return staging_dir
+
+
 # Path to the go-app-stager binary
-_GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
+_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot-1.6', 'bin')
+
+# Path to the jar which contains the staging command
+_APPENGINE_TOOLS_JAR = os.path.join(
+    'platform', 'google_appengine', 'google', 'appengine', 'tools', 'java',
+    'lib', 'appengine-tools-api.jar')
 
 # STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
 # path relative to Cloud SDK Root; it should look something like the following:
@@ -128,88 +205,49 @@ _GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
 _STAGING_REGISTRY = {
     ('go', util.Environment.STANDARD):
         _Command(
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.MANAGED_VMS):
         _Command(
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.FLEX):
         _Command(
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
+            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
 }
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
 # same key is used.
-_STAGING_REGISTRY_BETA = {}
-
-
-_STAGING_COMMAND_OUTPUT_TEMPLATE = """\
------------------------------------- STDOUT ------------------------------------
-{out}\
------------------------------------- STDERR ------------------------------------
-{err}\
---------------------------------------------------------------------------------
-"""
-
-
-@contextlib.contextmanager
-def _StageUsingGivenCommand(command_path, service_yaml):
-  """Invokes a staging command with a given <service>.yaml and temp dir.
-
-  This is a context manager because the temporary staging directory should
-  always be deleted, independent of potential errors.
-
-  Args:
-    command_path: str, path to the staging command
-    service_yaml: str, path to the unstaged <service>.yaml
-
-  Yields:
-    str, the path to the staged directory.
-
-  Raises:
-    StagingCommandFailedError: if the staging command process exited non-zero.
-  """
-  with files.TemporaryDirectory() as temp_directory:
-    args = [command_path, service_yaml, temp_directory]
-    log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
-    out = cStringIO.StringIO()
-    err = cStringIO.StringIO()
-    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                                       err_func=err.write)
-    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
-                                                      err=err.getvalue())
-    log.info(message)
-    if return_code:
-      raise StagingCommandFailedError(args, return_code, message)
-    yield temp_directory
+_STAGING_REGISTRY_BETA = {
+    ('java-xml', util.Environment.STANDARD):
+        _Command(
+            _APPENGINE_TOOLS_JAR,
+            _APPENGINE_TOOLS_JAR,
+            component='app-engine-java',
+            mapper=_JavaStagingMapper)
+}
 
 
 class Stager(object):
 
-  def __init__(self, registry):
+  def __init__(self, registry, staging_area):
     self.registry = registry
+    self.staging_area = staging_area
 
-  @contextlib.contextmanager
-  def Stage(self, service_yaml, runtime, environment):
-    """Stage the given command.
-
-    This method is a context manager that
-
-    >>> with stager.Stage('python', util.Environment.STANDARD):
-    ...   pass  # perform deployment steps
+  def Stage(self, descriptor, runtime, environment):
+    """Stage the given deployable or do nothing if N/A.
 
     Args:
-      service_yaml: str, path to the unstaged <service>.yaml
+      descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
       runtime: str, the name of the runtime for the application to stage
       environment: api_lib.app.util.Environment, the environment for the
           application to stage
 
-    Yields:
+    Returns:
       str, the path to the staged directory or None if no corresponding staging
           command was found.
 
@@ -223,28 +261,24 @@ class Stager(object):
       # Many runtimes do not require a staging step; this isn't a problem.
       log.debug(('No staging command found for runtime [%s] and environment '
                  '[%s].'), runtime, environment.name)
-      yield None
       return
 
     command.EnsureInstalled()
-
-    command_path = command.GetPath()
-    with _StageUsingGivenCommand(command_path, service_yaml) as app_dir:
-      yield app_dir
+    return command.Run(self.staging_area, descriptor)
 
 
-def GetStager():
+def GetStager(staging_area):
   """Get the default stager."""
-  return Stager(_STAGING_REGISTRY)
+  return Stager(_STAGING_REGISTRY, staging_area)
 
 
-def GetBetaStager():
+def GetBetaStager(staging_area):
   """Get the beta stager, used for `gcloud beta *` commands."""
   registry = _STAGING_REGISTRY.copy()
   registry.update(_STAGING_REGISTRY_BETA)
-  return Stager(registry)
+  return Stager(registry, staging_area)
 
 
-def GetNoopStager():
+def GetNoopStager(staging_area):
   """Get a stager with an empty registry."""
-  return Stager({})
+  return Stager({}, staging_area)

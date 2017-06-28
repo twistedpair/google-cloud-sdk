@@ -729,7 +729,7 @@
     },
     "LogConfig": {
       "id": "LogConfig",
-      "description": "Specifies what kind of log the caller must write",
+      "description": "Specifies what kind of log the caller must write\nIncrement a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present the only supported field names are\n   - \"iam_principal\", corresponding to IAMContext.principal;\n   - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
       "type": "object",
       "properties": {
         "counter": {

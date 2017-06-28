@@ -37,6 +37,8 @@ class AppengineV1beta(base_api.BaseApiClient):
     self.apps_authorizedCertificates = self.AppsAuthorizedCertificatesService(self)
     self.apps_authorizedDomains = self.AppsAuthorizedDomainsService(self)
     self.apps_domainMappings = self.AppsDomainMappingsService(self)
+    self.apps_firewall_ingressRules = self.AppsFirewallIngressRulesService(self)
+    self.apps_firewall = self.AppsFirewallService(self)
     self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
     self.apps_services_versions_instances = self.AppsServicesVersionsInstancesService(self)
@@ -370,6 +372,188 @@ class AppengineV1beta(base_api.BaseApiClient):
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+  class AppsFirewallIngressRulesService(base_api.BaseApiService):
+    """Service class for the apps_firewall_ingressRules resource."""
+
+    _NAME = u'apps_firewall_ingressRules'
+
+    def __init__(self, client):
+      super(AppengineV1beta.AppsFirewallIngressRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchUpdate(self, request, global_params=None):
+      """Replaces the entire firewall ruleset in one bulk operation. This overrides and replaces the rules of an existing firewall with the new rules.If the final rule does not match traffic with the '*' wildcard IP range, then an "allow all" rule is explicitly added to the end of the list.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesBatchUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchUpdateIngressRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules:batchUpdate',
+        http_method=u'POST',
+        method_id=u'appengine.apps.firewall.ingressRules.batchUpdate',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}:batchUpdate',
+        request_field=u'batchUpdateIngressRulesRequest',
+        request_type_name=u'AppengineAppsFirewallIngressRulesBatchUpdateRequest',
+        response_type_name=u'BatchUpdateIngressRulesResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      """Creates a firewall rule for the application.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallRule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules',
+        http_method=u'POST',
+        method_id=u'appengine.apps.firewall.ingressRules.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta/{+parent}/firewall/ingressRules',
+        request_field=u'firewallRule',
+        request_type_name=u'AppengineAppsFirewallIngressRulesCreateRequest',
+        response_type_name=u'FirewallRule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified firewall rule.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}',
+        http_method=u'DELETE',
+        method_id=u'appengine.apps.firewall.ingressRules.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsFirewallIngressRulesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the specified firewall rule.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.firewall.ingressRules.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsFirewallIngressRulesGetRequest',
+        response_type_name=u'FirewallRule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the firewall rules of an application.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListIngressRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules',
+        http_method=u'GET',
+        method_id=u'appengine.apps.firewall.ingressRules.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'matchingAddress', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta/{+parent}/firewall/ingressRules',
+        request_field='',
+        request_type_name=u'AppengineAppsFirewallIngressRulesListRequest',
+        response_type_name=u'ListIngressRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified firewall rule.
+
+      Args:
+        request: (AppengineAppsFirewallIngressRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FirewallRule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/apps/{appsId}/firewall/ingressRules/{ingressRulesId}',
+        http_method=u'PATCH',
+        method_id=u'appengine.apps.firewall.ingressRules.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta/{+name}',
+        request_field=u'firewallRule',
+        request_type_name=u'AppengineAppsFirewallIngressRulesPatchRequest',
+        response_type_name=u'FirewallRule',
+        supports_download=False,
+    )
+
+  class AppsFirewallService(base_api.BaseApiService):
+    """Service class for the apps_firewall resource."""
+
+    _NAME = u'apps_firewall'
+
+    def __init__(self, client):
+      super(AppengineV1beta.AppsFirewallService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class AppsLocationsService(base_api.BaseApiService):
     """Service class for the apps_locations resource."""

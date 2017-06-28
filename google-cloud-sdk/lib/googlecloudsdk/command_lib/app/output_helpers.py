@@ -15,18 +15,34 @@
 """This module holds exceptions raised by commands."""
 
 from googlecloudsdk.api_lib.app import deploy_command_util
+from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.core import log
-from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.util import encoding
 
 
-DEPLOY_MESSAGE_TEMPLATE = u"""\
-{project}/{service}/{version} (from [{file}])
+DEPLOY_SERVICE_MESSAGE_TEMPLATE = u"""\
+descriptor:      [{descriptor}]
+source:          [{source}]
+target project:  [{project}]
+target service:  [{service}]
+target version:  [{version}]
+target url:      [{url}]
+
 """
 
-DEPLOYED_URL_TEMPLATE = u"""\
-     Deploying to URL: [{url}]
+DEPLOY_CONFIG_MESSAGE_TEMPLATE = u"""\
+descriptor:      [{descriptor}]
+type:            [{type}]
+target project:  [{project}]
+
 """
+
+CONFIG_TYPES = {
+    yaml_parsing.ConfigYamlInfo.INDEX: 'datastore indexes',
+    yaml_parsing.ConfigYamlInfo.CRON: 'cron jobs',
+    yaml_parsing.ConfigYamlInfo.QUEUE: 'task queues',
+    yaml_parsing.ConfigYamlInfo.DISPATCH: 'routing rules',
+    yaml_parsing.ConfigYamlInfo.DOS: 'DoS blacklist',
+}
 
 PROMOTE_MESSAGE_TEMPLATE = u"""\
      (add --promote if you also want to make this service available from
@@ -38,14 +54,16 @@ RUNTIME_MISMATCH_MSG = (u"You've generated a Dockerfile that may be customized "
                         u'the runtime field in [{0}] must be set to custom.')
 
 
-def DisplayProposedDeployment(app, project, app_config, version, promote):
+def DisplayProposedDeployment(app, project, services, configs, version,
+                              promote):
   """Prints the details of the proposed deployment.
 
   Args:
     app: Application resource for the current application (required if any
       services are deployed, otherwise ignored).
     project: The name of the current project.
-    app_config: yaml_parsing.AppConfigSet, The configurations being deployed.
+    services: [deployables.Service], The services being deployed.
+    configs: [yaml_parsing.ConfigYamlInfo], The configurations being updated.
     version: The version identifier of the application to be deployed.
     promote: Whether the newly deployed version will receive all traffic
       (this affects deployed URLs).
@@ -57,33 +75,28 @@ def DisplayProposedDeployment(app, project, app_config, version, promote):
   version number, and deployed URLs) as well as configurations.
   """
   deployed_urls = {}
-
-  if app_config.Services():
+  if services:
     if app is None:
       raise TypeError('If services are deployed, must provide `app` parameter.')
-    deploy_messages = []
-    for service, info in app_config.Services().iteritems():
-      use_ssl = deploy_command_util.UseSsl(info.parsed.handlers)
-      deploy_message = DEPLOY_MESSAGE_TEMPLATE.format(
-          project=project, service=service, version=version,
-          file=encoding.Decode(info.file))
-
+    log.status.Print('Services to deploy:\n')
+    for service in services:
+      use_ssl = deploy_command_util.UseSsl(
+          service.service_info.parsed.handlers)
       url = deploy_command_util.GetAppHostname(
-          app=app, service=info.module, version=None if promote else version,
-          use_ssl=use_ssl)
-      deployed_urls[service] = url
-      deploy_message += DEPLOYED_URL_TEMPLATE.format(url=url)
+          app=app, service=service.service_id,
+          version=None if promote else version, use_ssl=use_ssl)
+      deployed_urls[service.service_id] = url
+      log.status.Print(DEPLOY_SERVICE_MESSAGE_TEMPLATE.format(
+          project=project, service=service.service_id, version=version,
+          descriptor=service.descriptor, source=service.source, url=url))
       if not promote:
         default_url = deploy_command_util.GetAppHostname(
-            app=app, service=info.module, use_ssl=use_ssl)
-        deploy_message += PROMOTE_MESSAGE_TEMPLATE.format(
-            default_url=default_url)
-      deploy_messages.append(deploy_message)
-    fmt = 'list[title="You are about to deploy the following services:"]'
-    resource_printer.Print(deploy_messages, fmt, out=log.status)
+            app=app, service=service.service_id, use_ssl=use_ssl)
+        log.status.Print(PROMOTE_MESSAGE_TEMPLATE.format(
+            default_url=default_url))
 
-  if app_config.Configs():
-    DisplayProposedConfigDeployments(project, app_config.Configs().values())
+  if configs:
+    DisplayProposedConfigDeployments(project, configs)
 
   return deployed_urls
 
@@ -96,7 +109,7 @@ def DisplayProposedConfigDeployments(project, configs):
     configs: [yaml_parsing.ConfigYamlInfo], The configurations being
       deployed.
   """
-  fmt = 'list[title="You are about to update the following configurations:"]'
-  resource_printer.Print(
-      [u'{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
-       for c in configs], fmt, out=log.status)
+  log.status.Print('Configurations to update:\n')
+  for c in configs:
+    log.status.Print(DEPLOY_CONFIG_MESSAGE_TEMPLATE.format(
+        project=project, type=CONFIG_TYPES[c.config], descriptor=c.file))

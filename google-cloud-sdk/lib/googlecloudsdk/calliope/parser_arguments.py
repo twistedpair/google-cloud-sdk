@@ -15,14 +15,16 @@
 """Calliope argparse argument intercepts and extensions.
 
 Refer to the calliope.parser_extensions module for a detailed overview.
-
 """
 
 import argparse
 
 from googlecloudsdk.calliope import display_info
+from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
-from googlecloudsdk.core import remote_completion
+from googlecloudsdk.command_lib.util import deprecated_completers
+from googlecloudsdk.core.cache import completion_cache
+from googlecloudsdk.core.resource import resource_property
 
 
 _MUTEX_GROUP_REQUIRED_DESCRIPTION = 'Exactly one of these must be specified:'
@@ -63,9 +65,11 @@ class ArgumentInterceptor(object):
     """Parser data for the entire command.
 
     Attributes:
+      allow_positional: bool, Allow positional arguments if True.
       ancestor_flag_args: [argparse.Action], The flags for all ancestor groups
         in the cli tree.
       argument_groups: {dest: group-id}, Maps dests to argument group ids.
+      cli_generator: cli.CLILoader, The builder used to generate this CLI.
       command_name: str, The dotted command name path.
       defaults: {dest: default}, For all registered arguments.
       dests: [str], A list of the dests for all arguments.
@@ -75,12 +79,17 @@ class ArgumentInterceptor(object):
       groups: [ArgumentInterceptor], The arg groups.
       mutex_groups: {dest: mutex_group_id}, Maps dests to mutex group ids.
       positional_args: [ArgumentInterceptor], The positional args.
+      positional_completers: {Completer}, The set of completers for positionals.
       required: [str], The dests for all required arguments.
       required_mutex_groups: set(id), Set of mutex group ids that are required.
     """
 
-    def __init__(self, command_name):
+    def __init__(self, command_name, is_root, cli_generator, allow_positional):
       self.command_name = command_name
+      self.is_root = is_root
+      self.cli_generator = cli_generator
+      self.allow_positional = allow_positional
+      self.is_root = is_root
 
       self.ancestor_flag_args = []
       self.argument_groups = {}
@@ -92,6 +101,7 @@ class ArgumentInterceptor(object):
       self.groups = {}
       self.mutex_groups = {}
       self.positional_args = []
+      self.positional_completers = set()
       self.required = []
       self.required_mutex_groups = set()
 
@@ -99,9 +109,6 @@ class ArgumentInterceptor(object):
                allow_positional=True, data=None, mutex_group_id=None,
                argument_group_id=None):
     self.parser = parser
-    self.is_root = is_root
-    self.cli_generator = cli_generator
-    self.allow_positional = allow_positional
     # If this is an argument group within a command, use the data from the
     # parser for the entire command.  If it is the command itself, create a new
     # data object and extract the command name from the parser.
@@ -109,9 +116,21 @@ class ArgumentInterceptor(object):
       self.data = data
     else:
       self.data = ArgumentInterceptor.ParserData(
-          command_name=self.parser._calliope_command.GetPath())  # pylint: disable=protected-access
+          # pylint: disable=protected-access
+          command_name=self.parser._calliope_command.GetPath(),
+          is_root=is_root,
+          cli_generator=cli_generator,
+          allow_positional=allow_positional)
     self.mutex_group_id = mutex_group_id
     self.argument_group_id = argument_group_id
+
+  @property
+  def allow_positional(self):
+    return self.data.allow_positional
+
+  @property
+  def cli_generator(self):
+    return self.data.cli_generator
 
   @property
   def defaults(self):
@@ -128,6 +147,10 @@ class ArgumentInterceptor(object):
   @property
   def group_attr(self):
     return self.data.group_attr
+
+  @property
+  def is_root(self):
+    return self.data.is_root
 
   @property
   def dests(self):
@@ -152,6 +175,10 @@ class ArgumentInterceptor(object):
   @property
   def flag_args(self):
     return self.data.flag_args
+
+  @property
+  def positional_completers(self):
+    return self.data.positional_completers
 
   @property
   def ancestor_flag_args(self):
@@ -189,7 +216,7 @@ class ArgumentInterceptor(object):
     # Any alias this flag has for the purposes of the "did you mean"
     # suggestions.
     suggestion_aliases = kwargs.pop('suggestion_aliases', [])
-    # The unbound completer object (or legacy completer function).
+    # The unbound completer object or raw argcomplete completer function).
     completer = kwargs.pop('completer', None)
     # The resource name for the purposes of doing remote completion.
     completion_resource = kwargs.pop('completion_resource', None)
@@ -263,12 +290,14 @@ class ArgumentInterceptor(object):
       added_argument = self.parser.AddRemainderArgument(*args, **kwargs)
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
-    if completer:
-      added_argument.completer = completer
-    else:
-      self._AddRemoteCompleter(added_argument, completion_resource,
-                               list_command_path, list_command_callback_fn)
-
+    self._AttachCompleter(
+        added_argument,
+        name,
+        completer,
+        positional,
+        deprecated_collection=completion_resource,
+        deprecated_list_command=list_command_path,
+        deprecated_list_command_callback=list_command_callback_fn)
     if positional:
       if category:
         raise parser_errors.ArgumentException(
@@ -328,18 +357,12 @@ class ArgumentInterceptor(object):
   def add_argument_group(self, *args, **kwargs):
     new_parser = self.parser.add_argument_group(*args, **kwargs)
     return ArgumentInterceptor(parser=new_parser,
-                               is_root=self.is_root,
-                               cli_generator=self.cli_generator,
-                               allow_positional=self.allow_positional,
                                data=self.data,
                                argument_group_id=id(new_parser))
 
   def add_mutually_exclusive_group(self, **kwargs):
     new_parser = self.parser.add_mutually_exclusive_group(**kwargs)
     return ArgumentInterceptor(parser=new_parser,
-                               is_root=self.is_root,
-                               cli_generator=self.cli_generator,
-                               allow_positional=self.allow_positional,
                                data=self.data,
                                mutex_group_id=id(new_parser))
 
@@ -461,33 +484,65 @@ class ArgumentInterceptor(object):
     # Not a Boolean flag.
     return False, None
 
-  def _AddRemoteCompleter(self, added_argument, completion_resource,
-                          list_command_path, list_command_callback_fn):
-    """Adds a remote completer to the given argument if necessary.
+  # TODO(b/38374705): Drop the deprecated code.
+  def _AttachCompleter(self, arg, name, completer, positional,
+                       deprecated_collection=None,
+                       deprecated_list_command=None,
+                       deprecated_list_command_callback=None):
+    """Attaches a completer to arg if one is specified.
 
     Args:
-      added_argument: The argparse argument that was previously created.
-      completion_resource: str, The name of the resource that this argument
-        corresponds to.
-      list_command_path: str, The explicit calliope command to run to get the
-        completions if you want to override the default for the given resource
-        type. list_command_callback_fn takes precedence.
-      list_command_callback_fn: function, Callback function to be called to get
-        the list command. Takes precedence over list_command_path.
+      arg: The argument to attach the completer to.
+      name: The arg name for messaging.
+      completer: The completer Completer class or argcomplete function object.
+      positional: True if argument is a positional.
+      deprecated_collection: The collection name for the resource to complete.
+      deprecated_list_command: The command whose Run() method returns the
+        current resource list.
+      deprecated_list_command_callback: A callback function that returns the
+        list command to run.
     """
-    if not completion_resource:
-      if list_command_path or list_command_callback_fn:
-        raise parser_errors.ArgumentException(
-            'Command [{}] argument [{}] does not have completion_resource '
-            'set but has one or more of the deprecated list_command_path '
-            'and list_command_callback_fn attributes.'.format(
-                ' '.join(self.data.command_name), added_argument.dest))
-      return
-    # add a remote completer
-    added_argument.completer = (
-        remote_completion.RemoteCompletion.GetCompleterForResource(
-            completion_resource,
-            self.cli_generator.Generate,
-            command_line=list_command_path,
-            list_command_callback_fn=list_command_callback_fn))
-    added_argument.completion_resource = completion_resource
+    if not completer:
+      if not deprecated_collection:
+        if deprecated_list_command or deprecated_list_command_callback:
+          raise parser_errors.ArgumentException(
+              'Command [{}] argument [{}] does not have completion_resource '
+              'set but has one or more of the deprecated list_command_path '
+              'and list_command_callback_fn attributes.'.format(
+                  ' '.join(self.data.command_name), name))
+        return
+
+      class DeprecatedCompleter(
+          deprecated_completers.DeprecatedListCommandCompleter):
+
+        def __init__(self, **kwargs):
+          super(DeprecatedCompleter, self).__init__(
+              collection=deprecated_collection,
+              list_command=deprecated_list_command,
+              list_command_callback=deprecated_list_command_callback,
+              **kwargs)
+
+      DeprecatedCompleter.__name__ = (
+          resource_property.ConvertToCamelCase(
+              deprecated_collection.capitalize().replace('.', '_')) +
+          'DeprecatedCompleter')
+
+      completer = DeprecatedCompleter
+    elif (deprecated_collection or
+          deprecated_list_command or
+          deprecated_list_command_callback):
+      raise parser_errors.ArgumentException(
+          'Command [{}] argument [{}] has a completer set with one or more '
+          'of the deprecated completion_resource, list_command_path, and '
+          'list_command_callback_fn attributes.'.format(
+              ' '.join(self.data.command_name), name))
+    if isinstance(completer, type):
+      # A completer class that will be instantiated at completion time.
+      if positional and issubclass(completer, completion_cache.Completer):
+        # The list of positional resource completers is used to determine
+        # parameters that must be present in the completions.
+        self.data.positional_completers.add(completer)
+      arg.completer = parser_completer.ArgumentCompleter(
+          completer, argument=arg)
+    else:
+      arg.completer = completer

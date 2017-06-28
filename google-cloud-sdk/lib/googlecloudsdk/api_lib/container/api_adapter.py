@@ -262,6 +262,9 @@ class APIAdapter(object):
   def SetMasterAuth(self, cluster_ref, options):
     raise NotImplementedError('SetMasterAuth requires a v1 client.')
 
+  def SetNetworkPolicy(self, cluster_ref, options):
+    raise NotImplementedError('SetNetworkPolicy requires a v1 client.')
+
   def StartIpRotation(self, cluster_ref):
     raise NotImplementedError('StartIpRotation requires a v1 client.')
 
@@ -449,7 +452,9 @@ class CreateClusterOptions(object):
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
                enable_legacy_authorization=None,
-               labels=None):
+               labels=None,
+               disk_type=None,
+               enable_network_policy=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -482,7 +487,9 @@ class CreateClusterOptions(object):
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
     self.enable_legacy_authorization = enable_legacy_authorization
+    self.enable_network_policy = enable_network_policy
     self.labels = labels
+    self.disk_type = disk_type
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -531,6 +538,12 @@ class SetMasterAuthOptions(object):
     self.password = password
 
 
+class SetNetworkPolicyOptions(object):
+
+  def __init__(self, enabled):
+    self.enabled = enabled
+
+
 class CreateNodePoolOptions(object):
 
   def __init__(self,
@@ -549,7 +562,8 @@ class CreateNodePoolOptions(object):
                preemptible=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
-               service_account=None):
+               service_account=None,
+               disk_type=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -566,6 +580,7 @@ class CreateNodePoolOptions(object):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
+    self.disk_type = disk_type
 
 
 class UpdateNodePoolOptions(object):
@@ -592,6 +607,8 @@ class V1Adapter(APIAdapter):
       node_config.machineType = options.node_machine_type
     if options.node_disk_size_gb:
       node_config.diskSizeGb = options.node_disk_size_gb
+    if options.disk_type:
+      node_config.diskType = options.disk_type
     if options.node_source_image:
       raise util.Error('cannot specify node source image in container v1 api')
     scope_uris = ExpandScopeURIs(options.scopes)
@@ -688,6 +705,12 @@ class V1Adapter(APIAdapter):
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
 
+    # Only Calico is currently supported as a network policy provider.
+    if options.enable_network_policy:
+      cluster.networkPolicy = self.messages.NetworkPolicy(
+          enabled=options.enable_network_policy,
+          provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
+
     if options.labels is not None:
       labels = self.messages.Cluster.ResourceLabelsValue()
       props = []
@@ -745,7 +768,6 @@ class V1Adapter(APIAdapter):
           authorized_networks.cidrs.append(self.messages.CIDR(network=network))
       update = self.messages.ClusterUpdate(
           desiredMasterAuthorizedNetworks=authorized_networks)
-
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -780,6 +802,22 @@ class V1Adapter(APIAdapter):
       addons.horizontalPodAutoscaling = self.messages.HorizontalPodAutoscaling(
           disabled=bool(disable_hpa))
     return addons
+
+  def SetNetworkPolicy(self, cluster_ref, options):
+    netpol = self.messages.NetworkPolicy(
+        enabled=options.enabled,
+        # Only Calico is currently supported as a network policy provider.
+        provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
+
+    request = self.messages.SetNetworkPolicyRequest(networkPolicy=netpol)
+
+    req = self.messages.ContainerProjectsZonesClustersSetNetworkPolicyRequest(
+        clusterId=cluster_ref.clusterId,
+        zone=cluster_ref.zone,
+        projectId=cluster_ref.projectId,
+        setNetworkPolicyRequest=request)
+    return self.ParseOperation(
+        self.client.projects_zones_clusters.SetNetworkPolicy(req).name)
 
   def SetMasterAuth(self, cluster_ref, options):
     update = self.messages.MasterAuth(password=options.password)
@@ -838,6 +876,8 @@ class V1Adapter(APIAdapter):
       node_config.machineType = options.machine_type
     if options.disk_size_gb:
       node_config.diskSizeGb = options.disk_size_gb
+    if options.disk_type:
+      node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
     scope_uris = ExpandScopeURIs(options.scopes)

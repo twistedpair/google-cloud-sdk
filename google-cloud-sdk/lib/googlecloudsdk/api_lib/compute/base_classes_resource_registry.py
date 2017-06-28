@@ -351,7 +351,7 @@ RESOURCE_REGISTRY = {
         """,),
     'compute.peerings':
         resource_info.ResourceInfo(
-            cache_command='beta compute networks peerings list',
+            cache_command='compute networks peerings list',
             list_format="""
           table(
             name,

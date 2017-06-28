@@ -48,6 +48,15 @@ COLLECTION_FLAG = base.Argument(
     completer=CollectionCompleter,
     help='The name of the collection to specify the method for.')
 
+RAW_FLAG = base.Argument(
+    '--raw',
+    action='store_true',
+    default=False,
+    help='For list commands, the response is flattened to return the items as '
+         'a list rather than returning the list response verbatim. Use this '
+         'flag to disable this behavior and return the raw response.'
+)
+
 
 class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
   """A DynamicPositionalAction that adds flags for a given method to the parser.
@@ -78,7 +87,7 @@ class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
     method = registry.GetMethod(full_collection_name, method_name,
                                 api_version=api_version)
 
-    arg_generator = marshalling.ArgumentGenerator(method)
+    arg_generator = marshalling.ArgumentGenerator(method, raw=namespace.raw)
     method_ref = MethodRef(namespace, method, arg_generator)
     setattr(namespace, self._dest, method_ref)
 
@@ -117,8 +126,10 @@ class MethodRef(object):
     Returns:
       The result of the method call.
     """
-    # TODO(b/38000796): Should have special handling for list requests to do
-    # paging automatically.
-    return self.method.Call(self.arg_generator.CreateRequest(self.namespace))
+    raw = self.arg_generator.raw
+    request = self.arg_generator.CreateRequest(self.namespace)
+    limit = self.arg_generator.Limit(self.namespace)
+    page_size = self.arg_generator.PageSize(self.namespace)
+    return self.method.Call(request, raw=raw, limit=limit, page_size=page_size)
 
 

@@ -32,7 +32,34 @@ def _RequestsAreListRequests(requests):
         'All requests must be either list requests or non-list requests.')
 
 
-def _List(requests, http, batch_url, errors):
+def _HandleMessageList(response, service, method, errors):
+  """Extracts data from one *List response page as Message object."""
+  items = []
+
+  # If the request is a list call, then yield the items directly.
+  if method == 'List':
+    items = response.items
+
+  # If the request is an aggregatedList call, then do all the
+  # magic necessary to get the actual resources because the
+  # aggregatedList responses are very complicated data
+  # structures...
+  else:
+    items_field_name = service.GetMethodConfig(
+        'AggregatedList').relative_path.split('/')[-1]
+    for scope_result in response.items.additionalProperties:
+      # If the given scope is unreachable, record the warning
+      # message in the errors list.
+      warning = scope_result.value.warning
+      if warning and warning.code == warning.CodeValueValuesEnum.UNREACHABLE:
+        errors.append((None, warning.message))
+
+      items.extend(getattr(scope_result.value, items_field_name))
+
+  return items, response.nextPageToken
+
+
+def _ListCore(requests, http, batch_url, errors, response_handler):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
@@ -45,10 +72,11 @@ def _List(requests, http, batch_url, errors):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error,
       it is added to this list.
+    response_handler: The function to extract information responses.
 
   Yields:
-    Resources encapsulated as protocol buffers as they are received
-      from the server.
+    Resources encapsulated in format chosen by response_handler as they are
+      received from the server.
   """
   while requests:
     responses, request_errors = batch_helper.MakeRequests(
@@ -65,37 +93,38 @@ def _List(requests, http, batch_url, errors):
 
       service, method, request_protobuf = requests[i]
 
-      # If the request is a list call, then yield the items directly.
-      if method == 'List':
-        for item in response.items:
-          yield item
+      items, next_page_token = response_handler(response, service, method,
+                                                errors)
+      for item in items:
+        yield item
 
-      # If the request is an aggregatedList call, then do all the
-      # magic necessary to get the actual resources because the
-      # aggregatedList responses are very complicated data
-      # structures...
-      else:
-        items_field_name = service.GetMethodConfig(
-            'AggregatedList').relative_path.split('/')[-1]
-        for scope_result in response.items.additionalProperties:
-          # If the given scope is unreachable, record the warning
-          # message in the errors list.
-          warning = scope_result.value.warning
-          if (warning and
-              warning.code == warning.CodeValueValuesEnum.UNREACHABLE):
-            errors.append((None, warning.message))
-
-          items = getattr(scope_result.value, items_field_name)
-          for item in items:
-            yield item
-
-      next_page_token = response.nextPageToken
       if next_page_token:
         new_request_protobuf = copy.deepcopy(request_protobuf)
         new_request_protobuf.pageToken = next_page_token
         new_requests.append((service, method, new_request_protobuf))
 
     requests = new_requests
+
+
+def _List(requests, http, batch_url, errors):
+  """Makes a series of list and/or aggregatedList batch requests.
+
+  Args:
+    requests: A list of requests to make. Each element must be a 3-element
+      tuple where the first element is the service, the second element is
+      the method ('List' or 'AggregatedList'), and the third element
+      is a protocol buffer representing either a list or aggregatedList
+      request.
+    http: An httplib2.Http-like object.
+    batch_url: The handler for making batch requests.
+    errors: A list for capturing errors. If any response contains an error,
+      it is added to this list.
+
+  Returns:
+    Resources encapsulated as protocol buffers as they are received
+      from the server.
+  """
+  return _ListCore(requests, http, batch_url, errors, _HandleMessageList)
 
 
 def MakeRequests(requests, http, batch_url, errors):

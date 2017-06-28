@@ -22,7 +22,7 @@ def RunLanguageCommand(feature, content_file=None, content=None,
   """Runs a gcloud ml language command.
 
   Args:
-    feature: str, the name of the feature to request (e.g. 'extractEntities')
+    feature: str, the name of the feature being used, such as analyzeEntities.
     content_file: str, the file to be used to analyze text.
     content: str, the text to be analyzed.
     language: str, the language of the input text.
@@ -37,12 +37,15 @@ def RunLanguageCommand(feature, content_file=None, content=None,
         an error.
 
   Returns:
-    messages.AnnotateTextResponse: the response from the API.
+    the response from the API (type depends on feature, for example
+          if feature is analyzeEntities, response would be
+          messages.AnalyzeEntitiesResponse).
   """
   client = util.LanguageClient()
   source = util.GetContentSource(content, content_file)
-  return client.Annotate(feature, source=source, language=language,
-                         content_type=content_type, encoding_type=encoding_type)
+  return client.SingleFeatureAnnotate(feature, source=source, language=language,
+                                      content_type=content_type,
+                                      encoding_type=encoding_type)
 
 
 SERVICE_ACCOUNT_HELP = (

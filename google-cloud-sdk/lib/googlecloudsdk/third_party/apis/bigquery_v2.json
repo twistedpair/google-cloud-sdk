@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20170606",
+ "revision": "20170616",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1801,6 +1801,10 @@
        "tableReference": {
         "$ref": "TableReference",
         "description": "A reference uniquely identifying the table."
+       },
+       "timePartitioning": {
+        "$ref": "TimePartitioning",
+        "description": "[Experimental] The time-based partitioning for this table."
        },
        "type": {
         "type": "string",

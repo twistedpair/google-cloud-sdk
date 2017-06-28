@@ -47,6 +47,7 @@ def CreateNetworkInterfaceMessage(
                * None - no network tier
                * PREMIUM - network tier being PREMIUM
                * SELECT - network tier being SELECT
+               * STANDARD - network tier being STANDARD
   Returns:
     network_interface: a NetworkInterface message object
   """

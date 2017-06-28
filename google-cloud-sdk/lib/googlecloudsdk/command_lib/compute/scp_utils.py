@@ -28,7 +28,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
 
 
-class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
+class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
   """Copy files to and from Google Compute Engine virtual machines."""
 
   @staticmethod
@@ -38,7 +38,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
     Args:
       parser: An argparse.ArgumentParser.
     """
-    super(BaseScpCommand, BaseScpCommand).Args(parser)
+    super(BaseScpHelper, BaseScpHelper).Args(parser)
 
     parser.add_argument(
         'sources',
@@ -59,18 +59,28 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
         help=('The zone of the instance to copy files to/from.\n\n' +
               flags.ZONE_PROPERTY_EXPLANATION))
 
-  def Run(self, args, port=None, recursive=False, compress=False,
-          extra_flags=None):
+  def RunScp(self,
+             compute_holder,
+             cua_holder,
+             args,
+             port=None,
+             recursive=False,
+             compress=False,
+             extra_flags=None,
+             use_account_service=False):
     """SCP files between local and remote GCE instance.
 
     Run this method from subclasses' Run methods.
 
     Args:
+      compute_holder: The ComputeApiHolder.
+      cua_holder: The ComputeUserAccountsApiHolder.
       args: argparse.Namespace, the args the command was invoked with.
       port: str, int or None, Port number to use for SSH connection.
       recursive: bool, Whether to use recursive copying using -R flag.
       compress: bool, Whether to use compression.
       extra_flags: [str] or None, extra flags to add to command invocation.
+      use_account_service: bool, Whether to use Cloud User Accounts API
 
     Raises:
       ssh_utils.NetworkError: Network issue which likely is due to failure
@@ -78,7 +88,7 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
       ssh.CommandError: The SSH command exited with SSH exit code, which
         usually implies that a connection problem occurred.
     """
-    super(BaseScpCommand, self).Run(args)
+    super(BaseScpHelper, self).Run(args)
 
     dst = ssh.FileReference.FromPath(args.destination)
     srcs = [ssh.FileReference.FromPath(src) for src in args.sources]
@@ -92,11 +102,14 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
         src.remote = remote
 
     instance_ref = instance_flags.SSH_INSTANCE_RESOLVER.ResolveResources(
-        [remote.host], compute_scope.ScopeEnum.ZONE, args.zone, self.resources,
+        [remote.host],
+        compute_scope.ScopeEnum.ZONE,
+        args.zone,
+        compute_holder.resources,
         scope_lister=instance_flags.GetInstanceZoneScopeLister(
-            self.compute_client))[0]
-    instance = self.GetInstance(instance_ref)
-    project = self.GetProject(instance_ref.project)
+            compute_holder.client))[0]
+    instance = self.GetInstance(compute_holder.client, instance_ref)
+    project = self.GetProject(compute_holder.client, instance_ref.project)
 
     # Now replace the instance name with the actual IP/hostname
     remote.host = ssh_utils.GetExternalIPAddress(instance)
@@ -123,8 +136,12 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
       keys_newly_added = False
     else:
       keys_newly_added = self.EnsureSSHKeyExists(
-          remote.user, instance, project,
-          use_account_service=self._use_account_service)
+          compute_holder.client,
+          cua_holder.client,
+          remote.user,
+          instance,
+          project,
+          use_account_service=use_account_service)
 
     if keys_newly_added:
       poller = ssh.SSHPoller(
@@ -141,38 +158,3 @@ class BaseScpCommand(ssh_utils.BaseSSHCLICommand):
       # Can't raise an exception because we don't want any "ERROR" message
       # printed; the output from `ssh` will be enough.
       sys.exit(return_code)
-
-  detailed_help = {
-      'brief': 'Copy files to and from Google Compute Engine virtual machines '
-               'via scp.',
-      'DESCRIPTION': """\
-          *{command}* copies files between a virtual machine instance
-          and your local machine using the scp command.
-
-          To denote a remote file, prefix the file name with the virtual
-          machine instance name (e.g., _example-instance_:~/_FILE_). To
-          denote a local file, do not add a prefix to the file name
-          (e.g., ~/_FILE_). For example, to copy a remote directory
-          to your local host, run:
-
-            $ {command} example-instance:~/REMOTE-DIR ~/LOCAL-DIR --zone us-central1-a
-
-          In the above example, ``~/REMOTE-DIR'' from ``example-instance'' is
-          copied into the ~/_LOCAL-DIR_ directory.
-
-          Conversely, files from your local computer can be copied to a
-          virtual machine:
-
-            $ {command} ~/LOCAL-FILE-1 ~/LOCAL-FILE-2 example-instance:~/REMOTE-DIR --zone us-central1-a
-
-          If a file contains a colon (``:''), you must specify it by
-          either using an absolute path or a path that begins with
-          ``./''.
-
-          Under the covers, *scp(1)* or pscp (on Windows) is used to facilitate the transfer.
-
-          When the destination is local, all sources must be the same
-          virtual machine instance. When the destination is remote, all
-          sources must be local.
-          """,
-  }

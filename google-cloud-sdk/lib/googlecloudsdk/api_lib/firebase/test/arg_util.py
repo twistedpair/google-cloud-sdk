@@ -54,7 +54,8 @@ def AddCommonTestRunArgs(parser):
   parser.add_argument(
       '--results-bucket',
       help='The name of a Google Cloud Storage bucket where raw test results '
-      'will be stored (default: "test-lab-<random-UUID>"). Note that using a '
+      'will be stored (default: "test-lab-<random-UUID>"). Note that the '
+      'bucket must be owned by a billing-enabled project, and that using a '
       'non-default bucket will result in billing charges for the storage used.')
   parser.add_argument(
       '--results-dir',

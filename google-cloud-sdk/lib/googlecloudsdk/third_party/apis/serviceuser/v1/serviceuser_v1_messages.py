@@ -2267,10 +2267,13 @@ class UsageRule(_messages.Message):
       false otherwise.
     selector: Selects the methods to which this rule applies. Use '*' to
       indicate all methods in all APIs.  Refer to selector for syntax details.
+    skipServiceControl: True, if the method should skip service control. If
+      so, no control plane feature (like quota and billing) will be enabled.
   """
 
   allowUnregisteredCalls = _messages.BooleanField(1)
   selector = _messages.StringField(2)
+  skipServiceControl = _messages.BooleanField(3)
 
 
 class Visibility(_messages.Message):

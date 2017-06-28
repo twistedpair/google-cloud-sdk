@@ -13,45 +13,34 @@
 # limitations under the License.
 """Common classes and functions for routers."""
 
-
-from googlecloudsdk.api_lib.compute import utils
-
-
-def AddCommonArgs(parser, for_update=False):
-  """Adds common arguments for routers add-interface or update-interface."""
-
-  operation = 'added'
-  if for_update:
-    operation = 'updated'
-
-  parser.add_argument(
-      '--interface-name',
-      required=True,
-      help='The name of the interface being {0}.'.format(operation))
-
-  parser.add_argument(
-      '--ip-address',
-      type=utils.IPV4Argument,
-      help='The link local address of the router for this interface.')
-
-  parser.add_argument(
-      '--mask-length',
-      type=int,
-      # TODO(b/36051080): better help
-      help='The mask for network used for the server IP address.')
+import operator
 
 
-def GetGetRequest(client, ref):
-  """Returns the request to Get a Router resource."""
-  return (client.apitools_client.routers, 'Get',
-          client.messages.ComputeRoutersGetRequest(**ref.AsDict()))
+def ParseMode(resource_class, mode):
+  return resource_class.AdvertiseModeValueValuesEnum(mode)
 
 
-def GetPatchRequest(client, ref, replacement):
-  """Returns the request to Patch a Router resource."""
-  request = client.messages.ComputeRoutersPatchRequest(
-      router=replacement.name,
-      routerResource=replacement,
-      project=ref.project,
-      region=ref.region)
-  return (client.apitools_client.routers, 'Patch', request)
+def ParseGroups(resource_class, groups):
+  return map(resource_class.AdvertisedGroupsValueListEntryValuesEnum, groups)
+
+
+def ParseIpRanges(messages, ip_ranges):
+  """Parse a dict of IP ranges into AdvertisedPrefix objects.
+
+  Args:
+    messages: API messages holder.
+    ip_ranges: A dict of IP ranges of the form ip_range=description, where
+               ip_range is a CIDR-formatted IP and description is an optional
+               text label.
+
+  Returns:
+    A list of AdvertisedPrefix objects containing the specified IP ranges.
+  """
+  prefixes = [
+      messages.RouterAdvertisedPrefix(prefix=ip_range, description=description)
+      for ip_range, description in ip_ranges.items()
+  ]
+  # Sort the resulting list so that requests have a deterministic ordering
+  # for test validations and user output.
+  prefixes.sort(key=operator.attrgetter('prefix', 'description'))
+  return prefixes

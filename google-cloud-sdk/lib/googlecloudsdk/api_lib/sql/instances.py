@@ -14,10 +14,14 @@
 """Common utility functions for sql instances."""
 
 import argparse
+from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.sql import api_util
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
@@ -67,6 +71,34 @@ class _BaseInstances(object):
       backup_config.binaryLogEnabled = args.enable_bin_log
 
     cls.AddBackupConfigToSettings(settings, backup_config)
+
+  @staticmethod
+  def GetDatabaseInstances():
+    """Gets SQL instances in a given project.
+
+    Modifies current state of an individual instance to 'STOPPED' if
+    activationPolicy is 'NEVER'.
+
+    Returns:
+      List of yielded sql_messages.DatabaseInstance instances.
+    """
+
+    client = api_util.SqlClient(api_util.API_VERSION_DEFAULT)
+    sql_client = client.sql_client
+    sql_messages = client.sql_messages
+    project_id = properties.VALUES.core.project.Get(required=True)
+
+    yielded = list_pager.YieldFromList(
+        sql_client.instances,
+        sql_messages.SqlInstancesListRequest(project=project_id))
+
+    def YieldInstancesWithAModifiedState():
+      for result in yielded:
+        if result.settings.activationPolicy == 'NEVER':
+          result.state = 'STOPPED'
+        yield result
+
+    return YieldInstancesWithAModifiedState()
 
   @staticmethod
   def _SetDatabaseFlags(sql_messages, settings, args):
@@ -135,6 +167,10 @@ class _BaseInstances(object):
         pricingPlan=args.pricing_plan,
         replicationType=args.replication,
         activationPolicy=args.activation_policy)
+
+    labels = cls._ConstructLabelsFromArgs(sql_messages, args, instance)
+    if labels:
+      settings.userLabels = labels
 
     # these args are only present for the patch command
     clear_authorized_networks = getattr(args, 'clear_authorized_networks',
@@ -339,6 +375,51 @@ class _BaseInstances(object):
       machine_type = constants.DEFAULT_MACHINE_TYPE
 
     return machine_type
+
+  # TODO(b/62903092): Refactor to use kwargs; call from patch and create.
+  @classmethod
+  def _ConstructLabelsFromArgs(cls, sql_messages, args, instance=None):
+    """Constructs the labels message for the instance.
+
+    Args:
+      sql_messages: module, The messages module that should be used.
+      args: Flags specified on the gcloud command; looking for
+          args.labels, args.update_labels, args.remove_labels, ags.clear_labels.
+      instance: sql_messages.DatabaseInstance, The original instance, if
+          the original labels are needed.
+
+    Returns:
+      sql_messages.Settings.UserLabelsValue, the labels message for the patch.
+    """
+    # Parse labels args
+    update_labels, remove_labels = {}, []
+    if hasattr(args, 'labels'):
+      update_labels = args.labels
+    elif (hasattr(args, 'update_labels') and
+          args.update_labels) or (hasattr(args, 'remove_labels') and
+                                  args.remove_labels):
+      update_labels, remove_labels = labels_util.GetAndValidateOpsFromArgs(args)
+    elif hasattr(args, 'clear_labels') and args.clear_labels:
+      remove_labels = [
+          label.key
+          for label in instance.settings.userLabels.additionalProperties
+      ]
+
+    # Removing labels with a patch request requires explicitly setting values
+    # to null. If the user did not specify labels in this patch request, we
+    # keep their existing labels.
+    if remove_labels:
+      if not update_labels:
+        update_labels = {}
+      for key in remove_labels:
+        update_labels[key] = None
+
+    # Generate the actual UserLabelsValue message.
+    existing_labels = None
+    if instance:
+      existing_labels = instance.settings.userLabels
+    return labels_util.UpdateLabels(
+        existing_labels, sql_messages.Settings.UserLabelsValue, update_labels)
 
   @staticmethod
   def PrintAndConfirmAuthorizedNetworksOverwrite():

@@ -127,24 +127,33 @@ def AddZonesFlag(parser):
           All zones must belong to the same region. You may specify --region
           flag but it must be the region to which zones belong. This flag is
           mutually exclusive with --zone flag.""",
+      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       completion_resource='compute.zones',
       default=[])
 
 
+# TODO(b/62898965): Use ResourcceResolver instead of resources.Parse().
 def ValidateManagedInstanceGroupScopeArgs(args, resources):
   """Validate arguments specifying scope of the managed instance group."""
+  ignored_required_params = {'project': 'fake'}
   if args.zones and args.zone:
     raise exceptions.ConflictingArgumentsException('--zone', '--zones')
-  zone_names = [resources.Parse(z, collection='compute.zones').Name()
-                for z in args.zones]
+  zone_names = []
+  for zone in args.zones:
+    zone_ref = resources.Parse(
+        zone, collection='compute.zones', params=ignored_required_params)
+    zone_names.append(zone_ref.Name())
+
   zone_regions = set([utils.ZoneNameToRegionName(z) for z in zone_names])
   if len(zone_regions) > 1:
     raise exceptions.InvalidArgumentException(
         '--zones', 'All zones must be in the same region.')
   elif len(zone_regions) == 1 and args.region:
     zone_region = zone_regions.pop()
-    region = resources.Parse(args.region, collection='compute.regions').Name()
+    region_ref = resources.Parse(args.region, collection='compute.regions',
+                                 params=ignored_required_params)
+    region = region_ref.Name()
     if zone_region != region:
       raise exceptions.InvalidArgumentException(
           '--zones', 'Specified zones not in specified region.')

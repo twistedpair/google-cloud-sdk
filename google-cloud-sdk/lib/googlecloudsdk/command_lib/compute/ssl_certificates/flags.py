@@ -31,6 +31,7 @@ def SslCertificateArgument(required=True, plural=False):
       global_collection='compute.sslCertificates')
 
 
+# TODO(b/37253214): remove this argument when it's fully deprecated.
 def SslCertificateArgumentForOtherResource(resource, required=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificate',
@@ -45,4 +46,23 @@ def SslCertificateArgumentForOtherResource(resource, required=True):
         A reference to an SSL certificate resource that is used for
         server-side authentication. The SSL certificate must exist and cannot
         be deleted while referenced by a {0}.
+        """.format(resource))
+
+
+def SslCertificatesArgumentForOtherResource(resource, required=True):
+  return compute_flags.ResourceArgument(
+      name='--ssl-certificates',
+      resource_name='ssl certificate',
+      completion_resource_id='compute.sslCertificates',
+      plural=True,
+      required=required,
+      global_collection='compute.sslCertificates',
+      short_help=('A reference to SSL certificate resources that are used for '
+                  'server-side authentication.'),
+      detailed_help="""\
+        References to at most 10 SSL certificate resources that are used for
+        server-side authentication. The first SSL certificate in this list is
+        considered the primary SSL certificate associated with the load
+        balancer. The SSL certificate must exist and cannot be deleted while
+        referenced by a {0}.
         """.format(resource))

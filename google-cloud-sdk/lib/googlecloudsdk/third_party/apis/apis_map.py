@@ -307,6 +307,12 @@ MAP = {
             messages_modulepath='dataproc_v1_messages',
             default_version=True
         ),
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dataproc.v1beta2',
+            client_classpath='dataproc_v1beta2_client.DataprocV1beta2',
+            messages_modulepath='dataproc_v1beta2_messages',
+            default_version=False
+        ),
     },
     'deploymentmanager': {
         'alpha': APIDef(

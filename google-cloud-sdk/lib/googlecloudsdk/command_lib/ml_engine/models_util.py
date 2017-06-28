@@ -15,6 +15,7 @@
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 def ParseModel(model):
@@ -34,6 +35,8 @@ def Create(models_client, model, regions=None, enable_logging=None):
 
 
 def Delete(models_client, operations_client, model):
+  console_io.PromptContinue('This will delete model [{}]...'.format(model),
+                            cancel_on_no=True)
   op = models_client.Delete(model)
 
   return operations_client.WaitForOperation(

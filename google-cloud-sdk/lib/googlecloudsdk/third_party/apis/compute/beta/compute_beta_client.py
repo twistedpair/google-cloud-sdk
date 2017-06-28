@@ -503,7 +503,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -695,7 +695,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified BackendBucket resource with the data included in the request. This method supports patch semantics.
+      """Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendBucketsPatchRequest) input message
@@ -913,7 +913,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1437,7 +1437,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request. This method supports patch semantics.
+      """Updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeFirewallsPatchRequest) input message
@@ -2319,7 +2319,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHealthChecksPatchRequest) input message
@@ -2511,7 +2511,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpHealthChecksPatchRequest) input message
@@ -2703,7 +2703,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpsHealthChecksPatchRequest) input message
@@ -3229,7 +3229,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -4337,7 +4337,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMinCpuPlatform(self, request, global_params=None):
-      """Changes the minimum cpu/platform that this instance should be started as. This is called on a stopped instance.
+      """Changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
 
       Args:
         request: (ComputeInstancesSetMinCpuPlatformRequest) input message
@@ -5323,7 +5323,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -5541,7 +5541,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -5935,7 +5935,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -6605,7 +6605,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified Router resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -8937,7 +8937,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.
+      """Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message

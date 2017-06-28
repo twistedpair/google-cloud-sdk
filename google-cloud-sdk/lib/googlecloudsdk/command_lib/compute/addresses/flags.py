@@ -98,3 +98,13 @@ def AddDescription(parser):
   parser.add_argument(
       '--description',
       help='An optional textual description for the addresses.')
+
+
+def AddNetworkTier(parser):
+  """Adds network tier flag."""
+  parser.add_argument(
+      '--network-tier',
+      choices=['PREMIUM', 'SELECT', 'STANDARD'],
+      default='PREMIUM',
+      type=lambda x: x.upper(),
+      help='The network tier to assign to the reserved IP addresses.')
