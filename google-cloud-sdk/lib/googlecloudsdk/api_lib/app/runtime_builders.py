@@ -98,7 +98,11 @@ from googlecloudsdk.core import properties
 import yaml
 
 
-WHITELISTED_RUNTIMES = ['aspnetcore', 'nodejs', 'ruby', 'php']
+# "test-{ga,beta}" runtimes are canaries for unit testing
+_WHITELISTED_RUNTIMES_GA = {'test-ga'}
+_WHITELISTED_RUNTIMES_BETA = (
+    _WHITELISTED_RUNTIMES_GA |
+    {'aspnetcore', 'nodejs', 'ruby', 'php', 'java', 'test-beta'})
 
 
 class FileReadError(exceptions.Error):
@@ -135,15 +139,33 @@ class BuilderResolveError(exceptions.Error):
 class RuntimeBuilderStrategy(enum.Enum):
   """Enum indicating when to use runtime builders."""
   NEVER = 1
-  WHITELIST = 2  # That is, turned on for a whitelisted set of runtimes
-  ALWAYS = 3
+  WHITELIST_BETA = 2  # That is, turned on for a whitelisted set of runtimes
+  WHITELIST_GA = 3  # That is, turned on for a whitelisted set of runtimes
+  ALWAYS = 4
+
+  def _GetWhitelist(self):
+    """Return the whitelist of runtimes for this strategy.
+
+    Returns:
+      list of str, the names of runtimes that are whitelisted for this strategy.
+
+    Raises:
+      ValueError: if this strategy is not whitelist-based.
+    """
+    if self is self.WHITELIST_GA:
+      return _WHITELISTED_RUNTIMES_GA
+    elif self is self.WHITELIST_BETA:
+      return _WHITELISTED_RUNTIMES_BETA
+    raise ValueError(
+        'RuntimeBuilderStrategy {} is not a whitelist strategy.'.format(self))
 
   def ShouldUseRuntimeBuilders(self, runtime, needs_dockerfile):
     """Returns True if runtime should use runtime builders under this strategy.
 
     For the most part, this is obvious: the ALWAYS strategy returns True, the
-    WHITELIST strategy returns True if the given runtime is in the list of
-    WHITELISTED_RUNTIMES, and the NEVER strategy returns False.
+    WHITELIST_${TRACK} strategies return True if the given runtime is in the
+    list of _WHITELISTED_RUNTIMES_${TRACK}, and the NEVER strategy returns
+    False.
 
     However, in the case of 'custom' runtimes, things get tricky: if the
     strategy *is not* NEVER, we return True only if there is no `Dockerfile` in
@@ -161,15 +183,19 @@ class RuntimeBuilderStrategy(enum.Enum):
     Raises:
       ValueError: if an unrecognized runtime_builder_strategy is given
     """
-    if self is RuntimeBuilderStrategy.WHITELIST:
-      if runtime == 'custom':
-        return needs_dockerfile
-      return runtime in WHITELISTED_RUNTIMES
-    elif self is RuntimeBuilderStrategy.ALWAYS:
-      if runtime == 'custom':
-        return needs_dockerfile
+    # For these strategies, if a user provides a 'custom' runtime, we use
+    # runtime builders unless there is a Dockerfile. For other strategies, we
+    # never use runtime builders with 'custom'.
+    if runtime == 'custom' and self in (self.ALWAYS,
+                                        self.WHITELIST_BETA,
+                                        self.WHITELIST_GA):
+      return needs_dockerfile
+
+    if self is self.ALWAYS:
       return True
-    elif self is RuntimeBuilderStrategy.NEVER:
+    elif self is self.WHITELIST_BETA or self is self.WHITELIST_GA:
+      return runtime in self._GetWhitelist()
+    elif self is self.NEVER:
       return False
     else:
       raise ValueError('Invalid runtime builder strategy [{}].'.format(self))

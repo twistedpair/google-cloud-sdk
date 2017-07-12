@@ -144,7 +144,7 @@ RESOURCE_REGISTRY = {
             targetTags.list():label=TARGET_TAGS
           )
         """,),
-    'compute.firewalls.alpha':
+    'compute.firewalls.beta':
         resource_info.ResourceInfo(
             cache_command='compute firewall-rules list',
             list_format="""

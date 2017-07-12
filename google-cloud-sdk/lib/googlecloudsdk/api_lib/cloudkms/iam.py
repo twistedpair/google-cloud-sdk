@@ -64,7 +64,7 @@ def AddPolicyBindingToKeyRing(key_ring_ref, member, role):
   messages = base.GetMessagesModule()
 
   policy = GetKeyRingIamPolicy(key_ring_ref)
-  iam_util.AddBindingToIamPolicy(messages, policy, member, role)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
   return SetKeyRingIamPolicy(key_ring_ref, policy, update_mask='bindings,etag')
 
 
@@ -122,7 +122,7 @@ def AddPolicyBindingToCryptoKey(crypto_key_ref, member, role):
   messages = base.GetMessagesModule()
 
   policy = GetCryptoKeyIamPolicy(crypto_key_ref)
-  iam_util.AddBindingToIamPolicy(messages, policy, member, role)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
   return SetCryptoKeyIamPolicy(
       crypto_key_ref, policy, update_mask='bindings,etag')
 

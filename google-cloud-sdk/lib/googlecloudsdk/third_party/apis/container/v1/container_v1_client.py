@@ -130,6 +130,33 @@ to make modifications to its user's project.
       self._upload_configs = {
           }
 
+    def Audit(self, request, global_params=None):
+      """Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
+policies defined by GKE.
+
+      Args:
+        request: (ContainerMasterProjectsZonesAuditRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuditResponse) The response message.
+      """
+      config = self.GetMethodConfig('Audit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Audit.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.audit',
+        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit',
+        request_field=u'auditEventList',
+        request_type_name=u'ContainerMasterProjectsZonesAuditRequest',
+        response_type_name=u'AuditResponse',
+        supports_download=False,
+    )
+
     def Authenticate(self, request, global_params=None):
       """Processes a request to authenticate a token. If it is able to authenticate.
 the token, the email for the authorized user is also returned.

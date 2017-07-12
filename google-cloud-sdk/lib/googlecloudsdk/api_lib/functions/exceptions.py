@@ -19,3 +19,11 @@ from googlecloudsdk.core import exceptions
 
 class FunctionsError(exceptions.Error):
   """Exceptions for Functions errors."""
+
+
+class OversizedDeployment(FunctionsError):
+
+  def __init__(self, actual_size, max_allowed_size):
+    super(OversizedDeployment, self).__init__(
+        'Uncompessed deployment is {}, bigger than maximum allowed size of {}.'
+        .format(actual_size, max_allowed_size))

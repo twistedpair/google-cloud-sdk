@@ -203,9 +203,10 @@ class DatabaseInstance(_messages.Message):
       Monitoring API instead. Please see https://groups.google.com/d/msg
       /google-cloud-sql-announce/I_7-F9EBhT0/BtvFtdFeAgAJ for details.
     databaseVersion: The database engine type and version. The databaseVersion
-      can not be changed after instance creation. Can be MYSQL_5_5, MYSQL_5_6
-      or MYSQL_5_7. Defaults to MYSQL_5_6. MYSQL_5_7 is applicable only to
-      Second Generation instances.
+      field can not be changed after instance creation. MySQL Second
+      Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL
+      instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6
+      (default) or MYSQL_5_5
     etag: HTTP 1.1 Entity tag for the resource.
     failoverReplica: The name and status of the failover replica. This
       property is applicable only to Second Generation instances.
@@ -430,8 +431,8 @@ class ImportContext(_messages.Message):
       is CSV, it must be specified.
     fileType: The file type for the specified uri. SQL: The file contains SQL
       statements. CSV: The file contains CSV data.
-    importUser: The PostgreSQL user to use for this import operation. Defaults
-      to cloudsqlsuperuser. Does not apply to MySQL instances.
+    importUser: The PostgreSQL user for this import operation. Defaults to
+      cloudsqlsuperuser. Used only for PostgreSQL instances.
     kind: This is always sql#importContext.
     uri: A path to the file in Google Cloud Storage from which the import is
       made. The URI is in the form gs://bucketName/fileName. Compressed gzip

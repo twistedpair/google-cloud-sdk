@@ -317,6 +317,120 @@ returned in Task.schedule_time.
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      """Creates a queue.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Queue) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2beta2/{+parent}/queues',
+        request_field=u'queue',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesCreateRequest',
+        response_type_name=u'Queue',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a queue.
+
+This command will delete the queue even if it has tasks in it.
+
+Note: If you delete a queue, a queue with the same name can't be created
+for 7 days.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
+        http_method=u'DELETE',
+        method_id=u'cloudtasks.projects.locations.queues.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2beta2/{+name}',
+        request_field='',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      """Enable a queue.
+
+This method re-enables a queue after it has been
+Queue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of
+a queue is stored in Queue.queue_state; after calling this method it
+will be set to Queue.QueueState.ENABLED.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+WARNING: Re-enabling many high-QPS queues at the same time can
+lead to target overloading. If you are re-enabling high-QPS
+queues, follow the 500/50/5 pattern described in
+[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Queue) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:enable',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.enable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2beta2/{+name}:enable',
+        request_field=u'enableQueueRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesEnableRequest',
+        response_type_name=u'Queue',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets a queue.
 
@@ -370,6 +484,82 @@ Queues are returned in lexicographical order.
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsQueuesListRequest',
         response_type_name=u'ListQueuesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a queue.
+
+This method creates the queue if it does not exist and updates
+the queue if it does exist.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Queue) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}',
+        http_method=u'PATCH',
+        method_id=u'cloudtasks.projects.locations.queues.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2beta2/{+name}',
+        request_field=u'queue',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesPatchRequest',
+        response_type_name=u'Queue',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      """Pauses the queue.
+
+If a queue is paused then the system will stop executing the
+tasks in the queue until it is re-enabled via
+CloudTasks.EnableQueue. Tasks can still be added when the
+queue is paused. The state of the queue is stored in
+Queue.queue_state; if paused it will be set to
+Queue.QueueState.PAUSED.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Queue) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:pause',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.pause',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2beta2/{+name}:pause',
+        request_field=u'pauseQueueRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesPauseRequest',
+        response_type_name=u'Queue',
         supports_download=False,
     )
 

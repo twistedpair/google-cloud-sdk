@@ -88,6 +88,7 @@ class CloudFunction(_messages.Message):
       and can be terminated if the function is not completed at the end of the
       timeout period. Defaults to 60 seconds.
     updateTime: Output only. The last update timestamp of a Cloud Function.
+    versionId: Output only. Google internal. The version of a Cloud Function.
   """
 
   class LanguageValueValuesEnum(_messages.Enum):
@@ -136,6 +137,7 @@ class CloudFunction(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 13)
   timeout = _messages.StringField(14)
   updateTime = _messages.StringField(15)
+  versionId = _messages.IntegerField(16)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -301,7 +303,13 @@ class EventTrigger(_messages.Message):
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
-  """Request of `GenerateDownloadUrl` method."""
+  """Request of `GenerateDownloadUrl` method.
+
+  Fields:
+    versionId: The optional version of function.
+  """
+
+  versionId = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
 
 
 class GenerateDownloadUrlResponse(_messages.Message):
@@ -580,6 +588,11 @@ class OperationMetadataV1Beta2(_messages.Message):
     target: Target of the operation - for example
       projects/project-1/locations/region-1/functions/function-1
     type: Type of operation.
+    versionId: Google internal optional id of the version created by the
+      operation. For every create and update action new version of function is
+      created. For other operations (currently - delete function and some
+      internal operations) in which no new version is created this field is
+      going to have default value - 0 - which means no version id.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -624,6 +637,7 @@ class OperationMetadataV1Beta2(_messages.Message):
   request = _messages.MessageField('RequestValue', 1)
   target = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+  versionId = _messages.IntegerField(4)
 
 
 class RetryPolicy(_messages.Message):

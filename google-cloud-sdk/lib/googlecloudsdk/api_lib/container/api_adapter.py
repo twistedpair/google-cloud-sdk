@@ -55,6 +55,26 @@ No label named '{name}' found on cluster '{cluster}'."""
 NO_LABELS_ON_CLUSTER_ERROR_MSG = """\
 Cluster '{cluster}' has no labels to remove."""
 
+SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG = """\
+Cannot use --services-ipv4-cidr without --enable-ip-alias and --enable_kubernetes_alpha.
+"""
+
+CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG = """\
+Cannot use --create-subnetwork without --enable-ip-alias and --enable_kubernetes_alpha.
+"""
+
+ENABLE_IP_ALIAS_ALPHA_ONLY_ERROR_MSG = """\
+Only alpha clusters (--enable_kubernetes_alpha) can use --enable-ip-alias.
+"""
+
+CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG = """\
+Invalid key '{key}' for --create-subnetwork (must be one of 'name', 'range').
+"""
+
+CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG = """\
+Cannot specify both '--subnetwork' and '--create-subnetwork' at the same time.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 
@@ -65,25 +85,42 @@ def CheckResponse(response):
   return http_wrapper.CheckResponse(response)
 
 
-def NewAPIAdapter():
-  """Initialize an api adapter for the given api_version.
+def NewAPIAdapter(api_version):
+  if api_version is 'v1alpha1':
+    return NewV1Alpha1APIAdapter()
+  else:
+    return NewV1APIAdapter()
 
+
+def NewV1APIAdapter():
+  return InitAPIAdapter('v1', V1Adapter)
+
+
+def NewV1Alpha1APIAdapter():
+  return InitAPIAdapter('v1alpha1', V1Alpha1Adapter)
+
+
+def InitAPIAdapter(api_version, adapter):
+  """Initialize an api adapter.
+
+  Args:
+    api_version: the api version we want.
+    adapter: the api adapter constructor.
   Returns:
     APIAdapter object.
   """
-  api_client = core_apis.GetClientInstance('container', 'v1')
+
+  api_client = core_apis.GetClientInstance('container', api_version)
   api_client.check_response_func = CheckResponse
-  messages = core_apis.GetMessagesModule('container', 'v1')
+  messages = core_apis.GetMessagesModule('container', api_version)
 
   api_compute_client = core_apis.GetClientInstance('compute', 'v1')
   api_compute_client.check_response_func = CheckResponse
   compute_messages = core_apis.GetMessagesModule('compute', 'v1')
 
   registry = cloud_resources.REGISTRY.Clone()
-  registry.RegisterApiByName('container', 'v1')
+  registry.RegisterApiByName('container', api_version)
   registry.RegisterApiByName('compute', 'v1')
-
-  adapter = V1Adapter
 
   return adapter(registry, api_client, messages, api_compute_client,
                  compute_messages)
@@ -119,302 +156,6 @@ def ExpandScopeURIs(scopes):
     expanded = constants.SCOPES.get(scope, [scope])
     scope_uris.extend(expanded)
   return scope_uris
-
-
-class APIAdapter(object):
-  """Handles making api requests in a version-agnostic way."""
-
-  def __init__(self, registry, client, messages, compute_client,
-               compute_messages):
-    self.registry = registry
-    self.client = client
-    self.messages = messages
-    self.compute_client = compute_client
-    self.compute_messages = compute_messages
-
-  def ParseCluster(self, name):
-    return self.registry.Parse(
-        name,
-        params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
-            'zone': properties.VALUES.compute.zone.GetOrFail,
-        },
-        collection='container.projects.zones.clusters')
-
-  def Zone(self, cluster_ref):
-    raise NotImplementedError('Zone is not overriden')
-
-  def Version(self, cluster):
-    raise NotImplementedError('Version is not overriden')
-
-  def PrintClusters(self, clusters):
-    raise NotImplementedError('PrintClusters is not overriden')
-
-  def PrintOperations(self, operations):
-    raise NotImplementedError('PrintOperations is not overriden')
-
-  def PrintNodePools(self, node_pools):
-    raise NotImplementedError('PrintNodePools is not overriden')
-
-  def ParseOperation(self, operation_id):
-    return self.registry.Parse(
-        operation_id,
-        params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
-            'zone': properties.VALUES.compute.zone.GetOrFail,
-        },
-        collection='container.projects.zones.operations')
-
-  def ParseNodePool(self, node_pool_id):
-    return self.registry.Parse(
-        node_pool_id,
-        params={
-            'projectId': properties.VALUES.core.project.GetOrFail,
-            'clusterId': properties.VALUES.container.cluster.GetOrFail,
-            'zone': properties.VALUES.compute.zone.GetOrFail,
-        },
-        collection='container.projects.zones.clusters.nodePools')
-
-  def ParseIGM(self, igm_id):
-    return self.registry.Parse(igm_id,
-                               collection='compute.instanceGroupManagers')
-
-  def CreateCluster(self, cluster_ref, **options):
-    raise NotImplementedError('CreateCluster is not overriden')
-
-  def CreateNodePool(self, node_pool_ref, **options):
-    raise NotImplementedError('CreateNodePool is not overriden')
-
-  def RollbackUpgrade(self, node_pool_ref):
-    raise NotImplementedError('RollbackUpgrade is not overriden')
-
-  def DeleteCluster(self, cluster_ref):
-    raise NotImplementedError('DeleteCluster is not overriden')
-
-  def GetCluster(self, cluster_ref):
-    """Get a running cluster.
-
-    Args:
-      cluster_ref: cluster Resource to describe.
-    Returns:
-      Cluster message.
-    Raises:
-      Error: if cluster cannot be found.
-    """
-    try:
-      return self.client.projects_zones_clusters.Get(
-          self.messages.ContainerProjectsZonesClustersGetRequest(
-              projectId=cluster_ref.projectId,
-              zone=cluster_ref.zone,
-              clusterId=cluster_ref.clusterId))
-    except apitools_exceptions.HttpError as error:
-      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
-
-    # Cluster couldn't be found, maybe user got zone wrong?
-    try:
-      clusters = self.ListClusters(cluster_ref.projectId).clusters
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-    for cluster in clusters:
-      if cluster.name == cluster_ref.clusterId:
-        # User likely got zone wrong.
-        raise util.Error(WRONG_ZONE_ERROR_MSG.format(
-            error=api_error,
-            name=cluster_ref.clusterId,
-            wrong_zone=self.Zone(cluster_ref),
-            zone=cluster.zone))
-    # Couldn't find a cluster with that name.
-    raise util.Error(NO_SUCH_CLUSTER_ERROR_MSG.format(
-        error=api_error,
-        name=cluster_ref.clusterId,
-        project=cluster_ref.projectId))
-
-  def FindNodePool(self, cluster, pool_name=None):
-    """Find the node pool with the given name in the cluster."""
-    msg = ''
-    if pool_name:
-      for np in cluster.nodePools:
-        if np.name == pool_name:
-          return np
-      msg = NO_SUCH_NODE_POOL_ERROR_MSG.format(cluster=cluster.name,
-                                               name=pool_name) + linesep
-    elif len(cluster.nodePools) == 1:
-      return cluster.nodePools[0]
-    # Couldn't find a node pool with that name or a node pool was not specified.
-    msg += NO_NODE_POOL_SELECTED_ERROR_MSG + linesep.join(
-        [np.name for np in cluster.nodePools])
-    raise util.Error(msg)
-
-  def ListClusters(self, project, zone=None):
-    raise NotImplementedError('ListClusters is not overriden')
-
-  def ListNodePools(self, project, zone, cluster):
-    raise NotImplementedError('ListNodePools is not overriden')
-
-  def GetNodePool(self, node_pool_ref):
-    raise NotImplementedError('GetNodePool is not overriden')
-
-  def UpdateCluster(self, cluster_ref, options):
-    raise NotImplementedError('Update requires a v1 client.')
-
-  def SetMasterAuth(self, cluster_ref, options):
-    raise NotImplementedError('SetMasterAuth requires a v1 client.')
-
-  def SetNetworkPolicy(self, cluster_ref, options):
-    raise NotImplementedError('SetNetworkPolicy requires a v1 client.')
-
-  def StartIpRotation(self, cluster_ref):
-    raise NotImplementedError('StartIpRotation requires a v1 client.')
-
-  def CompleteIpRotation(self, cluster_ref):
-    raise NotImplementedError('CompleteIpRotation requires a v1 client.')
-
-  def GetOperation(self, operation_ref):
-    return self.client.projects_zones_operations.Get(
-        self.messages.ContainerProjectsZonesOperationsGetRequest(
-            projectId=operation_ref.projectId,
-            zone=operation_ref.zone,
-            operationId=operation_ref.operationId))
-
-  def CancelOperation(self, op_ref):
-    raise NotImplementedError('CancelOperation is not overriden')
-
-  def GetComputeOperation(self, project, zone, operation_id):
-    req = self.compute_messages.ComputeZoneOperationsGetRequest(
-        operation=operation_id,
-        project=project,
-        zone=zone)
-    return self.compute_client.zoneOperations.Get(req)
-
-  def GetOperationError(self, operation_ref):
-    raise NotImplementedError('GetOperationError is not overriden')
-
-  def IsOperationFinished(self, operation):
-    raise NotImplementedError('IsOperationFinished is not overriden')
-
-  def IsRunning(self, cluster):
-    raise NotImplementedError('IsRunning is not overriden')
-
-  def ListOperations(self, project, zone=None):
-    raise NotImplementedError('ListOperations is not overriden')
-
-  def WaitForOperation(self, operation_ref, message,
-                       timeout_s=1200, poll_period_s=5):
-    """Poll container Operation until its status is done or timeout reached.
-
-    Args:
-      operation_ref: operation resource.
-      message: str, message to display to user while polling.
-      timeout_s: number, seconds to poll with retries before timing out.
-      poll_period_s: number, delay in seconds between requests.
-
-    Returns:
-      Operation: the return value of the last successful operations.get
-      request.
-
-    Raises:
-      Error: if the operation times out or finishes with an error.
-    """
-    detail_message = None
-    with progress_tracker.ProgressTracker(message, autotick=True,
-                                          detail_message_callback=
-                                          lambda: detail_message):
-      start_time = time.clock()
-      while timeout_s > (time.clock() - start_time):
-        try:
-          operation = self.GetOperation(operation_ref)
-          if self.IsOperationFinished(operation):
-            # Success!
-            log.info('Operation %s succeeded after %.3f seconds',
-                     operation, (time.clock() - start_time))
-            break
-          detail_message = operation.detail
-        except apitools_exceptions.HttpError as error:
-          log.debug('GetOperation failed: %s', error)
-          # Keep trying until we timeout in case error is transient.
-          # TODO(b/36050880): add additional backoff if server is returning 500s
-        time.sleep(poll_period_s)
-    if not self.IsOperationFinished(operation):
-      log.err.Print('Timed out waiting for operation {0}'.format(operation))
-      raise util.Error(
-          'Operation [{0}] is still running'.format(operation))
-    if self.GetOperationError(operation):
-      raise util.Error('Operation [{0}] finished with error: {1}'.format(
-          operation, self.GetOperationError(operation)))
-
-    return operation
-
-  def GetServerConfig(self, project, zone):
-    raise NotImplementedError('GetServerConfig is not overriden')
-
-  def ResizeCluster(self, project, zone, name, size):
-    raise NotImplementedError('ResizeCluster is not overriden')
-
-  def IsComputeOperationFinished(self, operation):
-    return (operation.status ==
-            self.compute_messages.Operation.StatusValueValuesEnum.DONE)
-
-  def WaitForComputeOperations(self, project, zone, operation_ids, message,
-                               timeout_s=1200, poll_period_s=5):
-    """Poll Compute Operations until their status is done or timeout reached.
-
-    Args:
-      project: project on which the operation is performed
-      zone: zone on which the operation is performed
-      operation_ids: list/set of ids of the compute operations to wait for
-      message: str, message to display to user while polling.
-      timeout_s: number, seconds to poll with retries before timing out.
-      poll_period_s: number, delay in seconds between requests.
-
-    Returns:
-      Operations: list of the last successful operations.getrequest for each op.
-
-    Raises:
-      Error: if the operation times out or finishes with an error.
-    """
-    operation_ids = deque(operation_ids)
-    operations = {}
-    errors = []
-    with progress_tracker.ProgressTracker(message, autotick=True):
-      start_time = time.clock()
-      ops_to_retry = []
-      while timeout_s > (time.clock() - start_time) and operation_ids:
-        op_id = operation_ids.popleft()
-        try:
-          operation = self.GetComputeOperation(project, zone, op_id)
-          operations[op_id] = operation
-          if not self.IsComputeOperationFinished(operation):
-            # Operation is still in progress.
-            ops_to_retry.append(op_id)
-            continue
-
-          log.debug('Operation %s succeeded after %.3f seconds', operation,
-                    (time.clock() - start_time))
-          error = self.GetOperationError(operation)
-          if error:
-            # Operation Failed!
-            msg = 'Operation [{0}] finished with error: {1}'.format(op_id,
-                                                                    error)
-            log.debug(msg)
-            errors.append(msg)
-        except apitools_exceptions.HttpError as error:
-          log.debug('GetComputeOperation failed: %s', error)
-          # Keep trying until we timeout in case error is transient.
-          # TODO(b/36050235): add additional backoff if server is returning 500s
-        if not operation_ids and ops_to_retry:
-          operation_ids = deque(ops_to_retry)
-          ops_to_retry = []
-          time.sleep(poll_period_s)
-
-    operation_ids.extend(ops_to_retry)
-    for op_id in operation_ids:
-      errors.append('Operation [{0}] is still running'.format(op_id))
-    if errors:
-      raise util.Error(linesep.join(errors))
-
-    return operations.values()
 
 
 class CreateClusterOptions(object):
@@ -454,7 +195,10 @@ class CreateClusterOptions(object):
                enable_legacy_authorization=None,
                labels=None,
                disk_type=None,
-               enable_network_policy=None):
+               enable_network_policy=None,
+               services_ipv4_cidr=None,
+               enable_ip_alias=None,
+               create_subnetwork=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -490,6 +234,9 @@ class CreateClusterOptions(object):
     self.enable_network_policy = enable_network_policy
     self.labels = labels
     self.disk_type = disk_type
+    self.services_ipv4_cidr = services_ipv4_cidr
+    self.enable_ip_alias = enable_ip_alias
+    self.create_subnetwork = create_subnetwork
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -592,8 +339,237 @@ class UpdateNodePoolOptions(object):
     self.enable_autoupgrade = enable_autoupgrade
 
 
-class V1Adapter(APIAdapter):
-  """APIAdapter for v1."""
+class APIAdapter(object):
+  """Handles making api requests in a version-agnostic way."""
+
+  def __init__(self, registry, client, messages, compute_client,
+               compute_messages):
+    self.registry = registry
+    self.client = client
+    self.messages = messages
+    self.compute_client = compute_client
+    self.compute_messages = compute_messages
+
+  def ParseCluster(self, name):
+    return self.registry.Parse(
+        name,
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
+        collection='container.projects.zones.clusters')
+
+  def PrintClusters(self, clusters):
+    raise NotImplementedError('PrintClusters is not overriden')
+
+  def PrintOperations(self, operations):
+    raise NotImplementedError('PrintOperations is not overriden')
+
+  def PrintNodePools(self, node_pools):
+    raise NotImplementedError('PrintNodePools is not overriden')
+
+  def ParseOperation(self, operation_id):
+    return self.registry.Parse(
+        operation_id,
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
+        collection='container.projects.zones.operations')
+
+  def ParseNodePool(self, node_pool_id):
+    return self.registry.Parse(
+        node_pool_id,
+        params={
+            'projectId': properties.VALUES.core.project.GetOrFail,
+            'clusterId': properties.VALUES.container.cluster.GetOrFail,
+            'zone': properties.VALUES.compute.zone.GetOrFail,
+        },
+        collection='container.projects.zones.clusters.nodePools')
+
+  def ParseIGM(self, igm_id):
+    return self.registry.Parse(igm_id,
+                               collection='compute.instanceGroupManagers')
+
+  def GetCluster(self, cluster_ref):
+    """Get a running cluster.
+
+    Args:
+      cluster_ref: cluster Resource to describe.
+    Returns:
+      Cluster message.
+    Raises:
+      Error: if cluster cannot be found.
+    """
+    try:
+      return self.client.projects_zones_clusters.Get(
+          self.messages.ContainerProjectsZonesClustersGetRequest(
+              projectId=cluster_ref.projectId,
+              zone=cluster_ref.zone,
+              clusterId=cluster_ref.clusterId))
+    except apitools_exceptions.HttpError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
+        raise api_error
+
+    # Cluster couldn't be found, maybe user got zone wrong?
+    try:
+      clusters = self.ListClusters(cluster_ref.projectId).clusters
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+    for cluster in clusters:
+      if cluster.name == cluster_ref.clusterId:
+        # User likely got zone wrong.
+        raise util.Error(WRONG_ZONE_ERROR_MSG.format(
+            error=api_error,
+            name=cluster_ref.clusterId,
+            wrong_zone=self.Zone(cluster_ref),
+            zone=cluster.zone))
+    # Couldn't find a cluster with that name.
+    raise util.Error(NO_SUCH_CLUSTER_ERROR_MSG.format(
+        error=api_error,
+        name=cluster_ref.clusterId,
+        project=cluster_ref.projectId))
+
+  def FindNodePool(self, cluster, pool_name=None):
+    """Find the node pool with the given name in the cluster."""
+    msg = ''
+    if pool_name:
+      for np in cluster.nodePools:
+        if np.name == pool_name:
+          return np
+      msg = NO_SUCH_NODE_POOL_ERROR_MSG.format(cluster=cluster.name,
+                                               name=pool_name) + linesep
+    elif len(cluster.nodePools) == 1:
+      return cluster.nodePools[0]
+    # Couldn't find a node pool with that name or a node pool was not specified.
+    msg += NO_NODE_POOL_SELECTED_ERROR_MSG + linesep.join(
+        [np.name for np in cluster.nodePools])
+    raise util.Error(msg)
+
+  def GetOperation(self, operation_ref):
+    return self.client.projects_zones_operations.Get(
+        self.messages.ContainerProjectsZonesOperationsGetRequest(
+            projectId=operation_ref.projectId,
+            zone=operation_ref.zone,
+            operationId=operation_ref.operationId))
+
+  def GetComputeOperation(self, project, zone, operation_id):
+    req = self.compute_messages.ComputeZoneOperationsGetRequest(
+        operation=operation_id,
+        project=project,
+        zone=zone)
+    return self.compute_client.zoneOperations.Get(req)
+
+  def WaitForOperation(self, operation_ref, message,
+                       timeout_s=1200, poll_period_s=5):
+    """Poll container Operation until its status is done or timeout reached.
+
+    Args:
+      operation_ref: operation resource.
+      message: str, message to display to user while polling.
+      timeout_s: number, seconds to poll with retries before timing out.
+      poll_period_s: number, delay in seconds between requests.
+
+    Returns:
+      Operation: the return value of the last successful operations.get
+      request.
+
+    Raises:
+      Error: if the operation times out or finishes with an error.
+    """
+    detail_message = None
+    with progress_tracker.ProgressTracker(message, autotick=True,
+                                          detail_message_callback=
+                                          lambda: detail_message):
+      start_time = time.clock()
+      while timeout_s > (time.clock() - start_time):
+        try:
+          operation = self.GetOperation(operation_ref)
+          if self.IsOperationFinished(operation):
+            # Success!
+            log.info('Operation %s succeeded after %.3f seconds',
+                     operation, (time.clock() - start_time))
+            break
+          detail_message = operation.detail
+        except apitools_exceptions.HttpError as error:
+          log.debug('GetOperation failed: %s', error)
+          # Keep trying until we timeout in case error is transient.
+          # TODO(b/36050880): add additional backoff if server is returning 500s
+        time.sleep(poll_period_s)
+    if not self.IsOperationFinished(operation):
+      log.err.Print('Timed out waiting for operation {0}'.format(operation))
+      raise util.Error(
+          'Operation [{0}] is still running'.format(operation))
+    if self.GetOperationError(operation):
+      raise util.Error('Operation [{0}] finished with error: {1}'.format(
+          operation, self.GetOperationError(operation)))
+
+    return operation
+
+  def IsComputeOperationFinished(self, operation):
+    return (operation.status ==
+            self.compute_messages.Operation.StatusValueValuesEnum.DONE)
+
+  def WaitForComputeOperations(self, project, zone, operation_ids, message,
+                               timeout_s=1200, poll_period_s=5):
+    """Poll Compute Operations until their status is done or timeout reached.
+
+    Args:
+      project: project on which the operation is performed
+      zone: zone on which the operation is performed
+      operation_ids: list/set of ids of the compute operations to wait for
+      message: str, message to display to user while polling.
+      timeout_s: number, seconds to poll with retries before timing out.
+      poll_period_s: number, delay in seconds between requests.
+
+    Returns:
+      Operations: list of the last successful operations.getrequest for each op.
+
+    Raises:
+      Error: if the operation times out or finishes with an error.
+    """
+    operation_ids = deque(operation_ids)
+    operations = {}
+    errors = []
+    with progress_tracker.ProgressTracker(message, autotick=True):
+      start_time = time.clock()
+      ops_to_retry = []
+      while timeout_s > (time.clock() - start_time) and operation_ids:
+        op_id = operation_ids.popleft()
+        try:
+          operation = self.GetComputeOperation(project, zone, op_id)
+          operations[op_id] = operation
+          if not self.IsComputeOperationFinished(operation):
+            # Operation is still in progress.
+            ops_to_retry.append(op_id)
+            continue
+
+          log.debug('Operation %s succeeded after %.3f seconds', operation,
+                    (time.clock() - start_time))
+          error = self.GetOperationError(operation)
+          if error:
+            # Operation Failed!
+            msg = 'Operation [{0}] finished with error: {1}'.format(op_id,
+                                                                    error)
+            log.debug(msg)
+            errors.append(msg)
+        except apitools_exceptions.HttpError as error:
+          log.debug('GetComputeOperation failed: %s', error)
+          # Keep trying until we timeout in case error is transient.
+          # TODO(b/36050235): add additional backoff if server is returning 500s
+        if not operation_ids and ops_to_retry:
+          operation_ids = deque(ops_to_retry)
+          ops_to_retry = []
+          time.sleep(poll_period_s)
+
+    operation_ids.extend(ops_to_retry)
+    for op_id in operation_ids:
+      errors.append('Operation [{0}] is still running'.format(op_id))
+    if errors:
+      raise util.Error(linesep.join(errors))
+
+    return operations.values()
 
   def Zone(self, cluster_ref):
     return cluster_ref.zone
@@ -602,6 +578,7 @@ class V1Adapter(APIAdapter):
     return cluster.currentMasterVersion
 
   def CreateCluster(self, cluster_ref, options):
+    """Returns a CreateCluster operation."""
     node_config = self.messages.NodeConfig()
     if options.node_machine_type:
       node_config.machineType = options.node_machine_type
@@ -719,6 +696,43 @@ class V1Adapter(APIAdapter):
       labels.additionalProperties = props
       cluster.resourceLabels = labels
 
+    if options.enable_kubernetes_alpha:
+      if not options.enable_ip_alias and options.services_ipv4_cidr:
+        raise util.Error(SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG)
+      if not options.enable_ip_alias and options.create_subnetwork:
+        raise util.Error(CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG)
+      if options.create_subnetwork and options.subnetwork:
+        raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
+
+      if options.enable_ip_alias:
+        subnetwork_name = None
+        node_ipv4_cidr = None
+
+        if options.create_subnetwork:
+          for key in options.create_subnetwork:
+            if key not in ['name', 'range']:
+              raise util.Error(
+                  CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key))
+          subnetwork_name = options.create_subnetwork.get('name', None)
+          node_ipv4_cidr = options.create_subnetwork.get('range', None)
+        policy = self.messages.IPAllocationPolicy(
+            useIpAliases=options.enable_ip_alias,
+            # For V1, create_subnetwork is always true.
+            createSubnetwork=True,
+            subnetworkName=subnetwork_name,
+            clusterIpv4Cidr=options.cluster_ipv4_cidr,
+            nodeIpv4Cidr=node_ipv4_cidr,
+            servicesIpv4Cidr=options.services_ipv4_cidr)
+        cluster.clusterIpv4Cidr = None
+        cluster.ipAllocationPolicy = policy
+    else:
+      if options.enable_ip_alias:
+        raise util.Error(ENABLE_IP_ALIAS_ALPHA_ONLY_ERROR_MSG)
+      if options.services_ipv4_cidr:
+        raise util.Error(SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG)
+      if options.create_subnetwork:
+        raise util.Error(CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG)
+
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 
     req = self.messages.ContainerProjectsZonesClustersCreateRequest(
@@ -729,6 +743,7 @@ class V1Adapter(APIAdapter):
     return self.ParseOperation(operation.name)
 
   def UpdateCluster(self, cluster_ref, options):
+    """Returns an UpdateCluster operation."""
     if not options.version:
       options.version = '-'
     if options.update_nodes:
@@ -804,6 +819,7 @@ class V1Adapter(APIAdapter):
     return addons
 
   def SetNetworkPolicy(self, cluster_ref, options):
+    """Returns a SetNetworkPolicy operation."""
     netpol = self.messages.NetworkPolicy(
         enabled=options.enabled,
         # Only Calico is currently supported as a network policy provider.
@@ -820,6 +836,7 @@ class V1Adapter(APIAdapter):
         self.client.projects_zones_clusters.SetNetworkPolicy(req).name)
 
   def SetMasterAuth(self, cluster_ref, options):
+    """Returns a SetMasterAuth operation."""
     update = self.messages.MasterAuth(password=options.password)
     if options.action == SetMasterAuthOptions.SET_PASSWORD:
       request = self.messages.SetMasterAuthRequest(
@@ -871,6 +888,7 @@ class V1Adapter(APIAdapter):
     return self.client.projects_zones_clusters.List(req)
 
   def CreateNodePool(self, node_pool_ref, options):
+    """Returns a CreateNodePool operation."""
     node_config = self.messages.NodeConfig()
     if options.machine_type:
       node_config.machineType = options.machine_type
@@ -1009,9 +1027,9 @@ class V1Adapter(APIAdapter):
         projectId=project, zone=zone)
     return self.client.projects_zones.GetServerconfig(req)
 
-  def ResizeCluster(self, project, zone, groupName, size):
+  def ResizeCluster(self, project, zone, group_name, size):
     req = self.compute_messages.ComputeInstanceGroupManagersResizeRequest(
-        instanceGroupManager=groupName,
+        instanceGroupManager=group_name,
         project=project,
         size=size,
         zone=zone)
@@ -1127,6 +1145,14 @@ class V1Adapter(APIAdapter):
             projectId=cluster_ref.projectId,
             setLabelsRequest=req))
     return self.ParseOperation(operation.name)
+
+
+class V1Adapter(APIAdapter):
+  """APIAdapter for v1."""
+
+
+class V1Alpha1Adapter(APIAdapter):
+  """APIAdapter for v1alpha1."""
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

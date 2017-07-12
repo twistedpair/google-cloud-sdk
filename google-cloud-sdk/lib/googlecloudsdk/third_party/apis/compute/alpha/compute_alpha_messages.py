@@ -14187,6 +14187,8 @@ class Disk(_messages.Message):
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
       format.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this disk.
     licenses: Any applicable publicly visible licenses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -14316,25 +14318,26 @@ class Disk(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   lastAttachTimestamp = _messages.StringField(8)
   lastDetachTimestamp = _messages.StringField(9)
-  licenses = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  options = _messages.StringField(12)
-  physicalBlockSizeBytes = _messages.IntegerField(13)
-  region = _messages.StringField(14)
-  replicaZones = _messages.StringField(15, repeated=True)
-  selfLink = _messages.StringField(16)
-  sizeGb = _messages.IntegerField(17)
-  sourceImage = _messages.StringField(18)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceImageId = _messages.StringField(20)
-  sourceSnapshot = _messages.StringField(21)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
-  sourceSnapshotId = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 25)
-  type = _messages.StringField(26)
-  users = _messages.StringField(27, repeated=True)
-  zone = _messages.StringField(28)
+  licenseCodes = _messages.IntegerField(10, repeated=True)
+  licenses = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  options = _messages.StringField(13)
+  physicalBlockSizeBytes = _messages.IntegerField(14)
+  region = _messages.StringField(15)
+  replicaZones = _messages.StringField(16, repeated=True)
+  selfLink = _messages.StringField(17)
+  sizeGb = _messages.IntegerField(18)
+  sourceImage = _messages.StringField(19)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceImageId = _messages.StringField(21)
+  sourceSnapshot = _messages.StringField(22)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceSnapshotId = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 26)
+  type = _messages.StringField(27)
+  users = _messages.StringField(28, repeated=True)
+  zone = _messages.StringField(29)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -16554,6 +16557,8 @@ class Image(_messages.Message):
       an image.
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this image.
     licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -16690,18 +16695,19 @@ class Image(_messages.Message):
   kind = _messages.StringField(10, default=u'compute#image')
   labelFingerprint = _messages.BytesField(11)
   labels = _messages.MessageField('LabelsValue', 12)
-  licenses = _messages.StringField(13, repeated=True)
-  name = _messages.StringField(14)
-  rawDisk = _messages.MessageField('RawDiskValue', 15)
-  selfLink = _messages.StringField(16)
-  sourceDisk = _messages.StringField(17)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceDiskId = _messages.StringField(19)
-  sourceImage = _messages.StringField(20)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceImageId = _messages.StringField(22)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 23, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  licenseCodes = _messages.IntegerField(13, repeated=True)
+  licenses = _messages.StringField(14, repeated=True)
+  name = _messages.StringField(15)
+  rawDisk = _messages.MessageField('RawDiskValue', 16)
+  selfLink = _messages.StringField(17)
+  sourceDisk = _messages.StringField(18)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDiskId = _messages.StringField(20)
+  sourceImage = _messages.StringField(21)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  sourceImageId = _messages.StringField(23)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 24, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
 
 
 class ImageList(_messages.Message):
@@ -18600,7 +18606,7 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 
 class Interconnect(_messages.Message):
   """Protocol definitions for Mixer API to support Interconnect. Next
-  available tag: 22
+  available tag: 23
 
   Enums:
     InterconnectTypeValueValuesEnum:
@@ -19771,13 +19777,36 @@ class ManagedInstanceLastAttempt(_messages.Message):
 class ManagedInstanceOverride(_messages.Message):
   """Overrides of stateful properties for a given instance
 
+  Messages:
+    MetadataValueListEntry: A MetadataValueListEntry object.
+
   Fields:
     disks: Disk overrides defined for this instance
     instance: The URL of the instance.
+    metadata: Metadata overrides defined for this instance.
   """
+
+  class MetadataValueListEntry(_messages.Message):
+    """A MetadataValueListEntry object.
+
+    Fields:
+      key: Key for the metadata entry. Keys must conform to the following
+        regexp: [a-zA-Z0-9-_]+, and be less than 128 bytes in length. This is
+        reflected as part of a URL in the metadata server. Additionally, to
+        avoid ambiguity, keys must not conflict with any other metadata keys
+        for the project.
+      value: Value for the metadata entry. These are free-form strings, and
+        only have meaning as interpreted by the image running in the instance.
+        The only restriction placed on values is that their size must be less
+        than or equal to 32768 bytes.
+    """
+
+    key = _messages.StringField(1)
+    value = _messages.StringField(2)
 
   disks = _messages.MessageField('ManagedInstanceOverrideDiskOverride', 1, repeated=True)
   instance = _messages.StringField(2)
+  metadata = _messages.MessageField('MetadataValueListEntry', 3, repeated=True)
 
 
 class ManagedInstanceOverrideDiskOverride(_messages.Message):
@@ -20651,8 +20680,8 @@ class Project(_messages.Message):
 
   Enums:
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
-      in a Cross Project Network (XPN) configuration. Currently only HOST
-      projects are differentiated.
+      in a shared VPC configuration. Currently only HOST projects are
+      differentiated.
 
   Fields:
     commonInstanceMetadata: Metadata key/value pairs available to all
@@ -20675,14 +20704,13 @@ class Project(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     usageExportLocation: The naming prefix for daily usage reports and the
       Google Cloud Storage bucket where they are stored.
-    xpnProjectStatus: [Output Only] The role this project has in a Cross
-      Project Network (XPN) configuration. Currently only HOST projects are
-      differentiated.
+    xpnProjectStatus: [Output Only] The role this project has in a shared VPC
+      configuration. Currently only HOST projects are differentiated.
   """
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The role this project has in a Cross Project Network
-    (XPN) configuration. Currently only HOST projects are differentiated.
+    """[Output Only] The role this project has in a shared VPC configuration.
+    Currently only HOST projects are differentiated.
 
     Values:
       HOST: <no description>
@@ -20709,7 +20737,7 @@ class ProjectsDisableXpnResourceRequest(_messages.Message):
   """A ProjectsDisableXpnResourceRequest object.
 
   Fields:
-    xpnResource: XPN resource ID.
+    xpnResource: Service resource (a.k.a service project) ID.
   """
 
   xpnResource = _messages.MessageField('XpnResourceId', 1)
@@ -20719,7 +20747,7 @@ class ProjectsEnableXpnResourceRequest(_messages.Message):
   """A ProjectsEnableXpnResourceRequest object.
 
   Fields:
-    xpnResource: XPN resource ID.
+    xpnResource: Service resource (a.k.a service project) ID.
   """
 
   xpnResource = _messages.MessageField('XpnResourceId', 1)
@@ -20730,13 +20758,15 @@ class ProjectsGetXpnResources(_messages.Message):
 
   Fields:
     kind: [Output Only] Type of resource. Always
-      compute#projectsGetXpnResources for lists of XPN resources.
+      compute#projectsGetXpnResources for lists of service resources (a.k.a
+      service projects)
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    resources: XPN resources attached to this project as their XPN host.
+    resources: Serive resources (a.k.a service projects) attached to this
+      project as their shared VPC host.
   """
 
   kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
@@ -20749,8 +20779,8 @@ class ProjectsListXpnHostsRequest(_messages.Message):
 
   Fields:
     organization: Optional organization ID managed by Cloud Resource Manager,
-      for which to list XPN host projects. If not specified, the organization
-      will be inferred from the project.
+      for which to list shared VPC host projects. If not specified, the
+      organization will be inferred from the project.
   """
 
   organization = _messages.StringField(1)
@@ -22414,6 +22444,8 @@ class Snapshot(_messages.Message):
       retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
       the setLabels method. Label values may be empty.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this snapshot.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -22515,16 +22547,17 @@ class Snapshot(_messages.Message):
   kind = _messages.StringField(5, default=u'compute#snapshot')
   labelFingerprint = _messages.BytesField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  licenses = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
-  sourceDisk = _messages.StringField(12)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceDiskId = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  storageBytes = _messages.IntegerField(16)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 17)
+  licenseCodes = _messages.IntegerField(8, repeated=True)
+  licenses = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
+  sourceDisk = _messages.StringField(13)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceDiskId = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  storageBytes = _messages.IntegerField(17)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 18)
 
 
 class SnapshotList(_messages.Message):
@@ -24814,9 +24847,9 @@ class XpnHostList(_messages.Message):
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    items: [Output Only] A list of XPN host project URLs.
+    items: [Output Only] A list of shared VPC host project URLs.
     kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
-      of XPN hosts.
+      of shared VPC hosts.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -24833,19 +24866,20 @@ class XpnHostList(_messages.Message):
 
 
 class XpnResourceId(_messages.Message):
-  """XpnResourceId
+  """Service resource (a.k.a service project) ID.
 
   Enums:
-    TypeValueValuesEnum: The type of the XPN resource.
+    TypeValueValuesEnum: The type of the service resource.
 
   Fields:
-    id: The ID of the XPN resource. In the case of projects, this field
-      matches the project's name, not the canonical ID.
-    type: The type of the XPN resource.
+    id: The ID of the service resource. In the case of projects, this field
+      matches the project ID (e.g., my-project), not the project number (e.g.,
+      12345678).
+    type: The type of the service resource.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of the XPN resource.
+    """The type of the service resource.
 
     Values:
       PROJECT: <no description>

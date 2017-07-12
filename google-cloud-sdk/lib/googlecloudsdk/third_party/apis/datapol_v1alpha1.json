@@ -512,14 +512,18 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the datapol taxonomy, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\".",
+          "description": "Resource name of the datapol taxonomy, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{id}\".",
+          "type": "string"
+        },
+        "storeId": {
+          "description": "Id of the enclosing store. Read-only.",
           "type": "string"
         },
         "id": {
-          "description": "Unique id of the taxonomy.",
+          "description": "Id of this taxonomy. Read-only.",
           "type": "string"
         },
-        "taxonomyName": {
+        "displayName": {
           "description": "Name of the taxonomy. Should be no more than 100 characters.",
           "type": "string"
         },
@@ -615,15 +619,27 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name of the annotation, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\/annotations\/{annotation_id}\".",
+          "description": "Resource name of the annotation, which has the format of\n\"taxonomyStores\/{store_id}\/dataTaxonomies\/{taxonomy_id}\/annotations\/{id}\".",
+          "type": "string"
+        },
+        "storeId": {
+          "description": "Id of the enclosing store. Read-only.",
+          "type": "string"
+        },
+        "taxonomyId": {
+          "description": "Id of the enclosing taxonomy. Read-only.",
+          "type": "string"
+        },
+        "taxonomyDisplayName": {
+          "description": "Human readable name of the enclosing taxonomy. Read-only.",
           "type": "string"
         },
         "id": {
-          "description": "Unique id of the annotation.",
+          "description": "Id of this annotation. Read-only.",
           "type": "string"
         },
-        "annotationName": {
-          "description": "Name of the annotation. Should be no more than 100 characters.",
+        "displayName": {
+          "description": "Human readable name of this annotation. Max 100 characters.",
           "type": "string"
         },
         "description": {
@@ -700,8 +716,24 @@
           "description": "A finer grained subset of the data that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire data asset.",
           "type": "string"
         },
+        "storeId": {
+          "description": "Id of the enclosing taxonomy store. Read-only.",
+          "type": "string"
+        },
+        "taxonomyId": {
+          "description": "Id of the taxonomy enclosing the annotation corresponding to this tag.\nRead-only.",
+          "type": "string"
+        },
+        "taxonomyDisplayName": {
+          "description": "Human readable name of the taxonomy enclosing the annotation corresponding\nto this tag. Read-only.",
+          "type": "string"
+        },
         "annotationId": {
-          "description": "The value of 'id' for the tagged annotation.The annotation must be a member\nof the taxonomy included in the resource name.",
+          "description": "Id of the annotation corresponding to this tag. Read-only.",
+          "type": "string"
+        },
+        "annotationDisplayName": {
+          "description": "Human readable name of the annotation corresponding to this tag. Read-only.",
           "type": "string"
         }
       }

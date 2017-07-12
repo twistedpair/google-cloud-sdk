@@ -23,7 +23,7 @@ def AddInstanceIamPolicyBinding(instance_ref, member, role):
   """Adds a policy binding to an instance IAM policy."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
   policy = instances.GetIamPolicy(instance_ref)
-  iam_util.AddBindingToIamPolicy(msgs, policy, member, role)
+  iam_util.AddBindingToIamPolicy(msgs.Binding, policy, member, role)
   return instances.SetPolicy(instance_ref, policy)
 
 
@@ -45,7 +45,7 @@ def AddDatabaseIamPolicyBinding(database_ref, member, role):
   """Adds a policy binding to a database IAM policy."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
   policy = databases.GetIamPolicy(database_ref)
-  iam_util.AddBindingToIamPolicy(msgs, policy, member, role)
+  iam_util.AddBindingToIamPolicy(msgs.Binding, policy, member, role)
   return databases.SetPolicy(database_ref, policy)
 
 

@@ -13,8 +13,43 @@
 # limitations under the License.
 """Module for wrangling bigtable command arguments."""
 
+import itertools
+
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.core import log
 
 _INSTANCE_COMPLETION = 'beta bigtable instances list --uri'
+
+
+class ClusterCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ClusterCompleter, self).__init__(
+        collection='bigtableadmin.projects.instances.clusters',
+        list_command='beta bigtable clusters list --uri',
+        **kwargs)
+
+
+class InstanceCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstanceCompleter, self).__init__(
+        collection='bigtableadmin.projects.instances',
+        list_command='beta bigtable instances list --uri',
+        **kwargs)
+
+
+# TODO(b/33272823): Remove after deprecation period
+def ProcessInstances(args):
+  """Flatten --instances flag and warn if multiple arguments were used."""
+  if args.instances is not None:
+    if len(args.instances) > 1:
+      log.warn('Use of --instances with space-separated values is '
+               'deprecated and will not work in the future. Use comma '
+               'instead.')
+    # flatten into list
+    args.instances = list(itertools.chain.from_iterable(args.instances))
 
 
 class ArgAdder(object):
@@ -33,25 +68,16 @@ class ArgAdder(object):
   def AddCluster(self, positional=True):
     """Add cluster argument."""
 
-    def _CompletionFn(args):
-      """Completion function for clusters."""
-
-      instance = getattr(args, 'instance')
-      return ['beta', 'bigtable', 'clusters', 'list',
-              '--instances={}'.format(instance), '--uri']
-
     help_text = 'ID of the cluster.'
     if positional:
       self.parser.add_argument(
           'cluster',
-          completion_resource='bigtableadmin.projects.instances.clusters',
-          list_command_callback_fn=_CompletionFn,
+          completer=ClusterCompleter,
           help=help_text)
     else:
       self.parser.add_argument(
           '--cluster',
-          completion_resource='bigtableadmin.projects.instances.clusters',
-          list_command_callback_fn=_CompletionFn,
+          completer=ClusterCompleter,
           help=help_text,
           required=True)
     return self
@@ -85,20 +111,24 @@ class ArgAdder(object):
   def AddInstance(self, positional=True, required=True, multiple=False):
     """Add argument for instance ID to parser."""
     help_text = 'ID of the instance.'
-    if positional:
-      self.parser.add_argument(
-          'instance',
-          completion_resource='bigtableadmin.projects.instances',
-          list_command_path=_INSTANCE_COMPLETION,
-          help=help_text, nargs='+' if multiple else None)
-    else:
-      self.parser.add_argument(
-          '--instances' if multiple else '--instance',
-          help=help_text,
-          required=required,
-          completion_resource='bigtableadmin.projects.instances',
-          list_command_path=_INSTANCE_COMPLETION,
-          nargs='+' if multiple else None)
+    name = 'instance' if positional else '--instance'
+    args = {
+        'completion_resource': 'bigtableadmin.projects.instances',
+        'list_command_path': _INSTANCE_COMPLETION,
+        'help': help_text
+    }
+    if multiple:
+      if positional:
+        args['nargs'] = '+'
+      else:
+        name = '--instances'
+        args['type'] = arg_parsers.ArgList()
+        args['nargs'] = '+'  # TODO(b/33272823): remove after deprecation period
+        args['metavar'] = 'INSTANCE'
+    if not positional:
+      args['required'] = required
+
+    self.parser.add_argument(name, **args)
     return self
 
   def AddInstanceDescription(self, required=False):

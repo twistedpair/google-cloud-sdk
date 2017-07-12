@@ -21,8 +21,8 @@ import textwrap
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.util import pkg_resources
 
 
 def _GetDescription(arg):
@@ -69,7 +69,7 @@ class Argument(object):
 
     completer = getattr(arg, 'completer', None)
     if isinstance(completer, type):
-      self.completer = pkg_resources.GetModulePath(completer) or ''
+      self.completer = module_util.GetModulePath(completer) or ''
     else:
       # Legacy completer.
       self.completer = None
@@ -150,7 +150,7 @@ class Flag(Argument):
       elif isinstance(flag.type, arg_parsers.ArgList):
         self.type = 'list'
       else:
-        self.type = pkg_resources.GetModulePath(flag.type) or 'string'
+        self.type = module_util.GetModulePath(flag.type) or 'string'
     if flag.choices:
       choices = sorted(flag.choices)
       if choices == ['false', 'true']:

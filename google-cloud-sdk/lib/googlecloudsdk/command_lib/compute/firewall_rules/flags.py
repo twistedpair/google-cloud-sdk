@@ -16,7 +16,7 @@
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 # Needs to be indented to show up correctly in help text
-LIST_WITH_ALL_FIELDS_FORMAT_ALPHA = """\
+LIST_WITH_ALL_FIELDS_FORMAT_BETA = """\
 table(
                     name,
                     network,
@@ -32,20 +32,6 @@ table(
                     targetServiceAccounts.list():label=TARGET_SVC_ACCT
                 )"""
 
-LIST_WITH_ALL_FIELDS_FORMAT_BETA = """\
-table(
-                    name,
-                    network,
-                    direction,
-                    priority,
-                    sourceRanges.list():label=SRC_RANGES,
-                    destinationRanges.list():label=DEST_RANGES,
-                    allowed[].map().firewall_rule().list():label=ALLOW,
-                    denied[].map().firewall_rule().list():label=DENY,
-                    sourceTags.list():label=SRC_TAGS,
-                    targetTags.list():label=TARGET_TAGS
-                )"""
-
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
@@ -56,7 +42,7 @@ DEFAULT_LIST_FORMAT = """\
       targetTags.list():label=TARGET_TAGS
     )"""
 
-DEFAULT_ALPHA_LIST_FORMAT = """\
+DEFAULT_BETA_LIST_FORMAT = """\
     table(
       name,
       network.basename(),

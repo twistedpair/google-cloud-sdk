@@ -61,7 +61,10 @@ def WaitForResourceDeletion(
           # Object deleted
           return
         log.debug('Get request for [{0}] failed:\n{1}', resource_ref, error)
-        # Keep trying until we timeout in case error is transient.
+
+        # Do not retry on 4xx errors
+        if IsClientHttpException(error):
+          raise
       time.sleep(poll_period_s)
   raise exceptions.OperationTimeoutError(
       'Deleting resource [{0}] timed out.'.format(resource_ref))
@@ -107,3 +110,8 @@ def AddTimeoutFlag(parser, default='10m'):
       type=arg_parsers.Duration(),
       default=default,
       hidden=True)
+
+
+def IsClientHttpException(http_exception):
+  """Returns true if the http exception given is an HTTP 4xx error."""
+  return http_exception.status_code >= 400 and http_exception.status_code < 500

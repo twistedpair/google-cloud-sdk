@@ -13,16 +13,78 @@
 # limitations under the License.
 
 """'functions deploy' utilities."""
+import os
+import random
+import re
+import string
+
+from googlecloudsdk.api_lib.functions import cloud_storage as storage
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import archive
 
 
 def GetLocalPath(args):
   return args.local_path or '.'
+
+
+def GetIgnoreFilesRegex(include_ignored_files):
+  if include_ignored_files:
+    return None
+  else:
+    return r'(node_modules{}.*)|(node_modules)'.format(re.escape(os.sep))
+
+
+def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
+  """Prepare zip file with source of the function to upload.
+
+  Args:
+    zip_dir: str, directory in which zip file will be located. Name of the file
+             will be `fun.zip`.
+    source_path: str, directory containing the sources to be zipped.
+    include_ignored_files: bool, indicates whether `node_modules` directory and
+                           its content will be included in the zip.
+  Returns:
+    Path to the zip file (str).
+  Raises:
+    FunctionsError
+  """
+  zip_file_name = os.path.join(zip_dir, 'fun.zip')
+  try:
+    if include_ignored_files:
+      log.info('Not including node_modules in deployed code. To include '
+               'node_modules in uploaded code use --include-ignored-files '
+               'flag.')
+    archive.MakeZipFromDir(
+        zip_file_name,
+        source_path,
+        skip_file_regex=GetIgnoreFilesRegex(include_ignored_files))
+  except ValueError as e:
+    raise exceptions.FunctionsError(
+        'Error creating a ZIP archive with the source code '
+        'for directory {0}: {1}'.format(source_path, str(e)))
+  return zip_file_name
+
+
+def _GenerateRemoteZipFileName(function_name):
+  sufix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
+  return '{0}-{1}-{2}.zip'.format(
+      properties.VALUES.functions.region.Get(), function_name, sufix)
+
+
+def UploadFile(source, function_name, stage_bucket):
+  remote_zip_file = _GenerateRemoteZipFileName(function_name)
+  gcs_url = storage.BuildRemoteDestination(stage_bucket, remote_zip_file)
+  if storage.Upload(source, gcs_url) != 0:
+    raise exceptions.FunctionsError(
+        'Failed to upload the function source code to the bucket {0}'
+        .format(stage_bucket))
+  return gcs_url
 
 
 def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,

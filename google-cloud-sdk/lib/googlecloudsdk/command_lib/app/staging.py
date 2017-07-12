@@ -75,16 +75,17 @@ class StagingCommandFailedError(exceptions.Error):
             ' '.join(args), return_code, output_message))
 
 
-def _StagingProtocolMapper(command_path, descriptor, staging_dir):
-  return [command_path, descriptor, staging_dir]
+def _StagingProtocolMapper(command_path, descriptor, app_dir, staging_dir):
+  return [command_path, descriptor, app_dir, staging_dir]
 
 
-def _JavaStagingMapper(command_path, descriptor, staging_dir):
+def _JavaStagingMapper(command_path, descriptor, app_dir, staging_dir):
   """Map a java staging request to the right args.
 
   Args:
     command_path: str, path to the jar tool file.
     descriptor: str, path to the `appengine-web.xml`
+    app_dir: str, path to the unstaged app directory
     staging_dir: str, path to the empty staging dir
 
   Raises:
@@ -93,9 +94,9 @@ def _JavaStagingMapper(command_path, descriptor, staging_dir):
   Returns:
     [str], args for executable invocation.
   """
+  del descriptor  # Unused, app_dir is sufficient
   java.CheckIfJavaIsInstalled('local staging for java')
   java_bin = files.FindExecutableOnPath('java')
-  app_dir = os.path.dirname(os.path.dirname(descriptor))
   args = ([java_bin, '-classpath', command_path, _JAVA_APPCFG_ENTRY_POINT] +
           _JAVA_APPCFG_STAGE_FLAGS + ['stage', app_dir, staging_dir])
   return args
@@ -150,12 +151,13 @@ class _Command(object):
     update_manager.UpdateManager.EnsureInstalledAndRestart([self.component],
                                                            msg=msg)
 
-  def Run(self, staging_area, descriptor):
+  def Run(self, staging_area, descriptor, app_dir):
     """Invokes a staging command with a given <service>.yaml and temp dir.
 
     Args:
       staging_area: str, path to the staging area.
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
+      app_dir: str, path to the unstaged app directory
 
     Returns:
       str, the path to the staged directory.
@@ -164,7 +166,7 @@ class _Command(object):
       StagingCommandFailedError: if the staging command process exited non-zero.
     """
     staging_dir = tempfile.mkdtemp(dir=staging_area)
-    args = self.mapper(self.GetPath(), descriptor, staging_dir)
+    args = self.mapper(self.GetPath(), descriptor, app_dir, staging_dir)
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
     out = cStringIO.StringIO()
     err = cStringIO.StringIO()
@@ -179,7 +181,7 @@ class _Command(object):
 
 
 # Path to the go-app-stager binary
-_GO_BIN_DIR = os.path.join('platform', 'google_appengine', 'goroot-1.6', 'bin')
+_GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
 
 # Path to the jar which contains the staging command
 _APPENGINE_TOOLS_JAR = os.path.join(
@@ -205,18 +207,18 @@ _APPENGINE_TOOLS_JAR = os.path.join(
 _STAGING_REGISTRY = {
     ('go', util.Environment.STANDARD):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.MANAGED_VMS):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
     ('go', util.Environment.FLEX):
         _Command(
-            os.path.join(_GO_BIN_DIR, 'go-app-stager'),
-            os.path.join(_GO_BIN_DIR, 'go-app-stager.exe'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
 }
 
@@ -238,11 +240,12 @@ class Stager(object):
     self.registry = registry
     self.staging_area = staging_area
 
-  def Stage(self, descriptor, runtime, environment):
+  def Stage(self, descriptor, app_dir, runtime, environment):
     """Stage the given deployable or do nothing if N/A.
 
     Args:
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
+      app_dir: str, path to the unstaged app directory
       runtime: str, the name of the runtime for the application to stage
       environment: api_lib.app.util.Environment, the environment for the
           application to stage
@@ -264,7 +267,7 @@ class Stager(object):
       return
 
     command.EnsureInstalled()
-    return command.Run(self.staging_area, descriptor)
+    return command.Run(self.staging_area, descriptor, app_dir)
 
 
 def GetStager(staging_area):

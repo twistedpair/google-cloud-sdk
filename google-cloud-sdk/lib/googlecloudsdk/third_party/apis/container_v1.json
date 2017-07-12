@@ -382,7 +382,7 @@
           }
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
           "type": "string"
         }
       }
@@ -457,6 +457,10 @@
         "horizontalPodAutoscaling": {
           "description": "Configuration for the horizontal pod autoscaling feature, which\nincreases or decreases the number of replica pods a replication controller\nhas based on the resource usage of the existing pods.",
           "$ref": "HorizontalPodAutoscaling"
+        },
+        "kubernetesDashboard": {
+          "description": "Configuration for the Kubernetes Dashboard.",
+          "$ref": "KubernetesDashboard"
         }
       }
     },
@@ -478,6 +482,17 @@
       "properties": {
         "disabled": {
           "description": "Whether the Horizontal Pod Autoscaling feature is enabled in the cluster.\nWhen enabled, it ensures that a Heapster pod is running in the cluster,\nwhich is also used by the Cloud Monitoring service.",
+          "type": "boolean"
+        }
+      }
+    },
+    "KubernetesDashboard": {
+      "id": "KubernetesDashboard",
+      "description": "Configuration for the Kubernetes Dashboard.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether the Kubernetes Dashboard is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -667,7 +682,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "PROVIDER_UNSPECIFIED",
             "CALICO"
           ]
         },
@@ -1263,6 +1278,338 @@
         }
       }
     },
+    "AuditEventList": {
+      "id": "AuditEventList",
+      "description": "A request to audit write audit events (to Cloud Audit Logging and\/or Gin).\nThe request contains items to audit.\n\nThis should look very close to the EventList struct in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match EventList.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "The list of events to audit log.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditEvent"
+          }
+        },
+        "metadata": {
+          "description": "metadata exists in the EventList object.",
+          "$ref": "ListMeta"
+        },
+        "kind": {
+          "description": "kind is an artifact of the Kubernetes API.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "kind is an artifact of the Kubernetes API.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditEvent": {
+      "id": "AuditEvent",
+      "description": "Event captures all the information that can be included in an API audit log.\n\nShould match Event in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "level": {
+          "description": "AuditLevel at which event was generated",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "Time the request reached the apiserver.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "auditID": {
+          "description": "Unique audit ID, generated for each request.",
+          "type": "string"
+        },
+        "stage": {
+          "description": "Stage of the request handling when this event instance was generated.",
+          "type": "string"
+        },
+        "requestURI": {
+          "description": "RequestURI is the request URI as sent by the client to a server.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Verb is the kubernetes verb associated with the request.  For non-resource\nrequests, this is identical to HttpMethod.",
+          "type": "string"
+        },
+        "user": {
+          "description": "Authenticated user information.",
+          "$ref": "AuthnV1UserInfo"
+        },
+        "impersonatedUser": {
+          "description": "Impersonated user information.\n+optional",
+          "$ref": "AuthnV1UserInfo"
+        },
+        "sourceIPs": {
+          "description": "Source IPs, from where the request originated and intermediate proxies.\n+optional",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "objectRef": {
+          "description": "Object reference this request is targeted at.  Does not apply for List-type\nrequests, or non-resource requests.\n+optional",
+          "$ref": "AuditObjectReference"
+        },
+        "responseStatus": {
+          "description": "The response status, populated even when the ResponseObject is not a Status\ntype.  For successful responses, this will only include the Code and\nStatusSuccess.  For non-status type error responses, this will be\nauto-populated with the error Message.\n+optional",
+          "$ref": "MetaV1Status"
+        },
+        "requestObject": {
+          "description": "API object from the request, in JSON format. The RequestObject is recorded\nas-is in the request (possibly re-encoded as JSON), prior to version\nconversion, defaulting, admission or merging. It is an external versioned\nobject type, and may not be a valid object on its own.  Omitted for\nnon-resource requests.  Only logged at Request Level and higher.\n+optional",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "responseObject": {
+          "description": "API object returned in the response, in JSON. The ResponseObject is\nrecorded after conversion to the external type, and serialized as JSON.\nOmitted for non-resource requests.  Only logged at Response Level and\nhigher.\n+optional",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "metadata": {
+          "description": "metadata exists in the Event object.",
+          "$ref": "ObjectMeta"
+        }
+      }
+    },
+    "AuthnV1UserInfo": {
+      "id": "AuthnV1UserInfo",
+      "description": "The attributes of an authenticated user.\n\nShould match UserInfo in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/client-go\/pkg\/apis\/authentication\/v1\/generated.proto",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "The name of the user. This should be the email address associated with the\nGAIA identity of the user.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "A unique identifier (across time) for the user. This is not currently\nfilled in for GKE.",
+          "type": "string"
+        },
+        "groups": {
+          "description": "Groups that this user is a part of. This is not currently filled in for\nGKE.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extra": {
+          "description": "Any additional information provided by the authenticator.\n+optional",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ExtraValue"
+          }
+        }
+      }
+    },
+    "ExtraValue": {
+      "id": "ExtraValue",
+      "description": "ExtraValue allows the extra field to be a mapstringstring",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "items, if empty, will result in an empty slice",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AuditObjectReference": {
+      "id": "AuditObjectReference",
+      "description": "AuditObjectReference contains enough information to let you inspect or modify the referred object.\n\nShould match ObjectReference in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "resource": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "namespace": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "name": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "uid": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "resourceVersion": {
+          "description": "+optional",
+          "type": "string"
+        },
+        "subresource": {
+          "description": "+optional",
+          "type": "string"
+        }
+      }
+    },
+    "MetaV1Status": {
+      "id": "MetaV1Status",
+      "description": "MetaV1Status is a return value for calls that don't return other objects.\n\nShould match Status in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/apis\/meta\/v1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status of the operation.\nOne of: \"Success\" or \"Failure\".\nMore info: https:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#spec-and-status\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "A human-readable description of the status of this operation.\n+optional",
+          "type": "string"
+        },
+        "reason": {
+          "description": "A machine-readable description of why this operation is in the\n\"Failure\" status. If this value is empty there\nis no information available. A Reason clarifies an HTTP status\ncode but does not override it.\n+optional",
+          "type": "string"
+        },
+        "details": {
+          "description": "Extended data associated with the reason.  Each reason may define its\nown extended details. This field is optional and the data returned\nis not guaranteed to conform to any schema except that defined by\nthe reason type.\n+optional",
+          "$ref": "MetaV1StatusDetails"
+        },
+        "code": {
+          "description": "Suggested HTTP return code for this status, 0 if not set.\n+optional",
+          "type": "integer",
+          "format": "int32"
+        },
+        "metadata": {
+          "description": "Fields from \"pkg\/api\/types\".ListMeta\nTODO (b\/30563544): Remove these unused fields.",
+          "$ref": "ListMeta"
+        }
+      }
+    },
+    "MetaV1StatusDetails": {
+      "id": "MetaV1StatusDetails",
+      "description": "MetaV1StatusDetails is a set of additional properties that MAY be set by the\nserver to provide additional information about a response. The Reason\nfield of a Status object defines what attributes will be set. Clients\nmust ignore fields that do not match the defined type of each attribute,\nand should assume that any attribute may be empty, invalid, or under\ndefined.\n\nShould match StatusDetails in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/apis\/meta\/v1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name attribute of the resource associated with the status StatusReason\n(when there is a single name which can be described).\n+optional",
+          "type": "string"
+        },
+        "group": {
+          "description": "The group attribute of the resource associated with the status StatusReason.\n+optional",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind attribute of the resource associated with the status StatusReason.\nOn some operations may differ from the requested resource Kind.\nMore info: https:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#types-kinds\n+optional",
+          "type": "string"
+        },
+        "uid": {
+          "description": "UID of the resource.\n(when there is a single resource which can be described).\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#uids\n+optional",
+          "type": "string"
+        },
+        "causes": {
+          "description": "The Causes array includes more details associated with the StatusReason\nfailure. Not all StatusReasons may provide detailed causes.\n+optional",
+          "type": "array",
+          "items": {
+            "$ref": "MetaV1StatusCause"
+          }
+        },
+        "retryAfterSeconds": {
+          "description": "If specified, the time in seconds before the operation should be retried.\n+optional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "MetaV1StatusCause": {
+      "id": "MetaV1StatusCause",
+      "description": "MetaV1StatusCause provides more information about an api.Status failure, including\ncases when multiple errors are encountered.\n\nShould match StatusCause in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/apis\/meta\/v1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "A machine-readable description of the cause of the error. If this value is\nempty there is no information available.\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "A human-readable description of the cause of the error.  This field may be\npresented as-is to a reader.\n+optional",
+          "type": "string"
+        },
+        "field": {
+          "description": "The field of the resource that has caused this error, as named by its JSON\nserialization. May include dot and postfix notation for nested attributes.\nArrays are zero-indexed.  Fields may appear more than once in an array of\ncauses due to fields having multiple errors.\nOptional.\n\nExamples:\n  \"name\" - the field \"name\" on the current resource\n  \"items[0].name\" - the field \"name\" on the first array entry in \"items\"\n+optional",
+          "type": "string"
+        }
+      }
+    },
+    "ListMeta": {
+      "id": "ListMeta",
+      "description": "ListMeta describes metadata that synthetic resources must have, including lists and\nvarious status objects.\n\nShould match ListMeta in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/apis\/meta\/v1\/generated.proto.",
+      "type": "object",
+      "properties": {
+        "selfLink": {
+          "description": "SelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n+optional",
+          "type": "string"
+        },
+        "resourceVersion": {
+          "description": "String that identifies the server's internal version of this object that\ncan be used by clients to determine when objects have changed.\nValue must be treated as opaque by clients and passed unmodified back to the server.\nPopulated by the system.\nRead-only.\nMore info: https:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency\n+optional",
+          "type": "string"
+        }
+      }
+    },
+    "ObjectMeta": {
+      "id": "ObjectMeta",
+      "description": "This maps to the \"apimachinery\/pkg\/apis\/meta\/v1\".ObjectMeta type, although\nnot all fields are populated and represented here.\nTODO (b\/30563544): Remove unused fields.\n\nCurrently, if a request includes metadata fields that aren't explicitly\nmodeled here, the caller will receive a 400 response instead of ignoring the\nunrecognized fields. We should consider following b\/28297888 to enable\n\"ignore_unknown_fields\" in order to make this less brittle.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the resource, unique within a namespace.",
+          "type": "string"
+        },
+        "generateName": {
+          "description": "An optional prefix, used by the server, to generate a unique name ONLY IF\nthe name field has not been provided.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "A URL representing this object.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "A unique identifier in time and space for this object.",
+          "type": "string"
+        },
+        "resourceVersion": {
+          "description": "An opaque value that represents the internal version of this object that\ncan be used by clients to determine when objects have changed.",
+          "type": "string"
+        },
+        "creationTimestamp": {
+          "description": "Timestamp representing the server time when this object was created.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Key-value pairs that may be used to scope and select individual resources.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "Unstructured key-value pairs that are not queryable and should be preserved\nwhen modifying objects.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AuditResponse": {
+      "id": "AuditResponse",
+      "description": "Response sent to audit log requests.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "AuthenticateRequest": {
       "id": "AuthenticateRequest",
       "description": "A request to authenticate a user based on a provided OAuth2 token.\n\nThis should look very close to the TokenReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match TokenReview.",
@@ -1318,7 +1665,7 @@
     },
     "UserInfo": {
       "id": "UserInfo",
-      "description": "The attributes of an authenticated user.\nThis should match the UserInfo struct in\npkg\/apis\/authentication.k8s.io\/v1beta1\/types.go",
+      "description": "The attributes of an authenticated user.\nThis should match the UserInfo struct in\npkg\/apis\/authentication.k8s.io\/v1beta1\/types.go\n\nTODO(b\/62143841) Convert token authenticator to use v1 types and use\nAuthnV1UserInfo.",
       "type": "object",
       "properties": {
         "username": {
@@ -1335,50 +1682,12 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "ObjectMeta": {
-      "id": "ObjectMeta",
-      "description": "This maps to the \"apimachinery\/pkg\/apis\/meta\/v1\".ObjectMeta type, although\nnot all fields are populated and represented here.\nTODO (b\/30563544, b\/34947157): Remove unused fields.\n\nCurrently, if a request includes metadata fields that aren't explicitly\nmodeled here, the caller will receive a 400 response instead of ignoring the\nunrecognized fields. We should consider following b\/28297888 to enable\n\"ignore_unknown_fields\" in order to make this less brittle.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the resource, unique within a namespace.",
-          "type": "string"
         },
-        "generateName": {
-          "description": "An optional prefix, used by the server, to generate a unique name ONLY IF\nthe name field has not been provided.",
-          "type": "string"
-        },
-        "selfLink": {
-          "description": "A URL representing this object.",
-          "type": "string"
-        },
-        "uid": {
-          "description": "A unique identifier in time and space for this object.",
-          "type": "string"
-        },
-        "resourceVersion": {
-          "description": "An opaque value that represents the internal version of this object that\ncan be used by clients to determine when objects have changed.",
-          "type": "string"
-        },
-        "creationTimestamp": {
-          "description": "Timestamp representing the server time when this object was created.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Key-value pairs that may be used to scope and select individual resources.",
+        "extra": {
+          "description": "Any additional information provided by the authenticator to be passed\nto the authorizer.",
           "type": "object",
           "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "annotations": {
-          "description": "Unstructured key-value pairs that are not queryable and should be preserved\nwhen modifying objects.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+            "$ref": "ExtraValue"
           }
         }
       }
@@ -1513,20 +1822,6 @@
         "verb": {
           "description": "The verb of the request",
           "type": "string"
-        }
-      }
-    },
-    "ExtraValue": {
-      "id": "ExtraValue",
-      "description": "ExtraValue allows the extra field to be a mapstringstring",
-      "type": "object",
-      "properties": {
-        "items": {
-          "description": "items, if empty, will result in an empty slice",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -3005,6 +3300,55 @@
       "resources": {
         "zones": {
           "methods": {
+            "audit": {
+              "id": "container.masterProjects.zones.audit",
+              "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit",
+              "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit",
+              "httpMethod": "POST",
+              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "zone": {
+                  "description": "The zone of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "zone",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuditEventList"
+              },
+              "response": {
+                "$ref": "AuditResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
             "authenticate": {
               "id": "container.masterProjects.zones.authenticate",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate",

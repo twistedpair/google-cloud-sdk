@@ -447,19 +447,34 @@ class RemoteCompletion(object):
     Returns:
       The resource data list.
     """
-    if parse_output:
-      log_out = log.out
-      out = StringIO.StringIO()
-      log.out = out
-    elif list_command_updates_cache:
-      command.append('--format=none')
-    else:
-      command.append('--format=disable')
-    items = parsed_args._Execute(command, call_arg_complete=False)  # pylint: disable=protected-access
-    if parse_output:
-      log.out = log_out
-      return out.getvalue().rstrip('\n').split('\n')
-    return list(items) if items else []
+    def _HasFlagArg(flag):
+      return any([arg.startswith(flag) for arg in command])
+
+    if _HasFlagArg('--format=disable'):
+      parse_output = False
+    elif not _HasFlagArg('--uri'):
+      parse_output = True
+
+    try:
+      if not _HasFlagArg('--quiet'):
+        command.append('--quiet')
+      if parse_output:
+        log_out = log.out
+        out = StringIO.StringIO()
+        log.out = out
+        parsed_args._Execute(command, call_arg_complete=False)  # pylint: disable=protected-access
+        return out.getvalue().rstrip('\n').split('\n')
+      else:
+        if _HasFlagArg('--uri') and not _HasFlagArg('--format='):
+          if list_command_updates_cache:
+            command.append('--format=none')
+          else:
+            command.append('--format=disable')
+        items = parsed_args._Execute(command, call_arg_complete=False)  # pylint: disable=protected-access
+        return list(items) if items else []
+    finally:
+      if parse_output:
+        log.out = log_out
 
   @staticmethod
   def GetCompleterForResource(resource, cli=None, command_line=None,
@@ -491,15 +506,15 @@ class RemoteCompletion(object):
       """Runs list command on resource to generate completion data."""
       list_command_updates_cache = False
       info = resource_registry.Get(resource)
-      if info.cache_command:
-        command = info.cache_command.split(' ')
+      if list_command_callback_fn:
+        command = list_command_callback_fn(parsed_args)
+      elif command_line:
+        command = command_line.split(' ')
+      elif info.cache_command:
+        command = info.cache_command.split(' ') + ['--uri']
         list_command_updates_cache = True
       elif info.list_command:
         command = info.list_command.split(' ')
-      elif list_command_callback_fn:
-        command = list_command_callback_fn(parsed_args)
-      elif command_line:
-        command = command_line.replace('.', ' ').split(' ')
       else:
         command = _LowerCaseWithDashes(resource).split('.') + ['list', '--uri']
 
@@ -529,22 +544,34 @@ class RemoteCompletion(object):
                 if value:
                   parms[attrib] = value
                   command.append('--' + attrib + '=' + value)
-        resource_link = _GetResourceLink(parms, resource)
-        ccache = RemoteCompletion()
-        options = ccache.GetFromCache(resource_link, prefix)
-        if options is not None:
-          return options
+        if command[0] == 'compute':
+          # Workaround until the new cache.
+          cmd = []
+          for arg in command:
+            if arg.startswith('--region='):
+              arg = '--regions=' + arg[9:]
+            elif arg.startswith('--zone='):
+              arg = '--zones=' + arg[7:]
+            cmd.append(arg)
+          command = cmd
+        if resource:
+          resource_link = _GetResourceLink(parms, resource)
+          ccache = RemoteCompletion()
+          options = ccache.GetFromCache(resource_link, prefix)
+          if options is not None:
+            return options
 
         items = RemoteCompletion.RunListCommand(
             parsed_args, command,
             list_command_updates_cache=list_command_updates_cache)
+        if not resource or not any([arg for arg in command if arg == '--uri']):
+          return items
         if list_command_updates_cache:
           options = ccache.GetFromCache(resource_link, prefix) or []
           if options:
             RemoteCompletion.CACHE_HITS -= 1
           return options
 
-        # This part can be dropped when all commands are subclassed.
         options = []
         self_links = []
         for selflink in items:

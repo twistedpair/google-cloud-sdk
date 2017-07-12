@@ -179,12 +179,6 @@ MAP = {
             messages_modulepath='cloudkms_v1_messages',
             default_version=True
         ),
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.cloudkms.v1beta1',
-            client_classpath='cloudkms_v1beta1_client.CloudkmsV1beta1',
-            messages_modulepath='cloudkms_v1beta1_messages',
-            default_version=False
-        ),
     },
     'cloudresourcemanager': {
         'v1': APIDef(

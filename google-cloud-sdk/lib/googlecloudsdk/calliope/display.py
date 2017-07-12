@@ -31,7 +31,11 @@ where only one of the three elements need be present.
 """
 
 from googlecloudsdk.calliope import display_taps
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import module_util
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.cache import cache_update_ops
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_keys_expr
 from googlecloudsdk.core.resource import resource_lex
@@ -40,6 +44,18 @@ from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
+
+
+class Error(exceptions.Error):
+  """Base exception for this module."""
+
+
+class CommandNeedsAddCacheUpdater(Error):
+  """Command needs an AddCacheUpdater() call."""
+
+
+class CommandShouldntHaveAddCacheUpdater(Error):
+  """Command has an AddCacheUpdater() call and shouldn't."""
 
 
 class Displayer(object):
@@ -76,6 +92,7 @@ class Displayer(object):
         in the command path.
     """
     self._args = args
+    self._cache_updater = None
     self._command = command
     self._defaults = None
     self._default_format_used = False
@@ -91,6 +108,7 @@ class Displayer(object):
       display_info = args.GetDisplayInfo()
     if display_info:
       self._legacy = display_info.legacy
+      self._cache_updater = display_info.cache_updater
       self._defaults = resource_projection_spec.ProjectionSpec(
           defaults=self._defaults,
           symbols=display_info.transforms,
@@ -128,15 +146,44 @@ class Displayer(object):
   def _AddUriCacheTap(self):
     """Taps a resource Uri cache updater into self.resources if needed."""
 
+    from googlecloudsdk.calliope import base  # pylint: disable=g-import-not-at-top, circular dependency
+
+    if self._cache_updater == cache_update_ops.NoCacheUpdater:
+      return
+
+    if not self._cache_updater:
+      # pylint: disable=protected-access
+      if not isinstance(self._command,
+                        (base.CreateCommand,
+                         base.DeleteCommand,
+                         base.ListCommand,
+                         base.RestoreCommand)):
+        return
+      if 'AddCacheUpdater' in properties.VALUES.core.lint.Get():
+        # pylint: disable=protected-access
+        raise CommandNeedsAddCacheUpdater(
+            '`{}` needs a parser.display_info.AddCacheUpdater() call.'.format(
+                ' '.join(self._args._GetCommand().GetPath())))
+      return
+
     if self._legacy and (not self._info or self._info.bypass_cache):
       return
-
-    cache_update_op = self._command.GetUriCacheUpdateOp()
-    if not cache_update_op:
-      return
-
     if any([self._GetFlag(flag) for flag in self._CORRUPT_FLAGS]):
       return
+
+    # pylint: disable=protected-access
+    if isinstance(self._command, (base.CreateCommand, base.RestoreCommand)):
+      cache_update_op = cache_update_ops.AddToCacheOp(self._cache_updater)
+    elif isinstance(self._command, base.DeleteCommand):
+      cache_update_op = cache_update_ops.DeleteFromCacheOp(self._cache_updater)
+    elif isinstance(self._command, base.ListCommand):
+      cache_update_op = cache_update_ops.ReplaceCacheOp(self._cache_updater)
+    else:
+      raise CommandShouldntHaveAddCacheUpdater(
+          'Cache updater [{}] not expected for [{}] `{}`.'.format(
+              module_util.GetModulePath(self._cache_updater),
+              module_util.GetModulePath(self._args._GetCommand()),
+              ' '.join(self._args._GetCommand().GetPath())))
 
     tap = display_taps.UriCacher(cache_update_op, self._transform_uri)
     self._resources = peek_iterable.Tapper(self._resources, tap)

@@ -14,14 +14,56 @@
 """Common flags for some of the SQL commands."""
 
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util import completers
+
+
+class DatabaseCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DatabaseCompleter, self).__init__(
+        collection='sql.databases',
+        api_version='v1beta4',
+        list_command='sql databases list --uri',
+        flags=['instance'],
+        **kwargs)
+
+
+class InstanceCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstanceCompleter, self).__init__(
+        collection='sql.instances',
+        list_command='sql instances list --uri',
+        **kwargs)
+
+
+class UserCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(UserCompleter, self).__init__(
+        collection=None,  # TODO(b/62961917): Should be 'sql.users',
+        api_version='v1beta4',
+        list_command='sql users list --flatten=name[] --format=disable',
+        flags=['instance'],
+        **kwargs)
+
 
 INSTANCE_FLAG = base.Argument(
     '--instance',
     '-i',
     required=True,
-    completion_resource='sql.instances',
+    completer=InstanceCompleter,
     help='Cloud SQL instance ID.')
+
+# Currently, 10230 is the max storage size one can set, and 10 is the minimum.
+INSTANCE_RESIZE_LIMIT_FLAG = base.Argument(
+    '--storage-auto-increase-limit',
+    type=arg_parsers.BoundedInt(10, 10230, unlimited=True),
+    help='Allows you to set a maximum storage capacity. Automatic increases to '
+    'your capacity will stop once this limit has been reached. Default '
+    ' capacity is *unlimited*.')
 
 DEPRECATED_INSTANCE_FLAG_REQUIRED = base.Argument(
     '--instance',
@@ -32,7 +74,7 @@ DEPRECATED_INSTANCE_FLAG_REQUIRED = base.Argument(
         warn=('Starting on 2017-06-30, --instance will no longer be a valid '
               'flag: Run the same command but omit this flag.'),),
     required=True,
-    completion_resource='sql.instances',
+    completer=InstanceCompleter,
     help='Cloud SQL instance ID.')
 
 DEPRECATED_INSTANCE_FLAG = base.Argument(
@@ -44,11 +86,13 @@ DEPRECATED_INSTANCE_FLAG = base.Argument(
         warn=('Starting on 2017-06-30, --instance will no longer be a valid '
               'flag: Run the same command but omit this flag.'),),
     required=False,
-    completion_resource='sql.instances',
+    completer=InstanceCompleter,
     help='Cloud SQL instance ID.')
 
 USERNAME_FLAG = base.Argument(
-    'username', completion_resource='sql.users', help='Cloud SQL username.')
+    'username',
+    completer=UserCompleter,
+    help='Cloud SQL username.')
 
 HOST_FLAG = base.Argument('host', help='Cloud SQL user\'s host.')
 
@@ -66,7 +110,7 @@ PROMPT_FOR_PASSWORD_FLAG = base.Argument(
 
 DATABASE_NAME_FLAG = base.Argument(
     'database',
-    completion_resource='sql.databases',
+    completer=DatabaseCompleter,
     help='Cloud SQL database name.')
 
 CHARSET_FLAG = base.Argument(

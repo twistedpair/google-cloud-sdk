@@ -589,7 +589,9 @@ class ServiceAccountKey(_messages.Message):
       `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}/keys/{key
       }`.
     privateKeyData: The private key data. Only provided in
-      `CreateServiceAccountKey` responses.
+      `CreateServiceAccountKey` responses. Make sure to keep the private key
+      data secure because it allows for the assertion of the service account
+      identity.
     privateKeyType: The output format for the private key. Only provided in
       `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
       `ListServiceAccountKey` responses.  Google never exposes system-managed

@@ -31,7 +31,6 @@ and load from configuration files.
 # to be reflected in the java code. For questions, talk to clouser@ or
 
 
-
 import logging
 import os
 import re
@@ -372,6 +371,13 @@ NETWORK_NAME = 'name'
 SUBNETWORK_NAME = 'subnetwork_name'
 SESSION_AFFINITY = 'session_affinity'
 
+# Attributes for Scheduler Settings
+STANDARD_SCHEDULER_SETTINGS = 'standard_scheduler_settings'
+STANDARD_MIN_INSTANCES = 'min_instances'
+STANDARD_MAX_INSTANCES = 'max_instances'
+STANDARD_TARGET_CPU_UTILIZATION = 'target_cpu_utilization'
+STANDARD_TARGET_THROUGHPUT_UTILIZATION = 'target_throughput_utilization'
+
 
 class _VersionedLibrary(object):
   """A versioned library supported by App Engine."""
@@ -465,7 +471,7 @@ _SUPPORTED_LIBRARIES = [
         'django',
         'http://www.djangoproject.com/',
         'A full-featured web application framework for Python.',
-        ['1.2', '1.3', '1.4', '1.5', '1.9'],
+        ['1.2', '1.3', '1.4', '1.5', '1.9', '1.11'],
         latest_version='1.4',
         ),
     _VersionedLibrary(
@@ -489,7 +495,14 @@ _SUPPORTED_LIBRARIES = [
         'and good intentions.',
         ['0.12'],
         latest_version='0.12',
-        hidden_versions=['0.12'],
+        ),
+    _VersionedLibrary(
+        'futures',
+        'https://docs.python.org/3/library/concurrent.futures.html',
+        'Backport of Python 3.2 Futures.',
+        ['3.0.5'],
+        latest_version='3.0.5',
+        hidden_versions=['3.0.5'],
         ),
     _VersionedLibrary(
         'grpcio',
@@ -497,7 +510,6 @@ _SUPPORTED_LIBRARIES = [
         'A high performance general RPC framework',
         ['1.0.0'],
         latest_version='1.0.0',
-        default_version='1.0.0',
         hidden_versions=['1.0.0'],
         ),
     _VersionedLibrary(
@@ -520,9 +532,8 @@ _SUPPORTED_LIBRARIES = [
         'http://lxml.de/',
         'A Pythonic binding for the C libraries libxml2 and libxslt.',
         ['2.3', '2.3.5', '3.7.3'],
-        latest_version='2.3',
+        latest_version='3.7.3',
         experimental_versions=['2.3.5'],
-        hidden_versions=['3.7.3'],
         ),
     _VersionedLibrary(
         'markupsafe',
@@ -585,6 +596,14 @@ _SUPPORTED_LIBRARIES = [
         latest_version='1.7',
         ),
     _VersionedLibrary(
+        'protobuf',
+        'https://developers.google.com/protocol-buffers/',
+        'A library for serializing structured data',
+        ['3.0.0'],
+        latest_version='3.0.0',
+        hidden_versions=['3.0.0'],
+        ),
+    _VersionedLibrary(
         'PyAMF',
         'http://pyamf.appspot.com/index.html',
         'A library that provides (AMF) Action Message Format functionality.',
@@ -626,7 +645,6 @@ _SUPPORTED_LIBRARIES = [
         'UltraJSON is an ultra fast JSON encoder and decoder written in pure C',
         ['1.35'],
         latest_version='1.35',
-        hidden_versions=['1.35'],
         ),
     _VersionedLibrary(
         'webapp2',
@@ -669,12 +687,21 @@ _NAME_TO_SUPPORTED_LIBRARY = dict((library.name, library)
 # A mapping from third-party name/version to a list of that library's
 # dependencies.
 REQUIRED_LIBRARIES = {
+    ('django', '1.11'): [('pytz', '2016.4')],
     ('flask', '0.12'): [('click', '6.6'), ('itsdangerous', '0.24'),
                         ('jinja2', '2.6'), ('werkzeug', '0.11.10')],
     ('jinja2', '2.6'): [('markupsafe', '0.15'), ('setuptools', '0.6c11')],
     ('jinja2', 'latest'): [('markupsafe', 'latest'), ('setuptools', 'latest')],
     ('matplotlib', '1.2.0'): [('numpy', '1.6.1')],
     ('matplotlib', 'latest'): [('numpy', 'latest')],
+    ('protobuf', '3.0.0'): [('six', '1.9.0')],
+    ('protobuf', 'latest'): [('six', 'latest')],
+    ('grpcio', '1.0.0'): [('protobuf', '3.0.0'), ('enum', '0.9.23'),
+                          ('futures', '3.0.5'), ('six', '1.9.0'),
+                          ('setuptools', '0.6c11')],
+    ('grpcio', 'latest'): [('protobuf', 'latest'), ('enum', 'latest'),
+                           ('futures', 'latest'), ('six', 'latest'),
+                           ('setuptools', 'latest')]
 }
 
 _USE_VERSION_FORMAT = ('use one of: "%s"')
@@ -718,9 +745,9 @@ _MAX_URL_LENGTH = 2047
 # We allow certain headers to be larger than the normal limit of 8192 bytes.
 _MAX_HEADER_SIZE_FOR_EXEMPTED_HEADERS = 10240
 
-_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'python',
-                    'python27', 'python-compat', 'java', 'java7', 'vm',
-                    'custom', 'nodejs', 'ruby')
+_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php7',
+                    'python', 'python27', 'python-compat', 'java', 'java7',
+                    'vm', 'custom', 'nodejs', 'ruby')
 _all_runtimes = _CANNED_RUNTIMES
 
 
@@ -971,7 +998,7 @@ class HttpHeadersDict(validation.ValidatedDict):
 
 
 class URLMap(HandlerBase):
-  """Maps from URLs to handlers.
+  r"""Maps from URLs to handlers.
 
   This class acts similar to a union type. Its purpose is to describe a mapping
   between a set of URLs and their handlers. The handler type of a given instance
@@ -1551,6 +1578,21 @@ class CpuUtilization(validation.Validated):
   }
 
 
+class StandardSchedulerSettings(validation.Validated):
+  """Class representing StandardSchedulerSettings in AppInfoExternal."""
+
+  ATTRIBUTES = {
+      STANDARD_MAX_INSTANCES: validation.Optional(
+          validation.TYPE_INT),
+      STANDARD_MIN_INSTANCES: validation.Optional(
+          validation.TYPE_INT),
+      STANDARD_TARGET_CPU_UTILIZATION: validation.Optional(
+          validation.TYPE_FLOAT),
+      STANDARD_TARGET_THROUGHPUT_UTILIZATION: validation.Optional(
+          validation.TYPE_FLOAT),
+  }
+
+
 class EndpointsApiService(validation.Validated):
   """Class representing EndpointsApiService in AppInfoExternal."""
   ATTRIBUTES = {
@@ -1574,6 +1616,8 @@ class AutomaticScaling(validation.Validated):
       COOL_DOWN_PERIOD_SEC: validation.Optional(
           validation.Range(60, sys.maxint, int)),
       CPU_UTILIZATION: validation.Optional(CpuUtilization),
+      STANDARD_SCHEDULER_SETTINGS: validation.Optional(
+          StandardSchedulerSettings),
       TARGET_NETWORK_SENT_BYTES_PER_SEC:
       validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_NETWORK_SENT_PACKETS_PER_SEC:
@@ -2420,6 +2464,7 @@ class AppInfoExternal(validation.Validated):
     return (self.vm or
             self.env in ['2', 'flex', 'flexible'])
 
+
 def ValidateHandlers(handlers, is_include_file=False):
   """Validates a list of handler (`URLMap`) objects.
 
@@ -2574,18 +2619,15 @@ def ParseExpiration(expiration):
 # apphosting/client/app_config_old.cc,
 # apphosting/api/app_config/app_config_server2.cc
 
-# Valid characters for a file name.
-_file_path_positive_re = re.compile(r'^.{1,256}$')
-
 # Forbid `.`, `..`, and leading `-`, `_ah/` or `/`
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 
 # Forbid `//` and trailing `/`
 _file_path_negative_2_re = re.compile(r'//|/$')
 
-# Forbid any use of space other than in the middle of a directory or file
-# name.
-_file_path_negative_3_re = re.compile(r'^ | $|/ | /')
+# Forbid any use of space and newlines other than in the middle of a directory
+# or file name.
+_file_path_negative_3_re = re.compile(r'^ | $|/ | /|\n')
 
 
 # (erinjerison) Lint seems to think I'm specifying the word "character" as an
@@ -2609,8 +2651,10 @@ def ValidFilename(filename):
     An error string if the file name is invalid. `''` is returned if the file
     name is valid.
   """
-  if _file_path_positive_re.match(filename) is None:
-    return 'Invalid character in filename: %s' % filename
+  if not filename:
+    return 'Filename cannot be empty'
+  if len(filename) > 1024:
+    return 'Filename cannot exceed 1024 characters: %s' % filename
   if _file_path_negative_1_re.search(filename) is not None:
     return ('Filename cannot contain "." or ".." '
             'or start with "-" or "_ah/": %s' %

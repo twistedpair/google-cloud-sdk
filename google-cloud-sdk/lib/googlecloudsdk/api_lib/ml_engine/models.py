@@ -47,6 +47,20 @@ class ModelsClient(object):
             onlinePredictionLogging=enable_logging))
     return self.client.projects_models.Create(req)
 
+  def GetIamPolicy(self, model_ref):
+    return self.client.projects_models.GetIamPolicy(
+        self.messages.MlProjectsModelsGetIamPolicyRequest(
+            resource=model_ref.RelativeName()))
+
+  def SetIamPolicy(self, model_ref, policy, update_mask):
+    request = self.messages.GoogleIamV1SetIamPolicyRequest(
+        policy=policy,
+        updateMask=update_mask)
+    return self.client.projects_models.SetIamPolicy(
+        self.messages.MlProjectsModelsSetIamPolicyRequest(
+            googleIamV1SetIamPolicyRequest=request,
+            resource=model_ref.RelativeName()))
+
   def Delete(self, model):
     """Delete an existing model."""
     model_ref = _ParseModel(model)

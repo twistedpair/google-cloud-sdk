@@ -277,8 +277,8 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
     name: The resource path name. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0` or `projects/p1/locations
       /us-central1/registries/registry0/devices/{num_id}`. When `name` is
-      populated as a response from the service, it will always end in the
-      device numeric id.
+      populated as a response from the service, it always ends in the device
+      numeric ID.
     updateMask: Only updates the `device` fields indicated by this mask. The
       field mask must not be empty, and it must not contain fields that are
       immutable or only set by the server. Mutable top-level fields:
@@ -495,8 +495,7 @@ class DataAccessOptions(_messages.Message):
 
 
 class Device(_messages.Message):
-  """The device resource. Contains metadata about the device that is only
-  configured in the cloud.
+  """The device resource.
 
   Enums:
     EnabledStateValueValuesEnum: If disabled, connections from this device
@@ -506,42 +505,43 @@ class Device(_messages.Message):
 
   Fields:
     config: The most recent device configuration, which is eventually sent
-      from the Cloud IoT service to the device. If not present on creation,
-      the configuration will be initialized with an empty payload and version
-      value of `1`. To update this field after creation, use the
+      from the Cloud IoT Core service to the device. If not present on
+      creation, the configuration will be initialized with an empty payload
+      and version value of `1`. To update this field after creation, use the
       `DeviceManager.ModifyCloudToDeviceConfig` method.
     credentials: The credentials used to authenticate this device. To allow
       credential rotation without interruption, multiple device credentials
-      may be bound to this device. No more than 3 credentials may be bound to
+      can be bound to this device. No more than 3 credentials can be bound to
       a single device at a time.
     enabledState: If disabled, connections from this device will fail. Can be
       used to temporarily prevent the device from connecting if, for example,
       the sensor is generating bad data and needs maintenance.
-    id: The user-defined device identifier. The device id must be unique
+    id: The user-defined device identifier. The device ID must be unique
       within a device registry.
-    lastConfigAckTime: The last time a cloud-to-device config version
-      acknowledgement was received from the device. Output only.
-    lastErrorStatus: The error message of the last error, e.g., failed to
-      publish to Cloud Pub/Sub. 'last_error_time' is the timestamp of this
-      field. If no errors are present, this will have an empty message (whose
-      status code is 0 == OK), otherwise this field is expected to have a not-
-      OK status code. Output only.
-    lastErrorTime: The last time an error happened, e.g., failed to publish to
-      Cloud Pub/Sub. This field is the timestamp of 'last_error_status'.
-      Output only.
-    lastEventTime: The last time an event was received. The timestamps are
-      periodically collected and written to storage; this means that it is
-      possible to see stale timestamps by a few minutes. Output only.
-    lastHeartbeatTime: The last time a heartbeat was received. The timestamps
-      are periodically collected and written to storage; this means that it is
-      possible to see stale timestamps by a few minutes. Output only.
+    lastConfigAckTime: [Output only] The last time a cloud-to-device config
+      version acknowledgment was received from the device.
+    lastErrorStatus: [Output only] The error message of the last error, e.g.,
+      failed to publish to Cloud Pub/Sub. 'last_error_time' is the timestamp
+      of this field. If no errors are present, this will have an empty message
+      (whose status code is 0 == OK), otherwise this field is expected to have
+      a not-OK status code.
+    lastErrorTime: [Output only] The last time an error happened, e.g., failed
+      to publish to Cloud Pub/Sub. This field is the timestamp of
+      'last_error_status'.
+    lastEventTime: [Output only] The last time an event was received.
+      Timestamps are periodically collected and written to storage; they may
+      be stale by a few minutes.
+    lastHeartbeatTime: [Output only] The last time a heartbeat was received.
+      Timestamps are periodically collected and written to storage; they may
+      be stale by a few minutes.
     name: The resource path name. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0` or `projects/p1/locations
       /us-central1/registries/registry0/devices/{num_id}`. When `name` is
-      populated as a response from the service, it will always end in the
-      device numeric id.
-    numId: A server defined unique numerical id for the device. This is a more
-      compact way to identify devices, and it is globally unique. Output only.
+      populated as a response from the service, it always ends in the device
+      numeric ID.
+    numId: [Output only] A server-defined unique numeric ID for the device.
+      This is a more compact way to identify devices, and it is globally
+      unique.
   """
 
   class EnabledStateValueValuesEnum(_messages.Enum):
@@ -573,28 +573,29 @@ class Device(_messages.Message):
 
 
 class DeviceConfig(_messages.Message):
-  """The device configuration, and it's metadata. Eventually delivered to
+  """The device configuration and its metadata. Eventually delivered to
   devices.
 
   Fields:
-    cloudUpdateTime: The time when this version state was updated in the Cloud
-      IoT service. This timestamp is set by the server. Output only.
+    cloudUpdateTime: [Output only] The time when this version state was
+      updated in the Cloud IoT Core service. This timestamp is set by the
+      server.
     data: The device configuration data.
-    deviceAckTime: The time when the Cloud IoT server received the
-      acknowledgement from the device, indicating that the device has received
-      this configuration version. If this field is not present, it indicates
-      that the device has not yet acknowledged that it received this version.
-      Note that when sending the config to the device, there may have been
-      many config versions on the Cloud IoT service while the device was
+    deviceAckTime: [Output only] The time when the Cloud IoT Core server
+      received the acknowledgment from the device, indicating that the device
+      has received this configuration version. If this field is not present,
+      the device has not yet acknowledged that it received this version. Note
+      that when sending the config to the device, there may have been many
+      config versions on the Cloud IoT Core service while the device was
       disconnected; and on connection, only the latest version is sent to the
       device. Some of the versions may never be sent to the device, and
       therefore are never acknowledged. This timestamp is set by the Cloud IoT
-      service. Output only.
-    version: The version of this update. The version number is assigned by the
-      server, and is always greater than zero after device creation. The
-      version must be zero on the `CreateDevice` request if a `config` is
-      specified; the response of `CreateDevice` will always have a value of
-      one. Output only.
+      Core service.
+    version: [Output only] The version of this update. The version number is
+      assigned by the server, and is always greater than zero after device
+      creation. The version must be zero on the `CreateDevice` request if a
+      `config` is specified; the response of `CreateDevice` will always have a
+      value of one.
   """
 
   cloudUpdateTime = _messages.StringField(1)
@@ -618,11 +619,12 @@ class DeviceCredential(_messages.Message):
   """A server-stored device credential used for authentication.
 
   Fields:
-    expirationTime: Optionally, the time when this credential stops being
-      valid. This credential will be ignored for new client authentication
+    expirationTime: [Optional] The time at which this credential becomes
+      invalid. This credential will be ignored for new client authentication
       requests after this timestamp; however, it will not be automatically
       deleted.
-    publicKey: A public key used to verify the signature of JWT tokens.
+    publicKey: A public key used to verify the signature of JSON Web Tokens
+      (JWTs).
   """
 
   expirationTime = _messages.StringField(1)
@@ -630,15 +632,14 @@ class DeviceCredential(_messages.Message):
 
 
 class DeviceRegistry(_messages.Message):
-  """This is a container for a group of devices.
+  """A container for a group of devices.
 
   Fields:
     eventNotificationConfig: Configuration to notify events received from the
       device.
-    id: The identifier of this device registry. e.g. `myRegistry`
+    id: The identifier of this device registry. For example, `myRegistry`.
     mqttConfig: The configuration of the MQTT broker associated with this
-      device registry, which includes enablement, payload data format type,
-      etc.
+      device registry, including enablement, payload data format type, etc.
     name: The resource path name. For example, `projects/example-
       project/locations/us-central1/registries/my-registry`.
   """
@@ -774,18 +775,17 @@ class MqttConfig(_messages.Message):
   """The configuration of MQTT for a device registry.
 
   Enums:
-    MqttConfigStateValueValuesEnum: If enabled, it allows connections using
-      the MQTT protocol. Otherwise any MQTT connection to this registry will
-      fail.
+    MqttConfigStateValueValuesEnum: If enabled, allows connections using the
+      MQTT protocol. Otherwise any MQTT connection to this registry will fail.
 
   Fields:
-    mqttConfigState: If enabled, it allows connections using the MQTT
-      protocol. Otherwise any MQTT connection to this registry will fail.
+    mqttConfigState: If enabled, allows connections using the MQTT protocol.
+      Otherwise any MQTT connection to this registry will fail.
   """
 
   class MqttConfigStateValueValuesEnum(_messages.Enum):
-    """If enabled, it allows connections using the MQTT protocol. Otherwise
-    any MQTT connection to this registry will fail.
+    """If enabled, allows connections using the MQTT protocol. Otherwise any
+    MQTT connection to this registry will fail.
 
     Values:
       UNSPECIFIED_MQTT_STATE: No MQTT state specified. If not specified, MQTT
@@ -874,7 +874,7 @@ class PublicKeyCredential(_messages.Message):
 
     Values:
       UNSPECIFIED_PUBLIC_KEY_FORMAT: The format has not been specified. This
-        is will return an error. A format must be defined.
+        is an invalid default value and must not be used.
       RSA_X509_PEM: An RSA public key wrapped in a X.509v3 certificate
         [RFC5280](https://www.ietf.org/rfc/rfc5280.txt), encoded in base64,
         and wrapped by `-----BEGIN CERTIFICATE-----` and `-----END

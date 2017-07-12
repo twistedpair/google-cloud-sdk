@@ -44,7 +44,7 @@ def Create(taxonomy_id,
       messages.DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest(
           parent=utils.GetTaxonomyRelativeName(taxonomy_id),
           annotation=messages.Annotation(
-              annotationName=annotation_name,
+              displayName=annotation_name,
               description=description,
               parentAnnotation=parent_annotation,
               childAnnotations=child_annotations if child_annotations else [])))

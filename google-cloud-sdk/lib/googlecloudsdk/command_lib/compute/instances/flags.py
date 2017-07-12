@@ -194,9 +194,9 @@ def MakeSourceInstanceTemplateArg():
       required=False,
       global_collection='compute.instanceTemplates',
       short_help=('The name of the instance template that the instance will '
-                  'be created from.\nUsers can also override machine '
-                  'type nad labels. Values of other flags will be ignored - '
-                  '--source-intanse-template will be used instead.'))
+                  'be created from.\n\nUsers can also override machine '
+                  'type and labels. Values of other flags will be ignored and '
+                  '`--source-instance-template` will be used instead.'))
 
 
 def AddImageArgs(parser):
@@ -488,10 +488,6 @@ def AddCustomMachineTypeArgs(parser):
       must be specified if a custom machine type is desired, and the
       --machine-type flag must be omitted.
       """)
-
-
-def AddExtendedMachineTypeArgs(parser):
-  """Adds the argument enabling extended custom machine types for instances."""
   parser.add_argument(
       '--custom-extensions',
       action='store_true',

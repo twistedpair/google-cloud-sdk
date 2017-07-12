@@ -678,16 +678,28 @@ class _LegacyGenerator(object):
       SaveCredentialsAsADC(self.credentials, self._adc_path)
 
       if self.credentials_type == creds.CredentialType.USER_ACCOUNT:
-        # we create a small .boto file for gsutil, to be put in BOTO_PATH
-        self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
-            [Credentials]
-            gs_oauth2_refresh_token = {token}
-            """).format(token=self.credentials.refresh_token))
+        # We create a small .boto file for gsutil, to be put in BOTO_PATH.
+        # Our client_id and client_secret should accompany our refresh token;
+        # if a user loaded any other .boto files that specified a different
+        # id and secret, those would override our id and secret, causing any
+        # attempts to obtain an access token with our refresh token to fail.
+        self._WriteFileContents(
+            self._gsutil_path, '\n'.join([
+                '[OAuth2]',
+                'client_id = {cid}',
+                'client_secret = {secret}',
+                '',
+                '[Credentials]',
+                'gs_oauth2_refresh_token = {token}',
+            ]).format(cid=config.CLOUDSDK_CLIENT_ID,
+                      secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
+                      token=self.credentials.refresh_token))
       elif self.credentials_type == creds.CredentialType.SERVICE_ACCOUNT:
-        self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
-            [Credentials]
-            gs_service_key_file = {key_file}
-            """).format(key_file=self._adc_path))
+        self._WriteFileContents(
+            self._gsutil_path, '\n'.join([
+                '[Credentials]',
+                'gs_service_key_file = {key_file}',
+            ]).format(key_file=self._adc_path))
       else:
         raise CredentialFileSaveError(
             'Unsupported credentials type {0}'.format(type(self.credentials)))
@@ -700,14 +712,15 @@ class _LegacyGenerator(object):
         pk.write(key)
 
       # the .boto file gets some different fields
-      self._WriteFileContents(self._gsutil_path, textwrap.dedent("""\
-          [Credentials]
-          gs_service_client_id = {account}
-          gs_service_key_file = {key_file}
-          gs_service_key_file_password = {key_password}
-          """).format(account=self.credentials.service_account_email,
-                      key_file=self._p12_key_path,
-                      key_password=password))
+      self._WriteFileContents(
+          self._gsutil_path, '\n'.join([
+              '[Credentials]',
+              'gs_service_client_id = {account}',
+              'gs_service_key_file = {key_file}',
+              'gs_service_key_file_password = {key_password}',
+          ]).format(account=self.credentials.service_account_email,
+                    key_file=self._p12_key_path,
+                    key_password=password))
 
   def _WriteFileContents(self, filepath, contents):
     """Writes contents to a path, ensuring mkdirs.

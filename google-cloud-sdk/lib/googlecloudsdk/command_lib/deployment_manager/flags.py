@@ -14,7 +14,7 @@
 
 """Helper methods for configuring deployment manager command flags."""
 
-from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
+from googlecloudsdk.api_lib.deployment_manager import dm_api_util
 from googlecloudsdk.calliope import arg_parsers
 
 
@@ -42,6 +42,14 @@ OPERATION_FORMAT = """
     )
 """
 
+DEPLOYMENT_FORMAT = """
+    default(
+      name, id, description, fingerprint,insertTime, manifest.basename(),
+      labels, operation.operationType, operation.progress,
+      operation.status, operation.user, operation.endTime, operation.startTime,
+      operation.error, update)
+"""
+
 
 def AddDeploymentNameFlag(parser):
   """Add properties flag."""
@@ -55,7 +63,7 @@ def AddPropertiesFlag(parser):
       '--properties',
       help='A comma separated, key:value, map '
       'to be used when deploying a template file directly.',
-      type=arg_parsers.ArgDict(operators=dm_v2_util.NewParserDict()),
+      type=arg_parsers.ArgDict(operators=dm_api_util.NewParserDict()),
       dest='properties')
 
 

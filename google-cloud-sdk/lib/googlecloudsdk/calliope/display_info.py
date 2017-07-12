@@ -13,6 +13,8 @@
 # limitations under the License.
 """Resource display info for the Calliope display module."""
 
+from googlecloudsdk.core.cache import cache_update_ops
+
 
 class DisplayInfo(object):
   """Display info accumulator for priming Displayer.
@@ -20,7 +22,15 @@ class DisplayInfo(object):
   "legacy" logic will be dropped when the incremental Command class refactor
   is complete.
 
+  NOTICE: If you add an attribute:
+    (1) document it
+    (2) handle it in AddLowerDisplayInfo()
+
   Attributes:
+    _cache_updater: A resource_cache.Updater class that will be instantiated
+      and called to update the cache to reflect the resources returned by the
+      calling command.
+    _filter: The default filter string. args.filter takes precedence.
     _format: The default format string. args.format takes precedence.
     _transforms: The filter/format transforms symbol dict.
     _aliases: The resource name alias dict.
@@ -30,12 +40,37 @@ class DisplayInfo(object):
 
   def __init__(self):
     self._legacy = True
-    self._format = None
+    self._cache_updater = None
     self._filter = None
+    self._format = None
     self._transforms = {}
     self._aliases = {}
 
   # pylint: disable=redefined-builtin, name matches args.format and --format
+  def AddLowerDisplayInfo(self, display_info):
+    """Add lower precedence display_info to the object.
+
+    This method is called by calliope to propagate CLI low precedence parent
+    info to its high precedence children.
+
+    Args:
+      display_info: The low precedence DisplayInfo object to add.
+    """
+    if not self._cache_updater:
+      self._cache_updater = display_info.cache_updater
+    if not self._filter:
+      self._filter = display_info.filter
+    if not self._format:
+      self._format = display_info.format
+    if display_info.transforms:
+      transforms = dict(display_info.transforms)
+      transforms.update(self.transforms)
+      self._transforms = transforms
+    if display_info.aliases:
+      aliases = dict(display_info.aliases)
+      aliases.update(self._aliases)
+      self._aliases = aliases
+
   def AddFormat(self, format):
     """Adds a format to the display info, newer info takes precedence.
 
@@ -47,6 +82,11 @@ class DisplayInfo(object):
       self._format = format
 
   def AddFilter(self, filter):
+    """Adds a filter to the display info, newer info takes precedence.
+
+    Args:
+      filter: The default filter string. args.filter takes precedence.
+    """
     if filter:
       self._filter = filter
 
@@ -82,25 +122,23 @@ class DisplayInfo(object):
     if aliases:
       self._aliases.update(aliases)
 
-  def AddLowerDisplayInfo(self, display_info):
-    """Add lower precedence display_info to the object.
+  def AddCacheUpdater(self, cache_updater):
+    """Adds a cache_updater to the display info, newer values takes precedence.
 
-    This method is called by calliope to propagate CLI low precedence parent
-    info to its high precedence children.
+    The cache updater is called to update the resource cache for CreateCommand,
+    DeleteCommand and ListCommand commands.
 
     Args:
-      display_info: The low precedence DisplayInfo object to add.
+      cache_updater: A resource_cache.Updater class that will be instantiated
+        and called to update the cache to reflect the resources returned by the
+        calling command. None disables cache update.
     """
-    if not self._format:
-      self._format = display_info.format
-    if display_info.transforms:
-      transforms = dict(display_info.transforms)
-      transforms.update(self.transforms)
-      self._transforms = transforms
-    if display_info.aliases:
-      aliases = dict(display_info.aliases)
-      aliases.update(self._aliases)
-      self._aliases = aliases
+    self._legacy = False
+    self._cache_updater = cache_updater or cache_update_ops.NoCacheUpdater
+
+  @property
+  def cache_updater(self):
+    return self._cache_updater
 
   @property
   def format(self):

@@ -395,7 +395,7 @@ def AddAutoscalersToMigs(migs_iterator,
       fail_when_api_not_supported=fail_when_api_not_supported)
 
   for location in list(zones) + list(regions):
-    autoscalers[location] = []
+    autoscalers[location.Name()] = []
 
   for autoscaler in all_autoscalers:
     autoscaler_scope = None
@@ -404,8 +404,8 @@ def AddAutoscalersToMigs(migs_iterator,
     if hasattr(autoscaler, 'region') and autoscaler.region is not None:
       autoscaler_scope = ParseRegion(autoscaler.region)
     if autoscaler_scope is not None:
-      autoscalers.setdefault(autoscaler_scope, [])
-      autoscalers[autoscaler_scope].append(autoscaler)
+      autoscalers.setdefault(autoscaler_scope.Name(), [])
+      autoscalers[autoscaler_scope.Name()].append(autoscaler)
 
   for mig in migs:
     location = None
@@ -421,7 +421,7 @@ def AddAutoscalersToMigs(migs_iterator,
     if location and scope_type:
       autoscaler = AutoscalerForMig(
           mig_name=mig['name'],
-          autoscalers=autoscalers[location],
+          autoscalers=autoscalers[location.Name()],
           location=location,
           scope_type=scope_type)
     if autoscaler:
@@ -560,50 +560,16 @@ def BuildAutoscaler(args, messages, igm_ref, name):
   return autoscaler
 
 
-def AddAutohealingArgs(parser):
-  """Adds autohealing-related commandline arguments to parser."""
-  health_check_group = parser.add_mutually_exclusive_group()
-  health_check_group.add_argument(
-      '--http-health-check',
-      help=('Specifies the HTTP health check object used for autohealing '
-            'instances in this group.'))
-  health_check_group.add_argument(
-      '--https-health-check',
-      help=('Specifies the HTTPS health check object used for autohealing '
-            'instances in this group.'))
-  parser.add_argument(
-      '--initial-delay',
-      type=arg_parsers.Duration(),
-      help="""\
-      Specifies the length of the period during which the instance is known to
-      be initializing and should not be autohealed even if unhealthy.
-      Valid units for this flag are ``s'' for seconds, ``m'' for minutes and
-      ``h'' for hours. If no unit is specified, seconds is assumed. This value
-      cannot be greater than 1 hour.
-      """)
-
-
-def CreateAutohealingPolicies(resources, messages, args):
+def CreateAutohealingPolicies(messages, health_check, initial_delay):
   """Creates autohealing policy list from args."""
-  if hasattr(args, 'http_health_check'):  # alpha or beta
-    if args.http_health_check or args.https_health_check or args.initial_delay:
-      policy = messages.InstanceGroupManagerAutoHealingPolicy()
-      if args.http_health_check:
-        health_check_ref = resources.Parse(
-            args.http_health_check,
-            params={'project': properties.VALUES.core.project.GetOrFail},
-            collection='compute.httpHealthChecks')
-        policy.healthCheck = health_check_ref.SelfLink()
-      elif args.https_health_check:
-        health_check_ref = resources.Parse(
-            args.https_health_check,
-            params={'project': properties.VALUES.core.project.GetOrFail},
-            collection='compute.httpsHealthChecks')
-        policy.healthCheck = health_check_ref.SelfLink()
-      if args.initial_delay:
-        policy.initialDelaySec = args.initial_delay
-      return [policy]
-  return []
+  if health_check is None and initial_delay is None:
+    return []
+  policy = messages.InstanceGroupManagerAutoHealingPolicy()
+  if health_check:
+    policy.healthCheck = health_check
+  if initial_delay:
+    policy.initialDelaySec = initial_delay
+  return [policy]
 
 
 def _GetInstanceTemplatesSet(*versions_lists):
@@ -747,3 +713,20 @@ def _ComputeInstanceGroupSize(items, client, resources):
 
     item['size'] = str(instance_group_uri_to_size.get(gm_self_link, ''))
     yield item
+
+
+def GetHealthCheckUri(resources, args, health_check_parser=None):
+  """Creates health check reference from args."""
+  if args.health_check:
+    ref = health_check_parser.ResolveAsResource(args, resources)
+    return ref.SelfLink()
+  if args.http_health_check:
+    return resources.Parse(
+        args.http_health_check,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.httpHealthChecks').SelfLink()
+  if args.https_health_check:
+    return resources.Parse(
+        args.https_health_check,
+        params={'project': properties.VALUES.core.project.GetOrFail},
+        collection='compute.httpsHealthChecks').SelfLink()

@@ -18,17 +18,19 @@ import StringIO
 import time
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
-from googlecloudsdk.command_lib.deployment_manager import dm_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
 
-def Execute(request, async, call, logger):
+def Execute(client, messages, resources, request, async, call, logger):
   """Executes the request, managing asynchronous behavior.
 
   Args:
+    client: The API client to use.
+    messages: The API message to use.
+    resources: The API resource to use.
     request: The request to pass call.
     async: False if this call should poll for the Operation's success.
     call: Function that calls the appropriate API.
@@ -45,11 +47,12 @@ def Execute(request, async, call, logger):
   """
   response = call(request)
   if not async:
-    operation_ref = dm_base.GetResources().Parse(
+    operation_ref = resources.Parse(
         response.name,
         params={'project': properties.VALUES.core.project.GetOrFail},
         collection='deploymentmanager.operations')
-    WaitForOperation(operation_ref.operation, response.operationType,
+    WaitForOperation(client, messages,
+                     operation_ref.operation, response.operationType,
                      project=request.project)
 
   logger(request, async)
@@ -73,7 +76,8 @@ def GetOperationError(error):
   return error_message.getvalue()
 
 
-def WaitForOperation(operation_name, operation_description=None,
+def WaitForOperation(client, messages, operation_name,
+                     operation_description=None,
                      project=None, timeout=180):
   """Wait for an operation to complete.
 
@@ -81,6 +85,8 @@ def WaitForOperation(operation_name, operation_description=None,
   progress indicator. Returns when the operation has completed.
 
   Args:
+    client: The API client to use.
+    messages: The API message to use.
     operation_name: The name of the operation to wait on, as returned by
         operations.list.
     operation_description: A short description of the operation to wait on,
@@ -99,11 +105,11 @@ def WaitForOperation(operation_name, operation_description=None,
   message = ('Waiting for {0}[{1}]'.format(
       operation_description + ' ' if operation_description else '',
       operation_name))
-  request = dm_base.GetMessages().DeploymentmanagerOperationsGetRequest(
+  request = messages.DeploymentmanagerOperationsGetRequest(
       project=project, operation=operation_name)
   with progress_tracker.ProgressTracker(message, autotick=False) as ticker:
     while ticks < timeout:
-      operation = dm_base.GetClient().operations.Get(request)
+      operation = client.operations.Get(request)
       # Operation status is one of PENDING, RUNNING, DONE
       if operation.status == 'DONE':
         if operation.error:
@@ -121,4 +127,3 @@ def WaitForOperation(operation_name, operation_description=None,
     raise exceptions.Error(
         'Wait for Operation [{0}] exceeded timeout [{1}].'.format(
             operation_name, str(timeout)))
-

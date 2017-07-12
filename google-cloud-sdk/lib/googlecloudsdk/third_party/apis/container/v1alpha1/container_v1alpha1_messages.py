@@ -37,10 +37,12 @@ class AddonsConfig(_messages.Message):
     httpLoadBalancing: Configuration for the HTTP (L7) load balancing
       controller addon, which makes it easy to set up HTTP load balancers for
       services in a cluster.
+    kubernetesDashboard: Configuration for the Kubernetes Dashboard.
   """
 
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 3)
 
 
 class AutoUpgradeOptions(_messages.Message):
@@ -1710,6 +1712,16 @@ class IPAllocationPolicy(_messages.Message):
   useIpAliases = _messages.BooleanField(6)
 
 
+class KubernetesDashboard(_messages.Message):
+  """Configuration for the Kubernetes Dashboard.
+
+  Fields:
+    disabled: Whether the Kubernetes Dashboard is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class LegacyAbac(_messages.Message):
   """Configuration for the legacy Attribute Based Access Control authorization
   mode.
@@ -1829,10 +1841,10 @@ class NetworkPolicy(_messages.Message):
     """The selected network policy provider.
 
     Values:
-      UNKNOWN: Not set
+      PROVIDER_UNSPECIFIED: Not set
       CALICO: Tigera (Calico Felix).
     """
-    UNKNOWN = 0
+    PROVIDER_UNSPECIFIED = 0
     CALICO = 1
 
   enabled = _messages.BooleanField(1)
@@ -1870,6 +1882,7 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
+      Currently restricted because of b/36071127#comment27
     enableAuditLogging: Whether to enable execve audit logging on the nodes.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.

@@ -29,6 +29,39 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
 
+CLUSTERS_FORMAT = """
+    table(
+        name,
+        zone,
+        master_version():label=MASTER_VERSION,
+        endpoint:label=MASTER_IP,
+        nodePools[0].config.machineType,
+        currentNodeVersion:label=NODE_VERSION,
+        currentNodeCount:label=NUM_NODES,
+        status
+    )
+"""
+
+OPERATIONS_FORMAT = """
+    table(
+        name,
+        operationType:label=TYPE,
+        zone,
+        targetLink.basename():label=TARGET,
+        statusMessage,
+        status
+    )
+"""
+
+NODEPOOLS_FORMAT = """
+     table(
+        name,
+        config.machineType,
+        config.diskSizeGb,
+        version:label=NODE_VERSION
+     )
+"""
+
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 

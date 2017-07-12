@@ -20,6 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://cloudresourcemanager.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

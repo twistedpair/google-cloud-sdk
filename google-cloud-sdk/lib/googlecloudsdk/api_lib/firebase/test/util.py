@@ -168,3 +168,43 @@ def _GetCatalog(client, messages, environment_type):
     # such as a socket.error from httplib2.
     log.error('Unable to access the Firebase Test Lab environment catalog.')
     raise  # Re-raise the error in case Calliope can do something with it.
+
+
+def ParseRoboDirectiveKey(key):
+  """Returns a tuple representing a directive's type and resource name.
+
+  Args:
+    key: the directive key, which can be "<type>:<resource>" or "<resource>"
+
+  Returns:
+    A tuple of the directive's parsed type and resource name. If no type is
+    specified, "text" will be returned as the default type.
+
+  Raises:
+    InvalidArgException: if the input format is incorrect or if the specified
+    type is unsupported.
+  """
+
+  parts = key.split(':')
+  resource_name = parts[-1]
+  if len(parts) > 2:
+    # Invalid format: at most one ':' is allowed.
+    raise exceptions.InvalidArgException(
+        'robo_directives', 'Invalid format for key [{0}]. '
+        'Use a colon only to separate action type and resource name.'.format(
+            key))
+
+  if len(parts) == 1:
+    # Format: '<resource_name>=<input_text>' defaults to 'text'
+    action_type = 'text'
+  else:
+    # Format: '<type>:<resource_name>=<input_value>'
+    action_type = parts[0]
+    supported_action_types = ['text', 'click']
+    if action_type not in supported_action_types:
+      raise exceptions.InvalidArgException(
+          'robo_directives',
+          'Unsupported action type [{0}]. Please choose one of [{1}]'.format(
+              action_type, ', '.join(supported_action_types)))
+
+  return (action_type, resource_name)

@@ -786,6 +786,10 @@
             "ADMIN_ACTIVITY",
             "DATA_ACCESS"
           ]
+        },
+        "isReadPermissionType": {
+          "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ.",
+          "type": "boolean"
         }
       }
     },
@@ -1241,7 +1245,7 @@
                           "description": "Required. The resource name of the CryptoKey to use for decryption.\nThe server will choose the appropriate version.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.+$",
                           "type": "string"
                         }
                       },

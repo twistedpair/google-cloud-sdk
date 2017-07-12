@@ -17,6 +17,7 @@
 import sys
 
 from googlecloudsdk.command_lib.util import deprecated_completers
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import progress_tracker
 
@@ -52,14 +53,12 @@ class ArgumentCompleter(object):
       try:
         completer = self._completer_class()
         parameter_info = completer.ParameterInfo(parsed_args, self._argument)
-        if isinstance(completer,
-                      deprecated_completers.DeprecatedListCommandCompleter):
-          old_completer = completer
-        else:
-          old_completer = deprecated_completers.DeprecatedListCommandCompleter(
+        if not isinstance(completer,
+                          deprecated_completers.DeprecatedListCommandCompleter):
+          completer = deprecated_completers.DeprecatedListCommandCompleter(
               collection=completer.collection,
-              list_command=completer.GetListCommand(parameter_info))
-        return old_completer.Complete(prefix, parameter_info)
+              list_command=' '.join(completer.GetListCommand(parameter_info)))
+        return completer.Complete(prefix, parameter_info)
       except (Exception, SystemExit) as e:  # pylint: disable=broad-except, e shall not pass
         # Fatal completer errors return two "completions", each an error
         # message that is displayed by the shell completers, and look more
@@ -70,6 +69,8 @@ class ArgumentCompleter(object):
         # NOTICE: Each message must start with different characters,
         # otherwise they will be taken as valid completions.  Also, the
         # messages are sorted in the display, so choose the first words wisely.
+        if properties.VALUES.core.print_completion_tracebacks.Get():
+          raise
         if completer:
           completer_name = completer.collection
         else:

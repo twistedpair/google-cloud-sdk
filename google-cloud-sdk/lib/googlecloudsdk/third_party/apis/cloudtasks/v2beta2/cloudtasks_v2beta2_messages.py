@@ -457,6 +457,46 @@ class CancelLeaseRequest(_messages.Message):
   scheduleTime = _messages.StringField(2)
 
 
+class CloudtasksProjectsLocationsQueuesCreateRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesCreateRequest object.
+
+  Fields:
+    parent: Required.  The location name in which the queue will be created.
+      For example: `projects/PROJECT_ID/locations/LOCATION_ID`  The list of
+      allowed locations can be obtained by calling Cloud Tasks' implementation
+      of google.cloud.location.Locations.ListLocations.
+    queue: A Queue resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  queue = _messages.MessageField('Queue', 2)
+
+
+class CloudtasksProjectsLocationsQueuesDeleteRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesDeleteRequest object.
+
+  Fields:
+    name: Required.  The queue name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudtasksProjectsLocationsQueuesEnableRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesEnableRequest object.
+
+  Fields:
+    enableQueueRequest: A EnableQueueRequest resource to be passed as the
+      request body.
+    name: Required.  The queue name. For example:
+      `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
+  """
+
+  enableQueueRequest = _messages.MessageField('EnableQueueRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
   """A CloudtasksProjectsLocationsQueuesGetRequest object.
 
@@ -496,6 +536,44 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.BytesField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesPatchRequest object.
+
+  Fields:
+    name: The queue name.  The queue name must have the following format:
+      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
+      `PROJECT_ID` can contain uppercase and lowercase letters,   numbers,
+      hyphens, colons, and periods; that is, it must match   the regular
+      expression: `[a-zA-Z\\d-:\\.]+`. * `QUEUE_ID` can contain uppercase and
+      lowercase letters,   numbers, and hyphens; that is, it must match the
+      regular   expression: `[a-zA-Z\\d-]+`. The maximum length is 100
+      characters.  Caller-specified and required in CreateQueueRequest, after
+      which it becomes output only.
+    queue: A Queue resource to be passed as the request body.
+    updateMask: A  mask used to specify which fields of the queue are being
+      updated.  Queue.name cannot be changed and cannot be specified in the
+      update_mask.
+  """
+
+  name = _messages.StringField(1, required=True)
+  queue = _messages.MessageField('Queue', 2)
+  updateMask = _messages.StringField(3)
+
+
+class CloudtasksProjectsLocationsQueuesPauseRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesPauseRequest object.
+
+  Fields:
+    name: Required.  The queue name. For example:
+      `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
+    pauseQueueRequest: A PauseQueueRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseQueueRequest = _messages.MessageField('PauseQueueRequest', 2)
 
 
 class CloudtasksProjectsLocationsQueuesPurgeRequest(_messages.Message):
@@ -788,6 +866,10 @@ class Empty(_messages.Message):
 
 
 
+class EnableQueueRequest(_messages.Message):
+  """Request message for CloudTasks.EnableQueue."""
+
+
 class ListQueuesResponse(_messages.Message):
   """Response message for CloudTasks.ListQueues.
 
@@ -816,6 +898,10 @@ class ListTasksResponse(_messages.Message):
 
   nextPageToken = _messages.BytesField(1)
   tasks = _messages.MessageField('Task', 2, repeated=True)
+
+
+class PauseQueueRequest(_messages.Message):
+  """Request message for CloudTasks.PauseQueue."""
 
 
 class PullQueueConfig(_messages.Message):

@@ -12771,8 +12771,8 @@ class Project(_messages.Message):
 
   Enums:
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
-      in a Cross Project Network (XPN) configuration. Currently only HOST
-      projects are differentiated.
+      in a shared VPC configuration. Currently only HOST projects are
+      differentiated.
 
   Fields:
     commonInstanceMetadata: Metadata key/value pairs available to all
@@ -12795,14 +12795,13 @@ class Project(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     usageExportLocation: The naming prefix for daily usage reports and the
       Google Cloud Storage bucket where they are stored.
-    xpnProjectStatus: [Output Only] The role this project has in a Cross
-      Project Network (XPN) configuration. Currently only HOST projects are
-      differentiated.
+    xpnProjectStatus: [Output Only] The role this project has in a shared VPC
+      configuration. Currently only HOST projects are differentiated.
   """
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The role this project has in a Cross Project Network
-    (XPN) configuration. Currently only HOST projects are differentiated.
+    """[Output Only] The role this project has in a shared VPC configuration.
+    Currently only HOST projects are differentiated.
 
     Values:
       HOST: <no description>
@@ -12829,7 +12828,7 @@ class ProjectsDisableXpnResourceRequest(_messages.Message):
   """A ProjectsDisableXpnResourceRequest object.
 
   Fields:
-    xpnResource: XPN resource ID.
+    xpnResource: Service resource (a.k.a service project) ID.
   """
 
   xpnResource = _messages.MessageField('XpnResourceId', 1)
@@ -12839,7 +12838,7 @@ class ProjectsEnableXpnResourceRequest(_messages.Message):
   """A ProjectsEnableXpnResourceRequest object.
 
   Fields:
-    xpnResource: XPN resource ID.
+    xpnResource: Service resource (a.k.a service project) ID.
   """
 
   xpnResource = _messages.MessageField('XpnResourceId', 1)
@@ -12850,13 +12849,15 @@ class ProjectsGetXpnResources(_messages.Message):
 
   Fields:
     kind: [Output Only] Type of resource. Always
-      compute#projectsGetXpnResources for lists of XPN resources.
+      compute#projectsGetXpnResources for lists of service resources (a.k.a
+      service projects)
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    resources: XPN resources attached to this project as their XPN host.
+    resources: Serive resources (a.k.a service projects) attached to this
+      project as their shared VPC host.
   """
 
   kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
@@ -12869,8 +12870,8 @@ class ProjectsListXpnHostsRequest(_messages.Message):
 
   Fields:
     organization: Optional organization ID managed by Cloud Resource Manager,
-      for which to list XPN host projects. If not specified, the organization
-      will be inferred from the project.
+      for which to list shared VPC host projects. If not specified, the
+      organization will be inferred from the project.
   """
 
   organization = _messages.StringField(1)
@@ -16216,9 +16217,9 @@ class XpnHostList(_messages.Message):
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    items: [Output Only] A list of XPN host project URLs.
+    items: [Output Only] A list of shared VPC host project URLs.
     kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
-      of XPN hosts.
+      of shared VPC hosts.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -16235,19 +16236,20 @@ class XpnHostList(_messages.Message):
 
 
 class XpnResourceId(_messages.Message):
-  """XpnResourceId
+  """Service resource (a.k.a service project) ID.
 
   Enums:
-    TypeValueValuesEnum: The type of the XPN resource.
+    TypeValueValuesEnum: The type of the service resource.
 
   Fields:
-    id: The ID of the XPN resource. In the case of projects, this field
-      matches the project's name, not the canonical ID.
-    type: The type of the XPN resource.
+    id: The ID of the service resource. In the case of projects, this field
+      matches the project ID (e.g., my-project), not the project number (e.g.,
+      12345678).
+    type: The type of the service resource.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of the XPN resource.
+    """The type of the service resource.
 
     Values:
       PROJECT: <no description>

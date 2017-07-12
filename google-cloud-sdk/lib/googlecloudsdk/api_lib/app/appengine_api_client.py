@@ -28,7 +28,7 @@ from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 
 import yaml
 
@@ -522,8 +522,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     parsed_yaml = service_config.parsed.ToYAML()
     config_dict = yaml.safe_load(parsed_yaml)
     try:
-      json_version_resource = yaml_schema_v1.SCHEMA.ConvertValue(
-          config_dict)
+      # pylint: disable=protected-access
+      schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)
+      json_version_resource = schema_parser.ConvertValue(config_dict)
     except ValueError, e:
       raise exceptions.ConfigError(
           '[{f}] could not be converted to the App Engine configuration '

@@ -15,6 +15,7 @@
 """Completer extensions for the core.cache.completion_cache module."""
 
 import abc
+import StringIO
 
 from googlecloudsdk.api_lib.util import resource_search
 from googlecloudsdk.command_lib.util import parameter_info_lib
@@ -52,9 +53,15 @@ class Converter(completion_cache.Completer):
         qualified.  Use the name 'collection' to qualify collections.
   """
 
-  def __init__(self, additional_params=None, qualified_parameter_names=None,
-               style=None, **kwargs):
+  def __init__(self, additional_params=None, api=None,
+               qualified_parameter_names=None, style=None, **kwargs):
     super(Converter, self).__init__(**kwargs)
+    if api:
+      self.api = api
+    elif self.collection:
+      self.api = self.collection.split('.')[0]
+    else:
+      self.api = None
     self._additional_params = additional_params
     self.qualified_parameter_names = set(qualified_parameter_names or [])
     if style is None:
@@ -97,7 +104,7 @@ class Converter(completion_cache.Completer):
       The parameter info object.
     """
     return parameter_info_lib.ParameterInfoByConvention(
-        parsed_args, argument, self.collection)
+        parsed_args, argument, self.api)
 
   def _GRI_StringToRow(self, string):
     try:
@@ -176,39 +183,40 @@ class ResourceCompleter(Converter):
       of parsed parameters.
   """
 
-  def __init__(self, collection=None, api_version=None, param=None, timeout=60,
-               **kwargs):
+  def __init__(self, collection=None, api_version=None, param=None, **kwargs):
     """Constructor.
 
     Args:
       collection: The resource collection name.
       api_version: The API version for collection, None for the default version.
       param: The updated parameter column name.
-      timeout: The persistent cache timeout in seconds.
       **kwargs: Base class kwargs.
     """
     self.api_version = api_version
-    self.collection_info = resources.REGISTRY.GetCollectionInfo(
-        collection, api_version=api_version)
-    params = self.collection_info.params
-    log.info(u'cache collection=%s api_version=%s params=%s' % (
-        collection, self.collection_info.api_version, params))
-    parameters = [resource_cache.Parameter(name=name, column=column)
-                  for column, name in enumerate(params)]
-    parse = resources.REGISTRY.Parse
+    if collection:
+      self.collection_info = resources.REGISTRY.GetCollectionInfo(
+          collection, api_version=api_version)
+      params = self.collection_info.GetParams('')
+      log.info(u'cache collection=%s api_version=%s params=%s' % (
+          collection, self.collection_info.api_version, params))
+      parameters = [resource_cache.Parameter(name=name, column=column)
+                    for column, name in enumerate(params)]
+      parse = resources.REGISTRY.Parse
 
-    def _Parse(string):
-      return parse(string, collection=collection,
-                   enforce_collection=False, validate=False).AsList()
+      def _Parse(string):
+        return parse(string, collection=collection, enforce_collection=False,
+                     validate=False).AsList()
 
-    self.parse = _Parse
+      self.parse = _Parse
+    else:
+      params = []
+      parameters = []
 
     super(ResourceCompleter, self).__init__(
         collection=collection,
         columns=len(params),
         column=params.index(param) if param else 0,
         parameters=parameters,
-        timeout=timeout,
         **kwargs)
 
 
@@ -218,16 +226,57 @@ class ListCommandCompleter(ResourceCompleter):
   Attributes:
     list_command: The gcloud list command that returns the list of current
       resource URIs.
+    flags: The resource parameter flags that are referenced by list_command.
+    parse_output: The completion items are written to the list_command standard
+      output, one per line, if True. Otherwise the list_command return value is
+      the list of items.
   """
 
-  def __init__(self, list_command=None, **kwargs):
-    self.list_command = list_command
+  def __init__(self, list_command=None, flags=None, parse_output=False,
+               **kwargs):
+    self._list_command = list_command
+    self._flags = flags or []
+    self._parse_output = parse_output
     super(ListCommandCompleter, self).__init__(**kwargs)
 
   def GetListCommand(self, parameter_info):
     """Returns the list command argv given parameter_info."""
-    del parameter_info
-    return self.list_command.split() + ['--quiet', '--format=disable']
+
+    def _FlagName(flag):
+      return flag.split('=')[0]
+
+    list_command = self._list_command.split()
+    flags = {_FlagName(f) for f in list_command if f.startswith('--')}
+    if '--quiet' not in flags:
+      flags.add('--quiet')
+      list_command.append('--quiet')
+    if '--uri' in flags and '--format' not in flags:
+      flags.add('--format')
+      list_command.append('--format=disable')
+    for name in (self._flags +
+                 [parameter.name for parameter in self.parameters] +
+                 parameter_info.GetAdditionalParams()):
+      flag = parameter_info.GetFlag(name)
+      if flag:
+        flag_name = _FlagName(flag)
+        if flag_name not in flags:
+          flags.add(flag_name)
+          list_command.append(flag)
+    return list_command
+
+  def GetAllItems(self, command, parameter_info):
+    """Runs command and returns the list of completion items."""
+    try:
+      if not self._parse_output:
+        return parameter_info.Execute(command)
+      log_out = log.out
+      out = StringIO.StringIO()
+      log.out = out
+      parameter_info.Execute(command)
+      return out.getvalue().rstrip('\n').split('\n')
+    finally:
+      if self._parse_output:
+        log.out = log_out
 
   def Update(self, parameter_info, aggregations):
     """Returns the current list of parsed resources from list_command."""
@@ -238,11 +287,16 @@ class ListCommandCompleter(ResourceCompleter):
         command.append(flag)
     log.info(u'cache update command: %s' % ' '.join(command))
     try:
-      items = list(parameter_info.Execute(command))
+      items = list(self.GetAllItems(command, parameter_info) or [])
     except (Exception, SystemExit) as e:  # pylint: disable=broad-except
+      if properties.VALUES.core.print_completion_tracebacks.Get():
+        raise
       log.info(unicode(e).rstrip())
-      raise (type(e))(u'Update command [{}]: {}'.format(
-          ' '.join(command), unicode(e).rstrip()))
+      try:
+        raise (type(e))(u'Update command [{}]: {}'.format(
+            ' '.join(command), unicode(e).rstrip()))
+      except TypeError:
+        raise e
     return [self.StringToRow(item) for item in items]
 
 
@@ -256,6 +310,8 @@ class ResourceSearchCompleter(ResourceCompleter):
     try:
       items = resource_search.List(query=query, uri=True)
     except Exception as e:  # pylint: disable=broad-except
+      if properties.VALUES.core.print_completion_tracebacks.Get():
+        raise
       log.info(unicode(e).rstrip())
       raise (type(e))(u'Update resource query [{}]: {}'.format(
           query, unicode(e).rstrip()))
@@ -265,11 +321,10 @@ class ResourceSearchCompleter(ResourceCompleter):
 class ResourceParamCompleter(ListCommandCompleter):
   """A completer that produces a resource list for one resource param."""
 
-  def __init__(self, collection=None, param=None, timeout=60, **kwargs):
+  def __init__(self, collection=None, param=None, **kwargs):
     super(ResourceParamCompleter, self).__init__(
         collection=collection,
         param=param,
-        timeout=timeout,
         **kwargs)
 
   def RowToString(self, row, parameter_info=None):
@@ -310,18 +365,22 @@ class MultiResourceCompleter(Converter):
         name for name, count in name_count.iteritems()
         if count != len(self.completers)}
 
-    # The "collection" for a multi resource completer is the common api (first
-    # dotted part of the collection) of the sub-completer collections.  It names
-    # the property section used to determine default values in the flag
-    # completion style.  If there are multiple apis then the combined collection
-    # is None which disables property lookup.
+    # The "collection" for a multi resource completer is the odered comma
+    # separated list of collections. The api is the common API prefix (the first
+    # dotted part of the collections). It names the property section used to
+    # determine default values in the flag completion style.  If there are
+    # multiple apis then the combined collection is None which disables property
+    # lookup.
+    collections = []
     apis = set()
     for completer in self.completers:
       completer.AddQualifiedParameterNames(qualified_parameter_names)
       apis.add(completer.collection.split('.')[0])
-    collection = apis.pop() if len(apis) == 1 else None
+      collections.append(completer.collection)
+    collection = ','.join(collections)
+    api = apis.pop() if len(apis) == 1 else None
     super(MultiResourceCompleter, self).__init__(
-        collection=collection, **kwargs)
+        collection=collection, api=api, **kwargs)
 
   def Complete(self, prefix, parameter_info):
     """Returns the union of completions from all completers."""

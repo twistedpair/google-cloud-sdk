@@ -21,25 +21,31 @@ class Annotation(_messages.Message):
   "ZipCode".
 
   Fields:
-    annotationName: Name of the annotation. Should be no more than 100
-      characters.
     childAnnotations: Ids of child annotations of this annotation.
     description: Description of the annotation. Length of the description is
       limited to 1000 characters.
-    id: Unique id of the annotation.
-    name: Resource name of the annotation, which has the format of "taxonomySt
-      ores/{store_id}/dataTaxonomies/{taxonomy_id}/annotations/{annotation_id}
+    displayName: Human readable name of this annotation. Max 100 characters.
+    id: Id of this annotation. Read-only.
+    name: Resource name of the annotation, which has the format of
+      "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_id}/annotations/{id}
       ".
     parentAnnotation: Ids of the parent annotation to this annotation. If
       empty, it means this annotation is a top level annotation.
+    storeId: Id of the enclosing store. Read-only.
+    taxonomyDisplayName: Human readable name of the enclosing taxonomy. Read-
+      only.
+    taxonomyId: Id of the enclosing taxonomy. Read-only.
   """
 
-  annotationName = _messages.StringField(1)
-  childAnnotations = _messages.StringField(2, repeated=True)
-  description = _messages.StringField(3)
+  childAnnotations = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
   id = _messages.StringField(4)
   name = _messages.StringField(5)
   parentAnnotation = _messages.StringField(6)
+  storeId = _messages.StringField(7)
+  taxonomyDisplayName = _messages.StringField(8)
+  taxonomyId = _messages.StringField(9)
 
 
 class AnnotationTag(_messages.Message):
@@ -49,8 +55,9 @@ class AnnotationTag(_messages.Message):
   it associated with, and the taxonomy that the annotation belongs to.
 
   Fields:
-    annotationId: The value of 'id' for the tagged annotation.The annotation
-      must be a member of the taxonomy included in the resource name.
+    annotationDisplayName: Human readable name of the annotation corresponding
+      to this tag. Read-only.
+    annotationId: Id of the annotation corresponding to this tag. Read-only.
     dataSubsetName: A finer grained subset of the data that this annotation
       tag is applied to. For Bigquery, provide the name of the column you want
       to annotate. If this field is empty, the given annotation tag is
@@ -59,11 +66,20 @@ class AnnotationTag(_messages.Message):
       resource_name_of_the_data}/taxonomyStores/{store_id}/dataTaxonomies/{tax
       onomy_id}/annotationTag" Resouce name of the data asset should be
       RFC3986 escaped.
+    storeId: Id of the enclosing taxonomy store. Read-only.
+    taxonomyDisplayName: Human readable name of the taxonomy enclosing the
+      annotation corresponding to this tag. Read-only.
+    taxonomyId: Id of the taxonomy enclosing the annotation corresponding to
+      this tag. Read-only.
   """
 
-  annotationId = _messages.StringField(1)
-  dataSubsetName = _messages.StringField(2)
-  name = _messages.StringField(3)
+  annotationDisplayName = _messages.StringField(1)
+  annotationId = _messages.StringField(2)
+  dataSubsetName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  storeId = _messages.StringField(5)
+  taxonomyDisplayName = _messages.StringField(6)
+  taxonomyId = _messages.StringField(7)
 
 
 class ApplyAnnotationTagRequest(_messages.Message):
@@ -374,16 +390,18 @@ class DataTaxonomy(_messages.Message):
   Fields:
     description: Description of the datapol taxonomy. Length of the
       description is limited to 1000 characters.
-    id: Unique id of the taxonomy.
+    displayName: Name of the taxonomy. Should be no more than 100 characters.
+    id: Id of this taxonomy. Read-only.
     name: Resource name of the datapol taxonomy, which has the format of
-      "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_id}".
-    taxonomyName: Name of the taxonomy. Should be no more than 100 characters.
+      "taxonomyStores/{store_id}/dataTaxonomies/{id}".
+    storeId: Id of the enclosing store. Read-only.
   """
 
   description = _messages.StringField(1)
-  id = _messages.StringField(2)
-  name = _messages.StringField(3)
-  taxonomyName = _messages.StringField(4)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  name = _messages.StringField(4)
+  storeId = _messages.StringField(5)
 
 
 class DatapolDataAssetsListResourceNamesRequest(_messages.Message):

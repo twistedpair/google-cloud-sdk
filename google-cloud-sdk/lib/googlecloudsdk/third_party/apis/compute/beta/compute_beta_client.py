@@ -4897,7 +4897,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def DisableXpnHost(self, request, global_params=None):
-      """Disable this project as an XPN host project.
+      """Disable this project as a shared VPC host project.
 
       Args:
         request: (ComputeProjectsDisableXpnHostRequest) input message
@@ -4923,7 +4923,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DisableXpnResource(self, request, global_params=None):
-      """Disable an XPN resource associated with this host project.
+      """Disable a serivce resource (a.k.a service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsDisableXpnResourceRequest) input message
@@ -4949,7 +4949,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def EnableXpnHost(self, request, global_params=None):
-      """Enable this project as an XPN host project.
+      """Enable this project as a shared VPC host project.
 
       Args:
         request: (ComputeProjectsEnableXpnHostRequest) input message
@@ -4975,7 +4975,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def EnableXpnResource(self, request, global_params=None):
-      """Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.
+      """Enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
 
       Args:
         request: (ComputeProjectsEnableXpnResourceRequest) input message
@@ -5027,7 +5027,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnHost(self, request, global_params=None):
-      """Get the XPN host project that this project links to. May be empty if no link exists.
+      """Get the shared VPC host project that this project links to. May be empty if no link exists.
 
       Args:
         request: (ComputeProjectsGetXpnHostRequest) input message
@@ -5053,7 +5053,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnResources(self, request, global_params=None):
-      """Get XPN resources associated with this host project.
+      """Get service resources (a.k.a service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsGetXpnResourcesRequest) input message
@@ -5079,7 +5079,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListXpnHosts(self, request, global_params=None):
-      """List all XPN host projects visible to the user in an organization.
+      """List all shared VPC host projects visible to the user in an organization.
 
       Args:
         request: (ComputeProjectsListXpnHostsRequest) input message

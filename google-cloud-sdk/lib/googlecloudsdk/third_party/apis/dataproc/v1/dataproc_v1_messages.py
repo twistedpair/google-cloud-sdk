@@ -19,9 +19,13 @@ class AcceleratorConfig(_messages.Message):
   Fields:
     acceleratorCount: The number of the accelerator cards of this type exposed
       to this instance.
-    acceleratorTypeUri: Full or partial URI of the accelerator type resource
-      to expose to this instance. See Google Compute Engine AcceleratorTypes(
-      /compute/docs/reference/beta/acceleratorTypes)
+    acceleratorTypeUri: Full URL, partial URI, or short name of the
+      accelerator type resource to expose to this instance. See Google Compute
+      Engine AcceleratorTypes(
+      /compute/docs/reference/beta/acceleratorTypes)Examples *
+      https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
+      east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
+      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -755,9 +759,10 @@ class GceClusterConfig(_messages.Message):
       machine communications. Cannot be specified with subnetwork_uri. If
       neither network_uri nor subnetwork_uri is specified, the "default"
       network of the project is used, if it exists. Cannot be a "Custom Subnet
-      Network" (see Using Subnetworks for more information). Example: https://
-      www.googleapis.com/compute/v1/projects/[project_id]/regions/global/defau
-      lt.
+      Network" (see Using Subnetworks for more information).A full URL,
+      partial URI, or short name are valid. Examples: https://www.googleapis.c
+      om/compute/v1/projects/[project_id]/regions/global/default
+      projects/[project_id]/regions/global/default default
     serviceAccount: Optional. The service account of the instances. Defaults
       to the default Google Compute Engine service account. Custom service
       accounts need permissions equivalent to the folloing IAM roles:
@@ -777,15 +782,20 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
     subnetworkUri: Optional. The Google Compute Engine subnetwork to be used
-      for machine communications. Cannot be specified with network_uri.
-      Example:
+      for machine communications. Cannot be specified with network_uri.A full
+      URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
-      east1/sub0.
+      east1/sub0 projects/[project_id]/regions/us-east1/sub0 sub0
     tags: The Google Compute Engine tags to add to all instances (see Tagging
       instances).
-    zoneUri: Required. The zone where the Google Compute Engine cluster will
-      be located. Example: https://www.googleapis.com/compute/v1/projects/[pro
-      ject_id]/zones/[zone].
+    zoneUri: Optional. The zone where the Google Compute Engine cluster will
+      be located. On a create request, it is required in the "global" region.
+      If omitted in a non-global Cloud Dataproc region, the service will pick
+      a zone in the corresponding GCE region. On a get request, zone will
+      always be present.A full URL, partial URI, or short name are valid.
+      Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
+      projects/[project_id]/zones/[zone] us-central1-f
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1011,14 +1021,16 @@ class InstanceGroupConfig(_messages.Message):
       derive the name).
     isPreemptible: Optional. Specifies that this instance group contains
       preemptible instances.
-    machineTypeUri: Required. The Google Compute Engine machine type used for
-      cluster instances. Example:
+    machineTypeUri: Optional. The Google Compute Engine machine type used for
+      cluster instances.A full URL, partial URI, or short name are valid.
+      Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
-      east1-a/machineTypes/n1-standard-2.
+      east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2 n1-standard-2
     managedGroupConfig: Output-only. The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
-    numInstances: Required. The number of VM instances in the instance group.
+    numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
 

@@ -551,3 +551,78 @@ Type of the node VM boot disk.
       '--disk-type',
       help=help_text,
       choices=['pd-standard', 'pd-ssd'])
+
+
+def AddIPAliasFlags(parser, hidden=False):
+  """Adds flags related to IP aliases to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  parser.add_argument(
+      '--enable-ip-alias',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help="""\
+Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
+for pod IPs. This will create two new subnetworks, one for the
+instance and pod IPs, and another to reserve space for the services
+range.
+
+Can not be specified unless '--enable-kubernetes-alpha' is also specified.
+""")
+
+  parser.add_argument(
+      '--services-ipv4-cidr',
+      metavar='CIDR',
+      hidden=hidden,
+      help="""\
+Set the IP range for the services IPs.
+
+Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
+(e.g. '10.100.0.0/20'). If given as a netmask size, the IP range will
+be choosen automatically from the available space in the network.
+
+If unspecified, the services CIDR range will use automatic defaults.
+
+Can not be specified unless '--enable-ip-alias' is also specified.
+""")
+
+  parser.add_argument(
+      '--create-subnetwork',
+      metavar='KEY=VALUE',
+      hidden=hidden,
+      type=arg_parsers.ArgDict(),
+      help="""\
+Create a new subnetwork for the cluster. The name and range of the
+subnetwork can be customized via optional 'name' and 'range' key-value
+pairs.
+
+'name' specifies the name of the subnetwork to be created.
+
+'range' specifies the IP range for the new subnetwork. This can either
+be a netmask size (e.g. '/20') or a CIDR range (e.g. '10.0.0.0/20').
+If a netmask size is specified, the IP is automatically taken from
+the free space in the cluster's network.
+
+Examples:
+
+Create a new subnetwork named "my-subnet" with netmask of size 21.
+
+      $ {command} --create-subnetwork name=my-subnet,range=/21
+
+Create a new subnetwork with a default name with the primary range of
+10.100.0.0/16.
+
+      $ {command} --create-subnetwork range=10.100.0.0/16
+
+Create a new subnetwork with the name "my-subnet" with a default range.
+
+      $ {command} --create-subnetwork name=my-subnet
+
+Can not be specified unless '--enable-ip-alias' is also specified. Can
+not be used in conjunction with the '--subnetwork' option.
+""")

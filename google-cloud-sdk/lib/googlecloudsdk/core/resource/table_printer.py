@@ -142,6 +142,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     if not self._console_attr:
       self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
                                                        out=self._out)
+    self._csi = self._console_attr.GetControlSequenceIndicator()
     self._page_count = 0
 
     # Check for subformat columns.
@@ -213,11 +214,17 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     # Get maximum split index where the next line will be wider than max.
     current_width = 0
     split = 0
+    prefix = ''  # Track any control sequence to use to start next line.
     while split < len(s):
-      current_width += console_attr.GetCharacterDisplayWidth(s[split])
-      if current_width > max_width:
-        break
-      split += 1
+      if self._csi and s[split:].startswith(self._csi):
+        seq_length = self._console_attr.GetControlSequenceLen(s[split:])
+        prefix = s[split:split + seq_length]
+        split += seq_length
+      else:
+        current_width += console_attr.GetCharacterDisplayWidth(s[split])
+        if current_width > max_width:
+          break
+        split += 1
     if not include_all_whitespace:
       split += len(s[split:]) - len(s[split:].lstrip())
 
@@ -243,6 +250,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     else:
       next_line = s[:split]
     remaining_value = s[split:]
+    # Reset font on this line if needed and add prefix to the remainder.
+    if prefix and prefix != self._console_attr.GetFontCode():
+      next_line += self._console_attr.GetFontCode()
+      remaining_value = prefix + remaining_value
     return next_line, remaining_value
 
   def Finish(self):

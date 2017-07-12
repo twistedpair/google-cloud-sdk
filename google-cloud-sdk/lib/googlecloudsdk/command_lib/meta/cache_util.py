@@ -18,11 +18,11 @@ from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.cache import exceptions as cache_exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.cache import resource_cache
-from googlecloudsdk.core.util import pkg_resources
 
 
 _CACHE_RI_DEFAULT = 'resource://'
@@ -126,44 +126,45 @@ class _CompleterModuleGenerator(walker.Walker):
         completer_class = arg.completer
       except AttributeError:
         continue
+      collection = None
+      api_version = None
       if isinstance(completer_class, parser_completer.ArgumentCompleter):
         completer_class = completer_class.completer_class
+      module_path = module_util.GetModulePath(completer_class)
       if isinstance(completer_class, type):
-        module_path = pkg_resources.GetModulePath(completer_class)
         try:
           completer = completer_class()
           try:
             collection = completer.collection
           except AttributeError:
-            collection = None
+            pass
           try:
             api_version = completer.api_version
           except AttributeError:
-            api_version = None
+            pass
         except (apis_util.UnknownAPIError,
                 resources.InvalidCollectionException) as e:
           collection = u'ERROR: {}'.format(e)
-          api_version = None
-        if arg.option_strings:
-          name = arg.option_strings[0]
-        else:
-          name = arg.dest.replace('_', '-')
-        module = self._modules_dict.get(module_path)
-        if not module:
-          module = _CompleterModule(
-              collection=collection,
-              api_version=api_version,
-              module_path=module_path,
-          )
-          self._modules_dict[module_path] = module
-        command_path = ' '.join(command.GetPath())
-        # pylint: disable=protected-access
-        attachment = module._attachments_dict.get(command_path)
-        if not attachment:
-          attachment = _CompleterAttachment(command_path)
-          module._attachments_dict[command_path] = attachment
-          module.attachments.append(attachment)
-        attachment.arguments.append(name)
+      if arg.option_strings:
+        name = arg.option_strings[0]
+      else:
+        name = arg.dest.replace('_', '-')
+      module = self._modules_dict.get(module_path)
+      if not module:
+        module = _CompleterModule(
+            collection=collection,
+            api_version=api_version,
+            module_path=module_path,
+        )
+      self._modules_dict[module_path] = module
+      command_path = ' '.join(command.GetPath())
+      # pylint: disable=protected-access
+      attachment = module._attachments_dict.get(command_path)
+      if not attachment:
+        attachment = _CompleterAttachment(command_path)
+        module._attachments_dict[command_path] = attachment
+        module.attachments.append(attachment)
+      attachment.arguments.append(name)
     return self._modules_dict
 
 

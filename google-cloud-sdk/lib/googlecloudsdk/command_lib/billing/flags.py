@@ -14,12 +14,21 @@
 """Flag definitions for gcloud billing."""
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.resource_manager import completers as resource_manager_completers
+from googlecloudsdk.command_lib.util import completers
+
+
+class BillingAccountsCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(BillingAccountsCompleter, self).__init__(
+        collection='cloudbilling.billingAccounts',
+        list_command='beta billing accounts list --uri',
+        **kwargs)
 
 
 def GetOldAccountIdArgument(positional=True):
   metavar = 'ACCOUNT_ID'
-  completion_resource = 'cloudbilling.billingAccounts'
-  list_command_path = 'billing accounts list --uri'
   help_ = (
       'Specify a billing account ID. Billing account '
       'IDs are of the form `0X0X0X-0X0X0X-0X0X0X`. To see available IDs, run '
@@ -32,8 +41,7 @@ def GetOldAccountIdArgument(positional=True):
         'id',
         nargs='?',
         metavar=metavar,
-        completion_resource=completion_resource,
-        list_command_path=list_command_path,
+        completer=BillingAccountsCompleter,
         action=actions.DeprecationAction(
             'ACCOUNT_ID',
             show_message=lambda x: x is not None,  # See note above
@@ -46,8 +54,7 @@ def GetOldAccountIdArgument(positional=True):
         '--account-id',
         dest='billing_account',
         metavar=metavar,
-        completion_resource=completion_resource,
-        list_command_path=list_command_path,
+        completer=BillingAccountsCompleter,
         action=actions.DeprecationAction(
             '--account-id',
             removed=False,
@@ -58,8 +65,6 @@ def GetOldAccountIdArgument(positional=True):
 
 def GetAccountIdArgument(positional=True, required=False):
   metavar = 'ACCOUNT_ID'
-  completion_resource = 'cloudbilling.billingAccounts'
-  list_command_path = 'billing accounts list --uri'
   help_ = (
       'Specify a billing account ID. Billing account IDs are of the form '
       '`0X0X0X-0X0X0X-0X0X0X`. To see available IDs, run '
@@ -68,23 +73,20 @@ def GetAccountIdArgument(positional=True, required=False):
     return base.Argument(
         'id',
         metavar=metavar,
-        completion_resource=completion_resource,
-        list_command_path=list_command_path,
+        completer=BillingAccountsCompleter,
         help=help_)
   else:
     return base.Argument(
         '--billing-account',
         metavar=metavar,
         required=required,
-        completion_resource=completion_resource,
-        list_command_path=list_command_path,
+        completer=BillingAccountsCompleter,
         help=help_)
 
 
 def GetProjectIdArgument():
   return base.Argument(
       'project_id',
-      completion_resource='cloudresourcemanager.projects',
-      list_command_path='projects list --uri',
+      completer=resource_manager_completers.ProjectCompleter,
       help='Specify a project id.'
   )

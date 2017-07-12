@@ -107,8 +107,6 @@ apis:
         projects.locations: "projects/{projectsId}/locations/{locationsId}"
         projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions"
   cloudkms:
-    v1beta1:
-      discovery_doc: cloudkms_v1beta1.json
     v1:
       discovery_doc: cloudkms_v1.json
       default: true

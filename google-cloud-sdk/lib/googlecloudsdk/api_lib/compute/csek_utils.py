@@ -34,9 +34,9 @@ class InvalidKeyFileException(core_exceptions.Error):
 
   def __init__(self, base_message):
     super(InvalidKeyFileException, self).__init__(
-        '{0}'.format(base_message))
-    # TODO(b/36050347) Update this message to include
-    # a lint to friendly documentation.
+        '{0}\nFor information on proper key file format see: '
+        'https://cloud.google.com/compute/docs/disks/'
+        'customer-supplied-encryption#csek_key_file'.format(base_message))
 
 
 class BadPatternException(InvalidKeyFileException):

@@ -97,9 +97,10 @@ class Dataproc(object):
           warnings_so_far = len(metadata.warnings)
           if operation.done:
             break
-        except apitools_exceptions.HttpError:
-          # Keep trying until we timeout in case error is transient.
-          pass
+        except apitools_exceptions.HttpError as http_exception:
+          # Do not retry on 4xx errors.
+          if util.IsClientHttpException(http_exception):
+            raise
         time.sleep(poll_period_s)
     metadata = self.ParseOperationJsonMetadata(operation.metadata)
     _LogWarnings(metadata.warnings)
@@ -206,8 +207,10 @@ class Dataproc(object):
           try:
             job = self.client.projects_regions_jobs.Get(request)
           except apitools_exceptions.HttpError as error:
-            log.warn('GetJob failed:\n{1}', error)
-            # Keep trying until we timeout in case error is transient.
+            log.warn('GetJob failed:\n{}'.format(str(error)))
+            # Do not retry on 4xx errors.
+            if util.IsClientHttpException(error):
+              raise
           if (stream_driver_log
               and job.driverOutputResourceUri
               and job.driverOutputResourceUri != driver_output_uri):

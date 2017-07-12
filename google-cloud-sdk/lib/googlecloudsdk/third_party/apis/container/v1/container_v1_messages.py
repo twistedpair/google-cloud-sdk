@@ -7,6 +7,7 @@ based applications, powered by the open source Kubernetes technology.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'container'
@@ -37,10 +38,186 @@ class AddonsConfig(_messages.Message):
     httpLoadBalancing: Configuration for the HTTP (L7) load balancing
       controller addon, which makes it easy to set up HTTP load balancers for
       services in a cluster.
+    kubernetesDashboard: Configuration for the Kubernetes Dashboard.
   """
 
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 3)
+
+
+class AuditEvent(_messages.Message):
+  """Event captures all the information that can be included in an API audit
+  log.  Should match Event in https://github.com/kubernetes/kubernetes/blob/ma
+  ster/staging/src/k8s.io/apiserver/pkg/apis/audit/v1alpha1/generated.proto.
+
+  Messages:
+    RequestObjectValue: API object from the request, in JSON format. The
+      RequestObject is recorded as-is in the request (possibly re-encoded as
+      JSON), prior to version conversion, defaulting, admission or merging. It
+      is an external versioned object type, and may not be a valid object on
+      its own.  Omitted for non-resource requests.  Only logged at Request
+      Level and higher. +optional
+    ResponseObjectValue: API object returned in the response, in JSON. The
+      ResponseObject is recorded after conversion to the external type, and
+      serialized as JSON. Omitted for non-resource requests.  Only logged at
+      Response Level and higher. +optional
+
+  Fields:
+    auditID: Unique audit ID, generated for each request.
+    impersonatedUser: Impersonated user information. +optional
+    level: AuditLevel at which event was generated
+    metadata: metadata exists in the Event object.
+    objectRef: Object reference this request is targeted at.  Does not apply
+      for List-type requests, or non-resource requests. +optional
+    requestObject: API object from the request, in JSON format. The
+      RequestObject is recorded as-is in the request (possibly re-encoded as
+      JSON), prior to version conversion, defaulting, admission or merging. It
+      is an external versioned object type, and may not be a valid object on
+      its own.  Omitted for non-resource requests.  Only logged at Request
+      Level and higher. +optional
+    requestURI: RequestURI is the request URI as sent by the client to a
+      server.
+    responseObject: API object returned in the response, in JSON. The
+      ResponseObject is recorded after conversion to the external type, and
+      serialized as JSON. Omitted for non-resource requests.  Only logged at
+      Response Level and higher. +optional
+    responseStatus: The response status, populated even when the
+      ResponseObject is not a Status type.  For successful responses, this
+      will only include the Code and StatusSuccess.  For non-status type error
+      responses, this will be auto-populated with the error Message. +optional
+    sourceIPs: Source IPs, from where the request originated and intermediate
+      proxies. +optional
+    stage: Stage of the request handling when this event instance was
+      generated.
+    timestamp: Time the request reached the apiserver.
+    user: Authenticated user information.
+    verb: Verb is the kubernetes verb associated with the request.  For non-
+      resource requests, this is identical to HttpMethod.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestObjectValue(_messages.Message):
+    """API object from the request, in JSON format. The RequestObject is
+    recorded as-is in the request (possibly re-encoded as JSON), prior to
+    version conversion, defaulting, admission or merging. It is an external
+    versioned object type, and may not be a valid object on its own.  Omitted
+    for non-resource requests.  Only logged at Request Level and higher.
+    +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestObjectValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a RequestObjectValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseObjectValue(_messages.Message):
+    """API object returned in the response, in JSON. The ResponseObject is
+    recorded after conversion to the external type, and serialized as JSON.
+    Omitted for non-resource requests.  Only logged at Response Level and
+    higher. +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseObjectValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResponseObjectValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  auditID = _messages.StringField(1)
+  impersonatedUser = _messages.MessageField('AuthnV1UserInfo', 2)
+  level = _messages.StringField(3)
+  metadata = _messages.MessageField('ObjectMeta', 4)
+  objectRef = _messages.MessageField('AuditObjectReference', 5)
+  requestObject = _messages.MessageField('RequestObjectValue', 6)
+  requestURI = _messages.StringField(7)
+  responseObject = _messages.MessageField('ResponseObjectValue', 8)
+  responseStatus = _messages.MessageField('MetaV1Status', 9)
+  sourceIPs = _messages.StringField(10, repeated=True)
+  stage = _messages.StringField(11)
+  timestamp = _messages.StringField(12)
+  user = _messages.MessageField('AuthnV1UserInfo', 13)
+  verb = _messages.StringField(14)
+
+
+class AuditEventList(_messages.Message):
+  """A request to audit write audit events (to Cloud Audit Logging and/or
+  Gin). The request contains items to audit.  This should look very close to
+  the EventList struct in https://github.com/kubernetes/kubernetes/blob/master
+  /staging/src/k8s.io/apiserver/pkg/apis/audit/v1alpha1/generated.proto. This
+  message has 4 GKE-specific fields that get mapped from the path, but the
+  other fields (the expected JSON payload) must match EventList.
+
+  Fields:
+    apiVersion: kind is an artifact of the Kubernetes API.
+    items: The list of events to audit log.
+    kind: kind is an artifact of the Kubernetes API.
+    metadata: metadata exists in the EventList object.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('AuditEvent', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+
+
+class AuditObjectReference(_messages.Message):
+  """AuditObjectReference contains enough information to let you inspect or
+  modify the referred object.  Should match ObjectReference in https://github.
+  com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apiserver/pkg/apis/
+  audit/v1alpha1/generated.proto.
+
+  Fields:
+    apiVersion: +optional
+    name: +optional
+    namespace: +optional
+    resource: +optional
+    resourceVersion: +optional
+    subresource: +optional
+    uid: +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  name = _messages.StringField(2)
+  namespace = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceVersion = _messages.StringField(5)
+  subresource = _messages.StringField(6)
+  uid = _messages.StringField(7)
+
+
+class AuditResponse(_messages.Message):
+  """Response sent to audit log requests."""
 
 
 class AuthenticateRequest(_messages.Message):
@@ -90,6 +267,55 @@ class AuthenticateResponse(_messages.Message):
   kind = _messages.StringField(2)
   spec = _messages.MessageField('TokenReviewSpec', 3)
   status = _messages.MessageField('TokenReviewStatus', 4)
+
+
+class AuthnV1UserInfo(_messages.Message):
+  """The attributes of an authenticated user.  Should match UserInfo in
+  https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io
+  /client-go/pkg/apis/authentication/v1/generated.proto
+
+  Messages:
+    ExtraValue: Any additional information provided by the authenticator.
+      +optional
+
+  Fields:
+    extra: Any additional information provided by the authenticator. +optional
+    groups: Groups that this user is a part of. This is not currently filled
+      in for GKE.
+    uid: A unique identifier (across time) for the user. This is not currently
+      filled in for GKE.
+    username: The name of the user. This should be the email address
+      associated with the GAIA identity of the user.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraValue(_messages.Message):
+    """Any additional information provided by the authenticator. +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtraValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ExtraValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtraValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtraValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extra = _messages.MessageField('ExtraValue', 1)
+  groups = _messages.StringField(2, repeated=True)
+  uid = _messages.StringField(3)
+  username = _messages.StringField(4)
 
 
 class AuthorizeRequest(_messages.Message):
@@ -528,6 +754,29 @@ class CompleteIPRotationRequest(_messages.Message):
   mode.
   """
 
+
+
+class ContainerMasterProjectsZonesAuditRequest(_messages.Message):
+  """A ContainerMasterProjectsZonesAuditRequest object.
+
+  Fields:
+    auditEventList: A AuditEventList resource to be passed as the request
+      body.
+    clusterId: The name of this master's cluster.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    projectNumber: The project number for which the request is being
+      authorized.  This is the project in which this master's cluster resides.
+      This is an int64, so it must be a project number, not a project ID.
+    zone: The zone of this master's cluster.
+  """
+
+  auditEventList = _messages.MessageField('AuditEventList', 1)
+  clusterId = _messages.StringField(2, required=True)
+  masterProjectId = _messages.StringField(3, required=True)
+  projectNumber = _messages.IntegerField(4, required=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ContainerMasterProjectsZonesAuthenticateRequest(_messages.Message):
@@ -1440,6 +1689,16 @@ class ImageReviewStatus(_messages.Message):
   reason = _messages.StringField(2)
 
 
+class KubernetesDashboard(_messages.Message):
+  """Configuration for the Kubernetes Dashboard.
+
+  Fields:
+    disabled: Whether the Kubernetes Dashboard is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class LegacyAbac(_messages.Message):
   """Configuration for the legacy Attribute Based Access Control authorization
   mode.
@@ -1466,6 +1725,28 @@ class ListClustersResponse(_messages.Message):
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
   missingZones = _messages.StringField(2, repeated=True)
+
+
+class ListMeta(_messages.Message):
+  """ListMeta describes metadata that synthetic resources must have, including
+  lists and various status objects.  Should match ListMeta in https://github.c
+  om/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api
+  s/meta/v1/generated.proto.
+
+  Fields:
+    resourceVersion: String that identifies the server's internal version of
+      this object that can be used by clients to determine when objects have
+      changed. Value must be treated as opaque by clients and passed
+      unmodified back to the server. Populated by the system. Read-only. More
+      info:
+      https://github.com/kubernetes/community/blob/master/contributors/devel
+      /api-conventions.md#concurrency-control-and-consistency +optional
+    selfLink: SelfLink is a URL representing this object. Populated by the
+      system. Read-only. +optional
+  """
+
+  resourceVersion = _messages.StringField(1)
+  selfLink = _messages.StringField(2)
 
 
 class ListNodePoolsResponse(_messages.Message):
@@ -1539,6 +1820,102 @@ class MasterAuthorizedNetworks(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class MetaV1Status(_messages.Message):
+  """MetaV1Status is a return value for calls that don't return other objects.
+  Should match Status in https://github.com/kubernetes/kubernetes/blob/master/
+  staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto.
+
+  Fields:
+    code: Suggested HTTP return code for this status, 0 if not set. +optional
+    details: Extended data associated with the reason.  Each reason may define
+      its own extended details. This field is optional and the data returned
+      is not guaranteed to conform to any schema except that defined by the
+      reason type. +optional
+    message: A human-readable description of the status of this operation.
+      +optional
+    metadata: Fields from "pkg/api/types".ListMeta TODO (b/30563544): Remove
+      these unused fields.
+    reason: A machine-readable description of why this operation is in the
+      "Failure" status. If this value is empty there is no information
+      available. A Reason clarifies an HTTP status code but does not override
+      it. +optional
+    status: Status of the operation. One of: "Success" or "Failure". More
+      info:
+      https://github.com/kubernetes/community/blob/master/contributors/devel
+      /api-conventions.md#spec-and-status +optional
+  """
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('MetaV1StatusDetails', 2)
+  message = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  reason = _messages.StringField(5)
+  status = _messages.StringField(6)
+
+
+class MetaV1StatusCause(_messages.Message):
+  """MetaV1StatusCause provides more information about an api.Status failure,
+  including cases when multiple errors are encountered.  Should match
+  StatusCause in https://github.com/kubernetes/kubernetes/blob/master/staging/
+  src/k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto.
+
+  Fields:
+    field: The field of the resource that has caused this error, as named by
+      its JSON serialization. May include dot and postfix notation for nested
+      attributes. Arrays are zero-indexed.  Fields may appear more than once
+      in an array of causes due to fields having multiple errors. Optional.
+      Examples:   "name" - the field "name" on the current resource
+      "items[0].name" - the field "name" on the first array entry in "items"
+      +optional
+    message: A human-readable description of the cause of the error.  This
+      field may be presented as-is to a reader. +optional
+    reason: A machine-readable description of the cause of the error. If this
+      value is empty there is no information available. +optional
+  """
+
+  field = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+
+
+class MetaV1StatusDetails(_messages.Message):
+  """MetaV1StatusDetails is a set of additional properties that MAY be set by
+  the server to provide additional information about a response. The Reason
+  field of a Status object defines what attributes will be set. Clients must
+  ignore fields that do not match the defined type of each attribute, and
+  should assume that any attribute may be empty, invalid, or under defined.
+  Should match StatusDetails in https://github.com/kubernetes/kubernetes/blob/
+  master/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto.
+
+  Fields:
+    causes: The Causes array includes more details associated with the
+      StatusReason failure. Not all StatusReasons may provide detailed causes.
+      +optional
+    group: The group attribute of the resource associated with the status
+      StatusReason. +optional
+    kind: The kind attribute of the resource associated with the status
+      StatusReason. On some operations may differ from the requested resource
+      Kind. More info:
+      https://github.com/kubernetes/community/blob/master/contributors/devel
+      /api-conventions.md#types-kinds +optional
+    name: The name attribute of the resource associated with the status
+      StatusReason (when there is a single name which can be described).
+      +optional
+    retryAfterSeconds: If specified, the time in seconds before the operation
+      should be retried. +optional
+    uid: UID of the resource. (when there is a single resource which can be
+      described). More info: http://kubernetes.io/docs/user-
+      guide/identifiers#uids +optional
+  """
+
+  causes = _messages.MessageField('MetaV1StatusCause', 1, repeated=True)
+  group = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  retryAfterSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(6)
+
+
 class NetworkPolicy(_messages.Message):
   """Configuration options for the NetworkPolicy feature.
   https://kubernetes.io/docs/concepts/services-networking/networkpolicies/
@@ -1555,10 +1932,10 @@ class NetworkPolicy(_messages.Message):
     """The selected network policy provider.
 
     Values:
-      UNKNOWN: Not set
+      PROVIDER_UNSPECIFIED: Not set
       CALICO: Tigera (Calico Felix).
     """
-    UNKNOWN = 0
+    PROVIDER_UNSPECIFIED = 0
     CALICO = 1
 
   enabled = _messages.BooleanField(1)
@@ -1596,6 +1973,7 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
+      Currently restricted because of b/36071127#comment27
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
@@ -1846,11 +2224,11 @@ class NonResourceAttributes(_messages.Message):
 class ObjectMeta(_messages.Message):
   """This maps to the "apimachinery/pkg/apis/meta/v1".ObjectMeta type,
   although not all fields are populated and represented here. TODO
-  (b/30563544, b/34947157): Remove unused fields.  Currently, if a request
-  includes metadata fields that aren't explicitly modeled here, the caller
-  will receive a 400 response instead of ignoring the unrecognized fields. We
-  should consider following b/28297888 to enable "ignore_unknown_fields" in
-  order to make this less brittle.
+  (b/30563544): Remove unused fields.  Currently, if a request includes
+  metadata fields that aren't explicitly modeled here, the caller will receive
+  a 400 response instead of ignoring the unrecognized fields. We should
+  consider following b/28297888 to enable "ignore_unknown_fields" in order to
+  make this less brittle.
 
   Messages:
     AnnotationsValue: Unstructured key-value pairs that are not queryable and
@@ -2506,9 +2884,16 @@ class UpdateNodePoolRequest(_messages.Message):
 
 class UserInfo(_messages.Message):
   """The attributes of an authenticated user. This should match the UserInfo
-  struct in pkg/apis/authentication.k8s.io/v1beta1/types.go
+  struct in pkg/apis/authentication.k8s.io/v1beta1/types.go  TODO(b/62143841)
+  Convert token authenticator to use v1 types and use AuthnV1UserInfo.
+
+  Messages:
+    ExtraValue: Any additional information provided by the authenticator to be
+      passed to the authorizer.
 
   Fields:
+    extra: Any additional information provided by the authenticator to be
+      passed to the authorizer.
     groups: Groups that this user is a part of. This is not currently filled
       in for GKE.
     uid: A unique identifier (across time) for the user. This is not currently
@@ -2517,9 +2902,35 @@ class UserInfo(_messages.Message):
       associated with the GAIA identity of the user.
   """
 
-  groups = _messages.StringField(1, repeated=True)
-  uid = _messages.StringField(2)
-  username = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraValue(_messages.Message):
+    """Any additional information provided by the authenticator to be passed
+    to the authorizer.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtraValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ExtraValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ExtraValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ExtraValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  extra = _messages.MessageField('ExtraValue', 1)
+  groups = _messages.StringField(2, repeated=True)
+  uid = _messages.StringField(3)
+  username = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

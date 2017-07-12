@@ -23,8 +23,10 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def HealthCheckArgument(protocol_string, required=True, plural=False):
+def HealthCheckArgument(
+    protocol_string, name=None, required=True, plural=False):
   return compute_flags.ResourceArgument(
+      name=name,
       resource_name='{} health check'.format(protocol_string),
       completion_resource_id='compute.healthChecks',
       plural=plural,

@@ -15,7 +15,7 @@
 """type-provider command basics."""
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
-from googlecloudsdk.command_lib.deployment_manager import dm_beta_base
+from googlecloudsdk.command_lib.deployment_manager import dm_v2beta_base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 import yaml
@@ -80,7 +80,7 @@ def _OptionsFrom(options_data):
   Returns:
     An Options message object derived from options_data.
   """
-  options = dm_beta_base.GetMessages().Options()
+  options = dm_v2beta_base.GetMessages().Options()
   if 'virtualProperties' in options_data:
     options.virtualProperties = options_data['virtualProperties']
 
@@ -90,7 +90,7 @@ def _OptionsFrom(options_data):
 
   if 'validationOptions' in options_data:
     validation_options_data = options_data['validationOptions']
-    validation_options = dm_beta_base.GetMessages().ValidationOptions()
+    validation_options = dm_v2beta_base.GetMessages().ValidationOptions()
     if 'schemaValidation' in validation_options_data:
       validation_options.schemaValidation = (
           validation_options_data['schemaValidation'])
@@ -110,7 +110,7 @@ def _InputMappingFrom(input_mapping_data):
   Returns:
     An InputMapping message object derived from options_data.
   """
-  return dm_beta_base.GetMessages().InputMapping(
+  return dm_v2beta_base.GetMessages().InputMapping(
       fieldName=input_mapping_data.get('fieldName', None),
       location=input_mapping_data.get('location', None),
       methodMatch=input_mapping_data.get('methodMatch', None),
@@ -125,10 +125,10 @@ def _CredentialFrom(credential_data):
   Returns:
     An Credential message object derived from credential_data.
   """
-  basic_auth = dm_beta_base.GetMessages().BasicAuth(
+  basic_auth = dm_v2beta_base.GetMessages().BasicAuth(
       password=credential_data['basicAuth']['password'],
       user=credential_data['basicAuth']['user'])
-  return dm_beta_base.GetMessages().Credential(basicAuth=basic_auth)
+  return dm_v2beta_base.GetMessages().Credential(basicAuth=basic_auth)
 
 
 def AddOptions(options_file, type_provider):
@@ -159,7 +159,7 @@ def AddOptions(options_file, type_provider):
       type_provider.collectionOverrides = []
 
       for collection_override_data in yaml_content['collectionOverrides']:
-        collection_override = dm_beta_base.GetMessages().CollectionOverride(
+        collection_override = dm_v2beta_base.GetMessages().CollectionOverride(
             collection=collection_override_data['collection'])
 
         if 'options' in collection_override_data:
@@ -178,7 +178,7 @@ def AddOptions(options_file, type_provider):
 
 
 def GetReference(name):
-  return dm_beta_base.GetResources().Parse(
+  return dm_v2beta_base.GetResources().Parse(
       name,
       params={'project': properties.VALUES.core.project.GetOrFail},
       collection='deploymentmanager.typeProviders')

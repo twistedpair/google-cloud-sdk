@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common classes and functions for forwarding rules."""
-from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
@@ -20,21 +19,6 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
-
-
-class ForwardingRulesMutator(base_classes.BaseAsyncMutator):
-  """Base class for modifying forwarding rules."""
-
-  @property
-  def service(self):
-    if self.global_request:
-      return self.compute.globalForwardingRules
-    else:
-      return self.compute.forwardingRules
-
-  @property
-  def resource_type(self):
-    return 'forwardingRules'
 
 
 def _ValidateGlobalArgs(args):
@@ -78,28 +62,33 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args):
+def _ValidateRegionalArgs(args, include_alpha):
   """Validate the regional forwarding rules args."""
   if getattr(args, 'global', None):
     raise exceptions.ToolException(
         'You cannot specify [--global] for a regional '
         'forwarding rule.')
-  if args.target_http_proxy:
-    raise exceptions.ToolException(
-        'You cannot specify [--target-http-proxy] for a regional '
-        'forwarding rule.')
-  if getattr(args, 'target_https_proxy', None):
-    raise exceptions.ToolException(
-        'You cannot specify [--target-https-proxy] for a regional '
-        'forwarding rule.')
-  if getattr(args, 'target_ssl_proxy', None):
-    raise exceptions.ToolException(
-        'You cannot specify [--target-ssl-proxy] for a regional '
-        'forwarding rule.')
-  if getattr(args, 'target_tcp_proxy', None):
-    raise exceptions.ToolException(
-        'You cannot specify [--target-tcp-proxy] for a regional '
-        'forwarding rule.')
+
+  allow_global_target = (
+      include_alpha and args.network_tier and args.network_tier == 'STANDARD')
+  if not allow_global_target:
+    if args.target_http_proxy:
+      raise exceptions.ToolException(
+          'You cannot specify [--target-http-proxy] for a regional '
+          'forwarding rule.')
+    if getattr(args, 'target_https_proxy', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--target-https-proxy] for a regional '
+          'forwarding rule.')
+    if getattr(args, 'target_ssl_proxy', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--target-ssl-proxy] for a regional '
+          'forwarding rule.')
+    if getattr(args, 'target_tcp_proxy', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--target-tcp-proxy] for a regional '
+          'forwarding rule.')
+
   if args.target_instance_zone and not args.target_instance:
     raise exceptions.ToolException(
         'You cannot specify [--target-instance-zone] unless you are '
@@ -117,9 +106,13 @@ def _ValidateRegionalArgs(args):
         '[--load-balancing-scheme] forwarding rule.')
 
 
-def GetRegionalTarget(client, resources, args, forwarding_rule_ref=None):
+def GetRegionalTarget(client,
+                      resources,
+                      args,
+                      forwarding_rule_ref=None,
+                      include_alpha=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args)
+  _ValidateRegionalArgs(args, include_alpha)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project
@@ -154,6 +147,18 @@ def GetRegionalTarget(client, resources, args, forwarding_rule_ref=None):
       args.backend_service_region = region_arg
     target_ref = flags.BACKEND_SERVICE_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
+  elif args.target_http_proxy:
+    target_ref = flags.TARGET_HTTP_PROXY_ARG.ResolveAsResource(args, resources)
+    target_region = region_arg
+  elif args.target_https_proxy:
+    target_ref = flags.TARGET_HTTPS_PROXY_ARG.ResolveAsResource(args, resources)
+    target_region = region_arg
+  elif args.target_ssl_proxy:
+    target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
+    target_region = region_arg
+  elif args.target_tcp_proxy:
+    target_ref = flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
+    target_region = region_arg
 
   return target_ref, target_region
 

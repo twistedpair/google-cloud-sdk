@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170616",
+ "revision": "20170623",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2270,6 +2270,14 @@
      "type": "string",
      "description": "[Output Only] Last detach timestamp in RFC3339 text format."
     },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this disk.",
+     "items": {
+      "type": "string",
+      "format": "int64"
+     }
+    },
     "licenses": {
      "type": "array",
      "description": "Any applicable publicly visible licenses.",
@@ -2767,7 +2775,13 @@
    "properties": {
     "zone": {
      "type": "string",
-     "description": "URL of the zone where managed instance group is spawning instances (for regional resources). Zone has to belong to the region where managed instance group is located."
+     "description": "URL of the zone where managed instance group is spawning instances (for regional resources). Zone has to belong to the region where managed instance group is located.",
+     "annotations": {
+      "required": [
+       "compute.regionInstanceGroupManagers.insert",
+       "compute.regionInstanceGroupManagers.update"
+      ]
+     }
     }
    }
   },
@@ -4322,6 +4336,14 @@
       "type": "string"
      }
     },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this image.",
+     "items": {
+      "type": "string",
+      "format": "int64"
+     }
+    },
     "licenses": {
      "type": "array",
      "description": "Any applicable license URI.",
@@ -4857,7 +4879,8 @@
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
      "annotations": {
       "required": [
-       "compute.instanceGroupManagers.insert"
+       "compute.instanceGroupManagers.insert",
+       "compute.regionInstanceGroupManagers.insert"
       ]
      }
     },
@@ -4901,7 +4924,8 @@
      "format": "int32",
      "annotations": {
       "required": [
-       "compute.instanceGroupManagers.insert"
+       "compute.instanceGroupManagers.insert",
+       "compute.regionInstanceGroupManagers.insert"
       ]
      }
     },
@@ -6193,7 +6217,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 22",
+   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 23",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -7327,6 +7351,36 @@
     "instance": {
      "type": "string",
      "description": "The URL of the instance."
+    },
+    "metadata": {
+     "type": "array",
+     "description": "Metadata overrides defined for this instance.",
+     "items": {
+      "type": "object",
+      "properties": {
+       "key": {
+        "type": "string",
+        "description": "Key for the metadata entry. Keys must conform to the following regexp: [a-zA-Z0-9-_]+, and be less than 128 bytes in length. This is reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project.",
+        "pattern": "[a-zA-Z0-9-_]{1,128}",
+        "annotations": {
+         "required": [
+          "compute.instances.insert",
+          "compute.projects.setCommonInstanceMetadata"
+         ]
+        }
+       },
+       "value": {
+        "type": "string",
+        "description": "Value for the metadata entry. These are free-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on values is that their size must be less than or equal to 32768 bytes.",
+        "annotations": {
+         "required": [
+          "compute.instances.insert",
+          "compute.projects.setCommonInstanceMetadata"
+         ]
+        }
+       }
+      }
+     }
     }
    }
   },
@@ -8195,7 +8249,7 @@
     },
     "xpnProjectStatus": {
      "type": "string",
-     "description": "[Output Only] The role this project has in a Cross Project Network (XPN) configuration. Currently only HOST projects are differentiated.",
+     "description": "[Output Only] The role this project has in a shared VPC configuration. Currently only HOST projects are differentiated.",
      "enum": [
       "HOST",
       "UNSPECIFIED_XPN_PROJECT_STATUS"
@@ -8213,7 +8267,7 @@
    "properties": {
     "xpnResource": {
      "$ref": "XpnResourceId",
-     "description": "XPN resource ID."
+     "description": "Service resource (a.k.a service project) ID."
     }
    }
   },
@@ -8223,7 +8277,7 @@
    "properties": {
     "xpnResource": {
      "$ref": "XpnResourceId",
-     "description": "XPN resource ID."
+     "description": "Service resource (a.k.a service project) ID."
     }
    }
   },
@@ -8233,7 +8287,7 @@
    "properties": {
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#projectsGetXpnResources for lists of XPN resources.",
+     "description": "[Output Only] Type of resource. Always compute#projectsGetXpnResources for lists of service resources (a.k.a service projects)",
      "default": "compute#projectsGetXpnResources"
     },
     "nextPageToken": {
@@ -8242,7 +8296,7 @@
     },
     "resources": {
      "type": "array",
-     "description": "XPN resources attached to this project as their XPN host.",
+     "description": "Serive resources (a.k.a service projects) attached to this project as their shared VPC host.",
      "items": {
       "$ref": "XpnResourceId"
      }
@@ -8255,7 +8309,7 @@
    "properties": {
     "organization": {
      "type": "string",
-     "description": "Optional organization ID managed by Cloud Resource Manager, for which to list XPN host projects. If not specified, the organization will be inferred from the project."
+     "description": "Optional organization ID managed by Cloud Resource Manager, for which to list shared VPC host projects. If not specified, the organization will be inferred from the project."
     }
    }
   },
@@ -10021,6 +10075,14 @@
      "description": "Labels to apply to this snapshot. These can be later modified by the setLabels method. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
+     }
+    },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this snapshot.",
+     "items": {
+      "type": "string",
+      "format": "int64"
      }
     },
     "licenses": {
@@ -12202,14 +12264,14 @@
     },
     "items": {
      "type": "array",
-     "description": "[Output Only] A list of XPN host project URLs.",
+     "description": "[Output Only] A list of shared VPC host project URLs.",
      "items": {
       "$ref": "Project"
      }
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#xpnHostList for lists of XPN hosts.",
+     "description": "[Output Only] Type of resource. Always compute#xpnHostList for lists of shared VPC hosts.",
      "default": "compute#xpnHostList"
     },
     "nextPageToken": {
@@ -12225,15 +12287,15 @@
   "XpnResourceId": {
    "id": "XpnResourceId",
    "type": "object",
-   "description": "XpnResourceId",
+   "description": "Service resource (a.k.a service project) ID.",
    "properties": {
     "id": {
      "type": "string",
-     "description": "The ID of the XPN resource. In the case of projects, this field matches the project's name, not the canonical ID."
+     "description": "The ID of the service resource. In the case of projects, this field matches the project ID (e.g., my-project), not the project number (e.g., 12345678)."
     },
     "type": {
      "type": "string",
-     "description": "The type of the XPN resource.",
+     "description": "The type of the service resource.",
      "enum": [
       "PROJECT",
       "XPN_RESOURCE_TYPE_UNSPECIFIED"
@@ -22975,7 +23037,7 @@
      "id": "compute.projects.disableXpnHost",
      "path": "{project}/disableXpnHost",
      "httpMethod": "POST",
-     "description": "Disable this project as an XPN host project.",
+     "description": "Disable this project as a shared VPC host project.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23005,7 +23067,7 @@
      "id": "compute.projects.disableXpnResource",
      "path": "{project}/disableXpnResource",
      "httpMethod": "POST",
-     "description": "Disable an XPN resource associated with this host project.",
+     "description": "Disable a serivce resource (a.k.a service project) associated with this host project.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23038,7 +23100,7 @@
      "id": "compute.projects.enableXpnHost",
      "path": "{project}/enableXpnHost",
      "httpMethod": "POST",
-     "description": "Enable this project as an XPN host project.",
+     "description": "Enable this project as a shared VPC host project.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23068,7 +23130,7 @@
      "id": "compute.projects.enableXpnResource",
      "path": "{project}/enableXpnResource",
      "httpMethod": "POST",
-     "description": "Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.",
+     "description": "Enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23127,7 +23189,7 @@
      "id": "compute.projects.getXpnHost",
      "path": "{project}/getXpnHost",
      "httpMethod": "GET",
-     "description": "Get the XPN host project that this project links to. May be empty if no link exists.",
+     "description": "Get the shared VPC host project that this project links to. May be empty if no link exists.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23152,7 +23214,7 @@
      "id": "compute.projects.getXpnResources",
      "path": "{project}/getXpnResources",
      "httpMethod": "GET",
-     "description": "Get XPN resources associated with this host project.",
+     "description": "Get service resources (a.k.a service project) associated with this host project.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -23196,7 +23258,7 @@
      "id": "compute.projects.listXpnHosts",
      "path": "{project}/listXpnHosts",
      "httpMethod": "POST",
-     "description": "List all XPN host projects visible to the user in an organization.",
+     "description": "List all shared VPC host projects visible to the user in an organization.",
      "parameters": {
       "filter": {
        "type": "string",

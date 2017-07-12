@@ -195,6 +195,7 @@ class JobSubmitterBeta(JobSubmitter):
 
   def ConfigureJob(self, messages, job, args):
     # Configure Restartable job.
+    super(JobSubmitterBeta, self).ConfigureJob(messages, job, args)
     if args.max_failures_per_hour:
       scheduling = messages.JobScheduling(
           maxFailuresPerHour=args.max_failures_per_hour)

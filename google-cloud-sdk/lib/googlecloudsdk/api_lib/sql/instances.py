@@ -94,7 +94,8 @@ class _BaseInstances(object):
 
     def YieldInstancesWithAModifiedState():
       for result in yielded:
-        if result.settings.activationPolicy == 'NEVER':
+        # TODO(b/63139112): Investigate impact of instances without settings.
+        if result.settings and result.settings.activationPolicy == 'NEVER':
           result.state = 'STOPPED'
         yield result
 
@@ -297,6 +298,22 @@ class _BaseInstances(object):
     if (hasattr(args, 'storage_auto_increase') and
         args.storage_auto_increase is not None):
       instance_resource.settings.storageAutoResize = args.storage_auto_increase
+
+    if (hasattr(args, 'storage_auto_increase_limit') and
+        args.IsSpecified('storage_auto_increase_limit')):
+      # Resize limit should be settable if the original instance has resize
+      # turned on, or if the instance to be created has resize flag.
+      if (original and original.settings.storageAutoResize) or (
+          args.storage_auto_increase):
+        # If the limit is set to None, we want it to be set to 0. This is a
+        # backend requirement.
+        instance_resource.settings.storageAutoResizeLimit = (
+            args.storage_auto_increase_limit) or 0
+      else:
+        raise exceptions.RequiredArgumentException(
+            '--storage-auto-increase', 'To set the storage capacity limit '
+            'using [--storage-auto-increase-limit], [--storage-auto-increase] '
+            'must be enabled.')
 
     return instance_resource
 

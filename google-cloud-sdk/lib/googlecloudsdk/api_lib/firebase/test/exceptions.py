@@ -15,6 +15,7 @@
 """Exceptions raised by Testing API libs or commands."""
 
 from googlecloudsdk.api_lib.firebase.test import exit_code
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
@@ -130,3 +131,29 @@ class AllDimensionsIncompatibleError(TestingError):
     super(AllDimensionsIncompatibleError, self).__init__(
         msg, exit_code=exit_code.UNSUPPORTED_ENV)
 
+
+def ExternalArgNameFrom(arg_internal_name):
+  """Converts an internal arg name into its corresponding user-visible name.
+
+  This is used for creating exceptions using user-visible arg names.
+
+  Args:
+    arg_internal_name: the internal name of an argument.
+
+  Returns:
+    The user visible name for the argument.
+  """
+  return arg_internal_name.replace('_', '-')
+
+
+class InvalidArgException(calliope_exceptions.InvalidArgumentException):
+  """InvalidArgException is for malformed gcloud firebase test argument values.
+
+  It provides a wrapper around Calliope's InvalidArgumentException that
+  conveniently converts internal arg names with underscores into the external
+  arg names with hyphens.
+  """
+
+  def __init__(self, param_name, message):
+    super(InvalidArgException, self).__init__(
+        ExternalArgNameFrom(param_name), message)

@@ -16,7 +16,31 @@
 
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.service_management import completion_callbacks
+from googlecloudsdk.command_lib.util import completers
+
+
+_SERVICES_LIST_COMMAND = ('service-management list --format=disable '
+                          '--flatten=serviceName[]')
+
+
+class ConsumerServiceCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ConsumerServiceCompleter, self).__init__(
+        collection=services_util.SERVICES_COLLECTION,
+        list_command=_SERVICES_LIST_COMMAND,
+        flags=['enabled'],
+        **kwargs)
+
+
+class ProducerServiceCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ProducerServiceCompleter, self).__init__(
+        collection=services_util.SERVICES_COLLECTION,
+        list_command=_SERVICES_LIST_COMMAND,
+        flags=['produced'],
+        **kwargs)
 
 
 def operation_flag(suffix='to act on'):
@@ -28,18 +52,14 @@ def operation_flag(suffix='to act on'):
 def producer_service_flag(suffix='to act on', flag_name='service'):
   return base.Argument(
       flag_name,
-      completion_resource=services_util.SERVICES_COLLECTION,
-      list_command_callback_fn=(completion_callbacks.
-                                ProducerServiceFlagCompletionCallback),
+      completer=ProducerServiceCompleter,
       help='The name of the service {0}.'.format(suffix))
 
 
 def consumer_service_flag(suffix='to act on', flag_name='service'):
   return base.Argument(
       flag_name,
-      completion_resource=services_util.SERVICES_COLLECTION,
-      list_command_callback_fn=(completion_callbacks.
-                                ConsumerServiceFlagCompletionCallback),
+      completer=ConsumerServiceCompleter,
       help='The name of the service {0}.'.format(suffix))
 
 

@@ -247,7 +247,7 @@
           ]
         },
         "privateKeyData": {
-          "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses.",
+          "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses. Make sure to keep the private key data secure because it\nallows for the assertion of the service account identity.",
           "type": "string",
           "format": "byte"
         },

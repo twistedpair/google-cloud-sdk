@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for ml-engine models commands."""
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+
+
+MODELS_COLLECTION = 'ml.projects.models'
 
 
 def ParseModel(model):
@@ -23,7 +27,7 @@ def ParseModel(model):
   return resources.REGISTRY.Parse(
       model,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='ml.projects.models')
+      collection=MODELS_COLLECTION)
 
 
 def Create(models_client, model, regions=None, enable_logging=None):
@@ -48,3 +52,32 @@ def List(models_client):
       properties.VALUES.core.project.GetOrFail(),
       collection='ml.projects')
   return models_client.List(project_ref)
+
+
+def GetIamPolicy(models_client, model):
+  model_ref = ParseModel(model)
+  return models_client.GetIamPolicy(model_ref)
+
+
+def SetIamPolicy(models_client, model, policy_file):
+  model_ref = ParseModel(model)
+  policy = iam_util.ParseJsonPolicyFile(
+      policy_file, models_client.messages.GoogleIamV1Policy)
+  update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
+  iam_util.LogSetIamPolicy(model_ref.Name(), 'model')
+  return models_client.SetIamPolicy(model_ref, policy, update_mask)
+
+
+def AddIamPolicyBinding(models_client, model, member, role):
+  model_ref = ParseModel(model)
+  policy = models_client.GetIamPolicy(model_ref)
+  iam_util.AddBindingToIamPolicy(models_client.messages.GoogleIamV1Binding,
+                                 policy, member, role)
+  return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+
+
+def RemoveIamPolicyBinding(models_client, model, member, role):
+  model_ref = ParseModel(model)
+  policy = models_client.GetIamPolicy(model_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')

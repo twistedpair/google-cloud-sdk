@@ -70,6 +70,23 @@ class MatrixCreator(object):
         gcsPath=os.path.join(self._gcs_results_root,
                              os.path.basename(filename)))
 
+  def _BuildRoboDirectives(self, robo_directives_dict):
+    """Build a list of RoboDirectives from the dictionary input."""
+    robo_directives = []
+    action_types = self._messages.RoboDirective.ActionTypeValueValuesEnum
+    action_type_mapping = {
+        'click': action_types.SINGLE_CLICK,
+        'text': action_types.ENTER_TEXT
+    }
+    for key, value in (robo_directives_dict or {}).iteritems():
+      (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
+      robo_directives.append(
+          self._messages.RoboDirective(
+              resourceName=resource_name,
+              inputText=value,
+              actionType=action_type_mapping.get(action_type)))
+    return robo_directives
+
   def _BuildAndroidInstrumentationTestSpec(self):
     """Build a TestSpecification for an AndroidInstrumentationTest."""
     spec = self._BuildGenericTestSpec()
@@ -85,24 +102,13 @@ class MatrixCreator(object):
   def _BuildAndroidRoboTestSpec(self):
     """Build a TestSpecification for an AndroidRoboTest."""
     spec = self._BuildGenericTestSpec()
-
-    robo_directives = []
-    if self._args.robo_directives:
-      action_types = self._messages.RoboDirective.ActionTypeValueValuesEnum
-      for key, value in self._args.robo_directives.iteritems():
-        robo_directives.append(
-            self._messages.RoboDirective(
-                resourceName=key,
-                inputText=value,
-                actionType=action_types.ENTER_TEXT))
-
     spec.androidRoboTest = self._messages.AndroidRoboTest(
         appApk=self._BuildFileReference(self._args.app),
         appPackageId=self._args.app_package,
         maxDepth=self._args.max_depth,
         maxSteps=self._args.max_steps,
         appInitialActivity=self._args.app_initial_activity,
-        roboDirectives=robo_directives)
+        roboDirectives=self._BuildRoboDirectives(self._args.robo_directives))
     return spec
 
   def _BuildAndroidGameLoopTestSpec(self):

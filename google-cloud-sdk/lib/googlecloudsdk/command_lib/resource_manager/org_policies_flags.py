@@ -33,6 +33,8 @@ def AddResourceFlagsToParser(parser):
       help='Folder ID for Org Policies.').AddToParser(parser)
 
 
+# TODO(b/63101095): have --project show up in the synopsis and have
+# mutually exclusive group shown explicitly
 def CheckResourceFlags(args):
   if [bool(a)
       for a in [args.project, args.organization, args.folder]].count(True) > 1:

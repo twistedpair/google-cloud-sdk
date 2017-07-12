@@ -152,10 +152,13 @@ class BuildOptions(_messages.Message):
   Enums:
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
+    SubstitutionOptionValueValuesEnum: SubstitutionOption to allow unmatch
+      substitutions.
 
   Fields:
     requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
+    substitutionOption: SubstitutionOption to allow unmatch substitutions.
   """
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
@@ -178,8 +181,20 @@ class BuildOptions(_messages.Message):
     NONE = 0
     SHA256 = 1
 
+  class SubstitutionOptionValueValuesEnum(_messages.Enum):
+    """SubstitutionOption to allow unmatch substitutions.
+
+    Values:
+      MUST_MATCH: Fails the build if error in substitutions checks, like
+        missing a substitution in the template or in the map.
+      ALLOW_LOOSE: Do not fail the build if error in substitutions checks.
+    """
+    MUST_MATCH = 0
+    ALLOW_LOOSE = 1
+
   requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 1)
   sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 2, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 3)
 
 
 class BuildStep(_messages.Message):

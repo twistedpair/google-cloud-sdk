@@ -130,7 +130,7 @@ def _SplitArgFileAndGroup(file_and_group_str):
   """Parses an ARGSPEC and returns the arg filename and arg group name."""
   index = file_and_group_str.rfind(':')
   if index < 0 or (index == 2 and file_and_group_str.startswith('gs://')):
-    raise arg_validate.InvalidArgException(
+    raise exceptions.InvalidArgException(
         'arg-spec', 'Format must be ARG_FILE:ARG_GROUP_NAME')
   return file_and_group_str[:index], file_and_group_str[index+1:]
 
@@ -198,7 +198,7 @@ def _MergeArgGroupIntoArgs(
   if already_included_set is None:
     already_included_set = set()
   elif group_name in already_included_set:
-    raise arg_validate.InvalidArgException(
+    raise exceptions.InvalidArgException(
         _INCLUDE,
         'Detected cyclic reference to arg group [{g}]'.format(g=group_name))
   if group_name not in all_arg_groups:
@@ -256,7 +256,7 @@ def ArgSpecCompleter(prefix, parsed_args, **kwargs):
   """
   try:
     arg_file, group_prefix = _SplitArgFileAndGroup(prefix)
-  except arg_validate.InvalidArgException:
+  except exceptions.InvalidArgException:
     return []
   try:
     groups = _ReadArgGroupsFromFile(arg_file).keys()

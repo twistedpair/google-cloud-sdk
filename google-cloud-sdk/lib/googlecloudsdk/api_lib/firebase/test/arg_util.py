@@ -15,6 +15,7 @@
 
 from googlecloudsdk.api_lib.firebase.test import arg_file
 from googlecloudsdk.api_lib.firebase.test import arg_validate
+from googlecloudsdk.api_lib.firebase.test import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -182,18 +183,32 @@ def AddAndroidTestArgs(parser):
       help='The initial activity used to start the app during a robo test.')
   parser.add_argument(
       '--robo-directives',
-      metavar='RESOURCE_NAME=INPUT',
+      metavar='TYPE:RESOURCE_NAME=INPUT',
       category=ANDROID_ROBO_TEST,
       type=arg_parsers.ArgDict(),
-      help='A comma-separated, key=value, map of robo_directives for use by '
-      'Robo test. Each key should be the Android resource name of a target '
-      'UI element, and each value should be the text input for that element. '
-      'For example, specify "--robo-directives username_resource=username,'
-      'password_resource=password" to provide custom login credentials for '
-      'your app. Caution: You should only use credentials for test accounts '
-      'that are not associated with real users. For more information, see '
-      # pylint: disable=line-too-long
-      'https://firebase.google.com/docs/test-lab/command-line#custom_login_and_text_input_with_robo_test.')
+      help='A comma-separated (`<type>:<key>=<value>`) map of '
+      '`robo_directives` that you can use to customize the behavior of Robo '
+      'test. The `type` specifies the action type of the directive, which may '
+      'take on values `click` or `text`. If no `type` is provided, `text` will '
+      'be used by default. Each key should be the Android resource name of a '
+      'target UI element and each value should be the text input for that '
+      'element. Values are only permitted for `text` type elements, so no '
+      'value should be specified for `click` type elements. For example, use'
+      '\n\n'
+      '    --robo-directives text:username_resource=username,'
+      'text:password_resource=password'
+      '\n\n'
+      'to provide custom login credentials for your app, or'
+      '\n\n'
+      '    --robo-directives click:sign_in_button='
+      '\n\n'
+      'to instruct Robo to click on the sign in button. To learn more about '
+      'Robo test and robo_directives, see '
+      'https://firebase.google.com/docs/test-lab/command-line'
+      '#custom_login_and_text_input_with_robo_test.'
+      '\n\n'
+      'Caution: You should only use credentials for test accounts that are not '
+      'associated with real users.')
 
 
 def AddGaArgs(parser):
@@ -381,7 +396,7 @@ def ApplyLowerPriorityArgs(args, lower_pri_args, issue_cli_warning=False):
                 .format(arg, str(lower_pri_args[arg])))
       setattr(args, arg, lower_pri_args[arg])
     elif issue_cli_warning and getattr(args, arg) != lower_pri_args[arg]:
-      ext_name = arg_validate.ExternalArgNameFrom(arg)
+      ext_name = exceptions.ExternalArgNameFrom(arg)
       log.warning(
           'Command-line argument "--{0} {1}" overrides file argument "{2}: {3}"'
           .format(ext_name,

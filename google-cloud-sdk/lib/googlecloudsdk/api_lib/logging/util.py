@@ -24,61 +24,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-class TypedLogSink(object):
-  """Class that encapsulates V1 and V2 LogSinks during the transition period.
-
-  Attributes:
-    name: present in both versions.
-    destination: present in both versions.
-    filter: present in both versions.
-    format: format of exported entries, only present in V2 sinks.
-    start_time: time at which the sink becomes active
-    end_time: time at which sink is no longer active
-    include_children: whether the sink applies to all children.
-    type: one-of log/service/project.
-    writer_identity: identity that needs to be granted write access
-        to the destination, only present in V2 sinks.
-  """
-
-  def __init__(self, sink, log_name=None, service_name=None):
-    """Creates a TypedLogSink with type based on constructor values.
-
-    Args:
-      sink: instance of V1 or V2 LogSink
-      log_name: name of log, if it's a log-sink.
-      service_name: name of service, if it's a service-sink
-    """
-    self.name = sink.name
-    self.destination = sink.destination
-    self.filter = None
-    self.start_time = sink.startTime if sink.startTime else '(no start time)'
-    self.end_time = sink.endTime if sink.endTime else '(no end time)'
-
-    # Get sink type.
-    if log_name:
-      self.type = 'LOG: %s' % log_name
-    elif service_name:
-      self.type = 'SERVICE: %s' % service_name
-    else:
-      self.type = 'PROJECT SINK'
-      self.filter = sink.filter if sink.filter else '(empty filter)'
-      if hasattr(sink, 'includeChildren'):
-        self.include_children = sink.includeChildren
-    # Get sink format.
-    if hasattr(sink, 'outputVersionFormat'):
-      if sink.outputVersionFormat is None:
-        self.format = 'V2'
-      else:
-        self.format = sink.outputVersionFormat.name
-    else:
-      self.format = 'V1'
-    # Get sink writer identity
-    if hasattr(sink, 'writerIdentity'):
-      self.writer_identity = sink.writerIdentity
-    else:
-      self.writer_identity = ''
-
-
 def GetClient():
   """Returns the client for the logging API."""
   return core_apis.GetClientInstance('logging', 'v2')
@@ -89,16 +34,6 @@ def GetMessages():
   return core_apis.GetMessagesModule('logging', 'v2')
 
 
-def GetClientV1():
-  """Returns the client for the v1 logging API."""
-  return core_apis.GetClientInstance('logging', 'v1beta3')
-
-
-def GetMessagesV1():
-  """Returns the messages for the v1 logging API."""
-  return core_apis.GetMessagesModule('logging', 'v1beta3')
-
-
 def GetCurrentProjectParent():
   """Returns the relative resource path to the current project."""
   project = properties.VALUES.core.project.Get(required=True)
@@ -107,78 +42,12 @@ def GetCurrentProjectParent():
   return project_ref.RelativeName()
 
 
-def GetSinkReference(sink_name, log, service, args):
+def GetSinkReference(sink_name, args):
   """Returns the appropriate sink resource based on args."""
-  # TODO(b/30276338): Remove this function altogether
-  params = {'projectsId': properties.VALUES.core.project.GetOrFail}
-  if log or service:
-    registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('logging', 'v1beta3')
-  else:
-    registry = resources.REGISTRY
-
-  if log:
-    params['logsId'] = log
-    return registry.Parse(
-        sink_name, params=params, collection='logging.projects.logs.sinks')
-  elif service:
-    params['logServicesId'] = service
-    return registry.Parse(
-        sink_name, params=params,
-        collection='logging.projects.logServices.sinks')
-  else:
-    return registry.Parse(
-        sink_name,
-        params={GetIdFromArgs(args): GetParentResourceFromArgs(args).Name()},
-        collection=GetCollectionFromArgs(args, 'sinks'))
-
-
-def WarnOnUsingLogOrServiceArguments(args):
-  """Warns on using the --log or --service flag."""
-  if args.log:
-    sdk_log.warn('--log is deprecated and will soon be removed.')
-  elif args.service:
-    sdk_log.warn('--service is deprecated and will soon be removed.')
-
-
-def CheckLegacySinksCommandArguments(args):
-  """Validates that legacy sinks only use project arguments."""
-  WarnOnUsingLogOrServiceArguments(args)
-  is_legacy_sink = args.log or args.service
-
-  if is_legacy_sink and args.organization:
-    raise exceptions.InvalidArgumentException(
-        '--organization', 'Legacy sinks do not support this feature')
-
-  if is_legacy_sink and args.folder:
-    raise exceptions.InvalidArgumentException(
-        '--folder', 'Legacy sinks do not support this feature')
-
-  if is_legacy_sink and args.billing_account:
-    raise exceptions.InvalidArgumentException(
-        '--billing-account', 'Legacy sinks do not support this feature')
-
-
-def CheckSinksCommandArguments(args):
-  """Validates arguments that are provided to 'sinks create/update' command.
-
-  Args:
-    args: arguments returned from argparser.
-
-  Raises:
-    InvalidArgumentException on error.
-  """
-  is_legacy_sink = args.log or args.service
-
-  if is_legacy_sink and args.log_filter:
-    raise exceptions.InvalidArgumentException(
-        '--log-filter', 'Legacy sinks do not support filters')
-
-  if is_legacy_sink and args.output_version_format == 'V2':
-    raise exceptions.InvalidArgumentException(
-        '--output-version-format', 'Legacy sinks do not support V2 format')
-
-  CheckLegacySinksCommandArguments(args)
+  return resources.REGISTRY.Parse(
+      sink_name,
+      params={GetIdFromArgs(args): GetParentResourceFromArgs(args).Name()},
+      collection=GetCollectionFromArgs(args, 'sinks'))
 
 
 def FormatTimestamp(timestamp):

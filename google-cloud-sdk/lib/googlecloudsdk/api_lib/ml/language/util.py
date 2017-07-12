@@ -19,7 +19,8 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 
 LANGUAGE_API = 'language'
-LANGUAGE_API_VERSION = 'v1'
+LANGUAGE_GA_VERSION = 'v1'
+LANGUAGE_BETA_VERSION = 'v1beta2'
 
 
 class Error(exceptions.Error):
@@ -34,19 +35,19 @@ class ContentError(Error):
   """Error if content is not given."""
 
 
-def GetLanguageClient(version=LANGUAGE_API_VERSION):
+def GetLanguageClient(version=LANGUAGE_GA_VERSION):
   return apis.GetClientInstance(LANGUAGE_API, version)
 
 
-def GetLanguageMessages(version=LANGUAGE_API_VERSION):
+def GetLanguageMessages(version=LANGUAGE_GA_VERSION):
   return apis.GetMessagesModule(LANGUAGE_API, version)
 
 
 class LanguageClient(object):
   """Wrapper for the Cloud Language API client class."""
 
-  def __init__(self, version=None):
-    version = version or LANGUAGE_API_VERSION
+  def __init__(self, version=None, entity_sentiment_enabled=False):
+    version = version or LANGUAGE_GA_VERSION
     self.client = GetLanguageClient(version=version)
     self.messages = GetLanguageMessages(version=version)
     self.features = {
@@ -57,6 +58,12 @@ class LanguageClient(object):
         'analyzeSentiment': (self.messages.AnalyzeSentimentRequest,
                              self.client.documents.AnalyzeSentiment)
     }
+    # analyzeEntitySentiment is only available in the beta API.
+    if entity_sentiment_enabled:
+      self.features.update({
+          'analyzeEntitySentiment': (
+              self.messages.AnalyzeEntitySentimentRequest,
+              self.client.documents.AnalyzeEntitySentiment)})
 
   def _GetDocument(self, source=None, language=None,
                    content_type='PLAIN_TEXT'):
@@ -188,3 +195,4 @@ def GetContentSource(content=None, content_file=None):
   # string, raise an error.
   raise ContentError('The content provided is empty. Please provide '
                      'language content to analyze.')
+

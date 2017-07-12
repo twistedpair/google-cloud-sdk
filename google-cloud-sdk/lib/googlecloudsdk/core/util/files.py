@@ -19,6 +19,7 @@ import errno
 import hashlib
 import logging
 import os
+import re
 import shutil
 import stat
 import sys
@@ -1011,3 +1012,14 @@ def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False):
     return
 
   WriteFileContents(path, content, overwrite=overwrite, binary=binary)
+
+
+def GetTreeSizeBytes(path, ignore_regex):
+  """Returns sum of sizes of not-ingnored files under given path, in bytes."""
+  result = 0
+  for directory in os.walk(path):
+    for file_name in directory[2]:
+      file_path = os.path.join(directory[0], file_name)
+      if ignore_regex is None or re.match(ignore_regex, file_path) is None:
+        result += os.path.getsize(file_path)
+  return result

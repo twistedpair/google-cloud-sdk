@@ -40,8 +40,8 @@ FINGERPRINT_REGEX = re.compile(
 OP_BASE_CMD = 'gcloud service-management operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
-SERVICES_COLLECTION = 'servicemanagement-v1.services'
-CONFIG_COLLECTION = 'servicemanagement-v1.serviceConfigs'
+SERVICES_COLLECTION = 'servicemanagement.services'
+CONFIG_COLLECTION = 'servicemanagement.services.configs'
 
 ALL_IAM_PERMISSIONS = [
     'servicemanagement.services.get',

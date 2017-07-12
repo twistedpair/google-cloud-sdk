@@ -565,6 +565,18 @@
             "NOT_VERIFIED",
             "VERIFIED"
           ]
+        },
+        "substitutionOption": {
+          "description": "SubstitutionOption to allow unmatch substitutions.",
+          "enumDescriptions": [
+            "Fails the build if error in substitutions checks, like missing\na substitution in the template or in the map.",
+            "Do not fail the build if error in substitutions checks."
+          ],
+          "type": "string",
+          "enum": [
+            "MUST_MATCH",
+            "ALLOW_LOOSE"
+          ]
         }
       }
     },

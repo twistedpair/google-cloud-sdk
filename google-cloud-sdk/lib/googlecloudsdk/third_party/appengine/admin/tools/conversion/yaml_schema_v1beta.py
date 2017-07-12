@@ -35,6 +35,12 @@ SCHEMA = s.Message(
             aggregation_window_length_sec=s.Value('aggregation_window_length',
                                                   converter=c.SecondsToDuration)
         ),
+        standard_scheduler_settings=s.Message(
+            max_instances=s.Value(converter=c.StringToInt()),
+            min_instances=s.Value(converter=c.StringToInt()),
+            target_cpu_utilization=s.Value(),
+            target_throughput_utilization=s.Value()
+        ),
         max_num_instances=s.Value('max_total_instances'),
         min_pending_latency=s.Value(converter=c.LatencyToDuration),
         min_idle_instances=s.Value(converter=
@@ -121,7 +127,7 @@ SCHEMA = s.Message(
         check_interval_sec=s.Value('check_interval',
                                    converter=c.SecondsToDuration),
         timeout_sec=s.Value('timeout', converter=c.SecondsToDuration),
-        app_start_timeout_sec=s.Value('app_start_timeout_sec',
+        app_start_timeout_sec=s.Value('app_start_timeout',
                                       converter=c.SecondsToDuration),
         success_threshold=s.Value(),
         failure_threshold=s.Value(),
@@ -151,6 +157,7 @@ SCHEMA = s.Message(
             volume_type=s.Value(converter=c.ToJsonString),
             size_gb=s.Value()))),
     runtime=s.Value(converter=c.ToJsonString),
+    standard_websocket=s.Value('enable_standard_websocket'),
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),
     vm=s.Value(),

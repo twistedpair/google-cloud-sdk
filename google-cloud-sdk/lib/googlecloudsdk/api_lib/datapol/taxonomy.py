@@ -41,7 +41,7 @@ def Create(taxonomy_name, description):
               'datapol.taxonomyStores',
               taxonomyStoresId=utils.GetTaxonomyStoresId()).RelativeName(),
           dataTaxonomy=messages.DataTaxonomy(
-              taxonomyName=taxonomy_name, description=description)))
+              displayName=taxonomy_name, description=description)))
 
 
 def Delete(taxonomy_id):

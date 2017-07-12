@@ -53,9 +53,17 @@ class DeprecatedListCommandCompleter(object):
     return parameter_info_lib.ParameterInfoByConvention(parsed_args, argument)
 
   def GetListCommand(self, parameter_info):
+    """Returns the completion value list command argv."""
     if self._list_command_callback:
       return self._list_command_callback(parameter_info.parsed_args)
-    return self._list_command
+    if not self._list_command:
+      return None
+    list_command = self._list_command.split()
+    if ' --quiet' not in self._list_command:
+      list_command.append('--quiet')
+    if ' --uri' in self._list_command and '--format' not in self._list_command:
+      list_command.append('--format=disable')
+    return list_command
 
   def Complete(self, prefix, parameter_info):
     """Returns the list of strings matching prefix.
@@ -68,8 +76,8 @@ class DeprecatedListCommandCompleter(object):
     Returns:
       The list of strings matching prefix.
     """
+    list_command = self.GetListCommand(parameter_info)
+    command_line = ' '.join(list_command) if list_command else None
     completer = remote_completion.RemoteCompletion.GetCompleterForResource(
-        resource=self.collection,
-        command_line=self._list_command,
-        list_command_callback_fn=self._list_command_callback)
+        resource=self.collection, command_line=command_line)
     return completer(parameter_info.parsed_args, prefix=prefix)

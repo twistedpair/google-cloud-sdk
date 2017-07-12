@@ -639,9 +639,12 @@ class _SectionApp(_Section):
 
     # Whether or not to use the (currently under-development) Flex Runtime
     # Builders, as opposed to Externalized Runtimes.
+    #   True  => ALWAYS
+    #   False => NEVER
+    #   Unset => default behavior, which varies between beta/GA commands
     self.use_runtime_builders = self._Add(
         'use_runtime_builders',
-        default=False,
+        default=None,
         hidden=True)
     # The Cloud Storage path prefix for the Flex Runtime Builder configuration
     # files. The configuration files will live at
@@ -671,6 +674,14 @@ class _SectionContainer(_Section):
         default=False,
         help_text='Use application default credentials to authenticate to '
         'the cluster API server.')
+    self.use_v1_api_client = self._AddBool(
+        'use_v1_api_client',
+        default=True,
+        hidden=True,
+        help_text='If True, always use a v1 api client to talk to the '
+        'Container Engine v1 API; if False, gcloud alpha track commands will '
+        'use a v1alpha1 API client. The Container Engine v1alpha1 API is '
+        'whitelist-only at this time.')
 
     def BuildTimeoutValidator(build_timeout):
       if build_timeout is None:
@@ -740,6 +751,26 @@ class _SectionCore(_Section):
         help_text='The resource completion style controls how resource strings '
         'are represented in command argument completions.  All styles, '
         'including uri, are handled on input.')
+    self.lint = self._Add(
+        'lint',
+        # Current runtime lint patterns. Delete from this comment when the
+        # pattern usage has been deleted.
+        #
+        #   AddCacheUpdaters: Throws an exeption for each command that needs
+        #     a parser.display_info.AddCacheUpdater() call.
+        #
+        # When running tests set default=PATTERN[,PATTERN...] here to weed out
+        # all occurrences of the patterns. Patterns are checked using substring
+        # matching on the lint property string value:
+        #
+        #   if 'AddCacheUpdaters' in properties.VALUES.core.lint.Get():
+        #     # AddCacheUpdaters lint check enabled.
+        default='none',
+        hidden=True,
+        help_text='Enable the runtime linter for specific patterns. '
+        'Each occurrence of a runtime pattern raises an exception. '
+        'The pattern names are source specific. Consult the source for '
+        'details.')
     self.api_host = self._Add(
         'api_host',
         hidden=True,
@@ -766,6 +797,11 @@ class _SectionCore(_Section):
         'check_gce_metadata',
         hidden=True,
         default=True)
+    self.print_completion_tracebacks = self._AddBool(
+        'print_completion_tracebacks',
+        hidden=True,
+        help_text='If True, print actual completion exceptions with traceback '
+        'instead of the nice UX scrubbed exceptions.')
     self.print_unhandled_tracebacks = self._AddBool(
         'print_unhandled_tracebacks',
         hidden=True)

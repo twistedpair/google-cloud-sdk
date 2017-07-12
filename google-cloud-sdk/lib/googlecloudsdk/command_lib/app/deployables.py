@@ -112,7 +112,7 @@ def ServiceYamlMatcher(path, stager):
   if os.path.exists(descriptor) and ext in ['.yaml', '.yml']:
     app_dir = os.path.dirname(descriptor)
     service_info = yaml_parsing.ServiceYamlInfo.FromFile(descriptor)
-    staging_dir = stager.Stage(descriptor, service_info.runtime,
+    staging_dir = stager.Stage(descriptor, app_dir, service_info.runtime,
                                service_info.env)
     # If staging, stage, get stage_dir
     return Service(descriptor, app_dir, service_info, staging_dir or app_dir)
@@ -148,7 +148,8 @@ def AppengineWebMatcher(path, stager):
   descriptor = os.path.join(app_dir, 'WEB-INF', 'appengine-web.xml')
   if not os.path.isfile(descriptor):
     return None
-  staging_dir = stager.Stage(descriptor, 'java-xml', util.Environment.STANDARD)
+  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml',
+                             util.Environment.STANDARD)
   if not staging_dir:
     # If there is no staging defined, we should stop here. This is in order to
     # support rolling out java staging in beta first, since the staging registry

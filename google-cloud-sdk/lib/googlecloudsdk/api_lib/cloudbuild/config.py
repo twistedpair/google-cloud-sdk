@@ -28,7 +28,7 @@ import yaml.parser
 # Don't apply camel case to keys for dict or list values with these field names.
 # These correspond to map fields in our proto message, where we expect keys to
 # be sent exactly as the user typed them, without transformation to camelCase.
-_SKIP_CAMEL_CASE = ['secretEnv', 'secret_env']
+_SKIP_CAMEL_CASE = ['secretEnv', 'secret_env', 'substitutions']
 
 
 class NotFoundException(exceptions.Error):
@@ -208,7 +208,10 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
   except ValueError as e:
     raise BadConfigException(path, '%s' % e)
 
-  build.substitutions = cloudbuild_util.EncodeSubstitutions(params, messages)
+  subst = structured_data.get('substitutions', {})
+  if params:
+    subst.update(params)
+  build.substitutions = cloudbuild_util.EncodeSubstitutions(subst, messages)
 
   # Some problems can be caught before talking to the cloudbuild service.
   if build.source:

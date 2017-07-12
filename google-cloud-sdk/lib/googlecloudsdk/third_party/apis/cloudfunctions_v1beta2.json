@@ -310,6 +310,11 @@
           "description": "Output only. The last update timestamp of a Cloud Function.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "versionId": {
+          "description": "Output only. Google internal. The version of a Cloud Function.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -438,6 +443,11 @@
       "description": "Request of `GenerateDownloadUrl` method.",
       "type": "object",
       "properties": {
+        "versionId": {
+          "description": "The optional version of function.",
+          "type": "string",
+          "format": "uint64"
+        }
       }
     },
     "GenerateDownloadUrlResponse": {
@@ -531,6 +541,11 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
+        },
+        "versionId": {
+          "description": "Google internal optional id of the version created by the operation.\nFor every create and update action new version of function is created.\nFor other operations (currently - delete function and some internal\noperations) in which no new version is created this field is going\nto have default value - 0 - which means no version id.",
+          "type": "string",
+          "format": "int64"
         }
       }
     }

@@ -200,7 +200,7 @@ def AddIamPolicyBinding(project_ref, member, role):
     policy = GetIamPolicy(project_ref)
   except exceptions.HttpError as error:
     raise projects_util.ConvertHttpError(error)
-  iam_util.AddBindingToIamPolicy(messages, policy, member, role)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
   try:
     return SetIamPolicy(project_ref, policy)
   except exceptions.HttpError as error:

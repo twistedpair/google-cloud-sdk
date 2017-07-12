@@ -30,7 +30,9 @@ from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_sch
 API_VERSION_SCHEMAS = {
     'v1beta4': yaml_schema_v1beta,
     'v1beta5': yaml_schema_v1beta,
-    'v1': yaml_schema_v1
+    'v1beta': yaml_schema_v1beta,
+    'v1alpha': yaml_schema_v1beta,
+    'v1': yaml_schema_v1,
 }
 
 
@@ -51,6 +53,10 @@ def main():
 
   converted_yaml = yaml_schema.SCHEMA.ConvertValue(input_yaml)
   json.dump(converted_yaml, sys.stdout, indent=2, sort_keys=True)
+
+
+def GetSchemaParser(api_version=None):
+  return API_VERSION_SCHEMAS.get(api_version, yaml_schema_v1).SCHEMA
 
 
 if __name__ == '__main__':

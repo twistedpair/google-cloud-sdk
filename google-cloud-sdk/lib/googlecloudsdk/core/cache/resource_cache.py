@@ -71,12 +71,14 @@ import os
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.util import files
 
 PERSISTENT_CACHE_IMPLEMENTATION = file_cache
+DEFAULT_TIMEOUT = 1*60*60
 
 
 def DeleteDeprecatedCache():
@@ -203,7 +205,7 @@ class Updater(BaseUpdater):
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache=None, collection=None, columns=0, column=0,
-               parameters=None, timeout=None):
+               parameters=None, timeout=DEFAULT_TIMEOUT):
     """Updater constructor.
 
     Args:
@@ -226,10 +228,16 @@ class Updater(BaseUpdater):
     super(Updater, self).__init__()
     self.cache = cache
     self.collection = collection
-    self.columns = columns
+    self.columns = columns if collection else 1
     self.column = column
     self.parameters = parameters or []
     self.timeout = timeout or 0
+
+  def _GetTableName(self):
+    """Returns the table name [prefix], the module path if no collection."""
+    if self.collection:
+      return self.collection
+    return module_util.GetModulePath(self)
 
   def _GetRuntimeParameters(self, parameter_info):
     """Constructs and returns the _RuntimeParameter list.
@@ -363,7 +371,7 @@ class Updater(BaseUpdater):
         values.append(v)
     if not values:
       table = self.cache.Table(
-          '.'.join([self.collection] + [x.value for x in aggregations]),
+          '.'.join([self._GetTableName()] + [x.value for x in aggregations]),
           columns=self.columns,
           keys=self.columns,
           timeout=self.timeout)
@@ -372,7 +380,7 @@ class Updater(BaseUpdater):
     for perm in itertools.product(*values):
       perm = list(perm)
       table = self.cache.Table(
-          '.'.join([self.collection] + perm),
+          '.'.join([self._GetTableName()] + perm),
           columns=self.columns,
           keys=self.columns,
           timeout=self.timeout)
@@ -402,7 +410,7 @@ class Updater(BaseUpdater):
     parameters = self._GetRuntimeParameters(parameter_info)
     values = [row[p.column] for p in parameters if p.aggregator]
     return self.cache.Table(
-        '.'.join([self.collection] + values),
+        '.'.join([self._GetTableName()] + values),
         columns=self.columns,
         keys=self.columns,
         timeout=self.timeout,

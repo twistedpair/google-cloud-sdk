@@ -18,7 +18,8 @@ from googlecloudsdk.api_lib.ml.language import util
 
 def RunLanguageCommand(feature, content_file=None, content=None,
                        language=None, content_type=None,
-                       encoding_type=None):
+                       encoding_type=None,
+                       api_version=util.LANGUAGE_GA_VERSION):
   """Runs a gcloud ml language command.
 
   Args:
@@ -29,6 +30,7 @@ def RunLanguageCommand(feature, content_file=None, content=None,
     content_type: str, the format of the input text - 'PLAIN_TEXT' or 'HTML'.
     encoding_type: str, the encoding type to be used for calculating word
         offsets - 'UTF8', 'UTF16', 'UTF32', 'NONE'.
+    api_version: str, the API version to use.
 
   Raises:
     ContentFileError: if content file can't be found and is not a GCS URL.
@@ -41,7 +43,9 @@ def RunLanguageCommand(feature, content_file=None, content=None,
           if feature is analyzeEntities, response would be
           messages.AnalyzeEntitiesResponse).
   """
-  client = util.LanguageClient()
+  entity_sentiment = True if feature == 'analyzeEntitySentiment' else False
+  client = util.LanguageClient(version=api_version,
+                               entity_sentiment_enabled=entity_sentiment)
   source = util.GetContentSource(content, content_file)
   return client.SingleFeatureAnnotate(feature, source=source, language=language,
                                       content_type=content_type,
@@ -58,3 +62,13 @@ SERVICE_ACCOUNT_HELP = (
 
 LANGUAGE_HELP = (
     'Currently English, Spanish, and Japanese are supported.')
+
+
+LANGUAGE_HELP_BETA = (
+    'Currently English, Spanish, Japanese, Chinese (Simplified and '
+    'Traditional), French, German, Italian, Korean, and Portuguese are '
+    'supported.')
+
+
+LANGUAGE_HELP_ENTITY_SENTIMENT = (
+    'Currently only English is supported for this feature.')

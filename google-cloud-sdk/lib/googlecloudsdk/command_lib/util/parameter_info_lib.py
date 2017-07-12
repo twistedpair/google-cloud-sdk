@@ -24,7 +24,9 @@ from googlecloudsdk.core.resource import resource_property
 
 def GetDestFromParam(param, prefix=None):
   """Returns a conventional dest name given param name with optional prefix."""
-  name = prefix + '_' + param if prefix else param
+  name = param.replace('-', '_').strip('_')
+  if prefix:
+    name = prefix + '_' + name
   return resource_property.ConvertToSnakeCase(
       re.sub('s?I[Dd]$', '', name)).strip('_')
 
@@ -156,7 +158,11 @@ class ParameterInfoByConvention(resource_cache.ParameterInfo):
     dest = self.GetDest(parameter_name)
     flag, flag_dest = self._GetFlagAndDest(dest)
     if not flag:
-      return None
+      # Try the plural form to handle sub-resources.
+      dest += 's'
+      flag, flag_dest = self._GetFlagAndDest(dest)
+      if not flag:
+        return None
     program_value = self._parsed_args.GetValue(flag_dest)
     if program_value is None and check_properties:
       program_value = self._GetPropertyValue(dest)

@@ -114,6 +114,9 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-vision": {
+          "description": "Apply machine learning models to understand and label images"
         }
       }
     }
@@ -1342,7 +1345,8 @@
             "$ref": "BatchAnnotateImagesResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
           ]
         }
       }

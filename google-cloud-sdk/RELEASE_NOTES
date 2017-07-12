@@ -3,6 +3,105 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 162.0.0 (2017-07-12)
+
+### Breaking Changes
+
+*   Removed `gcloud alpha compute instance-groups managed rolling-action
+    recreate`. Instead, use `gcloud alpha compute instance-groups managed
+    rolling-action replace`.
+
+### Google Compute Engine
+
+*   `gcloud compute networks peerings` is now generally available. The alpha and
+    beta tracks remain.
+*   `gcloud alpha compute networks list-ip-owners` is now available in the
+    alpha track.
+*   Added `source-service-accounts` and `target-service-accounts` to the `gcloud
+    beta compute firewall-rules <describe|list|create|update>` commands.
+*   Added the `--custom-extensions` flag to:
+    *   `gcloud compute instances create`
+    *   `gcloud compute instances set-machine-type`
+    *   `gcloud compute instance-templates create`.
+*   Forwarding rules with a standard network tier can now accept global targets.
+*   Added support for updating network tiers in the `gcloud alpha compute
+    forwarding-rules update` commands.
+
+### Google App Engine
+
+*   Google App Engine components updated to 1.9.57. Please visit the following
+    release notes for more details:
+    https://cloud.google.com/appengine/docs/python/release-notes.
+*   Added `gcloud beta app update` to support configuring an application's
+    feature settings.
+*   `gcloud app deploy` now allows deployments of Go 1.8 apps on App Engine
+    Standard. During this open beta period you may opt-in to Go 1.8 by
+    specifying `api_version: go1.8` in your `app.yaml`.
+*   Added support for standard scheduler settings.
+
+### Google Cloud Deployment Manager
+
+*   `gcloud deployment-manager deployments create
+    --automatic-rollback-on-failure` will now delete the new deployment after
+    creation if it contains operation errors.
+*   `gcloud beta deployment-manager deployments create` can now create
+    deployments with a list of key-value pairs as labels using the `--labels`
+    flag. `gcloud beta deployment-manager deployments update` can now
+    update/remove labels of the deployment using the `--update-labels` and
+    `--remove-labels` flags.
+
+### Google Cloud Machine Learning Engine
+
+*   Added the `gcloud ml-engine models <get-iam-policy|set-iam-policy|remove-iam-policy-binding|add-iam-policy-binding>`
+    commands. These read and modify IAM policy data for ML Engine models. See
+    https://cloud.google.com/iam/docs/managing-policies for details.
+
+### Google Cloud Machine Learning APIs
+
+*   The `gcloud ml language analyze-entity-sentiment` command is now available
+    in the beta track. This command allows for entity-level sentiment analysis.
+    Please visit https://cloud.google.com/natural-language/pricing to learn more
+    about pricing for this feature.
+
+### Google Cloud Resource Manager
+
+*   The following Organization Policy commands are now available in the beta
+    track: `gcloud beta resource-manager org-policies
+    <allow|delete|deny|describe|disable-enforce|enable-enforce|list|set-policy>`.
+
+### Google Cloud SQL
+
+*   The `beta sql instances create` and `beta sql instances patch` commands have
+    been updated to support storage auto-resize limits using
+    `--storage-auto-increase-limit`.
+
+### Google Container Engine
+
+*   Added the `--enable-ip-alias`, `--services-ipv4-cidr`, and
+    `--create-cluster` flags to support IP aliases.
+*   Updated `kubectl` from version 1.6.6 to version 1.7.0.
+
+### Google Cloud Storage
+
+*   Updated the gsutil component to 4.27.
+
+### Google Cloud Container Builder
+
+*   Fixed bug: defining substitutions with the command-line `--substitutions`
+    flag no longer causes all substitutions defined in cloudbuild.yaml to be
+    deleted.
+
+### Google Cloud Logging
+
+*   `gcloud beta logging sinks` commands now use only V2 of the API instead of
+    a mix of V1 and V2 calls.
+
+### Google Cloud Source Repositories
+
+*   `gcloud source repos clone` now gives a warning if the repository is
+    mirrored.
+
+
 ## 161.0.0 (2017-06-28)
 
 ### Breaking Changes
@@ -59,9 +158,9 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 ### Google Cloud SQL
 
-*   Added `--labels` flag to `gcloud sql instances create` and
-    `--<update|remove|clear>-labels` flags to `gcloud sql instances patch` to
-    support the application of labels to SQL instances.
+*   Added `--labels` flag to `gcloud beta sql instances create` and
+    `--<update|remove|clear>-labels` flags to `gcloud beta sql instances patch`
+    to support the application of labels to SQL instances.
 
 ### Google Compute Engine
 
@@ -99,7 +198,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 *   Updated `kubectl` from version 1.6.4 to version 1.6.6.
 
 
-## 160.0.0 (2017-06-21)
+## 160.0.0 (2017-06-21; abandoned: all changes available in 161.0.0)
 
 ### Breaking Changes
 
@@ -151,7 +250,7 @@ Copyright 2014-2017 Google Inc. All rights reserved.
         DISPLAY, etc.) and just prints the URL instead of attempting to launch
         a browser.
 
-### Google Cloud BigTable
+### Google Cloud Bigtable
 
 *   `cbt ls <table>` now shows the GC policy for each column family.
 
@@ -631,8 +730,8 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 ### Miscellaneous
 
-*   (Cloud BigTable Emulator) The BigTable Emulator no longer crashes when not
-    configured with a host_port.
+*   (Cloud Bigtable Emulator) The Cloud Bigtable Emulator no longer crashes when
+    not configured with a host_port.
 *   (Cloud SDK) Fixed a bug in the fish shell $PATH script that caused the $PWD
     to change (<https://issuetracker.google.com/issues/35906130>).
 

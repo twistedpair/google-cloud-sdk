@@ -124,11 +124,11 @@
   "schemas": {
     "DeviceRegistry": {
       "id": "DeviceRegistry",
-      "description": "This is a container for a group of devices.",
+      "description": "A container for a group of devices.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "The identifier of this device registry. e.g. `myRegistry`",
+          "description": "The identifier of this device registry. For example, `myRegistry`.",
           "type": "string"
         },
         "name": {
@@ -140,7 +140,7 @@
           "$ref": "NotificationConfig"
         },
         "mqttConfig": {
-          "description": "The configuration of the MQTT broker associated with this device registry,\nwhich includes enablement, payload data format type, etc.",
+          "description": "The configuration of the MQTT broker associated with this device registry,\nincluding enablement, payload data format type, etc.",
           "$ref": "MqttConfig"
         }
       }
@@ -162,7 +162,7 @@
       "type": "object",
       "properties": {
         "mqttConfigState": {
-          "description": "If enabled, it allows connections using the MQTT protocol. Otherwise any\nMQTT connection to this registry will fail.",
+          "description": "If enabled, allows connections using the MQTT protocol. Otherwise any MQTT\nconnection to this registry will fail.",
           "enumDescriptions": [
             "No MQTT state specified. If not specified, MQTT will be enabled by default.",
             "Enables a MQTT connection.",
@@ -204,41 +204,41 @@
     },
     "Device": {
       "id": "Device",
-      "description": "The device resource. Contains metadata about the device that is only\nconfigured in the cloud.",
+      "description": "The device resource.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "The user-defined device identifier. The device id must be unique\nwithin a device registry.",
+          "description": "The user-defined device identifier. The device ID must be unique\nwithin a device registry.",
           "type": "string"
         },
         "name": {
-          "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it will always\nend in the device numeric id.",
+          "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it always ends\nin the device numeric ID.",
           "type": "string"
         },
         "numId": {
-          "description": "A server defined unique numerical id for the device. This is a more compact\nway to identify devices, and it is globally unique. Output only.",
+          "description": "[Output only] A server-defined unique numeric ID for the device. This is a\nmore compact way to identify devices, and it is globally unique.",
           "type": "string",
           "format": "uint64"
         },
         "credentials": {
-          "description": "The credentials used to authenticate this device. To allow credential\nrotation without interruption, multiple device credentials may be bound to\nthis device. No more than 3 credentials may be bound to a single device at\na time.",
+          "description": "The credentials used to authenticate this device. To allow credential\nrotation without interruption, multiple device credentials can be bound to\nthis device. No more than 3 credentials can be bound to a single device at\na time.",
           "type": "array",
           "items": {
             "$ref": "DeviceCredential"
           }
         },
         "lastHeartbeatTime": {
-          "description": "The last time a heartbeat was received. The timestamps are periodically\ncollected and written to storage; this means that it is possible to see\nstale timestamps by a few minutes. Output only.",
+          "description": "[Output only] The last time a heartbeat was received. Timestamps are\nperiodically collected and written to storage; they may be stale by a few\nminutes.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastEventTime": {
-          "description": "The last time an event was received. The timestamps are periodically\ncollected and written to storage; this means that it is possible to see\nstale timestamps by a few minutes. Output only.",
+          "description": "[Output only] The last time an event was received. Timestamps are\nperiodically collected and written to storage; they may be stale by a few\nminutes.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastConfigAckTime": {
-          "description": "The last time a cloud-to-device config version acknowledgement was received\nfrom the device. Output only.",
+          "description": "[Output only] The last time a cloud-to-device config version acknowledgment\nwas received from the device.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -257,16 +257,16 @@
           ]
         },
         "lastErrorTime": {
-          "description": "The last time an error happened, e.g., failed to publish to Cloud Pub\/Sub.\nThis field is the timestamp of 'last_error_status'. Output only.",
+          "description": "[Output only] The last time an error happened, e.g., failed to publish to\nCloud Pub\/Sub. This field is the timestamp of 'last_error_status'.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastErrorStatus": {
-          "description": "The error message of the last error, e.g., failed to publish to Cloud\nPub\/Sub. 'last_error_time' is the timestamp of this field.\nIf no errors are present, this will have an empty message (whose\nstatus code is 0 == OK), otherwise this field is expected to have a\nnot-OK status code. Output only.",
+          "description": "[Output only] The error message of the last error, e.g., failed to publish\nto Cloud Pub\/Sub. 'last_error_time' is the timestamp of this field. If no\nerrors are present, this will have an empty message (whose status code is\n0 == OK), otherwise this field is expected to have a not-OK status code.",
           "$ref": "Status"
         },
         "config": {
-          "description": "The most recent device configuration, which is eventually sent from the\nCloud IoT service to the device. If not present on creation, the\nconfiguration will be initialized with an empty payload and version value\nof `1`. To update this field after creation, use the\n`DeviceManager.ModifyCloudToDeviceConfig` method.",
+          "description": "The most recent device configuration, which is eventually sent from the\nCloud IoT Core service to the device. If not present on creation, the\nconfiguration will be initialized with an empty payload and version value\nof `1`. To update this field after creation, use the\n`DeviceManager.ModifyCloudToDeviceConfig` method.",
           "$ref": "DeviceConfig"
         }
       }
@@ -277,11 +277,11 @@
       "type": "object",
       "properties": {
         "publicKey": {
-          "description": "A public key used to verify the signature of JWT tokens.",
+          "description": "A public key used to verify the signature of JSON Web Tokens (JWTs).",
           "$ref": "PublicKeyCredential"
         },
         "expirationTime": {
-          "description": "Optionally, the time when this credential stops being valid. This\ncredential will be ignored for new client authentication requests after\nthis timestamp; however, it will not be automatically deleted.",
+          "description": "[Optional] The time at which this credential becomes invalid. This\ncredential will be ignored for new client authentication requests after\nthis timestamp; however, it will not be automatically deleted.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -295,7 +295,7 @@
         "format": {
           "description": "The format of the key.",
           "enumDescriptions": [
-            "The format has not been specified. This is will return an error. A format\nmust be defined.",
+            "The format has not been specified. This is an invalid default value and\nmust not be used.",
             "An RSA public key wrapped in a X.509v3 certificate\n[RFC5280](https:\/\/www.ietf.org\/rfc\/rfc5280.txt), encoded in base64, and\nwrapped by `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`.\nThis can be used to verify `RS256` signatures in JWT tokens\n[RFC7518](https:\/\/www.ietf.org\/rfc\/rfc7518.txt).",
             "Public key for the ECDSA algorithm using P-256 and SHA-256, encoded in\nbase64, and wrapped by `-----BEGIN PUBLIC KEY-----` and `-----END\nPUBLIC KEY-----`. This can be used to verify JWT tokens with the `ES256`\nalgorithm [RFC7518](https:\/\/www.ietf.org\/rfc\/rfc7518.txt). This curve is\ndefined in [openssl](https:\/\/www.openssl.org\/) as the `prime256v1` curve."
           ],
@@ -341,21 +341,21 @@
     },
     "DeviceConfig": {
       "id": "DeviceConfig",
-      "description": "The device configuration, and it's metadata. Eventually delivered to devices.",
+      "description": "The device configuration and its metadata. Eventually delivered to devices.",
       "type": "object",
       "properties": {
         "version": {
-          "description": "The version of this update. The version number is assigned by the\nserver, and is always greater than zero after device creation. The version\nmust be zero on the `CreateDevice` request if a `config` is specified; the\nresponse of `CreateDevice` will always have a value of one. Output only.",
+          "description": "[Output only] The version of this update. The version number is assigned by\nthe server, and is always greater than zero after device creation. The\nversion must be zero on the `CreateDevice` request if a `config` is\nspecified; the response of `CreateDevice` will always have a value of one.",
           "type": "string",
           "format": "int64"
         },
         "cloudUpdateTime": {
-          "description": "The time when this version state was updated in the Cloud IoT service.\nThis timestamp is set by the server. Output only.",
+          "description": "[Output only] The time when this version state was updated in the Cloud IoT\nCore service. This timestamp is set by the server.",
           "type": "string",
           "format": "google-datetime"
         },
         "deviceAckTime": {
-          "description": "The time when the Cloud IoT server received the acknowledgement from the\ndevice, indicating that the device has received this configuration version.\nIf this field is not present, it indicates that the device has not yet\nacknowledged that it received this version. Note that when sending the\nconfig to the device, there may have been many config versions on the Cloud\nIoT service while the device was disconnected; and on connection, only the\nlatest version is sent to the device. Some of the versions may never be\nsent to the device, and therefore are never acknowledged. This timestamp\nis set by the Cloud IoT service. Output only.",
+          "description": "[Output only] The time when the Cloud IoT Core server received the\nacknowledgment from the device, indicating that the device has received\nthis configuration version. If this field is not present, the device has\nnot yet acknowledged that it received this version. Note that when sending\nthe config to the device, there may have been many config versions on the\nCloud IoT Core service while the device was disconnected; and on\nconnection, only the latest version is sent to the device. Some of the\nversions may never be sent to the device, and therefore are never\nacknowledged. This timestamp is set by the Cloud IoT Core service.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1140,7 +1140,7 @@
                       "description": "Updates a device.",
                       "parameters": {
                         "name": {
-                          "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it will always\nend in the device numeric id.",
+                          "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it always ends\nin the device numeric ID.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",

@@ -37,6 +37,7 @@ flags.
 """
 
 from googlecloudsdk.core import remote_completion
+from googlecloudsdk.core.cache import cache_update_ops
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projector
@@ -118,8 +119,9 @@ class Flattener(peek_iterable.Tap):
       self._resource = resource_projector.MakeSerializable(resource)
       self._items = resource_property.Get(self._resource, self._key)
       if not isinstance(self._items, list):
+        item = self._items
         self._items = None
-        return True
+        return peek_iterable.TapInjector(item, replace=True)
     if not self._items:
       self._items = None
       return False
@@ -228,7 +230,16 @@ class UriCacher(peek_iterable.Tap):
 
   def Done(self):
     if self._uris is not None:
-      remote_completion.RemoteCompletion().UpdateCache(self._update_cache_op,
+      if isinstance(self._update_cache_op, cache_update_ops.AddToCacheOp):
+        update_cache_op = remote_completion.AddToCacheOp
+      elif isinstance(self._update_cache_op,
+                      cache_update_ops.DeleteFromCacheOp):
+        update_cache_op = remote_completion.DeleteFromCacheOp
+      elif isinstance(self._update_cache_op, cache_update_ops.ReplaceCacheOp):
+        update_cache_op = remote_completion.ReplaceCacheOp
+      else:
+        return
+      remote_completion.RemoteCompletion().UpdateCache(update_cache_op,
                                                        self._uris)
 
 
