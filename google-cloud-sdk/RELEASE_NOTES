@@ -3,6 +3,17 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 162.0.1 (2017-07-14)
+
+### Cloud SDK
+
+*   Revert breaking change released with 162.0.0: the `:` operator for the
+    `--filter` flag formerly performed a substring match, but with release
+    162.0.0 it performed a full string match (in agreement with its
+    documentation). The change has been reverted, since it was deployed without
+    warning.
+
+
 ## 162.0.0 (2017-07-12)
 
 ### Breaking Changes

@@ -74,14 +74,13 @@ def _Has(value, pattern):
     EXPRESSION  PATTERN         VALUE       MATCHES
     abc*xyz     ['abc', 'xyz']  abcpdqxyz   True
     abc*        ['abc', '']     abcpdqxyz   True
-    abc         ['abc']         abc         True
-    abc         ['abc']         abcpdqxyz   False
+    abc         ['abc']         abcpdqxyz   True
     *abc        ['', 'abc']     abcpdqxyz   False
     pdq*        ['pdq', '']     abcpdqxyz   False
-    pdq         ['pdq']         abcpdqxyz   False
+    pdq         ['pdq']         abcpdqxyz   True
     *pdq        ['', 'pdq']     abcpdqxyz   False
     xyz*        ['xyz', '']     abcpdqxyz   False
-    xyz         ['xyz']         abcpdqxyz   False
+    xyz         ['xyz']         abcpdqxyz   True
     *xyz        ['', 'xyz']     abcpdqxyz   True
     *           ['', '']        abcpdqxyz   True
     *           ['', '']        <''>        False
@@ -96,13 +95,13 @@ def _Has(value, pattern):
 
   prefix = pattern[0]
   if len(pattern) == 1:
-    # Test if value equals prefix.
+    # Test if value contains prefix.
     try:
-      return value == prefix
-    except AttributeError:
+      return prefix in value
+    except TypeError:
       pass
     try:
-      return _StripTrailingDotZeroes(value) == _StripTrailingDotZeroes(prefix)
+      return _StripTrailingDotZeroes(prefix) in _StripTrailingDotZeroes(value)
     except (TypeError, ValueError):
       pass
     return False
@@ -135,19 +134,8 @@ def _IsIn(matcher, value, operand):
     True if the value (or any element in value if it is a list) matches/contains
     operand (or any element in operand if it is a list).
   """
-  if isinstance(value, (dict, list, tuple)):
-    values = value
-  else:
-    values = {value}
-    if matcher == _Has:
-      try:
-        values |= set(value.split())
-      except AttributeError:
-        pass
-  if isinstance(operand, (dict, list, tuple)):
-    operands = operand
-  else:
-    operands = {operand}
+  values = value if isinstance(value, (dict, list, tuple)) else [value]
+  operands = operand if isinstance(operand, (dict, list, tuple)) else [operand]
   for v in values:
     for o in operands:
       if matcher(v, o):
